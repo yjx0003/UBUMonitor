@@ -1,0 +1,160 @@
+.anchorpane {
+    -fx-background-color: #f2f2f2;
+}
+
+.progress-bar .bar { 
+    -fx-padding: 1px; 
+    -fx-background-insets: 0; 
+    -fx-background-color: #ab263c;
+}
+
+.text-field-login {
+	-fx-background-color: #faffbd;
+	-fx-border-radius: 1.0;
+	-fx-border-color: #c6c5c5; 
+}
+
+.text-field-main {
+	-fx-background-color: white;
+	-fx-border-radius: 1.0;
+	-fx-border-color: #b0b0b0; 
+	-fx-text-fill: #5c5b5b;
+}
+
+.button{
+	-fx-background-color: #066db3;
+	-fx-font-size: 13.0px;
+	-fx-text-fill: white;
+	/*-fx-border-color: #b0b0b0;*/ 
+}
+
+.button:hover{
+	-fx-background-color: #0790ed;
+}
+
+.root {
+    -fx-accent: #328ff2;
+    -fx-focus-color: #328ff2;
+    -fx-text-fill: white;
+}
+
+.label-info{
+	-fx-font-size: 11.0;
+	-fx-text-fill: #5c5b5b;
+	/*-fx-background-color:#ffff99;*/
+	-fx-margin: 15.0;
+	-fx-padding: 0.0 0.0 0.0 8.0 ;
+}
+
+.label-lists{
+	-fx-text-fill: #066db3;
+}
+
+.list-view-intro{
+	-fx-padding: 4.0;
+	-fx-font-size: 15.0px;
+	-fx-background-color: #ab263c;
+}
+
+.list-cell:hover {
+  -fx-background-color: #ffa1a7;
+  -fx-text-fill: black;
+}
+
+.list-cell:selected {
+  -fx-background-color: #ab263c;
+  -fx-text-fill: white;
+}
+
+.tree-cell:hover{
+	-fx-background-color: #ffa1a7;
+	-fx-text-fill: black;
+}
+
+.tree-cell:selected{
+	-fx-background-color: #ab263c;
+  	-fx-text-fill: white;
+}
+
+.tree-cell .tree-disclosure-node .arrow {
+    /*-fx-shape: square;
+    -fx-background-color: blue;*/
+    -fx-background-image: url("/img/arrow_collapsed.png");
+}
+.tree-cell:expanded .tree-disclosure-node .arrow {
+    /*-fx-shape: circle;
+    -fx-background-color: green;*/
+    -fx-background-image: url("/img/arrow_expanded.png");
+}
+
+.pane{
+	-fx-background-color:#f2f2f2;
+}
+
+.menu-button .label{
+	-fx-background-color: #ab263c;
+	/*-fx-border-color:#cc0044;*/
+	-fx-font-size: 11.0px;
+	-fx-text-fill: white;
+}
+
+.menu-button{
+	-fx-background-color: #ab263c;
+	/*-fx-border-color:#cc0044;*/
+	-fx-font-size: 11.0px;
+	-fx-text-fill: white;
+}
+
+.menu-button .arrow-button {
+	-fx-mark-color: white;
+}
+
+.menu-item{
+	-fx-background-color: #ab263c;
+}
+
+.menu-item:hover{
+	-fx-background-color: #066db3;
+	/*-fx-background-color: #ffff99;*/
+}
+
+.menu-item .label{
+	-fx-background-color: #ab263c;
+	-fx-text-fill: white;
+}
+
+.menu-item:hover .label{
+	-fx-background-color: #066db3;
+	-fx-text-fill: white;
+}
+
+.menu-bar .label{
+	-fx-background-color: #ab263c;
+}
+
+/* HTML */
+table {
+    margin-bottom: 3.0em;
+    width: 100.0%;
+    font-family:Arial, Verdana, sans-serif;
+    text-align:center;
+    /*border: 1.0 solid grey;*/
+    border-radius: 1;
+    border-collapse: collapse;
+}
+th{
+	heigth:20%;
+	font-size:80%;
+	color: white;
+    background: #ab263c;
+    padding:1%;
+    border-collapse: collapse;
+}
+td {
+	font-size:80%;
+	heigth:20%;
+    background: white;
+    padding:3%;
+    /*border: 1.0 solid grey;*/
+    border-collapse: collapse;
+}

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" styleClass="anchorpane" stylesheets="@/css/style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.WelcomeController">
+	<children>
+      <ImageView fitHeight="68.0" fitWidth="350.0" layoutX="293.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@/img/titulo.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="161.0" fitWidth="161.0" layoutX="130.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@/img/logo_min.png" />
+         </image>
+      </ImageView>
+		<Label layoutX="300.0" layoutY="113.0" text="Bienvenida/o,">
+			<font>
+				<Font size="22.0" />
+			</font>
+		</Label>
+		<Label fx:id="lblUser" layoutX="300.0" layoutY="145.0" text="Nombre de usuario">
+			<font>
+				<Font size="25.0" />
+			</font>
+		</Label>
+		<ListView fx:id="listCourses" layoutX="139.0" layoutY="216.0" prefHeight="265.0" prefWidth="540.0" styleClass="list-view-intro" stylesheets="@/css/style.css">
+         <cursor>
+            <Cursor fx:constant="DEFAULT" />
+         </cursor></ListView>
+		<Label layoutX="300.0" layoutY="188.0" text="Por favor, seleccione un curso:">
+			<font>
+				<Font size="15.0" />
+			</font>
+		</Label>
+		<Button fx:id="btnEntrar" layoutX="364.0" layoutY="496.0" mnemonicParsing="false" onAction="#enterCourse" prefHeight="39.0" prefWidth="86.0" style="-fx-font-size: 16;" styleClass="rich-blue" stylesheets="@/css/style.css" text="Entrar">
+			<font>
+				<Font size="19.0" />
+			</font>
+			<cursor>
+				<Cursor fx:constant="HAND" />
+			</cursor>
+		</Button>
+      <Label fx:id="lblNoSelect" layoutX="321.0" layoutY="551.0" prefWidth="175.0" style="-fx-text-fill: #ff5050;" textFill="#e11010">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+	</children>
+</AnchorPane>

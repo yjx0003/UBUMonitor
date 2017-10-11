@@ -275,7 +275,8 @@ public class CourseWS {
 		String result = "";
 		// Busco el final de la cadena única a partir de la cual empieza el
 		// nombre de la categoría
-		int begin = data.lastIndexOf("/>") + 2;
+		//FNS en moodle 3.3 aparece <i/> antes del nombre de la categoria
+		int begin = data.lastIndexOf("</i>") + 4;
 		// El nombre termina al final de todo el texto
 		int end = data.length();
 		// Me quedo con la cadena entre esos índices
@@ -303,7 +304,8 @@ public class CourseWS {
 	 * @return
 	 */
 	public static String getNameManualItemOrEndCategory(String data) {
-		int begin = data.lastIndexOf("/>") + 2;
+		//FNS en moodle 3.3 aparece </i> antes del nombre
+		int begin = data.lastIndexOf("</i>") + 4;
 		int end = data.indexOf("</span>");
 		return data.substring(begin, end);
 	}
@@ -388,15 +390,18 @@ public class CourseWS {
 	 * @return
 	 */
 	private static String manualItemOrEndCategory(String data) {
-		String url = data.substring(data.lastIndexOf("src="), data.indexOf("/>"));
-		if (url.contains("i/manual_item")) {
+		//FNS 
+		if(data.contains("Ítem manual")) {
 			return "manualItem";
-		} else if (url.contains("i/agg_sum")
+		}else if(data.contains("i/agg_sum")
 				// added by RMS
-				|| url.contains("i/calc") || url.contains("i/agg_mean"))
+				|| data.contains("i/calc") || data.contains("i/agg_mean")
+				//FNS
+				|| data.contains("Calificación calculada")) {
 			return "endCategory";
-		else
+		}else {
 			return "";
+		}
 	}
 
 	/**

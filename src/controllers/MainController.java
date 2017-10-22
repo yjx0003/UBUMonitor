@@ -68,8 +68,8 @@ public class MainController implements Initializable {
 
 	static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
-	@FXML
-	public AnchorPane canvas;
+	//@FXML
+	//public AnchorPane canvas;
 	@FXML // Curso actual
 	public Label lblActualCourse;
 	@FXML // Usuario actual
@@ -111,11 +111,13 @@ public class MainController implements Initializable {
 	String filterType = "Todos";
 
 	@FXML // Gráfico
-	private LineChart<String, Number> lineChart;
+	private WebView webViewChart;
+	private WebEngine webViewChartEngine;
+	//private LineChart<String, Number> lineChart;
 
 	@FXML // Tabla de calificaciones
-	private WebView webView;
-	private WebEngine engine;
+	private WebView webViewCalificaciones;
+	private WebEngine webViewCalificacionesEngine;
 
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades
@@ -125,7 +127,14 @@ public class MainController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
 			logger.info(" Cargando curso '" + UBUGrades.session.getActualCourse().getFullName() + "'...");
-			engine = webView.getEngine();
+			
+			
+			webViewChartEngine = webViewChart.getEngine();
+			URL url = this.getClass().getResource("/graphics/LineGraphic.html");
+			webViewChartEngine.load(url.toString());
+			
+			webViewCalificacionesEngine = webViewCalificaciones.getEngine();
+			
 			// Establecemos los usuarios matriculados
 			CourseWS.setEnrolledUsers(UBUGrades.session.getToken(), UBUGrades.session.getActualCourse());
 			// Establecemos calificador del curso
@@ -244,7 +253,7 @@ public class MainController implements Initializable {
 				ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel()
 						.getSelectedItems();
 				// Al seleccionar un participante reiniciamos el gráfico
-				lineChart.getData().clear();
+				//lineChart.getData().clear();
 
 				// Recalculamos la tabla
 				String htmlTitle = "<tr><th style='background:#066db3; border: 1.0 solid grey; color:white;'> Alumno </th>";
@@ -310,20 +319,20 @@ public class MainController implements Initializable {
 					}
 					htmlTitle += "</tr>";
 					// Mostramos el gráfico
-					lineChart.getData().add(series);
+					//lineChart.getData().add(series);
 					htmlRow += "</tr>";
 					content += htmlRow;
 				}
 				// Mostramos la tabla
 				String head = "";
 				try {
-					engine.setUserStyleSheetLocation(getClass().getResource("../css/style.css").toString());
+					webViewCalificacionesEngine.setUserStyleSheetLocation(getClass().getResource("../css/style.css").toString());
 				} catch (Exception e) {
 					head = "<style>table {margin-bottom: 3.0em; width: 100.0%;font-family:Arial, Verdana, sans-serif; text-align:center;border-radius: 1; border-collapse: collapse;}"
 							+ "th{heigth:20%;font-size:80%;color: white;   background: #ab263c;   padding:1%;   border-collapse: collapse;}"
 							+ "td {font-size:80%;heigth:20%;   background: white;   padding:1%; border-collapse: collapse;}</style>";
 				}
-				engine.loadContent("<html><head>" + head + "</head><body style='background-color:#f2f2f2'><table>"
+				webViewCalificacionesEngine.loadContent("<html><head>" + head + "</head><body style='background-color:#f2f2f2'><table>"
 						+ htmlTitle + content + "</table></body></html>");
 			}
 		});
@@ -359,7 +368,7 @@ public class MainController implements Initializable {
 				ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel()
 						.getSelectedItems();
 				// Se reinicia el gráfico por cada nuevo ítem seleccionado
-				lineChart.getData().clear();
+				//lineChart.getData().clear();
 				String htmlTitle = "<tr><th style='background:#066db3; border: 1.0 solid grey; color:white;'> Alumno </th>";
 				String content = "";
 				int countA = 0;
@@ -423,21 +432,21 @@ public class MainController implements Initializable {
 						}
 					}
 					htmlTitle += "</tr>";
-					lineChart.getData().add(series);
+					//lineChart.getData().add(series);
 					htmlRow += "</tr>";
 					content += htmlRow;
 				}
 				// Mostramos la tabla
 				String head = "";
 				try {
-					engine.setUserStyleSheetLocation(getClass().getResource("../css/style.css").toString());
+					webViewCalificacionesEngine.setUserStyleSheetLocation(getClass().getResource("../css/style.css").toString());
 				} catch (Exception e) {
 					logger.error("No hay fichero de hoja de estilo disponible", e);
 					head = "<style>table {margin-bottom: 3.0em; width: 100.0%;font-family:Arial, Verdana, sans-serif; text-align:center;border-radius: 1; border-collapse: collapse;}"
 							+ "th{heigth:20%;font-size:80%;color: white;   background: #ab263c;   padding:1%;   border-collapse: collapse;}"
 							+ "td {font-size:80%;heigth:20%;   background: white;   padding:1%; border-collapse: collapse;}</style>";
 				}
-				engine.loadContent("<html><head>" + head + "</head><body style='background-color:#f2f2f2'><table>"
+				webViewCalificacionesEngine.loadContent("<html><head>" + head + "</head><body style='background-color:#f2f2f2'><table>"
 						+ htmlTitle + content + "</table></body></html>");
 			}
 		});
@@ -804,7 +813,7 @@ public class MainController implements Initializable {
 	 * @throws Exception
 	 */
 	public void saveChart(ActionEvent actionEvent) throws Exception {
-		WritableImage image = lineChart.snapshot(new SnapshotParameters(), null);
+		//WritableImage image = lineChart.snapshot(new SnapshotParameters(), null);
 
 		File file = new File("chart.png");
 
@@ -818,11 +827,11 @@ public class MainController implements Initializable {
 		try {
 			file = fileChooser.showSaveDialog(UBUGrades.stage);
 			if (file != null) {
-				try {
+				/*try {
 					ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
 				} catch (IOException ex) {
 					logger.info(ex.getMessage());
-				}
+				}*/
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -837,7 +846,7 @@ public class MainController implements Initializable {
 	 * @throws Exception
 	 */
 	public void saveTable(ActionEvent actionEvent) throws Exception {
-		WritableImage image = webView.snapshot(new SnapshotParameters(), null);
+		WritableImage image = webViewCalificaciones.snapshot(new SnapshotParameters(), null);
 
 		File file = new File("table.png");
 
@@ -894,8 +903,8 @@ public class MainController implements Initializable {
 	}
 
 	public void clearData() {
-		lineChart.getData().clear();
-		engine.loadContent("<html><head></head><body style='background-color:#f2f2f2'></body></html>");
+		//lineChart.getData().clear();
+		webViewCalificacionesEngine.loadContent("<html><head></head><body style='background-color:#f2f2f2'></body></html>");
 	}
 
 	/**

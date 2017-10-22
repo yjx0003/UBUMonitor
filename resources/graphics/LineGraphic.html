@@ -1,0 +1,147 @@
+
+<html>
+<head>
+
+<style>
+	body
+	{
+		background: #1D1F20;
+		padding: 16px;
+	}
+
+	.chart-container
+	{
+		position: relative;
+		margin: auto;
+		height: 90vh;
+		width: 90vw;	
+	}
+</style>
+		
+<script src="../../lib/Chart.js"></script>
+
+</head>
+
+<body>
+
+<div class="chart-container">
+<canvas id="myChart"></canvas>
+</div>
+
+
+<script>
+
+var data = {
+        labels: ["Examen 1", "Examen Teoria Programación", "Examen Teoria Programación", "Examen Practicas Programación", "Examen Practicas 2 Programación", "Examen 6"],
+        datasets: [
+        	{
+	            label: 'Alumno 1',
+	            data: [8.9, 8, 5, 2, NaN, 3],
+	            backgroundColor: 'rgba(249, 4, 53,1)',
+	            borderColor: 'rgba(249, 4, 53,1)',
+	            Color: 'rgba(249, 4, 53,1)',
+	            borderWidth: 2,
+	            fill: false,
+	            lineTension: 0
+        	}
+        	,
+        	{
+	            label: 'Alumno 2',
+	            data: [2, 8.9, 7, 8],
+	            backgroundColor: 'rgba(232, 249, 3,1)',
+	            borderColor: 'rgba(232, 249, 3,1)',
+	            Color: 'rgba(232, 249, 3,1)',
+	            borderWidth: 2,
+	            fill: false,
+	            lineTension: 0
+        	}
+        	,
+        	{
+	            label: 'Alumno 3',
+	            data: [4, 8, 6.66, 8.66],
+	            backgroundColor: 'rgba(3, 249, 48,1)',
+	            borderColor: 'rgba(3, 249, 48,1)',
+	            Color: 'rgba(3, 249, 48,1)',
+	            borderWidth: 2,
+	            fill: false,
+	            lineTension: 0
+        	}
+        ]//datasets
+}; //data
+
+var options = {
+	maintainAspectRatio: false,
+	responsive: true,
+	responsiveAnimationDuration: 0, // animation duration after a resize, better perfomance at 0
+	showLines: true,
+	spanGaps: false, //si se quiere mostrar las lineas cuando en algÃºn elemento no hay dato (NaN)
+	animation:{
+		 duration: 0 // better performance at 0
+	}, //animation
+	layout: {
+		padding: {
+			top: 20,
+		} //pading
+	}, //layout
+	elements: {
+		point : {
+			pointStyle: 'circle',
+			radius: 3,
+		}, //points
+		line: {
+			tension: 0 //disable bezier curves, better performance
+		}
+	}, //elements
+	legend: {
+		display: true,
+		position: 'bottom',
+		labels : {
+			fontSize: 12,
+			padding: 20,
+			usePointStyle: true,
+			fontColor: 'rgba(255, 255, 255, 1)',
+			fontFamily: 'sans-serif'
+		} //labels
+	}, //legend
+	tooltips: {
+		mode: 'point',
+		cornerRadius: 6,
+		caretSize: 10
+	}, //tooltips
+    scales: {
+        yAxes: [{
+        	gridLines: {
+        		display: true,
+        		color: 'rgba(255, 255, 255, 0.4)'
+        	}, //gridLines
+            ticks: 
+            {
+                beginAtZero:true,
+                max: 10,
+                stepSize: 1,
+                fontColor: 'rgba(255, 255, 255, 1)'
+            }//ticks
+        }], //yAxes
+        xAxes :[{
+        	gridLines: {
+        		display: true,
+        		color: 'rgba(255, 255, 255, 0.4)'
+        	}, //gridLines
+        	ticks: {
+        		autoSkip: false,
+        		fontColor: 'rgba(255, 255, 255, 1)'
+        	}
+        }]//xAxes
+    } //scales
+} //options
+
+var ctx = document.getElementById('myChart');
+var myChart = new Chart(ctx,{
+	type: 'line',
+	data: data,
+	options: options
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.web.*?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.web.WebView?>
+
+<AnchorPane id="canvas" prefHeight="600.0" prefWidth="900.0" styleClass="anchorpane" stylesheets="@/css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
+  <!-- TODO Add Nodes -->
+  <children>
+    <Pane fx:id="PanelParticipantes" prefHeight="284.0" prefWidth="256.0" styleClass="pane" stylesheets="@/css/style.css">
+      <children>
+        <Label fx:id="lblCountParticipants" layoutX="8.0" layoutY="5.0" styleClass="label-lists" stylesheets="@/css/style.css" text="Participantes: " />
+        <TextField fx:id="tfdParticipants" layoutX="7.0" layoutY="26.0" prefWidth="108.0" styleClass="text-field-main" stylesheets="@/css/style.css" text="Filtro..." />
+        <MenuButton fx:id="slcGroup" layoutX="157.0" layoutY="1.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="96.0" text="Grupo" />
+        <TreeView layoutY="72.0" prefHeight="206.0" prefWidth="256.0" />
+        <Pane fx:id="PanelCateg" layoutY="282.0" prefHeight="314.0" prefWidth="256.0" styleClass="pane" stylesheets="@/css/style.css">
+          <children>
+            <Label layoutX="8.0" layoutY="5.0" styleClass="label-lists" stylesheets="@/css/style.css" text="Categorías / Items" />
+            <TextField fx:id="tfdItems" layoutX="7.0" layoutY="23.0" prefHeight="25.0" prefWidth="108.0" styleClass="text-field-main" stylesheets="@/css/style.css" text="Filtro..." />
+                  <TreeView fx:id="tvwGradeReport" layoutX="-1.0" layoutY="52.0" prefHeight="266.0" prefWidth="257.0" styleClass="list-view-main" stylesheets="@/css/style.css" />
+                  <MenuButton fx:id="slcType" layoutX="157.0" layoutY="23.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="96.0" text="Tipo" />
+                  <Label alignment="CENTER_RIGHT" layoutX="120.0" layoutY="30.0" prefHeight="16.0" prefWidth="33.0" text="Tipo:">
+                     <font>
+                        <Font size="11.0" />
+                     </font>
+                  </Label>
+          </children>
+        </Pane>
+            <ListView fx:id="listParticipants" layoutY="55.0" prefHeight="231.0" prefWidth="257.0" styleClass="list-view-main" stylesheets="@/css/style.css" />
+            <MenuButton fx:id="slcRole" layoutX="157.0" layoutY="28.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="96.0" text="Rol" />
+            <Label alignment="CENTER_RIGHT" layoutX="120.0" layoutY="6.0" text="Grupo:">
+               <font>
+                  <Font size="11.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER_RIGHT" layoutX="120.0" layoutY="34.0" prefHeight="16.0" prefWidth="33.0" text="Rol:" textAlignment="RIGHT" wrapText="true">
+               <font>
+                  <Font size="11.0" />
+               </font>
+            </Label>
+      </children>
+    </Pane>
+    <TabPane layoutX="256.0" layoutY="59.0" prefHeight="541.0" prefWidth="644.0" style="-: #ffa1a7;" tabClosingPolicy="UNAVAILABLE">
+      <tabs>
+        <Tab text="Gráficos">
+          <content>
+            <AnchorPane id="Content1" minHeight="0.0" minWidth="0.0" prefHeight="534.0" prefWidth="644.0">
+              <children>
+                <LineChart id="LineChart" fx:id="lineChart" animated="false" layoutX="7.0" layoutY="8.0" prefHeight="463.0" prefWidth="644.0">
+                  <xAxis>
+                    <CategoryAxis side="BOTTOM" fx:id="xAxis">
+                                 <tickLabelFont>
+                                    <Font size="11.0" />
+                                 </tickLabelFont></CategoryAxis>
+                  </xAxis>
+                  <yAxis>
+                    <NumberAxis fx:id="yAxis" animated="false" autoRanging="false" side="LEFT" tickLength="5.0" tickUnit="1.0" upperBound="10.0">
+                                 <tickLabelFont>
+                                    <Font size="12.0" />
+                                 </tickLabelFont></NumberAxis>
+                  </yAxis>
+                           <padding>
+                              <Insets bottom="-2.0" left="-5.0" top="-2.0" />
+                           </padding>
+                </LineChart>
+                <Button fx:id="btnExport" alignment="CENTER_RIGHT" layoutX="14.0" layoutY="472.0" mnemonicParsing="false" onAction="#saveChart" style="-fx-font-size: 13;" stylesheets="@/css/style.css" text="Exportar gráfico">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor></Button>
+                      <Button fx:id="btnExit" alignment="CENTER_RIGHT" layoutX="590.0" layoutY="472.0" mnemonicParsing="false" onAction="#closeApplication" style="-fx-font-size: 13;" styleClass="rich-blue" stylesheets="@/css/style.css" text="Salir">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </Button>
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+        <Tab text="Calificaciones">
+          <content>
+            <AnchorPane id="Content2" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+            	<children>
+                	<WebView fx:id="webViewCalificaciones" prefHeight="455.0" prefWidth="644.0" />
+                        <Button fx:id="btnExit1" alignment="CENTER_RIGHT" layoutX="590.0" layoutY="472.0" mnemonicParsing="false" onAction="#closeApplication" style="-fx-font-size: 13;" styleClass="rich-blue" stylesheets="@/css/style.css" text="Salir">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </Button>
+                        <Button fx:id="btnExportTable" alignment="CENTER_RIGHT" layoutX="14.0" layoutY="472.0" mnemonicParsing="false" onAction="#saveTable" style="-fx-font-size: 13;" stylesheets="@/css/style.css" text="Exportar tabla">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </Button>
+                </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+      </tabs>
+    </TabPane>
+      <MenuBar layoutX="256.0" layoutY="1.0" prefHeight="59.0" prefWidth="327.0" stylesheets="@/css/style.css">
+        <menus>
+          <Menu mnemonicParsing="false" text="Archivo">
+            <items>
+              <MenuItem fx:id="MIChangeCourse" mnemonicParsing="false" onAction="#changeCourse" text="Cambiar asignatura" />
+                  <MenuItem fx:id="MISaveChart" mnemonicParsing="false" onAction="#saveChart" text="Guardar gráfico como..." />
+                  <MenuItem fx:id="MISaveTable" mnemonicParsing="false" onAction="#saveTable" text="Guardar tabla como..." />
+                  <MenuItem fx:id="MILogOut" mnemonicParsing="false" onAction="#logOut" text="Cerrar sesión" />
+                  <MenuItem fx:id="MIExit" mnemonicParsing="false" onAction="#closeApplication" text="Salir" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Editar">
+            <items>
+              <MenuItem fx:id="MIClearSelection" mnemonicParsing="false" onAction="#clearSelection" text="Borrar selección" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Ayuda">
+            <items>
+              <MenuItem fx:id="MIAboutUBUGrades" mnemonicParsing="false" onAction="#aboutUBUGrades" text="Acerca de UBUGrades" />
+            </items>
+          </Menu>
+        </menus>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <styleClass>
+            <String fx:value="menu-tools" />
+            <String fx:value="menu-bar-tools" />
+         </styleClass>
+      </MenuBar>
+    <Label fx:id="lblActualCourse" contentDisplay="CENTER" layoutX="580.0" layoutY="20.0" prefHeight="20.0" prefWidth="320.0" styleClass="label-info" stylesheets="@/css/style.css" text="Curso actual: " />
+    <Label fx:id="lblActualUser" layoutX="580.0" prefHeight="24.0" prefWidth="320.0" styleClass="label-info" stylesheets="@/css/style.css" text="Usuario: " />
+    <Label fx:id="lblActualHost" contentDisplay="RIGHT" layoutX="580.0" layoutY="38.0" prefHeight="21.0" prefWidth="320.0" styleClass="label-info" stylesheets="@/css/style.css" text="Host actual: " />
+      <Separator layoutX="580.0" orientation="VERTICAL" prefHeight="59.0" prefWidth="4.0" />
+  </children>
+</AnchorPane>

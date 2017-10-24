@@ -89,6 +89,9 @@ public class WelcomeController implements Initializable {
 			UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
 			UBUGrades.stage.setTitle("UBUGrades");
 			UBUGrades.stage.setResizable(true);
+			UBUGrades.stage.setMinHeight(600);
+			UBUGrades.stage.setMinWidth(800);
+			UBUGrades.stage.setMaximized(true);
 			UBUGrades.stage.show();
 			UBUGrades.init.getScene().setCursor(Cursor.DEFAULT);
 			lblNoSelect.setText("");

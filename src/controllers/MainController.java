@@ -19,7 +19,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,10 +27,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -44,7 +42,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
@@ -69,7 +67,7 @@ public class MainController implements Initializable {
 	static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
 	//@FXML
-	//public AnchorPane canvas;
+	public BorderPane canvas;
 	@FXML // Curso actual
 	public Label lblActualCourse;
 	@FXML // Usuario actual
@@ -113,12 +111,14 @@ public class MainController implements Initializable {
 	@FXML // Gráfico
 	private WebView webViewChart;
 	private WebEngine webViewChartEngine;
-	//private LineChart<String, Number> lineChart;
 
 	@FXML // Tabla de calificaciones
 	private WebView webViewCalificaciones;
 	private WebEngine webViewCalificacionesEngine;
-
+	
+	@FXML // Boton para generar graficos
+	private Button btnGenerateGraphic;
+	
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades
 	 * de las que se compone.
@@ -127,8 +127,9 @@ public class MainController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
 			logger.info(" Cargando curso '" + UBUGrades.session.getActualCourse().getFullName() + "'...");
-			
-			
+			 
+			//Cargamos el html del gráfico
+			webViewChart.setContextMenuEnabled(false); // Desactiva el click derecho
 			webViewChartEngine = webViewChart.getEngine();
 			URL url = this.getClass().getResource("/graphics/LineGraphic.html");
 			webViewChartEngine.load(url.toString());
@@ -244,7 +245,7 @@ public class MainController implements Initializable {
 		listParticipants.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		// Asignamos el manejador de eventos de la lista
 		// Al clickar en la lista, se recalcula el nº de elementos seleccionados
-		listParticipants.setOnMouseClicked(new EventHandler<Event>() {
+		/*listParticipants.setOnMouseClicked(new EventHandler<Event>() {
 			// Manejador que llama a la función de mostrar gráfico
 			@Override
 			public void handle(Event event) { // (1º click en participantes)
@@ -258,12 +259,15 @@ public class MainController implements Initializable {
 				// Recalculamos la tabla
 				String htmlTitle = "<tr><th style='background:#066db3; border: 1.0 solid grey; color:white;'> Alumno </th>";
 				String content = "";
+				
 				int countA = 0;
+				
 				// Por cada usuario seleccionado
 				for (EnrolledUser actualUser : selectedParticipants) {
 					// Añadimos el usuario a la tabla
 					String htmlRow = "<th style='color:#066db3; background: white; border: 1.0 solid grey;'>"
 							+ actualUser.getFullName() + " </th>";
+					
 					try {
 						// Establecemos el calificador del curso con este
 						// usuario
@@ -335,7 +339,7 @@ public class MainController implements Initializable {
 				webViewCalificacionesEngine.loadContent("<html><head>" + head + "</head><body style='background-color:#f2f2f2'><table>"
 						+ htmlTitle + content + "</table></body></html>");
 			}
-		});
+		});*/
 
 		/// Mostramos la lista de participantes
 		listParticipants.setItems(enrList);
@@ -359,7 +363,7 @@ public class MainController implements Initializable {
 		tvwGradeReport.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		// Asignamos el manejador de eventos de la lista
 		// Al clickar en la lista, se recalcula el nº de elementos seleccionados
-		tvwGradeReport.setOnMouseClicked(new EventHandler<Event>() {
+		/*tvwGradeReport.setOnMouseClicked(new EventHandler<Event>() {
 			// Manejador que llama a la función de mostrar gráfico
 			@Override
 			public void handle(Event event) { // (1º clik en el calificador)
@@ -449,7 +453,7 @@ public class MainController implements Initializable {
 				webViewCalificacionesEngine.loadContent("<html><head>" + head + "</head><body style='background-color:#f2f2f2'><table>"
 						+ htmlTitle + content + "</table></body></html>");
 			}
-		});
+		});*/
 
 		// Mostramos nº participantes
 		lblCountParticipants.setText(
@@ -943,4 +947,141 @@ public class MainController implements Initializable {
 		if (result.get() == buttonSalir)
 			UBUGrades.stage.close();
 	}
+	
+	/**
+	 * Botón "Generar Grafico". Genera el grafico con los datos seleccionados.
+	 * 
+	 * @param event
+	 */
+    public void generateGraphic(ActionEvent event) {
+    	
+    	logger.info("Generando Gráfico");
+    	// Lista de alumnos y calificaciones seleccionadas
+		ObservableList<EnrolledUser> selectedParticipants = listParticipants.getSelectionModel()
+				.getSelectedItems();
+		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel()
+				.getSelectedItems();
+		
+		String htmlTitle = "<tr><th style='background:#066db3; border: 1.0 solid grey; color:white;'> Alumno </th>";
+		String content = "";
+		int countA = 0;
+		boolean firstUser = true;
+		boolean firstGrade = true;
+		String dataSet = "";
+		String labels = "";	
+		
+		// Por cada usuario seleccionado
+		for (EnrolledUser actualUser : selectedParticipants) {
+			// Se añade el usuario a la tabla
+			String htmlRow = "<th style='color:#066db3; background:white; border: 1.0 solid grey;'> "
+					+ actualUser.getFullName() + " </th>";
+			
+			// Añadimos el nombre del alumno al dataset
+			if (firstUser) {
+				dataSet += "{label:'" + actualUser.getFullName() + "',";
+				firstUser = false;
+			} else {
+				dataSet += ",{label:'" + actualUser.getFullName() + "',";
+			}
+			
+			
+			try {
+				// Establecemos el calificador del curso con este
+				// usuario
+				CourseWS.setGradeReportLines(UBUGrades.session.getToken(), actualUser.getId(),
+						UBUGrades.session.getActualCourse());
+			} catch (Exception e) {
+				logger.error("Error de conexión. {}", e);
+				e.printStackTrace();
+				errorDeConexion();
+			}
+
+			int countB = 1;
+			firstGrade = true;
+
+			// Por cada ítem seleccionado
+			for (TreeItem<GradeReportLine> structTree : selectedGRL) {
+				countA++;
+				for (GradeReportLine actualLine : UBUGrades.session.getActualCourse().getGradeReportLines()) {
+					try {
+						if (structTree.getValue().getId() == actualLine.getId()) {
+							String calculatedGrade = actualLine.getGrade();
+							
+							if (countA == countB) {
+								// Añadimos la actividad a la tabla
+								htmlTitle += "<th style='border: 1.0 solid grey'> " + actualLine.getName()
+										+ " </th>";
+								countB++;
+								
+								//Añadidimos el nombre del elemento como label
+								if (firstGrade) {
+									labels += "'" + actualLine.getName() + "'";
+								} else {
+									labels += ",'" + actualLine.getName() + "'";
+								}
+							}
+							// Si es numérico lo graficamos y lo
+							// mostramos en la tabla
+							if (!Float.isNaN(CourseWS.getFloat(calculatedGrade))) {
+								/*series.getData()
+										.add(new XYChart.Data<String, Number>(actualLine.getName(),
+												(CourseWS.getFloat(calculatedGrade)
+														/ Float.valueOf(actualLine.getRangeMax())) * 10));*/
+								// Añadimos la nota
+								if (firstGrade) {
+									dataSet += "data: [" + Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
+									firstGrade = false;
+								} else {
+									dataSet += "," + Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
+								}
+								
+								htmlRow += "<td style='border: 1.0 solid grey'> "
+										+ Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0
+										+ "/<b style='color:#ab263c'>" + actualLine.getRangeMax()
+										+ "</b> </td>";
+							} else { // Si no, sólo lo mostramos en la
+										// tabla
+								htmlRow += "<td style='border: 1.0 solid grey'> " + calculatedGrade + " </td>";
+								if (firstGrade) {
+									dataSet += "data: [NaN";
+									firstGrade = false;
+								} else {
+									dataSet += ",NaN";
+								}
+							}
+						}
+					} catch (Exception e) {
+						logger.error("Error en la construcción del árbol/tabla. {}", e);
+					}
+				}
+			}
+			dataSet += "],\r\n" +
+					"backgroundColor: 'rgba(249, 4, 53,1)'," + 
+					"borderColor: 'rgba(249, 4, 53,1)'," + 
+					"Color: 'rgba(249, 4, 53,1)'," + 
+					"borderWidth: 2," + 
+					"fill: false}";
+			htmlTitle += "</tr>";
+			//lineChart.getData().add(series);
+			htmlRow += "</tr>";
+			content += htmlRow;
+		}
+		// Generamos el html correspondiente 	
+		//webViewChartEngine.executeScript("clearChart()");
+		webViewChartEngine.executeScript("generateChart({ labels:[" + labels + "],datasets: ["+ dataSet + "]})");		
+		
+		// Mostramos la tabla
+		String head = "";
+		try {
+			webViewCalificacionesEngine.setUserStyleSheetLocation(getClass().getResource("../css/style.css").toString());
+		} catch (Exception e) {
+			logger.error("No hay fichero de hoja de estilo disponible", e);
+			head = "<style>table {margin-bottom: 3.0em; width: 100.0%;font-family:Arial, Verdana, sans-serif; text-align:center;border-radius: 1; border-collapse: collapse;}"
+					+ "th{heigth:20%;font-size:80%;color: white;   background: #ab263c;   padding:1%;   border-collapse: collapse;}"
+					+ "td {font-size:80%;heigth:20%;   background: white;   padding:1%; border-collapse: collapse;}</style>";
+		}
+		webViewCalificacionesEngine.loadContent("<html><head>" + head + "</head><body style='background-color:#f2f2f2'><table>"
+				+ htmlTitle + content + "</table></body></html>");
+	}
+    	
 }

@@ -14,60 +14,45 @@
 		position: relative;
 		margin: auto;
 		height: 90vh;
-		width: 90vw;	
+		width: 90vw;
+		display: none;	
 	}
+	
+	.Alumnos{
+		height: 50%;
+		color: white;
+	}
+	
+	.Calificaciones{
+		height: 50%;
+		color: white;
+	}
+	
+	.GenerarGrafico{
+		position: fixed;
+		bottom: 5px;
+		color: white;
+	}
+	
 </style>
 		
-<script src="../../lib/Chart.js"></script>
+<script type="text/javascript" src="../../lib/Chart.js"></script>
 
 </head>
 
 <body>
+<div id="inicio">
+	<div class="Alumnos">1- SELECCIONA LOS ALUMNOS</div>
+	<div class="Calificaciones">2- SELECCIONA LAS CALIFICACIONES</div>
+	<div class="GenerarGrafico">3- GENERA EL GRÁFICO</div>
+</div>
 
-<div class="chart-container">
-<canvas id="myChart"></canvas>
+<div id="chart-container" class="chart-container">
+	<canvas id="myChart"></canvas>
 </div>
 
 
 <script>
-
-var data = {
-        labels: ["Examen 1", "Examen Teoria Programación", "Examen Teoria Programación", "Examen Practicas Programación", "Examen Practicas 2 Programación", "Examen 6"],
-        datasets: [
-        	{
-	            label: 'Alumno 1',
-	            data: [8.9, 8, 5, 2, NaN, 3],
-	            backgroundColor: 'rgba(249, 4, 53,1)',
-	            borderColor: 'rgba(249, 4, 53,1)',
-	            Color: 'rgba(249, 4, 53,1)',
-	            borderWidth: 2,
-	            fill: false,
-	            lineTension: 0
-        	}
-        	,
-        	{
-	            label: 'Alumno 2',
-	            data: [2, 8.9, 7, 8],
-	            backgroundColor: 'rgba(232, 249, 3,1)',
-	            borderColor: 'rgba(232, 249, 3,1)',
-	            Color: 'rgba(232, 249, 3,1)',
-	            borderWidth: 2,
-	            fill: false,
-	            lineTension: 0
-        	}
-        	,
-        	{
-	            label: 'Alumno 3',
-	            data: [4, 8, 6.66, 8.66],
-	            backgroundColor: 'rgba(3, 249, 48,1)',
-	            borderColor: 'rgba(3, 249, 48,1)',
-	            Color: 'rgba(3, 249, 48,1)',
-	            borderWidth: 2,
-	            fill: false,
-	            lineTension: 0
-        	}
-        ]//datasets
-}; //data
 
 var options = {
 	maintainAspectRatio: false,
@@ -138,9 +123,23 @@ var options = {
 var ctx = document.getElementById('myChart');
 var myChart = new Chart(ctx,{
 	type: 'line',
-	data: data,
+	data: '',
 	options: options
 });
+
+function clearChart(){
+	document.getElementById('chart-container').style.display = 'block';
+	document.getElementById('inicio').style.display = 'none';
+	myChart.data = '';
+	myChart.update();
+}
+
+function generateChart(data){
+	document.getElementById('chart-container').style.display = 'block';
+	document.getElementById('inicio').style.display = 'none';
+	myChart.data = data;
+	myChart.update();
+}
 </script>
 
 </body>

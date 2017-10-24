@@ -5,7 +5,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="500.0" minWidth="750.0" prefHeight="500.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
+<BorderPane fx:id="canvas" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="500.0" minWidth="750.0" prefHeight="500.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
    <center>
       <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
         <tabs>
@@ -64,7 +64,7 @@
                   <TreeView fx:id="tvwGradeReport" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
                </center>
                <bottom>
-                  <Button fx:id="btnGenerarGrafico" mnemonicParsing="false" prefWidth="250.0" text="Generar Gráfico" BorderPane.alignment="CENTER" />
+                  <Button fx:id="btnGenerateGraphic" mnemonicParsing="false" onAction="#generateGraphic" prefWidth="250.0" text="Generar Gráfico" BorderPane.alignment="CENTER" />
                </bottom>
             </BorderPane>
          </children>

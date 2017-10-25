@@ -5,6 +5,9 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.jws.WebService;
+import javax.swing.table.TableCellEditor;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -15,6 +18,8 @@ import org.json.JSONObject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
 
 import controllers.MainController;
 import controllers.UBUGrades;
@@ -240,6 +245,79 @@ public class CourseWS {
 		} finally {
 			httpclient.close();
 		}
+	}
+	
+
+	/**
+	 * Establece los GradeReportLine de un usuario en un curso. Esta función se
+	 * usará para obtener todos los GradeReportLine del usuario y mostrar sus
+	 * datos donde necesitemos. Para ello utiliza el nuevo servicio web de 
+	 * Moodle 3.3  @see MoodleOptions
+	 * 
+	 * @param token
+	 *            token del profesor logueado
+	 * @param courseId
+	 *            curso del que se quieren cargar los datos
+	 * @param userId
+	 *            id del usuario a cargar
+	 * @throws Exception
+	 */
+	public static void setUserGradeReportLines(String token, int userId, Course course) throws Exception {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		CloseableHttpResponse response = null;
+		try {
+			String call = UBUGrades.host + "/webservice/rest/server.php?wstoken=" + token
+					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_NOTAS_ALUMNO + "&courseid="
+					+ course.getId() + "&userid=" + userId;
+			HttpGet httpget = new HttpGet(call);
+			response = httpclient.execute(httpget);
+			
+			String respuesta = EntityUtils.toString(response.getEntity());
+			JSONObject jsonArray = new JSONObject(respuesta);
+			
+			//lista de GradeReportLines
+			course.gradeReportLines = new ArrayList<GradeReportLine>();
+			
+			if(jsonArray != null ) {
+				JSONArray usergrades = (JSONArray) jsonArray.get("usergrades");
+				JSONObject alumn = (JSONObject) usergrades.get(0);
+				
+				JSONArray gradeItems = (JSONArray) alumn.getJSONArray("gradeitems");
+				
+				// El elemento gradeitems tiene cada linea del calificador
+				// que cnvertiremos en GradeReportLines
+				for(int i = 0; i < gradeItems.length(); i++) {
+					JSONObject gradeItemsElement = gradeItems.getJSONObject(i);
+					
+					// Obtenemos los datos necesarios
+					int id;
+					String name = gradeItemsElement.getString("itemname");
+					String type = gradeItemsElement.getString("itemtype");
+					// Para los tipos categoria y curso hay dos ids
+					// Para estos casos obtenemos el id de iteminstance
+					if (type.equals("category") || type.equals("course")) {
+						id = gradeItemsElement.getInt("iteminstance");
+					} else {
+						id = gradeItemsElement.getInt("id");
+					}
+					int rangeMin = gradeItemsElement.getInt("grademin");
+					int rangeMax = gradeItemsElement.getInt("grademax");
+					String grade = gradeItemsElement.getString("gradeformatted");
+					
+					// Añadimos el nuevo GradeReportLine
+					course.gradeReportLines.add(
+							new GradeReportLine(id, name, grade, String.valueOf(rangeMin), String.valueOf(rangeMax)));
+				}
+				course.setActivities(course.gradeReportLines);
+			}
+		} catch (Exception e) {
+			logger.error("Error de conexión");
+			MainController.errorDeConexion();
+		} finally {
+				response.close();
+				httpclient.close();
+		}
+			
 	}
 
 	/**

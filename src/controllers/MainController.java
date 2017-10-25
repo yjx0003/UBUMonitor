@@ -812,7 +812,9 @@ public class MainController implements Initializable {
 									
 			try {
 				// Establecemos el calificador del curso con este usuario
-				CourseWS.setGradeReportLines(UBUGrades.session.getToken(), actualUser.getId(),
+				/*CourseWS.setGradeReportLines(UBUGrades.session.getToken(), actualUser.getId(),
+						UBUGrades.session.getActualCourse());*/
+				CourseWS.setUserGradeReportLines(UBUGrades.session.getToken(), actualUser.getId(),
 						UBUGrades.session.getActualCourse());
 			} catch (Exception e) {
 				logger.error("Error de conexión. {}", e);

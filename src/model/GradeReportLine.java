@@ -26,6 +26,27 @@ public class GradeReportLine {
 	private Activity activity;
 
 	/**
+	 * Contructor GRL con 4 parámetros. Le añadimos solo los necesarios a la hora de generar el grafico de lineas
+	 * @param id
+	 * 			id de la categoría
+	 * @param name
+	 * 			nombre de la categoria
+	 * @param grade
+	 * 			la nota del elemento
+	 * @param rangeMin
+	 * 			rango minimo de la calificación
+	 * @param rangeMax
+	 * 			rango maximo de la calificaión
+	 */
+	public GradeReportLine(int id, String name, String grade, String rangeMin, String rangeMax) {
+		this.id = id;
+		this.name = name;
+		this.grade = grade;
+		this.rangeMin = rangeMin;
+		this.rangeMax = rangeMax;
+	}
+	
+	/**
 	 * Constructor GRL con 4 parámetros. Se le añaden a posteriori los elementos
 	 * de su suma de calificaciones
 	 * 

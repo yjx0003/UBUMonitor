@@ -63,9 +63,6 @@
                <center>
                   <TreeView fx:id="tvwGradeReport" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
                </center>
-               <bottom>
-                  <Button fx:id="btnGenerateGraphic" mnemonicParsing="false" onAction="#generateGraphic" prefWidth="250.0" text="Generar Gráfico" BorderPane.alignment="CENTER" />
-               </bottom>
             </BorderPane>
          </children>
       </GridPane>

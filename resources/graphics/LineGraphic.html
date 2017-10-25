@@ -37,12 +37,13 @@
 </style>
 		
 <script type="text/javascript" src="../../lib/Chart.js"></script>
+<script type="text/javascript" src="../../lib/color-hash.js"></script>
 
 </head>
 
 <body>
 <div id="inicio">
-	<div class="Alumnos">1- SELECCIONA LOS ALUMNOS</div>
+	<div class="Alumnos">1- SELECCIONA LOS ALUMNOSS</div>
 	<div class="Calificaciones">2- SELECCIONA LAS CALIFICACIONES</div>
 	<div class="GenerarGrafico">3- GENERA EL GRÁFICO</div>
 </div>
@@ -120,6 +121,7 @@ var options = {
     } //scales
 } //options
 
+var colorHash = new ColorHash();
 var ctx = document.getElementById('myChart');
 var myChart = new Chart(ctx,{
 	type: 'line',
@@ -127,19 +129,20 @@ var myChart = new Chart(ctx,{
 	options: options
 });
 
-function clearChart(){
-	document.getElementById('chart-container').style.display = 'block';
-	document.getElementById('inicio').style.display = 'none';
-	myChart.data = '';
-	myChart.update();
-}
-
+// Funcion que genera un grafico con el dataset que recibe
+// data : el dataset a mostrar en el gráfico
 function generateChart(data){
 	document.getElementById('chart-container').style.display = 'block';
 	document.getElementById('inicio').style.display = 'none';
 	myChart.data = data;
 	myChart.update();
 }
+
+function colorGeneration(color){
+	return colorHash.hex(color);
+}
+
+
 </script>
 
 </body>

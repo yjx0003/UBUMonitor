@@ -138,6 +138,11 @@ function generateChart(data){
 	myChart.update();
 }
 
+function clearChart(){
+	myChart.data = { labels:[],datasets: []};
+	myChart.update();
+}
+
 function colorGeneration(color){
 	return colorHash.hex(color);
 }

@@ -5,9 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.Optional;
-import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,7 +43,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
@@ -645,25 +642,25 @@ public class MainController implements Initializable {
 	 * @throws Exception
 	 */
 	public void saveChart(ActionEvent actionEvent) throws Exception {
-		//WritableImage image = lineChart.snapshot(new SnapshotParameters(), null);
-
+		WritableImage image = webViewChart.snapshot(new SnapshotParameters(), null);
+		
 		File file = new File("chart.png");
 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Guardar gráfico");
 
-		fileChooser.setInitialFileName("chart");
+		fileChooser.setInitialFileName("chart.png");
 		fileChooser.setInitialDirectory(file.getParentFile());
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(".png", "*.*"),
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(".png", "*.png"),
 				new FileChooser.ExtensionFilter("*.jpg", "*.jpg"), new FileChooser.ExtensionFilter("*.png", "*.png"));
 		try {
 			file = fileChooser.showSaveDialog(UBUGrades.stage);
 			if (file != null) {
-				/*try {
+				try {
 					ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
 				} catch (IOException ex) {
 					logger.info(ex.getMessage());
-				}*/
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -733,9 +730,12 @@ public class MainController implements Initializable {
 		tvwGradeReport.getSelectionModel().clearSelection();
 		clearData();
 	}
-
+	
+	/**
+	 * Elimina los datos del gráfico y de la tabla de calificaciones
+	 */
 	public void clearData() {
-		//lineChart.getData().clear();
+		webViewChartEngine.executeScript("clearChart()");
 		webViewCalificacionesEngine.loadContent("<html><head></head><body style='background-color:#f2f2f2'></body></html>");
 	}
 
@@ -793,7 +793,7 @@ public class MainController implements Initializable {
 		boolean firstGrade = true;
 		String dataSet = "";
 		String labels = "";	
-		String color = "#ffffff";
+		String color;
 		
 		// Por cada usuario seleccionado
 		for (EnrolledUser actualUser : selectedParticipants) {
@@ -804,10 +804,10 @@ public class MainController implements Initializable {
 			
 			// Añadimos el nombre del alumno al dataset
 			if (firstUser) {
-				dataSet += "{label:'" + actualUserFullName + "',";
+				dataSet += "{label:'" + actualUserFullName + "',data: [";
 				firstUser = false;
 			} else {
-				dataSet += ",{label:'" + actualUserFullName + "',";
+				dataSet += ",{label:'" + actualUserFullName + "',data: [";
 			}
 									
 			try {
@@ -849,7 +849,7 @@ public class MainController implements Initializable {
 							if (!Float.isNaN(CourseWS.getFloat(calculatedGrade))) {
 								// Añadimos la nota
 								if (firstGrade) {
-									dataSet += "data: [" + Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
+									dataSet += Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
 									firstGrade = false;
 								} else {
 									dataSet += "," + Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
@@ -863,7 +863,7 @@ public class MainController implements Initializable {
 								// Si no, sólo lo mostramos en la tabla
 								htmlRow += "<td style='border: 1.0 solid grey'> " + calculatedGrade + " </td>";
 								if (firstGrade) {
-									dataSet += "data: [NaN";
+									dataSet += "NaN";
 									firstGrade = false;
 								} else {
 									dataSet += ",NaN";
@@ -877,7 +877,12 @@ public class MainController implements Initializable {
 			}		
 			
 			//Establecemos el color de ese alumno en el grafico
-			color = (String) webViewChartEngine.executeScript("colorGeneration('" + actualUserFullName + "')");
+			try {
+				color = (String) webViewChartEngine.executeScript("colorGeneration('" + actualUserFullName + "')");
+			} catch (Exception e) {
+				logger.error("Error al generar el color para el gráfico", e);
+				color = "#ffffff";
+			}
 			
 			dataSet += "]," +
 						"backgroundColor: '" + color + "'," + 
@@ -891,7 +896,11 @@ public class MainController implements Initializable {
 		}
 		
 		// Generamos el gráfico
-		webViewChartEngine.executeScript("generateChart({ labels:[" + labels + "],datasets: ["+ dataSet + "]})");	
+		try {
+			webViewChartEngine.executeScript("generateChart({ labels:[" + labels + "],datasets: ["+ dataSet + "]})");
+		} catch (Exception e) {
+			logger.error("Error al generar el gráfico", e);
+		}
 
 		// Mostramos la tabla
 		String head = "";

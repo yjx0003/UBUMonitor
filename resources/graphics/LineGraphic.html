@@ -138,11 +138,26 @@ function generateChart(data){
 	myChart.update();
 }
 
+//Funcion que añade un data set al gráfico
+function addDataSet(dataset) {
+	myChart.data.datasets.push(dataset);
+	myChart.update();
+}
+
+//Funcion que elimina el ultimo data set
+function removeDataSet() {
+	myChart.data.datasets.pop();
+	myChart.update();
+}
+
+//Funcion que limpia el gráfico
 function clearChart(){
 	myChart.data = { labels:[],datasets: []};
 	myChart.update();
 }
 
+//Funcion que devuelve un color en formato hexadecimal
+//en base a el string que se le pasa
 function colorGeneration(color){
 	return colorHash.hex(color);
 }

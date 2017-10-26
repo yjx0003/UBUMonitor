@@ -15,6 +15,8 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -31,6 +33,7 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
@@ -53,6 +56,7 @@ import model.EnrolledUser;
 import model.GradeReportLine;
 import model.Group;
 import model.Role;
+import model.Stats;
 import webservice.CourseWS;
 
 /**
@@ -115,6 +119,11 @@ public class MainController implements Initializable {
 	@FXML // Tabla de calificaciones
 	private WebView webViewCalificaciones;
 	private WebEngine webViewCalificacionesEngine;
+	
+    @FXML
+    private CheckBox meanSelector;
+	
+	private Stats stats;
 		
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades
@@ -280,6 +289,20 @@ public class MainController implements Initializable {
 			}
 		});
 
+		// Asignamos el manejador de eventos al checkbox de la media.
+		meanSelector.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				if(meanSelector.isSelected()) {
+					// Mostramos la media.
+					showMean();
+				} else {
+					// Eliminamos la media
+					removeMean();
+				}
+			}
+		});
+		
 		// Mostramos nº participantes
 		lblCountParticipants.setText(
 				"Participantes: " + String.valueOf(UBUGrades.session.getActualCourse().getEnrolledUsersCount()));
@@ -518,7 +541,7 @@ public class MainController implements Initializable {
 			}
 		};
 	}
-
+	
 	/**
 	 * Filtra la lista de actividades del calificador según el tipo y el patrón
 	 * introducidos.
@@ -786,6 +809,8 @@ public class MainController implements Initializable {
 		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel()
 				.getSelectedItems();
 		
+		stats = new Stats();
+		
 		String htmlTitle = "<tr><th style='background:#066db3; border: 1.0 solid grey; color:white;'> Alumno </th>";
 		String content = "";
 		int countA = 0;
@@ -844,10 +869,11 @@ public class MainController implements Initializable {
 								} else {
 									labels += ",'" + actualLine.getName() + "'";
 								}
+								
 							}
 							// Si es numérico lo graficamos y lo mostramos en la tabla
 							if (!Float.isNaN(CourseWS.getFloat(calculatedGrade))) {
-								// Añadimos la nota
+								// Añadimos la nota al gráfico
 								if (firstGrade) {
 									dataSet += Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
 									firstGrade = false;
@@ -855,6 +881,10 @@ public class MainController implements Initializable {
 									dataSet += "," + Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
 								}
 								
+								// Añadimos la nota para las estadisticas
+								stats.addElementValue(actualLine.getId(), parseStringGradeToDouble(calculatedGrade));
+								
+								// Añadimos la nota a la tabla de calificaciones
 								htmlRow += "<td style='border: 1.0 solid grey'> "
 										+ Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0
 										+ "/<b style='color:#ab263c'>" + actualLine.getRangeMax()
@@ -898,6 +928,9 @@ public class MainController implements Initializable {
 		// Generamos el gráfico
 		try {
 			webViewChartEngine.executeScript("generateChart({ labels:[" + labels + "],datasets: ["+ dataSet + "]})");
+			if(meanSelector.isSelected()) {
+				showMean();
+			}
 		} catch (Exception e) {
 			logger.error("Error al generar el gráfico", e);
 		}
@@ -914,6 +947,52 @@ public class MainController implements Initializable {
 		}
 		webViewCalificacionesEngine.loadContent("<html><head>" + head + "</head><body style='background-color:#f2f2f2'><table>"
 				+ htmlTitle + content + "</table></body></html>");
+    }
+    
+    /**
+     * Convierte la nota  de String a Double
+     * 
+     * @param grade
+     * 		La nota a parsear.
+     * @return
+     * 		La nota como tipo Double.
+     */
+    private double parseStringGradeToDouble(String grade) {
+    	grade = grade.replace(",", ".");
+    	return Double.parseDouble(grade);
+    }
+    
+    /**
+     * Función que muestra la media en el gráfico para los elementos seleccionados.
+     */
+    private void showMean() {
+		String dataset = "{label:'Media',data:[";
+		Boolean firstElement = true;
+		for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
+			if(firstElement) {
+				dataset += stats.getElementMean(structTree.getValue().getId());
+				firstElement = false;
+			} else {
+				dataset += "," + stats.getElementMean(structTree.getValue().getId());
+			}
+		}
+		dataset += "]," +
+		"backgroundColor: 'red'," + 
+		"borderColor: 'red'," + 
+		"Color: 'red'," + 
+		"borderWidth: 4," + 
+		"fill: false}";
+		
+		logger.info("Mostrando la media en el gráfico.");
+		webViewChartEngine.executeScript("addDataSet(" + dataset + ")");
+    }
+    
+    /**
+     * Función que elimina la media del gráfico.
+     */
+    private void removeMean() {
+    	logger.info("Eliminando la media del gráfico.");
+    	webViewChartEngine.executeScript("removeDataSet()");
     }
     
 }

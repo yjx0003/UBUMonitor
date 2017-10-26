@@ -6,22 +6,6 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane fx:id="canvas" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="500.0" minWidth="750.0" prefHeight="500.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
-   <center>
-      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-        <tabs>
-          <Tab text="Graficos">
-               <content>
-                  <WebView fx:id="webViewChart" minHeight="200.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" />
-               </content>
-          </Tab>
-          <Tab text="Calificaciones">
-               <content>
-                  <WebView fx:id="webViewCalificaciones" prefHeight="200.0" prefWidth="200.0" />
-               </content>
-          </Tab>
-        </tabs>
-      </TabPane>
-   </center>
    <left>
       <GridPane prefHeight="464.0" prefWidth="250.0" BorderPane.alignment="CENTER">
         <columnConstraints>
@@ -118,4 +102,37 @@
          </children>
       </GridPane>
    </top>
+   <center>
+      <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <center>
+            <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+              <tabs>
+                <Tab text="Graficos">
+                     <content>
+                        <WebView fx:id="webViewChart" minHeight="200.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" />
+                     </content>
+                </Tab>
+                <Tab text="Calificaciones">
+                     <content>
+                        <WebView fx:id="webViewCalificaciones" prefHeight="200.0" prefWidth="200.0" />
+                     </content>
+                </Tab>
+              </tabs>
+            </TabPane>
+         </center>
+         <top>
+            <GridPane prefHeight="20.0" prefWidth="500.0" BorderPane.alignment="CENTER">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <CheckBox fx:id="meanSelector" mnemonicParsing="false" text="Media" />
+               </children>
+            </GridPane>
+         </top>
+      </BorderPane>
+   </center>
 </BorderPane>

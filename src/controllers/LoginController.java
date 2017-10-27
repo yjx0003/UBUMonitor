@@ -90,6 +90,7 @@ public class LoginController {
 							UBUGrades.stage.setScene(scene);
 							UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
 							UBUGrades.stage.setTitle("UBUGrades");
+							UBUGrades.stage.setResizable(false);
 							UBUGrades.init.close();
 							UBUGrades.stage.show();
 							lblStatus.setText("");
@@ -105,9 +106,9 @@ public class LoginController {
 			Thread th = new Thread(task);
 			th.start();
 		} else {
-			lblStatus.setText(" Usuario incorrecto");
+			lblStatus.setText("Usuario y/o contraseña incorrectos.");
 			logger.info("Login Incorrecto");
-			txtUsername.setText("");
+			//txtUsername.setText("");
 			txtPassword.setText("");
 		}
 	}

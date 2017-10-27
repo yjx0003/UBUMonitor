@@ -39,6 +39,7 @@ public class UBUGrades extends Application {
 			init.setScene(scene);
 			init.getIcons().add(new Image("/img/logo_min.png"));
 			UBUGrades.init.setTitle("UBUGrades");
+			UBUGrades.init.setResizable(false);
 			init.show();
 		} catch (Exception e) {
 			logger.error("Error al iniciar UBUGrades");

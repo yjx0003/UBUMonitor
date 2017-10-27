@@ -148,7 +148,7 @@ public class MainController implements Initializable {
 			CourseWS.setGradeReportLines(UBUGrades.session.getToken(),
 					UBUGrades.session.getActualCourse().getEnrolledUsers().get(0).getId(),
 					UBUGrades.session.getActualCourse());
-
+			
 			// Almacenamos todos participantes en una lista
 			ArrayList<EnrolledUser> users = (ArrayList<EnrolledUser>) UBUGrades.session.getActualCourse()
 					.getEnrolledUsers();
@@ -835,17 +835,17 @@ public class MainController implements Initializable {
 				dataSet += ",{label:'" + actualUserFullName + "',data: [";
 			}
 									
-			try {
+			/*try {
 				// Establecemos el calificador del curso con este usuario
-				/*CourseWS.setGradeReportLines(UBUGrades.session.getToken(), actualUser.getId(),
-						UBUGrades.session.getActualCourse());*/
+				CourseWS.setGradeReportLines(UBUGrades.session.getToken(), actualUser.getId(),
+						UBUGrades.session.getActualCourse());
 				CourseWS.setUserGradeReportLines(UBUGrades.session.getToken(), actualUser.getId(),
 						UBUGrades.session.getActualCourse());
 			} catch (Exception e) {
 				logger.error("Error de conexión. {}", e);
 				e.printStackTrace();
 				errorDeConexion();
-			}
+			}*/
 
 			int countB = 1;
 			firstGrade = true;
@@ -853,56 +853,53 @@ public class MainController implements Initializable {
 			// Por cada ítem seleccionado
 			for (TreeItem<GradeReportLine> structTree : selectedGRL) {
 				countA++;
-				for (GradeReportLine actualLine : UBUGrades.session.getActualCourse().getGradeReportLines()) {
-					try {
-						if (structTree.getValue().getId() == actualLine.getId()) {
-							String calculatedGrade = actualLine.getGrade();
-							
-							if (countA == countB) {
-								// Añadimos la actividad a la tabla
-								htmlTitle += "<th style='border: 1.0 solid grey'> " + actualLine.getName()+ " </th>";
-								countB++;
-								
-								//Añadidimos el nombre del elemento como label
-								if (firstGrade) {
-									labels += "'" + actualLine.getName() + "'";
-								} else {
-									labels += ",'" + actualLine.getName() + "'";
-								}
-								
-							}
-							// Si es numérico lo graficamos y lo mostramos en la tabla
-							if (!Float.isNaN(CourseWS.getFloat(calculatedGrade))) {
-								// Añadimos la nota al gráfico
-								if (firstGrade) {
-									dataSet += Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
-									firstGrade = false;
-								} else {
-									dataSet += "," + Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
-								}
-								
-								// Añadimos la nota para las estadisticas
-								stats.addElementValue(actualLine.getId(), parseStringGradeToDouble(calculatedGrade));
-								
-								// Añadimos la nota a la tabla de calificaciones
-								htmlRow += "<td style='border: 1.0 solid grey'> "
-										+ Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0
-										+ "/<b style='color:#ab263c'>" + actualLine.getRangeMax()
-										+ "</b> </td>";
-							} else { 
-								// Si no, sólo lo mostramos en la tabla
-								htmlRow += "<td style='border: 1.0 solid grey'> " + calculatedGrade + " </td>";
-								if (firstGrade) {
-									dataSet += "NaN";
-									firstGrade = false;
-								} else {
-									dataSet += ",NaN";
-								}
-							}
+				GradeReportLine actualLine = actualUser.getGradeReportLine(structTree.getValue().getId());
+				try {
+					String calculatedGrade = actualLine.getGrade();
+					
+					if (countA == countB) {
+						// Añadimos la actividad a la tabla
+						htmlTitle += "<th style='border: 1.0 solid grey'> " + actualLine.getName()+ " </th>";
+						countB++;
+						
+						//Añadidimos el nombre del elemento como label
+						if (firstGrade) {
+							labels += "'" + actualLine.getName() + "'";
+						} else {
+							labels += ",'" + actualLine.getName() + "'";
 						}
-					} catch (Exception e) {
-						logger.error("Error en la construcción del árbol/tabla. {}", e);
+						
 					}
+					// Si es numérico lo graficamos y lo mostramos en la tabla
+					if (!Float.isNaN(CourseWS.getFloat(calculatedGrade))) {
+						// Añadimos la nota al gráfico
+						if (firstGrade) {
+							dataSet += Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
+							firstGrade = false;
+						} else {
+							dataSet += "," + Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
+						}
+						
+						// Añadimos la nota para las estadisticas
+						stats.addElementValue(actualLine.getId(), parseStringGradeToDouble(calculatedGrade));
+						
+						// Añadimos la nota a la tabla de calificaciones
+						htmlRow += "<td style='border: 1.0 solid grey'> "
+								+ Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0
+								+ "/<b style='color:#ab263c'>" + actualLine.getRangeMax()
+								+ "</b> </td>";
+					} else { 
+						// Si no, sólo lo mostramos en la tabla
+						htmlRow += "<td style='border: 1.0 solid grey'> " + calculatedGrade + " </td>";
+						if (firstGrade) {
+							dataSet += "NaN";
+							firstGrade = false;
+						} else {
+							dataSet += ",NaN";
+						}
+					}
+				} catch (Exception e) {
+					logger.error("Error en la construcción del árbol/tabla. {}", e);
 				}
 			}		
 			

@@ -244,26 +244,27 @@ public class CourseWS {
 	
 
 	/**
-	 * Establece los GradeReportLine de un usuario en un curso. Esta función se
-	 * usará para obtener todos los GradeReportLine del usuario y mostrar sus
-	 * datos donde necesitemos. Para ello utiliza el nuevo servicio web de 
-	 * Moodle 3.3  @see MoodleOptions
+	 * Genera todos los GradeReportLines de un curso para un usuario.Este proceso se realiza al inicio
+	 * alamcenando en memoria los datos.
 	 * 
 	 * @param token
-	 *            token del profesor logueado
-	 * @param courseId
-	 *            curso del que se quieren cargar los datos
+	 *            token del profesor logueado.
 	 * @param userId
-	 *            id del usuario a cargar
+	 *            id del usuario a cargar.
+	 * @param courseId
+	 *            curso del que se quieren cargar los datos.
+	 * @return
+	 * 		ArrayList con todos los GradeReportLines del usuario.
 	 * @throws Exception
 	 */
-	public static void setUserGradeReportLines(String token, int userId, Course course) throws Exception {
+	public static ArrayList<GradeReportLine> setUserGradeReportLines(String token, int userId, int courseId) throws Exception {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse response = null;
+		ArrayList<GradeReportLine> gradeReportLines = null;
 		try {
 			String call = UBUGrades.host + "/webservice/rest/server.php?wstoken=" + token
 					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_NOTAS_ALUMNO + "&courseid="
-					+ course.getId() + "&userid=" + userId;
+					+ courseId + "&userid=" + userId;
 			HttpGet httpget = new HttpGet(call);
 			response = httpclient.execute(httpget);
 			
@@ -271,7 +272,7 @@ public class CourseWS {
 			JSONObject jsonArray = new JSONObject(respuesta);
 			
 			//lista de GradeReportLines
-			course.gradeReportLines = new ArrayList<GradeReportLine>();
+			gradeReportLines = new ArrayList<GradeReportLine>();
 			
 			if(jsonArray != null ) {
 				JSONArray usergrades = (JSONArray) jsonArray.get("usergrades");
@@ -300,10 +301,9 @@ public class CourseWS {
 					String grade = gradeItemsElement.getString("gradeformatted");
 					
 					// Añadimos el nuevo GradeReportLine
-					course.gradeReportLines.add(
+					gradeReportLines.add(
 							new GradeReportLine(id, name, grade, String.valueOf(rangeMin), String.valueOf(rangeMax)));
 				}
-				course.setActivities(course.gradeReportLines);
 			}
 		} catch (Exception e) {
 			logger.error("Error de conexión");
@@ -312,7 +312,7 @@ public class CourseWS {
 				response.close();
 				httpclient.close();
 		}
-			
+		return gradeReportLines;
 	}
 
 	/**

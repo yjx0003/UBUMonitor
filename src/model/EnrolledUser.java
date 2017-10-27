@@ -5,6 +5,11 @@ import java.util.Date;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import controllers.UBUGrades;
+import webservice.CourseWS;
 
 /**
  * Clase que representa un usuario matriculado en una asignatura
@@ -14,6 +19,9 @@ import org.json.JSONObject;
  *
  */
 public class EnrolledUser {
+	
+	static final Logger logger = LoggerFactory.getLogger(EnrolledUser.class);
+	
 	private int id;
 	private String firstName;
 	private String lastName;
@@ -29,6 +37,7 @@ public class EnrolledUser {
 	private ArrayList<Role> roles;
 	private ArrayList<Group> groups;
 	private ArrayList<Integer> courses;
+	private ArrayList<GradeReportLine> gradeReportLines;
 
 	/**
 	 * Constructor de EnrolledUser
@@ -83,6 +92,12 @@ public class EnrolledUser {
 			groups = new ArrayList<>(); // to have an empty list, not a null
 		}
 		this.courses = new ArrayList<Integer>();
+		
+		// Obtenemos todas las lineas de calificación del usuario
+		gradeReportLines = new ArrayList<GradeReportLine>();
+		gradeReportLines = CourseWS.setUserGradeReportLines(UBUGrades.session.getToken(), this.id,
+				UBUGrades.session.getActualCourse().getId());
+		logger.info("Cargados datos de: " + this.fullName);
 	}
 
 	/**
@@ -362,6 +377,23 @@ public class EnrolledUser {
 		for (Integer course : courses) {
 			this.courses.add(course);
 		}
+	}
+	
+	/**
+	 * Devuelve un GradeReportLine según el id.
+	 * 
+	 * @param id
+	 * 		El id del GradeReportLine.
+	 * @return
+	 * 		El GradeReportLine.
+	 */
+	public GradeReportLine getGradeReportLine(int id) {
+		for(GradeReportLine grl : this.gradeReportLines) {
+			if(grl.getId() == id) {
+				return grl;
+			}
+		}
+		return null;
 	}
 
 	/**

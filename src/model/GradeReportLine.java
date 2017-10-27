@@ -26,7 +26,7 @@ public class GradeReportLine {
 	private Activity activity;
 
 	/**
-	 * Contructor GRL con 4 parámetros. Le añadimos solo los necesarios a la hora de generar el grafico de lineas
+	 * Contructor GRL con 4 parámetros. Le añadimos solo los necesarios a la hora de generar el grafico de lineas.
 	 * @param id
 	 * 			id de la categoría
 	 * @param name

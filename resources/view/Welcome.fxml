@@ -15,8 +15,13 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" styleClass="anchorpane" stylesheets="@/css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.WelcomeController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" styleClass="anchorpane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.WelcomeController">
 	<children>
+      <Label fx:id="lblNoSelect" layoutX="322.0" layoutY="543.0" prefWidth="175.0" style="-fx-text-fill: #ff5050;" textFill="#e11010">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
       <ImageView fitHeight="68.0" fitWidth="350.0" layoutX="293.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../img/titulo.png" />
@@ -54,10 +59,6 @@
 				<Cursor fx:constant="HAND" />
 			</cursor>
 		</Button>
-      <Label fx:id="lblNoSelect" layoutX="321.0" layoutY="551.0" prefWidth="175.0" style="-fx-text-fill: #ff5050;" textFill="#e11010">
-         <font>
-            <Font size="15.0" />
-         </font>
-      </Label>
+      <ProgressBar fx:id="progressBar" layoutX="338.0" layoutY="544.0" prefHeight="18.0" prefWidth="139.0" progress="0.0" />
 	</children>
 </AnchorPane>

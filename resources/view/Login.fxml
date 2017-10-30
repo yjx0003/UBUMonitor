@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="1024.0" maxWidth="728.0" minHeight="500.0" minWidth="400.0" prefHeight="500.0" prefWidth="400.0" styleClass="anchorpane" stylesheets="@/css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.LoginController">
+<AnchorPane maxHeight="1024.0" maxWidth="728.0" minHeight="500.0" minWidth="400.0" prefHeight="500.0" prefWidth="400.0" styleClass="anchorpane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.LoginController">
 	<!-- TODO Add Nodes -->
 
 	<children>

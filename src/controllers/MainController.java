@@ -142,13 +142,6 @@ public class MainController implements Initializable {
 			
 			webViewCalificacionesEngine = webViewCalificaciones.getEngine();
 			
-			// Establecemos los usuarios matriculados
-			CourseWS.setEnrolledUsers(UBUGrades.session.getToken(), UBUGrades.session.getActualCourse());
-			// Establecemos calificador del curso
-			CourseWS.setGradeReportLines(UBUGrades.session.getToken(),
-					UBUGrades.session.getActualCourse().getEnrolledUsers().get(0).getId(),
-					UBUGrades.session.getActualCourse());
-			
 			// Almacenamos todos participantes en una lista
 			ArrayList<EnrolledUser> users = (ArrayList<EnrolledUser>) UBUGrades.session.getActualCourse()
 					.getEnrolledUsers();
@@ -974,11 +967,10 @@ public class MainController implements Initializable {
 			}
 		}
 		dataset += "]," +
-		"backgroundColor: 'red'," + 
-		"borderColor: 'red'," + 
-		"Color: 'red'," + 
+		"backgroundColor: 'rgba(73, 87, 98, 0.5)'," + 
+		"borderColor: 'rgba(26, 65, 96, 1)'," + 
 		"borderWidth: 4," + 
-		"fill: false}";
+		"fill: true}";
 		
 		logger.info("Mostrando la media en el gráfico.");
 		webViewChartEngine.executeScript("addDataSet(" + dataset + ")");

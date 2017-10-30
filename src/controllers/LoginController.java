@@ -78,7 +78,7 @@ public class LoginController {
 			task.messageProperty().addListener(new ChangeListener<String>() {
 				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 					if (newValue.equals("end")) {
-						// Load GUI
+						// Cargamos la siguiente ventana
 						try {
 							// Accedemos a la siguiente ventana
 							FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Welcome.fxml"));

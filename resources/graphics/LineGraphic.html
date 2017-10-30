@@ -5,7 +5,7 @@
 <style>
 	body
 	{
-		background: #1D1F20;
+		background: #f2f2f2;
 		padding: 16px;
 	}
 
@@ -20,18 +20,18 @@
 	
 	.Alumnos{
 		height: 50%;
-		color: white;
+		color: black;
 	}
 	
 	.Calificaciones{
 		height: 50%;
-		color: white;
+		color: black;
 	}
 	
 	.GenerarGrafico{
 		position: fixed;
 		bottom: 5px;
-		color: white;
+		color: black;
 	}
 	
 </style>
@@ -81,16 +81,20 @@ var options = {
 	legend: {
 		display: true,
 		position: 'bottom',
+		onHover: function() {
+			legendOnHover();
+		},
 		labels : {
-			fontSize: 12,
 			padding: 20,
 			usePointStyle: true,
-			fontColor: 'rgba(255, 255, 255, 1)',
+			fontSize: 12,
+			fontColor: 'rgba(0, 0, 0, 1)',
 			fontFamily: 'sans-serif'
 		} //labels
 	}, //legend
 	tooltips: {
 		mode: 'point',
+		position: 'nearest',
 		cornerRadius: 6,
 		caretSize: 10
 	}, //tooltips
@@ -98,24 +102,24 @@ var options = {
         yAxes: [{
         	gridLines: {
         		display: true,
-        		color: 'rgba(255, 255, 255, 0.4)'
+        		color: 'rgba(0, 0, 0, 0.4)'
         	}, //gridLines
             ticks: 
             {
                 beginAtZero:true,
                 max: 10,
                 stepSize: 1,
-                fontColor: 'rgba(255, 255, 255, 1)'
+                fontColor: 'rgba(0, 0, 0, 1)'
             }//ticks
         }], //yAxes
         xAxes :[{
         	gridLines: {
         		display: true,
-        		color: 'rgba(255, 255, 255, 0.4)'
+        		color: 'rgba(0, 0, 0, 0.4)'
         	}, //gridLines
         	ticks: {
         		autoSkip: false,
-        		fontColor: 'rgba(255, 255, 255, 1)'
+        		fontColor: 'rgba(0, 0, 0, 1)'
         	}
         }]//xAxes
     } //scales
@@ -160,6 +164,11 @@ function clearChart(){
 //en base a el string que se le pasa
 function colorGeneration(color){
 	return colorHash.hex(color);
+}
+
+//Funcion que se ejecuta al pasar el raton por label(nombres de los alumnos)
+function legendOnHover() {
+	//TODO mostar el label completo
 }
 
 

@@ -50,6 +50,7 @@
 	-fx-text-fill: #066db3;
 }
 
+
 .list-view-intro{
 	-fx-padding: 4.0;
 	-fx-font-size: 15.0px;
@@ -93,7 +94,7 @@
 
 .menu-button .label{
 	-fx-background-color: #ab263c;
-	/*-fx-border-color:#cc0044;*/
+	/*-fx-border-color:#ab263c;*/
 	-fx-font-size: 11.0px;
 	-fx-text-fill: white;
 }
@@ -128,8 +129,38 @@
 	-fx-text-fill: white;
 }
 
+.menu-bar {
+	-fx-background-color: #ab263c;
+}
+
 .menu-bar .label{
 	-fx-background-color: #ab263c;
+}
+
+#topBar{
+	-fx-background-color: #ab263c;
+}
+
+#topBarLabels{
+	-fx-text-fill: white;
+}
+
+.tab-pane *.tab-header-background {
+    -fx-background-color: #f2f2f2;
+}
+
+.tab-pane .tab {
+	-fx-background-color: #ab263c;
+}
+
+.tab .tab-label{
+	-fx-text-fill: white;
+	-fx-font-size: 12px;
+	-fx-font-weight: bold;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #066db3;
 }
 
 /* HTML */

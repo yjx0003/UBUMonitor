@@ -395,6 +395,16 @@ public class EnrolledUser {
 		}
 		return null;
 	}
+	
+	/**
+	 * Devuelve todos los GradeReportLines del usuario.
+	 * 
+	 * @return
+	 * 		La lista de GRL.
+	 */
+	public ArrayList<GradeReportLine> getAllGradeReportLines() {
+		return gradeReportLines;
+	}
 
 	/**
 	 * Convierte el EnrolledUser a un String con su nombre

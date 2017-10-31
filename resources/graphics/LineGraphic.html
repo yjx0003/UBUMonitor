@@ -6,7 +6,7 @@
 	body
 	{
 		background: #f2f2f2;
-		padding: 16px;
+		padding: 0px;
 	}
 
 	.chart-container
@@ -19,12 +19,12 @@
 	}
 	
 	.Alumnos{
-		height: 50%;
+		height: 45%;
 		color: black;
 	}
 	
 	.Calificaciones{
-		height: 50%;
+		height: 45%;
 		color: black;
 	}
 	
@@ -32,6 +32,27 @@
 		position: fixed;
 		bottom: 5px;
 		color: black;
+	}
+	
+	.controles{
+		padding-left: 10px;
+	}
+	
+	.btn {
+		background-color: #066db3;
+		border: none;
+		color: white;
+		font-size: 13px;
+		font-weight: bold;
+		border-radius: 4px;
+		cursor: pointer;
+		padding-top: 5px;
+		padding-bottom: 5px;
+		margin-left: 10px;
+	}
+	
+	.btn:hover {
+		background-color: #0790ed;
 	}
 	
 </style>
@@ -42,6 +63,10 @@
 </head>
 
 <body>
+<div class="controles">
+<input type="button" value="Ocultar Leyenda" class="btn" id="btnLegend" onclick="hideLegend()"></input>
+<input type="button" value="Mostrar Media" class="btn" id="btnMean" onclick="showMean()"></input>
+</div>
 <div id="inicio">
 	<div class="Alumnos">1- SELECCIONA LOS ALUMNOSS</div>
 	<div class="Calificaciones">2- SELECCIONA LAS CALIFICACIONES</div>
@@ -60,7 +85,7 @@ var options = {
 	responsive: true,
 	responsiveAnimationDuration: 0, // animation duration after a resize, better perfomance at 0
 	showLines: true,
-	spanGaps: false, //si se quiere mostrar las lineas cuando en algÃºn elemento no hay dato (NaN)
+	spanGaps: false, //si se quiere mostrar las lineas cuando en algun elemento no hay dato (NaN)
 	animation:{
 		 duration: 0 // better performance at 0
 	}, //animation
@@ -72,18 +97,16 @@ var options = {
 	elements: {
 		point : {
 			pointStyle: 'circle',
-			radius: 3,
+			radius: 5,
+			hoverRadius: 7
 		}, //points
 		line: {
-			tension: 0 //disable bezier curves, better performance
+			tension: 0.4 //disable bezier curves, better performance
 		}
 	}, //elements
 	legend: {
 		display: true,
 		position: 'bottom',
-		onHover: function() {
-			legendOnHover();
-		},
 		labels : {
 			padding: 20,
 			usePointStyle: true,
@@ -93,25 +116,49 @@ var options = {
 		} //labels
 	}, //legend
 	tooltips: {
-		mode: 'point',
-		position: 'nearest',
-		cornerRadius: 6,
-		caretSize: 10
+		mode: 'index',
+		intersect: false,
+		position: 'average',
+		backgroundColor: 'rgba(0, 0, 0, 0.8)',
+		bodySpacing: 4,
+		cornerRadius: 0,
+		caretSize: 10,
+		itemSort: function(a, b) {return (parseFloat(a.y) - parseFloat(b.y));}	
 	}, //tooltips
     scales: {
-        yAxes: [{
-        	gridLines: {
-        		display: true,
-        		color: 'rgba(0, 0, 0, 0.4)'
-        	}, //gridLines
-            ticks: 
-            {
-                beginAtZero:true,
-                max: 10,
-                stepSize: 1,
-                fontColor: 'rgba(0, 0, 0, 1)'
-            }//ticks
-        }], //yAxes
+        yAxes: [
+        	{
+        		id:'left-y-axis',
+        		type: 'linear',
+        		position: 'left',
+        		gridLines: {
+            		display: true,
+            		color: 'rgba(0, 0, 0, 0.4)'
+            	}, //gridLines
+                ticks: 
+                {
+                    beginAtZero:true,
+                    max: 10,
+                    stepSize: 1,
+                    fontColor: 'rgba(0, 0, 0, 1)'
+                }//ticks
+        	},
+        	{
+        		id: 'right-y-axis',
+        		type: 'linear',
+        		position: 'right',
+        		gridLines: {
+            		display: true,
+            		color: 'rgba(0, 0, 0, 0.4)'
+            	}, //gridLines
+                ticks: 
+                {
+                    beginAtZero:true,
+                    max: 10,
+                    stepSize: 1,
+                    fontColor: 'rgba(0, 0, 0, 1)'
+                }//ticks
+        	}], //yAxes
         xAxes :[{
         	gridLines: {
         		display: true,
@@ -133,6 +180,8 @@ var myChart = new Chart(ctx,{
 	options: options
 });
 
+var meanDataSet = "";
+
 // Funcion que genera un grafico con el dataset que recibe
 // data : el dataset a mostrar en el gráfico
 function generateChart(data){
@@ -142,16 +191,27 @@ function generateChart(data){
 	myChart.update();
 }
 
-//Funcion que añade un data set al gráfico
-function addDataSet(dataset) {
-	myChart.data.datasets.push(dataset);
-	myChart.update();
+//Funcion que almacena la media.
+function saveMean(mean){
+	meanDataSet = mean;
 }
 
-//Funcion que elimina el ultimo data set
-function removeDataSet() {
+//Funcion que muestra la media en el gráfico
+function showMean() {
+	if("" != meanDataSet){
+		myChart.data.datasets.push(meanDataSet);
+		myChart.update();
+		document.getElementById('btnMean').value='Ocultar Media';
+		document.getElementById('btnMean').setAttribute('onClick', 'hideMean()');
+	}
+}
+
+//Funcion que elimina la media del gráfico
+function hideMean() {
 	myChart.data.datasets.pop();
 	myChart.update();
+	document.getElementById('btnMean').value='Mostrar Media';
+	document.getElementById('btnMean').setAttribute('onClick', 'showMean()');
 }
 
 //Funcion que limpia el gráfico
@@ -166,9 +226,20 @@ function colorGeneration(color){
 	return colorHash.hex(color);
 }
 
-//Funcion que se ejecuta al pasar el raton por label(nombres de los alumnos)
-function legendOnHover() {
-	//TODO mostar el label completo
+//Oculta la leyenda del gráfico
+function hideLegend() {
+	myChart.options.legend.display = false;
+	myChart.update();
+	document.getElementById('btnLegend').value='Mostrar Leyenda';
+	document.getElementById('btnLegend').setAttribute('onClick', 'showLegend()');
+}
+
+//Muestra la leyenda del gráfico
+function showLegend() {
+	myChart.options.legend.display = true;
+	myChart.update();
+	document.getElementById('btnLegend').value = 'Ocultar Leyenda';
+	document.getElementById('btnLegend').setAttribute('onClick', 'hideLegend()');
 }
 
 

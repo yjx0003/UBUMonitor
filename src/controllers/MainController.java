@@ -15,8 +15,6 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -33,7 +31,6 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
@@ -120,9 +117,6 @@ public class MainController implements Initializable {
 	private WebView webViewCalificaciones;
 	private WebEngine webViewCalificacionesEngine;
 	
-    @FXML
-    private CheckBox meanSelector;
-	
 	private Stats stats;
 		
 	/**
@@ -133,6 +127,9 @@ public class MainController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
 			logger.info(" Cargando curso '" + UBUGrades.session.getActualCourse().getFullName() + "'...");
+			
+			// CAMBIAR Inicializamos las estadisticas para esta asignatura
+			stats = new Stats();
 			 
 			//Cargamos el html del gráfico
 			webViewChart.setContextMenuEnabled(false); // Desactiva el click derecho
@@ -279,20 +276,6 @@ public class MainController implements Initializable {
 			public void handle(Event event) {
 				// Generamos el gráfico con los elementos selecionados
 				generateGraphic();
-			}
-		});
-
-		// Asignamos el manejador de eventos al checkbox de la media.
-		meanSelector.selectedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				if(meanSelector.isSelected()) {
-					// Mostramos la media.
-					showMean();
-				} else {
-					// Eliminamos la media
-					removeMean();
-				}
 			}
 		});
 		
@@ -801,9 +784,7 @@ public class MainController implements Initializable {
 				.getSelectedItems();
 		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel()
 				.getSelectedItems();
-		
-		stats = new Stats();
-		
+				
 		String htmlTitle = "<tr><th style='background:#066db3; border: 1.0 solid grey; color:white;'> Alumno </th>";
 		String content = "";
 		int countA = 0;
@@ -872,10 +853,7 @@ public class MainController implements Initializable {
 						} else {
 							dataSet += "," + Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
 						}
-						
-						// Añadimos la nota para las estadisticas
-						stats.addElementValue(actualLine.getId(), parseStringGradeToDouble(calculatedGrade));
-						
+												
 						// Añadimos la nota a la tabla de calificaciones
 						htmlRow += "<td style='border: 1.0 solid grey'> "
 								+ Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0
@@ -907,7 +885,6 @@ public class MainController implements Initializable {
 			dataSet += "]," +
 						"backgroundColor: '" + color + "'," + 
 						"borderColor: '" + color + "'," + 
-						"Color: '" + color + "'," + 
 						"borderWidth: 2," + 
 						"fill: false}";
 			htmlTitle += "</tr>";
@@ -917,10 +894,8 @@ public class MainController implements Initializable {
 		
 		// Generamos el gráfico
 		try {
+			generateMeanDataSet();
 			webViewChartEngine.executeScript("generateChart({ labels:[" + labels + "],datasets: ["+ dataSet + "]})");
-			if(meanSelector.isSelected()) {
-				showMean();
-			}
 		} catch (Exception e) {
 			logger.error("Error al generar el gráfico", e);
 		}
@@ -939,49 +914,30 @@ public class MainController implements Initializable {
 				+ htmlTitle + content + "</table></body></html>");
     }
     
-    /**
-     * Convierte la nota  de String a Double
-     * 
-     * @param grade
-     * 		La nota a parsear.
-     * @return
-     * 		La nota como tipo Double.
-     */
-    private double parseStringGradeToDouble(String grade) {
-    	grade = grade.replace(",", ".");
-    	return Double.parseDouble(grade);
-    }
     
     /**
-     * Función que muestra la media en el gráfico para los elementos seleccionados.
+     * Función que genera el dataSet de la media y lo envia al gráfico.
      */
-    private void showMean() {
-		String dataset = "{label:'Media',data:[";
+    private void generateMeanDataSet() {
+		String meanDataset = "{label:'Media',data:[";
 		Boolean firstElement = true;
 		for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 			if(firstElement) {
-				dataset += stats.getElementMean(structTree.getValue().getId());
+				meanDataset += stats.getElementMean(structTree.getValue().getId());
 				firstElement = false;
 			} else {
-				dataset += "," + stats.getElementMean(structTree.getValue().getId());
+				meanDataset += "," + stats.getElementMean(structTree.getValue().getId());
 			}
 		}
-		dataset += "]," +
-		"backgroundColor: 'rgba(73, 87, 98, 0.5)'," + 
+		meanDataset += "]," +
+		"backgroundColor: 'rgba(73, 87, 98, 0.3)'," + 
 		"borderColor: 'rgba(26, 65, 96, 1)'," + 
+		"pointBackgroundColor: 'rgba(26, 65, 96, 1)'," +
 		"borderWidth: 4," + 
 		"fill: true}";
 		
-		logger.info("Mostrando la media en el gráfico.");
-		webViewChartEngine.executeScript("addDataSet(" + dataset + ")");
+		logger.info("Guardando Media.");
+		webViewChartEngine.executeScript("saveMean(" + meanDataset + ")");
     }
-    
-    /**
-     * Función que elimina la media del gráfico.
-     */
-    private void removeMean() {
-    	logger.info("Eliminando la media del gráfico.");
-    	webViewChartEngine.executeScript("removeDataSet()");
-    }
-    
+      
 }

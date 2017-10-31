@@ -28,9 +28,21 @@ public class Stats {
 	 */
 	public Stats() {
 		gradesStats = new HashMap<>();
+		String grade = "";
 		// Inicializamos el HashMap con cada una de los Grade Report Lines de la asignatura.
 		for (GradeReportLine actualLine : UBUGrades.session.getActualCourse().getGradeReportLines()) {
 			this.createElementStats(actualLine.getId());
+		}
+		
+		// Añadimos las notas de cada usuario para cada GradeReportLine
+		for(EnrolledUser enrroledUser: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
+			for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
+				grade = gradeReportLine.getGrade();
+				// Si la nota es "-", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
+				if(!grade.equals("-")) {
+				this.addElementValue(gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
+				}
+			}
 		}
 	}
 	
@@ -75,4 +87,17 @@ public class Stats {
 		mean = mean.replace(",", ".");
 		return mean;
 	}
+	
+    /**
+     * Convierte la nota  de String a Double
+     * 
+     * @param grade
+     * 		La nota a parsear.
+     * @return
+     * 		La nota como tipo Double.
+     */
+    private double parseStringGradeToDouble(String grade) {
+    	grade = grade.replace(",", ".");
+    	return Double.parseDouble(grade);
+    }
 }

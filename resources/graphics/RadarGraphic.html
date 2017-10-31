@@ -1,4 +1,3 @@
-
 <html>
 <head>
 
@@ -101,7 +100,7 @@ var options = {
 			hoverRadius: 7
 		}, //points
 		line: {
-			tension: 0.4 //disable bezier curves, better performance
+			tension: 0 //disable bezier curves, better performance
 		}
 	}, //elements
 	legend: {
@@ -117,7 +116,7 @@ var options = {
 	}, //legend
 	tooltips: {
 		mode: 'index',
-		intersect: false,
+		intersect: true,
 		position: 'average',
 		backgroundColor: 'rgba(0, 0, 0, 0.8)',
 		bodySpacing: 4,
@@ -125,57 +124,25 @@ var options = {
 		caretSize: 10,
 		itemSort: function(a, b) {return (parseFloat(a.y) - parseFloat(b.y));}	
 	}, //tooltips
-    scales: {
-        yAxes: [
-        	{
-        		id:'left-y-axis',
-        		type: 'linear',
-        		position: 'left',
-        		gridLines: {
-            		display: true,
-            		color: 'rgba(0, 0, 0, 0.4)'
-            	}, //gridLines
-                ticks: 
-                {
-                    beginAtZero:true,
-                    max: 10,
-                    stepSize: 1,
-                    fontColor: 'rgba(0, 0, 0, 1)'
-                }//ticks
-        	},
-        	{
-        		id: 'right-y-axis',
-        		type: 'linear',
-        		position: 'right',
-        		gridLines: {
-            		display: true,
-            		color: 'rgba(0, 0, 0, 0.4)'
-            	}, //gridLines
-                ticks: 
-                {
-                    beginAtZero:true,
-                    max: 10,
-                    stepSize: 1,
-                    fontColor: 'rgba(0, 0, 0, 1)'
-                }//ticks
-        	}], //yAxes
-        xAxes :[{
-        	gridLines: {
-        		display: true,
-        		color: 'rgba(0, 0, 0, 0.4)'
-        	}, //gridLines
-        	ticks: {
-        		autoSkip: false,
-        		fontColor: 'rgba(0, 0, 0, 1)'
-        	}
-        }]//xAxes
+    scale: {
+		gridLines: {
+    		display: true,
+    		color: 'rgba(0, 0, 0, 0.4)'
+    	}, //gridLines
+        ticks: 
+        {
+            beginAtZero:true,
+            max: 10,
+            stepSize: 1,
+            fontColor: 'rgba(0, 0, 0, 1)'
+        }//ticks
     } //scales
 } //options
 
 var colorHash = new ColorHash();
 var ctx = document.getElementById('myChart');
 var myChart = new Chart(ctx,{
-	type: 'line',
+	type: 'radar',
 	data: '',
 	options: options
 });
@@ -226,7 +193,13 @@ function clearChart(){
 //Funcion que devuelve un color en formato hexadecimal
 //en base a el string que se le pasa
 function colorGeneration(color){
-	return colorHash.hex(color);
+	var rgbaColor = "rgba(";
+	var colors = []
+	colors = colorHash.rgb(color);
+	for (i = 0; i < colors.length; i++) {
+		rgbaColor += colors[i] + ",";
+	}
+	return rgbaColor;
 }
 
 //Oculta la leyenda del gráfico

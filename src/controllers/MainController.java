@@ -109,9 +109,13 @@ public class MainController implements Initializable {
 	MenuItem[] typeMenuItems;
 	String filterType = "Todos";
 
-	@FXML // Gráfico
-	private WebView webViewChart;
-	private WebEngine webViewChartEngine;
+	@FXML // Gráfico de lineas
+	private WebView webViewLine;
+	private WebEngine webViewLineEngine;
+	
+	@FXML // Radar
+	private WebView webViewRadar;
+	private WebEngine webViewRadarEngine;
 
 	@FXML // Tabla de calificaciones
 	private WebView webViewCalificaciones;
@@ -131,11 +135,16 @@ public class MainController implements Initializable {
 			// CAMBIAR Inicializamos las estadisticas para esta asignatura
 			stats = new Stats();
 			 
-			//Cargamos el html del gráfico
-			webViewChart.setContextMenuEnabled(false); // Desactiva el click derecho
-			webViewChartEngine = webViewChart.getEngine();
+			//Cargamos el html de los graficos y calificaciones
+			webViewLine.setContextMenuEnabled(false); // Desactiva el click derecho
+			webViewLineEngine = webViewLine.getEngine();
 			URL url = this.getClass().getResource("/graphics/LineGraphic.html");
-			webViewChartEngine.load(url.toString());
+			webViewLineEngine.load(url.toString());
+			
+			webViewRadar.setContextMenuEnabled(false); // Desactiva el click derecho
+			webViewRadarEngine = webViewRadar.getEngine();
+			url = this.getClass().getResource("/graphics/RadarGraphic.html");
+			webViewRadarEngine.load(url.toString());
 			
 			webViewCalificacionesEngine = webViewCalificaciones.getEngine();
 			
@@ -641,7 +650,7 @@ public class MainController implements Initializable {
 	 * @throws Exception
 	 */
 	public void saveChart(ActionEvent actionEvent) throws Exception {
-		WritableImage image = webViewChart.snapshot(new SnapshotParameters(), null);
+		WritableImage image = webViewLine.snapshot(new SnapshotParameters(), null);
 		
 		File file = new File("chart.png");
 
@@ -734,7 +743,7 @@ public class MainController implements Initializable {
 	 * Elimina los datos del gráfico y de la tabla de calificaciones
 	 */
 	public void clearData() {
-		webViewChartEngine.executeScript("clearChart()");
+		webViewLineEngine.executeScript("clearChart()");
 		webViewCalificacionesEngine.loadContent("<html><head></head><body style='background-color:#f2f2f2'></body></html>");
 	}
 
@@ -791,8 +800,10 @@ public class MainController implements Initializable {
 		boolean firstUser = true;
 		boolean firstGrade = true;
 		String dataSet = "";
+		String dataSetRadar = "";
 		String labels = "";	
 		String color;
+		String colorRadar;
 		
 		// Por cada usuario seleccionado
 		for (EnrolledUser actualUser : selectedParticipants) {
@@ -804,23 +815,13 @@ public class MainController implements Initializable {
 			// Añadimos el nombre del alumno al dataset
 			if (firstUser) {
 				dataSet += "{label:'" + actualUserFullName + "',data: [";
+				dataSetRadar += "{label:'" + actualUserFullName + "',data: [";
 				firstUser = false;
 			} else {
 				dataSet += ",{label:'" + actualUserFullName + "',data: [";
+				dataSetRadar += ",{label:'" + actualUserFullName + "',data: [";
 			}
 									
-			/*try {
-				// Establecemos el calificador del curso con este usuario
-				CourseWS.setGradeReportLines(UBUGrades.session.getToken(), actualUser.getId(),
-						UBUGrades.session.getActualCourse());
-				CourseWS.setUserGradeReportLines(UBUGrades.session.getToken(), actualUser.getId(),
-						UBUGrades.session.getActualCourse());
-			} catch (Exception e) {
-				logger.error("Error de conexión. {}", e);
-				e.printStackTrace();
-				errorDeConexion();
-			}*/
-
 			int countB = 1;
 			firstGrade = true;
 
@@ -849,9 +850,11 @@ public class MainController implements Initializable {
 						// Añadimos la nota al gráfico
 						if (firstGrade) {
 							dataSet += Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
+							dataSetRadar += Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
 							firstGrade = false;
 						} else {
 							dataSet += "," + Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
+							dataSetRadar += "," + Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
 						}
 												
 						// Añadimos la nota a la tabla de calificaciones
@@ -864,9 +867,11 @@ public class MainController implements Initializable {
 						htmlRow += "<td style='border: 1.0 solid grey'> " + calculatedGrade + " </td>";
 						if (firstGrade) {
 							dataSet += "NaN";
+							dataSetRadar += "NaN";
 							firstGrade = false;
 						} else {
 							dataSet += ",NaN";
+							dataSetRadar += ",NaN";
 						}
 					}
 				} catch (Exception e) {
@@ -876,17 +881,28 @@ public class MainController implements Initializable {
 			
 			//Establecemos el color de ese alumno en el grafico
 			try {
-				color = (String) webViewChartEngine.executeScript("colorGeneration('" + actualUserFullName + "')");
+				color = (String) webViewLineEngine.executeScript("colorGeneration('" + actualUserFullName + "')");
+				colorRadar = (String) webViewRadarEngine.executeScript("colorGeneration('" + actualUserFullName + "')");
 			} catch (Exception e) {
 				logger.error("Error al generar el color para el gráfico", e);
 				color = "#ffffff";
+				colorRadar = "#ffffff";
 			}
 			
 			dataSet += "]," +
 						"backgroundColor: '" + color + "'," + 
 						"borderColor: '" + color + "'," + 
+						"pointBorderColor: '" + color + "'," +
+						"pointBackgroundColor: '" + color + "'," +
 						"borderWidth: 2," + 
 						"fill: false}";
+			dataSetRadar += "]," +
+					"backgroundColor: '" + colorRadar + "0.3)" + "'," + 
+					"borderColor: '" + colorRadar + "1)" + "'," + 
+					"pointBorderColor: '" + colorRadar + "1)" + "'," +
+					"pointBackgroundColor: '" + colorRadar + "1)" + "'," +
+					"borderWidth: 2," + 
+					"fill: true}";
 			htmlTitle += "</tr>";
 			htmlRow += "</tr>";
 			content += htmlRow;
@@ -895,7 +911,8 @@ public class MainController implements Initializable {
 		// Generamos el gráfico
 		try {
 			generateMeanDataSet();
-			webViewChartEngine.executeScript("generateChart({ labels:[" + labels + "],datasets: ["+ dataSet + "]})");
+			webViewLineEngine.executeScript("generateChart({ labels:[" + labels + "],datasets: ["+ dataSet + "]})");
+			webViewRadarEngine.executeScript("generateChart({ labels:[" + labels + "],datasets: ["+ dataSetRadar + "]})");
 		} catch (Exception e) {
 			logger.error("Error al generar el gráfico", e);
 		}
@@ -933,11 +950,11 @@ public class MainController implements Initializable {
 		"backgroundColor: 'rgba(73, 87, 98, 0.3)'," + 
 		"borderColor: 'rgba(26, 65, 96, 1)'," + 
 		"pointBackgroundColor: 'rgba(26, 65, 96, 1)'," +
-		"borderWidth: 4," + 
+		"borderWidth: 3," + 
 		"fill: true}";
 		
-		logger.info("Guardando Media.");
-		webViewChartEngine.executeScript("saveMean(" + meanDataset + ")");
+		webViewLineEngine.executeScript("saveMean(" + meanDataset + ")");
+		webViewRadarEngine.executeScript("saveMean(" + meanDataset + ")");
     }
       
 }

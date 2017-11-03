@@ -21,7 +21,7 @@ public class Stats {
 	 * HashMap que almacena como clave el id del GradeReporLine(GRL)
 	 * y como valor el objeto de estadisticas de Apache Commons Math.
 	 */
-	HashMap<Integer, DescriptiveStatistics> gradesStats;
+	private HashMap<Integer, DescriptiveStatistics> gradesStats;
 	
 	/**
 	 * Constructor de la clase Stats.
@@ -86,6 +86,80 @@ public class Stats {
 		String mean = df.format(stats.getMean());
 		mean = mean.replace(",", ".");
 		return mean;
+	}
+	
+	/**
+	 * Obtenemos la mediana del GRL.
+	 * 
+	 * @param gradeId
+	 * 		El id del Grade Report Line
+	 * @return
+	 * 		La mediana del GRL.
+	 */
+	public String getMedian(int gradeId) {
+		// Hacemos que la media tenga el formato #.## para mostrarlo
+		// sin problemas en el gráfico
+		DecimalFormat df = new DecimalFormat("#.##");
+		DescriptiveStatistics stats = gradesStats.get(gradeId);
+		String median = df.format(stats.getPercentile(50));
+		median = median.replace(",", ".");
+		return median;
+	}
+	
+	/**
+	 * Obtenemos el percentil del GRL.
+	 * 
+	 * @param gradeId
+	 * 		El id del Grade Report Line.
+	 * @param percentil
+	 * 		El percentil que queremos.
+	 * @return
+	 * 		El percentil del GRL.
+	 */
+	public String getElementPercentile(int gradeId, double percentil) {
+		// Hacemos que el percentil tenga el formato #.## para mostrarlo
+		// sin problemas en el gráfico
+		DecimalFormat df = new DecimalFormat("#.##");
+		DescriptiveStatistics stats = gradesStats.get(gradeId);
+		String percentile = df.format(stats.getPercentile(percentil));
+		percentile = percentile.replace(",", ".");
+		return percentile;
+	}
+	
+	/**
+	 * Obtenemos el maximo del GRL.
+	 * 
+	 * @param gradeId
+	 * 		El id del Grade Report Line.
+	 * @return
+	 * 		El maximo del GRL.
+	 */
+	public String getMaxmimum(int gradeId) {
+		// Hacemos que el maximo tenga el formato #.## para mostrarlo
+		// sin problemas en el gráfico
+		DecimalFormat df = new DecimalFormat("#.##");
+		DescriptiveStatistics stats = gradesStats.get(gradeId);
+		String maximum = df.format(stats.getMax());
+		maximum = maximum.replace(",", ".");
+		return maximum;
+	}
+	
+	/**
+	 * Obtenemos el minimo del GRL.
+	 * 
+	 * @param gradeId
+	 * 		El id del Grade Report Line.
+	 * @return
+	 * 		El minimo del GRL.
+	 */
+	public String getMinimum(int gradeId) {
+		// Hacemos que el minimo tenga el formato #.## para mostrarlo
+		// sin problemas en el gráfico
+		DecimalFormat df = new DecimalFormat("#.##");
+		DescriptiveStatistics stats = gradesStats.get(gradeId);
+		String minimum = df.format(stats.getMin());
+		minimum = minimum.replace(",", ".");
+		return minimum;
 	}
 	
     /**

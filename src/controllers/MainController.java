@@ -116,6 +116,10 @@ public class MainController implements Initializable {
 	@FXML // Radar
 	private WebView webViewRadar;
 	private WebEngine webViewRadarEngine;
+	
+	@FXML // Tabla de calificaciones
+	private WebView webViewBoxPlot;
+	private WebEngine webViewBoxPlotEngine;
 
 	@FXML // Tabla de calificaciones
 	private WebView webViewCalificaciones;
@@ -145,6 +149,11 @@ public class MainController implements Initializable {
 			webViewRadarEngine = webViewRadar.getEngine();
 			url = this.getClass().getResource("/graphics/RadarGraphic.html");
 			webViewRadarEngine.load(url.toString());
+			
+			webViewBoxPlot.setContextMenuEnabled(false); // Desactiva el click derecho
+			webViewBoxPlotEngine = webViewBoxPlot.getEngine();
+			url = this.getClass().getResource("/graphics/BoxPlotGraphic.html");
+			webViewBoxPlotEngine.load(url.toString());
 			
 			webViewCalificacionesEngine = webViewCalificaciones.getEngine();
 			
@@ -285,6 +294,7 @@ public class MainController implements Initializable {
 			public void handle(Event event) {
 				// Generamos el gráfico con los elementos selecionados
 				generateGraphic();
+				generateBoxPlotGraphic();
 			}
 		});
 		
@@ -956,5 +966,90 @@ public class MainController implements Initializable {
 		webViewLineEngine.executeScript("saveMean(" + meanDataset + ")");
 		webViewRadarEngine.executeScript("saveMean(" + meanDataset + ")");
     }
-      
+    
+    private void generateBoxPlotGraphic() {
+		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel()
+				.getSelectedItems();
+		
+		String labels = "";	
+		String maximos = "{label:'Máximo',data: [";
+		String medianas = "{label:'Mediana',data: [";
+		String minimos = "{label:'Mínimo',data: [";
+		String primerQuartil = "{label:'Primer Quartil',data: [";
+		String tercerQuartil = "{label:'Tercer Quartil',data: [";
+		boolean firstLabel = true;
+		boolean firstGrade = true;
+		int gradeId;
+		
+		for (TreeItem<GradeReportLine> structTree : selectedGRL) {
+			if (firstLabel) {
+				labels += "'" + structTree.getValue().getName() + "'";
+				firstLabel = false;
+			} else {
+				labels += ",'" + structTree.getValue().getName() + "'";
+			}
+			
+			gradeId = structTree.getValue().getId();
+			if (firstGrade) {
+				maximos += stats.getMaxmimum(gradeId);
+				medianas += stats.getMedian(gradeId);
+				minimos += stats.getMinimum(gradeId);
+				primerQuartil += stats.getElementPercentile(gradeId, 25);
+				tercerQuartil += stats.getElementPercentile(gradeId, 75);
+				firstGrade = false;
+			} else {
+				maximos += "," + stats.getMaxmimum(gradeId);
+				medianas += "," + stats.getMedian(gradeId);
+				minimos += "," + stats.getMinimum(gradeId);
+				primerQuartil += "," + stats.getElementPercentile(gradeId, 25);
+				tercerQuartil += "," + stats.getElementPercentile(gradeId, 75);
+			}
+		}
+		
+		maximos += "]," +
+				"backgroundColor: 'rgba(244,67,54,1)'," + 
+				"borderColor: 'rgba(244,67,54,1)'," + 
+				"pointBorderColor: 'rgba(244,67,54,1)'," +
+				"pointBackgroundColor: 'rgba(244,67,54,1)'," +
+				"borderWidth: 2," + 
+				"fill: false}";
+		tercerQuartil += "]," +
+				"backgroundColor: 'rgba(255,152,0,0.3)" + "'," + 
+				"borderColor: 'rgba(255,152,0,1)" + "'," + 
+				"pointBorderColor: 'rgba(255,152,0,1)" + "'," +
+				"pointBackgroundColor: 'rgba(255,152,0,1)" + "'," +
+				"borderWidth: 2," + 
+				"fill: 3}";
+		medianas += "]," +
+				"backgroundColor: 'rgba(0,150,136,1)'," + 
+				"borderColor: 'rgba(0,150,136,1)'," + 
+				"pointBorderColor: 'rgba(0,150,136,1)'," +
+				"pointBackgroundColor: 'rgba(0,150,136,1)'," +
+				"borderWidth: 2," + 
+				"fill: false}";
+		primerQuartil += "]," +
+				"backgroundColor: 'rgba(255,152,0,0.3)'," + 
+				"borderColor: 'rgba(255,152,0,1)'," + 
+				"pointBorderColor: 'rgba(255,152,0,1)'," +
+				"pointBackgroundColor: 'rgba(255,152,0,1)'," +
+				"borderWidth: 2," + 
+				"fill: false}";
+		minimos += "]," +
+				"backgroundColor: 'rgba(81,45,168,1)'," + 
+				"borderColor: 'rgba(81,45,168,1)'," + 
+				"pointBorderColor: 'rgba(81,45,168,1)'," +
+				"pointBackgroundColor: 'rgba(81,45,168,1)'," +
+				"borderWidth: 2," + 
+				"fill: false}";
+		
+		// Generamos el gráfico
+		try {
+			webViewBoxPlotEngine.executeScript("generateChart({ labels:[" + labels + "],"
+					+ "datasets: ["+ maximos + "," + tercerQuartil + "," + medianas + "," + primerQuartil + 
+					"," + minimos + "]})");
+		} catch (Exception e) {
+			logger.error("Error al generar el gráfico", e);
+		}
+
+    }
 }

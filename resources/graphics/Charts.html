@@ -1,0 +1,461 @@
+
+<html>
+<head>
+
+<style>
+	body
+	{
+		background: #f2f2f2;
+		padding: 0px;
+	}
+
+	.chart-container
+	{
+		position: relative;
+		margin: auto;
+		height: 90vh;
+		width: 90vw;
+		display: none;
+	}
+	
+	.Alumnos{
+		height: 45%;
+		color: black;
+	}
+	
+	.Calificaciones{
+		height: 45%;
+		color: black;
+	}
+	
+	.GenerarGrafico{
+		position: fixed;
+		bottom: 5px;
+		color: black;
+	}
+	
+	.controles{
+		position: relative;
+		top: 0px;
+		width: 100%;
+		height: 30px;
+	}
+	
+	.opciones {
+		width: 50%;
+		display: inline;
+	}
+		
+	.opciones .btn {
+		background-color: #066db3;
+		border: none;
+		color: white;
+		font-size: 13px;
+		font-weight: bold;
+		border-radius: 4px;
+		cursor: pointer;
+		padding-top: 5px;
+		padding-bottom: 5px;
+		margin-left: 10px;
+	}
+	
+	.opciones .btn:hover {
+		background-color: #0790ed;
+	}
+	
+	.pestañas {
+		width: 50%;
+		display: inline;
+	}
+	
+	.pestañas {
+		position: relative;
+		top: 0px;
+		width: 50%;
+		height: 30px;
+	}
+	
+	.pestañas .btn {
+		background-color: #066db3;
+		border: none;
+		color: white;
+		font-size: 13px;
+		font-weight: bold;
+		border-radius: 4px 4px 0 0;
+		cursor: pointer;
+		padding-top: 5px;
+		padding-bottom: 5px;
+		margin-left: 10px;
+	}
+	
+</style>
+		
+<script type="text/javascript" src="../../lib/Chart.js"></script>
+<script type="text/javascript" src="../../lib/color-hash.js"></script>
+
+</head>
+
+<body>
+
+<div class="controles">
+<div class="pestañas">
+	<input type="button" value="Lineas" class="btn" id="btnLineas" onclick="generateChart('line')"></input>
+	<input type="button" value="Radar" class="btn" id="btnRadar" onclick="generateChart('radar')"></input>
+	<input type="button" value="BoxPlot" class="btn" id="btnBoxPlot" onclick="generateChart('boxplot')"></input>
+</div>
+
+<div class="opciones">
+	<input type="button" value="Ocultar Leyenda" class="btn" id="btnLegend" onclick="hideLegend()"></input>
+	<input type="button" value="Mostrar Media" class="btn" id="btnMean" onclick="showMean()"></input>
+</div>
+</div>
+
+<div id="inicio">
+	<div class="Alumnos">1- SELECCIONA LOS ALUMNOSS</div>
+	<div class="Calificaciones">2- SELECCIONA LAS CALIFICACIONES</div>
+	<div class="GenerarGrafico">3- GENERA EL GRÁFICO</div>
+</div>
+
+<div id="chart-container" class="chart-container">
+	<canvas id="myChart"></canvas>
+</div>
+
+<script>
+
+var optionsLineChart = {
+	maintainAspectRatio: false,
+	responsive: true,
+	responsiveAnimationDuration: 0, // animation duration after a resize, better perfomance at 0
+	showLines: true,
+	spanGaps: false, //si se quiere mostrar las lineas cuando en algun elemento no hay dato (NaN)
+	animation:{
+		 duration: 0 // better performance at 0
+	}, //animation
+	layout: {
+		padding: {
+			top: 20,
+		} //pading
+	}, //layout
+	elements: {
+		point : {
+			pointStyle: 'circle',
+			radius: 5,
+			hoverRadius: 7
+		}, //points
+		line: {
+			tension: 0.4 //disable bezier curves, better performance
+		}
+	}, //elements
+	legend: {
+		display: true,
+		position: 'bottom',
+		labels : {
+			padding: 20,
+			usePointStyle: true,
+			fontSize: 12,
+			fontColor: 'rgba(0, 0, 0, 1)',
+			fontFamily: 'sans-serif'
+		} //labels
+	}, //legend
+	tooltips: {
+		mode: 'index',
+		intersect: false,
+		position: 'average',
+		backgroundColor: 'rgba(0, 0, 0, 0.8)',
+		bodySpacing: 4,
+		cornerRadius: 0,
+		caretSize: 10,
+		itemSort: function(a, b) {return (parseFloat(a.y) - parseFloat(b.y));}	
+	}, //tooltips
+    scales: {
+        yAxes: [
+        	{
+        		id:'left-y-axis',
+        		type: 'linear',
+        		position: 'left',
+        		gridLines: {
+            		display: true,
+            		color: 'rgba(0, 0, 0, 0.4)'
+            	}, //gridLines
+                ticks: 
+                {
+                    beginAtZero:true,
+                    max: 10,
+                    stepSize: 1,
+                    fontColor: 'rgba(0, 0, 0, 1)'
+                }//ticks
+        	},
+        	{
+        		id: 'right-y-axis',
+        		type: 'linear',
+        		position: 'right',
+        		gridLines: {
+            		display: true,
+            		color: 'rgba(0, 0, 0, 0.4)'
+            	}, //gridLines
+                ticks: 
+                {
+                    beginAtZero:true,
+                    max: 10,
+                    stepSize: 1,
+                    fontColor: 'rgba(0, 0, 0, 1)'
+                }//ticks
+        	}], //yAxes
+        xAxes :[{
+        	gridLines: {
+        		display: true,
+        		color: 'rgba(0, 0, 0, 0.4)'
+        	}, //gridLines
+        	ticks: {
+        		autoSkip: false,
+        		fontColor: 'rgba(0, 0, 0, 1)'
+        	}
+        }]//xAxes
+    } //scales
+} //options
+	
+var optionsRadarChart = {
+	maintainAspectRatio: false,
+	responsive: true,
+	responsiveAnimationDuration: 0, // animation duration after a resize, better perfomance at 0
+	showLines: true,
+	spanGaps: false, //si se quiere mostrar las lineas cuando en algun elemento no hay dato (NaN)
+	animation:{
+		 duration: 0 // better performance at 0
+	}, //animation
+	layout: {
+		padding: {
+			top: 20,
+		} //pading
+	}, //layout
+	elements: {
+		point : {
+			pointStyle: 'circle',
+			radius: 5,
+			hoverRadius: 7
+		}, //points
+		line: {
+			tension: 0 //disable bezier curves, better performance
+		}
+	}, //elements
+	legend: {
+		display: true,
+		position: 'bottom',
+		labels : {
+			padding: 20,
+			usePointStyle: true,
+			fontSize: 12,
+			fontColor: 'rgba(0, 0, 0, 1)',
+			fontFamily: 'sans-serif'
+		} //labels
+	}, //legend
+	tooltips: {
+		mode: 'index',
+		intersect: true,
+		position: 'average',
+		backgroundColor: 'rgba(0, 0, 0, 0.8)',
+		bodySpacing: 4,
+		cornerRadius: 0,
+		caretSize: 10,
+		itemSort: function(a, b) {return (parseFloat(a.y) - parseFloat(b.y));}	
+	}, //tooltips
+    scale: {
+		gridLines: {
+    		display: true,
+    		color: 'rgba(0, 0, 0, 0.4)'
+    	}, //gridLines
+        ticks: 
+        {
+            beginAtZero:true,
+            max: 10,
+            stepSize: 1,
+            fontColor: 'rgba(0, 0, 0, 1)'
+        }//ticks
+    } //scales
+} //options
+
+
+var colorHash = new ColorHash();
+var ctx = document.getElementById('myChart');
+var meanDataSet = '';
+var LineDataSet = '';
+var RadarDataSet = '';
+var BoxPlotDataSet = '';
+var currentType = 'line';
+var myChart = new Chart(ctx,{
+	type: 'line',
+	data:'',
+	options: optionsLineChart
+});
+document.getElementById('btnLineas').disabled = true;
+
+
+
+function generateChart(type){
+
+	document.getElementById('chart-container').style.display = 'block';
+	document.getElementById('inicio').style.display = 'none';
+	
+	switch (type) {
+		case 'line':
+			currentType = 'line';
+			document.getElementById('btnLineas').disabled = true;
+			document.getElementById('btnRadar').disabled = false;
+			document.getElementById('btnBoxPlot').disabled = false;
+			myChart.destroy();
+			myChart = new Chart(ctx,{
+				type: 'line',
+				data: LineDataSet,
+			options: optionsLineChart
+			});
+			myChart.data.datasets.forEach((dataset) => {
+				color = colorRGB(dataset.label);
+				dataset.backgroundColor = color + '1)';
+				dataset.borderColor = color + '1)';
+				dataset.pointBackgroundColor = color + '1)';
+				dataset.pointBorderColor = color + '1)';
+				dataset.fill = false;
+			});
+			break;
+		case 'boxplot':
+			currentType = 'boxplot';
+			document.getElementById('btnLineas').disabled = false;
+			document.getElementById('btnRadar').disabled = false;
+			document.getElementById('btnBoxPlot').disabled = true;
+			myChart.destroy();
+			myChart = new Chart(ctx,{
+				type: 'line',
+				data: BoxPlotDataSet,
+				options: optionsLineChart
+			});
+			break;
+		case 'radar':
+			currentType = 'radar';
+			document.getElementById('btnLineas').disabled = false;
+			document.getElementById('btnRadar').disabled = true;
+			document.getElementById('btnBoxPlot').disabled = false;
+			myChart.destroy();
+			myChart = new Chart(ctx,{
+				type: 'radar',
+				data: RadarDataSet,
+				options: optionsRadarChart
+			});
+			myChart.data.datasets.forEach((dataset) => {
+				color = colorRGB(dataset.label);
+				dataset.backgroundColor = color + '0.3)';
+				dataset.borderColor = color + '1)';
+				dataset.pointBackgroundColor = color + '1)';
+				dataset.pointBorderColor = color + '1)';
+				dataset.fill = true;
+			});
+			break;
+	}
+
+	myChart.update();
+}
+
+function updateChart(type, dataSet){
+	document.getElementById('chart-container').style.display = 'block';
+	document.getElementById('inicio').style.display = 'none';
+	
+	switch (type) {
+		case 'line':
+			LineDataSet = dataSet;
+			if(currentType == 'line'){				
+				myChart.data = LineDataSet;
+				myChart.data.datasets.forEach((dataset) => {
+					color = colorRGB(dataset.label);
+					dataset.backgroundColor = color + '1)';
+					dataset.borderColor = color + '1)';
+					dataset.pointBackgroundColor = color + '1)';
+					dataset.pointBorderColor = color + '1)';
+					dataset.fill = false;
+				});
+			}
+			break;
+		case 'boxplot':
+			BoxPlotDataSet = dataSet;
+			if(currentType == 'boxplot'){
+				myChart.data = BoxPlotDataSet;	
+			}
+			break;
+		case 'radar':
+			RadarDataSet = dataSet;
+			if(currentType == 'radar'){
+				myChart.data = RadarDataSet;
+				myChart.data.datasets.forEach((dataset) => {
+					color = colorRGB(dataset.label);
+					dataset.backgroundColor = color + '0.3)';
+					dataset.borderColor = color + '1)';
+					dataset.pointBackgroundColor = color + '1)';
+					dataset.pointBorderColor = color + '1)';
+					dataset.fill = true;
+				});
+			}
+			break;
+	}
+	myChart.update();
+}
+
+//Funcion que devuelve un color en formato 'rgba(r,g,b', a falta de la transpaerncia
+//en base a el string que se le pasa
+function colorRGB(color){
+	var rgbaColor = 'rgba(';
+	var colors = []
+	colors = colorHash.rgb(color);
+	for (i = 0; i < colors.length; i++) {
+		rgbaColor += colors[i] + ',';
+	}
+	return rgbaColor;
+}
+
+//Funcion que devuelve un color en formato hexadecimal
+//en base a el string que se le pasa
+function colorHEX(color){
+	return colorHash.hex(color);
+}
+
+//Oculta la leyenda del gráfico
+function hideLegend() {
+	myChart.options.legend.display = false;
+	myChart.update();
+	document.getElementById('btnLegend').value='Mostrar Leyenda';
+	document.getElementById('btnLegend').setAttribute('onClick', 'showLegend()');
+}
+
+//Muestra la leyenda del gráfico
+function showLegend() {
+	myChart.options.legend.display = true;
+	myChart.update();
+	document.getElementById('btnLegend').value = 'Ocultar Leyenda';
+	document.getElementById('btnLegend').setAttribute('onClick', 'hideLegend()');
+}
+
+//Funcion que almacena la media.
+function saveMean(mean){
+	meanDataSet = mean;
+}
+
+//Funcion que muestra la media en el gráfico
+function showMean() {
+	if('' != meanDataSet){
+		myChart.data.datasets.push(meanDataSet);
+		myChart.update();
+		document.getElementById('btnMean').value='Ocultar Media';
+		document.getElementById('btnMean').setAttribute('onClick', 'hideMean()');
+	}
+}
+
+//Funcion que elimina la media del gráfico
+function hideMean() {
+	myChart.data.datasets.pop();
+	myChart.update();
+	document.getElementById('btnMean').value='Mostrar Media';
+	document.getElementById('btnMean').setAttribute('onClick', 'showMean()');
+}
+
+
+</script>
+
+</body>
+</html>

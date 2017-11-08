@@ -40,7 +40,7 @@ public class Stats {
 				grade = gradeReportLine.getGrade();
 				// Si la nota es "-", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
 				if(!grade.equals("-")) {
-				this.addElementValue(gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
+					this.addElementValue(gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
 				}
 			}
 		}

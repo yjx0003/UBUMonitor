@@ -126,7 +126,7 @@ public class MainController implements Initializable {
 	private WebEngine webViewCalificacionesEngine;
 	
 	private Stats stats;
-		
+			
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades
 	 * de las que se compone.
@@ -136,13 +136,13 @@ public class MainController implements Initializable {
 		try {
 			logger.info(" Cargando curso '" + UBUGrades.session.getActualCourse().getFullName() + "'...");
 			
-			// CAMBIAR Inicializamos las estadisticas para esta asignatura
+			// Inicializamos las estadisticas para esta asignatura
 			stats = new Stats();
 			 
 			//Cargamos el html de los graficos y calificaciones
 			webViewLine.setContextMenuEnabled(false); // Desactiva el click derecho
 			webViewLineEngine = webViewLine.getEngine();
-			URL url = this.getClass().getResource("/graphics/LineGraphic.html");
+			URL url = this.getClass().getResource("/graphics/Charts.html");
 			webViewLineEngine.load(url.toString());
 			
 			webViewRadar.setContextMenuEnabled(false); // Desactiva el click derecho
@@ -263,7 +263,7 @@ public class MainController implements Initializable {
 			@Override
 			public void handle(Event event) {
 				// Generamos el gráfico con los elementos selecionados
-				generateGraphic();
+				updateChart();
 			}
 		});
 
@@ -293,8 +293,7 @@ public class MainController implements Initializable {
 			@Override
 			public void handle(Event event) {
 				// Generamos el gráfico con los elementos selecionados
-				generateGraphic();
-				generateBoxPlotGraphic();
+				updateChart();
 			}
 		});
 		
@@ -797,7 +796,7 @@ public class MainController implements Initializable {
 	/**
 	 * Metodo que genera el grafico segun se añaden alumnos y calificaciones
 	 */
-    private void generateGraphic() {
+    private String generateDataSet() {
     	// Lista de alumnos y calificaciones seleccionadas
 		ObservableList<EnrolledUser> selectedParticipants = listParticipants.getSelectionModel()
 				.getSelectedItems();
@@ -810,10 +809,7 @@ public class MainController implements Initializable {
 		boolean firstUser = true;
 		boolean firstGrade = true;
 		String dataSet = "";
-		String dataSetRadar = "";
 		String labels = "";	
-		String color;
-		String colorRadar;
 		
 		// Por cada usuario seleccionado
 		for (EnrolledUser actualUser : selectedParticipants) {
@@ -825,11 +821,9 @@ public class MainController implements Initializable {
 			// Añadimos el nombre del alumno al dataset
 			if (firstUser) {
 				dataSet += "{label:'" + actualUserFullName + "',data: [";
-				dataSetRadar += "{label:'" + actualUserFullName + "',data: [";
 				firstUser = false;
 			} else {
 				dataSet += ",{label:'" + actualUserFullName + "',data: [";
-				dataSetRadar += ",{label:'" + actualUserFullName + "',data: [";
 			}
 									
 			int countB = 1;
@@ -860,11 +854,9 @@ public class MainController implements Initializable {
 						// Añadimos la nota al gráfico
 						if (firstGrade) {
 							dataSet += Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
-							dataSetRadar += Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
 							firstGrade = false;
 						} else {
 							dataSet += "," + Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
-							dataSetRadar += "," + Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
 						}
 												
 						// Añadimos la nota a la tabla de calificaciones
@@ -877,54 +869,26 @@ public class MainController implements Initializable {
 						htmlRow += "<td style='border: 1.0 solid grey'> " + calculatedGrade + " </td>";
 						if (firstGrade) {
 							dataSet += "NaN";
-							dataSetRadar += "NaN";
 							firstGrade = false;
 						} else {
 							dataSet += ",NaN";
-							dataSetRadar += ",NaN";
 						}
 					}
 				} catch (Exception e) {
 					logger.error("Error en la construcción del árbol/tabla. {}", e);
 				}
 			}		
-			
-			//Establecemos el color de ese alumno en el grafico
-			try {
-				color = (String) webViewLineEngine.executeScript("colorGeneration('" + actualUserFullName + "')");
-				colorRadar = (String) webViewRadarEngine.executeScript("colorGeneration('" + actualUserFullName + "')");
-			} catch (Exception e) {
-				logger.error("Error al generar el color para el gráfico", e);
-				color = "#ffffff";
-				colorRadar = "#ffffff";
-			}
-			
+						
 			dataSet += "]," +
-						"backgroundColor: '" + color + "'," + 
-						"borderColor: '" + color + "'," + 
-						"pointBorderColor: '" + color + "'," +
-						"pointBackgroundColor: '" + color + "'," +
+						"backgroundColor: 'red'," + 
+						"borderColor: 'red'," + 
+						"pointBorderColor: 'red'," +
+						"pointBackgroundColor: 'red'," +
 						"borderWidth: 2," + 
 						"fill: false}";
-			dataSetRadar += "]," +
-					"backgroundColor: '" + colorRadar + "0.3)" + "'," + 
-					"borderColor: '" + colorRadar + "1)" + "'," + 
-					"pointBorderColor: '" + colorRadar + "1)" + "'," +
-					"pointBackgroundColor: '" + colorRadar + "1)" + "'," +
-					"borderWidth: 2," + 
-					"fill: true}";
 			htmlTitle += "</tr>";
 			htmlRow += "</tr>";
 			content += htmlRow;
-		}
-		
-		// Generamos el gráfico
-		try {
-			generateMeanDataSet();
-			webViewLineEngine.executeScript("generateChart({ labels:[" + labels + "],datasets: ["+ dataSet + "]})");
-			webViewRadarEngine.executeScript("generateChart({ labels:[" + labels + "],datasets: ["+ dataSetRadar + "]})");
-		} catch (Exception e) {
-			logger.error("Error al generar el gráfico", e);
 		}
 
 		// Mostramos la tabla
@@ -939,35 +903,11 @@ public class MainController implements Initializable {
 		}
 		webViewCalificacionesEngine.loadContent("<html><head>" + head + "</head><body style='background-color:#f2f2f2'><table>"
 				+ htmlTitle + content + "</table></body></html>");
-    }
-    
-    
-    /**
-     * Función que genera el dataSet de la media y lo envia al gráfico.
-     */
-    private void generateMeanDataSet() {
-		String meanDataset = "{label:'Media',data:[";
-		Boolean firstElement = true;
-		for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
-			if(firstElement) {
-				meanDataset += stats.getElementMean(structTree.getValue().getId());
-				firstElement = false;
-			} else {
-				meanDataset += "," + stats.getElementMean(structTree.getValue().getId());
-			}
-		}
-		meanDataset += "]," +
-		"backgroundColor: 'rgba(73, 87, 98, 0.3)'," + 
-		"borderColor: 'rgba(26, 65, 96, 1)'," + 
-		"pointBackgroundColor: 'rgba(26, 65, 96, 1)'," +
-		"borderWidth: 3," + 
-		"fill: true}";
 		
-		webViewLineEngine.executeScript("saveMean(" + meanDataset + ")");
-		webViewRadarEngine.executeScript("saveMean(" + meanDataset + ")");
+		return "{ labels:[" + labels + "],datasets: ["+ dataSet + "]}";
     }
     
-    private void generateBoxPlotGraphic() {
+    public String generateBoxPlotGraphic() {
 		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel()
 				.getSelectedItems();
 		
@@ -1042,14 +982,40 @@ public class MainController implements Initializable {
 				"borderWidth: 2," + 
 				"fill: false}";
 		
-		// Generamos el gráfico
-		try {
-			webViewBoxPlotEngine.executeScript("generateChart({ labels:[" + labels + "],"
-					+ "datasets: ["+ maximos + "," + tercerQuartil + "," + medianas + "," + primerQuartil + 
-					"," + minimos + "]})");
-		} catch (Exception e) {
-			logger.error("Error al generar el gráfico", e);
+		return "{ labels:[" + labels + "],"
+				+ "datasets: ["+ maximos + "," + tercerQuartil + "," + medianas + "," + primerQuartil + 
+				"," + minimos + "]}";
+    }
+    
+    /**
+     * Función que genera el dataSet de la media y lo envia al gráfico.
+     */
+    private void generateMeanDataSet() {
+		String meanDataset = "{label:'Media',data:[";
+		Boolean firstElement = true;
+		for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
+			if(firstElement) {
+				meanDataset += stats.getElementMean(structTree.getValue().getId());
+				firstElement = false;
+			} else {
+				meanDataset += "," + stats.getElementMean(structTree.getValue().getId());
+			}
 		}
+		meanDataset += "]," +
+		"backgroundColor: 'rgba(73, 87, 98, 0.3)'," + 
+		"borderColor: 'rgba(26, 65, 96, 1)'," + 
+		"pointBackgroundColor: 'rgba(26, 65, 96, 1)'," +
+		"borderWidth: 3," + 
+		"fill: true}";
+		
+		webViewLineEngine.executeScript("saveMean(" + meanDataset + ")");
+		webViewRadarEngine.executeScript("saveMean(" + meanDataset + ")");
+    }
+    
+    public void updateChart() {
+		webViewLineEngine.executeScript("updateChart('line'," + generateDataSet() + ")");
+		webViewLineEngine.executeScript("updateChart('radar'," + generateDataSet() + ")");
+		webViewLineEngine.executeScript("updateChart('boxplot'," + generateBoxPlotGraphic() + ")");
 
     }
 }

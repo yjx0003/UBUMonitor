@@ -144,7 +144,7 @@ public class MainController implements Initializable {
 			webViewLineEngine = webViewLine.getEngine();
 			URL url = this.getClass().getResource("/graphics/Charts.html");
 			webViewLineEngine.load(url.toString());
-			
+						
 			webViewRadar.setContextMenuEnabled(false); // Desactiva el click derecho
 			webViewRadarEngine = webViewRadar.getEngine();
 			url = this.getClass().getResource("/graphics/RadarGraphic.html");
@@ -907,7 +907,7 @@ public class MainController implements Initializable {
 		return "{ labels:[" + labels + "],datasets: ["+ dataSet + "]}";
     }
     
-    public String generateBoxPlotGraphic() {
+    public String generateBoxPlotDataSet() {
 		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel()
 				.getSelectedItems();
 		
@@ -1009,13 +1009,12 @@ public class MainController implements Initializable {
 		"fill: true}";
 		
 		webViewLineEngine.executeScript("saveMean(" + meanDataset + ")");
-		webViewRadarEngine.executeScript("saveMean(" + meanDataset + ")");
     }
     
     public void updateChart() {
+    	generateMeanDataSet();
 		webViewLineEngine.executeScript("updateChart('line'," + generateDataSet() + ")");
 		webViewLineEngine.executeScript("updateChart('radar'," + generateDataSet() + ")");
-		webViewLineEngine.executeScript("updateChart('boxplot'," + generateBoxPlotGraphic() + ")");
-
+		webViewLineEngine.executeScript("updateChart('boxplot'," + generateBoxPlotDataSet() + ")");
     }
 }

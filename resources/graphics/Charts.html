@@ -92,6 +92,7 @@
 		
 <script type="text/javascript" src="../../lib/Chart.js"></script>
 <script type="text/javascript" src="../../lib/color-hash.js"></script>
+<script type="text/javascript" src="../../lib/jquery.js"></script>
 
 </head>
 
@@ -106,7 +107,7 @@
 
 <div class="opciones">
 	<input type="button" value="Ocultar Leyenda" class="btn" id="btnLegend" onclick="hideLegend()"></input>
-	<input type="button" value="Mostrar Media" class="btn" id="btnMean" onclick="showMean()"></input>
+	<input type="button" value="Mostrar Media" class="btn" id="btnMean"></input>
 </div>
 </div>
 
@@ -119,6 +120,8 @@
 <div id="chart-container" class="chart-container">
 	<canvas id="myChart"></canvas>
 </div>
+
+<div id="log">LOG:</div>
 
 <script>
 
@@ -277,14 +280,16 @@ var optionsRadarChart = {
 
 var colorHash = new ColorHash();
 var ctx = document.getElementById('myChart');
-var meanDataSet = '';
+var MeanDataSet = 'a';
 var LineDataSet = '';
 var RadarDataSet = '';
 var BoxPlotDataSet = '';
+var meanActive = false;
+var legendActive = true;
 var currentType = 'line';
 var myChart = new Chart(ctx,{
 	type: 'line',
-	data:'',
+	data:LineDataSet,
 	options: optionsLineChart
 });
 document.getElementById('btnLineas').disabled = true;
@@ -302,11 +307,15 @@ function generateChart(type){
 			document.getElementById('btnLineas').disabled = true;
 			document.getElementById('btnRadar').disabled = false;
 			document.getElementById('btnBoxPlot').disabled = false;
+			document.getElementById('btnMean').style.display = 'inline';
+			if(meanActive){
+				$('.btn#btnMean').trigger("click");
+			}
 			myChart.destroy();
 			myChart = new Chart(ctx,{
 				type: 'line',
 				data: LineDataSet,
-			options: optionsLineChart
+				options: optionsLineChart
 			});
 			myChart.data.datasets.forEach((dataset) => {
 				color = colorRGB(dataset.label);
@@ -322,6 +331,10 @@ function generateChart(type){
 			document.getElementById('btnLineas').disabled = false;
 			document.getElementById('btnRadar').disabled = false;
 			document.getElementById('btnBoxPlot').disabled = true;
+			document.getElementById('btnMean').style.display = 'none';
+			if(meanActive){
+				$('.btn#btnMean').trigger("click");
+			}
 			myChart.destroy();
 			myChart = new Chart(ctx,{
 				type: 'line',
@@ -334,6 +347,10 @@ function generateChart(type){
 			document.getElementById('btnLineas').disabled = false;
 			document.getElementById('btnRadar').disabled = true;
 			document.getElementById('btnBoxPlot').disabled = false;
+			document.getElementById('btnMean').style.display = 'inline';
+			if(meanActive){
+				$('.btn#btnMean').trigger("click");
+			}
 			myChart.destroy();
 			myChart = new Chart(ctx,{
 				type: 'radar',
@@ -371,6 +388,9 @@ function updateChart(type, dataSet){
 					dataset.pointBorderColor = color + '1)';
 					dataset.fill = false;
 				});
+				if (meanActive) {
+					myChart.data.datasets.push(MeanDataSet);
+				}
 			}
 			break;
 		case 'boxplot':
@@ -391,6 +411,9 @@ function updateChart(type, dataSet){
 					dataset.pointBorderColor = color + '1)';
 					dataset.fill = true;
 				});
+				if (meanActive) {
+					myChart.data.datasets.push(MeanDataSet);
+				}
 			}
 			break;
 	}
@@ -415,45 +438,40 @@ function colorHEX(color){
 	return colorHash.hex(color);
 }
 
-//Oculta la leyenda del gráfico
-function hideLegend() {
-	myChart.options.legend.display = false;
-	myChart.update();
-	document.getElementById('btnLegend').value='Mostrar Leyenda';
-	document.getElementById('btnLegend').setAttribute('onClick', 'showLegend()');
-}
-
-//Muestra la leyenda del gráfico
-function showLegend() {
-	myChart.options.legend.display = true;
-	myChart.update();
-	document.getElementById('btnLegend').value = 'Ocultar Leyenda';
-	document.getElementById('btnLegend').setAttribute('onClick', 'hideLegend()');
-}
-
 //Funcion que almacena la media.
-function saveMean(mean){
-	meanDataSet = mean;
+function saveMean(mean) {
+	MeanDataSet = mean;
 }
 
-//Funcion que muestra la media en el gráfico
-function showMean() {
-	if('' != meanDataSet){
-		myChart.data.datasets.push(meanDataSet);
+//Funcion que muestra u oculta la media del gráfico
+$('.btn#btnMean').click(function(){
+	if('' != MeanDataSet && meanActive == false){
+		meanActive = true;
+		myChart.data.datasets.push(MeanDataSet);
 		myChart.update();
-		document.getElementById('btnMean').value='Ocultar Media';
-		document.getElementById('btnMean').setAttribute('onClick', 'hideMean()');
+		$('.btn#btnMean').attr('value','Ocultar Media');
+	} else if(meanActive == true){
+		meanActive = false;
+		myChart.data.datasets.pop();
+		myChart.update();
+		$('.btn#btnMean').attr('value','Mostrar Media');
 	}
-}
+});
 
-//Funcion que elimina la media del gráfico
-function hideMean() {
-	myChart.data.datasets.pop();
-	myChart.update();
-	document.getElementById('btnMean').value='Mostrar Media';
-	document.getElementById('btnMean').setAttribute('onClick', 'showMean()');
-}
-
+//Funcion que muestra u oculta la leyenda del gráfico
+$('.btn#btnLegend').click(function(){
+	if(legendActive = true){
+		legendActive = false;
+		myChart.options.legend.display = false;
+		myChart.update();
+		$('.btn#btnLegend').attr('value','Mostrar Leyenda');
+	} else {
+		legendActive = true;
+		myChart.options.legend.display = true;
+		myChart.update();
+		$('.btn#btnLegend').attr('value','Ocultar Leyenda');
+	}
+});
 
 </script>
 

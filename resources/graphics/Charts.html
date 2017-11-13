@@ -121,10 +121,9 @@
 	<canvas id="myChart"></canvas>
 </div>
 
-<div id="log">LOG:</div>
-
 <script>
 
+// Opciones para el gráfico de lineas y el boxplot
 var optionsLineChart = {
 	maintainAspectRatio: false,
 	responsive: true,
@@ -217,6 +216,7 @@ var optionsLineChart = {
     } //scales
 } //options
 	
+// Opciones para el radar
 var optionsRadarChart = {
 	maintainAspectRatio: false,
 	responsive: true,
@@ -280,7 +280,7 @@ var optionsRadarChart = {
 
 var colorHash = new ColorHash();
 var ctx = document.getElementById('myChart');
-var MeanDataSet = 'a';
+var MeanDataSet = '';
 var LineDataSet = '';
 var RadarDataSet = '';
 var BoxPlotDataSet = '';
@@ -295,7 +295,7 @@ var myChart = new Chart(ctx,{
 document.getElementById('btnLineas').disabled = true;
 
 
-
+// Funcion que genera y muestra el grafico segun el tipo que se le pase.
 function generateChart(type){
 
 	document.getElementById('chart-container').style.display = 'block';
@@ -371,6 +371,7 @@ function generateChart(type){
 	myChart.update();
 }
 
+// Funcion que recibe el tipo de grafico y su data set y lo actualiza
 function updateChart(type, dataSet){
 	document.getElementById('chart-container').style.display = 'block';
 	document.getElementById('inicio').style.display = 'none';

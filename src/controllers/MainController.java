@@ -110,16 +110,8 @@ public class MainController implements Initializable {
 	String filterType = "Todos";
 
 	@FXML // Gráfico de lineas
-	private WebView webViewLine;
-	private WebEngine webViewLineEngine;
-	
-	@FXML // Radar
-	private WebView webViewRadar;
-	private WebEngine webViewRadarEngine;
-	
-	@FXML // Tabla de calificaciones
-	private WebView webViewBoxPlot;
-	private WebEngine webViewBoxPlotEngine;
+	private WebView webViewCharts;
+	private WebEngine webViewChartsEngine;
 
 	@FXML // Tabla de calificaciones
 	private WebView webViewCalificaciones;
@@ -140,20 +132,10 @@ public class MainController implements Initializable {
 			stats = new Stats();
 			 
 			//Cargamos el html de los graficos y calificaciones
-			webViewLine.setContextMenuEnabled(false); // Desactiva el click derecho
-			webViewLineEngine = webViewLine.getEngine();
+			webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
+			webViewChartsEngine = webViewCharts.getEngine();
 			URL url = this.getClass().getResource("/graphics/Charts.html");
-			webViewLineEngine.load(url.toString());
-						
-			webViewRadar.setContextMenuEnabled(false); // Desactiva el click derecho
-			webViewRadarEngine = webViewRadar.getEngine();
-			url = this.getClass().getResource("/graphics/RadarGraphic.html");
-			webViewRadarEngine.load(url.toString());
-			
-			webViewBoxPlot.setContextMenuEnabled(false); // Desactiva el click derecho
-			webViewBoxPlotEngine = webViewBoxPlot.getEngine();
-			url = this.getClass().getResource("/graphics/BoxPlotGraphic.html");
-			webViewBoxPlotEngine.load(url.toString());
+			webViewChartsEngine.load(url.toString());
 			
 			webViewCalificacionesEngine = webViewCalificaciones.getEngine();
 			
@@ -659,7 +641,7 @@ public class MainController implements Initializable {
 	 * @throws Exception
 	 */
 	public void saveChart(ActionEvent actionEvent) throws Exception {
-		WritableImage image = webViewLine.snapshot(new SnapshotParameters(), null);
+		WritableImage image = webViewCharts.snapshot(new SnapshotParameters(), null);
 		
 		File file = new File("chart.png");
 
@@ -752,7 +734,7 @@ public class MainController implements Initializable {
 	 * Elimina los datos del gráfico y de la tabla de calificaciones
 	 */
 	public void clearData() {
-		webViewLineEngine.executeScript("clearChart()");
+		webViewChartsEngine.executeScript("clearChart()");
 		webViewCalificacionesEngine.loadContent("<html><head></head><body style='background-color:#f2f2f2'></body></html>");
 	}
 
@@ -794,7 +776,11 @@ public class MainController implements Initializable {
 	}  	
     
 	/**
-	 * Metodo que genera el grafico segun se añaden alumnos y calificaciones
+	 * 	
+	 * Metodo que genera el data set para los gráficos.
+	 * 
+	 * @return
+	 * 		El data set.
 	 */
     private String generateDataSet() {
     	// Lista de alumnos y calificaciones seleccionadas
@@ -907,6 +893,11 @@ public class MainController implements Initializable {
 		return "{ labels:[" + labels + "],datasets: ["+ dataSet + "]}";
     }
     
+    /**
+     * Funcion que genera el DataSet para el boxplot.
+     * @return
+     * 		BoxPlot DataSet.
+     */
     public String generateBoxPlotDataSet() {
 		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel()
 				.getSelectedItems();
@@ -1008,13 +999,16 @@ public class MainController implements Initializable {
 		"borderWidth: 3," + 
 		"fill: true}";
 		
-		webViewLineEngine.executeScript("saveMean(" + meanDataset + ")");
+		webViewChartsEngine.executeScript("saveMean(" + meanDataset + ")");
     }
     
+    /**
+     * Actualiza los gráficos ejecutando la función updateChart en el javascript.
+     */
     public void updateChart() {
     	generateMeanDataSet();
-		webViewLineEngine.executeScript("updateChart('line'," + generateDataSet() + ")");
-		webViewLineEngine.executeScript("updateChart('radar'," + generateDataSet() + ")");
-		webViewLineEngine.executeScript("updateChart('boxplot'," + generateBoxPlotDataSet() + ")");
+		webViewChartsEngine.executeScript("updateChart('line'," + generateDataSet() + ")");
+		webViewChartsEngine.executeScript("updateChart('radar'," + generateDataSet() + ")");
+		webViewChartsEngine.executeScript("updateChart('boxplot'," + generateBoxPlotDataSet() + ")");
     }
 }

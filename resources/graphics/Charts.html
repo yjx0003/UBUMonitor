@@ -107,7 +107,7 @@
 
 <div class="opciones">
 	<input type="button" value="Ocultar Leyenda" class="btn" id="btnLegend" onclick="hideLegend()"></input>
-	<input type="button" value="Mostrar Media" class="btn" id="btnMean"></input>
+	<input type="button" value="Mostrar Media" class="btn" id="btnMean" onclick="showMean()"></input>
 </div>
 </div>
 
@@ -309,7 +309,7 @@ function generateChart(type){
 			document.getElementById('btnBoxPlot').disabled = false;
 			document.getElementById('btnMean').style.display = 'inline';
 			if(meanActive){
-				$('.btn#btnMean').trigger("click");
+				showMean();
 			}
 			myChart.destroy();
 			myChart = new Chart(ctx,{
@@ -333,7 +333,7 @@ function generateChart(type){
 			document.getElementById('btnBoxPlot').disabled = true;
 			document.getElementById('btnMean').style.display = 'none';
 			if(meanActive){
-				$('.btn#btnMean').trigger("click");
+				showMean();
 			}
 			myChart.destroy();
 			myChart = new Chart(ctx,{
@@ -349,7 +349,7 @@ function generateChart(type){
 			document.getElementById('btnBoxPlot').disabled = false;
 			document.getElementById('btnMean').style.display = 'inline';
 			if(meanActive){
-				$('.btn#btnMean').trigger("click");
+				showMean();
 			}
 			myChart.destroy();
 			myChart = new Chart(ctx,{
@@ -445,19 +445,19 @@ function saveMean(mean) {
 }
 
 //Funcion que muestra u oculta la media del gráfico
-$('.btn#btnMean').click(function(){
+function showMean() {
 	if('' != MeanDataSet && meanActive == false){
 		meanActive = true;
 		myChart.data.datasets.push(MeanDataSet);
 		myChart.update();
-		$('.btn#btnMean').attr('value','Ocultar Media');
+		document.getElementById('btnMean').value = 'Ocultar Media';
 	} else if(meanActive == true){
 		meanActive = false;
 		myChart.data.datasets.pop();
 		myChart.update();
-		$('.btn#btnMean').attr('value','Mostrar Media');
+		document.getElementById('btnMean').value = 'Mostrar Media';
 	}
-});
+}
 
 //Funcion que muestra u oculta la leyenda del gráfico
 $('.btn#btnLegend').click(function(){

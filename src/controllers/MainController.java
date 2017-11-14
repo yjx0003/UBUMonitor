@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
@@ -12,6 +13,7 @@ import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,6 +132,7 @@ public class MainController implements Initializable {
 			
 			// Inicializamos las estadisticas para esta asignatura
 			stats = new Stats();
+			
 			 
 			//Cargamos el html de los graficos y calificaciones
 			webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
@@ -425,6 +428,7 @@ public class MainController implements Initializable {
 			e.printStackTrace();
 		}
 		listParticipants.setItems(enrList);
+		updateGroupData(filterGroup);
 	}
 
 	/**
@@ -731,10 +735,9 @@ public class MainController implements Initializable {
 	}
 	
 	/**
-	 * Elimina los datos del gráfico y de la tabla de calificaciones
+	 * Elimina los datos de la tabla de calificaciones
 	 */
 	public void clearData() {
-		webViewChartsEngine.executeScript("clearChart()");
 		webViewCalificacionesEngine.loadContent("<html><head></head><body style='background-color:#f2f2f2'></body></html>");
 	}
 
@@ -898,7 +901,14 @@ public class MainController implements Initializable {
      * @return
      * 		BoxPlot DataSet.
      */
-    public String generateBoxPlotDataSet() {
+    public String generateBoxPlotDataSet(String group) {
+    	HashMap<Integer, DescriptiveStatistics> BoxPlotStats;
+    	if(group.equals("Todos")) {
+    		BoxPlotStats = stats.getGeneralStats();
+    	}else {
+    		BoxPlotStats = stats.getGroupStats(group);
+    	}
+    	
 		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel()
 				.getSelectedItems();
 		
@@ -922,18 +932,18 @@ public class MainController implements Initializable {
 			
 			gradeId = structTree.getValue().getId();
 			if (firstGrade) {
-				maximos += stats.getMaxmimum(gradeId);
-				medianas += stats.getMedian(gradeId);
-				minimos += stats.getMinimum(gradeId);
-				primerQuartil += stats.getElementPercentile(gradeId, 25);
-				tercerQuartil += stats.getElementPercentile(gradeId, 75);
+				maximos += stats.getMaxmimum(BoxPlotStats,gradeId);
+				medianas += stats.getMedian(BoxPlotStats,gradeId);
+				minimos += stats.getMinimum(BoxPlotStats,gradeId);
+				primerQuartil += stats.getElementPercentile(BoxPlotStats,gradeId, 25);
+				tercerQuartil += stats.getElementPercentile(BoxPlotStats,gradeId, 75);
 				firstGrade = false;
 			} else {
-				maximos += "," + stats.getMaxmimum(gradeId);
-				medianas += "," + stats.getMedian(gradeId);
-				minimos += "," + stats.getMinimum(gradeId);
-				primerQuartil += "," + stats.getElementPercentile(gradeId, 25);
-				tercerQuartil += "," + stats.getElementPercentile(gradeId, 75);
+				maximos += "," + stats.getMaxmimum(BoxPlotStats,gradeId);
+				medianas += "," + stats.getMedian(BoxPlotStats,gradeId);
+				minimos += "," + stats.getMinimum(BoxPlotStats,gradeId);
+				primerQuartil += "," + stats.getElementPercentile(BoxPlotStats,gradeId, 25);
+				tercerQuartil += "," + stats.getElementPercentile(BoxPlotStats,gradeId, 75);
 			}
 		}
 		
@@ -977,19 +987,28 @@ public class MainController implements Initializable {
 				+ "datasets: ["+ maximos + "," + tercerQuartil + "," + medianas + "," + primerQuartil + 
 				"," + minimos + "]}";
     }
-    
+
     /**
-     * Función que genera el dataSet de la media y lo envia al gráfico.
+     * Función que genera el dataSet de la media de todos los alumnos.
+     * 
+     * @return
+     * 		Mean DataSet.
      */
-    private void generateMeanDataSet() {
+    private String generateMeanDataSet(String group) {
+    	HashMap<Integer, DescriptiveStatistics> meanStats;
+    	if(group.equals("Todos")) {
+    		meanStats = stats.getGeneralStats();
+    	}else {
+    		meanStats = stats.getGroupStats(group);
+    	}
 		String meanDataset = "{label:'Media',data:[";
 		Boolean firstElement = true;
 		for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 			if(firstElement) {
-				meanDataset += stats.getElementMean(structTree.getValue().getId());
+				meanDataset += stats.getElementMean(meanStats,structTree.getValue().getId());
 				firstElement = false;
 			} else {
-				meanDataset += "," + stats.getElementMean(structTree.getValue().getId());
+				meanDataset += "," + stats.getElementMean(meanStats,structTree.getValue().getId());
 			}
 		}
 		meanDataset += "]," +
@@ -999,16 +1018,33 @@ public class MainController implements Initializable {
 		"borderWidth: 3," + 
 		"fill: true}";
 		
-		webViewChartsEngine.executeScript("saveMean(" + meanDataset + ")");
+		return meanDataset;	
     }
     
     /**
-     * Actualiza los gráficos ejecutando la función updateChart en el javascript.
+     *  Actualiza la media y el box plot del grupo.
+     *  
+     * @param group
+     * 		El grupo seleccionado.
+     */
+    public void updateGroupData(String group) {
+    	//TODO enviar los datos de los grupos al html
+    	//webViewChartsEngine.executeScript("saveMean(" + generateMeanDataSet(group) + ")");
+		//webViewChartsEngine.executeScript("updateChart('boxplot'," + generateBoxPlotDataSet(group) + ")");
+    }
+        
+    /**
+     * Actualiza los gráficos.
      */
     public void updateChart() {
-    	generateMeanDataSet();
-		webViewChartsEngine.executeScript("updateChart('line'," + generateDataSet() + ")");
-		webViewChartsEngine.executeScript("updateChart('radar'," + generateDataSet() + ")");
-		webViewChartsEngine.executeScript("updateChart('boxplot'," + generateBoxPlotDataSet() + ")");
+    	String data = generateDataSet();
+    	
+    	updateGroupData(filterGroup);
+    	
+    	webViewChartsEngine.executeScript("saveMean(" + generateMeanDataSet("Todos") + ")");
+		webViewChartsEngine.executeScript("updateChart('boxplot'," + generateBoxPlotDataSet("Todos") + ")");
+		
+		webViewChartsEngine.executeScript("updateChart('line'," + data + ")");
+		webViewChartsEngine.executeScript("updateChart('radar'," + data + ")");	
     }
 }

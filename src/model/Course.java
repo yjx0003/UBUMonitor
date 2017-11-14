@@ -355,4 +355,27 @@ public class Course implements Serializable {
 
 		return course;
 	}
+	
+	/**
+	 * Devuleve los usuarios en un grupo.
+	 *  
+	 * @param groupname
+	 * 		El nombre del grupo.
+	 * @return
+	 * 		ArrayList con los usuarios de ese grupo.
+	 */
+	public ArrayList<EnrolledUser> getUsersInGroup(String groupname) {
+		ArrayList<EnrolledUser> groupUsers = new ArrayList<>();
+		
+		for(EnrolledUser user: enrolledUsers) {
+			for(Group group: user.getGroups()) {
+				if(group.getName().equals(groupname)) {
+					groupUsers.add(user);
+					break;
+				}
+			}
+		}
+		
+		return groupUsers;
+	}
 }

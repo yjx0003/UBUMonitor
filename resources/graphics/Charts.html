@@ -92,7 +92,6 @@
 		
 <script type="text/javascript" src="Chart.js"></script>
 <script type="text/javascript" src="color-hash.js"></script>
-<script type="text/javascript" src="jquery.js"></script>
 
 </head>
 
@@ -102,12 +101,14 @@
 <div class="pestañas">
 	<input type="button" value="Lineas" class="btn" id="btnLineas" onclick="generateChart('line')"></input>
 	<input type="button" value="Radar" class="btn" id="btnRadar" onclick="generateChart('radar')"></input>
-	<input type="button" value="BoxPlot" class="btn" id="btnBoxPlot" onclick="generateChart('boxplot')"></input>
+	<input type="button" value="BoxPlot General" class="btn" id="btnBoxPlot" onclick="generateChart('boxplot')"></input>
+	<input type="button" value="BoxPlot Del Grupo" class="btn" id="btnBoxPlotGroup" onclick="generateChart('boxplotgroup')"></input>
 </div>
 
 <div class="opciones">
 	<input type="button" value="Ocultar Leyenda" class="btn" id="btnLegend" onclick="hideLegend()"></input>
-	<input type="button" value="Mostrar Media" class="btn" id="btnMean" onclick="showMean()"></input>
+	<input type="button" value="Mostrar Media General" class="btn" id="btnMean" onclick="showGeneralMean()"></input>
+	<input type="button" value="Mostrar Media Del Grupo" class="btn" id="btnGroupMean" onclick="showGroupMean()"></input>
 </div>
 </div>
 
@@ -121,6 +122,7 @@
 	<canvas id="myChart"></canvas>
 </div>
 
+<div id="log">Log:</div>
 <script>
 
 // Opciones para el gráfico de lineas y el boxplot
@@ -277,21 +279,31 @@ var optionsRadarChart = {
     } //scales
 } //options
 
-
-var colorHash = new ColorHash();
-var ctx = document.getElementById('myChart');
-var MeanDataSet = '';
+// DataSets
+var GeneralMeanDataSet = '';
+var GroupMeanDataSet = '';
 var LineDataSet = '';
 var RadarDataSet = '';
-var BoxPlotDataSet = '';
-var meanActive = false;
+var BoxPlotGeneralDataSet = '';
+var BoxPlotGroupDataSet = '';
+
+//
+var GeneralMeanActive = false;
+var GroupMeanActive = false;
 var legendActive = true;
 var currentType = 'line';
+
+//
+var colorHash = new ColorHash();
+var ctx = document.getElementById('myChart');
+
 var myChart = new Chart(ctx,{
 	type: 'line',
 	data:LineDataSet,
 	options: optionsLineChart
 });
+
+// Al iniciar el boton del gráfico de lineas esta deshabilitado
 document.getElementById('btnLineas').disabled = true;
 
 
@@ -307,10 +319,11 @@ function generateChart(type){
 			document.getElementById('btnLineas').disabled = true;
 			document.getElementById('btnRadar').disabled = false;
 			document.getElementById('btnBoxPlot').disabled = false;
+			document.getElementById('btnBoxPlotGroup').disabled = false;
 			document.getElementById('btnMean').style.display = 'inline';
-			if(meanActive){
-				showMean();
-			}
+			document.getElementById('btnGroupMean').style.display = 'inline';
+			if(GeneralMeanActive){showGeneralMean();}
+			if(GroupMeanActive){showGroupMean();}
 			myChart.destroy();
 			myChart = new Chart(ctx,{
 				type: 'line',
@@ -331,14 +344,32 @@ function generateChart(type){
 			document.getElementById('btnLineas').disabled = false;
 			document.getElementById('btnRadar').disabled = false;
 			document.getElementById('btnBoxPlot').disabled = true;
+			document.getElementById('btnBoxPlotGroup').disabled = false;
 			document.getElementById('btnMean').style.display = 'none';
-			if(meanActive){
-				showMean();
-			}
+			document.getElementById('btnGroupMean').style.display = 'none';
+			if(GeneralMeanActive){showGeneralMean();}
+			if(GroupMeanActive){showGroupMean();}
 			myChart.destroy();
 			myChart = new Chart(ctx,{
 				type: 'line',
-				data: BoxPlotDataSet,
+				data: BoxPlotGeneralDataSet,
+				options: optionsLineChart
+			});
+			break;
+		case 'boxplotgroup':
+			currentType = 'boxplotgroup';
+			document.getElementById('btnLineas').disabled = false;
+			document.getElementById('btnRadar').disabled = false;
+			document.getElementById('btnBoxPlot').disabled = false;
+			document.getElementById('btnBoxPlotGroup').disabled = true;
+			document.getElementById('btnMean').style.display = 'none';
+			document.getElementById('btnGroupMean').style.display = 'none';
+			if(GeneralMeanActive){showGeneralMean();}
+			if(GroupMeanActive){showGroupMean();}
+			myChart.destroy();
+			myChart = new Chart(ctx,{
+				type: 'line',
+				data: BoxPlotGroupDataSet,
 				options: optionsLineChart
 			});
 			break;
@@ -347,10 +378,11 @@ function generateChart(type){
 			document.getElementById('btnLineas').disabled = false;
 			document.getElementById('btnRadar').disabled = true;
 			document.getElementById('btnBoxPlot').disabled = false;
+			document.getElementById('btnBoxPlotGroup').disabled = false;
 			document.getElementById('btnMean').style.display = 'inline';
-			if(meanActive){
-				showMean();
-			}
+			document.getElementById('btnGroupMean').style.display = 'inline';
+			if(GeneralMeanActive){showGeneralMean();}
+			if(GroupMeanActive){showGroupMean();}
 			myChart.destroy();
 			myChart = new Chart(ctx,{
 				type: 'radar',
@@ -389,15 +421,20 @@ function updateChart(type, dataSet){
 					dataset.pointBorderColor = color + '1)';
 					dataset.fill = false;
 				});
-				if (meanActive) {
-					myChart.data.datasets.push(MeanDataSet);
-				}
+				if (GeneralMeanActive) {myChart.data.datasets.push(GeneralMeanDataSet);}
+				if (GroupMeanActive) {myChart.data.datasets.push(GroupMeanDataSet);}
 			}
 			break;
 		case 'boxplot':
-			BoxPlotDataSet = dataSet;
+			BoxPlotGeneralDataSet = dataSet;
 			if(currentType == 'boxplot'){
-				myChart.data = BoxPlotDataSet;	
+				myChart.data = BoxPlotGeneralDataSet;	
+			}
+			break;
+		case 'boxplotgroup':
+			BoxPlotGroupDataSet = dataSet;
+			if(currentType == 'boxplotgroup'){
+				myChart.data = BoxPlotGroupDataSet;	
 			}
 			break;
 		case 'radar':
@@ -412,13 +449,78 @@ function updateChart(type, dataSet){
 					dataset.pointBorderColor = color + '1)';
 					dataset.fill = true;
 				});
-				if (meanActive) {
-					myChart.data.datasets.push(MeanDataSet);
-				}
+				if (GeneralMeanActive) {myChart.data.datasets.push(GeneralMeanDataSet);}
+				if (GroupMeanActive) {myChart.data.datasets.push(GroupMeanDataSet);}
 			}
 			break;
 	}
 	myChart.update();
+}
+
+//Funcion que almacena la media general.
+function saveMean(mean) {
+	GeneralMeanDataSet = mean;
+}
+
+//Funcion que almacena la media del grupo.
+function saveGroupMean(mean){
+	GroupMeanDataSet = mean;
+}
+
+//Funcion que muestra u oculta la media general del gráfico
+function showGeneralMean() {
+	if('' != GeneralMeanDataSet && GeneralMeanActive == false){
+		GeneralMeanActive = true;
+		myChart.data.datasets.push(GeneralMeanDataSet);
+		myChart.update();
+		document.getElementById('btnMean').value = 'Ocultar Media General';
+	} else if(GeneralMeanActive == true){
+		GeneralMeanActive = false;
+		removeDataSet('Media general');
+		document.getElementById('btnMean').value = 'Mostrar Media General';
+	}
+}
+
+//Funcion que muestra u oculta la media del grupo del gráfico
+function showGroupMean() {
+	if('' != GroupMeanDataSet && GroupMeanActive == false){
+		GroupMeanActive = true;
+		myChart.data.datasets.push(GroupMeanDataSet);
+		myChart.update();
+		document.getElementById('btnGroupMean').value = 'Ocultar Media Del Grupo';
+	} else if(GroupMeanActive == true){
+		GroupMeanActive = false;
+		removeDataSet('Media del grupo');
+		document.getElementById('btnGroupMean').value = 'Mostrar Media Del Grupo';
+	}
+}
+
+//Elimina el DataSet del gráfico que conincida con la label pasada
+function removeDataSet(DataSetLabel) {
+	var arrayLength = myChart.data.datasets.length;
+	
+	for(var i = 0; i < arrayLength; i++) {
+		if(myChart.data.datasets[i].label == DataSetLabel){
+			myChart.data.datasets.splice(i,1);
+			myChart.update();
+			i = arrayLength;
+		}
+	}
+}
+
+//Funcion que muestra u oculta la leyenda del gráfico
+function hideLegend(){
+	if(legendActive == true){
+		legendActive = false;
+		myChart.options.legend.display = false;
+		myChart.update();
+		document.getElementById('btnLegend').value = 'Mostrar Leyenda';
+	} else {
+		legendActive = true;
+		myChart.options.legend.display = true;
+		myChart.update();
+		document.getElementById('btnLegend').value = 'Ocultar Leyenda';
+	}
 }
 
 //Funcion que devuelve un color en formato 'rgba(r,g,b', a falta de la transpaerncia
@@ -438,41 +540,6 @@ function colorRGB(color){
 function colorHEX(color){
 	return colorHash.hex(color);
 }
-
-//Funcion que almacena la media.
-function saveMean(mean) {
-	MeanDataSet = mean;
-}
-
-//Funcion que muestra u oculta la media del gráfico
-function showMean() {
-	if('' != MeanDataSet && meanActive == false){
-		meanActive = true;
-		myChart.data.datasets.push(MeanDataSet);
-		myChart.update();
-		document.getElementById('btnMean').value = 'Ocultar Media';
-	} else if(meanActive == true){
-		meanActive = false;
-		myChart.data.datasets.pop();
-		myChart.update();
-		document.getElementById('btnMean').value = 'Mostrar Media';
-	}
-}
-
-//Funcion que muestra u oculta la leyenda del gráfico
-$('.btn#btnLegend').click(function(){
-	if(legendActive = true){
-		legendActive = false;
-		myChart.options.legend.display = false;
-		myChart.update();
-		$('.btn#btnLegend').attr('value','Mostrar Leyenda');
-	} else {
-		legendActive = true;
-		myChart.options.legend.display = true;
-		myChart.update();
-		$('.btn#btnLegend').attr('value','Ocultar Leyenda');
-	}
-});
 
 </script>
 

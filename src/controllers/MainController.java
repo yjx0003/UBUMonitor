@@ -428,7 +428,8 @@ public class MainController implements Initializable {
 			e.printStackTrace();
 		}
 		listParticipants.setItems(enrList);
-		updateGroupData(filterGroup);
+		//Actualizamos los gráficos al cambiar el grupo
+		updateChart();
 	}
 
 	/**
@@ -996,13 +997,21 @@ public class MainController implements Initializable {
      */
     private String generateMeanDataSet(String group) {
     	HashMap<Integer, DescriptiveStatistics> meanStats;
+    	Boolean firstElement = true;
+    	String meanDataset;
+    	String color;
+    	
     	if(group.equals("Todos")) {
     		meanStats = stats.getGeneralStats();
+    		meanDataset = "{label:'Media general',data:[";
+    		color = "rgba(73, 87, 98, ";
     	}else {
     		meanStats = stats.getGroupStats(group);
+    		meanDataset = "{label:'Media del grupo',data:[";
+    		color = "rgba(73, 87, 98, ";
     	}
-		String meanDataset = "{label:'Media',data:[";
-		Boolean firstElement = true;
+    	
+		
 		for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 			if(firstElement) {
 				meanDataset += stats.getElementMean(meanStats,structTree.getValue().getId());
@@ -1011,10 +1020,11 @@ public class MainController implements Initializable {
 				meanDataset += "," + stats.getElementMean(meanStats,structTree.getValue().getId());
 			}
 		}
+		
 		meanDataset += "]," +
-		"backgroundColor: 'rgba(73, 87, 98, 0.3)'," + 
-		"borderColor: 'rgba(26, 65, 96, 1)'," + 
-		"pointBackgroundColor: 'rgba(26, 65, 96, 1)'," +
+		"backgroundColor:'" + color + "0.3)'," + 
+		"borderColor:'" + color + "1)'," + 
+		"pointBackgroundColor:'" + color + "1)'," +
 		"borderWidth: 3," + 
 		"fill: true}";
 		
@@ -1028,9 +1038,13 @@ public class MainController implements Initializable {
      * 		El grupo seleccionado.
      */
     public void updateGroupData(String group) {
-    	//TODO enviar los datos de los grupos al html
-    	//webViewChartsEngine.executeScript("saveMean(" + generateMeanDataSet(group) + ")");
-		//webViewChartsEngine.executeScript("updateChart('boxplot'," + generateBoxPlotDataSet(group) + ")");
+    	if(group.equals("Todos")) {
+    		webViewChartsEngine.executeScript("saveGroupMean('')");
+    		webViewChartsEngine.executeScript("updateChart('boxplotgroup' , '')");
+    	} else {
+        	webViewChartsEngine.executeScript("saveGroupMean(" + generateMeanDataSet(group) + ")");
+    		webViewChartsEngine.executeScript("updateChart('boxplotgroup'," + generateBoxPlotDataSet(group) + ")");
+    	}
     }
         
     /**

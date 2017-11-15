@@ -4,7 +4,10 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import controllers.MainController;
 import controllers.UBUGrades;
 
 /**
@@ -16,6 +19,8 @@ import controllers.UBUGrades;
  *
  */
 public class Stats {
+	
+	static final Logger logger = LoggerFactory.getLogger(MainController.class);
 	
 	/**
 	 * HashMap que almacena como clave el id del GradeReporLine(GRL)
@@ -109,7 +114,7 @@ public class Stats {
 	 * 		La nota a añadir.
 	 */
 	public void addElementValue (HashMap<Integer,DescriptiveStatistics> statsHs, int gradeId, double value) {
-		DescriptiveStatistics stats = generalGradesStats.get(gradeId);
+		DescriptiveStatistics stats = statsHs.get(gradeId);
 		stats.addValue(value);
 		statsHs.put(gradeId, stats);
 	}
@@ -127,7 +132,7 @@ public class Stats {
 		// sin problemas en el gráfico
 		DecimalFormat df = new DecimalFormat("#.##");
 		DescriptiveStatistics stats = statsHs.get(gradeId);
-		String mean = df.format(stats.getMean());
+		String mean  = String.valueOf(stats.getMean()).equals("NaN") ? "NaN" : df.format(stats.getMean());
 		mean = mean.replace(",", ".");
 		return mean;
 	}
@@ -145,7 +150,7 @@ public class Stats {
 		// sin problemas en el gráfico
 		DecimalFormat df = new DecimalFormat("#.##");
 		DescriptiveStatistics stats = statsHs.get(gradeId);
-		String median = df.format(stats.getPercentile(50));
+		String median  = String.valueOf(stats.getPercentile(50)).equals("NaN") ? "NaN" : df.format(stats.getPercentile(50));
 		median = median.replace(",", ".");
 		return median;
 	}
@@ -165,7 +170,7 @@ public class Stats {
 		// sin problemas en el gráfico
 		DecimalFormat df = new DecimalFormat("#.##");
 		DescriptiveStatistics stats = statsHs.get(gradeId);
-		String percentile = df.format(stats.getPercentile(percentil));
+		String percentile  = String.valueOf(stats.getPercentile(percentil)).equals("NaN") ? "NaN" : df.format(stats.getPercentile(percentil));
 		percentile = percentile.replace(",", ".");
 		return percentile;
 	}
@@ -183,7 +188,7 @@ public class Stats {
 		// sin problemas en el gráfico
 		DecimalFormat df = new DecimalFormat("#.##");
 		DescriptiveStatistics stats = statsHs.get(gradeId);
-		String maximum = df.format(stats.getMax());
+		String maximum  = String.valueOf(stats.getMax()).equals("NaN") ? "NaN" : df.format(stats.getMax());
 		maximum = maximum.replace(",", ".");
 		return maximum;
 	}
@@ -201,7 +206,7 @@ public class Stats {
 		// sin problemas en el gráfico
 		DecimalFormat df = new DecimalFormat("#.##");
 		DescriptiveStatistics stats = statsHs.get(gradeId);
-		String minimum = df.format(stats.getMin());
+		String minimum  = String.valueOf(stats.getMin()).equals("NaN") ? "NaN" : df.format(stats.getMin());
 		minimum = minimum.replace(",", ".");
 		return minimum;
 	}

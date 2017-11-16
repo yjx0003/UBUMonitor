@@ -779,6 +779,57 @@ public class MainController implements Initializable {
 			UBUGrades.stage.close();
 	}  	
     
+	
+	private String generateTableData() {
+    	// Lista de alumnos y calificaciones seleccionadas
+		ObservableList<EnrolledUser> selectedParticipants = listParticipants.getSelectionModel()
+				.getSelectedItems();
+		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel()
+				.getSelectedItems();
+		
+		String tableData = "[['Nombre'";
+		Boolean firstElement = true;
+		
+		// Por cada ítem seleccionado lo añadimos como label
+		for (TreeItem<GradeReportLine> structTree : selectedGRL) {
+				tableData += ",'" + structTree.getValue().getName() + "'";
+		}
+		
+		tableData += "],";
+		
+		// Por cada usuario seleccionado
+		for (EnrolledUser actualUser : selectedParticipants) {
+			
+			// Añadimos el nombre del alumno al dataset
+			if(firstElement) {
+				firstElement = false;
+				tableData += "['" + actualUser.getFullName() + "'";
+			}else {
+				tableData += ",['" + actualUser.getFullName() + "'";
+			}
+			
+			
+			// Por cada ítem seleccionado
+			for (TreeItem<GradeReportLine> structTree : selectedGRL) {
+				
+				GradeReportLine actualLine = actualUser.getGradeReportLine(structTree.getValue().getId());
+				String calculatedGrade = actualLine.getGrade();
+					
+				// Si es numérico lo graficamos y lo mostramos en la tabla
+				if (!Float.isNaN(CourseWS.getFloat(calculatedGrade))) {
+					Double grade = Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
+					// Añadimos la nota al gráfico
+					tableData += ",{v:" + grade + ", f:'" + grade + "/" + actualLine.getRangeMax() + "'}";
+				} else { 
+					tableData += ",{v:0, f:'NaN'}";
+				}
+			}
+			tableData += "]";
+		}
+		tableData += "]";
+		return tableData;
+	}
+	
 	/**
 	 * 	
 	 * Metodo que genera el data set para los gráficos.
@@ -902,7 +953,7 @@ public class MainController implements Initializable {
      * @return
      * 		BoxPlot DataSet.
      */
-    public String generateBoxPlotDataSet(String group) {
+    private String generateBoxPlotDataSet(String group) {
     	HashMap<Integer, DescriptiveStatistics> BoxPlotStats;
     	if(group.equals("Todos")) {
     		BoxPlotStats = stats.getGeneralStats();
@@ -1037,10 +1088,10 @@ public class MainController implements Initializable {
      * @param group
      * 		El grupo seleccionado.
      */
-    public void updateGroupData(String group) {
+    private void updateGroupData(String group) {
     	if(group.equals("Todos")) {
     		webViewChartsEngine.executeScript("saveGroupMean('')");
-    		webViewChartsEngine.executeScript("updateChart('boxplotgroup' , '')");
+    		//webViewChartsEngine.executeScript("updateChart('boxplotgroup' , '')");
     	} else {
         	webViewChartsEngine.executeScript("saveGroupMean(" + generateMeanDataSet(group) + ")");
     		webViewChartsEngine.executeScript("updateChart('boxplotgroup'," + generateBoxPlotDataSet(group) + ")");
@@ -1050,14 +1101,16 @@ public class MainController implements Initializable {
     /**
      * Actualiza los gráficos.
      */
-    public void updateChart() {
+    private void updateChart() {
     	String data = generateDataSet();
     	
     	updateGroupData(filterGroup);
     	
+    	webViewChartsEngine.executeScript("saveTableData(" + generateTableData() + ")");
+    	
     	webViewChartsEngine.executeScript("saveMean(" + generateMeanDataSet("Todos") + ")");
-		webViewChartsEngine.executeScript("updateChart('boxplot'," + generateBoxPlotDataSet("Todos") + ")");
 		
+    	webViewChartsEngine.executeScript("updateChart('boxplot'," + generateBoxPlotDataSet("Todos") + ")");
 		webViewChartsEngine.executeScript("updateChart('line'," + data + ")");
 		webViewChartsEngine.executeScript("updateChart('radar'," + data + ")");	
     }

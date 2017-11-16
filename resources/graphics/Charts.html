@@ -2,13 +2,21 @@
 <html>
 <head>
 
-<style>
+<style type="text/css">
 	body
 	{
 		background: #f2f2f2;
 		padding: 0px;
+		margin: 0px;
 	}
-
+	
+	.table_div
+	{
+		padding-left: 10px;
+		padding-right: 10px;
+		width: 98%;
+	}
+		
 	.chart-container
 	{
 		position: relative;
@@ -36,62 +44,67 @@
 	
 	.controles{
 		position: relative;
-		top: 0px;
-		width: 100%;
-		height: 30px;
+		padding-top: 5px;
+		padding-left: 5px;
+		width: 99%;
 	}
 	
 	.opciones {
-		width: 50%;
 		display: inline;
+		padding-left: 5px;
 	}
 		
 	.opciones .btn {
 		background-color: #066db3;
 		border: none;
 		color: white;
-		font-size: 13px;
+		font-size: 12px;
 		font-weight: bold;
 		border-radius: 4px;
 		cursor: pointer;
 		padding-top: 5px;
 		padding-bottom: 5px;
-		margin-left: 10px;
 	}
 	
 	.opciones .btn:hover {
 		background-color: #0790ed;
 	}
-	
-	.pestañas {
-		width: 50%;
-		display: inline;
-	}
-	
+		
 	.pestañas {
 		position: relative;
-		top: 0px;
-		width: 50%;
-		height: 30px;
+		display: inline;
 	}
 	
 	.pestañas .btn {
 		background-color: #066db3;
 		border: none;
 		color: white;
-		font-size: 13px;
+		font-size: 12px;
 		font-weight: bold;
 		border-radius: 4px 4px 0 0;
 		cursor: pointer;
 		padding-top: 5px;
 		padding-bottom: 5px;
-		margin-left: 10px;
+		margin-left: -2px;
 	}
+
+	.pestañas .btn:hover {
+		 background-color:  #0790ed;
+		 font-size: 15px;
+	}
+
+	input[type="button"][disabled]{
+		font-size: 15px;
+	}
+
 	
 </style>
 		
 <script type="text/javascript" src="Chart.js"></script>
 <script type="text/javascript" src="color-hash.js"></script>
+<script type="text/javascript" src="googleCharts.js"></script>
+<script type="text/javascript" src="jquery-3.2.1.js"></script>
+
 
 </head>
 
@@ -103,6 +116,7 @@
 	<input type="button" value="Radar" class="btn" id="btnRadar" onclick="generateChart('radar')"></input>
 	<input type="button" value="BoxPlot General" class="btn" id="btnBoxPlot" onclick="generateChart('boxplot')"></input>
 	<input type="button" value="BoxPlot Del Grupo" class="btn" id="btnBoxPlotGroup" onclick="generateChart('boxplotgroup')"></input>
+	<input type="button" value="Calificaciones" class="btn" id="btnCalificaciones" onclick="drawTable()"></input>
 </div>
 
 <div class="opciones">
@@ -122,8 +136,11 @@
 	<canvas id="myChart"></canvas>
 </div>
 
-<div id="log">Log:</div>
+<div id="table_div" class="table_div"></div>
+
 <script>
+
+//------------------------------------------Opciones para los graficos------------------------------------------------------------------
 
 // Opciones para el gráfico de lineas y el boxplot
 var optionsLineChart = {
@@ -279,6 +296,8 @@ var optionsRadarChart = {
     } //scales
 } //options
 
+//------------------------------------------Variables globales-------------------------------------------------------------
+
 // DataSets
 var GeneralMeanDataSet = '';
 var GroupMeanDataSet = '';
@@ -286,6 +305,7 @@ var LineDataSet = '';
 var RadarDataSet = '';
 var BoxPlotGeneralDataSet = '';
 var BoxPlotGroupDataSet = '';
+var TableDataSet = '';
 
 //
 var GeneralMeanActive = false;
@@ -303,15 +323,45 @@ var myChart = new Chart(ctx,{
 	options: optionsLineChart
 });
 
+// Cargamos la librearia de google para la tabla de calificaciones
+google.charts.load('current', {'packages':['table']});
+
 // Al iniciar el boton del gráfico de lineas esta deshabilitado
 document.getElementById('btnLineas').disabled = true;
+//Al iniciar el div de la tabla de calificaciones esta oculto
+document.getElementById('table_div').style.display = 'none';
 
+
+//------------------------------------------Funciones------------------------------------------------------------------
+
+// Funcion que crea la tabla de calificaciones
+function drawTable() {
+	currentType = 'table';
+	if(GeneralMeanActive){showGeneralMean();}
+	if(GroupMeanActive){showGroupMean();}
+	document.getElementById('btnLineas').disabled = false;
+	document.getElementById('btnRadar').disabled = false;
+	document.getElementById('btnBoxPlot').disabled = false;
+	document.getElementById('btnBoxPlotGroup').disabled = false;
+	document.getElementById('btnCalificaciones').disabled = true;
+	document.getElementById('chart-container').style.display = 'none';
+	document.getElementById('table_div').style.display = 'block';
+	document.getElementById('btnMean').style.display = 'none';
+	document.getElementById('btnGroupMean').style.display = 'none';
+	document.getElementById('btnLegend').style.display = 'none';
+	
+	var data = google.visualization.arrayToDataTable(TableDataSet, false); // 'false' indica que la primera fila son labels, no datos.
+    var table = new google.visualization.Table(document.getElementById('table_div'));
+    table.draw(data, {showRowNumber: false, allowHTML: true, width: '100%'});
+ }
 
 // Funcion que genera y muestra el grafico segun el tipo que se le pase.
 function generateChart(type){
 
+	document.getElementById('table_div').style.display = 'none';
 	document.getElementById('chart-container').style.display = 'block';
 	document.getElementById('inicio').style.display = 'none';
+	document.getElementById('btnLegend').style.display = 'inline';
 	
 	switch (type) {
 		case 'line':
@@ -320,6 +370,7 @@ function generateChart(type){
 			document.getElementById('btnRadar').disabled = false;
 			document.getElementById('btnBoxPlot').disabled = false;
 			document.getElementById('btnBoxPlotGroup').disabled = false;
+			document.getElementById('btnCalificaciones').disabled = false;
 			document.getElementById('btnMean').style.display = 'inline';
 			document.getElementById('btnGroupMean').style.display = 'inline';
 			if(GeneralMeanActive){showGeneralMean();}
@@ -345,6 +396,7 @@ function generateChart(type){
 			document.getElementById('btnRadar').disabled = false;
 			document.getElementById('btnBoxPlot').disabled = true;
 			document.getElementById('btnBoxPlotGroup').disabled = false;
+			document.getElementById('btnCalificaciones').disabled = false;
 			document.getElementById('btnMean').style.display = 'none';
 			document.getElementById('btnGroupMean').style.display = 'none';
 			if(GeneralMeanActive){showGeneralMean();}
@@ -362,6 +414,7 @@ function generateChart(type){
 			document.getElementById('btnRadar').disabled = false;
 			document.getElementById('btnBoxPlot').disabled = false;
 			document.getElementById('btnBoxPlotGroup').disabled = true;
+			document.getElementById('btnCalificaciones').disabled = false;
 			document.getElementById('btnMean').style.display = 'none';
 			document.getElementById('btnGroupMean').style.display = 'none';
 			if(GeneralMeanActive){showGeneralMean();}
@@ -379,6 +432,7 @@ function generateChart(type){
 			document.getElementById('btnRadar').disabled = true;
 			document.getElementById('btnBoxPlot').disabled = false;
 			document.getElementById('btnBoxPlotGroup').disabled = false;
+			document.getElementById('btnCalificaciones').disabled = false;
 			document.getElementById('btnMean').style.display = 'inline';
 			document.getElementById('btnGroupMean').style.display = 'inline';
 			if(GeneralMeanActive){showGeneralMean();}
@@ -405,56 +459,57 @@ function generateChart(type){
 
 // Funcion que recibe el tipo de grafico y su data set y lo actualiza
 function updateChart(type, dataSet){
-	document.getElementById('chart-container').style.display = 'block';
-	document.getElementById('inicio').style.display = 'none';
-	
-	switch (type) {
-		case 'line':
-			LineDataSet = dataSet;
-			if(currentType == 'line'){				
-				myChart.data = LineDataSet;
-				myChart.data.datasets.forEach((dataset) => {
-					color = colorRGB(dataset.label);
-					dataset.backgroundColor = color + '1)';
-					dataset.borderColor = color + '1)';
-					dataset.pointBackgroundColor = color + '1)';
-					dataset.pointBorderColor = color + '1)';
-					dataset.fill = false;
-				});
-				if (GeneralMeanActive) {myChart.data.datasets.push(GeneralMeanDataSet);}
-				if (GroupMeanActive) {myChart.data.datasets.push(GroupMeanDataSet);}
-			}
-			break;
-		case 'boxplot':
-			BoxPlotGeneralDataSet = dataSet;
-			if(currentType == 'boxplot'){
-				myChart.data = BoxPlotGeneralDataSet;	
-			}
-			break;
-		case 'boxplotgroup':
-			BoxPlotGroupDataSet = dataSet;
-			if(currentType == 'boxplotgroup'){
-				myChart.data = BoxPlotGroupDataSet;	
-			}
-			break;
-		case 'radar':
-			RadarDataSet = dataSet;
-			if(currentType == 'radar'){
-				myChart.data = RadarDataSet;
-				myChart.data.datasets.forEach((dataset) => {
-					color = colorRGB(dataset.label);
-					dataset.backgroundColor = color + '0.3)';
-					dataset.borderColor = color + '1)';
-					dataset.pointBackgroundColor = color + '1)';
-					dataset.pointBorderColor = color + '1)';
-					dataset.fill = true;
-				});
-				if (GeneralMeanActive) {myChart.data.datasets.push(GeneralMeanDataSet);}
-				if (GroupMeanActive) {myChart.data.datasets.push(GroupMeanDataSet);}
-			}
-			break;
+	if(currentType != 'table') {
+		switch (type) {
+			case 'line':
+				LineDataSet = dataSet;
+				if(currentType == 'line'){				
+					myChart.data = LineDataSet;
+					myChart.data.datasets.forEach((dataset) => {
+						color = colorRGB(dataset.label);
+						dataset.backgroundColor = color + '1)';
+						dataset.borderColor = color + '1)';
+						dataset.pointBackgroundColor = color + '1)';
+						dataset.pointBorderColor = color + '1)';
+						dataset.fill = false;
+					});
+					if (GeneralMeanActive) {myChart.data.datasets.push(GeneralMeanDataSet);}
+					if (GroupMeanActive) {myChart.data.datasets.push(GroupMeanDataSet);}
+				}
+				break;
+			case 'boxplot':
+				BoxPlotGeneralDataSet = dataSet;
+				if(currentType == 'boxplot'){
+					myChart.data = BoxPlotGeneralDataSet;	
+				}
+				break;
+			case 'boxplotgroup':
+				BoxPlotGroupDataSet = dataSet;
+				if(currentType == 'boxplotgroup'){
+					myChart.data = BoxPlotGroupDataSet;	
+				}
+				break;
+			case 'radar':
+				RadarDataSet = dataSet;
+				if(currentType == 'radar'){
+					myChart.data = RadarDataSet;
+					myChart.data.datasets.forEach((dataset) => {
+						color = colorRGB(dataset.label);
+						dataset.backgroundColor = color + '0.3)';
+						dataset.borderColor = color + '1)';
+						dataset.pointBackgroundColor = color + '1)';
+						dataset.pointBorderColor = color + '1)';
+						dataset.fill = true;
+					});
+					if (GeneralMeanActive) {myChart.data.datasets.push(GeneralMeanDataSet);}
+					if (GroupMeanActive) {myChart.data.datasets.push(GroupMeanDataSet);}
+				}
+				break;
+		}
+		myChart.update();
+		document.getElementById('chart-container').style.display = 'block';
+		document.getElementById('inicio').style.display = 'none';
 	}
-	myChart.update();
 }
 
 //Funcion que almacena la media general.
@@ -466,6 +521,15 @@ function saveMean(mean) {
 function saveGroupMean(mean){
 	GroupMeanDataSet = mean;
 }
+
+//Funcion que almacena la media del grupo.
+function saveTableData(dataSet){
+	TableDataSet = dataSet;
+	if(currentType == 'table'){
+		drawTable();
+	}
+}
+
 
 //Funcion que muestra u oculta la media general del gráfico
 function showGeneralMean() {

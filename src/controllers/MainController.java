@@ -808,7 +808,6 @@ public class MainController implements Initializable {
 				tableData += ",['" + actualUser.getFullName() + "'";
 			}
 			
-			
 			// Por cada ítem seleccionado
 			for (TreeItem<GradeReportLine> structTree : selectedGRL) {
 				
@@ -826,6 +825,31 @@ public class MainController implements Initializable {
 			}
 			tableData += "]";
 		}
+		
+		// Añadimos la media general
+		tableData += ",['Media'";
+		for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
+			String grade = stats.getElementMean(stats.getGeneralStats(),structTree.getValue().getId());
+			
+			tableData += ",{v:" + grade + ", f:'" + grade + "/" + structTree.getValue().getRangeMax() + "'}";
+		}
+		tableData += "]";
+		
+		// Añadimos la media de los grupos
+
+		for(MenuItem grupo:slcGroup.getItems()) {
+			if(!grupo.getText().equals("Todos")) {
+				tableData += ",['Media grupo " + grupo.getText() + "'";
+				for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
+					String grade = stats.getElementMean(stats.getGroupStats(grupo.getText()),structTree.getValue().getId());
+					tableData += ",{v:" + grade + ", f:'" + grade + "/" + structTree.getValue().getRangeMax() + "'}";
+				}
+				tableData += "]";
+			}
+		}
+
+		
+		
 		tableData += "]";
 		return tableData;
 	}

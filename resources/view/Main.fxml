@@ -105,20 +105,7 @@
    <center>
       <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <center>
-            <TabPane prefHeight="200.0" prefWidth="200.0" side="BOTTOM" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-              <tabs>
-                <Tab text="Gráficos">
-                     <content>
-                        <WebView fx:id="webViewCharts" minHeight="200.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" />
-                     </content>
-                </Tab>
-                <Tab text="Calificaciones">
-                     <content>
-                        <WebView fx:id="webViewCalificaciones" prefHeight="200.0" prefWidth="200.0" />
-                     </content>
-                </Tab>
-              </tabs>
-            </TabPane>
+            <WebView fx:id="webViewCharts" minHeight="200.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
          </center>
       </BorderPane>
    </center>

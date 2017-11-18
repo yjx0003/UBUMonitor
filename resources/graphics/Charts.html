@@ -1,11 +1,10 @@
-
 <html>
 <head>
 
 <style type="text/css">
 	body
 	{
-		background: #f2f2f2;
+		background: #ffffff;
 		padding: 0px;
 		margin: 0px;
 	}
@@ -14,6 +13,7 @@
 	{
 		padding-left: 10px;
 		padding-right: 10px;
+		padding-top: 10px;
 		width: 98%;
 	}
 		
@@ -44,67 +44,69 @@
 	
 	.controles{
 		position: relative;
-		padding-top: 5px;
-		padding-left: 5px;
-		width: 99%;
+		width: 100%;
+		background-color: #f2f2f2;
+		display: inline-block;
 	}
 	
 	.opciones {
-		display: inline;
-		padding-left: 5px;
+		height: 30px;
+		position: relative;
+		display: inline-block;
 	}
 		
 	.opciones .btn {
-		background-color: #066db3;
+		height: 100%;
+		background-color: transparent;
 		border: none;
-		color: white;
+		box-shadow: inset 0 -3px 0px 0px #25c5d8;
+		color: #000000;
 		font-size: 12px;
 		font-weight: bold;
-		border-radius: 4px;
 		cursor: pointer;
-		padding-top: 5px;
-		padding-bottom: 5px;
+		padding-left: 22px;
+		background-image: url(./../img/visibility_off.png);
+		background-repeat: no-repeat;
+		background-position: center left 2px;
+		margin-right: 2px;
 	}
 	
 	.opciones .btn:hover {
-		background-color: #0790ed;
+		box-shadow: inset 0 -4px 0px 0px #25c5d8;
 	}
 		
 	.pestañas {
+		height: 30px;
 		position: relative;
-		display: inline;
+		display: inline-block;
+		padding-right: 2px;
 	}
 	
 	.pestañas .btn {
-		background-color: #066db3;
+		height: 100%;
+		background-color: #f2f2f2;
 		border: none;
-		color: white;
+		color: #000000;
 		font-size: 12px;
 		font-weight: bold;
-		border-radius: 4px 4px 0 0;
 		cursor: pointer;
-		padding-top: 5px;
-		padding-bottom: 5px;
-		margin-left: -2px;
 	}
 
 	.pestañas .btn:hover {
-		 background-color:  #0790ed;
-		 font-size: 15px;
+		background-color:  #f2f2f2;
+		box-shadow: inset 0 -3px 0px 0px #25c5d8;
 	}
 
-	input[type="button"][disabled]{
-		font-size: 15px;
+	input[type="button"][disabled] {
+		background-color:  #f2f2f2;
+		box-shadow: inset 0 -3px 0px 0px #25c5d8;
 	}
-
 	
 </style>
 		
 <script type="text/javascript" src="Chart.js"></script>
 <script type="text/javascript" src="color-hash.js"></script>
 <script type="text/javascript" src="googleCharts.js"></script>
-<script type="text/javascript" src="jquery-3.2.1.js"></script>
-
 
 </head>
 
@@ -112,22 +114,23 @@
 
 <div class="controles">
 <div class="pestañas">
-	<input type="button" value="Lineas" class="btn" id="btnLineas" onclick="generateChart('line')"></input>
-	<input type="button" value="Radar" class="btn" id="btnRadar" onclick="generateChart('radar')"></input>
-	<input type="button" value="BoxPlot General" class="btn" id="btnBoxPlot" onclick="generateChart('boxplot')"></input>
-	<input type="button" value="BoxPlot Del Grupo" class="btn" id="btnBoxPlotGroup" onclick="generateChart('boxplotgroup')"></input>
-	<input type="button" value="Calificaciones" class="btn" id="btnCalificaciones" onclick="drawTable()"></input>
+	<input type="button" value="Lineas" class="btn" id="btnLineas" onclick="generateChart('line')"/>
+	<input type="button" value="Radar" class="btn" id="btnRadar" onclick="generateChart('radar')"/>
+	<input type="button" value="BoxPlot General" class="btn" id="btnBoxPlot" onclick="generateChart('boxplot')"/>
+	<input type="button" value="BoxPlot Del Grupo" class="btn" id="btnBoxPlotGroup" onclick="generateChart('boxplotgroup')"/>
+	<input type="button" value="Calificaciones" class="btn" id="btnCalificaciones" onclick="drawTable()"/>
 </div>
 
 <div class="opciones">
-	<input type="button" value="Ocultar Leyenda" class="btn" id="btnLegend" onclick="hideLegend()"></input>
-	<input type="button" value="Mostrar Media General" class="btn" id="btnMean" onclick="showGeneralMean()"></input>
-	<input type="button" value="Mostrar Media Del Grupo" class="btn" id="btnGroupMean" onclick="showGroupMean()"></input>
+	<input type="button" value="." class="btn" style="visibility: hidden;width: 0px:;margin: 0px; padding: 0px;"/>
+	<input type="button" value="Leyenda" class="btn" id="btnLegend" onclick="hideLegend()"/>
+	<input type="button" value="Media General" class="btn" id="btnMean" onclick="showGeneralMean()"/>
+	<input type="button" value="Media Del Grupo" class="btn" id="btnGroupMean" onclick="showGroupMean()"/>
 </div>
 </div>
 
 <div id="inicio">
-	<div class="Alumnos">1- SELECCIONA LOS ALUMNOSS</div>
+	<div class="Alumnos">1- SELECCIONA LOS ALUMNOS</div>
 	<div class="Calificaciones">2- SELECCIONA LAS CALIFICACIONES</div>
 	<div class="GenerarGrafico">3- GENERA EL GRÁFICO</div>
 </div>
@@ -330,6 +333,9 @@ google.charts.load('current', {'packages':['table']});
 document.getElementById('btnLineas').disabled = true;
 //Al iniciar el div de la tabla de calificaciones esta oculto
 document.getElementById('table_div').style.display = 'none';
+
+
+document.getElementById('btnLegend').style.backgroundImage = 'url(./../img/visibility.png)';
 
 
 //------------------------------------------Funciones------------------------------------------------------------------
@@ -537,11 +543,11 @@ function showGeneralMean() {
 		GeneralMeanActive = true;
 		myChart.data.datasets.push(GeneralMeanDataSet);
 		myChart.update();
-		document.getElementById('btnMean').value = 'Ocultar Media General';
+		document.getElementById('btnMean').style.backgroundImage = 'url(./../img/visibility.png)';
 	} else if(GeneralMeanActive == true){
 		GeneralMeanActive = false;
 		removeDataSet('Media general');
-		document.getElementById('btnMean').value = 'Mostrar Media General';
+		document.getElementById('btnMean').style.backgroundImage = 'url(./../img/visibility_off.png)';
 	}
 }
 
@@ -551,11 +557,11 @@ function showGroupMean() {
 		GroupMeanActive = true;
 		myChart.data.datasets.push(GroupMeanDataSet);
 		myChart.update();
-		document.getElementById('btnGroupMean').value = 'Ocultar Media Del Grupo';
+		document.getElementById('btnGroupMean').style.backgroundImage = 'url(./../img/visibility.png)';
 	} else if(GroupMeanActive == true){
 		GroupMeanActive = false;
 		removeDataSet('Media del grupo');
-		document.getElementById('btnGroupMean').value = 'Mostrar Media Del Grupo';
+		document.getElementById('btnGroupMean').style.backgroundImage = 'url(./../img/visibility_off.png)';
 	}
 }
 
@@ -578,12 +584,12 @@ function hideLegend(){
 		legendActive = false;
 		myChart.options.legend.display = false;
 		myChart.update();
-		document.getElementById('btnLegend').value = 'Mostrar Leyenda';
+		document.getElementById('btnLegend').style.backgroundImage = 'url(./../img/visibility_off.png)';
 	} else {
 		legendActive = true;
 		myChart.options.legend.display = true;
 		myChart.update();
-		document.getElementById('btnLegend').value = 'Ocultar Leyenda';
+		document.getElementById('btnLegend').style.backgroundImage = 'url(./../img/visibility.png)';
 	}
 }
 

@@ -22,15 +22,15 @@
 	<!-- TODO Add Nodes -->
 
 	<children>
-		<Group id="Group" layoutX="54.0" layoutY="280.0">
+		<Group id="Group" layoutX="50.0" layoutY="280.0">
 			<children>
-				<Label layoutX="20.0" layoutY="30.0" text="Usuario:">
+				<Label id="loginLabels" layoutX="20.0" layoutY="30.0" text="Usuario:">
 					<font>
 						<Font size="13.0" fx:id="x1" />
 					</font>
 				</Label>
-				<Label font="$x1" layoutX="20.0" layoutY="68.0" text="Contraseña:" />
-				<Label font="$x1" layoutX="20.0" layoutY="105.0" text="Host:" />
+				<Label id="loginLabels" font="$x1" layoutX="20.0" layoutY="68.0" text="Contraseña:" />
+				<Label id="loginLabels" font="$x1" layoutX="20.0" layoutY="105.0" text="Host:" />
 			</children>
 		</Group>
 		<Group id="Group" layoutX="152.0" layoutY="280.0">

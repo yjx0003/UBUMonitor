@@ -114,10 +114,6 @@ public class MainController implements Initializable {
 	@FXML // Gráfico de lineas
 	private WebView webViewCharts;
 	private WebEngine webViewChartsEngine;
-
-	@FXML // Tabla de calificaciones
-	private WebView webViewCalificaciones;
-	private WebEngine webViewCalificacionesEngine;
 	
 	private Stats stats;
 			
@@ -139,8 +135,6 @@ public class MainController implements Initializable {
 			webViewChartsEngine = webViewCharts.getEngine();
 			URL url = this.getClass().getResource("/graphics/Charts.html");
 			webViewChartsEngine.load(url.toString());
-			
-			webViewCalificacionesEngine = webViewCalificaciones.getEngine();
 			
 			// Almacenamos todos participantes en una lista
 			ArrayList<EnrolledUser> users = (ArrayList<EnrolledUser>) UBUGrades.session.getActualCourse()
@@ -371,7 +365,6 @@ public class MainController implements Initializable {
 	 */
 	public void filterParticipants() {
 		try {
-			clearData();
 			boolean roleYes;
 			boolean groupYes;
 			boolean patternYes;
@@ -529,7 +522,6 @@ public class MainController implements Initializable {
 	 */
 	public void filterCalifications() {
 		try {
-			clearData();
 			ArrayList<GradeReportLine> grcl = (ArrayList<GradeReportLine>) UBUGrades.session.getActualCourse()
 					.getGradeReportLines();
 			// Establecemos la raiz del Treeview
@@ -679,7 +671,7 @@ public class MainController implements Initializable {
 	 * @throws Exception
 	 */
 	public void saveTable(ActionEvent actionEvent) throws Exception {
-		WritableImage image = webViewCalificaciones.snapshot(new SnapshotParameters(), null);
+		/*WritableImage image = webViewCalificaciones.snapshot(new SnapshotParameters(), null);
 
 		File file = new File("table.png");
 
@@ -700,7 +692,7 @@ public class MainController implements Initializable {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	/**
@@ -732,16 +724,8 @@ public class MainController implements Initializable {
 	public void clearSelection(ActionEvent actionEvent) throws Exception {
 		listParticipants.getSelectionModel().clearSelection();
 		tvwGradeReport.getSelectionModel().clearSelection();
-		clearData();
 	}
 	
-	/**
-	 * Elimina los datos de la tabla de calificaciones
-	 */
-	public void clearData() {
-		webViewCalificacionesEngine.loadContent("<html><head></head><body style='background-color:#f2f2f2'></body></html>");
-	}
-
 	/**
 	 * Abre en el navegador el repositorio del proyecto.
 	 * 
@@ -830,8 +814,11 @@ public class MainController implements Initializable {
 		tableData += ",['Media'";
 		for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 			String grade = stats.getElementMean(stats.getGeneralStats(),structTree.getValue().getId());
-			
-			tableData += ",{v:" + grade + ", f:'" + grade + "/" + structTree.getValue().getRangeMax() + "'}";
+			if(grade.equals("NaN")) {
+				tableData += ",{v:0, f:'NaN'}";
+			} else {
+				tableData += ",{v:" + grade + ", f:'" + grade + "/" + structTree.getValue().getRangeMax() + "'}";
+			}
 		}
 		tableData += "]";
 		
@@ -842,7 +829,11 @@ public class MainController implements Initializable {
 				tableData += ",['Media grupo " + grupo.getText() + "'";
 				for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 					String grade = stats.getElementMean(stats.getGroupStats(grupo.getText()),structTree.getValue().getId());
-					tableData += ",{v:" + grade + ", f:'" + grade + "/" + structTree.getValue().getRangeMax() + "'}";
+					if(grade.equals("NaN")) {
+						tableData += ",{v:0, f:'NaN'}";
+					} else {
+						tableData += ",{v:" + grade + ", f:'" + grade + "/" + structTree.getValue().getRangeMax() + "'}";
+					}
 				}
 				tableData += "]";
 			}
@@ -867,9 +858,6 @@ public class MainController implements Initializable {
 				.getSelectedItems();
 		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel()
 				.getSelectedItems();
-				
-		String htmlTitle = "<tr><th style='background:#066db3; border: 1.0 solid grey; color:white;'> Alumno </th>";
-		String content = "";
 		int countA = 0;
 		boolean firstUser = true;
 		boolean firstGrade = true;
@@ -879,9 +867,6 @@ public class MainController implements Initializable {
 		// Por cada usuario seleccionado
 		for (EnrolledUser actualUser : selectedParticipants) {
 			String actualUserFullName = actualUser.getFullName();
-			
-			// Se añade el usuario a la tabla
-			String htmlRow = "<th style='color:#066db3; background:white; border: 1.0 solid grey;'> " + actualUserFullName + " </th>";
 			
 			// Añadimos el nombre del alumno al dataset
 			if (firstUser) {
@@ -902,8 +887,6 @@ public class MainController implements Initializable {
 					String calculatedGrade = actualLine.getGrade();
 					
 					if (countA == countB) {
-						// Añadimos la actividad a la tabla
-						htmlTitle += "<th style='border: 1.0 solid grey'> " + actualLine.getName()+ " </th>";
 						countB++;
 						
 						//Añadidimos el nombre del elemento como label
@@ -922,16 +905,8 @@ public class MainController implements Initializable {
 							firstGrade = false;
 						} else {
 							dataSet += "," + Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
-						}
-												
-						// Añadimos la nota a la tabla de calificaciones
-						htmlRow += "<td style='border: 1.0 solid grey'> "
-								+ Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0
-								+ "/<b style='color:#ab263c'>" + actualLine.getRangeMax()
-								+ "</b> </td>";
+						}											
 					} else { 
-						// Si no, sólo lo mostramos en la tabla
-						htmlRow += "<td style='border: 1.0 solid grey'> " + calculatedGrade + " </td>";
 						if (firstGrade) {
 							dataSet += "NaN";
 							firstGrade = false;
@@ -951,24 +926,7 @@ public class MainController implements Initializable {
 						"pointBackgroundColor: 'red'," +
 						"borderWidth: 2," + 
 						"fill: false}";
-			htmlTitle += "</tr>";
-			htmlRow += "</tr>";
-			content += htmlRow;
-		}
-
-		// Mostramos la tabla
-		String head = "";
-		try {
-			webViewCalificacionesEngine.setUserStyleSheetLocation(getClass().getResource("../css/style.css").toString());
-		} catch (Exception e) {
-			logger.error("No hay fichero de hoja de estilo disponible", e);
-			head = "<style>table {margin-bottom: 3.0em; width: 100.0%;font-family:Arial, Verdana, sans-serif; text-align:center;border-radius: 1; border-collapse: collapse;}"
-					+ "th{heigth:20%;font-size:80%;color: white;   background: #ab263c;   padding:1%;   border-collapse: collapse;}"
-					+ "td {font-size:80%;heigth:20%;   background: white;   padding:1%; border-collapse: collapse;}</style>";
-		}
-		webViewCalificacionesEngine.loadContent("<html><head>" + head + "</head><body style='background-color:#f2f2f2'><table>"
-				+ htmlTitle + content + "</table></body></html>");
-		
+		}			
 		return "{ labels:[" + labels + "],datasets: ["+ dataSet + "]}";
     }
     

@@ -235,7 +235,10 @@ var optionsLineChart = {
         		fontColor: 'rgba(0, 0, 0, 1)'
         	}
         }]//xAxes
-    } //scales
+    }, //scales
+    chartArea: {
+    	backgroundColor: 'rgba(255,255,255,1)'
+    } //chartArea
 } //options
 	
 // Opciones para el radar
@@ -296,7 +299,10 @@ var optionsRadarChart = {
             stepSize: 1,
             fontColor: 'rgba(0, 0, 0, 1)'
         }//ticks
-    } //scales
+    }, //scales
+    chartArea: {
+    	backgroundColor: 'rgba(255,255,255,1)'
+    } //chartArea
 } //options
 
 //------------------------------------------Variables globales-------------------------------------------------------------
@@ -328,6 +334,7 @@ var myChart = new Chart(ctx,{
 
 // Cargamos la librearia de google para la tabla de calificaciones
 google.charts.load('current', {'packages':['table']});
+var table;
 
 // Al iniciar el boton del gráfico de lineas esta deshabilitado
 document.getElementById('btnLineas').disabled = true;
@@ -355,9 +362,8 @@ function drawTable() {
 	document.getElementById('btnMean').style.display = 'none';
 	document.getElementById('btnGroupMean').style.display = 'none';
 	document.getElementById('btnLegend').style.display = 'none';
-	
 	var data = google.visualization.arrayToDataTable(TableDataSet, false); // 'false' indica que la primera fila son labels, no datos.
-    var table = new google.visualization.Table(document.getElementById('table_div'));
+	table = new google.visualization.Table(document.getElementById('table_div'));
     table.draw(data, {showRowNumber: false, allowHTML: true, width: '100%'});
  }
 
@@ -610,6 +616,32 @@ function colorRGB(color){
 function colorHEX(color){
 	return colorHash.hex(color);
 }
+
+// Exporta el elemento actual
+function exportCurrentElemet() {
+	if(currentType == 'table') {
+		
+	} else {
+		return myChart.toBase64Image();
+	}
+}
+
+// Plugin que nos permite establecer el color de fondo del gráfico
+// el color se define en opciones->chartArea->backgroundColor
+Chart.pluginService.register({
+	beforeDraw: function (chart, easing) {
+		if (chart.config.options.chartArea && chart.config.options.chartArea.backgroundColor) {
+			var helpers = Chart.helpers;
+			var ctx = chart.chart.ctx;
+			var canvas = document.getElementById('myChart');
+			
+			ctx.save();
+			ctx.fillStyle = chart.config.options.chartArea.backgroundColor;
+			ctx.fillRect(0, 0, canvas.scrollWidth, canvas.scrollHeight);
+			ctx.restore();
+		}
+	}
+});
 
 </script>
 

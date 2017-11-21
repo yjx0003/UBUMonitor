@@ -349,6 +349,7 @@ public class CourseWS {
 		// Busco el final de la cadena única a partir de la cual empieza el
 		// nombre de la categoría
 		//FNS en moodle 3.3 aparece <i/> antes del nombre de la categoria
+		//TODO
 		int begin = data.lastIndexOf("</i>") + 4;
 		// El nombre termina al final de todo el texto
 		int end = data.length();
@@ -377,6 +378,7 @@ public class CourseWS {
 	 * @return
 	 */
 	public static String getNameManualItemOrEndCategory(String data) {
+		//TODO
 		//FNS en moodle 3.3 aparece </i> antes del nombre
 		int begin = data.lastIndexOf("</i>") + 4;
 		int end = data.indexOf("</span>");

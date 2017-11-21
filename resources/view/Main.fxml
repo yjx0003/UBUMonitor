@@ -67,7 +67,6 @@
                   <items>
                         <MenuItem fx:id="MIChangeCourse" mnemonicParsing="false" onAction="#changeCourse" text="Cambiar Asignatura" />
                     <MenuItem fx:id="MISaveChart" mnemonicParsing="false" onAction="#saveChart" text="Guardar gráfico como..." />
-                        <MenuItem fx:id="MISaveTable" mnemonicParsing="false" onAction="#saveTable" text="Guardar tabla como..." />
                         <MenuItem fx:id="MILogOut" mnemonicParsing="false" onAction="#logOut" text="Cerrar sesión" />
                         <MenuItem fx:id="MIExit" mnemonicParsing="false" onAction="#closeApplication" text="Salir" />
                   </items>

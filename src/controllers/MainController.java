@@ -631,8 +631,7 @@ public class MainController implements Initializable {
 	}
 
 	/**
-	 * Exporta el gráfico. El usuario podrá elegir entre el formato .png o .jpg
-	 * para guardar la imagen.
+	 * Exporta el gráfico. Se exportara como imagen en formato png.
 	 * 
 	 * @param actionEvent
 	 * @throws Exception
@@ -645,13 +644,13 @@ public class MainController implements Initializable {
 
 		fileChooser.setInitialFileName("chart.png");
 		fileChooser.setInitialDirectory(file.getParentFile());
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(".png", "*.png"),
-				new FileChooser.ExtensionFilter("*.jpg", "*.jpg"), new FileChooser.ExtensionFilter("*.png", "*.png"));
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(".png", "*.png"));
 		try {
 			file = fileChooser.showSaveDialog(UBUGrades.stage);
 			if (file != null) {
 				try {
 					String str = (String) webViewChartsEngine.executeScript("exportCurrentElemet()");
+					logger.info("-------->" + str);
 					byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(",") + 1));
 					BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
 					ImageIO.write(bufferedImage, "png", file);
@@ -662,38 +661,6 @@ public class MainController implements Initializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * Exporta la tabla de calificaciones. El usuario podrá elegir entre el
-	 * formato .png o .jpg para guardar la imagen.
-	 * 
-	 * @param actionEvent
-	 * @throws Exception
-	 */
-	public void saveTable(ActionEvent actionEvent) throws Exception {
-		/*WritableImage image = webViewCalificaciones.snapshot(new SnapshotParameters(), null);
-
-		File file = new File("table.png");
-
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Guardar tabla");
-		fileChooser.setInitialFileName("table");
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(".png", "*.*"),
-				new FileChooser.ExtensionFilter("*.jpg", "*.jpg"), new FileChooser.ExtensionFilter("*.png", "*.png"));
-		try {
-			file = fileChooser.showSaveDialog(UBUGrades.stage);
-			logger.info(file.getAbsolutePath());
-			if (file != null) {
-				try {
-					ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-				} catch (IOException ex) {
-					logger.info(ex.getMessage());
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}*/
 	}
 
 	/**

@@ -107,6 +107,7 @@
 <script type="text/javascript" src="Chart.js"></script>
 <script type="text/javascript" src="color-hash.js"></script>
 <script type="text/javascript" src="googleCharts.js"></script>
+<script type="text/javascript" src="html2canvas.js"></script>
 
 </head>
 
@@ -140,6 +141,8 @@
 </div>
 
 <div id="table_div" class="table_div"></div>
+
+<div id="table_img" style="display: none;"></div>
 
 <script>
 
@@ -357,6 +360,7 @@ function drawTable() {
 	document.getElementById('btnBoxPlot').disabled = false;
 	document.getElementById('btnBoxPlotGroup').disabled = false;
 	document.getElementById('btnCalificaciones').disabled = true;
+	document.getElementById('inicio').style.display = 'none';
 	document.getElementById('chart-container').style.display = 'none';
 	document.getElementById('table_div').style.display = 'block';
 	document.getElementById('btnMean').style.display = 'none';
@@ -365,6 +369,17 @@ function drawTable() {
 	var data = google.visualization.arrayToDataTable(TableDataSet, false); // 'false' indica que la primera fila son labels, no datos.
 	table = new google.visualization.Table(document.getElementById('table_div'));
     table.draw(data, {showRowNumber: false, allowHTML: true, width: '100%'});
+    
+    // Al generar la tabla generamos la imagen para la exportación
+	html2canvas(document.getElementById('table_div'), {
+		onrendered: function(canvas) {
+			elem = document.querySelector('#table_img canvas');
+			if(elem != null) {
+				elem.parentNode.removeChild(elem);
+			}
+			document.getElementById('table_img').appendChild(canvas);
+		}	
+	});
  }
 
 // Funcion que genera y muestra el grafico segun el tipo que se le pase.
@@ -620,7 +635,7 @@ function colorHEX(color){
 // Exporta el elemento actual
 function exportCurrentElemet() {
 	if(currentType == 'table') {
-		
+		return document.querySelector('#table_img canvas').toDataURL();
 	} else {
 		return myChart.toBase64Image();
 	}

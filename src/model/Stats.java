@@ -38,7 +38,7 @@ public class Stats {
 	 * Constructor de la clase Stats.
 	 */
 	public Stats() {
-		logger.info("Generando las estadisticas para el curso cargado.");
+		logger.info("Generando las estadisticas generales para el curso cargado.");
 		//Estadisticas Generales
 		generalGradesStats = new HashMap<>();
 		String grade = "";
@@ -52,12 +52,13 @@ public class Stats {
 			for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
 				grade = gradeReportLine.getGrade();
 				// Si la nota es "-", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
-				if(!grade.equals("-")) {
+				if(!grade.equals("-") && !grade.equals("")) {
 					this.addElementValue(generalGradesStats, gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
 				}
 			}
 		}
 		
+		logger.info("Generando las estadisticas de los gruopos para el curso cargado.");
 		//Estadisticas de los grupos
 		groupsStats = new HashMap<>();
 		HashMap<Integer, DescriptiveStatistics> currentGroupStats;
@@ -75,13 +76,14 @@ public class Stats {
 				for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
 					grade = gradeReportLine.getGrade();
 					// Si la nota es "-", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
-					if(!grade.equals("-")) {
+					if(!grade.equals("-") && !grade.equals("")) {
 						this.addElementValue(currentGroupStats, gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
 					}
 				}
 			}
 			groupsStats.put(group, currentGroupStats);
 		}
+		logger.info("Estadisticas generadas.");
 	}
 	
 	/**
@@ -114,8 +116,10 @@ public class Stats {
 	 */
 	public void addElementValue (HashMap<Integer,DescriptiveStatistics> statsHs, int gradeId, double value) {
 		DescriptiveStatistics stats = statsHs.get(gradeId);
-		stats.addValue(value);
-		statsHs.put(gradeId, stats);
+		if(stats != null) {
+			stats.addValue(value);
+			statsHs.put(gradeId, stats);
+		}
 	}
 	
 	/**

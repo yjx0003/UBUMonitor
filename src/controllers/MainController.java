@@ -714,14 +714,19 @@ public class MainController implements Initializable {
 		UBUGrades.stage.close();
 	}
 
-	public static void errorDeConexion() {
+	/**
+	 * Muestra una ventana de error.
+	 * 
+	 * @param mensaje
+	 * 		El mensaje que se quiere mostrar.
+	 */
+	public static void errorWindow(String mensaje) {
 		Alert alert = new Alert(AlertType.ERROR);
 
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.initOwner(UBUGrades.stage);
-		alert.getDialogPane().setContentText("Su equipo ha perdido la conexión a Internet");
+		alert.getDialogPane().setContentText(mensaje);
 
-		logger.warn("Su equipo ha perdido la conexión a Internet");
 		ButtonType buttonSalir = new ButtonType("Cerrar UBUGrades");
 		alert.getButtonTypes().setAll(buttonSalir);
 

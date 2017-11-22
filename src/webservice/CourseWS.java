@@ -17,7 +17,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.MainController;
 import controllers.UBUGrades;
 import model.Course;
 import model.EnrolledUser;
@@ -67,9 +66,11 @@ public class CourseWS {
 			}
 		} catch (IOException ex) {
 			logger.error("Error de conexion con Moodle al obtener los usuarios matriculados.");
-			MainController.errorDeConexion();
+			throw new IOException("Error de conexion con Moodle al obtener los usuarios matriculados."
+					+ "\n Es posible que su equipo haya perdido la conexion a internet.");
 		} catch (Exception e ) {
 			logger.error("Se ha producido un error al obtener los usuarios matriculados.");
+			throw new Exception("Se ha producido un error al obtener los usuarios matriculados.");
 		} finally {
 			httpclient.close();
 		}
@@ -79,10 +80,9 @@ public class CourseWS {
 	}
 
 	/**
-	 * Establece los GradeReportLine de un usuario en un curso. Esta función se
-	 * usará para obtener todos los GradeReportLine del primer usuario
+	 * Esta función se usará para obtener todos los GradeReportLine del primer usuario
 	 * matriculado y así sacar la estructura del calificador del curso para
-	 * después mostrarla como TreeView en la vista
+	 * después mostrarla como TreeView en la vista.
 	 * 
 	 * @param token
 	 *            token del profesor logueado
@@ -100,6 +100,7 @@ public class CourseWS {
 			String call = UBUGrades.host + "/webservice/rest/server.php?wstoken=" + token
 					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_TABLA_NOTAS + "&courseid="
 					+ course.getId() + "&userid=" + userId;
+			logger.info(call);
 			HttpGet httpget = new HttpGet(call);
 			response = httpclient.execute(httpget);
 		
@@ -118,9 +119,6 @@ public class CourseWS {
 				JSONObject alumn = (JSONObject) tables.get(0);
 
 				JSONArray tableData = (JSONArray) alumn.getJSONArray("tabledata");
-
-				// logger.info("TableData:");
-				// logger.info(tableData); logger.info();
 
 				// El elemento table data tiene las líneas del configurador
 				// (que convertiremos a GradeReportLines)
@@ -231,9 +229,11 @@ public class CourseWS {
 			} // End if
 		} catch (IOException ex) {
 			logger.error("Error de conexion con Moodle al generar el arbol del calificador.");
-			MainController.errorDeConexion();
+			throw new IOException("Error de conexion con Moodle al generar el arbol del calificador."
+					+ "\n Es posible que su equipo haya perdido la conexion a internet.");
 		} catch (Exception e ) {
 			logger.error("Se ha producido un error al generar el arbol del calificador.");
+			throw new Exception("Se ha producido un error al generar el arbol del calificador.");
 		} finally {
 				response.close();
 				httpclient.close();
@@ -268,25 +268,29 @@ public class CourseWS {
 			
 			String respuesta = EntityUtils.toString(response.getEntity());
 			JSONObject jsonArray = new JSONObject(respuesta);
+			logger.info("Llamada al webService->OK userID=" + userId + " courseID " + courseId);
 			
 			//lista de GradeReportLines
 			gradeReportLines = new ArrayList<GradeReportLine>();
 			
 			if(jsonArray != null ) {
+				logger.info("Parseando datos...");
 				JSONArray usergrades = (JSONArray) jsonArray.get("usergrades");
 				JSONObject alumn = (JSONObject) usergrades.get(0);
 				
 				JSONArray gradeItems = (JSONArray) alumn.getJSONArray("gradeitems");
 				
 				// El elemento gradeitems tiene cada linea del calificador
-				// que cnvertiremos en GradeReportLines
+				// que convertiremos en GradeReportLines
 				for(int i = 0; i < gradeItems.length(); i++) {
 					JSONObject gradeItemsElement = gradeItems.getJSONObject(i);
 					
 					// Obtenemos los datos necesarios
 					int id;
 					String name = gradeItemsElement.getString("itemname");
+					logger.info("Obteniendo nombre-> " + name);
 					String type = gradeItemsElement.getString("itemtype");
+					logger.info("Obteniendo tipo-> " + type);
 					// Para los tipos categoria y curso hay dos ids
 					// Para estos casos obtenemos el id de iteminstance
 					if (type.equals("category") || type.equals("course")) {
@@ -296,18 +300,24 @@ public class CourseWS {
 					}
 					int rangeMin = gradeItemsElement.getInt("grademin");
 					int rangeMax = gradeItemsElement.getInt("grademax");
+					logger.info("Obteniendo rangos-> " + rangeMin + "-" + rangeMax);
 					String grade = gradeItemsElement.getString("gradeformatted");
+					logger.info("Obteniendo nota-> " + grade);
+					
 					
 					// Añadimos el nuevo GradeReportLine
 					gradeReportLines.add(
 							new GradeReportLine(id, name, grade, String.valueOf(rangeMin), String.valueOf(rangeMax)));
+					logger.info("Añadiendo el GRL obtenido");
 				}
 			}
 		} catch (IOException ex) {
-			logger.error("Error de conexion con Moodle al obtener las notas del alumno.");
-			MainController.errorDeConexion();
+			logger.error("Error de conexion con Moodle al obtener las notas de alumno.");
+			throw new IOException("Error de conexion con Moodle al generar el arbol del calificador."
+					+ "\n Es posible que su equipo haya perdido la conexion a internet.");
 		} catch (Exception e ) {
 			logger.error("Se ha producido un error al obtener las notas del alumno.");
+			throw new Exception("Se ha producido un error al obtener las notas del alumno.");
 		} finally {
 				response.close();
 				httpclient.close();

@@ -3,6 +3,7 @@ package controllers;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
@@ -20,11 +21,15 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.*;
 import webservice.CourseWS;
@@ -93,31 +98,36 @@ public class WelcomeController implements Initializable {
 		Task<Void> task = new Task<Void>() {
 
 			@Override
-			protected Void call() throws Exception {				
-				logger.info("Cargando datos del curso: " + UBUGrades.session.getActualCourse().getFullName());
-				// Establecemos los usuarios matriculados
-				CourseWS.setEnrolledUsers(UBUGrades.session.getToken(), UBUGrades.session.getActualCourse());
-				int enroledUsersCount = UBUGrades.session.getActualCourse().getEnrolledUsersCount()+4;
-				int done = 0;
-				updateProgress(done, enroledUsersCount);
-					
-				for(EnrolledUser user: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
-					// Obtenemos todas las lineas de calificación del usuario
-					logger.info("Cargando los datos de: " + user.getFullName() + "...");
-					user.setAllGradeReportLines(CourseWS.getUserGradeReportLines(UBUGrades.session.getToken(), user.getId(),
-							UBUGrades.session.getActualCourse().getId()));
-					updateProgress(done++, enroledUsersCount);
-					logger.info("Datos cargados.");
-				}
+			protected Void call() throws Exception {
 				
-				// Establecemos calificador del curso
-				CourseWS.setGradeReportLines(UBUGrades.session.getToken(),
-						UBUGrades.session.getActualCourse().getEnrolledUsers().get(0).getId(),
-						UBUGrades.session.getActualCourse());
-				updateProgress(done+4, enroledUsersCount);
-				Thread.sleep(50);
-				//Indica que se ha terminado el trabajo
-				updateMessage("end");
+				try {
+					logger.info("Cargando datos del curso: " + UBUGrades.session.getActualCourse().getFullName());
+					// Establecemos los usuarios matriculados
+					CourseWS.setEnrolledUsers(UBUGrades.session.getToken(), UBUGrades.session.getActualCourse());
+					int enroledUsersCount = UBUGrades.session.getActualCourse().getEnrolledUsersCount()+4;
+					int done = 0;
+					updateProgress(done, enroledUsersCount);
+						
+					for(EnrolledUser user: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
+						// Obtenemos todas las lineas de calificación del usuario
+						logger.info("Cargando los datos de: " + user.getFullName() + "...");
+						user.setAllGradeReportLines(CourseWS.getUserGradeReportLines(UBUGrades.session.getToken(), user.getId(),
+								UBUGrades.session.getActualCourse().getId()));
+						updateProgress(done++, enroledUsersCount);
+						logger.info("Datos cargados.");
+					}
+					
+					// Establecemos calificador del curso
+					CourseWS.setGradeReportLines(UBUGrades.session.getToken(),
+							UBUGrades.session.getActualCourse().getEnrolledUsers().get(0).getId(),
+							UBUGrades.session.getActualCourse());
+					updateProgress(done+4, enroledUsersCount);
+					Thread.sleep(50);
+					//Indica que se ha terminado el trabajo
+					updateMessage("end");
+				} catch (Exception e) {
+					updateMessage(e.getMessage());
+				}
 				return null;
 			}
 		};
@@ -150,12 +160,35 @@ public class WelcomeController implements Initializable {
 						lblNoSelect.setText("Debe seleccionar un curso");
 						logger.info("Debe seleccionar un curso");
 					}
+				} else {
+					errorWindow(newValue);
 				}
 			}
 		});
-		final Thread thread = new Thread(task, "task-thread");
+		Thread thread = new Thread(task, "task-thread");
 		thread.setDaemon(true);
 		thread.start();
 	}
+	
+	/**
+	 * Muestra una ventana de error.
+	 * 
+	 * @param mensaje
+	 * 		El mensaje que se quiere mostrar.
+	 */
+	private static void errorWindow(String mensaje) {
+		Alert alert = new Alert(AlertType.ERROR);
+		
+		alert.initModality(Modality.APPLICATION_MODAL);
+		alert.initOwner(UBUGrades.stage);
+		alert.getDialogPane().setContentText(mensaje);
+
+		ButtonType buttonSalir = new ButtonType("Cerrar UBUGrades");
+		alert.getButtonTypes().setAll(buttonSalir);
+
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get() == buttonSalir)
+			UBUGrades.stage.close();
+	}  
 
 }

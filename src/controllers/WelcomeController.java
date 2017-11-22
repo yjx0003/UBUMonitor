@@ -20,6 +20,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
@@ -44,6 +45,8 @@ public class WelcomeController implements Initializable {
 	private ObservableList<String> list;
 	@FXML
 	private Label lblNoSelect;
+    @FXML
+    private Button btnEntrar;
 	@FXML
 	private ProgressBar progressBar;
 
@@ -85,26 +88,40 @@ public class WelcomeController implements Initializable {
 		UBUGrades.session.setActualCourse(Course.getCourseByString(selectedCourse));
 		logger.info(" Curso seleccionado: " + UBUGrades.session.getActualCourse().getFullName());
 		
+		btnEntrar.setVisible(false);
 		progressBar.setProgress(0.0);
 		Task<Void> task = new Task<Void>() {
 
 			@Override
-			protected Void call() throws Exception {
+			protected Void call() throws Exception {				
 				logger.info("Cargando datos del curso: " + UBUGrades.session.getActualCourse().getFullName());
-				updateProgress(1, 10);
 				// Establecemos los usuarios matriculados
 				CourseWS.setEnrolledUsers(UBUGrades.session.getToken(), UBUGrades.session.getActualCourse());
-				updateProgress(6, 10);
+				int enroledUsersCount = UBUGrades.session.getActualCourse().getEnrolledUsersCount()+4;
+				int done = 0;
+				updateProgress(done, enroledUsersCount);
+					
+				for(EnrolledUser user: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
+					// Obtenemos todas las lineas de calificación del usuario
+					logger.info("Cargando los datos de: " + user.getFullName() + "...");
+					user.setAllGradeReportLines(CourseWS.getUserGradeReportLines(UBUGrades.session.getToken(), user.getId(),
+							UBUGrades.session.getActualCourse().getId()));
+					updateProgress(done++, enroledUsersCount);
+					logger.info("Datos cargados.");
+				}
+				
 				// Establecemos calificador del curso
 				CourseWS.setGradeReportLines(UBUGrades.session.getToken(),
 						UBUGrades.session.getActualCourse().getEnrolledUsers().get(0).getId(),
 						UBUGrades.session.getActualCourse());
-				updateProgress(10, 10);
+				updateProgress(done+4, enroledUsersCount);
 				Thread.sleep(50);
+				//Indica que se ha terminado el trabajo
 				updateMessage("end");
 				return null;
 			}
 		};
+		
 		progressBar.progressProperty().bind(task.progressProperty());
 		progressBar.visibleProperty().set(true);
 		task.messageProperty().addListener(new ChangeListener<String>() {

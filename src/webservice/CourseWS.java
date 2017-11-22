@@ -1,5 +1,6 @@
 package webservice;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.regex.Matcher;
@@ -45,6 +46,7 @@ public class CourseWS {
 	 * @throws Exception
 	 */
 	public static void setEnrolledUsers(String token, Course course) throws Exception {
+		logger.info("Obteniendo los usuarios del curso.");
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		ArrayList<EnrolledUser> eUsers = new ArrayList<EnrolledUser>();
 		try {
@@ -52,20 +54,22 @@ public class CourseWS {
 					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_USUARIOS_MATRICULADOS
 					+ "&courseid=" + course.getId());
 			CloseableHttpResponse response = httpclient.execute(httpget);
-			try {
-				String respuesta = EntityUtils.toString(response.getEntity());
-				JSONArray jsonArray = new JSONArray(respuesta);
-				if (jsonArray != null) {
-					for (int i = 0; i < jsonArray.length(); i++) {
-						JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-						if (jsonObject != null) {
-							eUsers.add(new EnrolledUser(token, jsonObject));
-						}
+			
+			String respuesta = EntityUtils.toString(response.getEntity());
+			JSONArray jsonArray = new JSONArray(respuesta);
+			if (jsonArray != null) {
+				for (int i = 0; i < jsonArray.length(); i++) {
+					JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+					if (jsonObject != null) {
+						eUsers.add(new EnrolledUser(token, jsonObject));
 					}
 				}
-			} finally {
-				response.close();
 			}
+		} catch (IOException ex) {
+			logger.error("Error de conexion con Moodle al obtener los usuarios matriculados.");
+			MainController.errorDeConexion();
+		} catch (Exception e ) {
+			logger.error("Se ha producido un error al obtener los usuarios matriculados.");
 		} finally {
 			httpclient.close();
 		}
@@ -89,156 +93,150 @@ public class CourseWS {
 	 * @throws Exception
 	 */
 	public static void setGradeReportLines(String token, int userId, Course course) throws Exception {
+		logger.info("Generando el arbol del calificador.");
 		CloseableHttpClient httpclient = HttpClients.createDefault();
+		CloseableHttpResponse response = null;
 		try {
 			String call = UBUGrades.host + "/webservice/rest/server.php?wstoken=" + token
 					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_TABLA_NOTAS + "&courseid="
 					+ course.getId() + "&userid=" + userId;
-			// logger.info(call);
 			HttpGet httpget = new HttpGet(call);
-			CloseableHttpResponse response = httpclient.execute(httpget);
-			try {
-				String respuesta = EntityUtils.toString(response.getEntity());
-				JSONObject jsonArray = new JSONObject(respuesta);
-				// logger.info("response: "+jsonArray.toString());
-				// lista de GradeReportLines
-				course.gradeReportLines = new ArrayList<GradeReportLine>();
-				// En esta pila sólo van a entrar Categorías. Se mantendrán en
-				// la pila mientran tengan descendencia.
-				// Una vez añadida al árbol toda la descendencia de un nodo,
-				// este nodo se saca de la pila y se añade al árbol.
-				Stack<GradeReportLine> deque = new Stack<GradeReportLine>();
+			response = httpclient.execute(httpget);
+		
+			String respuesta = EntityUtils.toString(response.getEntity());
+			JSONObject jsonArray = new JSONObject(respuesta);
+			// lista de GradeReportLines
+			course.gradeReportLines = new ArrayList<GradeReportLine>();
+			// En esta pila sólo van a entrar Categorías. Se mantendrán en
+			// la pila mientran tengan descendencia.
+			// Una vez añadida al árbol toda la descendencia de un nodo,
+			// este nodo se saca de la pila y se añade al árbol.
+			Stack<GradeReportLine> deque = new Stack<GradeReportLine>();
 
-				if (jsonArray != null) {
-					JSONArray tables = (JSONArray) jsonArray.get("tables");
-					JSONObject alumn = (JSONObject) tables.get(0);
+			if (jsonArray != null) {
+				JSONArray tables = (JSONArray) jsonArray.get("tables");
+				JSONObject alumn = (JSONObject) tables.get(0);
 
-					JSONArray tableData = (JSONArray) alumn.getJSONArray("tabledata");
+				JSONArray tableData = (JSONArray) alumn.getJSONArray("tabledata");
 
-					// logger.info("TableData:");
-					// logger.info(tableData); logger.info();
+				// logger.info("TableData:");
+				// logger.info(tableData); logger.info();
 
-					// El elemento table data tiene las líneas del configurador
-					// (que convertiremos a GradeReportLines)
-					for (int i = 0; i < tableData.length(); i++) {
-						JSONObject tableDataElement = tableData.getJSONObject(i);
-						// sea categoría o item, se saca de la misma manera el
-						// nivel del itemname
-						JSONObject itemname = tableDataElement.getJSONObject("itemname");
-						int actualLevel = getActualLevel(itemname.getString("class"));
-						int idLine = getIdLine(itemname.getString("id"));
-						// Si es un feedback (item o suma de
-						// calificaciones):
-						if (tableDataElement.isNull("leader")) {
-							String nameContainer = itemname.getString("content");
-							String nameLine = "";
-							String typeActivity = "";
-							// true=item, false=categoría
-							boolean typeLine = false;
-							// Si es una actividad (assignment o quiz)
-							// Se reconocen por la etiqueta "<a"
-							if (nameContainer.substring(0, 2).equals("<a")) {
-								nameLine = getNameActivity(nameContainer);
-								if (assignmentOrQuizOrForum(nameContainer).equals("assignment"))
-									typeActivity = "Assignment";
-								else if (assignmentOrQuizOrForum(nameContainer).equals("quiz"))
-									typeActivity = "Quiz";
-								else if (assignmentOrQuizOrForum(nameContainer).equals("forum"))
-									typeActivity = "Forum";
+				// El elemento table data tiene las líneas del configurador
+				// (que convertiremos a GradeReportLines)
+				for (int i = 0; i < tableData.length(); i++) {
+					JSONObject tableDataElement = tableData.getJSONObject(i);
+					// sea categoría o item, se saca de la misma manera el
+					// nivel del itemname
+					JSONObject itemname = tableDataElement.getJSONObject("itemname");
+					int actualLevel = getActualLevel(itemname.getString("class"));
+					int idLine = getIdLine(itemname.getString("id"));
+					// Si es un feedback (item o suma de
+					// calificaciones):
+					if (tableDataElement.isNull("leader")) {
+						String nameContainer = itemname.getString("content");
+						String nameLine = "";
+						String typeActivity = "";
+						boolean typeLine = false;
+						// Si es una actividad (assignment o quiz)
+						// Se reconocen por la etiqueta "<a"
+						if (nameContainer.substring(0, 2).equals("<a")) {
+							nameLine = getNameActivity(nameContainer);
+							if (assignmentOrQuizOrForum(nameContainer).equals("assignment"))
+								typeActivity = "Assignment";
+							else if (assignmentOrQuizOrForum(nameContainer).equals("quiz"))
+								typeActivity = "Quiz";
+							else if (assignmentOrQuizOrForum(nameContainer).equals("forum"))
+								typeActivity = "Forum";
+							typeLine = true;
+						} else {
+							// Si es un item manual o suma de calificaciones
+							// Se reconocen por la etiqueta "<span"
+							nameLine = getNameManualItemOrEndCategory(nameContainer);
+							if (manualItemOrEndCategory(nameContainer).equals("manualItem")) {
+								typeActivity = "ManualItem";
 								typeLine = true;
-							} else {
-								// Si es un item manual o suma de calificaciones
-								// Se reconocen por la etiqueta "<span"
-								nameLine = getNameManualItemOrEndCategory(nameContainer);
-								if (manualItemOrEndCategory(nameContainer).equals("manualItem")) {
-									typeActivity = "ManualItem";
-									typeLine = true;
-								} else if (manualItemOrEndCategory(nameContainer).equals("endCategory")) {
-									typeActivity = "Category";
-									typeLine = false;
-								}
+							} else if (manualItemOrEndCategory(nameContainer).equals("endCategory")) {
+								typeActivity = "Category";
+								typeLine = false;
 							}
-							// Sacamos la nota (grade)
-							JSONObject gradeContainer = tableDataElement.getJSONObject("grade");
-							String grade = "-";
-							// Si no hay nota numérica
-							if (!gradeContainer.getString("content").contains("-")) {
-								grade = getNumber(gradeContainer.getString("content"));
-								// logger.info(" - Nota item: " + grade);
-							}
+						}
+						// Sacamos la nota (grade)
+						JSONObject gradeContainer = tableDataElement.getJSONObject("grade");
+						String grade = "-";
+						// Si no hay nota numérica
+						if (!gradeContainer.getString("content").contains("-")) {
+							grade = getNumber(gradeContainer.getString("content"));
+						}
 
-							// Sacamos el porcentaje
-							JSONObject percentageContainer = tableDataElement.getJSONObject("percentage");
-							Float percentage = Float.NaN;
-							if (!percentageContainer.getString("content").contains("-")) {
-								percentage = getFloat(percentageContainer.getString("content"));
+						// Sacamos el porcentaje
+						JSONObject percentageContainer = tableDataElement.getJSONObject("percentage");
+						Float percentage = Float.NaN;
+						if (!percentageContainer.getString("content").contains("-")) {
+							percentage = getFloat(percentageContainer.getString("content"));
+						}
+						// Sacamos el peso
+						JSONObject weightContainer = tableDataElement.optJSONObject("weight");
+						Float weight = Float.NaN;
+						if (weightContainer != null) {
+							if (!weightContainer.getString("content").contains("-")) {
+								weight = getFloat(weightContainer.getString("content"));
+								// logger.info(" - Nota item: " + weight);
 							}
-							// Sacamos el peso
-							JSONObject weightContainer = tableDataElement.optJSONObject("weight");
-							Float weight = Float.NaN;
-							if (weightContainer != null) {
-								if (!weightContainer.getString("content").contains("-")) {
-									weight = getFloat(weightContainer.getString("content"));
-									// logger.info(" - Nota item: " + weight);
-								}
-							}
-							// Sacamos el rango
-							JSONObject rangeContainer = tableDataElement.getJSONObject("range");
-							String rangeMin = getRange(rangeContainer.getString("content"), true);
-							String rangeMax = getRange(rangeContainer.getString("content"), false);
-							// logger.info("-Rango: " + rangeMin + "-" +
-							// rangeMax);
-							// logger.info(" - Rango: " + rangeMin + "-" +
-							// rangeMax);
-							if (typeLine) { // Si es un item
-								// Añadimos la linea actual
-								GradeReportLine actualLine = new GradeReportLine(idLine, nameLine, actualLevel,
-										typeLine, weight, rangeMin, rangeMax, grade, percentage, typeActivity);
-								if (!deque.isEmpty()) {
-									deque.lastElement().addChild(actualLine);
-								}
-								// Añadimos el elemento a la lista como item
-								course.gradeReportLines.add(actualLine);
-							} else {
-								// Obtenemos el elemento cabecera de la pila
-								GradeReportLine actualLine = deque.pop();
-								// Establecemos los valores restantes
-								actualLine.setWeight(weight);
-								actualLine.setRangeMin(rangeMin);
-								actualLine.setRangeMax(rangeMax);
-								actualLine.setNameType(typeActivity);
-								actualLine.setGrade(grade);
-								// Modificamos la cabecera de esta suma, para
-								// dejarla como una categoria completa
-								course.updateGRLList(actualLine);
-							}
-						} else {// --- Si es una categoría
-							String nameLine = getNameCategorie(itemname.getString("content"));
-
-							// Añadimos la cabecera de la categoria a la pila
-							GradeReportLine actualLine = new GradeReportLine(idLine, nameLine, actualLevel, false);
-							// Lo añadimos como hijo de la categoria anterior
+						}
+						// Sacamos el rango
+						JSONObject rangeContainer = tableDataElement.getJSONObject("range");
+						String rangeMin = getRange(rangeContainer.getString("content"), true);
+						String rangeMax = getRange(rangeContainer.getString("content"), false);
+						if (typeLine) { // Si es un item
+							// Añadimos la linea actual
+							GradeReportLine actualLine = new GradeReportLine(idLine, nameLine, actualLevel,
+									typeLine, weight, rangeMin, rangeMax, grade, percentage, typeActivity);
 							if (!deque.isEmpty()) {
 								deque.lastElement().addChild(actualLine);
 							}
-
-							// Añadimos esta cabecera a la pila
-							deque.add(actualLine);
-							// Añadimos el elemento a la lista como cabecera por
-							// ahora
+							// Añadimos el elemento a la lista como item
 							course.gradeReportLines.add(actualLine);
+						} else {
+							// Obtenemos el elemento cabecera de la pila
+							GradeReportLine actualLine = deque.pop();
+							// Establecemos los valores restantes
+							actualLine.setWeight(weight);
+							actualLine.setRangeMin(rangeMin);
+							actualLine.setRangeMax(rangeMax);
+							actualLine.setNameType(typeActivity);
+							actualLine.setGrade(grade);
+							// Modificamos la cabecera de esta suma, para
+							// dejarla como una categoria completa
+							course.updateGRLList(actualLine);
 						}
-					} // End for
-					course.setActivities(course.gradeReportLines);
-				} // End if
-			} finally {
-				response.close();
-			}
-		} catch (Exception e) {
-			logger.error("Error de conexión");
+					} else {// --- Si es una categoría
+						String nameLine = getNameCategorie(itemname.getString("content"));
+
+						// Añadimos la cabecera de la categoria a la pila
+						GradeReportLine actualLine = new GradeReportLine(idLine, nameLine, actualLevel, false);
+						// Lo añadimos como hijo de la categoria anterior
+						if (!deque.isEmpty()) {
+							deque.lastElement().addChild(actualLine);
+						}
+
+						// Añadimos esta cabecera a la pila
+						deque.add(actualLine);
+						// Añadimos el elemento a la lista como cabecera por
+						// ahora
+						course.gradeReportLines.add(actualLine);
+					}
+				} // End for
+				course.setActivities(course.gradeReportLines);
+			} // End if
+		} catch (IOException ex) {
+			logger.error("Error de conexion con Moodle al generar el arbol del calificador.");
 			MainController.errorDeConexion();
+		} catch (Exception e ) {
+			logger.error("Se ha producido un error al generar el arbol del calificador.");
 		} finally {
-			httpclient.close();
+				response.close();
+				httpclient.close();
 		}
 	}
 	
@@ -257,7 +255,7 @@ public class CourseWS {
 	 * 		ArrayList con todos los GradeReportLines del usuario.
 	 * @throws Exception
 	 */
-	public static ArrayList<GradeReportLine> setUserGradeReportLines(String token, int userId, int courseId) throws Exception {
+	public static ArrayList<GradeReportLine> getUserGradeReportLines(String token, int userId, int courseId) throws Exception {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse response = null;
 		ArrayList<GradeReportLine> gradeReportLines = null;
@@ -305,9 +303,11 @@ public class CourseWS {
 							new GradeReportLine(id, name, grade, String.valueOf(rangeMin), String.valueOf(rangeMax)));
 				}
 			}
-		} catch (Exception e) {
-			logger.error("Error de conexión");
+		} catch (IOException ex) {
+			logger.error("Error de conexion con Moodle al obtener las notas del alumno.");
 			MainController.errorDeConexion();
+		} catch (Exception e ) {
+			logger.error("Se ha producido un error al obtener las notas del alumno.");
 		} finally {
 				response.close();
 				httpclient.close();

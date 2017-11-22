@@ -61,6 +61,7 @@ public class LoginController {
 		progressBar.visibleProperty().set(false);
 
 		try { // Establecemos el token
+			logger.info("Obteniendo el token.");
 			UBUGrades.session.setToken();
 		} catch (Exception e) {
 			correcto = false;

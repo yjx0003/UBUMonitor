@@ -8,9 +8,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.UBUGrades;
-import webservice.CourseWS;
-
 /**
  * Clase que representa un usuario matriculado en una asignatura
  * 
@@ -92,12 +89,6 @@ public class EnrolledUser {
 			groups = new ArrayList<>(); // to have an empty list, not a null
 		}
 		this.courses = new ArrayList<Integer>();
-		
-		// Obtenemos todas las lineas de calificación del usuario
-		gradeReportLines = new ArrayList<GradeReportLine>();
-		gradeReportLines = CourseWS.setUserGradeReportLines(UBUGrades.session.getToken(), this.id,
-				UBUGrades.session.getActualCourse().getId());
-		logger.info("Cargados datos de: " + this.fullName);
 	}
 
 	/**
@@ -404,6 +395,10 @@ public class EnrolledUser {
 	 */
 	public ArrayList<GradeReportLine> getAllGradeReportLines() {
 		return gradeReportLines;
+	}
+	
+	public void setAllGradeReportLines(ArrayList<GradeReportLine> gradeReportLines) {
+		this.gradeReportLines = gradeReportLines;
 	}
 
 	/**

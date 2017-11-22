@@ -59,6 +59,6 @@
 				<Cursor fx:constant="HAND" />
 			</cursor>
 		</Button>
-      <ProgressBar fx:id="progressBar" layoutX="338.0" layoutY="544.0" prefHeight="18.0" prefWidth="139.0" progress="0.0" />
+      <ProgressBar fx:id="progressBar" layoutX="340.0" layoutY="507.0" prefHeight="18.0" prefWidth="139.0" progress="0.0" />
 	</children>
 </AnchorPane>

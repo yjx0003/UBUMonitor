@@ -38,6 +38,7 @@ public class Stats {
 	 * Constructor de la clase Stats.
 	 */
 	public Stats() {
+		logger.info("Generando las estadisticas para el curso cargado.");
 		//Estadisticas Generales
 		generalGradesStats = new HashMap<>();
 		String grade = "";
@@ -79,10 +80,8 @@ public class Stats {
 					}
 				}
 			}
-			
 			groupsStats.put(group, currentGroupStats);
 		}
-
 	}
 	
 	/**

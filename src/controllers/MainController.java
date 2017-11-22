@@ -124,12 +124,11 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
-			logger.info(" Cargando curso '" + UBUGrades.session.getActualCourse().getFullName() + "'...");
+			logger.info("Completada la carga del curso '" + UBUGrades.session.getActualCourse().getFullName() + ".");
 			
 			// Inicializamos las estadisticas para esta asignatura
 			stats = new Stats();
 			
-			 
 			//Cargamos el html de los graficos y calificaciones
 			webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
 			webViewChartsEngine = webViewCharts.getEngine();
@@ -1005,11 +1004,11 @@ public class MainController implements Initializable {
     	if(group.equals("Todos")) {
     		meanStats = stats.getGeneralStats();
     		meanDataset = "{label:'Media general',data:[";
-    		color = "rgba(73, 87, 98, ";
+    		color = "rgba(255, 152, 0, ";
     	}else {
     		meanStats = stats.getGroupStats(group);
     		meanDataset = "{label:'Media del grupo',data:[";
-    		color = "rgba(73, 87, 98, ";
+    		color = "rgba(0, 150, 136, ";
     	}
     	
 		

@@ -49,7 +49,6 @@ public class MoodleUserWS {
 					+ "&field=email&values[0]=" + eMail);
 			CloseableHttpResponse response = httpclient.execute(httpget);
 			String respuesta = EntityUtils.toString(response.getEntity());
-			// logger.info(respuesta);
 			JSONArray jsonArray = new JSONArray(respuesta);
 			if (jsonArray != null) {
 				JSONObject jsonObject = (JSONObject) jsonArray.get(0);

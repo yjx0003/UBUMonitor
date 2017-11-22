@@ -425,10 +425,15 @@ public class CourseWS {
 	 */
 	public static String getRange(String data, boolean option) {
 		String[] ranges = data.split("&ndash;");
-		if (option) // true = rango mínimo
-			return ranges[0];
-		else // false = rango máximo
-			return ranges[1];
+		try {
+			if (option) // true = rango mínimo
+				return ranges[0];
+			else // false = rango máximo
+				return ranges[1];
+		} catch (ArrayIndexOutOfBoundsException e) {
+			return "0";
+		}
+		
 	}
 
 	/**

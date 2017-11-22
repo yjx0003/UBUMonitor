@@ -6,6 +6,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import controllers.UBUGrades;
 import model.Course;
@@ -23,6 +26,8 @@ public class Session {
 	private String password;
 	private String tokenUser;
 	private Course actualCourse;
+	
+	static final Logger logger = LoggerFactory.getLogger(Session.class);
 
 	/**
 	 * Constructor de la clase Session
@@ -59,7 +64,7 @@ public class Session {
 			HttpGet httpget = new HttpGet(UBUGrades.host + "/login/token.php?username=" + this.email + "&password="
 					+ this.password + "&service=" + MoodleOptions.SERVICIO_WEB_MOODLE);
 			response = httpclient.execute(httpget);
-	
+			
 			String respuesta = EntityUtils.toString(response.getEntity());
 			JSONObject jsonObject = new JSONObject(respuesta);
 			if (jsonObject != null) {

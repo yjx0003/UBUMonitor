@@ -70,14 +70,14 @@ public class LoginController {
 				logger.info("Obteniendo el token.");
 				UBUGrades.session.setToken();
 			} catch (UnknownHostException | ClientProtocolException e) {
+				correcto = false;
 				logger.error("No se ha podido conectar con el host.", e);
 				lblStatus.setText("No se ha podido conectar con el host.");
 			}catch (Exception e) {
+				correcto = false;
 				logger.error("Usuario y/o contraseña incorrectos", e);
 				lblStatus.setText("Usuario y/o contraseña incorrectos.");
 				txtPassword.setText("");
-			}finally {
-				correcto = false;
 			}
 			
 			// Si el login es correcto

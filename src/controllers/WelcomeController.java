@@ -70,13 +70,13 @@ public class WelcomeController implements Initializable {
 				nameCourses.add(UBUGrades.user.getCourses().get(i).getFullName());
 			}
 			Collections.sort(nameCourses);
-
 			list = FXCollections.observableArrayList(nameCourses);
 			progressBar.visibleProperty().set(false);
+			listCourses.setItems(list);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error al cargar los cursos", e);
 		}
-		listCourses.setItems(list);
+		
 	}
 
 	/**
@@ -99,7 +99,6 @@ public class WelcomeController implements Initializable {
 
 			@Override
 			protected Void call() throws Exception {
-				
 				try {
 					logger.info("Cargando datos del curso: " + UBUGrades.session.getActualCourse().getFullName());
 					// Establecemos los usuarios matriculados

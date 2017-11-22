@@ -165,8 +165,7 @@ public class WelcomeController implements Initializable {
 				}
 			}
 		});
-		Thread thread = new Thread(task, "task-thread");
-		thread.setDaemon(true);
+		Thread thread = new Thread(task, "datos");
 		thread.start();
 	}
 	
@@ -179,10 +178,12 @@ public class WelcomeController implements Initializable {
 	private static void errorWindow(String mensaje) {
 		Alert alert = new Alert(AlertType.ERROR);
 		
+		alert.setTitle("UbuGrades");
+		alert.setHeaderText("Error");
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.initOwner(UBUGrades.stage);
 		alert.getDialogPane().setContentText(mensaje);
-
+		
 		ButtonType buttonSalir = new ButtonType("Cerrar UBUGrades");
 		alert.getButtonTypes().setAll(buttonSalir);
 

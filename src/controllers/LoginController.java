@@ -14,6 +14,9 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+import java.net.UnknownHostException;
+
+import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,65 +55,72 @@ public class LoginController {
 	 * @throws Exception
 	 */
 	public void login(ActionEvent event) throws Exception {
-		// Almacenamos los parámetros introducidos por el usuario:
-		UBUGrades.init.getScene().setCursor(Cursor.WAIT);
-		UBUGrades.host = txtHost.getText();
-		UBUGrades.session = new Session(txtUsername.getText(), txtPassword.getText());
-
-		Boolean correcto = true;
-		progressBar.visibleProperty().set(false);
-
-		try { // Establecemos el token
-			logger.info("Obteniendo el token.");
-			UBUGrades.session.setToken();
-		} catch (Exception e) {
-			correcto = false;
-			logger.error("No se ha podido establecer el token d usuario. {}", e);
-		}
-		// Si el login es correcto
-		if (correcto) {
-			logger.info(" Login Correcto");
-
-			progressBar.setProgress(0.0);
-			Task<Object> task = createWorker();
-			progressBar.progressProperty().unbind();
-			progressBar.progressProperty().bind(task.progressProperty());
-			progressBar.visibleProperty().set(true);
-			task.messageProperty().addListener(new ChangeListener<String>() {
-				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-					if (newValue.equals("end")) {
-						// Cargamos la siguiente ventana
-						try {
-							// Accedemos a la siguiente ventana
-							FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Welcome.fxml"));
-
-							UBUGrades.stage = new Stage();
-
-							Parent root = loader.load();
-							Scene scene = new Scene(root);
-							UBUGrades.stage.setScene(scene);
-							UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
-							UBUGrades.stage.setTitle("UBUGrades");
-							UBUGrades.stage.setResizable(false);
-							UBUGrades.init.close();
-							UBUGrades.stage.show();
-							lblStatus.setText("");
-						} catch (Exception e) {
-							e.printStackTrace();
-							throw new RuntimeException("Loading Welcome.fxml");
-						}
-					} else {
-						logger.info(newValue);
-					}
-				}
-			});
-			Thread th = new Thread(task);
-			th.start();
+		if(txtHost.getText().isEmpty() || txtPassword.getText().isEmpty() || txtUsername.getText().isEmpty()) {
+			lblStatus.setText("Debes completar todos los campos.");
 		} else {
-			lblStatus.setText("Usuario y/o contraseña incorrectos.");
-			logger.info("Login Incorrecto");
-			//txtUsername.setText("");
-			txtPassword.setText("");
+			// Almacenamos los parámetros introducidos por el usuario:
+			UBUGrades.init.getScene().setCursor(Cursor.WAIT);
+			UBUGrades.host = txtHost.getText();
+			UBUGrades.session = new Session(txtUsername.getText(), txtPassword.getText());
+	
+			Boolean correcto = true;
+			progressBar.visibleProperty().set(false);
+	
+			try { // Establecemos el token
+				logger.info("Obteniendo el token.");
+				UBUGrades.session.setToken();
+			} catch (UnknownHostException | ClientProtocolException e) {
+				logger.error("No se ha podido conectar con el host.", e);
+				lblStatus.setText("No se ha podido conectar con el host.");
+			}catch (Exception e) {
+				logger.error("Usuario y/o contraseña incorrectos", e);
+				lblStatus.setText("Usuario y/o contraseña incorrectos.");
+				txtPassword.setText("");
+			}finally {
+				correcto = false;
+			}
+			
+			// Si el login es correcto
+			if (correcto) {
+				logger.info("Login Correcto");
+				lblStatus.setVisible(false);
+	
+				progressBar.setProgress(0.0);
+				Task<Object> task = createWorker();
+				progressBar.progressProperty().unbind();
+				progressBar.progressProperty().bind(task.progressProperty());
+				progressBar.visibleProperty().set(true);
+				task.messageProperty().addListener(new ChangeListener<String>() {
+					public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+						if (newValue.equals("end")) {
+							// Cargamos la siguiente ventana
+							try {
+								// Accedemos a la siguiente ventana
+								FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Welcome.fxml"));
+	
+								UBUGrades.stage = new Stage();
+	
+								Parent root = loader.load();
+								Scene scene = new Scene(root);
+								UBUGrades.stage.setScene(scene);
+								UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
+								UBUGrades.stage.setTitle("UBUGrades");
+								UBUGrades.stage.setResizable(false);
+								UBUGrades.init.close();
+								UBUGrades.stage.show();
+								lblStatus.setText("");
+							} catch (Exception e) {
+								e.printStackTrace();
+								throw new RuntimeException("Loading Welcome.fxml");
+							}
+						} else {
+							logger.info(newValue);
+						}
+					}
+				});
+				Thread th = new Thread(task, "login");
+				th.start();
+			}
 		}
 	}
 

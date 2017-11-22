@@ -64,12 +64,12 @@ public class CourseWS {
 					}
 				}
 			}
-		} catch (IOException ex) {
-			logger.error("Error de conexion con Moodle al obtener los usuarios matriculados.");
+		} catch (IOException e) {
+			logger.error("Error de conexion con Moodle al obtener los usuarios matriculados.", e);
 			throw new IOException("Error de conexion con Moodle al obtener los usuarios matriculados."
 					+ "\n Es posible que su equipo haya perdido la conexion a internet.");
 		} catch (Exception e ) {
-			logger.error("Se ha producido un error al obtener los usuarios matriculados.");
+			logger.error("Se ha producido un error al obtener los usuarios matriculados.", e);
 			throw new Exception("Se ha producido un error al obtener los usuarios matriculados.");
 		} finally {
 			httpclient.close();
@@ -227,12 +227,12 @@ public class CourseWS {
 				} // End for
 				course.setActivities(course.gradeReportLines);
 			} // End if
-		} catch (IOException ex) {
-			logger.error("Error de conexion con Moodle al generar el arbol del calificador.");
+		} catch (IOException e) {
+			logger.error("Error de conexion con Moodle al generar el arbol del calificador.", e);
 			throw new IOException("Error de conexion con Moodle al generar el arbol del calificador."
 					+ "\n Es posible que su equipo haya perdido la conexion a internet.");
 		} catch (Exception e ) {
-			logger.error("Se ha producido un error al generar el arbol del calificador.");
+			logger.error("Se ha producido un error al generar el arbol del calificador.", e);
 			throw new Exception("Se ha producido un error al generar el arbol del calificador.");
 		} finally {
 				response.close();
@@ -311,12 +311,12 @@ public class CourseWS {
 					logger.info("Añadiendo el GRL obtenido");
 				}
 			}
-		} catch (IOException ex) {
-			logger.error("Error de conexion con Moodle al obtener las notas de alumno.");
+		} catch (IOException e) {
+			logger.error("Error de conexion con Moodle al obtener las notas de alumno.", e);
 			throw new IOException("Error de conexion con Moodle al generar el arbol del calificador."
 					+ "\n Es posible que su equipo haya perdido la conexion a internet.");
 		} catch (Exception e ) {
-			logger.error("Se ha producido un error al obtener las notas del alumno.");
+			logger.error("Se ha producido un error al obtener las notas del alumno.", e);
 			throw new Exception("Se ha producido un error al obtener las notas del alumno.");
 		} finally {
 				response.close();

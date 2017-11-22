@@ -54,21 +54,20 @@ public class Session {
 	 */
 	public void setToken() throws Exception {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
+		CloseableHttpResponse response = null;
 		try {
 			HttpGet httpget = new HttpGet(UBUGrades.host + "/login/token.php?username=" + this.email + "&password="
 					+ this.password + "&service=" + MoodleOptions.SERVICIO_WEB_MOODLE);
-			CloseableHttpResponse response = httpclient.execute(httpget);
-			try {
-				String respuesta = EntityUtils.toString(response.getEntity());
-				JSONObject jsonObject = new JSONObject(respuesta);
-				if (jsonObject != null) {
-					this.tokenUser = jsonObject.getString("token");
-				}
-			} finally {
-				response.close();
+			response = httpclient.execute(httpget);
+	
+			String respuesta = EntityUtils.toString(response.getEntity());
+			JSONObject jsonObject = new JSONObject(respuesta);
+			if (jsonObject != null) {
+				this.tokenUser = jsonObject.getString("token");
 			}
 		} finally {
 			httpclient.close();
+			if(response != null) {response.close();}
 		}
 	}
 

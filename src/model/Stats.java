@@ -116,10 +116,8 @@ public class Stats {
 	 */
 	public void addElementValue (HashMap<Integer,DescriptiveStatistics> statsHs, int gradeId, double value) {
 		DescriptiveStatistics stats = statsHs.get(gradeId);
-		if(stats != null) {
-			stats.addValue(value);
-			statsHs.put(gradeId, stats);
-		}
+		stats.addValue(value);
+		statsHs.put(gradeId, stats);
 	}
 	
 	/**

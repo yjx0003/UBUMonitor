@@ -2,6 +2,11 @@ package model;
 
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import webservice.CourseWS;
+
 /**
  * Clase GradeReportLine (GRL). Representa a una línea en el calificador de un
  * alumno. Cada línea se compone de su id, nombre, nivel, nota, porcentaje,
@@ -12,6 +17,9 @@ import java.util.ArrayList;
  *
  */
 public class GradeReportLine {
+	
+	static final Logger logger = LoggerFactory.getLogger(GradeReportLine.class);
+	
 	private int id;
 	private String name;
 	private int level;
@@ -161,6 +169,27 @@ public class GradeReportLine {
 	 */
 	public String getGrade() {
 		return grade;
+	}
+	
+	/**
+	 * Devuelve la nota del GradeReportLine ajustada al rango de 0 a 10
+	 * 
+	 * @return
+	 * 		La nota ajustada.
+	 */
+	public String getGradeAdjustedTo10() {
+		Float gradeAdjusted = CourseWS.getFloat(grade);
+		if (!Float.isNaN(gradeAdjusted)) {
+			Float newRangeMax = Float.parseFloat(rangeMax);
+			Float newRangeMin = Float.parseFloat(rangeMin);
+			
+			newRangeMax -= newRangeMin;
+			gradeAdjusted -= newRangeMin;
+			newRangeMin = new Float(0);
+			
+			gradeAdjusted = (float) ((gradeAdjusted*10.0) / newRangeMax); 	
+		}
+		return Float.toString(gradeAdjusted);
 	}
 
 	/**
@@ -315,7 +344,7 @@ public class GradeReportLine {
 	public void addChild(GradeReportLine child) {
 		this.children.add(child);
 	}
-
+	
 	/**
 	 * Convierte el GradeReportLine a un String con su nombre.
 	 */

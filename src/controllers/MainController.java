@@ -811,8 +811,6 @@ public class MainController implements Initializable {
 			}
 		}
 
-		
-		
 		tableData += "]";
 		return tableData;
 	}
@@ -856,38 +854,28 @@ public class MainController implements Initializable {
 				countA++;
 				GradeReportLine actualLine = actualUser.getGradeReportLine(structTree.getValue().getId());
 				try {
-					String calculatedGrade = actualLine.getGrade();
+					String calculatedGrade = actualLine.getGradeAdjustedTo10();
 					
 					if (countA == countB) {
 						countB++;
-						
 						//Añadidimos el nombre del elemento como label
 						if (firstGrade) {
 							labels += "'" + actualLine.getName() + "'";
 						} else {
 							labels += ",'" + actualLine.getName() + "'";
 						}
-						
 					}
-					// Si es numérico lo graficamos y lo mostramos en la tabla
-					if (!Float.isNaN(CourseWS.getFloat(calculatedGrade))) {
-						// Añadimos la nota al gráfico
-						if (firstGrade) {
-							dataSet += Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
-							firstGrade = false;
-						} else {
-							dataSet += "," + Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
-						}											
-					} else { 
-						if (firstGrade) {
-							dataSet += "NaN";
-							firstGrade = false;
-						} else {
-							dataSet += ",NaN";
-						}
-					}
+					
+					if (firstGrade) {
+						dataSet += calculatedGrade;
+						firstGrade = false;
+					} else {
+						dataSet += "," + calculatedGrade;
+					}	
+					
 				} catch (Exception e) {
-					logger.error("Error en la construcción del árbol/tabla. {}", e);
+					//TODO mostrar ventana de error. ¿Volver a cargar los datos?
+					logger.error("Error en la construcción del dataset.", e);
 				}
 			}		
 						

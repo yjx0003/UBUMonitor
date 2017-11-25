@@ -239,7 +239,6 @@ public class CourseWS {
 		}
 	}
 	
-	
 	/**
 	 * Genera todos los GradeReportLines de un curso para un usuario.Este proceso se realiza al inicio
 	 * alamcenando en memoria los datos.
@@ -250,6 +249,8 @@ public class CourseWS {
 	 *            curso del que se quieren cargar los datos
 	 * @param userId
 	 *            id del usuario a cargar
+	 * @return
+	 * 		ArrayList con todos los GradeReportLines del usuario.
 	 * @throws Exception
 	 */
 	public static ArrayList<GradeReportLine> getUserGradeReportLines(String token, int userId, int courseId) throws Exception {
@@ -390,17 +391,16 @@ public class CourseWS {
 				} // End for
 			} // End if			
 		} catch (IOException e) {
-			logger.error("Error de conexion con Moodle al generar el arbol del calificador.", e);
-			throw new IOException("Error de conexion con Moodle al generar el arbol del calificador."
+			logger.error("Error de conexion con Moodle al obtener las notas del alumno.", e);
+			throw new IOException("Error de conexion con Moodle al obtener las notas del alumno."
 					+ "\n Es posible que su equipo haya perdido la conexion a internet.");
 		} catch (Exception e ) {
-			logger.error("Se ha producido un error al generar el arbol del calificador.", e);
-			throw new Exception("Se ha producido un error al generar el arbol del calificador.");
+			logger.error("Se ha producido un error al obtener las notas del alumno.", e);
+			throw new Exception("Se ha producido un error al obtener las notas del alumno.");
 		} finally {
 				response.close();
 				httpclient.close();
 		}
-		
 		return gradeReportLines;
 	}
 
@@ -671,7 +671,7 @@ public class CourseWS {
 
 	/**
 	 * Devuelve el numero, con el formato especificado, encontrado en la cadena
-	 * pasada Si no es un numero devuelve todo el contenido
+	 * pasada Si no es un numero devuelve "-".
 	 * 
 	 * @param data
 	 * @return
@@ -682,6 +682,6 @@ public class CourseWS {
 		if (match.find()) {
 			return data.substring(match.start(), match.end());
 		}
-		return data;
+		return "-";
 	}
 }

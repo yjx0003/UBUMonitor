@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,9 +30,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
@@ -48,7 +44,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import model.EnrolledUser;
@@ -126,9 +121,6 @@ public class MainController implements Initializable {
 		try {
 			logger.info("Completada la carga del curso '" + UBUGrades.session.getActualCourse().getFullName() + ".");
 			
-			// Inicializamos las estadisticas para esta asignatura
-			stats = new Stats();
-			
 			//Cargamos el html de los graficos y calificaciones
 			webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
 			webViewChartsEngine = webViewCharts.getEngine();
@@ -139,6 +131,8 @@ public class MainController implements Initializable {
 			ArrayList<EnrolledUser> users = (ArrayList<EnrolledUser>) UBUGrades.session.getActualCourse()
 					.getEnrolledUsers();
 			ArrayList<EnrolledUser> nameUsers = new ArrayList<EnrolledUser>();
+			
+			stats = Stats.getStats();
 
 			//////////////////////////////////////////////////////////////////////////
 			// Manejo de roles (MenuButton Rol):
@@ -229,8 +223,7 @@ public class MainController implements Initializable {
 			tfdItems.setOnAction(inputCalification());
 
 		} catch (Exception e) {
-			logger.error("Error en la inicialización. {}", e);
-			e.printStackTrace();
+			logger.error("Error en la inicialización.", e);
 		}
 
 		// Activamos la selección múltiple en la lista de participantes
@@ -613,6 +606,8 @@ public class MainController implements Initializable {
 	 */
 	public void changeCourse(ActionEvent actionEvent) throws Exception {
 		logger.info("Cambiando de asignatura...");
+		// Borramos las estadisticas para esta asignatura
+		Stats.removeStats();
 		// Accedemos a la siguiente ventana
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource("/view/Welcome.fxml"));
@@ -628,6 +623,8 @@ public class MainController implements Initializable {
 		UBUGrades.stage.setTitle("UBUGrades");
 		UBUGrades.stage.show();
 	}
+	
+	
 
 	/**
 	 * Exporta el gráfico. Se exportara como imagen en formato png.
@@ -713,27 +710,6 @@ public class MainController implements Initializable {
 		logger.info("Cerrando aplicación");
 		UBUGrades.stage.close();
 	}
-
-	/**
-	 * Muestra una ventana de error.
-	 * 
-	 * @param mensaje
-	 * 		El mensaje que se quiere mostrar.
-	 */
-	public static void errorWindow(String mensaje) {
-		Alert alert = new Alert(AlertType.ERROR);
-
-		alert.initModality(Modality.APPLICATION_MODAL);
-		alert.initOwner(UBUGrades.stage);
-		alert.getDialogPane().setContentText(mensaje);
-
-		ButtonType buttonSalir = new ButtonType("Cerrar UBUGrades");
-		alert.getButtonTypes().setAll(buttonSalir);
-
-		Optional<ButtonType> result = alert.showAndWait();
-		if (result.get() == buttonSalir)
-			UBUGrades.stage.close();
-	}  	
     
 	
 	private String generateTableData() {
@@ -1033,7 +1009,6 @@ public class MainController implements Initializable {
     private void updateGroupData(String group) {
     	if(group.equals("Todos")) {
     		webViewChartsEngine.executeScript("saveGroupMean('')");
-    		//webViewChartsEngine.executeScript("updateChart('boxplotgroup' , '')");
     	} else {
         	webViewChartsEngine.executeScript("saveGroupMean(" + generateMeanDataSet(group) + ")");
     		webViewChartsEngine.executeScript("updateChart('boxplotgroup'," + generateBoxPlotDataSet(group) + ")");
@@ -1056,4 +1031,5 @@ public class MainController implements Initializable {
 		webViewChartsEngine.executeScript("updateChart('line'," + data + ")");
 		webViewChartsEngine.executeScript("updateChart('radar'," + data + ")");	
     }
+
 }

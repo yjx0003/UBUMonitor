@@ -54,6 +54,8 @@ public class WelcomeController implements Initializable {
     private Button btnEntrar;
 	@FXML
 	private ProgressBar progressBar;
+	@FXML
+	private Label lblProgress;
 
 	static final Logger logger = LoggerFactory.getLogger(WelcomeController.class);
 
@@ -76,7 +78,6 @@ public class WelcomeController implements Initializable {
 		} catch (Exception e) {
 			logger.error("Error al cargar los cursos", e);
 		}
-		
 	}
 
 	/**
@@ -94,19 +95,21 @@ public class WelcomeController implements Initializable {
 		logger.info(" Curso seleccionado: " + UBUGrades.session.getActualCourse().getFullName());
 		
 		btnEntrar.setVisible(false);
+		lblProgress.setVisible(true);
 		progressBar.setProgress(0.0);
 		Task<Void> task = new Task<Void>() {
 
 			@Override
-			protected Void call() throws Exception {
+			protected Void call() {
 				try {
 					logger.info("Cargando datos del curso: " + UBUGrades.session.getActualCourse().getFullName());
 					// Establecemos los usuarios matriculados
 					CourseWS.setEnrolledUsers(UBUGrades.session.getToken(), UBUGrades.session.getActualCourse());
-					int enroledUsersCount = UBUGrades.session.getActualCourse().getEnrolledUsersCount()+4;
+					int enroledUsersCount = UBUGrades.session.getActualCourse().getEnrolledUsersCount()+8;
 					int done = 0;
 					updateProgress(done, enroledUsersCount);
-						
+					
+					updateMessage("update_" + "Alumnos cargados: " + done + " de " + (enroledUsersCount-8));
 					for(EnrolledUser user: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
 						// Obtenemos todas las lineas de calificación del usuario
 						logger.info("Cargando los datos de: " + user.getFullName() + "...");
@@ -114,13 +117,24 @@ public class WelcomeController implements Initializable {
 								UBUGrades.session.getActualCourse().getId()));
 						updateProgress(done++, enroledUsersCount);
 						logger.info("Datos cargados.");
+						updateMessage("update_" + "Alumnos cargados: " + done + " de " + (enroledUsersCount-8));
 					}
 					
+					updateMessage("update_" + "Generando el calificador del curso...");
 					// Establecemos calificador del curso
 					CourseWS.setGradeReportLines(UBUGrades.session.getToken(),
 							UBUGrades.session.getActualCourse().getEnrolledUsers().get(0).getId(),
 							UBUGrades.session.getActualCourse());
+					done += 4;
+					updateProgress(done, enroledUsersCount);
+					
+					updateMessage("update_" + "Generando estadisticas...");
+					//Establecemos las estadisticas
+					@SuppressWarnings("unused")
+					Stats stats = Stats.getStats();
+					
 					updateProgress(done+4, enroledUsersCount);
+					
 					Thread.sleep(50);
 					//Indica que se ha terminado el trabajo
 					updateMessage("end");
@@ -159,6 +173,8 @@ public class WelcomeController implements Initializable {
 						lblNoSelect.setText("Debe seleccionar un curso");
 						logger.info("Debe seleccionar un curso");
 					}
+				} else if (newValue.substring(0, 6).equals("update")){
+					lblProgress.setText(newValue.substring(7));
 				} else {
 					errorWindow(newValue);
 				}

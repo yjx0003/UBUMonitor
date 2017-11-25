@@ -23,6 +23,11 @@ public class Stats {
 	static final Logger logger = LoggerFactory.getLogger(MainController.class);
 	
 	/**
+	 * Instancia de las estadisticas.
+	 */
+	private static Stats stats = null;
+	
+	/**
 	 * HashMap que almacena como clave el id del GradeReporLine(GRL)
 	 * y como valor el objeto de estadisticas de Apache Commons Math.
 	 */
@@ -35,55 +40,81 @@ public class Stats {
 	private HashMap<String, HashMap<Integer, DescriptiveStatistics>> groupsStats;
 	
 	/**
+	 * Genera las estadisticas en caso de no estar ya generadas.
+	 * @return
+	 * 		La instancia de las estadisticas.
+	 * @throws Exception
+	 */
+	public static Stats getStats() throws Exception {
+		if (stats == null) {
+			stats = new Stats();
+		}
+		return stats;
+	}
+	
+	/**
+	 * Elimina la instancia de las estadisticas.
+	 */
+	public static void removeStats() {
+		stats = null;
+	}
+	
+	/**
 	 * Constructor de la clase Stats.
 	 */
-	public Stats() {
-		logger.info("Generando las estadisticas generales para el curso cargado.");
-		//Estadisticas Generales
-		generalGradesStats = new HashMap<>();
-		String grade = "";
-		// Inicializamos el HashMap con cada una de los Grade Report Lines de la asignatura.
-		for (GradeReportLine actualLine : UBUGrades.session.getActualCourse().getGradeReportLines()) {
-			generalGradesStats.put(actualLine.getId(), new DescriptiveStatistics());
-		}
-		
-		// Añadimos las notas de cada usuario para cada GradeReportLine
-		for(EnrolledUser enrroledUser: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
-			for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
-				grade = gradeReportLine.getGrade();
-				// Si la nota es "-", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
-				if(!grade.equals("-") && !grade.equals("")) {
-					this.addElementValue(generalGradesStats, gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
-				}
-			}
-		}
-		
-		logger.info("Generando las estadisticas de los gruopos para el curso cargado.");
-		//Estadisticas de los grupos
-		groupsStats = new HashMap<>();
-		HashMap<Integer, DescriptiveStatistics> currentGroupStats;
-		
-		// Generamos estadisticas para cada uno de los grupos
-		for(String group: UBUGrades.session.getActualCourse().getGroups()) {
-			
-			// Inicializamos el HashMap con cada una de los Grade Report Lines de la asignatura para ese grupo.
-			currentGroupStats = new HashMap<>();
+	protected Stats() throws Exception {
+		try {
+			logger.info("Generando las estadisticas generales para el curso cargado.");
+			//Estadisticas Generales
+			generalGradesStats = new HashMap<>();
+			String grade = "";
+			// Inicializamos el HashMap con cada una de los Grade Report Lines de la asignatura.
 			for (GradeReportLine actualLine : UBUGrades.session.getActualCourse().getGradeReportLines()) {
-				currentGroupStats.put(actualLine.getId(), new DescriptiveStatistics());
+				generalGradesStats.put(actualLine.getId(), new DescriptiveStatistics());
 			}
 			
-			for(EnrolledUser enrroledUser: UBUGrades.session.getActualCourse().getUsersInGroup(group)) {
+			// Añadimos las notas de cada usuario para cada GradeReportLine
+			for(EnrolledUser enrroledUser: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
 				for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
 					grade = gradeReportLine.getGrade();
 					// Si la nota es "-", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
 					if(!grade.equals("-") && !grade.equals("")) {
-						this.addElementValue(currentGroupStats, gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
+						this.addElementValue(generalGradesStats, gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
 					}
 				}
 			}
-			groupsStats.put(group, currentGroupStats);
+			
+			logger.info("Generando las estadisticas de los gruopos para el curso cargado.");
+			//Estadisticas de los grupos
+			groupsStats = new HashMap<>();
+			HashMap<Integer, DescriptiveStatistics> currentGroupStats;
+			
+			// Generamos estadisticas para cada uno de los grupos
+			for(String group: UBUGrades.session.getActualCourse().getGroups()) {
+				
+				// Inicializamos el HashMap con cada una de los Grade Report Lines de la asignatura para ese grupo.
+				currentGroupStats = new HashMap<>();
+				for (GradeReportLine actualLine : UBUGrades.session.getActualCourse().getGradeReportLines()) {
+					currentGroupStats.put(actualLine.getId(), new DescriptiveStatistics());
+				}
+				
+				for(EnrolledUser enrroledUser: UBUGrades.session.getActualCourse().getUsersInGroup(group)) {
+					for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
+						grade = gradeReportLine.getGrade();
+						// Si la nota es "-", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
+						if(!grade.equals("-") && !grade.equals("")) {
+							this.addElementValue(currentGroupStats, gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
+						}
+					}
+				}
+				groupsStats.put(group, currentGroupStats);
+			}
+			logger.info("Estadisticas generadas.");
+		} catch (Exception e) {
+			logger.error("Error al generar las estadisticas." , e);
+			throw new Exception("Error al generar las estadisticas.");
 		}
-		logger.info("Estadisticas generadas.");
+		
 	}
 	
 	/**

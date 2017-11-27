@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,6 +31,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
@@ -38,12 +41,14 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import model.EnrolledUser;
@@ -51,6 +56,7 @@ import model.GradeReportLine;
 import model.Group;
 import model.Role;
 import model.Stats;
+import netscape.javascript.JSException;
 import webservice.CourseWS;
 
 /**
@@ -1007,11 +1013,16 @@ public class MainController implements Initializable {
      * 		El grupo seleccionado.
      */
     private void updateGroupData(String group) {
-    	if(group.equals("Todos")) {
-    		webViewChartsEngine.executeScript("saveGroupMean('')");
-    	} else {
-        	webViewChartsEngine.executeScript("saveGroupMean(" + generateMeanDataSet(group) + ")");
-    		webViewChartsEngine.executeScript("updateChart('boxplotgroup'," + generateBoxPlotDataSet(group) + ")");
+    	try {
+	    	if(group.equals("Todos")) {
+	    		webViewChartsEngine.executeScript("saveGroupMean('')");
+	    	} else {
+	        	webViewChartsEngine.executeScript("saveGroupMean(" + generateMeanDataSet(group) + ")");
+	    		webViewChartsEngine.executeScript("updateChart('boxplotgroup'," + generateBoxPlotDataSet(group) + ")");
+	    	}
+    	} catch (JSException e) {
+    		logger.error("Error al generar los gráficos.", e);
+    		errorWindow("No se han podido generar los gráficos.");
     	}
     }
         
@@ -1019,17 +1030,45 @@ public class MainController implements Initializable {
      * Actualiza los gráficos.
      */
     private void updateChart() {
-    	String data = generateDataSet();
-    	
-    	updateGroupData(filterGroup);
-    	
-    	webViewChartsEngine.executeScript("saveTableData(" + generateTableData() + ")");
-    	
-    	webViewChartsEngine.executeScript("saveMean(" + generateMeanDataSet("Todos") + ")");
-		
-    	webViewChartsEngine.executeScript("updateChart('boxplot'," + generateBoxPlotDataSet("Todos") + ")");
-		webViewChartsEngine.executeScript("updateChart('line'," + data + ")");
-		webViewChartsEngine.executeScript("updateChart('radar'," + data + ")");	
+    	try {
+	    	String data = generateDataSet();
+	    	
+	    	updateGroupData(filterGroup);
+	    	
+	    	webViewChartsEngine.executeScript("saveTableData(" + generateTableData() + ")");
+	    	
+	    	webViewChartsEngine.executeScript("saveMean(" + generateMeanDataSet("Todos") + ")");
+			
+	    	webViewChartsEngine.executeScript("updateChart('boxplot'," + generateBoxPlotDataSet("Todos") + ")");
+			webViewChartsEngine.executeScript("updateChart('line'," + data + ")");
+			webViewChartsEngine.executeScript("updateChart('radar'," + data + ")");	
+    	} catch (JSException e) {
+    		logger.error("Error al generar los gráficos.", e);
+    		errorWindow("No se han podido generar los gráficos.");
+    	}
     }
+    
+	/**
+	 * Muestra una ventana de error.
+	 * 
+	 * @param mensaje
+	 * 		El mensaje que se quiere mostrar.
+	 */
+	private static void errorWindow(String mensaje) {
+		Alert alert = new Alert(AlertType.ERROR);
+		
+		alert.setTitle("UbuGrades");
+		alert.setHeaderText("Error");
+		alert.initModality(Modality.APPLICATION_MODAL);
+		alert.initOwner(UBUGrades.stage);
+		alert.getDialogPane().setContentText(mensaje);
+		
+		ButtonType buttonSalir = new ButtonType("Cerrar UBUGrades");
+		alert.getButtonTypes().setAll(buttonSalir);
+
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get() == buttonSalir)
+			UBUGrades.stage.close();
+	}  
 
 }

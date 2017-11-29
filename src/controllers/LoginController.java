@@ -58,6 +58,7 @@ public class LoginController {
 		if(txtHost.getText().isEmpty() || txtPassword.getText().isEmpty() || txtUsername.getText().isEmpty()) {
 			lblStatus.setText("Debes completar todos los campos.");
 		} else {
+			
 			// Almacenamos los parámetros introducidos por el usuario:
 			UBUGrades.init.getScene().setCursor(Cursor.WAIT);
 			UBUGrades.host = txtHost.getText();
@@ -85,7 +86,7 @@ public class LoginController {
 				logger.info("Login Correcto");
 				lblStatus.setVisible(false);
 	
-				progressBar.setProgress(0.0);
+				
 				Task<Object> task = createWorker();
 				progressBar.progressProperty().unbind();
 				progressBar.progressProperty().bind(task.progressProperty());

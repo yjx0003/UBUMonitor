@@ -5,9 +5,9 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
@@ -670,7 +670,7 @@ public class MainController implements Initializable {
 	public void saveAll(ActionEvent actionEvent) {
 		logger.info("Exportando los gráficos");
 		PrintWriter out = null;
-		FileReader fr = null;
+		InputStream fr = null;
 		FileWriter fw = null;
 
 		FileChooser fileChooser = new FileChooser();
@@ -681,7 +681,7 @@ public class MainController implements Initializable {
 		if (file != null) {
 			try {
 				// Copiamos la plantilla de exportacion, ExportChart.html al nuevo archivo
-				fr = new FileReader("./resources/graphics/ExportCharts.html");
+				fr = getClass().getResourceAsStream("/graphics/ExportCharts.html");
 				fw = new FileWriter(file);
 				int c = fr.read();
 				while (c != -1) {

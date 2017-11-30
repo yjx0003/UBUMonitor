@@ -17,6 +17,35 @@
 		padding-bottom: 20px;
 		width: 98%;
 	}
+
+	.actividades
+	{
+	}
+
+	.actividadesCelda
+	{
+		cursor: pointer;
+		color: white;
+		font-weight: bold;
+	    background-color: #ab263c;
+	}
+
+	.filasTabla
+	{
+	    background-color: #ffffff;
+	}
+	
+	.filasImpares
+	{
+		background-color: #f0f0f0f0;
+	}
+
+	table tr td:first-child
+	{
+		background-color: #ffffff;
+		color: #000000;
+    	font-weight: bold;
+	}
 		
 	.chart-container
 	{
@@ -260,10 +289,19 @@ var table;
 
 //------------------------------------------Funciones------------------------------------------------------------------
 function generateChart(){
+	
+		var cssClassNames = {
+		    headerRow: 'actividades',
+		    tableRow: 'filasTabla',
+		    oddTableRow: 'filasImpares',
+		    selectedTableRow: 'filaSeleccionada',
+		    hoverTableRow: 'filaHover',
+		    headerCell: 'actividadesCelda',
+		    tableCell: 'tablaCelda'};
 
 		var data = google.visualization.arrayToDataTable(TableDataSet, false); // 'false' indica que la primera fila son labels, no datos.
 		table = new google.visualization.Table(document.getElementById('table_div'));
-    	table.draw(data, {showRowNumber: false, allowHTML: true, width: '100%'});
+    	table.draw(data, {showRowNumber: false, allowHTML: true, width: '100%',  cssClassNames: cssClassNames, frozenColumns: 1});
 
 		var linectx = document.getElementById('LineChart');
 		LineChart = new Chart(linectx,{

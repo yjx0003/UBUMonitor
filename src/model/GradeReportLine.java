@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +73,7 @@ public class GradeReportLine {
 		this.name = name;
 		this.level = level;
 		this.type = type;
-		this.children = new ArrayList<GradeReportLine>();
+		this.children = new ArrayList<>();
 	}
 
 	/**
@@ -105,7 +106,7 @@ public class GradeReportLine {
 		this.grade = grade;
 		this.percentage = percentage;
 		this.typeName = nameType;
-		this.children = new ArrayList<GradeReportLine>();
+		this.children = new ArrayList<>();
 	}
 
 	/**
@@ -185,7 +186,6 @@ public class GradeReportLine {
 			
 			newRangeMax -= newRangeMin;
 			gradeAdjusted -= newRangeMin;
-			newRangeMin = new Float(0);
 			
 			gradeAdjusted = (float) ((gradeAdjusted*10.0) / newRangeMax); 	
 		}
@@ -226,7 +226,6 @@ public class GradeReportLine {
 	 */
 	// RMS changed
 	public String getRangeMax() {
-		// public float getRangeMax() {
 		return this.rangeMax;
 	}
 
@@ -332,7 +331,7 @@ public class GradeReportLine {
 	 * 
 	 * @return children
 	 */
-	public ArrayList<GradeReportLine> getChildren() {
+	public List<GradeReportLine> getChildren() {
 		return this.children;
 	}
 

@@ -16,6 +16,51 @@
 		padding-top: 10px;
 		width: 98%;
 	}
+	
+	.actividades
+	{
+	}
+
+	.actividadesCelda
+	{
+		cursor: pointer;
+		color: white;
+		font-weight: bold;
+	    background-color: #ab263c;
+	}
+
+	.filasTabla
+	{
+	    background-color: #ffffff;
+	}
+	
+	.filasImpares
+	{
+		background-color: #f0f0f0f0;
+	}
+
+	.filasTabla td:first-child
+	{
+		background-color: #ffffff;
+		color: #000000;
+    	font-weight: bold;
+	}
+
+	/*Primera columna de cada fila(la de los nombres de los alumnos)*/
+	.filasImpares td:first-child
+	{
+		background-color: #f0f0f0f0;
+		color: #000000;
+    	font-weight: bold;
+	}
+		
+	.chart-container
+	{
+		position: relative;
+		margin: auto;
+		height: 90vh;
+		width: 90vw;
+	}	
 		
 	.chart-container
 	{
@@ -101,6 +146,8 @@
 		background-color:  #f2f2f2;
 		box-shadow: inset 0 -3px 0px 0px #25c5d8;
 	}
+	
+	
 	
 </style>
 
@@ -352,6 +399,16 @@ document.getElementById('btnLegend').style.backgroundImage = 'url(./../img/visib
 
 // Funcion que crea la tabla de calificaciones
 function drawTable() {
+	
+	  var cssClassNames = {
+			    headerRow: 'actividades',
+			    tableRow: 'filasTabla',
+			    oddTableRow: 'filasImpares',
+			    selectedTableRow: 'filaSeleccionada',
+			    hoverTableRow: 'filaHover',
+			    headerCell: 'actividadesCelda',
+			    tableCell: 'tablaCelda'};
+	
 	currentType = 'table';
 	if(GeneralMeanActive){showGeneralMean();}
 	if(GroupMeanActive){showGroupMean();}
@@ -368,7 +425,7 @@ function drawTable() {
 	document.getElementById('btnLegend').style.display = 'none';
 	var data = google.visualization.arrayToDataTable(TableDataSet, false); // 'false' indica que la primera fila son labels, no datos.
 	table = new google.visualization.Table(document.getElementById('table_div'));
-    table.draw(data, {showRowNumber: false, allowHTML: true, width: '100%'});
+    table.draw(data, {showRowNumber: false, allowHTML: true, width: '100%', cssClassNames: cssClassNames, frozenColumns: 1});
     
     // Al generar la tabla generamos la imagen para la exportación
 	html2canvas(document.getElementById('table_div'), {

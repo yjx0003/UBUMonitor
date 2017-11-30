@@ -54,7 +54,7 @@ public class LoginController {
 	 * @param event
 	 * @throws Exception
 	 */
-	public void login(ActionEvent event) throws Exception {
+	public void login(ActionEvent event) {
 		if(txtHost.getText().isEmpty() || txtPassword.getText().isEmpty() || txtUsername.getText().isEmpty()) {
 			lblStatus.setText("Debes completar todos los campos.");
 		} else {
@@ -111,7 +111,7 @@ public class LoginController {
 								UBUGrades.stage.show();
 								lblStatus.setText("");
 							} catch (Exception e) {
-								e.printStackTrace();
+								logger.error("Error al acceder a la ventana de bienvenida" + e);
 								throw new RuntimeException("Loading Welcome.fxml");
 							}
 						} else {
@@ -153,7 +153,7 @@ public class LoginController {
 	 * @param event
 	 * @throws Exception
 	 */
-	public void clear(ActionEvent event) throws Exception {
+	public void clear(ActionEvent event) {
 		txtUsername.setText("");
 		txtPassword.setText("");
 		txtHost.setText("");

@@ -8,6 +8,11 @@ package webservice;
  *
  */
 public class MoodleOptions {
+	
+	private MoodleOptions() {
+	    throw new IllegalStateException("Clase de utilidad");
+	}
+	
 	/**
 	 * Devuelve token de usuario
 	 */

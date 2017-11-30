@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.json.JSONObject;
@@ -30,16 +31,16 @@ public class Course implements Serializable {
 	private int enrolledUsersCount;
 	private String idNumber;
 	private String summary;
-	public ArrayList<EnrolledUser> enrolledUsers;
+	public List<EnrolledUser> enrolledUsers;
 	public Set<String> roles; // roles que hay en el curso
 	public Set<String> groups; // grupos que hay en el curso
-	public ArrayList<GradeReportLine> gradeReportLines;
+	public List<GradeReportLine> gradeReportLines;
 	public Set<String> typeActivities;
 
 	static final Logger logger = LoggerFactory.getLogger(Course.class);
 
 	public Course() {
-		this.enrolledUsers = new ArrayList<EnrolledUser>();
+		this.enrolledUsers = new ArrayList<>();
 	}
 
 	/**
@@ -62,8 +63,8 @@ public class Course implements Serializable {
 			this.idNumber = obj.getString("idnumber");
 		if (obj.getString("summary") != null)
 			this.summary = obj.getString("summary");
-		this.enrolledUsers = new ArrayList<EnrolledUser>();
-		this.gradeReportLines = new ArrayList<GradeReportLine>();
+		this.enrolledUsers = new ArrayList<>();
+		this.gradeReportLines = new ArrayList<>();
 	}
 
 	/**
@@ -179,7 +180,7 @@ public class Course implements Serializable {
 	 * 
 	 * @return lista de usuarios
 	 */
-	public ArrayList<EnrolledUser> getEnrolledUsers() {
+	public List<EnrolledUser> getEnrolledUsers() {
 		Collections.sort(this.enrolledUsers, (o1, o2) -> o1.getLastName().compareTo(o2.getLastName()));
 		return this.enrolledUsers;
 	}
@@ -189,7 +190,7 @@ public class Course implements Serializable {
 	 * 
 	 * @param eUsers
 	 */
-	public void setEnrolledUsers(ArrayList<EnrolledUser> eUsers) {
+	public void setEnrolledUsers(List<EnrolledUser> eUsers) {
 		this.enrolledUsers.clear();
 		for (EnrolledUser eUser : eUsers) {
 			this.enrolledUsers.add(eUser);
@@ -201,8 +202,8 @@ public class Course implements Serializable {
 	 * 
 	 * @return lista de roles del curso
 	 */
-	public ArrayList<String> getRoles() {
-		ArrayList<String> result = new ArrayList<String>();
+	public List<String> getRoles() {
+		ArrayList<String> result = new ArrayList<>();
 		Iterator<String> roleIt = this.roles.iterator();
 		while (roleIt.hasNext()) {
 			String data = roleIt.next();
@@ -218,13 +219,13 @@ public class Course implements Serializable {
 	 * @param users
 	 *            usuarios matriculados en el curso
 	 */
-	public void setRoles(ArrayList<EnrolledUser> users) {
+	public void setRoles(List<EnrolledUser> users) {
 		// Creamos el set de roles
-		roles = new HashSet<String>();
+		roles = new HashSet<>();
 		// Recorremos la lista de usuarios matriculados en el curso
 		for (int i = 0; i < users.size(); i++) {
 			// sacamos el rol del usuario
-			ArrayList<Role> roleArray = users.get(i).getRoles();
+			ArrayList<Role> roleArray = (ArrayList<Role>) users.get(i).getRoles();
 			// cada rol nuevo se añade al set roles
 			for (int j = 0; j < roleArray.size(); j++) {
 				roles.add(roleArray.get(j).getName());
@@ -237,8 +238,8 @@ public class Course implements Serializable {
 	 * 
 	 * @return lista de grupos del curso
 	 */
-	public ArrayList<String> getGroups() {
-		ArrayList<String> result = new ArrayList<String>();
+	public List<String> getGroups() {
+		ArrayList<String> result = new ArrayList<>();
 		Iterator<String> groupsIt = this.groups.iterator();
 		while (groupsIt.hasNext()) {
 			String data = groupsIt.next();
@@ -255,13 +256,13 @@ public class Course implements Serializable {
 	 * @param users
 	 *            usuarios del curso
 	 */
-	public void setGroups(ArrayList<EnrolledUser> users) {
+	public void setGroups(List<EnrolledUser> users) {
 		// Creamos el set de grupos
-		groups = new HashSet<String>();
+		groups = new HashSet<>();
 		// Recorremos la lista de usuarios matriculados en el curso
 		for (int i = 0; i < users.size(); i++) {
 			// Sacamos el grupo del usuario
-			ArrayList<Group> groupsArray = users.get(i).getGroups();
+			ArrayList<Group> groupsArray = (ArrayList<Group>) users.get(i).getGroups();
 			// Cada grupo nuevo se añade al set de grupos
 			for (int j = 0; j < groupsArray.size(); j++) {
 				groups.add(groupsArray.get(j).getName());
@@ -275,7 +276,7 @@ public class Course implements Serializable {
 	 * 
 	 * @return lista de gradeReportConfigurationLines
 	 */
-	public ArrayList<GradeReportLine> getGradeReportLines() {
+	public List<GradeReportLine> getGradeReportLines() {
 		return this.gradeReportLines;
 	}
 
@@ -284,7 +285,7 @@ public class Course implements Serializable {
 	 * 
 	 * @param grcl
 	 */
-	public void setGradeReportLines(ArrayList<GradeReportLine> grcl) {
+	public void setGradeReportLines(List<GradeReportLine> grcl) {
 		this.gradeReportLines.clear();
 		for (GradeReportLine gl : grcl) {
 			this.gradeReportLines.add(gl);
@@ -296,8 +297,8 @@ public class Course implements Serializable {
 	 * 
 	 * @return lista de actividades
 	 */
-	public ArrayList<String> getActivities() {
-		ArrayList<String> result = new ArrayList<String>();
+	public List<String> getActivities() {
+		ArrayList<String> result = new ArrayList<>();
 		Iterator<String> grclIt = this.typeActivities.iterator();
 		while (grclIt.hasNext()) {
 			String data = grclIt.next();
@@ -313,9 +314,9 @@ public class Course implements Serializable {
 	 * @param grcl
 	 *            gradeReportConfigurationLines
 	 */
-	public void setActivities(ArrayList<GradeReportLine> grcl) {
+	public void setActivities(List<GradeReportLine> grcl) {
 		// Creamos el set de roles
-		typeActivities = new HashSet<String>();
+		typeActivities = new HashSet<>();
 		// Recorremos la lista de usuarios matriculados en el curso
 		for (int i = 0; i < grcl.size(); i++) {
 			typeActivities.add(grcl.get(i).getNameType());
@@ -346,7 +347,6 @@ public class Course implements Serializable {
 		Course course = null;
 
 		ArrayList<Course> courses = (ArrayList<Course>) UBUGrades.user.getCourses();
-		// logger.info(" Nº de cursos: " + courses.size());
 		for (int i = 0; i < courses.size(); i++) {
 			if (courses.get(i).getFullName().equals(courseName)) {
 				course = courses.get(i);
@@ -364,7 +364,7 @@ public class Course implements Serializable {
 	 * @return
 	 * 		ArrayList con los usuarios de ese grupo.
 	 */
-	public ArrayList<EnrolledUser> getUsersInGroup(String groupname) {
+	public List<EnrolledUser> getUsersInGroup(String groupname) {
 		ArrayList<EnrolledUser> groupUsers = new ArrayList<>();
 		
 		for(EnrolledUser user: enrolledUsers) {

@@ -27,7 +27,7 @@ public class MoodleUser {
 	 */
 	public MoodleUser() {
 		this.setId(0);
-		this.courses = new ArrayList<Course>();
+		this.courses = new ArrayList<>();
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class MoodleUser {
 		this.setLastAccess(lastAccess);
 		this.setCity(city);
 		this.setCountry(country);
-		this.courses = new ArrayList<Course>();
+		this.courses = new ArrayList<>();
 	}
 
 	/**

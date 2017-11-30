@@ -2,6 +2,7 @@ package model;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
@@ -145,7 +146,7 @@ public class Stats {
 	 * @param value
 	 * 		La nota a añadir.
 	 */
-	public void addElementValue (HashMap<Integer,DescriptiveStatistics> statsHs, int gradeId, double value) {
+	public void addElementValue (Map<Integer,DescriptiveStatistics> statsHs, int gradeId, double value) {
 		DescriptiveStatistics stats = statsHs.get(gradeId);
 		stats.addValue(value);
 		statsHs.put(gradeId, stats);
@@ -159,7 +160,7 @@ public class Stats {
 	 * @return
 	 * 		La media del GRL.
 	 */
-	public String getElementMean(HashMap<Integer,DescriptiveStatistics> statsHs, int gradeId) {
+	public String getElementMean(Map<Integer,DescriptiveStatistics> statsHs, int gradeId) {
 		// Hacemos que la media tenga el formato #.## para mostrarlo
 		// sin problemas en el gráfico
 		DecimalFormat df = new DecimalFormat("#.##");
@@ -177,7 +178,7 @@ public class Stats {
 	 * @return
 	 * 		La mediana del GRL.
 	 */
-	public String getMedian(HashMap<Integer,DescriptiveStatistics> statsHs, int gradeId) {
+	public String getMedian(Map<Integer,DescriptiveStatistics> statsHs, int gradeId) {
 		// Hacemos que la media tenga el formato #.## para mostrarlo
 		// sin problemas en el gráfico
 		DecimalFormat df = new DecimalFormat("#.##");
@@ -197,7 +198,7 @@ public class Stats {
 	 * @return
 	 * 		El percentil del GRL.
 	 */
-	public String getElementPercentile(HashMap<Integer,DescriptiveStatistics> statsHs, int gradeId, double percentil) {
+	public String getElementPercentile(Map<Integer,DescriptiveStatistics> statsHs, int gradeId, double percentil) {
 		// Hacemos que el percentil tenga el formato #.## para mostrarlo
 		// sin problemas en el gráfico
 		DecimalFormat df = new DecimalFormat("#.##");
@@ -215,7 +216,7 @@ public class Stats {
 	 * @return
 	 * 		El maximo del GRL.
 	 */
-	public String getMaxmimum(HashMap<Integer,DescriptiveStatistics> statsHs, int gradeId) {
+	public String getMaxmimum(Map<Integer,DescriptiveStatistics> statsHs, int gradeId) {
 		// Hacemos que el maximo tenga el formato #.## para mostrarlo
 		// sin problemas en el gráfico
 		DecimalFormat df = new DecimalFormat("#.##");
@@ -233,7 +234,7 @@ public class Stats {
 	 * @return
 	 * 		El minimo del GRL.
 	 */
-	public String getMinimum(HashMap<Integer,DescriptiveStatistics> statsHs, int gradeId) {
+	public String getMinimum(Map<Integer,DescriptiveStatistics> statsHs, int gradeId) {
 		// Hacemos que el minimo tenga el formato #.## para mostrarlo
 		// sin problemas en el gráfico
 		DecimalFormat df = new DecimalFormat("#.##");

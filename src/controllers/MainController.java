@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,7 +49,6 @@ import javafx.scene.control.TreeView;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
@@ -74,8 +74,8 @@ public class MainController implements Initializable {
 
 	static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
-	// @FXML
-	public BorderPane canvas;
+	private static final String TODOS = "Todos";
+	
 	@FXML // Curso actual
 	public Label lblActualCourse;
 	@FXML // Usuario actual
@@ -92,12 +92,12 @@ public class MainController implements Initializable {
 	@FXML // Botón filtro por rol
 	public MenuButton slcRole;
 	MenuItem[] roleMenuItems;
-	String filterRole = "Todos";
+	String filterRole = TODOS;
 
 	@FXML // Botón filtro por grupo
 	public MenuButton slcGroup;
 	MenuItem[] groupMenuItems;
-	String filterGroup = "Todos";
+	String filterGroup = TODOS;
 
 	@FXML // Entrada de filtro de usuarios por patrón
 	public TextField tfdParticipants;
@@ -114,7 +114,7 @@ public class MainController implements Initializable {
 	@FXML // Botón filtro por tipo de actividad
 	public MenuButton slcType;
 	MenuItem[] typeMenuItems;
-	String filterType = "Todos";
+	String filterType = TODOS;
 
 	@FXML // Gráfico de lineas
 	private WebView webViewCharts;
@@ -140,7 +140,7 @@ public class MainController implements Initializable {
 			// Almacenamos todos participantes en una lista
 			ArrayList<EnrolledUser> users = (ArrayList<EnrolledUser>) UBUGrades.session.getActualCourse()
 					.getEnrolledUsers();
-			ArrayList<EnrolledUser> nameUsers = new ArrayList<EnrolledUser>();
+			ArrayList<EnrolledUser> nameUsers = new ArrayList<>();
 
 			stats = Stats.getStats();
 
@@ -148,11 +148,11 @@ public class MainController implements Initializable {
 			// Manejo de roles (MenuButton Rol):
 			EventHandler<ActionEvent> actionRole = selectRole();
 			// Cargamos una lista con los nombres de los roles
-			ArrayList<String> rolesList = UBUGrades.session.getActualCourse().getRoles();
+			ArrayList<String> rolesList = (ArrayList<String>) UBUGrades.session.getActualCourse().getRoles();
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
-			ArrayList<MenuItem> rolesItemsList = new ArrayList<MenuItem>();
+			ArrayList<MenuItem> rolesItemsList = new ArrayList<>();
 			// En principio se mostrarán todos los usuarios con cualquier rol
-			MenuItem mi = (new MenuItem("Todos"));
+			MenuItem mi = (new MenuItem(TODOS));
 			// Añadimos el manejador de eventos al primer MenuItem
 			mi.setOnAction(actionRole);
 			rolesItemsList.add(mi);
@@ -167,17 +167,17 @@ public class MainController implements Initializable {
 
 			// Asignamos la lista de MenuItems al MenuButton "Rol"
 			slcRole.getItems().addAll(rolesItemsList);
-			slcRole.setText("Todos");
+			slcRole.setText(TODOS);
 
 			//////////////////////////////////////////////////////////////////////////
 			// Manejo de grupos (MenuButton Grupo):
 			EventHandler<ActionEvent> actionGroup = selectGroup();
 			// Cargamos una lista de los nombres de los grupos
-			ArrayList<String> groupsList = UBUGrades.session.getActualCourse().getGroups();
+			ArrayList<String> groupsList = (ArrayList<String>) UBUGrades.session.getActualCourse().getGroups();
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
-			ArrayList<MenuItem> groupsItemsList = new ArrayList<MenuItem>();
+			ArrayList<MenuItem> groupsItemsList = new ArrayList<>();
 			// En principio mostrarán todos los usuarios en cualquier grupo
-			mi = (new MenuItem("Todos"));
+			mi = (new MenuItem(TODOS));
 			// Añadimos el manejador de eventos al primer MenuItem
 			mi.setOnAction(actionGroup);
 			groupsItemsList.add(mi);
@@ -191,7 +191,7 @@ public class MainController implements Initializable {
 			}
 			// Asignamos la lista de MenuItems al MenuButton "Grupo"
 			slcGroup.getItems().addAll(groupsItemsList);
-			slcGroup.setText("Todos");
+			slcGroup.setText(TODOS);
 
 			////////////////////////////////////////////////////////
 			// Añadimos todos los participantes a la lista de visualización
@@ -204,12 +204,12 @@ public class MainController implements Initializable {
 			// Manejo de actividades (TreeView<GradeReportLine>):
 			EventHandler<ActionEvent> actionActivity = selectNameActivity();
 			// Cargamos una lista de los nombres de los grupos
-			ArrayList<String> nameActivityList = UBUGrades.session.getActualCourse().getActivities();
+			ArrayList<String> nameActivityList = (ArrayList<String>) UBUGrades.session.getActualCourse().getActivities();
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
-			ArrayList<MenuItem> nameActivityItemsList = new ArrayList<MenuItem>();
+			ArrayList<MenuItem> nameActivityItemsList = new ArrayList<>();
 			// En principio se van a mostrar todos los participantes en
 			// cualquier grupo
-			mi = (new MenuItem("Todos"));
+			mi = (new MenuItem(TODOS));
 			// Añadimos el manejador de eventos al primer MenuItem
 			mi.setOnAction(actionActivity);
 			nameActivityItemsList.add(mi);
@@ -224,7 +224,7 @@ public class MainController implements Initializable {
 
 			// Asignamos la lista de grupos al MenuButton "Grupo"
 			slcType.getItems().addAll(nameActivityItemsList);
-			slcType.setText("Todos");
+			slcType.setText(TODOS);
 
 			// Inicializamos el listener del textField de participantes
 			tfdParticipants.setOnAction(inputParticipant());
@@ -252,14 +252,14 @@ public class MainController implements Initializable {
 		listParticipants.setItems(enrList);
 
 		// Establecemos la estructura en árbol del calificador
-		ArrayList<GradeReportLine> grcl = (ArrayList<GradeReportLine>) UBUGrades.session.getActualCourse()
+		ArrayList<GradeReportLine> grcl =  (ArrayList<GradeReportLine>) UBUGrades.session.getActualCourse()
 				.getGradeReportLines();
 		// Establecemos la raiz del Treeview
-		TreeItem<GradeReportLine> root = new TreeItem<GradeReportLine>(grcl.get(0));
+		TreeItem<GradeReportLine> root = new TreeItem<>(grcl.get(0));
 		MainController.setIcon(root);
 		// Llamamos recursivamente para llenar el Treeview
 		for (int k = 0; k < grcl.get(0).getChildren().size(); k++) {
-			TreeItem<GradeReportLine> item = new TreeItem<GradeReportLine>(grcl.get(0).getChildren().get(k));
+			TreeItem<GradeReportLine> item = new TreeItem<>(grcl.get(0).getChildren().get(k));
 			MainController.setIcon(item);
 			root.getChildren().add(item);
 			root.setExpanded(true);
@@ -280,7 +280,7 @@ public class MainController implements Initializable {
 
 		// Mostramos nº participantes
 		lblCountParticipants.setText(
-				"Participantes: " + String.valueOf(UBUGrades.session.getActualCourse().getEnrolledUsersCount()));
+				"Participantes: " + UBUGrades.session.getActualCourse().getEnrolledUsersCount());
 
 		// Mostramos Usuario logeado
 		lblActualUser.setText("Usuario: " + UBUGrades.user.getFullName());
@@ -309,7 +309,7 @@ public class MainController implements Initializable {
 				MenuItem mItem = (MenuItem) event.getSource();
 				// Obtenemos el rol por el que se quiere filtrar
 				filterRole = mItem.getText();
-				logger.info("-> Filtrando participantes por rol: " + filterRole);
+				logger.info("-> Filtrando participantes por rol: {}", filterRole);
 				filterParticipants();
 				slcRole.setText(filterRole);
 			}
@@ -333,7 +333,7 @@ public class MainController implements Initializable {
 				MenuItem mItem = (MenuItem) event.getSource();
 				// Obtenemos el grupo por el que se quire filtrar
 				filterGroup = mItem.getText();
-				logger.info("-> Filtrando participantes por grupo: " + filterGroup);
+				logger.info("-> Filtrando participantes por grupo: {}", filterGroup);
 				filterParticipants();
 				slcGroup.setText(filterGroup);
 			}
@@ -353,7 +353,7 @@ public class MainController implements Initializable {
 			 */
 			public void handle(ActionEvent event) {
 				patternParticipants = tfdParticipants.getText();
-				logger.info("-> Filtrando participantes por nombre: " + patternParticipants);
+				logger.info("-> Filtrando participantes por nombre: {}", patternParticipants);
 				filterParticipants();
 			}
 		};
@@ -370,32 +370,32 @@ public class MainController implements Initializable {
 			ArrayList<EnrolledUser> users = (ArrayList<EnrolledUser>) UBUGrades.session.getActualCourse()
 					.getEnrolledUsers();
 			// Cargamos la lista de los roles
-			ArrayList<EnrolledUser> nameUsers = new ArrayList<EnrolledUser>();
+			ArrayList<EnrolledUser> nameUsers = new ArrayList<>();
 			// Obtenemos los participantes que tienen el rol elegido
 			for (int i = 0; i < users.size(); i++) {
 				// Filtrado por rol:
 				roleYes = false;
-				ArrayList<Role> roles = users.get(i).getRoles();
+				ArrayList<Role> roles = (ArrayList<Role>) users.get(i).getRoles();
 				// Si no tiene rol
-				if (roles.size() == 0 && filterRole.equals("Todos")) {
+				if (roles.isEmpty() && filterRole.equals(TODOS)) {
 					roleYes = true;
 				} else {
 					for (int j = 0; j < roles.size(); j++) {
 						// Comprobamos si el usuario pasa el filtro de "rol"
-						if (roles.get(j).getName().equals(filterRole) || filterRole.equals("Todos")) {
+						if (roles.get(j).getName().equals(filterRole) || filterRole.equals(TODOS)) {
 							roleYes = true;
 						}
 					}
 				}
 				// Filtrado por grupo:
 				groupYes = false;
-				ArrayList<Group> groups = users.get(i).getGroups();
-				if (groups.size() == 0 && filterGroup.equals("Todos")) {
+				ArrayList<Group> groups = (ArrayList<Group>) users.get(i).getGroups();
+				if (groups.isEmpty() && filterGroup.equals(TODOS)) {
 					groupYes = true;
 				} else {
 					for (int k = 0; k < groups.size(); k++) {
 						// Comprobamos si el usuario pasa el filtro de "grupo"
-						if (groups.get(k).getName().equals(filterGroup) || filterGroup.equals("Todos")) {
+						if (groups.get(k).getName().equals(filterGroup) || filterGroup.equals(TODOS)) {
 							groupYes = true;
 						}
 					}
@@ -417,7 +417,7 @@ public class MainController implements Initializable {
 			}
 			enrList = FXCollections.observableArrayList(nameUsers);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error al filtrar los participantes: {}", e);
 		}
 		listParticipants.setItems(enrList);
 		// Actualizamos los gráficos al cambiar el grupo
@@ -434,7 +434,7 @@ public class MainController implements Initializable {
 	 */
 	public void setTreeview(TreeItem<GradeReportLine> parent, GradeReportLine line) {
 		for (int j = 0; j < line.getChildren().size(); j++) {
-			TreeItem<GradeReportLine> item = new TreeItem<GradeReportLine>(line.getChildren().get(j));
+			TreeItem<GradeReportLine> item = new TreeItem<>(line.getChildren().get(j));
 			MainController.setIcon(item);
 			parent.getChildren().add(item);
 			parent.setExpanded(true);
@@ -448,7 +448,6 @@ public class MainController implements Initializable {
 	 * @param item
 	 */
 	public static void setIcon(TreeItem<GradeReportLine> item) {
-		// logger.info(item.getValue().getNameType());
 		switch (item.getValue().getNameType()) {
 		case "Assignment":
 			item.setGraphic((Node) new ImageView(new Image("/img/assignment.png")));
@@ -464,6 +463,7 @@ public class MainController implements Initializable {
 			break;
 		case "Forum":
 			item.setGraphic((Node) new ImageView(new Image("/img/forum.png")));
+			break;
 		default:
 			break;
 		}
@@ -487,7 +487,7 @@ public class MainController implements Initializable {
 				// Obtenemos el valor (rol) para filtrar la lista de
 				// participantes
 				filterType = mItem.getText();
-				logger.info("-> Filtrando calificador por tipo: " + filterType);
+				logger.info("-> Filtrando calificador por tipo: {}", filterType);
 				filterCalifications();
 				slcType.setText(filterType);
 			}
@@ -507,7 +507,7 @@ public class MainController implements Initializable {
 			 */
 			public void handle(ActionEvent event) {
 				patternCalifications = tfdItems.getText();
-				logger.info("-> Filtrando calificador por nombre: " + patternCalifications);
+				logger.info("-> Filtrando calificador por nombre: {}", patternCalifications);
 				filterCalifications();
 			}
 		};
@@ -522,13 +522,13 @@ public class MainController implements Initializable {
 			ArrayList<GradeReportLine> grcl = (ArrayList<GradeReportLine>) UBUGrades.session.getActualCourse()
 					.getGradeReportLines();
 			// Establecemos la raiz del Treeview
-			TreeItem<GradeReportLine> root = new TreeItem<GradeReportLine>(grcl.get(0));
+			TreeItem<GradeReportLine> root = new TreeItem<>(grcl.get(0));
 			MainController.setIcon(root);
 			// Llamamos recursivamente para llenar el Treeview
-			if (filterType.equals("Todos") && patternCalifications.equals("")) {
+			if (filterType.equals(TODOS) && patternCalifications.equals("")) {
 				// Sin filtro y sin patrón
 				for (int k = 0; k < grcl.get(0).getChildren().size(); k++) {
-					TreeItem<GradeReportLine> item = new TreeItem<GradeReportLine>(grcl.get(0).getChildren().get(k));
+					TreeItem<GradeReportLine> item = new TreeItem<>(grcl.get(0).getChildren().get(k));
 					MainController.setIcon(item);
 					root.getChildren().add(item);
 					root.setExpanded(true);
@@ -536,14 +536,13 @@ public class MainController implements Initializable {
 				}
 			} else { // Con filtro
 				for (int k = 0; k < grcl.get(0).getChildren().size(); k++) {
-					TreeItem<GradeReportLine> item = new TreeItem<GradeReportLine>(grcl.get(0).getChildren().get(k));
+					TreeItem<GradeReportLine> item = new TreeItem<>(grcl.get(0).getChildren().get(k));
 					boolean activityYes = false;
 					if (grcl.get(0).getChildren().get(k).getNameType().equals(filterType)
-							|| filterType.equals("Todos")) {
+							|| filterType.equals(TODOS)) {
 						activityYes = true;
 					}
 					Pattern pattern = Pattern.compile(patternCalifications);
-					// logger.info(grcl.get(0).getChildren().get(k).getName());
 					Matcher match = pattern.matcher(grcl.get(0).getChildren().get(k).getName());
 					boolean patternYes = false;
 					if (patternCalifications.equals("") || match.find()) {
@@ -560,7 +559,7 @@ public class MainController implements Initializable {
 			// Establecemos la raiz del treeview
 			tvwGradeReport.setRoot(root);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error al filtrar los elementos del calificador: {}", e);
 		}
 		listParticipants.setItems(enrList);
 	}
@@ -581,9 +580,9 @@ public class MainController implements Initializable {
 		 * line
 		 */
 		for (int j = 0; j < line.getChildren().size(); j++) {
-			TreeItem<GradeReportLine> item = new TreeItem<GradeReportLine>(line.getChildren().get(j));
+			TreeItem<GradeReportLine> item = new TreeItem<>(line.getChildren().get(j));
 			boolean activityYes = false;
-			if (line.getChildren().get(j).getNameType().equals(filterType) || filterType.equals("Todos")) {
+			if (line.getChildren().get(j).getNameType().equals(filterType) || filterType.equals(TODOS)) {
 				activityYes = true;
 			}
 			Pattern pattern = Pattern.compile(patternCalifications);
@@ -616,12 +615,10 @@ public class MainController implements Initializable {
 		// Accedemos a la siguiente ventana
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource("/view/Welcome.fxml"));
-		// UBUGrades.stage.getScene() setCursor(Cursor.WAIT);
 		UBUGrades.stage.close();
 		logger.info("Accediendo a UBUGrades...");
 		UBUGrades.stage = new Stage();
 		Parent root = loader.load();
-		// root.setCursor(Cursor.WAIT);
 		Scene scene = new Scene(root);
 		UBUGrades.stage.setScene(scene);
 		UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
@@ -649,7 +646,7 @@ public class MainController implements Initializable {
 			if (file != null) {
 				try {
 					String str = (String) webViewChartsEngine.executeScript("exportCurrentElemet()");
-					logger.info("-------->" + str);
+					logger.info("--------> {}", str);
 					byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(",") + 1));
 					BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
 					ImageIO.write(bufferedImage, "png", file);
@@ -658,7 +655,7 @@ public class MainController implements Initializable {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error al guardar el gráfico: {}", e);
 		}
 	}
 
@@ -694,7 +691,7 @@ public class MainController implements Initializable {
 				String generalDataSet = generateDataSet();
 				out.println("\n\rvar LineDataSet = " + generalDataSet + ";\r\n");
 				out.println("var RadarDataSet = " + generalDataSet + ";\r\n");
-				out.println("var BoxPlotGeneralDataSet = " + generateBoxPlotDataSet("Todos") + ";\r\n");
+				out.println("var BoxPlotGeneralDataSet = " + generateBoxPlotDataSet(TODOS) + ";\r\n");
 				out.println("var BoxPlotGroupDataSet = " + generateBoxPlotDataSet(filterGroup) + ";\r\n");
 				out.println("var TableDataSet = " + generateTableData() + ";\r\n");
 				out.println("</script>\r\n</body>\r\n</html>");
@@ -751,8 +748,12 @@ public class MainController implements Initializable {
 	 * @param actionEvent
 	 * @throws Exception
 	 */
-	public void aboutUBUGrades(ActionEvent actionEvent) throws Exception {
-		Desktop.getDesktop().browse(new URL("https://github.com/claumartinezh/TFG_UBUGrades").toURI());
+	public void aboutUBUGrades(ActionEvent actionEvent) {
+		try {
+			Desktop.getDesktop().browse(new URL("https://github.com/huco95/UBUGrades").toURI());
+		} catch (IOException | URISyntaxException e) {
+			logger.error("Error al abir la pagina aboutUBUGrades: {}", e);
+		}
 	}
 
 	/**
@@ -761,7 +762,7 @@ public class MainController implements Initializable {
 	 * @param actionEvent
 	 * @throws Exception
 	 */
-	public void closeApplication(ActionEvent actionEvent) throws Exception {
+	public void closeApplication(ActionEvent actionEvent) {
 		logger.info("Cerrando aplicación");
 		UBUGrades.stage.close();
 	}
@@ -825,7 +826,7 @@ public class MainController implements Initializable {
 		// Añadimos la media de los grupos
 
 		for (MenuItem grupo : slcGroup.getItems()) {
-			if (!grupo.getText().equals("Todos")) {
+			if (!grupo.getText().equals(TODOS)) {
 				tableData += ",['Media grupo " + grupo.getText() + "'";
 				for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 					String grade = stats.getElementMean(stats.getGroupStats(grupo.getText()),
@@ -918,11 +919,11 @@ public class MainController implements Initializable {
 	 * @return BoxPlot DataSet.
 	 */
 	private String generateBoxPlotDataSet(String group) {
-		HashMap<Integer, DescriptiveStatistics> BoxPlotStats;
-		if (group.equals("Todos")) {
-			BoxPlotStats = stats.getGeneralStats();
+		HashMap<Integer, DescriptiveStatistics> boxPlotStats;
+		if (group.equals(TODOS)) {
+			boxPlotStats = stats.getGeneralStats();
 		} else {
-			BoxPlotStats = stats.getGroupStats(group);
+			boxPlotStats = stats.getGroupStats(group);
 		}
 
 		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
@@ -947,18 +948,18 @@ public class MainController implements Initializable {
 
 			gradeId = structTree.getValue().getId();
 			if (firstGrade) {
-				maximos += stats.getMaxmimum(BoxPlotStats, gradeId);
-				medianas += stats.getMedian(BoxPlotStats, gradeId);
-				minimos += stats.getMinimum(BoxPlotStats, gradeId);
-				primerQuartil += stats.getElementPercentile(BoxPlotStats, gradeId, 25);
-				tercerQuartil += stats.getElementPercentile(BoxPlotStats, gradeId, 75);
+				maximos += stats.getMaxmimum(boxPlotStats, gradeId);
+				medianas += stats.getMedian(boxPlotStats, gradeId);
+				minimos += stats.getMinimum(boxPlotStats, gradeId);
+				primerQuartil += stats.getElementPercentile(boxPlotStats, gradeId, 25);
+				tercerQuartil += stats.getElementPercentile(boxPlotStats, gradeId, 75);
 				firstGrade = false;
 			} else {
-				maximos += "," + stats.getMaxmimum(BoxPlotStats, gradeId);
-				medianas += "," + stats.getMedian(BoxPlotStats, gradeId);
-				minimos += "," + stats.getMinimum(BoxPlotStats, gradeId);
-				primerQuartil += "," + stats.getElementPercentile(BoxPlotStats, gradeId, 25);
-				tercerQuartil += "," + stats.getElementPercentile(BoxPlotStats, gradeId, 75);
+				maximos += "," + stats.getMaxmimum(boxPlotStats, gradeId);
+				medianas += "," + stats.getMedian(boxPlotStats, gradeId);
+				minimos += "," + stats.getMinimum(boxPlotStats, gradeId);
+				primerQuartil += "," + stats.getElementPercentile(boxPlotStats, gradeId, 25);
+				tercerQuartil += "," + stats.getElementPercentile(boxPlotStats, gradeId, 75);
 			}
 		}
 
@@ -993,7 +994,7 @@ public class MainController implements Initializable {
 		String meanDataset;
 		String color;
 
-		if (group.equals("Todos")) {
+		if (group.equals(TODOS)) {
 			meanStats = stats.getGeneralStats();
 			meanDataset = "{label:'Media general',data:[";
 			color = "rgba(255, 152, 0, ";
@@ -1026,7 +1027,7 @@ public class MainController implements Initializable {
 	 */
 	private void updateGroupData(String group) {
 		try {
-			if (group.equals("Todos")) {
+			if (group.equals(TODOS)) {
 				webViewChartsEngine.executeScript("saveGroupMean('')");
 			} else {
 				webViewChartsEngine.executeScript("saveGroupMean(" + generateMeanDataSet(group) + ")");
@@ -1049,9 +1050,9 @@ public class MainController implements Initializable {
 
 			webViewChartsEngine.executeScript("saveTableData(" + generateTableData() + ")");
 
-			webViewChartsEngine.executeScript("saveMean(" + generateMeanDataSet("Todos") + ")");
+			webViewChartsEngine.executeScript("saveMean(" + generateMeanDataSet(TODOS) + ")");
 
-			webViewChartsEngine.executeScript("updateChart('boxplot'," + generateBoxPlotDataSet("Todos") + ")");
+			webViewChartsEngine.executeScript("updateChart('boxplot'," + generateBoxPlotDataSet(TODOS) + ")");
 			webViewChartsEngine.executeScript("updateChart('line'," + data + ")");
 			webViewChartsEngine.executeScript("updateChart('radar'," + data + ")");
 		} catch (JSException e) {
@@ -1074,12 +1075,12 @@ public class MainController implements Initializable {
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.initOwner(UBUGrades.stage);
 		alert.getDialogPane().setContentText(mensaje);
-
+		
 		ButtonType buttonSalir = new ButtonType("Cerrar UBUGrades");
 		alert.getButtonTypes().setAll(buttonSalir);
 
 		Optional<ButtonType> result = alert.showAndWait();
-		if (result.get() == buttonSalir)
+		if (result.isPresent() && result.get() == buttonSalir)
 			UBUGrades.stage.close();
 	}
 

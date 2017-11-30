@@ -47,7 +47,6 @@ public class WelcomeController implements Initializable {
 	private Label lblUser;
 	@FXML
 	private ListView<String> listCourses;
-	private ObservableList<String> list;
 	@FXML
 	private Label lblNoSelect;
     @FXML
@@ -67,12 +66,12 @@ public class WelcomeController implements Initializable {
 		try {
 			lblUser.setText(UBUGrades.user.getFullName());
 			logger.info("Cargando cursos...");
-			ArrayList<String> nameCourses = new ArrayList<String>();
+			ArrayList<String> nameCourses = new ArrayList<>();
 			for (int i = 0; i < UBUGrades.user.getCourses().size(); i++) {
 				nameCourses.add(UBUGrades.user.getCourses().get(i).getFullName());
 			}
 			Collections.sort(nameCourses);
-			list = FXCollections.observableArrayList(nameCourses);
+			ObservableList<String> list = FXCollections.observableArrayList(nameCourses);
 			progressBar.visibleProperty().set(false);
 			listCourses.setItems(list);
 		} catch (Exception e) {
@@ -86,7 +85,7 @@ public class WelcomeController implements Initializable {
 	 * @param event
 	 * @throws Exception
 	 */
-	public void enterCourse(ActionEvent event) throws Exception {
+	public void enterCourse(ActionEvent event) {
 		UBUGrades.init.getScene().setCursor(Cursor.WAIT);
 
 		// Guardamos en una variable el curso seleccionado por el usuario
@@ -129,11 +128,11 @@ public class WelcomeController implements Initializable {
 					updateProgress(done, enroledUsersCount);
 					
 					updateMessage("update_" + "Generando estadisticas...");
-					//Establecemos las estadisticas
-					@SuppressWarnings("unused")
-					Stats stats = Stats.getStats();
 					
-					updateProgress(done+4, enroledUsersCount);
+					//Establecemos las estadisticas
+					Stats.getStats();
+					
+					updateProgress(done+4L, enroledUsersCount);
 					
 					Thread.sleep(50);
 					//Indica que se ha terminado el trabajo
@@ -203,7 +202,7 @@ public class WelcomeController implements Initializable {
 		alert.getButtonTypes().setAll(buttonSalir);
 
 		Optional<ButtonType> result = alert.showAndWait();
-		if (result.get() == buttonSalir)
+		if (result.isPresent() && result.get() == buttonSalir)
 			UBUGrades.stage.close();
 	}  
 

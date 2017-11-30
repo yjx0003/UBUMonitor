@@ -29,6 +29,10 @@ public class MoodleUserWS {
 	
 	static final Logger logger = LoggerFactory.getLogger(MoodleUserWS.class);
 	
+	private MoodleUserWS() {
+	    throw new IllegalStateException("Clase de utilidad");
+	}
+	
 	/**
 	 * Establece los parámetros del usuario logueado.
 	 * 
@@ -83,7 +87,7 @@ public class MoodleUserWS {
 	public static void setCourses(String token, MoodleUser mUser) throws Exception {
 		logger.info("Obteniendo los cursos del usuario.");
 		CloseableHttpClient httpclient = HttpClients.createDefault();
-		ArrayList<Course> courses = new ArrayList<Course>();
+		ArrayList<Course> courses = new ArrayList<>();
 		try {
 			HttpGet httpget = new HttpGet(UBUGrades.host + "/webservice/rest/server.php?wstoken=" + token
 					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_CURSOS + "&userid="

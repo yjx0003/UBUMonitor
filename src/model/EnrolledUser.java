@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -62,7 +63,7 @@ public class EnrolledUser {
 			this.profileImageUrl = obj.getString("profileimageurl");
 		if (obj.getJSONArray("roles") != null) {
 			JSONArray roleArray = obj.getJSONArray("roles");
-			roles = new ArrayList<Role>();
+			roles = new ArrayList<>();
 			for (int i = 0; i < roleArray.length(); i++) {
 				// Establece un rol con el id, name y shortname obtenido de cada
 				// JSONObject del JSONArray
@@ -88,7 +89,7 @@ public class EnrolledUser {
 		} else {
 			groups = new ArrayList<>(); // to have an empty list, not a null
 		}
-		this.courses = new ArrayList<Integer>();
+		this.courses = new ArrayList<>();
 	}
 
 	/**
@@ -312,7 +313,7 @@ public class EnrolledUser {
 	 * 
 	 * @return roles
 	 */
-	public ArrayList<Role> getRoles() {
+	public List<Role> getRoles() {
 		return this.roles;
 	}
 
@@ -321,7 +322,7 @@ public class EnrolledUser {
 	 * 
 	 * @param roles
 	 */
-	public void setRoles(ArrayList<Role> roles) {
+	public void setRoles(List<Role> roles) {
 		this.roles.clear();
 		for (Role role : roles) {
 			this.roles.add(role);
@@ -333,7 +334,7 @@ public class EnrolledUser {
 	 * 
 	 * @return groups
 	 */
-	public ArrayList<Group> getGroups() {
+	public List<Group> getGroups() {
 		return this.groups;
 	}
 
@@ -342,7 +343,7 @@ public class EnrolledUser {
 	 * 
 	 * @param groups
 	 */
-	public void setGroups(ArrayList<Group> groups) {
+	public void setGroups(List<Group> groups) {
 		this.groups.clear();
 		for (Group group : groups) {
 			this.groups.add(group);
@@ -354,7 +355,7 @@ public class EnrolledUser {
 	 * 
 	 * @return courses
 	 */
-	public ArrayList<Integer> getEnrolledCourses() {
+	public List<Integer> getEnrolledCourses() {
 		return this.courses;
 	}
 
@@ -363,7 +364,7 @@ public class EnrolledUser {
 	 * 
 	 * @param courses
 	 */
-	public void setEnrolledCourses(ArrayList<Integer> courses) {
+	public void setEnrolledCourses(List<Integer> courses) {
 		this.courses.clear();
 		for (Integer course : courses) {
 			this.courses.add(course);
@@ -393,12 +394,12 @@ public class EnrolledUser {
 	 * @return
 	 * 		La lista de GRL.
 	 */
-	public ArrayList<GradeReportLine> getAllGradeReportLines() {
+	public List<GradeReportLine> getAllGradeReportLines() {
 		return gradeReportLines;
 	}
 	
-	public void setAllGradeReportLines(ArrayList<GradeReportLine> gradeReportLines) {
-		this.gradeReportLines = gradeReportLines;
+	public void setAllGradeReportLines(List<GradeReportLine> gradeReportLines) {
+		this.gradeReportLines = (ArrayList<GradeReportLine>) gradeReportLines;
 	}
 
 	/**

@@ -448,6 +448,8 @@ public class MainController implements Initializable {
 	 * @param item
 	 */
 	public static void setIcon(TreeItem<GradeReportLine> item) {
+		//TODO eliminar el switch estableciendo el nombre del elemento igual que el nombre del .png
+		// /img/ + item.getValue().getNameType() + png
 		switch (item.getValue().getNameType()) {
 		case "Assignment":
 			item.setGraphic((Node) new ImageView(new Image("/img/assignment.png")));
@@ -463,6 +465,9 @@ public class MainController implements Initializable {
 			break;
 		case "Forum":
 			item.setGraphic((Node) new ImageView(new Image("/img/forum.png")));
+			break;
+		case "Whorkshop":
+			item.setGraphic((Node) new ImageView(new Image("/img/workshop.png")));
 			break;
 		default:
 			break;

@@ -139,12 +139,16 @@ public class CourseWS {
 						// Se reconocen por la etiqueta "<a"
 						if (nameContainer.substring(0, 2).equals("<a")) {
 							nameLine = getNameActivity(nameContainer);
+							//TODO eliminar los if y guardar directamente lo que devuleve la funcion assignmenetOrQuizOrForum
+							// cambiar nombre a getType o algo similar
 							if (assignmentOrQuizOrForum(nameContainer).equals("assignment"))
 								typeActivity = "Assignment";
 							else if (assignmentOrQuizOrForum(nameContainer).equals("quiz"))
 								typeActivity = "Quiz";
 							else if (assignmentOrQuizOrForum(nameContainer).equals("forum"))
 								typeActivity = "Forum";
+							else if (assignmentOrQuizOrForum(nameContainer).equals("workshop"))
+								typeActivity = "Whorkshop";
 							typeLine = true;
 						} else {
 							// Si es un item manual o suma de calificaciones
@@ -629,6 +633,8 @@ public class CourseWS {
 			return "quiz";
 		else if (url.contains("mod/forum"))
 			return "forum";
+		else if (url.contains("mod/workshop"))
+			return "workshop";
 		else
 			return "";
 	}

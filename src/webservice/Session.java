@@ -1,10 +1,15 @@
 package webservice;
 
 import org.apache.http.client.methods.HttpGet;
+
+import java.io.IOException;
+
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,10 +59,13 @@ public class Session {
 	/**
 	 * Establece el token del usuario a partir de usuario y contraseña. Se
 	 * realiza mediante una petición http al webservice de Moodle
+	 * @throws IOException 
+	 * @throws ClientProtocolException 
+	 * @throws JSONException 
 	 * 
 	 * @throws Exception
 	 */
-	public void setToken() throws Exception {
+	public void setToken() throws IOException, JSONException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse response = null;
 		try {
@@ -67,9 +75,7 @@ public class Session {
 			
 			String respuesta = EntityUtils.toString(response.getEntity());
 			JSONObject jsonObject = new JSONObject(respuesta);
-			if (jsonObject != null) {
-				this.tokenUser = jsonObject.getString("token");
-			}
+			this.tokenUser = jsonObject.getString("token");
 		} finally {
 			httpclient.close();
 			if(response != null) {response.close();}

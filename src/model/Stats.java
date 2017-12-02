@@ -77,9 +77,9 @@ public class Stats {
 			// Añadimos las notas de cada usuario para cada GradeReportLine
 			for(EnrolledUser enrroledUser: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
 				for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
-					grade = gradeReportLine.getGrade();
-					// Si la nota es "-", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
-					if(!grade.equals("-") && !grade.equals("")) {
+					grade = gradeReportLine.getGradeAdjustedTo10();
+					// Si la nota es "NaN", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
+					if(!grade.equals("NaN")) {
 						this.addElementValue(generalGradesStats, gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
 					}
 				}
@@ -101,9 +101,9 @@ public class Stats {
 				
 				for(EnrolledUser enrroledUser: UBUGrades.session.getActualCourse().getUsersInGroup(group)) {
 					for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
-						grade = gradeReportLine.getGrade();
-						// Si la nota es "-", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
-						if(!grade.equals("-") && !grade.equals("")) {
+						grade = gradeReportLine.getGradeAdjustedTo10();
+						// Si la nota es "NaN", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
+						if(!grade.equals("NaN")) {
 							this.addElementValue(currentGroupStats, gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
 						}
 					}

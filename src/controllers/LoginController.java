@@ -2,7 +2,6 @@
 package controllers;
 
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,9 +13,9 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-import java.net.UnknownHostException;
+import java.io.IOException;
 
-import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,11 +69,11 @@ public class LoginController {
 			try { // Establecemos el token
 				logger.info("Obteniendo el token.");
 				UBUGrades.session.setToken();
-			} catch (UnknownHostException | ClientProtocolException e) {
+			} catch (IOException e) {
 				correcto = false;
 				logger.error("No se ha podido conectar con el host.", e);
 				lblStatus.setText("No se ha podido conectar con el host.");
-			}catch (Exception e) {
+			}catch (JSONException e) {
 				correcto = false;
 				logger.error("Usuario y/o contraseña incorrectos", e);
 				lblStatus.setText("Usuario y/o contraseña incorrectos.");
@@ -91,32 +90,29 @@ public class LoginController {
 				progressBar.progressProperty().unbind();
 				progressBar.progressProperty().bind(task.progressProperty());
 				progressBar.visibleProperty().set(true);
-				task.messageProperty().addListener(new ChangeListener<String>() {
-					public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-						if (newValue.equals("end")) {
-							// Cargamos la siguiente ventana
-							try {
-								// Accedemos a la siguiente ventana
-								FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Welcome.fxml"));
-	
-								UBUGrades.stage = new Stage();
-	
-								Parent root = loader.load();
-								Scene scene = new Scene(root);
-								UBUGrades.stage.setScene(scene);
-								UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
-								UBUGrades.stage.setTitle("UBUGrades");
-								UBUGrades.stage.setResizable(false);
-								UBUGrades.init.close();
-								UBUGrades.stage.show();
-								lblStatus.setText("");
-							} catch (Exception e) {
-								logger.error("Error al acceder a la ventana de bienvenida" + e);
-								throw new RuntimeException("Loading Welcome.fxml");
-							}
-						} else {
-							logger.info(newValue);
+				task.messageProperty().addListener((ChangeListener<String>)(observable, oldValue, newValue) -> {
+					if (newValue.equals("end")) {
+						// Cargamos la siguiente ventana
+						try {
+							// Accedemos a la siguiente ventana
+							FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Welcome.fxml"));
+							UBUGrades.stage = new Stage();
+							Parent root = loader.load();
+							Scene scene = new Scene(root);
+							UBUGrades.stage.setScene(scene);
+							UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
+							UBUGrades.stage.setTitle("UBUGrades");
+							UBUGrades.stage.setResizable(false);
+							UBUGrades.init.close();
+							UBUGrades.stage.show();
+							lblStatus.setText("");
+						} catch (IOException e) {
+							logger.info("No se ha podido cargar la ventana de bienvenida: {}", e);
 						}
+					} else if (newValue.equals("error")) {
+						progressBar.setVisible(false);
+						lblStatus.setVisible(true);
+						lblStatus.setText("Error al obtener los datos del usuario.");
 					}
 				});
 				Thread th = new Thread(task, "login");
@@ -133,15 +129,20 @@ public class LoginController {
 	private Task<Object> createWorker() {
 		return new Task<Object>() {
 			@Override
-			protected Object call() throws Exception {
-				MoodleUserWS.setMoodleUser(UBUGrades.session.getToken(), UBUGrades.session.getEmail(),
-						UBUGrades.user = new MoodleUser());
-				updateProgress(1, 3);
-				MoodleUserWS.setCourses(UBUGrades.session.getToken(), UBUGrades.user);
-				updateProgress(2, 3);
-				updateProgress(3, 3);
-				Thread.sleep(50);
-				updateMessage("end");
+			protected Object call() {
+				try {
+					MoodleUserWS.setMoodleUser(UBUGrades.session.getToken(), UBUGrades.session.getEmail(),
+							UBUGrades.user = new MoodleUser());
+					updateProgress(1, 3);
+					MoodleUserWS.setCourses(UBUGrades.session.getToken(), UBUGrades.user);
+					updateProgress(2, 3);
+					updateProgress(3, 3);
+					Thread.sleep(50);
+					updateMessage("end");
+				} catch (Exception e) {
+					logger.error("Error al obtener los datos del usuario.", e);
+					updateMessage("error");
+				}
 				return true;
 			}
 		};

@@ -34,6 +34,10 @@ public class CourseWS {
 
 	static final Logger logger = LoggerFactory.getLogger(CourseWS.class);
 
+	private CourseWS() {
+	    throw new IllegalStateException("Clase de utilidad");
+	}
+	
 	/**
 	 * Establece los usuarios que están matriculados en un curso junto con su
 	 * rol y grupo.
@@ -47,7 +51,7 @@ public class CourseWS {
 	public static void setEnrolledUsers(String token, Course course) throws Exception {
 		logger.info("Obteniendo los usuarios del curso.");
 		CloseableHttpClient httpclient = HttpClients.createDefault();
-		ArrayList<EnrolledUser> eUsers = new ArrayList<EnrolledUser>();
+		ArrayList<EnrolledUser> eUsers = new ArrayList<>();
 		try {
 			HttpGet httpget = new HttpGet(UBUGrades.host + "/webservice/rest/server.php?wstoken=" + token
 					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_USUARIOS_MATRICULADOS
@@ -56,12 +60,10 @@ public class CourseWS {
 			
 			String respuesta = EntityUtils.toString(response.getEntity());
 			JSONArray jsonArray = new JSONArray(respuesta);
-			if (jsonArray != null) {
-				for (int i = 0; i < jsonArray.length(); i++) {
-					JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-					if (jsonObject != null) {
-						eUsers.add(new EnrolledUser(token, jsonObject));
-					}
+			for (int i = 0; i < jsonArray.length(); i++) {
+				JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+				if (jsonObject != null) {
+					eUsers.add(new EnrolledUser(token, jsonObject));
 				}
 			}
 		} catch (IOException e) {
@@ -111,13 +113,13 @@ public class CourseWS {
 			// la pila mientran tengan descendencia.
 			// Una vez añadida al árbol toda la descendencia de un nodo,
 			// este nodo se saca de la pila y se añade al árbol.
-			Stack<GradeReportLine> deque = new Stack<GradeReportLine>();
+			Stack<GradeReportLine> deque = new Stack<>();
 
 			if (jsonArray != null) {
 				JSONArray tables = (JSONArray) jsonArray.get("tables");
 				JSONObject alumn = (JSONObject) tables.get(0);
 
-				JSONArray tableData = (JSONArray) alumn.getJSONArray("tabledata");
+				JSONArray tableData = alumn.getJSONArray("tabledata");
 
 				// El elemento table data tiene las líneas del configurador
 				// (que convertiremos a GradeReportLines)
@@ -139,32 +141,22 @@ public class CourseWS {
 						// Se reconocen por la etiqueta "<a"
 						if (nameContainer.substring(0, 2).equals("<a")) {
 							nameLine = getNameActivity(nameContainer);
-							//TODO eliminar los if y guardar directamente lo que devuleve la funcion assignmenetOrQuizOrForum
-							// cambiar nombre a getType o algo similar
-							if (assignmentOrQuizOrForum(nameContainer).equals("assignment"))
-								typeActivity = "Assignment";
-							else if (assignmentOrQuizOrForum(nameContainer).equals("quiz"))
-								typeActivity = "Quiz";
-							else if (assignmentOrQuizOrForum(nameContainer).equals("forum"))
-								typeActivity = "Forum";
-							else if (assignmentOrQuizOrForum(nameContainer).equals("workshop"))
-								typeActivity = "Whorkshop";
+							typeActivity = assignmentOrQuizOrForum(nameContainer);
 							typeLine = true;
 						} else {
 							// Si es un item manual o suma de calificaciones
 							// Se reconocen por la etiqueta "<span"
 							nameLine = getNameManualItemOrEndCategory(nameContainer);
-							if (manualItemOrEndCategory(nameContainer).equals("manualItem")) {
-								typeActivity = "ManualItem";
+							typeActivity = manualItemOrEndCategory(nameContainer);
+							if (typeActivity.equals("ManualItem")) {
 								typeLine = true;
-							} else if (manualItemOrEndCategory(nameContainer).equals("endCategory")) {
-								typeActivity = "Category";
+							} else if (typeActivity.equals("Category")) {
 								typeLine = false;
 							}
 						}
 						// Sacamos la nota (grade)
 						JSONObject gradeContainer = tableDataElement.getJSONObject("grade");
-						String grade = "-";
+						String grade = "NaN";
 						// Si no hay nota numérica
 						if (!gradeContainer.getString("content").contains("-")) {
 							grade = getNumber(gradeContainer.getString("content"));
@@ -179,11 +171,8 @@ public class CourseWS {
 						// Sacamos el peso
 						JSONObject weightContainer = tableDataElement.optJSONObject("weight");
 						Float weight = Float.NaN;
-						if (weightContainer != null) {
-							if (!weightContainer.getString("content").contains("-")) {
-								weight = getFloat(weightContainer.getString("content"));
-								// logger.info(" - Nota item: " + weight);
-							}
+						if (weightContainer != null && !weightContainer.getString("content").contains("-")) {
+							weight = getFloat(weightContainer.getString("content"));
 						}
 						// Sacamos el rango
 						JSONObject rangeContainer = tableDataElement.getJSONObject("range");
@@ -271,18 +260,18 @@ public class CourseWS {
 			String respuesta = EntityUtils.toString(response.getEntity());
 			JSONObject jsonArray = new JSONObject(respuesta);
 			// lista de GradeReportLines
-			gradeReportLines = new ArrayList<GradeReportLine>();
+			gradeReportLines = new ArrayList<>();
 			// En esta pila sólo van a entrar Categorías. Se mantendrán en
 			// la pila mientran tengan descendencia.
 			// Una vez añadida al árbol toda la descendencia de un nodo,
 			// este nodo se saca de la pila y se añade al árbol.
-			Stack<GradeReportLine> deque = new Stack<GradeReportLine>();
+			Stack<GradeReportLine> deque = new Stack<>();
 
 			if (jsonArray != null) {
 				JSONArray tables = (JSONArray) jsonArray.get("tables");
 				JSONObject alumn = (JSONObject) tables.get(0);
 
-				JSONArray tableData = (JSONArray) alumn.getJSONArray("tabledata");
+				JSONArray tableData = alumn.getJSONArray("tabledata");
 
 				// El elemento table data tiene las líneas del configurador
 				// (que convertiremos a GradeReportLines)
@@ -304,32 +293,25 @@ public class CourseWS {
 						// Se reconocen por la etiqueta "<a"
 						if (nameContainer.substring(0, 2).equals("<a")) {
 							nameLine = getNameActivity(nameContainer);
-							if (assignmentOrQuizOrForum(nameContainer).equals("assignment"))
-								typeActivity = "Assignment";
-							else if (assignmentOrQuizOrForum(nameContainer).equals("quiz"))
-								typeActivity = "Quiz";
-							else if (assignmentOrQuizOrForum(nameContainer).equals("forum"))
-								typeActivity = "Forum";
+							typeActivity = assignmentOrQuizOrForum(nameContainer);
 							typeLine = true;
 						} else {
 							// Si es un item manual o suma de calificaciones
 							// Se reconocen por la etiqueta "<span"
 							nameLine = getNameManualItemOrEndCategory(nameContainer);
-							if (manualItemOrEndCategory(nameContainer).equals("manualItem")) {
-								typeActivity = "ManualItem";
+							typeActivity = manualItemOrEndCategory(nameContainer);
+							if (typeActivity.equals("ManualItem")) {
 								typeLine = true;
-							} else if (manualItemOrEndCategory(nameContainer).equals("endCategory")) {
-								typeActivity = "Category";
+							} else if (typeActivity.equals("Category")) {
 								typeLine = false;
 							}
 						}
 						// Sacamos la nota (grade)
 						JSONObject gradeContainer = tableDataElement.getJSONObject("grade");
-						String grade = "-";
+						String grade = "NaN";
 						// Si no hay nota numérica
 						if (!gradeContainer.getString("content").contains("-")) {
 							grade = getNumber(gradeContainer.getString("content"));
-							//TODO guardar NaN si no hay nota(?)
 						}
 
 						// Sacamos el porcentaje
@@ -341,10 +323,8 @@ public class CourseWS {
 						// Sacamos el peso
 						JSONObject weightContainer = tableDataElement.optJSONObject("weight");
 						Float weight = Float.NaN;
-						if (weightContainer != null) {
-							if (!weightContainer.getString("content").contains("-")) {
-								weight = getFloat(weightContainer.getString("content"));
-							}
+						if (weightContainer != null && !weightContainer.getString("content").contains("-")) {
+							weight = getFloat(weightContainer.getString("content"));
 						}
 						// Sacamos el rango
 						JSONObject rangeContainer = tableDataElement.getJSONObject("range");
@@ -438,14 +418,14 @@ public class CourseWS {
 			logger.info("Llamada al webService->OK userID=" + userId + " courseID " + courseId);
 			
 			//lista de GradeReportLines
-			gradeReportLines = new ArrayList<GradeReportLine>();
+			gradeReportLines = new ArrayList<>();
 			
 			if(jsonArray != null ) {
 				logger.info("Parseando datos...");
 				JSONArray usergrades = (JSONArray) jsonArray.get("usergrades");
 				JSONObject alumn = (JSONObject) usergrades.get(0);
 				
-				JSONArray gradeItems = (JSONArray) alumn.getJSONArray("gradeitems");
+				JSONArray gradeItems = alumn.getJSONArray("gradeitems");
 				
 				// El elemento gradeitems tiene cada linea del calificador
 				// que convertiremos en GradeReportLines
@@ -511,8 +491,8 @@ public class CourseWS {
 	 */
 	public static int getActualLevel(String data) {
 		int result = 0;
-		result = Integer.parseInt(data.substring(5, data.indexOf(" ")));
-		return (int) result;
+		result = Integer.parseInt(data.substring(5, data.indexOf(' ')));
+		return result;
 	}
 
 	/**
@@ -525,7 +505,7 @@ public class CourseWS {
 		String result = "";
 		// Busco el final de la cadena única a partir de la cual empieza el
 		// nombre de la categoría
-		int begin = data.lastIndexOf(">") + 1;
+		int begin = data.lastIndexOf('>') + 1;
 		// El nombre termina al final de todo el texto
 		int end = data.length();
 		// Me quedo con la cadena entre esos índices
@@ -623,18 +603,19 @@ public class CourseWS {
 	 * Diferencia si la actividad es un quiz o un assignment.
 	 * 
 	 * @param nameContainer
-	 * @return true si es un assignment, false si es un quiz
+	 * @return 
+	 * 		el nombre del assignment
 	 */
 	private static String assignmentOrQuizOrForum(String data) {
 		String url = data.substring(data.lastIndexOf("href="), data.indexOf("?id="));
 		if (url.contains("mod/assign")) {
-			return "assignment";
+			return "Assignment";
 		} else if (url.contains("mod/quiz"))
-			return "quiz";
+			return "Quiz";
 		else if (url.contains("mod/forum"))
-			return "forum";
+			return "Forum";
 		else if (url.contains("mod/workshop"))
-			return "workshop";
+			return "Workshop";
 		else
 			return "";
 	}
@@ -648,13 +629,13 @@ public class CourseWS {
 	private static String manualItemOrEndCategory(String data) {
 		//FNS 
 		if(data.contains("Ítem manual")) {
-			return "manualItem";
+			return "ManualItem";
 		}else if(data.contains("i/agg_sum")
 				// added by RMS
 				|| data.contains("i/calc") || data.contains("i/agg_mean")
 				//FNS
 				|| data.contains("Calificación calculada")) {
-			return "endCategory";
+			return "Category";
 		}else {
 			return "";
 		}
@@ -688,6 +669,6 @@ public class CourseWS {
 		if (match.find()) {
 			return data.substring(match.start(), match.end());
 		}
-		return "-";
+		return "NaN";
 	}
 }

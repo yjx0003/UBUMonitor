@@ -1,5 +1,6 @@
 package controllers;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -90,6 +90,11 @@ public class WelcomeController implements Initializable {
 
 		// Guardamos en una variable el curso seleccionado por el usuario
 		String selectedCourse = listCourses.getSelectionModel().getSelectedItem();
+		if(selectedCourse == null) {
+			lblNoSelect.setText("Debe seleccionar un curso");
+			return; 
+		}
+		lblNoSelect.setText("");
 		UBUGrades.session.setActualCourse(Course.getCourseByString(selectedCourse));
 		logger.info(" Curso seleccionado: " + UBUGrades.session.getActualCourse().getFullName());
 		
@@ -108,7 +113,7 @@ public class WelcomeController implements Initializable {
 					int done = 0;
 					updateProgress(done, enroledUsersCount);
 					
-					updateMessage("update_" + "Alumnos cargados: " + done + " de " + (enroledUsersCount-8));
+					updateMessage("update_Alumnos cargados: " + done + " de " + (enroledUsersCount-8));
 					for(EnrolledUser user: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
 						// Obtenemos todas las lineas de calificación del usuario
 						logger.info("Cargando los datos de: " + user.getFullName() + "...");
@@ -119,7 +124,7 @@ public class WelcomeController implements Initializable {
 						updateMessage("update_" + "Alumnos cargados: " + done + " de " + (enroledUsersCount-8));
 					}
 					
-					updateMessage("update_" + "Generando el calificador del curso...");
+					updateMessage("update_Generando el calificador del curso...");
 					// Establecemos calificador del curso
 					CourseWS.setGradeReportLines(UBUGrades.session.getToken(),
 							UBUGrades.session.getActualCourse().getEnrolledUsers().get(0).getId(),
@@ -127,7 +132,7 @@ public class WelcomeController implements Initializable {
 					done += 4;
 					updateProgress(done, enroledUsersCount);
 					
-					updateMessage("update_" + "Generando estadisticas...");
+					updateMessage("update_Generando estadisticas...");
 					
 					//Establecemos las estadisticas
 					Stats.getStats();
@@ -146,37 +151,35 @@ public class WelcomeController implements Initializable {
 		
 		progressBar.progressProperty().bind(task.progressProperty());
 		progressBar.visibleProperty().set(true);
-		task.messageProperty().addListener(new ChangeListener<String>() {
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				if(newValue.equals("end")) {
-					// Cargamos la siguiente ventana
-					try {
-						// Accedemos a la siguiente ventana
-						FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"));
-						
-						UBUGrades.stage.close();
-						UBUGrades.stage = new Stage();
-						Parent root = loader.load();
-						Scene scene = new Scene(root);
-						UBUGrades.stage.setScene(scene);
-						UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
-						UBUGrades.stage.setTitle("UBUGrades");
-						UBUGrades.stage.setResizable(true);
-						UBUGrades.stage.setMinHeight(600);
-						UBUGrades.stage.setMinWidth(800);
-						UBUGrades.stage.setMaximized(true);
-						UBUGrades.stage.show();
-						UBUGrades.init.getScene().setCursor(Cursor.DEFAULT);
-						lblNoSelect.setText("");
-					} catch (Exception e) {
-						lblNoSelect.setText("Debe seleccionar un curso");
-						logger.info("Debe seleccionar un curso");
-					}
-				} else if (newValue.substring(0, 6).equals("update")){
-					lblProgress.setText(newValue.substring(7));
-				} else {
-					errorWindow(newValue);
+		task.messageProperty().addListener((ChangeListener<String>)(observable, oldValue, newValue) -> {
+			if(newValue.equals("end")) {
+				// Cargamos la siguiente ventana
+				try {
+					// Accedemos a la siguiente ventana
+					FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"));
+					
+					UBUGrades.stage.close();
+					UBUGrades.stage = new Stage();
+					Parent root = loader.load();
+					Scene scene = new Scene(root);
+					UBUGrades.stage.setScene(scene);
+					UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
+					UBUGrades.stage.setTitle("UBUGrades");
+					UBUGrades.stage.setResizable(true);
+					UBUGrades.stage.setMinHeight(600);
+					UBUGrades.stage.setMinWidth(800);
+					UBUGrades.stage.setMaximized(true);
+					UBUGrades.stage.show();
+					UBUGrades.init.getScene().setCursor(Cursor.DEFAULT);
+					lblNoSelect.setText("");
+				} catch (IOException e) {
+					logger.info("No se ha podido cargar la ventana principal: {}", e);
+					errorWindow("No se ha podido cargar el curso.");
 				}
+			} else if (newValue.substring(0, 6).equals("update")){
+				lblProgress.setText(newValue.substring(7));
+			} else {
+				errorWindow(newValue);
 			}
 		});
 		Thread thread = new Thread(task, "datos");

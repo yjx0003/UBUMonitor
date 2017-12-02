@@ -17,9 +17,9 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" styleClass="anchorpane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.WelcomeController">
 	<children>
-      <Label fx:id="lblNoSelect" layoutX="322.0" layoutY="543.0" prefWidth="175.0" style="-fx-text-fill: #ff5050;" textFill="#e11010">
+      <Label fx:id="lblNoSelect" alignment="CENTER" layoutX="136.0" layoutY="543.0" prefHeight="21.0" prefWidth="540.0" style="-fx-text-fill: #ff5050;" textAlignment="CENTER" textFill="#e11010">
          <font>
-            <Font size="15.0" />
+            <Font name="System Bold" size="12.0" />
          </font>
       </Label>
       <ImageView fitHeight="68.0" fitWidth="350.0" layoutX="293.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true">

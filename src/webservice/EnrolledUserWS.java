@@ -40,12 +40,10 @@ public class EnrolledUserWS {
 			try {
 				String respuesta = EntityUtils.toString(response.getEntity());
 				JSONArray jsonArray = new JSONArray(respuesta);
-				if (jsonArray != null) {
-					for (int i = 0; i < jsonArray.length(); i++) {
-						JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-						if (jsonObject != null) {
-							courses.add(jsonObject.getInt("id"));
-						}
+				for (int i = 0; i < jsonArray.length(); i++) {
+					JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+					if (jsonObject != null) {
+						courses.add(jsonObject.getInt("id"));
 					}
 				}
 			} finally {

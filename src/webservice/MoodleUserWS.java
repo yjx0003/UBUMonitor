@@ -1,14 +1,17 @@
 package webservice;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,9 +45,12 @@ public class MoodleUserWS {
 	 *            email de usuario
 	 * @param mUser
 	 *            moodleUser
+	 * @throws IOException 
+	 * @throws ClientProtocolException 
+	 * @throws JSONException 
 	 * @throws Exception
 	 */
-	public static void setMoodleUser(String token, String eMail, MoodleUser mUser) throws Exception {
+	public static void setMoodleUser(String token, String eMail, MoodleUser mUser) throws IOException, JSONException  {
 		logger.info("Obteniendo los datos del usuario.");
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		try {
@@ -82,9 +88,12 @@ public class MoodleUserWS {
 	 *            token de usuario
 	 * @param mUser
 	 *            usuario
+	 * @throws IOException 
+	 * @throws JSONException 
+	 * @throws ClientProtocolException 
 	 * @throws Exception
 	 */
-	public static void setCourses(String token, MoodleUser mUser) throws Exception {
+	public static void setCourses(String token, MoodleUser mUser) throws IOException, JSONException {
 		logger.info("Obteniendo los cursos del usuario.");
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		ArrayList<Course> courses = new ArrayList<>();
@@ -96,12 +105,10 @@ public class MoodleUserWS {
 			
 			String respuesta = EntityUtils.toString(response.getEntity());
 			JSONArray jsonArray = new JSONArray(respuesta);
-			if (jsonArray != null) {
-				for (int i = 0; i < jsonArray.length(); i++) {
-					JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-					if (jsonObject != null) {
-						courses.add(new Course(jsonObject));
-					}
+			for (int i = 0; i < jsonArray.length(); i++) {
+				JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+				if (jsonObject != null) {
+					courses.add(new Course(jsonObject));
 				}
 			}
 		} finally {

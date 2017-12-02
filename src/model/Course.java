@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,9 +50,10 @@ public class Course implements Serializable {
 	 * 
 	 * @param obj
 	 *            objeto JSON con la información del curso
+	 * @throws JSONException 
 	 * @throws Exception
 	 */
-	public Course(JSONObject obj) throws Exception {
+	public Course(JSONObject obj) throws JSONException {
 		this.id = obj.getInt("id");
 		if (obj.getString("shortname") != null)
 			this.shortName = obj.getString("shortname");

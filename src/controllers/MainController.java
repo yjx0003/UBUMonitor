@@ -146,7 +146,16 @@ public class MainController implements Initializable {
 
 			//////////////////////////////////////////////////////////////////////////
 			// Manejo de roles (MenuButton Rol):
-			EventHandler<ActionEvent> actionRole = selectRole();
+			// Manejador de eventos para el botón de filtro por roles.
+			EventHandler<ActionEvent> actionRole = ((ActionEvent event) -> {
+				// Obtenemos el ítem que se ha seleccionado
+				MenuItem mItem = (MenuItem) event.getSource();
+				// Obtenemos el rol por el que se quiere filtrar
+				filterRole = mItem.getText();
+				logger.info("-> Filtrando participantes por rol: {}", filterRole);
+				filterParticipants();
+				slcRole.setText(filterRole);
+			});
 			// Cargamos una lista con los nombres de los roles
 			ArrayList<String> rolesList = (ArrayList<String>) UBUGrades.session.getActualCourse().getRoles();
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
@@ -171,7 +180,16 @@ public class MainController implements Initializable {
 
 			//////////////////////////////////////////////////////////////////////////
 			// Manejo de grupos (MenuButton Grupo):
-			EventHandler<ActionEvent> actionGroup = selectGroup();
+			// Manejador de eventos para el botón de filtro por grupos.
+			EventHandler<ActionEvent> actionGroup = ((ActionEvent event) -> {
+				// Obtenemos el ítem que se ha seleccionado
+				MenuItem mItem = (MenuItem) event.getSource();
+				// Obtenemos el grupo por el que se quire filtrar
+				filterGroup = mItem.getText();
+				logger.info("-> Filtrando participantes por grupo: {}", filterGroup);
+				filterParticipants();
+				slcGroup.setText(filterGroup);
+			});
 			// Cargamos una lista de los nombres de los grupos
 			ArrayList<String> groupsList = (ArrayList<String>) UBUGrades.session.getActualCourse().getGroups();
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
@@ -202,7 +220,17 @@ public class MainController implements Initializable {
 
 			//////////////////////////////////////////////////////////////////////////
 			// Manejo de actividades (TreeView<GradeReportLine>):
-			EventHandler<ActionEvent> actionActivity = selectNameActivity();
+			// Manejador de eventos para las actividades.
+			EventHandler<ActionEvent> actionActivity = ((ActionEvent event) -> {
+				// Obtenemos el item que se ha seleccionado
+				MenuItem mItem = (MenuItem) event.getSource();
+				// Obtenemos el valor (rol) para filtrar la lista de
+				// participantes
+				filterType = mItem.getText();
+				logger.info("-> Filtrando calificador por tipo: {}", filterType);
+				filterCalifications();
+				slcType.setText(filterType);
+			});
 			// Cargamos una lista de los nombres de los grupos
 			ArrayList<String> nameActivityList = (ArrayList<String>) UBUGrades.session.getActualCourse().getActivities();
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
@@ -213,7 +241,6 @@ public class MainController implements Initializable {
 			// Añadimos el manejador de eventos al primer MenuItem
 			mi.setOnAction(actionActivity);
 			nameActivityItemsList.add(mi);
-
 			for (int i = 0; i < nameActivityList.size(); i++) {
 				String nameActivity = nameActivityList.get(i);
 				mi = (new MenuItem(nameActivity));
@@ -227,10 +254,19 @@ public class MainController implements Initializable {
 			slcType.setText(TODOS);
 
 			// Inicializamos el listener del textField de participantes
-			tfdParticipants.setOnAction(inputParticipant());
+			// Manejador de eventos para el textField de filtro de participantes.
+			tfdParticipants.setOnAction((ActionEvent event) -> {
+				patternParticipants = tfdParticipants.getText();
+				logger.info("-> Filtrando participantes por nombre: {}", patternParticipants);
+				filterParticipants();
+			});
 
 			// Inicializamos el listener del textField del calificador
-			tfdItems.setOnAction(inputCalification());
+			tfdItems.setOnAction((ActionEvent event) -> {
+				patternCalifications = tfdItems.getText();
+				logger.info("-> Filtrando calificador por nombre: {}", patternCalifications);
+				filterCalifications();
+			});
 
 		} catch (Exception e) {
 			logger.error("Error en la inicialización.", e);
@@ -240,13 +276,8 @@ public class MainController implements Initializable {
 		listParticipants.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		// Asignamos el manejador de eventos de la lista
 		// Al clickar en la lista, se recalcula el nº de elementos seleccionados
-		listParticipants.setOnMouseClicked(new EventHandler<Event>() {
-			@Override
-			public void handle(Event event) {
-				// Generamos el gráfico con los elementos selecionados
-				updateChart();
-			}
-		});
+		// Generamos el gráfico con los elementos selecionados
+		listParticipants.setOnMouseClicked((EventHandler<Event>) event -> updateChart());
 
 		/// Mostramos la lista de participantes
 		listParticipants.setItems(enrList);
@@ -270,14 +301,9 @@ public class MainController implements Initializable {
 		tvwGradeReport.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		// Asignamos el manejador de eventos de la lista
 		// Al clickar en la lista, se recalcula el nº de elementos seleccionados
-		tvwGradeReport.setOnMouseClicked(new EventHandler<Event>() {
-			@Override
-			public void handle(Event event) {
-				// Generamos el gráfico con los elementos selecionados
-				updateChart();
-			}
-		});
-
+		// Generamos el gráfico con los elementos selecionados
+		tvwGradeReport.setOnMouseClicked((EventHandler<Event>) event -> updateChart());
+		
 		// Mostramos nº participantes
 		lblCountParticipants.setText(
 				"Participantes: " + UBUGrades.session.getActualCourse().getEnrolledUsersCount());
@@ -290,73 +316,6 @@ public class MainController implements Initializable {
 
 		// Mostramos Host actual
 		lblActualHost.setText("Host: " + UBUGrades.host);
-	}
-
-	/**
-	 * Manejador de eventos para el botón de filtro por roles. Devuelve un manejador
-	 * de eventos para cada item.
-	 * 
-	 * @return manejador de eventos de roles
-	 */
-	private EventHandler<ActionEvent> selectRole() {
-		return new EventHandler<ActionEvent>() {
-			/**
-			 * Recibe un evento (relacionado con un MenuItem) y responde en consecuencia. El
-			 * usuario elige un menuItem y filtra la lista de participantes
-			 */
-			public void handle(ActionEvent event) {
-				// Obtenemos el ítem que se ha seleccionado
-				MenuItem mItem = (MenuItem) event.getSource();
-				// Obtenemos el rol por el que se quiere filtrar
-				filterRole = mItem.getText();
-				logger.info("-> Filtrando participantes por rol: {}", filterRole);
-				filterParticipants();
-				slcRole.setText(filterRole);
-			}
-		};
-	}
-
-	/**
-	 * Manejador de eventos para el botón de filtro por grupos. Devuelve un
-	 * manejador de eventos para cada item.
-	 * 
-	 * @return manejador de eventos de grupos
-	 */
-	private EventHandler<ActionEvent> selectGroup() {
-		return new EventHandler<ActionEvent>() {
-			/**
-			 * Recibe un evento (relacionado con un MenuItem) y responde en consecuencia. El
-			 * usuario elige un menuItem y filtra la lista de participantes
-			 */
-			public void handle(ActionEvent event) {
-				// Obtenemos el ítem que se ha seleccionado
-				MenuItem mItem = (MenuItem) event.getSource();
-				// Obtenemos el grupo por el que se quire filtrar
-				filterGroup = mItem.getText();
-				logger.info("-> Filtrando participantes por grupo: {}", filterGroup);
-				filterParticipants();
-				slcGroup.setText(filterGroup);
-			}
-		};
-	}
-
-	/**
-	 * Manejador de eventos para el textField de filtro de participantes.
-	 * 
-	 * @return manejador de eventos para el patrón de participantes
-	 */
-	private EventHandler<ActionEvent> inputParticipant() {
-		return new EventHandler<ActionEvent>() {
-			/**
-			 * Recibe un evento (relacionado con un MenuItem) y responde en consecuencia. El
-			 * usuario elige un menuItem y filtra la lista de participantes
-			 */
-			public void handle(ActionEvent event) {
-				patternParticipants = tfdParticipants.getText();
-				logger.info("-> Filtrando participantes por nombre: {}", patternParticipants);
-				filterParticipants();
-			}
-		};
 	}
 
 	/**
@@ -448,74 +407,7 @@ public class MainController implements Initializable {
 	 * @param item
 	 */
 	public static void setIcon(TreeItem<GradeReportLine> item) {
-		//TODO eliminar el switch estableciendo el nombre del elemento igual que el nombre del .png
-		// /img/ + item.getValue().getNameType() + png
-		switch (item.getValue().getNameType()) {
-		case "Assignment":
-			item.setGraphic((Node) new ImageView(new Image("/img/assignment.png")));
-			break;
-		case "Quiz":
-			item.setGraphic((Node) new ImageView(new Image("/img/quiz.png")));
-			break;
-		case "ManualItem":
-			item.setGraphic((Node) new ImageView(new Image("/img/manual_item.png")));
-			break;
-		case "Category":
-			item.setGraphic((Node) new ImageView(new Image("/img/folder.png")));
-			break;
-		case "Forum":
-			item.setGraphic((Node) new ImageView(new Image("/img/forum.png")));
-			break;
-		case "Whorkshop":
-			item.setGraphic((Node) new ImageView(new Image("/img/workshop.png")));
-			break;
-		default:
-			break;
-		}
-	}
-
-	/**
-	 * Manejador de eventos para las actividades. Devuelve un manejador de eventos
-	 * para cada item.
-	 * 
-	 * @return manejador de eventos para las actividades
-	 */
-	private EventHandler<ActionEvent> selectNameActivity() {
-		return new EventHandler<ActionEvent>() {
-			/**
-			 * Recibe un evento (relacionado con un MenuItem) y responde en consecuencia. El
-			 * usuario elige un menuItem y filtra la lista de participantes
-			 */
-			public void handle(ActionEvent event) {
-				// Obtenemos el item que se ha seleccionado
-				MenuItem mItem = (MenuItem) event.getSource();
-				// Obtenemos el valor (rol) para filtrar la lista de
-				// participantes
-				filterType = mItem.getText();
-				logger.info("-> Filtrando calificador por tipo: {}", filterType);
-				filterCalifications();
-				slcType.setText(filterType);
-			}
-		};
-	}
-
-	/**
-	 * Manejador de eventos para el textField de filtro de actividades.
-	 * 
-	 * @return manejador de eventos para el patrón de filtro de actividades
-	 */
-	public EventHandler<ActionEvent> inputCalification() {
-		return new EventHandler<ActionEvent>() {
-			/**
-			 * Recibe un evento (relacionado con un TreeItem) y responde en consecuencia. El
-			 * usuario elige un menuItem y filtra la lista de participantes
-			 */
-			public void handle(ActionEvent event) {
-				patternCalifications = tfdItems.getText();
-				logger.info("-> Filtrando calificador por nombre: {}", patternCalifications);
-				filterCalifications();
-			}
-		};
+		item.setGraphic((Node) new ImageView(new Image("/img/" + item.getValue().getNameType() + ".png")));
 	}
 
 	/**
@@ -652,7 +544,7 @@ public class MainController implements Initializable {
 				try {
 					String str = (String) webViewChartsEngine.executeScript("exportCurrentElemet()");
 					logger.info("--------> {}", str);
-					byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(",") + 1));
+					byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
 					BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
 					ImageIO.write(bufferedImage, "png", file);
 				} catch (IOException ex) {
@@ -694,7 +586,7 @@ public class MainController implements Initializable {
 				//Completamos el nuevo archivo con los dataSets de los gráficos
 				out = new PrintWriter(new BufferedWriter(fw));
 				String generalDataSet = generateDataSet();
-				out.println("\n\rvar LineDataSet = " + generalDataSet + ";\r\n");
+				out.println("\r\nvar LineDataSet = " + generalDataSet + ";\r\n");
 				out.println("var RadarDataSet = " + generalDataSet + ";\r\n");
 				out.println("var BoxPlotGeneralDataSet = " + generateBoxPlotDataSet(TODOS) + ";\r\n");
 				out.println("var BoxPlotGroupDataSet = " + generateBoxPlotDataSet(filterGroup) + ";\r\n");
@@ -723,6 +615,7 @@ public class MainController implements Initializable {
 	 * @throws Exception
 	 */
 	public void logOut(ActionEvent actionEvent) throws Exception {
+		Stats.removeStats();
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource("/view/Login.fxml"));
 		UBUGrades.stage.close();
@@ -907,8 +800,8 @@ public class MainController implements Initializable {
 					}
 
 				} catch (Exception e) {
-					// TODO mostrar ventana de error. ¿Volver a cargar los datos?
 					logger.error("Error en la construcción del dataset.", e);
+					errorWindow("Error en la construcción del dataset.");
 				}
 			}
 

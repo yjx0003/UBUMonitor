@@ -45,4 +45,8 @@ public class MoodleOptions {
 	 * Devuelve las notas de todos los elementos del calificador (Moodel 3.3)
 	 */
 	public static final String OBTENER_NOTAS_ALUMNO = "gradereport_user_get_grade_items";
+	/**
+	 * Devuelve información sobre una lección (Moodel 3.3)
+	 */
+	public static final String OBTENER_INFO_LECCION = "mod_lesson_get_lesson";	
 }

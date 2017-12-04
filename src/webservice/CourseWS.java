@@ -616,6 +616,8 @@ public class CourseWS {
 			return "Forum";
 		else if (url.contains("mod/workshop"))
 			return "Workshop";
+		else if (url.contains("mod/lesson"))
+			return "Lesson";
 		else
 			return "";
 	}

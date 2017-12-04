@@ -174,7 +174,7 @@ public class WelcomeController implements Initializable {
 					lblNoSelect.setText("");
 				} catch (IOException e) {
 					logger.info("No se ha podido cargar la ventana principal: {}", e);
-					errorWindow("No se ha podido cargar el curso.");
+					//errorWindow("No se ha podido cargar el curso.");
 				}
 			} else if (newValue.substring(0, 6).equals("update")){
 				lblProgress.setText(newValue.substring(7));

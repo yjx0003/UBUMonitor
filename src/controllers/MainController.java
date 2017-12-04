@@ -407,7 +407,11 @@ public class MainController implements Initializable {
 	 * @param item
 	 */
 	public static void setIcon(TreeItem<GradeReportLine> item) {
-		item.setGraphic((Node) new ImageView(new Image("/img/" + item.getValue().getNameType() + ".png")));
+		try {
+			item.setGraphic((Node) new ImageView(new Image("/img/" + item.getValue().getNameType() + ".png")));
+		} catch(Exception e) {
+			logger.error("No se ha podido cargar la imagen del elemento " + item +" : {}", e);
+		}
 	}
 
 	/**

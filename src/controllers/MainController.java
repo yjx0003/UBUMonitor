@@ -134,8 +134,7 @@ public class MainController implements Initializable {
 			// Cargamos el html de los graficos y calificaciones
 			webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
 			webViewChartsEngine = webViewCharts.getEngine();
-			URL url = this.getClass().getResource("/graphics/Charts.html");
-			webViewChartsEngine.load(url.toString());
+			webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html").toExternalForm());
 
 			// Almacenamos todos participantes en una lista
 			ArrayList<EnrolledUser> users = (ArrayList<EnrolledUser>) UBUGrades.session.getActualCourse()
@@ -547,7 +546,6 @@ public class MainController implements Initializable {
 			if (file != null) {
 				try {
 					String str = (String) webViewChartsEngine.executeScript("exportCurrentElemet()");
-					logger.info("--------> {}", str);
 					byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
 					BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
 					ImageIO.write(bufferedImage, "png", file);
@@ -707,7 +705,7 @@ public class MainController implements Initializable {
 					// Añadimos la nota al gráfico
 					tableData += ",{v:" + grade + ", f:'" + grade + "/" + actualLine.getRangeMax() + "'}";
 				} else {
-					tableData += ",{v:0, f:'NaN'}";
+					tableData += ",{v:0, f:'" + calculatedGrade + "'}";
 				}
 			}
 			tableData += "]";
@@ -784,7 +782,12 @@ public class MainController implements Initializable {
 				countA++;
 				GradeReportLine actualLine = actualUser.getGradeReportLine(structTree.getValue().getId());
 				try {
-					String calculatedGrade = actualLine.getGradeAdjustedTo10();
+					String calculatedGrade;
+					if(actualLine.getNameType().equals("Assignment")) {
+						calculatedGrade = actualLine.getGradeWithScale();
+					} else {
+						calculatedGrade = actualLine.getGradeAdjustedTo10();
+					}
 
 					if (countA == countB) {
 						countB++;

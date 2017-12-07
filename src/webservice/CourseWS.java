@@ -2,6 +2,7 @@ package webservice;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,9 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controllers.UBUGrades;
+import model.Assignment;
 import model.Course;
 import model.EnrolledUser;
 import model.GradeReportLine;
+import model.Scale;
 
 /**
  * Clase Course para webservices. Recoge funciones útiles para servicios web
@@ -156,11 +159,7 @@ public class CourseWS {
 						}
 						// Sacamos la nota (grade)
 						JSONObject gradeContainer = tableDataElement.getJSONObject("grade");
-						String grade = "NaN";
-						// Si no hay nota numérica
-						if (!gradeContainer.getString("content").contains("-")) {
-							grade = getNumber(gradeContainer.getString("content"));
-						}
+						String grade = getNumber(gradeContainer.getString("content"));
 
 						// Sacamos el porcentaje
 						JSONObject percentageContainer = tableDataElement.getJSONObject("percentage");
@@ -182,6 +181,12 @@ public class CourseWS {
 							// Añadimos la linea actual
 							GradeReportLine actualLine = new GradeReportLine(idLine, nameLine, actualLevel,
 									typeLine, weight, rangeMin, rangeMax, grade, percentage, typeActivity);
+							// Si es un assignment obtenemos la escala si la tiene
+							if(typeActivity.equals("Assignment")) {
+								Assignment assignment = new Assignment(nameLine, typeActivity, weight, rangeMin, rangeMax);
+								assignment.setScaleId(getAssignmentScale(token, course.getId(), nameLine));
+								actualLine.setActivity(assignment);
+							}
 							if (!deque.isEmpty()) {
 								deque.lastElement().addChild(actualLine);
 							}
@@ -308,11 +313,7 @@ public class CourseWS {
 						}
 						// Sacamos la nota (grade)
 						JSONObject gradeContainer = tableDataElement.getJSONObject("grade");
-						String grade = "NaN";
-						// Si no hay nota numérica
-						if (!gradeContainer.getString("content").contains("-")) {
-							grade = getNumber(gradeContainer.getString("content"));
-						}
+						String grade = getNumber(gradeContainer.getString("content"));
 
 						// Sacamos el porcentaje
 						JSONObject percentageContainer = tableDataElement.getJSONObject("percentage");
@@ -333,7 +334,13 @@ public class CourseWS {
 						if (typeLine) { // Si es un item
 							// Añadimos la linea actual
 							GradeReportLine actualLine = new GradeReportLine(idLine, nameLine, actualLevel,
-									typeLine, weight, rangeMin, rangeMax, grade, percentage, typeActivity);
+									typeLine, weight, rangeMin, rangeMax, grade, percentage, typeActivity);		
+							// Si es un assignment obtenemos la escala si la tiene
+							if(typeActivity.equals("Assignment")) {
+								Assignment assignment = new Assignment(nameLine, typeActivity, weight, rangeMin, rangeMax);
+								assignment.setScaleId(getAssignmentScale(token, courseId, nameLine));
+								actualLine.setActivity(assignment);
+							}
 							if (!deque.isEmpty()) {
 								deque.lastElement().addChild(actualLine);
 							}
@@ -660,7 +667,8 @@ public class CourseWS {
 
 	/**
 	 * Devuelve el numero, con el formato especificado, encontrado en la cadena
-	 * pasada Si no es un numero devuelve "-".
+	 * pasada. Si no es un numero devuelve NaN si no hay nota("-") o la cadena
+	 * pasada si es una escala.
 	 * 
 	 * @param data
 	 * @return
@@ -671,6 +679,62 @@ public class CourseWS {
 		if (match.find()) {
 			return data.substring(match.start(), match.end());
 		}
-		return "NaN";
+		// Si es un - es que no hay nota, sino es que es un texto de una escala
+		return data.equals("-") ?  "NaN": data;
+	}
+	
+	private static int getAssignmentScale(String token, int courseId, String assignmentName) {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		try {
+			HttpGet httpget = new HttpGet(UBUGrades.host + "/webservice/rest/server.php?wstoken=" + token
+					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_ASSIGNMENTS
+					+ "&courseids[]=" + courseId);
+			CloseableHttpResponse response = httpclient.execute(httpget);
+			
+			String respuesta = EntityUtils.toString(response.getEntity());
+			JSONObject jsonArray = new JSONObject(respuesta);
+			JSONObject coruses = (JSONObject) ((JSONArray) jsonArray.get("courses")).get(0);
+			JSONArray assignments = (JSONArray) coruses.get("assignments");
+			for (int i = 0; i < assignments.length(); i++) {
+				JSONObject assignment = assignments.getJSONObject(i);
+				if(assignment.get("name").equals(assignmentName)) {
+					int grade = (int) assignment.get("grade");
+					// Si la nota es negativa indica el id de la escala
+					if(grade<0) {
+						grade = Math.abs(grade);
+						Scale scale = UBUGrades.session.getActualCourse().getScale(grade);
+						return (scale != null) ? scale.getId() : getScale(token, grade);				
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Error al obtener la escala de la tarea: {}", e);
+		}
+		return 0;
+	}
+	
+	private static int getScale(String token, int scaleId) {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		Scale scale = null;
+		List<String> elements = new ArrayList<>();
+		try {
+			HttpGet httpget = new HttpGet(UBUGrades.host + "/webservice/rest/server.php?wstoken=" + token
+					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_ESCALA
+					+ "&scaleid=" + scaleId);
+			CloseableHttpResponse response = httpclient.execute(httpget);
+			String respuesta = EntityUtils.toString(response.getEntity());
+			JSONArray jsonArray = new JSONArray(respuesta);
+			for (int i = 0; i < jsonArray.length(); i++) {
+				JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+				if (jsonObject != null) {
+					elements.add(jsonObject.getString("name"));
+				}
+			}
+			scale = new Scale(scaleId, elements);
+			UBUGrades.session.getActualCourse().addScale(scale);
+		} catch (Exception e) {
+			logger.error("Error al obtener la escala: {}", e);
+		}
+		return (scale != null) ? scale.getId() : 0;
 	}
 }

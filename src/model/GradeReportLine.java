@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.UBUGrades;
 import webservice.CourseWS;
 
 /**
@@ -191,7 +192,21 @@ public class GradeReportLine {
 		}
 		return Float.toString(gradeAdjusted);
 	}
-
+	
+	public String getGradeWithScale() {
+		Float gradeAdjusted;
+		int scaleId = ((Assignment) activity).getScaleId();
+		if (scaleId != 0 && !grade.equals("NaN")) {
+			Scale scale = UBUGrades.session.getActualCourse().getScale(scaleId);
+			gradeAdjusted = (float) scale.getElements().indexOf(this.grade);
+			Float newRangeMax = (float) scale.getElements().size()-1;
+			gradeAdjusted = (float) ((gradeAdjusted*10.0) / newRangeMax); 
+		} else {
+			return getGradeAdjustedTo10();
+		}
+		return Float.toString(gradeAdjusted);
+	}
+	
 	/**
 	 * Modifica la nota del GradeReportLine
 	 * 
@@ -322,8 +337,8 @@ public class GradeReportLine {
 	/**
 	 * Crea una actividad a partir del GradeReportLine
 	 */
-	public void setActivity() {
-		this.activity = new Activity(name, typeName, weight, rangeMin, rangeMax);
+	public void setActivity(Activity activity) {
+		this.activity = activity;
 	}
 
 	/**

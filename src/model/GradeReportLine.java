@@ -193,6 +193,12 @@ public class GradeReportLine {
 		return Float.toString(gradeAdjusted);
 	}
 	
+	/**
+	 * Devuelve la nota de una escala ajustada al rango de 0 a 10
+	 * 
+	 * @return
+	 * 		La nota ajustada.
+	 */
 	public String getGradeWithScale() {
 		Float gradeAdjusted;
 		int scaleId = ((Assignment) activity).getScaleId();

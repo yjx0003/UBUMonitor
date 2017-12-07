@@ -82,6 +82,8 @@ public class MainController implements Initializable {
 	public Label lblActualUser;
 	@FXML // Host actual
 	public Label lblActualHost;
+	@FXML // Imagen del usuario
+	public ImageView userPhoto;
 
 	@FXML // Nº participantes
 	public Label lblCountParticipants;
@@ -307,8 +309,9 @@ public class MainController implements Initializable {
 		lblCountParticipants.setText(
 				"Participantes: " + UBUGrades.session.getActualCourse().getEnrolledUsersCount());
 
-		// Mostramos Usuario logeado
+		// Mostramos Usuario logeado y su imagen
 		lblActualUser.setText("Usuario: " + UBUGrades.user.getFullName());
+		userPhoto.setImage(UBUGrades.user.getUserPhoto());
 
 		// Mostramos Curso actual
 		lblActualCourse.setText("Curso actual: " + UBUGrades.session.getActualCourse().getFullName());

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javafx.scene.image.Image;
+
 /**
  * Clase para el usuario logeado en la aplicación
  * 
@@ -20,6 +22,7 @@ public class MoodleUser {
 	private Date lastAccess;
 	private String city;
 	private String country;
+	private Image userPhoto;
 	private ArrayList<Course> courses;
 
 	/**
@@ -205,6 +208,20 @@ public class MoodleUser {
 	 */
 	public void setCountry(String country) {
 		this.country = country;
+	}
+
+	/**
+	 * @return the userPhoto
+	 */
+	public Image getUserPhoto() {
+		return userPhoto;
+	}
+
+	/**
+	 * @param userPhoto the userPhoto to set
+	 */
+	public void setUserPhoto(Image userPhoto) {
+		this.userPhoto = userPhoto;
 	}
 
 	/**

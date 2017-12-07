@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controllers.UBUGrades;
+import javafx.scene.image.Image;
 import model.Course;
 import model.MoodleUser;
 
@@ -74,6 +75,8 @@ public class MoodleUserWS {
 						mUser.setFirstAccess(new Date(jsonObject.getLong("firstaccess") * 1000));
 					if (jsonObject.has("lastaccess"))
 						mUser.setLastAccess(new Date(jsonObject.getLong("lastaccess") * 1000));
+					if(jsonObject.has("profileimageurlsmall"))
+						mUser.setUserPhoto(new Image(jsonObject.getString("profileimageurlsmall")));
 				}
 			}
 		} finally {

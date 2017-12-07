@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controllers.UBUGrades;
+import model.Scale;
 
 /**
  * Clase curso (asignatura). Cada curso tiene un calificador (compuesto por
@@ -37,11 +38,13 @@ public class Course implements Serializable {
 	public Set<String> groups; // grupos que hay en el curso
 	public List<GradeReportLine> gradeReportLines;
 	public Set<String> typeActivities;
+	public List<Scale> scales;
 
 	static final Logger logger = LoggerFactory.getLogger(Course.class);
 
 	public Course() {
 		this.enrolledUsers = new ArrayList<>();
+		this.scales = new ArrayList<>();
 	}
 
 	/**
@@ -67,6 +70,7 @@ public class Course implements Serializable {
 			this.summary = obj.getString("summary");
 		this.enrolledUsers = new ArrayList<>();
 		this.gradeReportLines = new ArrayList<>();
+		this.scales = new ArrayList<>();
 	}
 
 	/**
@@ -379,5 +383,31 @@ public class Course implements Serializable {
 		}
 		
 		return groupUsers;
+	}
+	
+	/**
+	 * Añade una escala a la lista de escalas.
+	 * @param scale
+	 * 		La escala a añadadir.
+	 */
+	public void addScale(Scale scale) {
+		scales.add(scale);
+	}
+	
+	/**
+	 * Devuelve una escala por su id.
+	 * 
+	 * @param id
+	 * 		El id de la escala.
+	 * @return
+	 * 		La escala o null si no existe.
+	 */
+	public Scale getScale(int id) {
+		for(Scale scale: scales) {
+			if (scale.getId() == id) {
+				return scale;
+			}
+		}
+		return null;
 	}
 }

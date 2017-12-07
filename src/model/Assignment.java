@@ -2,8 +2,6 @@ package model;
 
 import java.util.Date;
 
-import org.json.JSONObject;
-
 /**
  * Clase Assignment (Tarea). Implementar versiones futuras.
  * 
@@ -15,11 +13,12 @@ public class Assignment extends Activity {
 	private Date dueDate;
 	private Date allowSubmissionsFromDate;
 	public Date timeModified;
+	private int scaleId;
+	
 	private static final long serialVersionUID = 1L;
 
-	public Assignment(String token, JSONObject obj) throws Exception {
-		super(token, obj);
-		// TODO Auto-generated constructor stub
+	public Assignment(String itemName, String type, float weight, String minRange, String maxRange) {
+		super(itemName, type, weight, minRange, maxRange);
 	}
 
 	/**
@@ -74,5 +73,19 @@ public class Assignment extends Activity {
 	 */
 	public void setTimeModified(Date timeModified) {
 		this.timeModified = timeModified;
+	}
+
+	/**
+	 * @return the scaleId
+	 */
+	public int getScaleId() {
+		return scaleId;
+	}
+
+	/**
+	 * @param scaleId the scaleId to set
+	 */
+	public void setScaleId(int scaleId) {
+		this.scaleId = scaleId;
 	}
 }

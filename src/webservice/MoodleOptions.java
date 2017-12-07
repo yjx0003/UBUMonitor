@@ -49,4 +49,8 @@ public class MoodleOptions {
 	 * Devuelve información sobre una lección (Moodel 3.3)
 	 */
 	public static final String OBTENER_INFO_LECCION = "mod_lesson_get_lesson";	
+	/**
+	 * Devuelve información sobre una escala.
+	 */
+	public static final String OBTENER_ESCALA = "core_competency_get_scale_values";	
 }

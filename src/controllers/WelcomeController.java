@@ -121,7 +121,7 @@ public class WelcomeController implements Initializable {
 								UBUGrades.session.getActualCourse().getId()));
 						updateProgress(done++, enroledUsersCount);
 						logger.info("Datos cargados.");
-						updateMessage("update_" + "Alumnos cargados: " + done + " de " + (enroledUsersCount-8));
+						updateMessage("update_Alumnos cargados: " + done + " de " + (enroledUsersCount-8));
 					}
 					
 					updateMessage("update_Generando el calificador del curso...");

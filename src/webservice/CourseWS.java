@@ -163,14 +163,11 @@ public class CourseWS {
 
 						// Sacamos el porcentaje
 						JSONObject percentageContainer = tableDataElement.getJSONObject("percentage");
-						Float percentage = Float.NaN;
-						if (!percentageContainer.getString("content").contains("-")) {
-							percentage = getFloat(percentageContainer.getString("content"));
-						}
+						Float percentage = getFloat(percentageContainer.getString("content"));
 						// Sacamos el peso
 						JSONObject weightContainer = tableDataElement.optJSONObject("weight");
 						Float weight = Float.NaN;
-						if (weightContainer != null && !weightContainer.getString("content").contains("-")) {
+						if (weightContainer != null) {
 							weight = getFloat(weightContainer.getString("content"));
 						}
 						// Sacamos el rango
@@ -287,8 +284,7 @@ public class CourseWS {
 					JSONObject itemname = tableDataElement.getJSONObject("itemname");
 					int actualLevel = getActualLevel(itemname.getString("class"));
 					int idLine = getIdLine(itemname.getString("id"));
-					// Si es un feedback (item o suma de
-					// calificaciones):
+					// Si es un feedback (item o suma de calificaciones):
 					if (tableDataElement.isNull("leader")) {
 						String nameContainer = itemname.getString("content");
 						String nameLine = "";
@@ -317,14 +313,12 @@ public class CourseWS {
 
 						// Sacamos el porcentaje
 						JSONObject percentageContainer = tableDataElement.getJSONObject("percentage");
-						Float percentage = Float.NaN;
-						if (!percentageContainer.getString("content").contains("-")) {
-							percentage = getFloat(percentageContainer.getString("content"));
-						}
+						Float percentage = getFloat(percentageContainer.getString("content"));
+						
 						// Sacamos el peso
 						JSONObject weightContainer = tableDataElement.optJSONObject("weight");
 						Float weight = Float.NaN;
-						if (weightContainer != null && !weightContainer.getString("content").contains("-")) {
+						if (weightContainer != null) {
 							weight = getFloat(weightContainer.getString("content"));
 						}
 						// Sacamos el rango

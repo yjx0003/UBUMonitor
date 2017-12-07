@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.web.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
@@ -94,9 +96,13 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <Label id="topBarLabels" fx:id="lblActualUser" text="Usuario:" />
+                  <Label id="topBarLabels" fx:id="lblActualUser" text="Usuario:">
+                     <padding>
+                        <Insets left="30.0" />
+                     </padding></Label>
                   <Label id="topBarLabels" fx:id="lblActualCourse" text="Curso actual:" GridPane.columnIndex="1" />
                   <Label id="topBarLabels" fx:id="lblActualHost" text="Host actual:" GridPane.columnIndex="2" />
+                  <ImageView fx:id="userPhoto" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </GridPane>
          </children>

@@ -193,6 +193,7 @@ public class CourseWS {
 							// Obtenemos el elemento cabecera de la pila
 							GradeReportLine actualLine = deque.pop();
 							// Establecemos los valores restantes
+							actualLine.setId(idLine);
 							actualLine.setWeight(weight);
 							actualLine.setRangeMin(rangeMin);
 							actualLine.setRangeMax(rangeMax);
@@ -229,8 +230,8 @@ public class CourseWS {
 			logger.error("Se ha producido un error al generar el arbol del calificador.", e);
 			throw new Exception("Se ha producido un error al generar el arbol del calificador.");
 		} finally {
-				response.close();
-				httpclient.close();
+			response.close();
+			httpclient.close();
 		}
 	}
 	
@@ -263,18 +264,11 @@ public class CourseWS {
 			JSONObject jsonArray = new JSONObject(respuesta);
 			// lista de GradeReportLines
 			gradeReportLines = new ArrayList<>();
-			// En esta pila sólo van a entrar Categorías. Se mantendrán en
-			// la pila mientran tengan descendencia.
-			// Una vez añadida al árbol toda la descendencia de un nodo,
-			// este nodo se saca de la pila y se añade al árbol.
-			Stack<GradeReportLine> deque = new Stack<>();
 
 			if (jsonArray != null) {
 				JSONArray tables = (JSONArray) jsonArray.get("tables");
 				JSONObject alumn = (JSONObject) tables.get(0);
-
 				JSONArray tableData = alumn.getJSONArray("tabledata");
-
 				// El elemento table data tiene las líneas del configurador
 				// (que convertiremos a GradeReportLines)
 				for (int i = 0; i < tableData.length(); i++) {
@@ -284,7 +278,7 @@ public class CourseWS {
 					JSONObject itemname = tableDataElement.getJSONObject("itemname");
 					int actualLevel = getActualLevel(itemname.getString("class"));
 					int idLine = getIdLine(itemname.getString("id"));
-					// Si es un feedback (item o suma de calificaciones):
+					// Si es un item o suma de calificaciones:
 					if (tableDataElement.isNull("leader")) {
 						String nameContainer = itemname.getString("content");
 						String nameLine = "";
@@ -325,52 +319,16 @@ public class CourseWS {
 						JSONObject rangeContainer = tableDataElement.getJSONObject("range");
 						String rangeMin = getRange(rangeContainer.getString("content"), true);
 						String rangeMax = getRange(rangeContainer.getString("content"), false);
-						if (typeLine) { // Si es un item
-							// Añadimos la linea actual
-							GradeReportLine actualLine = new GradeReportLine(idLine, nameLine, actualLevel,
-									typeLine, weight, rangeMin, rangeMax, grade, percentage, typeActivity);		
-							// Si es un assignment obtenemos la escala si la tiene
-							if(typeActivity.equals("Assignment")) {
-								Assignment assignment = new Assignment(nameLine, typeActivity, weight, rangeMin, rangeMax);
-								assignment.setScaleId(getAssignmentScale(token, courseId, nameLine));
-								actualLine.setActivity(assignment);
-							}
-							if (!deque.isEmpty()) {
-								deque.lastElement().addChild(actualLine);
-							}
-							// Añadimos el elemento a la lista como item
-							gradeReportLines.add(actualLine);
-						} else {
-							// Obtenemos el elemento cabecera de la pila
-							GradeReportLine actualLine = deque.pop();
-							// Establecemos los valores restantes
-							actualLine.setWeight(weight);
-							actualLine.setRangeMin(rangeMin);
-							actualLine.setRangeMax(rangeMax);
-							actualLine.setNameType(typeActivity);
-							actualLine.setGrade(grade);
-							// Modificamos la cabecera de esta suma, para
-							// dejarla como una categoria completa
-							
-							for (int x = 0; x < gradeReportLines.size(); x++) {
-								if(gradeReportLines.get(x).getId() == actualLine.getId())
-									gradeReportLines.set(x, actualLine);
-							}
+						// Añadimos la linea actual
+						GradeReportLine actualLine = new GradeReportLine(idLine, nameLine, actualLevel,
+								typeLine, weight, rangeMin, rangeMax, grade, percentage, typeActivity);		
+						// Si es un assignment obtenemos la escala si la tiene
+						if(typeActivity.equals("Assignment")) {
+							Assignment assignment = new Assignment(nameLine, typeActivity, weight, rangeMin, rangeMax);
+							assignment.setScaleId(getAssignmentScale(token, courseId, nameLine));
+							actualLine.setActivity(assignment);
 						}
-					}else {// --- Si es una categoría
-						String nameLine = getNameCategorie(itemname.getString("content"));
-
-						// Añadimos la cabecera de la categoria a la pila
-						GradeReportLine actualLine = new GradeReportLine(idLine, nameLine, actualLevel, false);
-						// Lo añadimos como hijo de la categoria anterior
-						if (!deque.isEmpty()) {
-							deque.lastElement().addChild(actualLine);
-						}
-
-						// Añadimos esta cabecera a la pila
-						deque.add(actualLine);
-						// Añadimos el elemento a la lista como cabecera por
-						// ahora
+						// Añadimos el elemento a la lista como item
 						gradeReportLines.add(actualLine);
 					}
 				} // End for
@@ -383,8 +341,8 @@ public class CourseWS {
 			logger.error("Se ha producido un error al obtener las notas del alumno.", e);
 			throw new Exception("Se ha producido un error al obtener las notas del alumno.");
 		} finally {
-				response.close();
-				httpclient.close();
+			if(response!=null) {response.close();}
+			httpclient.close();
 		}
 		return gradeReportLines;
 	}
@@ -467,8 +425,8 @@ public class CourseWS {
 			logger.error("Se ha producido un error al obtener las notas del alumno.", e);
 			throw new Exception("Se ha producido un error al obtener las notas del alumno.");
 		} finally {
-				response.close();
-				httpclient.close();
+			if(response!=null) {response.close();}
+			httpclient.close();
 		}
 		return gradeReportLines;
 	}
@@ -677,13 +635,27 @@ public class CourseWS {
 		return data.equals("-") ?  "NaN": data;
 	}
 	
-	private static int getAssignmentScale(String token, int courseId, String assignmentName) {
+	/**
+	 * Devuelve el id de la escala asociada a la tarea(Assignment) o 0 si no hay ninguna escala asociada.
+	 * 
+	 * @param token
+	 *            token del profesor logueado
+	 * @param courseId
+	 *            curso del que se quiere obtener la escala
+	 * @param assignmentName
+	 * 			  tarea de la que se quiere obtener la escala
+	 * @return
+	 * 		el id de la escala o 0 si no hay escala asociada.
+	 * @throws Exception
+	 */
+	private static int getAssignmentScale(String token, int courseId, String assignmentName) throws Exception {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
+		CloseableHttpResponse response = null;
 		try {
 			HttpGet httpget = new HttpGet(UBUGrades.host + "/webservice/rest/server.php?wstoken=" + token
 					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_ASSIGNMENTS
 					+ "&courseids[]=" + courseId);
-			CloseableHttpResponse response = httpclient.execute(httpget);
+			response = httpclient.execute(httpget);
 			
 			String respuesta = EntityUtils.toString(response.getEntity());
 			JSONObject jsonArray = new JSONObject(respuesta);
@@ -697,25 +669,41 @@ public class CourseWS {
 					if(grade<0) {
 						grade = Math.abs(grade);
 						Scale scale = UBUGrades.session.getActualCourse().getScale(grade);
-						return (scale != null) ? scale.getId() : getScale(token, grade);				
+						return (scale != null) ? scale.getId() : loadScale(token, grade);				
 					}
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Error al obtener la escala de la tarea: {}", e);
+			logger.error("Se ha producido un error al obtener la escala de la tarea: {}", e);
+			throw new Exception("Se ha producido un error al obtener la escala de la tarea.");
+		} finally {
+			if(response!=null) {response.close();}
+			httpclient.close();
 		}
 		return 0;
 	}
 	
-	private static int getScale(String token, int scaleId) {
+	/**
+	 * Obtiene los datos de una escala y los alamacena.
+	 * 
+	 * @param token
+	 * 		token del profesor logueado.
+	 * @param scaleId
+	 * 		el id de la escala.
+	 * @return
+	 * 		el id de la escala.
+	 * @throws Exception
+	 */
+	private static int loadScale(String token, int scaleId) throws Exception {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
+		CloseableHttpResponse response = null;
 		Scale scale = null;
 		List<String> elements = new ArrayList<>();
 		try {
 			HttpGet httpget = new HttpGet(UBUGrades.host + "/webservice/rest/server.php?wstoken=" + token
 					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_ESCALA
 					+ "&scaleid=" + scaleId);
-			CloseableHttpResponse response = httpclient.execute(httpget);
+			response = httpclient.execute(httpget);
 			String respuesta = EntityUtils.toString(response.getEntity());
 			JSONArray jsonArray = new JSONArray(respuesta);
 			for (int i = 0; i < jsonArray.length(); i++) {
@@ -727,8 +715,12 @@ public class CourseWS {
 			scale = new Scale(scaleId, elements);
 			UBUGrades.session.getActualCourse().addScale(scale);
 		} catch (Exception e) {
-			logger.error("Error al obtener la escala: {}", e);
+			logger.error("Se ha producido un error al obtener la escala: {}", e);
+			throw new Exception("Se ha producido un error al obtener la escala.");
+		} finally {
+			if(response!=null) {response.close();}
+			httpclient.close();
 		}
-		return (scale != null) ? scale.getId() : 0;
+		return scale.getId();
 	}
 }

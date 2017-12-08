@@ -91,7 +91,7 @@ public class WelcomeController implements Initializable {
 		// Guardamos en una variable el curso seleccionado por el usuario
 		String selectedCourse = listCourses.getSelectionModel().getSelectedItem();
 		if(selectedCourse == null) {
-			lblNoSelect.setText("Debe seleccionar un curso");
+			lblNoSelect.setText(UBUGrades.resourceBundle.getString("error.nocourse"));
 			return; 
 		}
 		lblNoSelect.setText("");
@@ -113,7 +113,8 @@ public class WelcomeController implements Initializable {
 					int done = 0;
 					updateProgress(done, enroledUsersCount);
 					
-					updateMessage("update_Alumnos cargados: " + done + " de " + (enroledUsersCount-8));
+					updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingstudents")
+									+ done + " " + UBUGrades.resourceBundle.getString("label.of") + " " + (enroledUsersCount-8));
 					for(EnrolledUser user: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
 						// Obtenemos todas las lineas de calificación del usuario
 						logger.info("Cargando los datos de: " + user.getFullName() + "...");
@@ -121,10 +122,11 @@ public class WelcomeController implements Initializable {
 								UBUGrades.session.getActualCourse().getId()));
 						updateProgress(done++, enroledUsersCount);
 						logger.info("Datos cargados.");
-						updateMessage("update_Alumnos cargados: " + done + " de " + (enroledUsersCount-8));
+						updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingstudents")
+										+ done + " " + UBUGrades.resourceBundle.getString("label.of") + " " + (enroledUsersCount-8));
 					}
 					
-					updateMessage("update_Generando el calificador del curso...");
+					updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingqualifier"));
 					// Establecemos calificador del curso
 					CourseWS.setGradeReportLines(UBUGrades.session.getToken(),
 							UBUGrades.session.getActualCourse().getEnrolledUsers().get(0).getId(),
@@ -132,7 +134,7 @@ public class WelcomeController implements Initializable {
 					done += 4;
 					updateProgress(done, enroledUsersCount);
 					
-					updateMessage("update_Generando estadisticas...");
+					updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingstats"));
 					
 					//Establecemos las estadisticas
 					Stats.getStats();
@@ -156,7 +158,7 @@ public class WelcomeController implements Initializable {
 				// Cargamos la siguiente ventana
 				try {
 					// Accedemos a la siguiente ventana
-					FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"));
+					FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"), UBUGrades.resourceBundle);
 					
 					UBUGrades.stage.close();
 					UBUGrades.stage = new Stage();
@@ -201,7 +203,7 @@ public class WelcomeController implements Initializable {
 		alert.initOwner(UBUGrades.stage);
 		alert.getDialogPane().setContentText(mensaje);
 		
-		ButtonType buttonSalir = new ButtonType("Cerrar UBUGrades");
+		ButtonType buttonSalir = new ButtonType(UBUGrades.resourceBundle.getString("label.close"));
 		alert.getButtonTypes().setAll(buttonSalir);
 
 		Optional<ButtonType> result = alert.showAndWait();

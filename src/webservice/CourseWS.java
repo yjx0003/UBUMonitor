@@ -374,13 +374,11 @@ public class CourseWS {
 			
 			String respuesta = EntityUtils.toString(response.getEntity());
 			JSONObject jsonArray = new JSONObject(respuesta);
-			logger.info("Llamada al webService->OK userID=" + userId + " courseID " + courseId);
 			
 			//lista de GradeReportLines
 			gradeReportLines = new ArrayList<>();
 			
 			if(jsonArray != null ) {
-				logger.info("Parseando datos...");
 				JSONArray usergrades = (JSONArray) jsonArray.get("usergrades");
 				JSONObject alumn = (JSONObject) usergrades.get(0);
 				
@@ -394,9 +392,7 @@ public class CourseWS {
 					// Obtenemos los datos necesarios
 					int id;
 					String name = gradeItemsElement.getString("itemname");
-					logger.info("Obteniendo nombre-> " + name);
 					String type = gradeItemsElement.getString("itemtype");
-					logger.info("Obteniendo tipo-> " + type);
 					// Para los tipos categoria y curso hay dos ids
 					// Para estos casos obtenemos el id de iteminstance
 					if (type.equals("category") || type.equals("course")) {
@@ -406,11 +402,8 @@ public class CourseWS {
 					}
 					int rangeMin = gradeItemsElement.getInt("grademin");
 					int rangeMax = gradeItemsElement.getInt("grademax");
-					logger.info("Obteniendo rangos-> " + rangeMin + "-" + rangeMax);
 					String grade = gradeItemsElement.getString("gradeformatted");
-					logger.info("Obteniendo nota-> " + grade);
-					
-					
+
 					// Añadimos el nuevo GradeReportLine
 					gradeReportLines.add(
 							new GradeReportLine(id, name, grade, String.valueOf(rangeMin), String.valueOf(rangeMax)));

@@ -24,13 +24,13 @@
 	<children>
 		<Group id="Group" layoutX="50.0" layoutY="280.0">
 			<children>
-				<Label id="loginLabels" layoutX="20.0" layoutY="30.0" text="Usuario:">
+				<Label id="loginLabels" layoutX="20.0" layoutY="30.0" text="%label.user">
 					<font>
 						<Font size="13.0" fx:id="x1" />
 					</font>
 				</Label>
-				<Label id="loginLabels" font="$x1" layoutX="20.0" layoutY="68.0" text="Contraseña:" />
-				<Label id="loginLabels" font="$x1" layoutX="20.0" layoutY="105.0" text="Host:" />
+				<Label id="loginLabels" font="$x1" layoutX="20.0" layoutY="68.0" text="%label.pass" />
+				<Label id="loginLabels" font="$x1" layoutX="20.0" layoutY="105.0" text="%label.host" />
 			</children>
 		</Group>
 		<Group id="Group" layoutX="152.0" layoutY="280.0">
@@ -40,7 +40,7 @@
 				<TextField fx:id="txtHost" layoutY="100.0" prefWidth="173.0" styleClass="text-field-login" stylesheets="@/css/style.css" />
 			</children>
 		</Group>
-		<Button id="Entrar" fx:id="btnLogin" cancelButton="false" defaultButton="false" disable="false" focusTraversable="true" graphicTextGap="5.0" layoutX="100.0" layoutY="425.0" mnemonicParsing="false" onAction="#login" prefWidth="70.0" text="Entrar" textOverrun="ELLIPSIS" underline="false" visible="true">
+		<Button id="Entrar" fx:id="btnLogin" cancelButton="false" defaultButton="false" disable="false" focusTraversable="true" graphicTextGap="5.0" layoutX="100.0" layoutY="425.0" mnemonicParsing="false" onAction="#login" prefWidth="70.0" text="%btn.enter" textOverrun="ELLIPSIS" underline="false" visible="true">
 			<font>
 				<Font size="14.0" fx:id="x2" />
 			</font>
@@ -48,7 +48,7 @@
 				<Cursor fx:constant="HAND" />
 			</cursor>
 		</Button>
-		<Button fx:id="btnDelete" font="$x2" layoutX="230.0" layoutY="425.0" mnemonicParsing="false" onAction="#clear" prefWidth="70.0" stylesheets="@/css/style.css" text="Borrar">
+		<Button fx:id="btnDelete" font="$x2" layoutX="230.0" layoutY="425.0" mnemonicParsing="false" onAction="#clear" prefWidth="70.0" stylesheets="@/css/style.css" text="%btn.clear">
 			<cursor>
 				<Cursor fx:constant="HAND" />
 			</cursor>

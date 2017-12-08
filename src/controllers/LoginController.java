@@ -45,7 +45,7 @@ public class LoginController {
 	private Button btnLogin;
 	@FXML
 	private ProgressBar progressBar;
-
+	
 	/**
 	 * Hace el login de usuario al pulsar el botón Entrar. Si el usuario es
 	 * incorrecto, muestra un mensaje de error.
@@ -55,7 +55,7 @@ public class LoginController {
 	 */
 	public void login(ActionEvent event) {
 		if(txtHost.getText().isEmpty() || txtPassword.getText().isEmpty() || txtUsername.getText().isEmpty()) {
-			lblStatus.setText("Debes completar todos los campos.");
+			lblStatus.setText(UBUGrades.resourceBundle.getString("error.fields"));
 		} else {
 			
 			// Almacenamos los parámetros introducidos por el usuario:
@@ -72,11 +72,11 @@ public class LoginController {
 			} catch (IOException e) {
 				correcto = false;
 				logger.error("No se ha podido conectar con el host.", e);
-				lblStatus.setText("No se ha podido conectar con el host.");
+				lblStatus.setText(UBUGrades.resourceBundle.getString("error.host"));
 			}catch (JSONException e) {
 				correcto = false;
 				logger.error("Usuario y/o contraseña incorrectos", e);
-				lblStatus.setText("Usuario y/o contraseña incorrectos.");
+				lblStatus.setText(UBUGrades.resourceBundle.getString("error.login"));
 				txtPassword.setText("");
 			}
 			
@@ -95,7 +95,7 @@ public class LoginController {
 						// Cargamos la siguiente ventana
 						try {
 							// Accedemos a la siguiente ventana
-							FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Welcome.fxml"));
+							FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Welcome.fxml"), UBUGrades.resourceBundle);
 							UBUGrades.stage = new Stage();
 							Parent root = loader.load();
 							Scene scene = new Scene(root);

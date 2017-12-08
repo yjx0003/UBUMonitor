@@ -22,12 +22,12 @@
                <top>
                   <Pane minHeight="64.0" prefHeight="64.0" prefWidth="250.0" BorderPane.alignment="CENTER">
                      <children>
-                        <Label fx:id="lblCountParticipants" layoutX="6.0" layoutY="6.0" text="Participantes:" />
-                        <TextField fx:id="tfdParticipants" layoutX="6.0" layoutY="31.0" prefHeight="25.0" prefWidth="108.0" promptText="Filtro..." />
-                        <Label layoutX="122.0" layoutY="6.0" text="Grupo:" />
-                        <Label layoutX="130.0" layoutY="35.0" text="Rol:" />
-                        <MenuButton fx:id="slcGroup" layoutX="160.0" layoutY="2.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="Grupo" />
-                        <MenuButton fx:id="slcRole" layoutX="160.0" layoutY="31.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="Rol" />
+                        <Label fx:id="lblCountParticipants" layoutX="6.0" layoutY="6.0" text="%label.participants" />
+                        <TextField fx:id="tfdParticipants" layoutX="6.0" layoutY="31.0" prefHeight="25.0" prefWidth="108.0" promptText="%label.filter" />
+                        <Label layoutX="122.0" layoutY="6.0" text="%label.group" />
+                        <Label layoutX="130.0" layoutY="35.0" text="%label.rol" />
+                        <MenuButton fx:id="slcGroup" layoutX="160.0" layoutY="2.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.group" />
+                        <MenuButton fx:id="slcRole" layoutX="160.0" layoutY="31.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.rol" />
                      </children>
                   </Pane>
                </top>
@@ -39,10 +39,10 @@
                <top>
                   <Pane minHeight="63.0" prefHeight="63.0" prefWidth="250.0" BorderPane.alignment="CENTER">
                      <children>
-                        <Label layoutX="8.0" layoutY="6.0" text="Categorías/Items" />
-                        <TextField fx:id="tfdItems" layoutX="8.0" layoutY="30.0" prefHeight="28.0" prefWidth="108.0" promptText="Filtro..." />
-                        <Label layoutX="125.0" layoutY="36.0" text="Tipo:" />
-                        <MenuButton fx:id="slcType" layoutX="162.0" layoutY="32.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="Tipo" />
+                        <Label layoutX="8.0" layoutY="6.0" text="%label.categoryitem" />
+                        <TextField fx:id="tfdItems" layoutX="8.0" layoutY="30.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+                        <Label layoutX="125.0" layoutY="36.0" text="%label.type" />
+                        <MenuButton fx:id="slcType" layoutX="162.0" layoutY="32.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.type" />
                      </children>
                   </Pane>
                </top>
@@ -65,23 +65,23 @@
          <children>
             <MenuBar minWidth="162.0" prefHeight="24.0" prefWidth="162.0">
               <menus>
-                <Menu mnemonicParsing="false" text="Archivo">
+                <Menu mnemonicParsing="false" text="%menu.file">
                   <items>
-                        <MenuItem fx:id="MIChangeCourse" mnemonicParsing="false" onAction="#changeCourse" text="Cambiar Asignatura" />
-                    <MenuItem fx:id="MISaveChart" mnemonicParsing="false" onAction="#saveChart" text="Guardar gráfico como..." />
-                        <MenuItem fx:id="MISaveAll" mnemonicParsing="false" onAction="#saveAll" text="Guardar todo como..." />
-                        <MenuItem fx:id="MILogOut" mnemonicParsing="false" onAction="#logOut" text="Cerrar sesión" />
-                        <MenuItem fx:id="MIExit" mnemonicParsing="false" onAction="#closeApplication" text="Salir" />
+                        <MenuItem fx:id="MIChangeCourse" mnemonicParsing="false" onAction="#changeCourse" text="%menu.changesubject" />
+                    <MenuItem fx:id="MISaveChart" mnemonicParsing="false" onAction="#saveChart" text="%menu.savechart" />
+                        <MenuItem fx:id="MISaveAll" mnemonicParsing="false" onAction="#saveAll" text="%menu.saveall" />
+                        <MenuItem fx:id="MILogOut" mnemonicParsing="false" onAction="#logOut" text="%menu.logout" />
+                        <MenuItem fx:id="MIExit" mnemonicParsing="false" onAction="#closeApplication" text="%menu.exit" />
                   </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Editar">
+                <Menu mnemonicParsing="false" text="%menu.edit">
                   <items>
-                    <MenuItem fx:id="MIClearSelection" mnemonicParsing="false" onAction="#clearSelection" text="Borrar selección" />
+                    <MenuItem fx:id="MIClearSelection" mnemonicParsing="false" onAction="#clearSelection" text="%menu.clearselection" />
                   </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Ayuda">
+                <Menu mnemonicParsing="false" text="%menu.help">
                   <items>
-                    <MenuItem fx:id="MIAboutUBUGrades" mnemonicParsing="false" onAction="#aboutUBUGrades" text="Acerca de UBUGrades" />
+                    <MenuItem fx:id="MIAboutUBUGrades" mnemonicParsing="false" onAction="#aboutUBUGrades" text="%menu.about" />
                   </items>
                 </Menu>
               </menus>
@@ -96,12 +96,12 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <Label id="topBarLabels" fx:id="lblActualUser" text="Usuario:">
+                  <Label id="topBarLabels" fx:id="lblActualUser" text="%label.user">
                      <padding>
                         <Insets left="30.0" />
                      </padding></Label>
-                  <Label id="topBarLabels" fx:id="lblActualCourse" text="Curso actual:" GridPane.columnIndex="1" />
-                  <Label id="topBarLabels" fx:id="lblActualHost" text="Host actual:" GridPane.columnIndex="2" />
+                  <Label id="topBarLabels" fx:id="lblActualCourse" text="%label.course" GridPane.columnIndex="1" />
+                  <Label id="topBarLabels" fx:id="lblActualHost" text="%label.host" GridPane.columnIndex="2" />
                   <ImageView fx:id="userPhoto" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </GridPane>

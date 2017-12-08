@@ -306,18 +306,18 @@ public class MainController implements Initializable {
 		tvwGradeReport.setOnMouseClicked((EventHandler<Event>) event -> updateChart());
 		
 		// Mostramos nº participantes
-		lblCountParticipants.setText(
-				"Participantes: " + UBUGrades.session.getActualCourse().getEnrolledUsersCount());
+		lblCountParticipants.setText(UBUGrades.resourceBundle.getString("label.participants") 
+				+ " " + UBUGrades.session.getActualCourse().getEnrolledUsersCount());
 
 		// Mostramos Usuario logeado y su imagen
-		lblActualUser.setText("Usuario: " + UBUGrades.user.getFullName());
+		lblActualUser.setText(UBUGrades.resourceBundle.getString("label.user") + " " + UBUGrades.user.getFullName());
 		userPhoto.setImage(UBUGrades.user.getUserPhoto());
 
 		// Mostramos Curso actual
-		lblActualCourse.setText("Curso actual: " + UBUGrades.session.getActualCourse().getFullName());
+		lblActualCourse.setText(UBUGrades.resourceBundle.getString("label.course") + " " + UBUGrades.session.getActualCourse().getFullName());
 
 		// Mostramos Host actual
-		lblActualHost.setText("Host: " + UBUGrades.host);
+		lblActualHost.setText(UBUGrades.resourceBundle.getString("label.host") + " " + UBUGrades.host);
 	}
 
 	/**

@@ -32,7 +32,7 @@
             <Image url="@../img/logo_min.png" />
          </image>
       </ImageView>
-		<Label layoutX="300.0" layoutY="113.0" text="Bienvenida/o,">
+		<Label layoutX="300.0" layoutY="113.0" text="%label.welcome">
 			<font>
 				<Font size="22.0" />
 			</font>
@@ -46,12 +46,12 @@
          <cursor>
             <Cursor fx:constant="DEFAULT" />
          </cursor></ListView>
-		<Label layoutX="300.0" layoutY="188.0" text="Por favor, seleccione un curso:">
+		<Label layoutX="300.0" layoutY="188.0" text="%label.selectcourse">
 			<font>
 				<Font size="15.0" />
 			</font>
 		</Label>
-		<Button fx:id="btnEntrar" layoutX="364.0" layoutY="496.0" mnemonicParsing="false" onAction="#enterCourse" prefHeight="39.0" prefWidth="86.0" style="-fx-font-size: 16;" styleClass="rich-blue" stylesheets="@/css/style.css" text="Entrar">
+		<Button fx:id="btnEntrar" layoutX="364.0" layoutY="496.0" mnemonicParsing="false" onAction="#enterCourse" prefHeight="39.0" prefWidth="86.0" style="-fx-font-size: 16;" styleClass="rich-blue" stylesheets="@/css/style.css" text="%btn.enter">
 			<font>
 				<Font size="19.0" />
 			</font>

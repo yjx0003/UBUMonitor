@@ -26,7 +26,6 @@ import webservice.Session;
 public class UBUGrades extends Application {
 	public static String host = "";
 	public static Stage stage;
-	public static Stage init;
 	public static Session session;
 	public static MoodleUser user;
 	public static ResourceBundle resourceBundle;
@@ -48,12 +47,12 @@ public class UBUGrades extends Application {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Login.fxml"), resourceBundle);
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
-			init = primaryStage;
-			init.setScene(scene);
-			init.getIcons().add(new Image("/img/logo_min.png"));
-			init.setTitle("UBUGrades");
-			init.setResizable(false);
-			init.show();
+			stage = primaryStage;
+			stage.setScene(scene);
+			stage.getIcons().add(new Image("/img/logo_min.png"));
+			stage.setTitle("UBUGrades");
+			stage.setResizable(false);
+			stage.show();
 		} catch (Exception e) {
 			logger.error("Error al iniciar UBUGrades");
 			e.printStackTrace();

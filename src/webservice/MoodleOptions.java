@@ -18,7 +18,7 @@ public class MoodleOptions {
 	 */
 	public static final String SERVICIO_WEB_MOODLE = "moodle_mobile_app";
 	/**
-	 * Devuelve id de usuario y atributos
+	 * Devuelve información relativa al usuario
 	 */
 	public static final String OBTENER_INFO_USUARIO = "core_user_get_users_by_field";
 	/**

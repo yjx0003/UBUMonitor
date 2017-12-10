@@ -63,6 +63,7 @@
             <Font name="System Bold" size="12.0" />
          </font></Label>
       <ProgressBar fx:id="progressBar" layoutX="130.0" layoutY="468.0" prefHeight="18.0" prefWidth="139.0" progress="0.0" visible="false" />
+      <ChoiceBox fx:id="languageSelector" layoutX="295.0" layoutY="14.0" prefHeight="25.0" prefWidth="94.0" />
       
 	</children>
 </AnchorPane>

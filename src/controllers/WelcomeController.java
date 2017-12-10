@@ -18,7 +18,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -86,7 +85,6 @@ public class WelcomeController implements Initializable {
 	 * @throws Exception
 	 */
 	public void enterCourse(ActionEvent event) {
-		UBUGrades.init.getScene().setCursor(Cursor.WAIT);
 
 		// Guardamos en una variable el curso seleccionado por el usuario
 		String selectedCourse = listCourses.getSelectionModel().getSelectedItem();
@@ -172,7 +170,6 @@ public class WelcomeController implements Initializable {
 					UBUGrades.stage.setMinWidth(800);
 					UBUGrades.stage.setMaximized(true);
 					UBUGrades.stage.show();
-					UBUGrades.init.getScene().setCursor(Cursor.DEFAULT);
 					lblNoSelect.setText("");
 				} catch (IOException e) {
 					logger.info("No se ha podido cargar la ventana principal: {}", e);

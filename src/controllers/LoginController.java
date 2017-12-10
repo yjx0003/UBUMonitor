@@ -2,11 +2,12 @@
 package controllers;
 
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Cursor;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -14,6 +15,11 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import org.json.JSONException;
 import org.slf4j.Logger;
@@ -29,7 +35,7 @@ import webservice.*;
  * @version 1.0
  *
  */
-public class LoginController {
+public class LoginController implements Initializable {
 
 	static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
@@ -45,6 +51,37 @@ public class LoginController {
 	private Button btnLogin;
 	@FXML
 	private ProgressBar progressBar;
+	@FXML
+	private ChoiceBox<String> languageSelector;
+	private final List<String> locale = Arrays.asList("es_es", "en_en");
+	
+	/**
+	 * Crea el selector de idioma.
+	 */
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		languageSelector.setItems(FXCollections.observableArrayList("Español", "English"));
+		languageSelector.getSelectionModel().select(locale.indexOf(UBUGrades.resourceBundle.getLocale().toString().toLowerCase()));
+		// Carga la interfaz con el idioma seleccionado
+		languageSelector.getSelectionModel().selectedIndexProperty().addListener((ov, value, newValue) -> {			
+			try {
+				UBUGrades.resourceBundle = ResourceBundle.getBundle("Messages", new Locale(locale.get(newValue.intValue())));
+				logger.info("[Bienvenido a UBUGrades]");
+				FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Login.fxml"), UBUGrades.resourceBundle);
+				UBUGrades.stage.close();
+				UBUGrades.stage = new Stage();
+				Parent root = loader.load();
+				Scene scene = new Scene(root);
+				UBUGrades.stage.setScene(scene);
+				UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
+				UBUGrades.stage.setTitle("UBUGrades");
+				UBUGrades.stage.setResizable(false);
+				UBUGrades.stage.show();
+			} catch (Exception e) {
+				logger.error("Error al cambiar el idioma: {}", e);
+			}
+		});
+	}
 	
 	/**
 	 * Hace el login de usuario al pulsar el botón Entrar. Si el usuario es
@@ -59,7 +96,6 @@ public class LoginController {
 		} else {
 			
 			// Almacenamos los parámetros introducidos por el usuario:
-			UBUGrades.init.getScene().setCursor(Cursor.WAIT);
 			UBUGrades.host = txtHost.getText();
 			UBUGrades.session = new Session(txtUsername.getText(), txtPassword.getText());
 	
@@ -96,6 +132,7 @@ public class LoginController {
 						try {
 							// Accedemos a la siguiente ventana
 							FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Welcome.fxml"), UBUGrades.resourceBundle);
+							UBUGrades.stage.close();
 							UBUGrades.stage = new Stage();
 							Parent root = loader.load();
 							Scene scene = new Scene(root);
@@ -103,7 +140,6 @@ public class LoginController {
 							UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
 							UBUGrades.stage.setTitle("UBUGrades");
 							UBUGrades.stage.setResizable(false);
-							UBUGrades.init.close();
 							UBUGrades.stage.show();
 							lblStatus.setText("");
 						} catch (IOException e) {

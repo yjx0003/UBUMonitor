@@ -29,6 +29,7 @@ public class UBUGrades extends Application {
 	public static Session session;
 	public static MoodleUser user;
 	public static ResourceBundle resourceBundle;
+	public static boolean idioma = false;
 	
 	static final Logger logger = LoggerFactory.getLogger(UBUGrades.class);
 
@@ -36,6 +37,7 @@ public class UBUGrades extends Application {
 	public void start(Stage primaryStage) {
 		// Si no existe el recurso de idioma especificado cargamos el Español
 		try {
+			logger.info("Cargando idoma del sistema:");
 			resourceBundle = ResourceBundle.getBundle("Messages");
 		}catch (NullPointerException | MissingResourceException e) {
 			logger.error("No se ha podido encontrar el recurso de idioma, cargando es_ES: {}", e);

@@ -65,7 +65,9 @@ public class LoginController implements Initializable {
 		// Carga la interfaz con el idioma seleccionado
 		languageSelector.getSelectionModel().selectedIndexProperty().addListener((ov, value, newValue) -> {			
 			try {
+				logger.info("idioma seleccionado " + locale.get(newValue.intValue()).toString());
 				UBUGrades.resourceBundle = ResourceBundle.getBundle("Messages", new Locale(locale.get(newValue.intValue())));
+				logger.info("idioma cargado " + UBUGrades.resourceBundle.getLocale().toString());
 				logger.info("[Bienvenido a UBUGrades]");
 				FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Login.fxml"), UBUGrades.resourceBundle);
 				UBUGrades.stage.close();

@@ -54,7 +54,6 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
 import model.EnrolledUser;
 import model.GradeReportLine;
 import model.Group;
@@ -132,7 +131,7 @@ public class MainController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
 			logger.info("Completada la carga del curso '" + UBUGrades.session.getActualCourse().getFullName() + ".");
-
+			
 			// Cargamos el html de los graficos y calificaciones
 			webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
 			webViewChartsEngine = webViewCharts.getEngine();

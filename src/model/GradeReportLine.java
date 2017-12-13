@@ -201,7 +201,11 @@ public class GradeReportLine {
 	 */
 	public String getGradeWithScale() {
 		Float gradeAdjusted;
-		int scaleId = ((Assignment) activity).getScaleId();
+		int scaleId;
+		
+		GradeReportLine grl = UBUGrades.session.getActualCourse().getGradeReportLineByName(name);
+		scaleId = ((Assignment) grl.getActivity()).getScaleId();
+				
 		if (scaleId != 0 && !grade.equals("NaN")) {
 			Scale scale = UBUGrades.session.getActualCourse().getScale(scaleId);
 			gradeAdjusted = (float) scale.getElements().indexOf(this.grade);

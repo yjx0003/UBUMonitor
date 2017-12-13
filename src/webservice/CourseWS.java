@@ -187,8 +187,6 @@ public class CourseWS {
 							if (!deque.isEmpty()) {
 								deque.lastElement().addChild(actualLine);
 							}
-							// Añadimos el elemento a la lista como item
-							course.gradeReportLines.add(actualLine);
 						} else {
 							// Obtenemos el elemento cabecera de la pila
 							GradeReportLine actualLine = deque.pop();
@@ -199,9 +197,6 @@ public class CourseWS {
 							actualLine.setRangeMax(rangeMax);
 							actualLine.setNameType(typeActivity);
 							actualLine.setGrade(grade);
-							// Modificamos la cabecera de esta suma, para
-							// dejarla como una categoria completa
-							course.updateGRLList(actualLine);
 						}
 					} else {// --- Si es una categoría
 						String nameLine = getNameCategorie(itemname.getString("content"));
@@ -215,9 +210,11 @@ public class CourseWS {
 
 						// Añadimos esta cabecera a la pila
 						deque.add(actualLine);
-						// Añadimos el elemento a la lista como cabecera por
-						// ahora
-						course.gradeReportLines.add(actualLine);
+						
+						// Si es el elemento del primer nivel lo añadimos, es la raiz del arbol
+						if(actualLevel == 1) {
+							course.gradeReportLines.add(actualLine);
+						}
 					}
 				} // End for
 				course.setActivities(course.gradeReportLines);
@@ -322,13 +319,6 @@ public class CourseWS {
 						// Añadimos la linea actual
 						GradeReportLine actualLine = new GradeReportLine(idLine, nameLine, actualLevel,
 								typeLine, weight, rangeMin, rangeMax, grade, percentage, typeActivity);
-						
-						// Si es un assignment y la nota no es un número obtenemos la escala si la tiene
-						if(typeActivity.equals("Assignment") && !isNumber(grade)) {
-							Assignment assignment = new Assignment(nameLine, typeActivity, weight, rangeMin, rangeMax);
-							assignment.setScaleId(getAssignmentScale(token, courseId, nameLine));
-							actualLine.setActivity(assignment);
-						}
 						// Añadimos el elemento a la lista como item
 						gradeReportLines.add(actualLine);
 					}
@@ -628,23 +618,7 @@ public class CourseWS {
 		// Si es un - es que no hay nota, sino es que es un texto de una escala
 		return data.equals("-") ?  "NaN": data;
 	}
-	
-	/**
-	 * Comprueba si la cadena passada es un numero o no.
-	 * 
-	 * @param data
-	 * 		La cadena a comprobar.
-	 * @return
-	 */
-	private static boolean isNumber(String data) {
-		if(data.equals("NaN")) {
-			return true;
-		}
-		Pattern pattern = Pattern.compile("[0-9]{1,3},{1}[0-9]{1,2}");
-		Matcher match = pattern.matcher(data);
-		return match.find();
-	}
-	
+		
 	/**
 	 * Devuelve el id de la escala asociada a la tarea(Assignment) o 0 si no hay ninguna escala asociada.
 	 * 

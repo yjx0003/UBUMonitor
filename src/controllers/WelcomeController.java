@@ -111,6 +111,14 @@ public class WelcomeController implements Initializable {
 					int done = 0;
 					updateProgress(done, enroledUsersCount);
 					
+					updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingqualifier"));
+					// Establecemos calificador del curso
+					CourseWS.setGradeReportLines(UBUGrades.session.getToken(),
+							UBUGrades.session.getActualCourse().getEnrolledUsers().get(0).getId(),
+							UBUGrades.session.getActualCourse());
+					done += 4;
+					updateProgress(done, enroledUsersCount);
+					
 					updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingstudents")
 									+ done + " " + UBUGrades.resourceBundle.getString("label.of") + " " + (enroledUsersCount-8));
 					for(EnrolledUser user: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
@@ -123,15 +131,7 @@ public class WelcomeController implements Initializable {
 						updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingstudents")
 										+ done + " " + UBUGrades.resourceBundle.getString("label.of") + " " + (enroledUsersCount-8));
 					}
-					
-					updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingqualifier"));
-					// Establecemos calificador del curso
-					CourseWS.setGradeReportLines(UBUGrades.session.getToken(),
-							UBUGrades.session.getActualCourse().getEnrolledUsers().get(0).getId(),
-							UBUGrades.session.getActualCourse());
-					done += 4;
-					updateProgress(done, enroledUsersCount);
-					
+										
 					updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingstats"));
 					
 					//Establecemos las estadisticas

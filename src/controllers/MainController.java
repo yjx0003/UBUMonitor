@@ -511,21 +511,24 @@ public class MainController implements Initializable {
 	 * @throws Exception
 	 */
 	public void changeCourse(ActionEvent actionEvent) throws Exception {
-		logger.info("Cambiando de asignatura...");
-		// Borramos las estadisticas para esta asignatura
-		Stats.removeStats();
-		// Accedemos a la siguiente ventana
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("/view/Welcome.fxml"));
-		UBUGrades.stage.close();
-		logger.info("Accediendo a UBUGrades...");
-		UBUGrades.stage = new Stage();
-		Parent root = loader.load();
-		Scene scene = new Scene(root);
-		UBUGrades.stage.setScene(scene);
-		UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
-		UBUGrades.stage.setTitle("UBUGrades");
-		UBUGrades.stage.show();
+		try {
+			logger.info("Cambiando de asignatura...");
+			// Borramos las estadisticas para esta asignatura
+			Stats.removeStats();
+			// Accedemos a la siguiente ventana
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Welcome.fxml"), UBUGrades.resourceBundle);
+			UBUGrades.stage.close();
+			logger.info("Accediendo a UBUGrades...");
+			UBUGrades.stage = new Stage();
+			Parent root = loader.load();
+			Scene scene = new Scene(root);
+			UBUGrades.stage.setScene(scene);
+			UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
+			UBUGrades.stage.setTitle("UBUGrades");
+			UBUGrades.stage.show();
+		} catch (Exception e) {
+			logger.error("Error al cambiar el curso: {}", e);
+		}
 	}
 
 	/**
@@ -619,18 +622,21 @@ public class MainController implements Initializable {
 	 * @throws Exception
 	 */
 	public void logOut(ActionEvent actionEvent) throws Exception {
-		Stats.removeStats();
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("/view/Login.fxml"));
-		UBUGrades.stage.close();
-		logger.info("Cerrando sesión de usuario");
-		UBUGrades.stage = new Stage();
-		Parent root = loader.load();
-		Scene scene = new Scene(root);
-		UBUGrades.stage.setScene(scene);
-		UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
-		UBUGrades.stage.setTitle("UBUGrades");
-		UBUGrades.stage.show();
+		try {
+			Stats.removeStats();
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Login.fxml"), UBUGrades.resourceBundle);
+			Parent root = loader.load();
+			Scene scene = new Scene(root);
+			UBUGrades.stage.close();
+			logger.info("Cerrando sesión de usuario");
+			UBUGrades.stage = new Stage();
+			UBUGrades.stage.setScene(scene);
+			UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
+			UBUGrades.stage.setTitle("UBUGrades");
+			UBUGrades.stage.show();
+		}  catch (Exception e) {
+			logger.error("Error al cerrar la sesión de usuario: {}", e);
+		}
 	}
 
 	/**

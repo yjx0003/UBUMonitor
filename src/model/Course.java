@@ -283,7 +283,30 @@ public class Course implements Serializable {
 	 * @return lista de gradeReportConfigurationLines
 	 */
 	public List<GradeReportLine> getGradeReportLines() {
-		return this.gradeReportLines;
+		List<GradeReportLine> listaGRL = new ArrayList<>();
+		listaGRL.add(gradeReportLines.get(0));
+		listaGRL.addAll(getChildrens(gradeReportLines.get(0).getChildren()));
+		
+		return listaGRL;
+	}
+
+	/**
+	 * Función auxiliar para obtener los hijos de cada GRL de forma recursiva.
+	 * 
+	 * @param children
+	 * 		La lista de hijos.
+	 * @return
+	 * 
+	 */
+	private List<GradeReportLine> getChildrens(List<GradeReportLine> children) {
+		List<GradeReportLine> listaGRL = new ArrayList<>();
+		for(GradeReportLine grl: children) {
+			listaGRL.add(grl);
+			if (grl.getChildren() != null) {
+				listaGRL.addAll(getChildrens(grl.getChildren()));
+			}
+		}
+		return listaGRL;
 	}
 
 	/**
@@ -406,6 +429,23 @@ public class Course implements Serializable {
 		for(Scale scale: scales) {
 			if (scale.getId() == id) {
 				return scale;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Devuleve el GradeReportLine cuyo nombre coincide con la cadena pasada.
+	 * 
+	 * @param elementName
+	 * 		El nombre del GRL a buscar.
+	 * @return
+	 * 		El GradeReportLine o null si no se encuentra.
+	 */
+	public GradeReportLine getGradeReportLineByName(String elementName) {
+		for(GradeReportLine grl: getGradeReportLines()) {
+			if(grl.getName().equals(elementName)) {
+				return grl;
 			}
 		}
 		return null;

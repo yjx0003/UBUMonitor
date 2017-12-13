@@ -321,9 +321,10 @@ public class CourseWS {
 						String rangeMax = getRange(rangeContainer.getString("content"), false);
 						// Añadimos la linea actual
 						GradeReportLine actualLine = new GradeReportLine(idLine, nameLine, actualLevel,
-								typeLine, weight, rangeMin, rangeMax, grade, percentage, typeActivity);		
-						// Si es un assignment obtenemos la escala si la tiene
-						if(typeActivity.equals("Assignment")) {
+								typeLine, weight, rangeMin, rangeMax, grade, percentage, typeActivity);
+						
+						// Si es un assignment y la nota no es un número obtenemos la escala si la tiene
+						if(typeActivity.equals("Assignment") && !isNumber(grade)) {
 							Assignment assignment = new Assignment(nameLine, typeActivity, weight, rangeMin, rangeMax);
 							assignment.setScaleId(getAssignmentScale(token, courseId, nameLine));
 							actualLine.setActivity(assignment);
@@ -626,6 +627,22 @@ public class CourseWS {
 		}
 		// Si es un - es que no hay nota, sino es que es un texto de una escala
 		return data.equals("-") ?  "NaN": data;
+	}
+	
+	/**
+	 * Comprueba si la cadena passada es un numero o no.
+	 * 
+	 * @param data
+	 * 		La cadena a comprobar.
+	 * @return
+	 */
+	private static boolean isNumber(String data) {
+		if(data.equals("NaN")) {
+			return true;
+		}
+		Pattern pattern = Pattern.compile("[0-9]{1,3},{1}[0-9]{1,2}");
+		Matcher match = pattern.matcher(data);
+		return match.find();
 	}
 	
 	/**

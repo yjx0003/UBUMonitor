@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -106,6 +107,7 @@ public class LoginController implements Initializable {
 	
 			try { // Establecemos el token
 				logger.info("Obteniendo el token.");
+				UBUGrades.stage.getScene().setCursor(Cursor.WAIT);
 				UBUGrades.session.setToken();
 			} catch (IOException e) {
 				correcto = false;
@@ -116,6 +118,8 @@ public class LoginController implements Initializable {
 				logger.error("Usuario y/o contraseña incorrectos", e);
 				lblStatus.setText(UBUGrades.resourceBundle.getString("error.login"));
 				txtPassword.setText("");
+			} finally {
+				UBUGrades.stage.getScene().setCursor(Cursor.DEFAULT);
 			}
 			
 			// Si el login es correcto
@@ -124,53 +128,64 @@ public class LoginController implements Initializable {
 				lblStatus.setVisible(false);
 	
 				
-				Task<Object> task = createWorker();
+				Task<Object> loginTask = getUserDataWorker();
 				progressBar.progressProperty().unbind();
-				progressBar.progressProperty().bind(task.progressProperty());
+				progressBar.progressProperty().bind(loginTask.progressProperty());
 				progressBar.visibleProperty().set(true);
-				task.messageProperty().addListener((ChangeListener<String>)(observable, oldValue, newValue) -> {
+				loginTask.messageProperty().addListener((ChangeListener<String>)(observable, oldValue, newValue) -> {
 					if (newValue.equals("end")) {
 						// Cargamos la siguiente ventana
-						try {
-							// Accedemos a la siguiente ventana
-							FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Welcome.fxml"), UBUGrades.resourceBundle);
-							UBUGrades.stage.close();
-							UBUGrades.stage = new Stage();
-							Parent root = loader.load();
-							Scene scene = new Scene(root);
-							UBUGrades.stage.setScene(scene);
-							UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
-							UBUGrades.stage.setTitle("UBUGrades");
-							UBUGrades.stage.setResizable(false);
-							UBUGrades.stage.show();
-							lblStatus.setText("");
-						} catch (IOException e) {
-							logger.info("No se ha podido cargar la ventana de bienvenida: {}", e);
-						}
+						loadWellcome();
 					} else if (newValue.equals("error")) {
 						progressBar.setVisible(false);
 						lblStatus.setVisible(true);
 						lblStatus.setText("Error al obtener los datos del usuario.");
 					}
 				});
-				Thread th = new Thread(task, "login");
+				Thread th = new Thread(loginTask, "login");
 				th.start();
 			}
 		}
 	}
-
+	
+	/**
+	 * Carga la ventana de seleccion del curso.
+	 */
+	private void loadWellcome() {
+		try {
+			UBUGrades.stage.getScene().setCursor(Cursor.WAIT);
+			// Accedemos a la siguiente ventana
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Welcome.fxml"), UBUGrades.resourceBundle);
+			UBUGrades.stage.close();
+			UBUGrades.stage = new Stage();
+			Parent root = loader.load();
+			Scene scene = new Scene(root);
+			UBUGrades.stage.setScene(scene);
+			UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
+			UBUGrades.stage.setTitle("UBUGrades");
+			UBUGrades.stage.setResizable(false);
+			UBUGrades.stage.show();
+			lblStatus.setText("");
+		} catch (IOException e) {
+			logger.info("No se ha podido cargar la ventana de bienvenida: {}", e);
+		} finally {
+			UBUGrades.stage.getScene().setCursor(Cursor.DEFAULT);
+		}
+	}
+	
 	/**
 	 * Realiza las tareas mientras carga la barra de progreso
 	 * 
 	 * @return tarea
 	 */
-	private Task<Object> createWorker() {
+	private Task<Object> getUserDataWorker() {
 		return new Task<Object>() {
 			@Override
 			protected Object call() {
 				try {
+					updateProgress(0, 3);
 					MoodleUserWS.setMoodleUser(UBUGrades.session.getToken(), UBUGrades.session.getEmail(),
-							UBUGrades.user = new MoodleUser());
+					UBUGrades.user = new MoodleUser());
 					updateProgress(1, 3);
 					MoodleUserWS.setCourses(UBUGrades.session.getToken(), UBUGrades.user);
 					updateProgress(2, 3);

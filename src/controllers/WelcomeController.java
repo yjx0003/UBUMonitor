@@ -18,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -95,60 +96,10 @@ public class WelcomeController implements Initializable {
 		lblNoSelect.setText("");
 		UBUGrades.session.setActualCourse(Course.getCourseByString(selectedCourse));
 		logger.info(" Curso seleccionado: " + UBUGrades.session.getActualCourse().getFullName());
-		
 		btnEntrar.setVisible(false);
 		lblProgress.setVisible(true);
 		progressBar.setProgress(0.0);
-		Task<Void> task = new Task<Void>() {
-
-			@Override
-			protected Void call() {
-				try {
-					logger.info("Cargando datos del curso: " + UBUGrades.session.getActualCourse().getFullName());
-					// Establecemos los usuarios matriculados
-					CourseWS.setEnrolledUsers(UBUGrades.session.getToken(), UBUGrades.session.getActualCourse());
-					int enroledUsersCount = UBUGrades.session.getActualCourse().getEnrolledUsersCount()+8;
-					int done = 0;
-					updateProgress(done, enroledUsersCount);
-					
-					updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingqualifier"));
-					// Establecemos calificador del curso
-					CourseWS.setGradeReportLines(UBUGrades.session.getToken(),
-							UBUGrades.session.getActualCourse().getEnrolledUsers().get(0).getId(),
-							UBUGrades.session.getActualCourse());
-					done += 4;
-					updateProgress(done, enroledUsersCount);
-					
-					updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingstudents")
-									+ done + " " + UBUGrades.resourceBundle.getString("label.of") + " " + (enroledUsersCount-8));
-					for(EnrolledUser user: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
-						// Obtenemos todas las lineas de calificación del usuario
-						logger.info("Cargando los datos de: " + user.getFullName() + "...");
-						user.setAllGradeReportLines(CourseWS.getUserGradeReportLines(UBUGrades.session.getToken(), user.getId(),
-								UBUGrades.session.getActualCourse().getId()));
-						updateProgress(done++, enroledUsersCount);
-						logger.info("Datos cargados.");
-						updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingstudents")
-										+ done + " " + UBUGrades.resourceBundle.getString("label.of") + " " + (enroledUsersCount-8));
-					}
-										
-					updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingstats"));
-					
-					//Establecemos las estadisticas
-					Stats.getStats();
-					
-					updateProgress(done+4L, enroledUsersCount);
-					
-					Thread.sleep(50);
-					//Indica que se ha terminado el trabajo
-					updateMessage("end");
-				} catch (Exception e) {
-					updateMessage(e.getMessage());
-				}
-				return null;
-			}
-		};
-		
+		Task<Void> task = getUserDataWorker();
 		progressBar.progressProperty().bind(task.progressProperty());
 		progressBar.visibleProperty().set(true);
 		task.messageProperty().addListener((ChangeListener<String>)(observable, oldValue, newValue) -> {
@@ -157,7 +108,6 @@ public class WelcomeController implements Initializable {
 				try {
 					// Accedemos a la siguiente ventana
 					FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"), UBUGrades.resourceBundle);
-					
 					UBUGrades.stage.close();
 					UBUGrades.stage = new Stage();
 					Parent root = loader.load();
@@ -172,8 +122,7 @@ public class WelcomeController implements Initializable {
 					UBUGrades.stage.show();
 					lblNoSelect.setText("");
 				} catch (IOException e) {
-					logger.info("No se ha podido cargar la ventana principal: {}", e);
-					//errorWindow("No se ha podido cargar el curso.");
+					logger.info("No se ha podido cargar la ventana Main.fxml: {}", e);
 				}
 			} else if (newValue.substring(0, 6).equals("update")){
 				lblProgress.setText(newValue.substring(7));
@@ -183,6 +132,65 @@ public class WelcomeController implements Initializable {
 		});
 		Thread thread = new Thread(task, "datos");
 		thread.start();
+	}
+	
+	/**
+	 * Realiza el proceso de carga de las notas de los alumnos, carga del arbol del calificador
+	 * y generación de las estadisticas.
+	 * 
+	 * @return
+	 */
+	private Task<Void> getUserDataWorker() {
+		return new Task<Void>() {
+			@Override
+			protected Void call() {
+				try {
+					UBUGrades.stage.getScene().setCursor(Cursor.WAIT);
+					logger.info("Cargando datos del curso: " + UBUGrades.session.getActualCourse().getFullName());
+					// Establecemos los usuarios matriculados
+					CourseWS.setEnrolledUsers(UBUGrades.session.getToken(), UBUGrades.session.getActualCourse());
+					int enroledUsersCount = UBUGrades.session.getActualCourse().getEnrolledUsersCount()+8;
+					int done = 0;
+					updateProgress(done, enroledUsersCount);
+					
+					updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingqualifier"));
+					// Establecemos calificador del curso
+					CourseWS.setGradeReportLines(UBUGrades.session.getToken(),
+							UBUGrades.session.getActualCourse().getEnrolledUsers().get(0).getId(),
+							UBUGrades.session.getActualCourse());
+					done += 4;
+					
+					updateProgress(done, enroledUsersCount);
+					updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingstudents")
+									+ (done-4) + " " + UBUGrades.resourceBundle.getString("label.of") + " " + (enroledUsersCount-8));
+					for(EnrolledUser user: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
+						// Obtenemos todas las lineas de calificación del usuario
+						logger.info("Cargando los datos de: " + user.getFullName() + "...");
+						user.setAllGradeReportLines(CourseWS.getUserGradeReportLines(UBUGrades.session.getToken(), user.getId(),
+								UBUGrades.session.getActualCourse().getId()));
+						updateProgress(done++, enroledUsersCount);
+						logger.info("Datos cargados.");
+						updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingstudents")
+										+ (done-4) + " " + UBUGrades.resourceBundle.getString("label.of") + " " + (enroledUsersCount-8));
+					}
+										
+					updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingstats"));
+					//Establecemos las estadisticas
+					Stats.getStats();
+					updateProgress(done+4L, enroledUsersCount);
+					
+					Thread.sleep(50);
+					//Indica que se ha terminado el trabajo
+					updateMessage("end");
+				} catch (Exception e) {
+					logger.error("Error al cargar los datos de los alumnos: {}", e);
+					updateMessage("Se produjo un error inesperado al cargar los datos.\n" + e.getLocalizedMessage());
+				} finally {
+					UBUGrades.stage.getScene().setCursor(Cursor.DEFAULT);
+				}
+				return null;
+			}
+		};
 	}
 	
 	/**

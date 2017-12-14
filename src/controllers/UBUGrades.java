@@ -37,11 +37,11 @@ public class UBUGrades extends Application {
 	public void start(Stage primaryStage) {
 		// Si no existe el recurso de idioma especificado cargamos el Español
 		try {
-			logger.info("Cargando idoma del sistema:");
-			resourceBundle = ResourceBundle.getBundle("Messages");
+			resourceBundle = ResourceBundle.getBundle("messages/Messages", new Locale(Locale.getDefault().toString().toLowerCase()));
+			logger.info("Cargando idoma del sistema: {}", resourceBundle.getLocale().toString());
 		}catch (NullPointerException | MissingResourceException e) {
-			logger.error("No se ha podido encontrar el recurso de idioma, cargando es_ES: {}", e);
-			resourceBundle = ResourceBundle.getBundle("Messages", new Locale("es_ES"));
+			logger.error("No se ha podido encontrar el recurso de idioma, cargando en_en: {}", e);
+			resourceBundle = ResourceBundle.getBundle("messages/Messages", new Locale("en_en"));
 		}
 		
 		try {

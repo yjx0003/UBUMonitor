@@ -64,9 +64,9 @@
       </GridPane>
    </top>
    <center>
-      <SplitPane dividerPositions="0.0" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <SplitPane fx:id="splitPane" dividerPositions="0.0" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <items>
-            <BorderPane maxWidth="500.0" prefHeight="200.0" prefWidth="200.0">
+            <BorderPane maxWidth="600.0" prefHeight="200.0" prefWidth="200.0">
                <center>
                   <GridPane minWidth="250.0" prefHeight="464.0" prefWidth="250.0" BorderPane.alignment="CENTER">
                     <columnConstraints>

@@ -25,6 +25,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -43,6 +44,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -120,6 +122,9 @@ public class MainController implements Initializable {
 	@FXML // Gráfico de lineas
 	private WebView webViewCharts;
 	private WebEngine webViewChartsEngine;
+	
+	@FXML
+	private SplitPane splitPane;
 
 	private Stats stats;
 
@@ -267,56 +272,61 @@ public class MainController implements Initializable {
 				logger.info("-> Filtrando calificador por nombre: {}", patternCalifications);
 				filterCalifications();
 			});
+			
+			// Coloca el divider a la izquierda al redimensionar la ventana
+			ChangeListener<Number> stageSizeListener =
+					(observable, oldValue, newValue) -> splitPane.setDividerPositions(0);
+			UBUGrades.stage.widthProperty().addListener(stageSizeListener);
+			UBUGrades.stage.heightProperty().addListener(stageSizeListener);
 
+			// Activamos la selección múltiple en la lista de participantes
+			listParticipants.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+			// Asignamos el manejador de eventos de la lista
+			// Al clickar en la lista, se recalcula el nº de elementos seleccionados
+			// Generamos el gráfico con los elementos selecionados
+			listParticipants.setOnMouseClicked((EventHandler<Event>) event -> updateChart());
+	
+			/// Mostramos la lista de participantes
+			listParticipants.setItems(enrList);
+	
+			// Establecemos la estructura en árbol del calificador
+			ArrayList<GradeReportLine> grcl =  (ArrayList<GradeReportLine>) UBUGrades.session.getActualCourse()
+					.getGradeReportLines();
+			// Establecemos la raiz del Treeview
+			TreeItem<GradeReportLine> root = new TreeItem<>(grcl.get(0));
+			MainController.setIcon(root);
+			// Llamamos recursivamente para llenar el Treeview
+			for (int k = 0; k < grcl.get(0).getChildren().size(); k++) {
+				TreeItem<GradeReportLine> item = new TreeItem<>(grcl.get(0).getChildren().get(k));
+				MainController.setIcon(item);
+				root.getChildren().add(item);
+				root.setExpanded(true);
+				setTreeview(item, grcl.get(0).getChildren().get(k));
+			}
+			// Establecemos la raiz en el TreeView
+			tvwGradeReport.setRoot(root);
+			tvwGradeReport.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+			// Asignamos el manejador de eventos de la lista
+			// Al clickar en la lista, se recalcula el nº de elementos seleccionados
+			// Generamos el gráfico con los elementos selecionados
+			tvwGradeReport.setOnMouseClicked((EventHandler<Event>) event -> updateChart());
+			
+			// Mostramos nº participantes
+			lblCountParticipants.setText(UBUGrades.resourceBundle.getString("label.participants") 
+					+ " " + UBUGrades.session.getActualCourse().getEnrolledUsersCount());
+	
+			// Mostramos Usuario logeado y su imagen
+			lblActualUser.setText(UBUGrades.resourceBundle.getString("label.user") + " " + UBUGrades.user.getFullName());
+			userPhoto.setImage(UBUGrades.user.getUserPhoto());
+	
+			// Mostramos Curso actual
+			lblActualCourse.setText(UBUGrades.resourceBundle.getString("label.course") + " " + UBUGrades.session.getActualCourse().getFullName());
+	
+			// Mostramos Host actual
+			lblActualHost.setText(UBUGrades.resourceBundle.getString("label.host") + " " + UBUGrades.host);
 		} catch (Exception e) {
 			logger.error("Error en la inicialización.", e);
 		}
-
-		// Activamos la selección múltiple en la lista de participantes
-		listParticipants.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		// Asignamos el manejador de eventos de la lista
-		// Al clickar en la lista, se recalcula el nº de elementos seleccionados
-		// Generamos el gráfico con los elementos selecionados
-		listParticipants.setOnMouseClicked((EventHandler<Event>) event -> updateChart());
-
-		/// Mostramos la lista de participantes
-		listParticipants.setItems(enrList);
-
-		// Establecemos la estructura en árbol del calificador
-		ArrayList<GradeReportLine> grcl =  (ArrayList<GradeReportLine>) UBUGrades.session.getActualCourse()
-				.getGradeReportLines();
-		// Establecemos la raiz del Treeview
-		TreeItem<GradeReportLine> root = new TreeItem<>(grcl.get(0));
-		MainController.setIcon(root);
-		// Llamamos recursivamente para llenar el Treeview
-		for (int k = 0; k < grcl.get(0).getChildren().size(); k++) {
-			TreeItem<GradeReportLine> item = new TreeItem<>(grcl.get(0).getChildren().get(k));
-			MainController.setIcon(item);
-			root.getChildren().add(item);
-			root.setExpanded(true);
-			setTreeview(item, grcl.get(0).getChildren().get(k));
-		}
-		// Establecemos la raiz en el TreeView
-		tvwGradeReport.setRoot(root);
-		tvwGradeReport.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		// Asignamos el manejador de eventos de la lista
-		// Al clickar en la lista, se recalcula el nº de elementos seleccionados
-		// Generamos el gráfico con los elementos selecionados
-		tvwGradeReport.setOnMouseClicked((EventHandler<Event>) event -> updateChart());
-		
-		// Mostramos nº participantes
-		lblCountParticipants.setText(UBUGrades.resourceBundle.getString("label.participants") 
-				+ " " + UBUGrades.session.getActualCourse().getEnrolledUsersCount());
-
-		// Mostramos Usuario logeado y su imagen
-		lblActualUser.setText(UBUGrades.resourceBundle.getString("label.user") + " " + UBUGrades.user.getFullName());
-		userPhoto.setImage(UBUGrades.user.getUserPhoto());
-
-		// Mostramos Curso actual
-		lblActualCourse.setText(UBUGrades.resourceBundle.getString("label.course") + " " + UBUGrades.session.getActualCourse().getFullName());
-
-		// Mostramos Host actual
-		lblActualHost.setText(UBUGrades.resourceBundle.getString("label.host") + " " + UBUGrades.host);
 	}
 
 	/**
@@ -365,8 +375,8 @@ public class MainController implements Initializable {
 				if (patternParticipants.equals("")) {
 					patternYes = true;
 				} else {
-					Pattern pattern = Pattern.compile(patternParticipants);
-					Matcher match = pattern.matcher(users.get(i).getFullName());
+					Pattern pattern = Pattern.compile(patternParticipants.toLowerCase());
+					Matcher match = pattern.matcher(users.get(i).getFullName().toLowerCase());
 					if (match.find()) {
 						patternYes = true;
 					}
@@ -436,16 +446,16 @@ public class MainController implements Initializable {
 					root.setExpanded(true);
 					setTreeview(item, grcl.get(0).getChildren().get(k));
 				}
-			} else { // Con filtro
-				for (int k = 0; k < grcl.get(0).getChildren().size(); k++) {
-					TreeItem<GradeReportLine> item = new TreeItem<>(grcl.get(0).getChildren().get(k));
+			} else { // Con filtro	
+				for (int k = 1; k < grcl.size(); k++) {
+					TreeItem<GradeReportLine> item = new TreeItem<>(grcl.get(k));
 					boolean activityYes = false;
-					if (grcl.get(0).getChildren().get(k).getNameType().equals(filterType)
+					if (grcl.get(k).getNameType().equals(filterType)
 							|| filterType.equals(TODOS)) {
 						activityYes = true;
 					}
-					Pattern pattern = Pattern.compile(patternCalifications);
-					Matcher match = pattern.matcher(grcl.get(0).getChildren().get(k).getName());
+					Pattern pattern = Pattern.compile(patternCalifications.toLowerCase());
+					Matcher match = pattern.matcher(grcl.get(k).getName().toLowerCase());
 					boolean patternYes = false;
 					if (patternCalifications.equals("") || match.find()) {
 						patternYes = true;
@@ -455,7 +465,6 @@ public class MainController implements Initializable {
 						root.getChildren().add(item);
 					}
 					root.setExpanded(true);
-					setTreeviewFilter(root, item, grcl.get(0).getChildren().get(k));
 				}
 			}
 			// Establecemos la raiz del treeview
@@ -464,44 +473,6 @@ public class MainController implements Initializable {
 			logger.error("Error al filtrar los elementos del calificador: {}", e);
 		}
 		listParticipants.setItems(enrList);
-	}
-
-	/**
-	 * Crea un árbol filtrado en el que los hijos del root(raíz) son elementos de
-	 * cualquier nivel que cumplen el filtro
-	 * 
-	 * @param root
-	 * @param parent
-	 * @param line
-	 */
-	public void setTreeviewFilter(TreeItem<GradeReportLine> root, TreeItem<GradeReportLine> parent,
-			GradeReportLine line) {
-		/*
-		 * Obtiene los hijos de la linea pasada por parametro Los transforma en
-		 * treeitems y los establece como hijos del elemento treeItem equivalente de
-		 * line
-		 */
-		for (int j = 0; j < line.getChildren().size(); j++) {
-			TreeItem<GradeReportLine> item = new TreeItem<>(line.getChildren().get(j));
-			boolean activityYes = false;
-			if (line.getChildren().get(j).getNameType().equals(filterType) || filterType.equals(TODOS)) {
-				activityYes = true;
-			}
-			Pattern pattern = Pattern.compile(patternCalifications);
-			Matcher match = pattern.matcher(line.getChildren().get(j).getName());
-			boolean patternYes = false;
-			if (patternCalifications.equals("") || match.find()) {
-				patternYes = true;
-			}
-			if (activityYes && patternYes) {
-				MainController.setIcon(item);
-				root.getChildren().add(item);
-			}
-
-			parent.setExpanded(true);
-			setTreeviewFilter(root, item, line.getChildren().get(j));
-		}
-
 	}
 
 	/**
@@ -549,17 +520,14 @@ public class MainController implements Initializable {
 		try {
 			file = fileChooser.showSaveDialog(UBUGrades.stage);
 			if (file != null) {
-				try {
-					String str = (String) webViewChartsEngine.executeScript("exportCurrentElemet()");
-					byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
-					BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
-					ImageIO.write(bufferedImage, "png", file);
-				} catch (IOException ex) {
-					logger.info(ex.getMessage());
-				}
+				String str = (String) webViewChartsEngine.executeScript("exportCurrentElemet()");
+				byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
+				BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
+				ImageIO.write(bufferedImage, "png", file);
 			}
 		} catch (Exception e) {
 			logger.error("Error al guardar el gráfico: {}", e);
+			errorWindow("Error al guardar el gráfico", false);
 		}
 	}
 
@@ -602,7 +570,7 @@ public class MainController implements Initializable {
 
 			} catch (IOException e) {
 				logger.error("Error al exportar los gráficos.", e);
-				errorWindow("No se han podido exportar los gráficos.");
+				errorWindow("No se han podido exportar los gráficos.", false);
 			} finally {
 				if(out != null) {out.close();}
 				try {
@@ -680,78 +648,83 @@ public class MainController implements Initializable {
 		ObservableList<EnrolledUser> selectedParticipants = listParticipants.getSelectionModel().getSelectedItems();
 		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
 
-		String tableData = "[['Nombre'";
+		StringBuilder tableData = new StringBuilder();
+		tableData.append("[['Nombre'");
 		Boolean firstElement = true;
 
 		// Por cada ítem seleccionado lo añadimos como label
 		for (TreeItem<GradeReportLine> structTree : selectedGRL) {
-			tableData += ",'" + structTree.getValue().getName() + "'";
+			tableData.append(",'" + structTree.getValue().getName() + "'");
 		}
-
-		tableData += "],";
+		tableData.append("],");
 
 		// Por cada usuario seleccionado
 		for (EnrolledUser actualUser : selectedParticipants) {
-
 			// Añadimos el nombre del alumno al dataset
 			if (firstElement) {
 				firstElement = false;
-				tableData += "['" + actualUser.getFullName() + "'";
+				tableData.append("['" + actualUser.getFullName() + "'");
 			} else {
-				tableData += ",['" + actualUser.getFullName() + "'";
+				tableData.append(",['" + actualUser.getFullName() + "'");
 			}
-
 			// Por cada ítem seleccionado
 			for (TreeItem<GradeReportLine> structTree : selectedGRL) {
-
 				GradeReportLine actualLine = actualUser.getGradeReportLine(structTree.getValue().getId());
 				String calculatedGrade = actualLine.getGrade();
-
 				// Si es numérico lo graficamos y lo mostramos en la tabla
 				if (!Float.isNaN(CourseWS.getFloat(calculatedGrade))) {
 					Double grade = Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
 					// Añadimos la nota al gráfico
-					tableData += ",{v:" + grade + ", f:'" + grade + "/" + actualLine.getRangeMax() + "'}";
+					tableData.append(",{v:" + grade + ", f:'" + grade + "/" + actualLine.getRangeMax() + "'}");
 				} else {
-					tableData += ",{v:0, f:'" + calculatedGrade + "'}";
+					tableData.append(",{v:0, f:'" + calculatedGrade + "'}");
 				}
 			}
-			tableData += "]";
+			tableData.append("]");
 		}
-
+		// Añadimos las medias
+		tableData.append(generateTableMean());
+		return tableData.toString();
+	}
+	
+	/**
+	 * Genera el dataset de las medias para la tabla de calificaciones.
+	 * @return
+	 * 		El dataset.
+	 */
+	private String generateTableMean() {
 		// Añadimos la media general
-		tableData += ",['Media'";
+		StringBuilder tableData = new StringBuilder(); 
+		tableData.append(",['Media'");
 		for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 			String grade = stats.getElementMean(stats.getGeneralStats(), structTree.getValue().getId());
 			if (grade.equals("NaN")) {
-				tableData += ",{v:0, f:'NaN'}";
+				tableData.append(",{v:0, f:'NaN'}");
 			} else {
-				tableData += ",{v:" + grade + ", f:'" + grade + "/" + structTree.getValue().getRangeMax() + "'}";
+				tableData.append(",{v:" + grade + ", f:'" + grade + "/" + structTree.getValue().getRangeMax() + "'}");
 			}
 		}
-		tableData += "]";
+		tableData.append("]");
 
 		// Añadimos la media de los grupos
-
 		for (MenuItem grupo : slcGroup.getItems()) {
 			if (!grupo.getText().equals(TODOS)) {
-				tableData += ",['Media grupo " + grupo.getText() + "'";
+				tableData.append(",['Media grupo " + grupo.getText() + "'");
 				for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 					String grade = stats.getElementMean(stats.getGroupStats(grupo.getText()),
 							structTree.getValue().getId());
 					if (grade.equals("NaN")) {
-						tableData += ",{v:0, f:'NaN'}";
+						tableData.append(",{v:0, f:'NaN'}");
 					} else {
-						tableData += ",{v:" + grade + ", f:'" + grade + "/" + structTree.getValue().getRangeMax()
-								+ "'}";
+						tableData.append(",{v:" + grade +
+								", f:'" + grade + "/" + structTree.getValue().getRangeMax()+ "'}");
 					}
 				}
-				tableData += "]";
+				tableData.append("]");
 			}
 		}
-
-		tableData += "]";
-		return tableData;
+		tableData.append("]");
+		return tableData.toString();
 	}
 
 	/**
@@ -773,30 +746,21 @@ public class MainController implements Initializable {
 		// Por cada usuario seleccionado
 		for (EnrolledUser actualUser : selectedParticipants) {
 			String actualUserFullName = actualUser.getFullName();
-
-			// Añadimos el nombre del alumno al dataset
+			// Añadimos el nombre del alumno al dataset		
 			if (firstUser) {
 				dataSet += "{label:'" + actualUserFullName + "',data: [";
 				firstUser = false;
 			} else {
 				dataSet += ",{label:'" + actualUserFullName + "',data: [";
 			}
-
 			int countB = 1;
 			firstGrade = true;
-
 			// Por cada ítem seleccionado
 			for (TreeItem<GradeReportLine> structTree : selectedGRL) {
 				countA++;
 				GradeReportLine actualLine = actualUser.getGradeReportLine(structTree.getValue().getId());
 				try {
 					String calculatedGrade;
-					if(actualLine.getNameType().equals("Assignment")) {
-						calculatedGrade = actualLine.getGradeWithScale();
-					} else {
-						calculatedGrade = actualLine.getGradeAdjustedTo10();
-					}
-
 					if (countA == countB) {
 						countB++;
 						// Añadidimos el nombre del elemento como label
@@ -806,20 +770,22 @@ public class MainController implements Initializable {
 							labels += ",'" + actualLine.getName() + "'";
 						}
 					}
-
+					if(actualLine.getNameType().equals("Assignment")) {
+						calculatedGrade = actualLine.getGradeWithScale();
+					} else {
+						calculatedGrade = actualLine.getGradeAdjustedTo10();
+					}
 					if (firstGrade) {
 						dataSet += calculatedGrade;
 						firstGrade = false;
 					} else {
 						dataSet += "," + calculatedGrade;
 					}
-
 				} catch (Exception e) {
 					logger.error("Error en la construcción del dataset.", e);
-					errorWindow("Error en la construcción del dataset.");
+					errorWindow("Error en la construcción del dataset.", false);
 				}
 			}
-
 			dataSet += "]," + "backgroundColor: 'red'," + "borderColor: 'red'," + "pointBorderColor: 'red',"
 					+ "pointBackgroundColor: 'red'," + "borderWidth: 2," + "fill: false}";
 		}
@@ -948,7 +914,7 @@ public class MainController implements Initializable {
 			}
 		} catch (JSException e) {
 			logger.error("Error al generar los gráficos.", e);
-			errorWindow("No se han podido generar los gráficos.");
+			errorWindow("No se han podido generar los gráficos.", true);
 		}
 	}
 
@@ -958,19 +924,15 @@ public class MainController implements Initializable {
 	private void updateChart() {
 		try {
 			String data = generateDataSet();
-
 			updateGroupData(filterGroup);
-
 			webViewChartsEngine.executeScript("saveTableData(" + generateTableData() + ")");
-
 			webViewChartsEngine.executeScript("saveMean(" + generateMeanDataSet(TODOS) + ")");
-
 			webViewChartsEngine.executeScript("updateChart('boxplot'," + generateBoxPlotDataSet(TODOS) + ")");
 			webViewChartsEngine.executeScript("updateChart('line'," + data + ")");
 			webViewChartsEngine.executeScript("updateChart('radar'," + data + ")");
 		} catch (JSException e) {
 			logger.error("Error al generar los gráficos.", e);
-			errorWindow("No se han podido generar los gráficos.");
+			errorWindow("No se han podido generar los gráficos.", true);
 		}
 	}
 
@@ -979,8 +941,10 @@ public class MainController implements Initializable {
 	 * 
 	 * @param mensaje
 	 *            El mensaje que se quiere mostrar.
+	 * @param exit
+	 * 			Indica si se quiere mostar el boton de salir o no.
 	 */
-	private static void errorWindow(String mensaje) {
+	private static void errorWindow(String mensaje, Boolean exit) {
 		Alert alert = new Alert(AlertType.ERROR);
 
 		alert.setTitle("UbuGrades");
@@ -989,12 +953,14 @@ public class MainController implements Initializable {
 		alert.initOwner(UBUGrades.stage);
 		alert.getDialogPane().setContentText(mensaje);
 		
-		ButtonType buttonSalir = new ButtonType("Cerrar UBUGrades");
-		alert.getButtonTypes().setAll(buttonSalir);
-
-		Optional<ButtonType> result = alert.showAndWait();
-		if (result.isPresent() && result.get() == buttonSalir)
-			UBUGrades.stage.close();
+		if(exit) {
+			ButtonType buttonSalir = new ButtonType("Cerrar UBUGrades");
+			alert.getButtonTypes().setAll(buttonSalir);
+	
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.isPresent() && result.get() == buttonSalir)
+				UBUGrades.stage.close();
+		}
 	}
 
 }

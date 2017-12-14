@@ -29,7 +29,6 @@ public class UBUGrades extends Application {
 	public static Session session;
 	public static MoodleUser user;
 	public static ResourceBundle resourceBundle;
-	public static boolean idioma = false;
 	
 	static final Logger logger = LoggerFactory.getLogger(UBUGrades.class);
 

@@ -3,6 +3,7 @@ package controllers;
 
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -54,20 +55,23 @@ public class LoginController implements Initializable {
 	private ProgressBar progressBar;
 	@FXML
 	private ChoiceBox<String> languageSelector;
+	
+	// Lista de idiomas disponibles
 	private final List<String> locale = Arrays.asList("es_es", "en_en");
+	private final ObservableList<String> languages = FXCollections.observableArrayList("Español", "English");
 	
 	/**
 	 * Crea el selector de idioma.
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		languageSelector.setItems(FXCollections.observableArrayList("Español", "English"));
+		languageSelector.setItems(languages);
 		languageSelector.getSelectionModel().select(locale.indexOf(UBUGrades.resourceBundle.getLocale().toString().toLowerCase()));
 		// Carga la interfaz con el idioma seleccionado
 		languageSelector.getSelectionModel().selectedIndexProperty().addListener((ov, value, newValue) -> {			
 			try {
 				logger.info("idioma seleccionado " + locale.get(newValue.intValue()).toString());
-				UBUGrades.resourceBundle = ResourceBundle.getBundle("Messages", new Locale(locale.get(newValue.intValue())));
+				UBUGrades.resourceBundle = ResourceBundle.getBundle("messages/Messages", new Locale(locale.get(newValue.intValue())));
 				logger.info("idioma cargado " + UBUGrades.resourceBundle.getLocale().toString());
 				logger.info("[Bienvenido a UBUGrades]");
 				FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Login.fxml"), UBUGrades.resourceBundle);

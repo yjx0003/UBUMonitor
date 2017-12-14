@@ -8,51 +8,6 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane fx:id="canvas" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="500.0" minWidth="750.0" prefHeight="500.0" prefWidth="750.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
-   <left>
-      <GridPane prefHeight="464.0" prefWidth="250.0" BorderPane.alignment="CENTER">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" percentWidth="100.0" prefWidth="250.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints percentHeight="50.0" vgrow="SOMETIMES" />
-          <RowConstraints percentHeight="50.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <BorderPane prefHeight="200.0" prefWidth="200.0">
-               <top>
-                  <Pane minHeight="64.0" prefHeight="64.0" prefWidth="250.0" BorderPane.alignment="CENTER">
-                     <children>
-                        <Label fx:id="lblCountParticipants" layoutX="6.0" layoutY="6.0" text="%label.participants" />
-                        <TextField fx:id="tfdParticipants" layoutX="6.0" layoutY="31.0" prefHeight="25.0" prefWidth="108.0" promptText="%label.filter" />
-                        <Label layoutX="122.0" layoutY="6.0" text="%label.group" />
-                        <Label layoutX="130.0" layoutY="35.0" text="%label.rol" />
-                        <MenuButton fx:id="slcGroup" layoutX="160.0" layoutY="2.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.group" />
-                        <MenuButton fx:id="slcRole" layoutX="160.0" layoutY="31.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.rol" />
-                     </children>
-                  </Pane>
-               </top>
-               <center>
-                  <ListView fx:id="listParticipants" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-               </center>
-            </BorderPane>
-            <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
-               <top>
-                  <Pane minHeight="63.0" prefHeight="63.0" prefWidth="250.0" BorderPane.alignment="CENTER">
-                     <children>
-                        <Label layoutX="8.0" layoutY="6.0" text="%label.categoryitem" />
-                        <TextField fx:id="tfdItems" layoutX="8.0" layoutY="30.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
-                        <Label layoutX="125.0" layoutY="36.0" text="%label.type" />
-                        <MenuButton fx:id="slcType" layoutX="162.0" layoutY="32.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.type" />
-                     </children>
-                  </Pane>
-               </top>
-               <center>
-                  <TreeView fx:id="tvwGradeReport" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-               </center>
-            </BorderPane>
-         </children>
-      </GridPane>
-   </left>
    <top>
       <GridPane id="topBar" BorderPane.alignment="CENTER">
         <columnConstraints>
@@ -109,10 +64,61 @@
       </GridPane>
    </top>
    <center>
-      <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <center>
-            <WebView fx:id="webViewCharts" minHeight="200.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-         </center>
-      </BorderPane>
+      <SplitPane dividerPositions="0.0" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <items>
+            <BorderPane maxWidth="500.0" prefHeight="200.0" prefWidth="200.0">
+               <center>
+                  <GridPane minWidth="250.0" prefHeight="464.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" percentWidth="100.0" prefWidth="250.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints percentHeight="50.0" vgrow="SOMETIMES" />
+                      <RowConstraints percentHeight="50.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <BorderPane prefHeight="200.0" prefWidth="200.0">
+                           <top>
+                              <Pane minHeight="64.0" prefHeight="64.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+                                 <children>
+                                    <Label fx:id="lblCountParticipants" layoutX="6.0" layoutY="6.0" text="%label.participants" />
+                                    <TextField fx:id="tfdParticipants" layoutX="6.0" layoutY="31.0" prefHeight="25.0" prefWidth="108.0" promptText="%label.filter" />
+                                    <Label layoutX="122.0" layoutY="6.0" text="%label.group" />
+                                    <Label layoutX="130.0" layoutY="35.0" text="%label.rol" />
+                                    <MenuButton fx:id="slcGroup" layoutX="160.0" layoutY="2.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.group" />
+                                    <MenuButton fx:id="slcRole" layoutX="160.0" layoutY="31.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.rol" />
+                                 </children>
+                              </Pane>
+                           </top>
+                           <center>
+                              <ListView fx:id="listParticipants" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                           </center>
+                        </BorderPane>
+                        <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+                           <top>
+                              <Pane minHeight="63.0" prefHeight="63.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+                                 <children>
+                                    <Label layoutX="8.0" layoutY="6.0" text="%label.categoryitem" />
+                                    <TextField fx:id="tfdItems" layoutX="8.0" layoutY="30.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+                                    <Label layoutX="123.0" layoutY="36.0" text="%label.type" />
+                                    <MenuButton fx:id="slcType" layoutX="160.0" layoutY="32.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.type" />
+                                 </children>
+                              </Pane>
+                           </top>
+                           <center>
+                              <TreeView fx:id="tvwGradeReport" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                           </center>
+                        </BorderPane>
+                     </children>
+                  </GridPane>
+               </center>
+            </BorderPane>
+            <BorderPane prefHeight="200.0" prefWidth="200.0">
+               <center>
+                  <WebView fx:id="webViewCharts" minHeight="200.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+               </center>
+            </BorderPane>
+         </items>
+      </SplitPane>
    </center>
 </BorderPane>

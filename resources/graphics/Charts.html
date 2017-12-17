@@ -72,18 +72,12 @@
 	}
 	
 	.Alumnos{
-		height: 45%;
+		height: 50%;
 		color: black;
 	}
 	
 	.Calificaciones{
-		height: 45%;
-		color: black;
-	}
-	
-	.GenerarGrafico{
-		position: fixed;
-		bottom: 5px;
+		height: 50%;
 		color: black;
 	}
 	
@@ -170,7 +164,7 @@
 </div>
 
 <div class="opciones">
-	<input type="button" value="." class="btn" style="visibility: hidden;width: 0px:;margin: 0px; padding: 0px;"/>
+	<input type="button" value="." class="btn" style="visibility: hidden;width: 0px;margin: 0px; padding: 0px;"/>
 	<input type="button" value="Leyenda" class="btn" id="btnLegend" onclick="hideLegend()"/>
 	<input type="button" value="Media General" class="btn" id="btnMean" onclick="showGeneralMean()"/>
 	<input type="button" value="Media Del Grupo" class="btn" id="btnGroupMean" onclick="showGroupMean()"/>
@@ -180,7 +174,6 @@
 <div id="inicio">
 	<div class="Alumnos">1- SELECCIONA LOS ALUMNOS</div>
 	<div class="Calificaciones">2- SELECCIONA LAS CALIFICACIONES</div>
-	<div class="GenerarGrafico">3- GENERA EL GRÁFICO</div>
 </div>
 
 <div id="chart-container" class="chart-container">
@@ -394,8 +387,8 @@ document.getElementById('table_div').style.display = 'none';
 
 document.getElementById('btnLegend').style.backgroundImage = 'url(./../img/visibility.png)';
 
-
 //------------------------------------------Funciones------------------------------------------------------------------
+
 
 // Funcion que crea la tabla de calificaciones
 function drawTable() {
@@ -715,6 +708,59 @@ Chart.pluginService.register({
 	}
 });
 
+//------------------------------------------Traducción-----------------------------------------------------------------
+// Contiene el texto a mostrar para los distintos elementos e idiomas
+var messages = {
+	btnLineas: {
+		es_es: "Lineas",
+		en_en: "Lines"
+	},
+	btnRadar: {
+		es_es: "Radar",
+		en_en: "Radar"
+	},
+	btnBoxPlot: {
+		es_es: "BoxPlot General",
+		en_en: "General BoxPlot"
+	},
+	btnBoxPlotGroup: {
+		es_es: "BoxPlot Del Grupo",
+		en_en: "Group BoxPlot"
+	},
+	btnCalificaciones: {
+		es_es: "Calificaciones",
+		en_en: "Grades"
+	},
+	btnLegend: {
+		es_es: "Leyenda",
+		en_en: "Legend"
+	},
+	btnMean: {
+		es_es: "Media General",
+		en_en: "General Mean"
+	},
+	btnGroupMean: {
+		es_es: "Media Del Grupo",
+		en_en: "Group Mean"
+	}
+}
+
+// Establece el idioma
+function setLanguage(lang) {
+	get_i18n('btnLineas', lang);
+	get_i18n('btnRadar', lang);
+	get_i18n('btnBoxPlot', lang);
+	get_i18n('btnBoxPlotGroup', lang);
+	get_i18n('btnCalificaciones', lang);
+	get_i18n('btnLegend', lang);
+	get_i18n('btnMean', lang);
+	get_i18n('btnGroupMean', lang);
+}
+
+// Modifica el valor de los inputs segun el idioma pasado
+function get_i18n(item, lang) {
+	document.getElementById(item).value = messages[item][lang];
+}
 </script>
 
 </body>

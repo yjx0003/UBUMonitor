@@ -159,7 +159,7 @@ public class WelcomeController implements Initializable {
 							UBUGrades.session.getActualCourse().getEnrolledUsers().get(0).getId(),
 							UBUGrades.session.getActualCourse());
 					done += 4;
-					
+									
 					updateProgress(done, enroledUsersCount);
 					updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingstudents")
 									+ (done-4) + " " + UBUGrades.resourceBundle.getString("label.of") + " " + (enroledUsersCount-8));

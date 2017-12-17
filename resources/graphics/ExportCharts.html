@@ -117,11 +117,6 @@
 <div class="titulos">Tabla de notas</div>
 <div id="table_div" class="table_div"></div>
 
-<br>
-<br>
-<br>
-<div id="table_img" style="display: none;"></div>
-
 <script>
 
 //------------------------------------------Opciones para los graficos------------------------------------------------------------------
@@ -292,25 +287,29 @@ var optionsRadarChart = {
 var colorHash = new ColorHash();
 
 // Cargamos la librearia de google para la tabla de calificaciones
-google.charts.load('current', {'packages':['table']});
 var table;
+
+google.charts.load('current', {'packages':['table']});
+google.charts.setOnLoadCallback(drawTable);
+
+function drawTable() {
+	var cssClassNames = {
+	    headerRow: 'actividades',
+	    tableRow: 'filasTabla',
+	    oddTableRow: 'filasImpares',
+	    selectedTableRow: 'filaSeleccionada',
+	    hoverTableRow: 'filaHover',
+	    headerCell: 'actividadesCelda',
+	    tableCell: 'tablaCelda'};
+
+	var data = google.visualization.arrayToDataTable(TableDataSet, false); // 'false' indica que la primera fila son labels, no datos.
+	table = new google.visualization.Table(document.getElementById('table_div'));
+   	table.draw(data, {showRowNumber: false, allowHTML: true, width: '100%',  cssClassNames: cssClassNames, frozenColumns: 1});
+}
 
 //------------------------------------------Funciones------------------------------------------------------------------
 function generateChart(){
 	
-		var cssClassNames = {
-		    headerRow: 'actividades',
-		    tableRow: 'filasTabla',
-		    oddTableRow: 'filasImpares',
-		    selectedTableRow: 'filaSeleccionada',
-		    hoverTableRow: 'filaHover',
-		    headerCell: 'actividadesCelda',
-		    tableCell: 'tablaCelda'};
-
-		var data = google.visualization.arrayToDataTable(TableDataSet, false); // 'false' indica que la primera fila son labels, no datos.
-		table = new google.visualization.Table(document.getElementById('table_div'));
-    	table.draw(data, {showRowNumber: false, allowHTML: true, width: '100%',  cssClassNames: cssClassNames, frozenColumns: 1});
-
 		var linectx = document.getElementById('LineChart');
 		LineChart = new Chart(linectx,{
 			type: 'line',

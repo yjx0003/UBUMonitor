@@ -701,7 +701,7 @@ public class MainController implements Initializable {
 			if (grade.equals("NaN")) {
 				tableData.append(",{v:0, f:'NaN'}");
 			} else {
-				tableData.append(",{v:" + grade + ", f:'" + grade + "/" + structTree.getValue().getRangeMax() + "'}");
+				tableData.append(",{v:" + grade + ", f:'" + grade + "/10'}");
 			}
 		}
 		tableData.append("]");
@@ -716,8 +716,7 @@ public class MainController implements Initializable {
 					if (grade.equals("NaN")) {
 						tableData.append(",{v:0, f:'NaN'}");
 					} else {
-						tableData.append(",{v:" + grade +
-								", f:'" + grade + "/" + structTree.getValue().getRangeMax()+ "'}");
+						tableData.append(",{v:" + grade + ", f:'" + grade + "/10'}");
 					}
 				}
 				tableData.append("]");

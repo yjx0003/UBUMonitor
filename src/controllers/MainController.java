@@ -141,6 +141,11 @@ public class MainController implements Initializable {
 			webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
 			webViewChartsEngine = webViewCharts.getEngine();
 			webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html").toExternalForm());
+			// Comprobamos cuando se carga la pagina para traducirla
+			webViewChartsEngine.getLoadWorker().stateProperty().addListener(
+					(ov, oldState, newState) ->
+			webViewChartsEngine.executeScript("setLanguage('" + UBUGrades.resourceBundle.getLocale().toString() + "')"));
+			
 
 			// Almacenamos todos participantes en una lista
 			ArrayList<EnrolledUser> users = (ArrayList<EnrolledUser>) UBUGrades.session.getActualCourse()
@@ -943,7 +948,7 @@ public class MainController implements Initializable {
 	 * @param exit
 	 * 			Indica si se quiere mostar el boton de salir o no.
 	 */
-	private static void errorWindow(String mensaje, Boolean exit) {
+	private void errorWindow(String mensaje, Boolean exit) {
 		Alert alert = new Alert(AlertType.ERROR);
 
 		alert.setTitle("UbuGrades");

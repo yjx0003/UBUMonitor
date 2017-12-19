@@ -744,18 +744,18 @@ public class MainController implements Initializable {
 		int countA = 0;
 		boolean firstUser = true;
 		boolean firstGrade = true;
-		String dataSet = "";
-		String labels = "";
+		StringBuilder dataSet = new StringBuilder();
+		StringBuilder labels = new StringBuilder();
 
 		// Por cada usuario seleccionado
 		for (EnrolledUser actualUser : selectedParticipants) {
 			String actualUserFullName = actualUser.getFullName();
 			// Añadimos el nombre del alumno al dataset		
 			if (firstUser) {
-				dataSet += "{label:'" + actualUserFullName + "',data: [";
+				dataSet.append("{label:'" + actualUserFullName + "',data: [");
 				firstUser = false;
 			} else {
-				dataSet += ",{label:'" + actualUserFullName + "',data: [";
+				dataSet.append(",{label:'" + actualUserFullName + "',data: [");
 			}
 			int countB = 1;
 			firstGrade = true;
@@ -769,9 +769,9 @@ public class MainController implements Initializable {
 						countB++;
 						// Añadidimos el nombre del elemento como label
 						if (firstGrade) {
-							labels += "'" + actualLine.getName() + "'";
+							labels.append("'" + actualLine.getName() + "'");
 						} else {
-							labels += ",'" + actualLine.getName() + "'";
+							labels.append(",'" + actualLine.getName() + "'");
 						}
 					}
 					if(actualLine.getNameType().equals("Assignment")) {
@@ -780,18 +780,18 @@ public class MainController implements Initializable {
 						calculatedGrade = actualLine.getGradeAdjustedTo10();
 					}
 					if (firstGrade) {
-						dataSet += calculatedGrade;
+						dataSet.append(calculatedGrade);
 						firstGrade = false;
 					} else {
-						dataSet += "," + calculatedGrade;
+						dataSet.append("," + calculatedGrade);
 					}
 				} catch (Exception e) {
 					logger.error("Error en la construcción del dataset.", e);
 					errorWindow("Error en la construcción del dataset.", false);
 				}
 			}
-			dataSet += "]," + "backgroundColor: 'red'," + "borderColor: 'red'," + "pointBorderColor: 'red',"
-					+ "pointBackgroundColor: 'red'," + "borderWidth: 2," + "fill: false}";
+			dataSet.append("]," + "backgroundColor: 'red'," + "borderColor: 'red'," + "pointBorderColor: 'red',"
+					+ "pointBackgroundColor: 'red'," + "borderWidth: 2," + "fill: false}");
 		}
 		return "{ labels:[" + labels + "],datasets: [" + dataSet + "]}";
 	}
@@ -811,56 +811,56 @@ public class MainController implements Initializable {
 
 		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
 
-		String labels = "";
-		String maximos = "{label:'Máximo',data: [";
-		String medianas = "{label:'Mediana',data: [";
-		String minimos = "{label:'Mínimo',data: [";
-		String primerQuartil = "{label:'Primer Quartil',data: [";
-		String tercerQuartil = "{label:'Tercer Quartil',data: [";
+		StringBuilder labels = new StringBuilder();
+		StringBuilder maximos = new StringBuilder("{label:'Máximo',data: [");
+		StringBuilder medianas = new StringBuilder("{label:'Mediana',data: [");
+		StringBuilder minimos = new StringBuilder("{label:'Mínimo',data: [");
+		StringBuilder primerQuartil = new StringBuilder("{label:'Primer Quartil',data: [");
+		StringBuilder tercerQuartil = new StringBuilder("{label:'Tercer Quartil',data: [");
 		boolean firstLabel = true;
 		boolean firstGrade = true;
 		int gradeId;
 
 		for (TreeItem<GradeReportLine> structTree : selectedGRL) {
 			if (firstLabel) {
-				labels += "'" + structTree.getValue().getName() + "'";
+				labels.append("'" + structTree.getValue().getName() + "'");
 				firstLabel = false;
 			} else {
-				labels += ",'" + structTree.getValue().getName() + "'";
+				labels.append(",'" + structTree.getValue().getName() + "'");
 			}
 
 			gradeId = structTree.getValue().getId();
 			if (firstGrade) {
-				maximos += stats.getMaxmimum(boxPlotStats, gradeId);
-				medianas += stats.getMedian(boxPlotStats, gradeId);
-				minimos += stats.getMinimum(boxPlotStats, gradeId);
-				primerQuartil += stats.getElementPercentile(boxPlotStats, gradeId, 25);
-				tercerQuartil += stats.getElementPercentile(boxPlotStats, gradeId, 75);
+				maximos.append(stats.getMaxmimum(boxPlotStats, gradeId));
+				medianas.append(stats.getMedian(boxPlotStats, gradeId));
+				minimos.append(stats.getMinimum(boxPlotStats, gradeId));
+				primerQuartil.append(stats.getElementPercentile(boxPlotStats, gradeId, 25));
+				tercerQuartil.append(stats.getElementPercentile(boxPlotStats, gradeId, 75));
 				firstGrade = false;
 			} else {
-				maximos += "," + stats.getMaxmimum(boxPlotStats, gradeId);
-				medianas += "," + stats.getMedian(boxPlotStats, gradeId);
-				minimos += "," + stats.getMinimum(boxPlotStats, gradeId);
-				primerQuartil += "," + stats.getElementPercentile(boxPlotStats, gradeId, 25);
-				tercerQuartil += "," + stats.getElementPercentile(boxPlotStats, gradeId, 75);
+				maximos.append("," + stats.getMaxmimum(boxPlotStats, gradeId));
+				medianas.append("," + stats.getMedian(boxPlotStats, gradeId));
+				minimos.append("," + stats.getMinimum(boxPlotStats, gradeId));
+				primerQuartil.append( "," + stats.getElementPercentile(boxPlotStats, gradeId, 25));
+				tercerQuartil.append("," + stats.getElementPercentile(boxPlotStats, gradeId, 75));
 			}
 		}
 
-		maximos += "]," + "backgroundColor: 'rgba(244,67,54,1)'," + "borderColor: 'rgba(244,67,54,1)',"
+		maximos.append("]," + "backgroundColor: 'rgba(244,67,54,1)'," + "borderColor: 'rgba(244,67,54,1)',"
 				+ "pointBorderColor: 'rgba(244,67,54,1)'," + "pointBackgroundColor: 'rgba(244,67,54,1)',"
-				+ "borderWidth: 2," + "fill: false}";
-		tercerQuartil += "]," + "backgroundColor: 'rgba(255,152,0,0.3)" + "'," + "borderColor: 'rgba(255,152,0,1)"
+				+ "borderWidth: 2," + "fill: false}");
+		tercerQuartil.append("]," + "backgroundColor: 'rgba(255,152,0,0.3)" + "'," + "borderColor: 'rgba(255,152,0,1)"
 				+ "'," + "pointBorderColor: 'rgba(255,152,0,1)" + "'," + "pointBackgroundColor: 'rgba(255,152,0,1)"
-				+ "'," + "borderWidth: 2," + "fill: 3}";
-		medianas += "]," + "backgroundColor: 'rgba(0,150,136,1)'," + "borderColor: 'rgba(0,150,136,1)',"
+				+ "'," + "borderWidth: 2," + "fill: 3}");
+		medianas.append("]," + "backgroundColor: 'rgba(0,150,136,1)'," + "borderColor: 'rgba(0,150,136,1)',"
 				+ "pointBorderColor: 'rgba(0,150,136,1)'," + "pointBackgroundColor: 'rgba(0,150,136,1)',"
-				+ "borderWidth: 2," + "fill: false}";
-		primerQuartil += "]," + "backgroundColor: 'rgba(255,152,0,0.3)'," + "borderColor: 'rgba(255,152,0,1)',"
+				+ "borderWidth: 2," + "fill: false}");
+		primerQuartil.append("]," + "backgroundColor: 'rgba(255,152,0,0.3)'," + "borderColor: 'rgba(255,152,0,1)',"
 				+ "pointBorderColor: 'rgba(255,152,0,1)'," + "pointBackgroundColor: 'rgba(255,152,0,1)',"
-				+ "borderWidth: 2," + "fill: false}";
-		minimos += "]," + "backgroundColor: 'rgba(81,45,168,1)'," + "borderColor: 'rgba(81,45,168,1)',"
+				+ "borderWidth: 2," + "fill: false}");
+		minimos.append("]," + "backgroundColor: 'rgba(81,45,168,1)'," + "borderColor: 'rgba(81,45,168,1)',"
 				+ "pointBorderColor: 'rgba(81,45,168,1)'," + "pointBackgroundColor: 'rgba(81,45,168,1)',"
-				+ "borderWidth: 2," + "fill: false}";
+				+ "borderWidth: 2," + "fill: false}");
 
 		return "{ labels:[" + labels + "]," + "datasets: [" + maximos + "," + tercerQuartil + "," + medianas + ","
 				+ primerQuartil + "," + minimos + "]}";
@@ -874,32 +874,32 @@ public class MainController implements Initializable {
 	private String generateMeanDataSet(String group) {
 		HashMap<Integer, DescriptiveStatistics> meanStats;
 		Boolean firstElement = true;
-		String meanDataset;
+		StringBuilder meanDataset = new StringBuilder();
 		String color;
 
 		if (group.equals(TODOS)) {
 			meanStats = stats.getGeneralStats();
-			meanDataset = "{label:'Media general',data:[";
+			meanDataset.append("{label:'Media general',data:[");
 			color = "rgba(255, 152, 0, ";
 		} else {
 			meanStats = stats.getGroupStats(group);
-			meanDataset = "{label:'Media del grupo',data:[";
+			meanDataset.append("{label:'Media del grupo',data:[");
 			color = "rgba(0, 150, 136, ";
 		}
 
 		for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 			if (firstElement) {
-				meanDataset += stats.getElementMean(meanStats, structTree.getValue().getId());
+				meanDataset.append(stats.getElementMean(meanStats, structTree.getValue().getId()));
 				firstElement = false;
 			} else {
-				meanDataset += "," + stats.getElementMean(meanStats, structTree.getValue().getId());
+				meanDataset.append("," + stats.getElementMean(meanStats, structTree.getValue().getId()));
 			}
 		}
 
-		meanDataset += "]," + "backgroundColor:'" + color + "0.3)'," + "borderColor:'" + color + "1)',"
-				+ "pointBackgroundColor:'" + color + "1)'," + "borderWidth: 3," + "fill: true}";
+		meanDataset.append("]," + "backgroundColor:'" + color + "0.3)'," + "borderColor:'" + color + "1)',"
+				+ "pointBackgroundColor:'" + color + "1)'," + "borderWidth: 3," + "fill: true}");
 
-		return meanDataset;
+		return meanDataset.toString();
 	}
 
 	/**

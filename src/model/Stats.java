@@ -81,24 +81,29 @@ public class Stats {
 	 * @throws Exception
 	 */
 	private void generateGeneralStats() throws Exception {
-		logger.info("Generando las estadisticas generales para el curso cargado.");
-		//Estadisticas Generales
-		generalGradesStats = new HashMap<>();
-		String grade = "";
-		// Inicializamos el HashMap con cada una de los Grade Report Lines de la asignatura.
-		for (GradeReportLine actualLine : UBUGrades.session.getActualCourse().getGradeReportLines()) {
-			generalGradesStats.put(actualLine.getId(), new DescriptiveStatistics());
-		}
-		
-		// Añadimos las notas de cada usuario para cada GradeReportLine
-		for(EnrolledUser enrroledUser: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
-			for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
-				grade = gradeReportLine.getGradeAdjustedTo10();
-				// Si la nota es "NaN", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
-				if(!grade.equals("NaN")) {
-					this.addElementValue(generalGradesStats, gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
+		try {
+			logger.info("Generando las estadisticas generales para el curso cargado.");
+			//Estadisticas Generales
+			generalGradesStats = new HashMap<>();
+			String grade = "";
+			// Inicializamos el HashMap con cada una de los Grade Report Lines de la asignatura.
+			for (GradeReportLine actualLine : UBUGrades.session.getActualCourse().getGradeReportLines()) {
+				generalGradesStats.put(actualLine.getId(), new DescriptiveStatistics());
+			}
+			
+			// Añadimos las notas de cada usuario para cada GradeReportLine
+			for(EnrolledUser enrroledUser: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
+				for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
+					grade = gradeReportLine.getGradeAdjustedTo10();
+					// Si la nota es "NaN", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
+					if(!grade.equals("NaN")) {
+						this.addElementValue(generalGradesStats, gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
+					}
 				}
 			}
+		}catch (Exception e) {
+			logger.error("Error al generar las estadisticas generales." , e);
+			throw new Exception("Error al generar las estadisticas generales.");
 		}
 	}
 	
@@ -108,31 +113,36 @@ public class Stats {
 	 * @throws Exception
 	 */
 	private void generateGroupStats() throws Exception {
-		logger.info("Generando las estadisticas de los gruopos para el curso cargado.");
-		//Estadisticas de los grupos
-		groupsStats = new HashMap<>();
-		String grade = "";
-		HashMap<Integer, DescriptiveStatistics> currentGroupStats;
-		
-		// Generamos estadisticas para cada uno de los grupos
-		for(String group: UBUGrades.session.getActualCourse().getGroups()) {
+		try {
+			logger.info("Generando las estadisticas de los gruopos para el curso cargado.");
+			//Estadisticas de los grupos
+			groupsStats = new HashMap<>();
+			String grade = "";
+			HashMap<Integer, DescriptiveStatistics> currentGroupStats;
 			
-			// Inicializamos el HashMap con cada una de los Grade Report Lines de la asignatura para ese grupo.
-			currentGroupStats = new HashMap<>();
-			for (GradeReportLine actualLine : UBUGrades.session.getActualCourse().getGradeReportLines()) {
-				currentGroupStats.put(actualLine.getId(), new DescriptiveStatistics());
-			}
-			
-			for(EnrolledUser enrroledUser: UBUGrades.session.getActualCourse().getUsersInGroup(group)) {
-				for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
-					grade = gradeReportLine.getGradeAdjustedTo10();
-					// Si la nota es "NaN", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
-					if(!grade.equals("NaN")) {
-						this.addElementValue(currentGroupStats, gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
+			// Generamos estadisticas para cada uno de los grupos
+			for(String group: UBUGrades.session.getActualCourse().getGroups()) {
+				
+				// Inicializamos el HashMap con cada una de los Grade Report Lines de la asignatura para ese grupo.
+				currentGroupStats = new HashMap<>();
+				for (GradeReportLine actualLine : UBUGrades.session.getActualCourse().getGradeReportLines()) {
+					currentGroupStats.put(actualLine.getId(), new DescriptiveStatistics());
+				}
+				
+				for(EnrolledUser enrroledUser: UBUGrades.session.getActualCourse().getUsersInGroup(group)) {
+					for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
+						grade = gradeReportLine.getGradeAdjustedTo10();
+						// Si la nota es "NaN", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
+						if(!grade.equals("NaN")) {
+							this.addElementValue(currentGroupStats, gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
+						}
 					}
 				}
+				groupsStats.put(group, currentGroupStats);
 			}
-			groupsStats.put(group, currentGroupStats);
+		} catch (Exception e) {
+			logger.error("Error al generar las estadisticas de los grupos." , e);
+			throw new Exception("Error al generar las estadisticas de los grupos.");
 		}
 	}
 	

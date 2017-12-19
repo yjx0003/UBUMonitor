@@ -26,7 +26,7 @@ public class EnrolledUser {
 	private String fullName;
 	private Date firstAccess;
 	private Date lastAccess;
-	public String description;
+	private String description;
 	private String descriptionFormat;
 	private String city;
 	private String country;
@@ -70,21 +70,19 @@ public class EnrolledUser {
 				Role rol = new Role(roleArray.getJSONObject(i).getInt("roleid"),
 						roleArray.getJSONObject(i).getString("name"),
 						roleArray.getJSONObject(i).getString("shortname"));
-				if (rol != null)
-					roles.add(rol);
+				roles.add(rol);
 			}
 		}
 		if (obj.optJSONArray("groups") != null) {
 			JSONArray groupArray = obj.getJSONArray("groups");
-			groups = new ArrayList<Group>();
+			groups = new ArrayList<>();
 			for (int i = 0; i < groupArray.length(); i++) {
 				// Establece un grupo con el id, name y description obtenido de
 				// cada JSONObject del JSONArray
 				Group group = new Group(groupArray.getJSONObject(i).getInt("id"),
 						groupArray.getJSONObject(i).getString("name"),
 						groupArray.getJSONObject(i).getString("description"));
-				if (group != null)
-					groups.add(group);
+				groups.add(group);
 			}
 		} else {
 			groups = new ArrayList<>(); // to have an empty list, not a null

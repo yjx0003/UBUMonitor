@@ -12,7 +12,7 @@ import java.util.Date;
 public class Assignment extends Activity {
 	private Date dueDate;
 	private Date allowSubmissionsFromDate;
-	public Date timeModified;
+	private Date timeModified;
 	private int scaleId;
 	
 	private static final long serialVersionUID = 1L;

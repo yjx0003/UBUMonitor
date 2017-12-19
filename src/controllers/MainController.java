@@ -618,7 +618,7 @@ public class MainController implements Initializable {
 	 * @param actionEvent
 	 * @throws Exception
 	 */
-	public void clearSelection(ActionEvent actionEvent) throws Exception {
+	public void clearSelection(ActionEvent actionEvent) {
 		listParticipants.getSelectionModel().clearSelection();
 		tvwGradeReport.getSelectionModel().clearSelection();
 	}

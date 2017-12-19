@@ -61,23 +61,21 @@ public class MoodleUserWS {
 			CloseableHttpResponse response = httpclient.execute(httpget);
 			String respuesta = EntityUtils.toString(response.getEntity());
 			JSONArray jsonArray = new JSONArray(respuesta);
-			if (jsonArray != null) {
-				JSONObject jsonObject = (JSONObject) jsonArray.get(0);
-				if (jsonObject != null) {
-					mUser.setId(jsonObject.getInt("id"));
-					if (jsonObject.has("username"))
-						mUser.setUserName(jsonObject.getString("username"));
-					if (jsonObject.has("fullname"))
-						mUser.setFullName(jsonObject.getString("fullname"));
-					if (jsonObject.has("email"))
-						mUser.setEmail(jsonObject.getString("email"));
-					if (jsonObject.has("firstaccess"))
-						mUser.setFirstAccess(new Date(jsonObject.getLong("firstaccess") * 1000));
-					if (jsonObject.has("lastaccess"))
-						mUser.setLastAccess(new Date(jsonObject.getLong("lastaccess") * 1000));
-					if(jsonObject.has("profileimageurlsmall"))
-						mUser.setUserPhoto(new Image(jsonObject.getString("profileimageurlsmall")));
-				}
+			JSONObject jsonObject = (JSONObject) jsonArray.get(0);
+			if (jsonObject != null) {
+				mUser.setId(jsonObject.getInt("id"));
+				if (jsonObject.has("username"))
+					mUser.setUserName(jsonObject.getString("username"));
+				if (jsonObject.has("fullname"))
+					mUser.setFullName(jsonObject.getString("fullname"));
+				if (jsonObject.has("email"))
+					mUser.setEmail(jsonObject.getString("email"));
+				if (jsonObject.has("firstaccess"))
+					mUser.setFirstAccess(new Date(jsonObject.getLong("firstaccess") * 1000));
+				if (jsonObject.has("lastaccess"))
+					mUser.setLastAccess(new Date(jsonObject.getLong("lastaccess") * 1000));
+				if(jsonObject.has("profileimageurlsmall"))
+					mUser.setUserPhoto(new Image(jsonObject.getString("profileimageurlsmall")));
 			}
 		} finally {
 			httpclient.close();

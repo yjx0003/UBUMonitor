@@ -65,57 +65,75 @@ public class Stats {
 	 */
 	protected Stats() throws Exception {
 		try {
-			logger.info("Generando las estadisticas generales para el curso cargado.");
-			//Estadisticas Generales
-			generalGradesStats = new HashMap<>();
-			String grade = "";
-			// Inicializamos el HashMap con cada una de los Grade Report Lines de la asignatura.
-			for (GradeReportLine actualLine : UBUGrades.session.getActualCourse().getGradeReportLines()) {
-				generalGradesStats.put(actualLine.getId(), new DescriptiveStatistics());
-			}
-			
-			// Añadimos las notas de cada usuario para cada GradeReportLine
-			for(EnrolledUser enrroledUser: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
-				for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
-					grade = gradeReportLine.getGradeAdjustedTo10();
-					// Si la nota es "NaN", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
-					if(!grade.equals("NaN")) {
-						this.addElementValue(generalGradesStats, gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
-					}
-				}
-			}
-			
-			logger.info("Generando las estadisticas de los gruopos para el curso cargado.");
-			//Estadisticas de los grupos
-			groupsStats = new HashMap<>();
-			HashMap<Integer, DescriptiveStatistics> currentGroupStats;
-			
-			// Generamos estadisticas para cada uno de los grupos
-			for(String group: UBUGrades.session.getActualCourse().getGroups()) {
-				
-				// Inicializamos el HashMap con cada una de los Grade Report Lines de la asignatura para ese grupo.
-				currentGroupStats = new HashMap<>();
-				for (GradeReportLine actualLine : UBUGrades.session.getActualCourse().getGradeReportLines()) {
-					currentGroupStats.put(actualLine.getId(), new DescriptiveStatistics());
-				}
-				
-				for(EnrolledUser enrroledUser: UBUGrades.session.getActualCourse().getUsersInGroup(group)) {
-					for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
-						grade = gradeReportLine.getGradeAdjustedTo10();
-						// Si la nota es "NaN", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
-						if(!grade.equals("NaN")) {
-							this.addElementValue(currentGroupStats, gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
-						}
-					}
-				}
-				groupsStats.put(group, currentGroupStats);
-			}
-			logger.info("Estadisticas generadas.");
+			generateGeneralStats();
+			generateGroupStats();
+			logger.info("Estadisticas generadas con exito.");
 		} catch (Exception e) {
 			logger.error("Error al generar las estadisticas." , e);
 			throw new Exception("Error al generar las estadisticas.");
 		}
 		
+	}
+	
+	/**
+	 * Genera las estatisticas generales del curso.
+	 * 
+	 * @throws Exception
+	 */
+	private void generateGeneralStats() throws Exception {
+		logger.info("Generando las estadisticas generales para el curso cargado.");
+		//Estadisticas Generales
+		generalGradesStats = new HashMap<>();
+		String grade = "";
+		// Inicializamos el HashMap con cada una de los Grade Report Lines de la asignatura.
+		for (GradeReportLine actualLine : UBUGrades.session.getActualCourse().getGradeReportLines()) {
+			generalGradesStats.put(actualLine.getId(), new DescriptiveStatistics());
+		}
+		
+		// Añadimos las notas de cada usuario para cada GradeReportLine
+		for(EnrolledUser enrroledUser: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
+			for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
+				grade = gradeReportLine.getGradeAdjustedTo10();
+				// Si la nota es "NaN", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
+				if(!grade.equals("NaN")) {
+					this.addElementValue(generalGradesStats, gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Genera las estadisticas para cada grupo del curso.
+	 * 
+	 * @throws Exception
+	 */
+	private void generateGroupStats() throws Exception {
+		logger.info("Generando las estadisticas de los gruopos para el curso cargado.");
+		//Estadisticas de los grupos
+		groupsStats = new HashMap<>();
+		String grade = "";
+		HashMap<Integer, DescriptiveStatistics> currentGroupStats;
+		
+		// Generamos estadisticas para cada uno de los grupos
+		for(String group: UBUGrades.session.getActualCourse().getGroups()) {
+			
+			// Inicializamos el HashMap con cada una de los Grade Report Lines de la asignatura para ese grupo.
+			currentGroupStats = new HashMap<>();
+			for (GradeReportLine actualLine : UBUGrades.session.getActualCourse().getGradeReportLines()) {
+				currentGroupStats.put(actualLine.getId(), new DescriptiveStatistics());
+			}
+			
+			for(EnrolledUser enrroledUser: UBUGrades.session.getActualCourse().getUsersInGroup(group)) {
+				for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
+					grade = gradeReportLine.getGradeAdjustedTo10();
+					// Si la nota es "NaN", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
+					if(!grade.equals("NaN")) {
+						this.addElementValue(currentGroupStats, gradeReportLine.getId(), this.parseStringGradeToDouble(grade));
+					}
+				}
+			}
+			groupsStats.put(group, currentGroupStats);
+		}
 	}
 	
 	/**
@@ -147,9 +165,9 @@ public class Stats {
 	 * 		La nota a añadir.
 	 */
 	public void addElementValue (Map<Integer,DescriptiveStatistics> statsHs, int gradeId, double value) {
-		DescriptiveStatistics stats = statsHs.get(gradeId);
-		stats.addValue(value);
-		statsHs.put(gradeId, stats);
+		DescriptiveStatistics statistics = statsHs.get(gradeId);
+		statistics.addValue(value);
+		statsHs.put(gradeId, statistics);
 	}
 	
 	/**
@@ -164,8 +182,8 @@ public class Stats {
 		// Hacemos que la media tenga el formato #.## para mostrarlo
 		// sin problemas en el gráfico
 		DecimalFormat df = new DecimalFormat("#.##");
-		DescriptiveStatistics stats = statsHs.get(gradeId);
-		String mean  = String.valueOf(stats.getMean()).equals("NaN") ? "NaN" : df.format(stats.getMean());
+		DescriptiveStatistics statistics = statsHs.get(gradeId);
+		String mean  = String.valueOf(statistics.getMean()).equals("NaN") ? "NaN" : df.format(statistics.getMean());
 		mean = mean.replace(",", ".");
 		return mean;
 	}
@@ -182,8 +200,8 @@ public class Stats {
 		// Hacemos que la media tenga el formato #.## para mostrarlo
 		// sin problemas en el gráfico
 		DecimalFormat df = new DecimalFormat("#.##");
-		DescriptiveStatistics stats = statsHs.get(gradeId);
-		String median  = String.valueOf(stats.getPercentile(50)).equals("NaN") ? "NaN" : df.format(stats.getPercentile(50));
+		DescriptiveStatistics statistics = statsHs.get(gradeId);
+		String median  = String.valueOf(statistics.getPercentile(50)).equals("NaN") ? "NaN" : df.format(statistics.getPercentile(50));
 		median = median.replace(",", ".");
 		return median;
 	}
@@ -202,8 +220,8 @@ public class Stats {
 		// Hacemos que el percentil tenga el formato #.## para mostrarlo
 		// sin problemas en el gráfico
 		DecimalFormat df = new DecimalFormat("#.##");
-		DescriptiveStatistics stats = statsHs.get(gradeId);
-		String percentile  = String.valueOf(stats.getPercentile(percentil)).equals("NaN") ? "NaN" : df.format(stats.getPercentile(percentil));
+		DescriptiveStatistics statistics = statsHs.get(gradeId);
+		String percentile  = String.valueOf(statistics.getPercentile(percentil)).equals("NaN") ? "NaN" : df.format(statistics.getPercentile(percentil));
 		percentile = percentile.replace(",", ".");
 		return percentile;
 	}
@@ -220,8 +238,8 @@ public class Stats {
 		// Hacemos que el maximo tenga el formato #.## para mostrarlo
 		// sin problemas en el gráfico
 		DecimalFormat df = new DecimalFormat("#.##");
-		DescriptiveStatistics stats = statsHs.get(gradeId);
-		String maximum  = String.valueOf(stats.getMax()).equals("NaN") ? "NaN" : df.format(stats.getMax());
+		DescriptiveStatistics statistics = statsHs.get(gradeId);
+		String maximum  = String.valueOf(statistics.getMax()).equals("NaN") ? "NaN" : df.format(statistics.getMax());
 		maximum = maximum.replace(",", ".");
 		return maximum;
 	}
@@ -238,8 +256,8 @@ public class Stats {
 		// Hacemos que el minimo tenga el formato #.## para mostrarlo
 		// sin problemas en el gráfico
 		DecimalFormat df = new DecimalFormat("#.##");
-		DescriptiveStatistics stats = statsHs.get(gradeId);
-		String minimum  = String.valueOf(stats.getMin()).equals("NaN") ? "NaN" : df.format(stats.getMin());
+		DescriptiveStatistics statistics = statsHs.get(gradeId);
+		String minimum  = String.valueOf(statistics.getMin()).equals("NaN") ? "NaN" : df.format(statistics.getMin());
 		minimum = minimum.replace(",", ".");
 		return minimum;
 	}

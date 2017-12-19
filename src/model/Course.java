@@ -33,12 +33,12 @@ public class Course implements Serializable {
 	private int enrolledUsersCount;
 	private String idNumber;
 	private String summary;
-	public List<EnrolledUser> enrolledUsers;
-	public Set<String> roles; // roles que hay en el curso
-	public Set<String> groups; // grupos que hay en el curso
-	public List<GradeReportLine> gradeReportLines;
-	public Set<String> typeActivities;
-	public List<Scale> scales;
+	private List<EnrolledUser> enrolledUsers;
+	private Set<String> roles; // roles que hay en el curso
+	private Set<String> groups; // grupos que hay en el curso
+	private GradeReportLine gradeReportLines;
+	private Set<String> typeActivities;
+	private List<Scale> scales;
 
 	static final Logger logger = LoggerFactory.getLogger(Course.class);
 
@@ -69,7 +69,6 @@ public class Course implements Serializable {
 		if (obj.getString("summary") != null)
 			this.summary = obj.getString("summary");
 		this.enrolledUsers = new ArrayList<>();
-		this.gradeReportLines = new ArrayList<>();
 		this.scales = new ArrayList<>();
 	}
 
@@ -283,11 +282,11 @@ public class Course implements Serializable {
 	 * @return lista de gradeReportConfigurationLines
 	 */
 	public List<GradeReportLine> getGradeReportLines() {
-		List<GradeReportLine> listaGRL = new ArrayList<>();
-		listaGRL.add(gradeReportLines.get(0));
-		listaGRL.addAll(getChildrens(gradeReportLines.get(0).getChildren()));
+		List<GradeReportLine> listGRL = new ArrayList<>();
+		listGRL.add(gradeReportLines);
+		listGRL.addAll(getChildrens(gradeReportLines.getChildren()));
 		
-		return listaGRL;
+		return listGRL;
 	}
 
 	/**
@@ -299,26 +298,24 @@ public class Course implements Serializable {
 	 * 
 	 */
 	private List<GradeReportLine> getChildrens(List<GradeReportLine> children) {
-		List<GradeReportLine> listaGRL = new ArrayList<>();
+		List<GradeReportLine> listGRL = new ArrayList<>();
 		for(GradeReportLine grl: children) {
-			listaGRL.add(grl);
+			listGRL.add(grl);
 			if (grl.getChildren() != null) {
-				listaGRL.addAll(getChildrens(grl.getChildren()));
+				listGRL.addAll(getChildrens(grl.getChildren()));
 			}
 		}
-		return listaGRL;
+		return listGRL;
 	}
 
 	/**
 	 * Establece la lista de gradeReportLines del curso (el calificador)
 	 * 
 	 * @param grcl
+	 * 		EL gradeReportLine
 	 */
-	public void setGradeReportLines(List<GradeReportLine> grcl) {
-		this.gradeReportLines.clear();
-		for (GradeReportLine gl : grcl) {
-			this.gradeReportLines.add(gl);
-		}
+	public void setGradeReportLine(GradeReportLine grcl) {
+		gradeReportLines = grcl;
 	}
 
 	/**
@@ -349,20 +346,6 @@ public class Course implements Serializable {
 		// Recorremos la lista de usuarios matriculados en el curso
 		for (int i = 0; i < grcl.size(); i++) {
 			typeActivities.add(grcl.get(i).getNameType());
-		}
-	}
-
-	/**
-	 * Sustituimos el elemento de la lista que es una cabecera por el elemento
-	 * que es una categoria completa con todos sus atributos
-	 * 
-	 * @param line
-	 */
-	public void updateGRLList(GradeReportLine line) {
-		for (int i = 0; i < this.gradeReportLines.size(); i++) {
-			if (this.gradeReportLines.get(i).getId() == line.getId()) {
-				this.gradeReportLines.set(i, line);
-			}
 		}
 	}
 

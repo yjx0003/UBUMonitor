@@ -1,10 +1,8 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import controllers.UBUGrades;
 import webservice.CourseWS;
@@ -18,9 +16,9 @@ import webservice.CourseWS;
  * @version 1.0
  *
  */
-public class GradeReportLine {
+public class GradeReportLine implements Serializable {
 	
-	static final Logger logger = LoggerFactory.getLogger(GradeReportLine.class);
+	private static final long serialVersionUID = 1L;
 	
 	private int id;
 	private String name;

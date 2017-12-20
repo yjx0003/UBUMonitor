@@ -73,17 +73,8 @@ public class LoginController implements Initializable {
 				UBUGrades.resourceBundle = ResourceBundle.getBundle("messages/Messages", new Locale(locale.get(newValue.intValue())));
 				logger.info("Idioma cargado: {}", UBUGrades.resourceBundle.getLocale().toString());
 				logger.info("[Bienvenido a UBUGrades]");
-				FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Login.fxml"), UBUGrades.resourceBundle);
-				UBUGrades.stage.close();
-				UBUGrades.stage = new Stage();
-				Parent root = loader.load();
-				Scene scene = new Scene(root);
-				UBUGrades.stage.setScene(scene);
-				UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
-				UBUGrades.stage.setTitle("UBUGrades");
-				UBUGrades.stage.setResizable(false);
-				UBUGrades.stage.show();
-			} catch (Exception e) {
+				changeScene(getClass().getResource("/view/Login.fxml"));
+			} catch (IOException e) {
 				logger.error("Error al cambiar el idioma: {}", e);
 			}
 		});
@@ -100,45 +91,26 @@ public class LoginController implements Initializable {
 		if(txtHost.getText().isEmpty() || txtPassword.getText().isEmpty() || txtUsername.getText().isEmpty()) {
 			lblStatus.setText(UBUGrades.resourceBundle.getString("error.fields"));
 		} else {
-			
-			// Almacenamos los parámetros introducidos por el usuario:
-			UBUGrades.host = txtHost.getText();
-			UBUGrades.session = new Session(txtUsername.getText(), txtPassword.getText());
-	
-			Boolean correcto = true;
-			progressBar.visibleProperty().set(false);
-	
-			try { // Establecemos el token
-				logger.info("Obteniendo el token.");
-				UBUGrades.stage.getScene().setCursor(Cursor.WAIT);
-				UBUGrades.session.setToken();
-			} catch (IOException e) {
-				correcto = false;
-				logger.error("No se ha podido conectar con el host.", e);
-				lblStatus.setText(UBUGrades.resourceBundle.getString("error.host"));
-			}catch (JSONException e) {
-				correcto = false;
-				logger.error("Usuario y/o contraseña incorrectos", e);
-				lblStatus.setText(UBUGrades.resourceBundle.getString("error.login"));
-				txtPassword.setText("");
-			} finally {
-				UBUGrades.stage.getScene().setCursor(Cursor.DEFAULT);
-			}
-			
 			// Si el login es correcto
-			if (correcto) {
+			if (checkLogin()) {
 				logger.info("Login Correcto");
 				lblStatus.setVisible(false);
 	
-				
 				Task<Object> loginTask = getUserDataWorker();
 				progressBar.progressProperty().unbind();
 				progressBar.progressProperty().bind(loginTask.progressProperty());
 				progressBar.visibleProperty().set(true);
 				loginTask.messageProperty().addListener((ChangeListener<String>)(observable, oldValue, newValue) -> {
 					if (newValue.equals("end")) {
-						// Cargamos la siguiente ventana
-						loadWellcome();
+						try {
+							// Cargamos la siguiente ventana
+							UBUGrades.stage.getScene().setCursor(Cursor.WAIT);
+							changeScene(getClass().getResource("/view/Welcome.fxml"));
+						} catch (IOException e) {
+							logger.info("No se ha podido cargar la ventana de bienvenida: {}", e);
+						} finally {
+							UBUGrades.stage.getScene().setCursor(Cursor.DEFAULT);
+						}
 					} else if (newValue.equals("error")) {
 						progressBar.setVisible(false);
 						lblStatus.setVisible(true);
@@ -152,13 +124,50 @@ public class LoginController implements Initializable {
 	}
 	
 	/**
-	 * Carga la ventana de seleccion del curso.
+	 * Comprueba si los datos de login introducidos son correctos.
+	 * 
+	 * @return
+	 * 		True si el login es correcto.Falso si no lo es.
 	 */
-	private void loadWellcome() {
-		try {
+	private Boolean checkLogin() {
+		// Almacenamos los parámetros introducidos por el usuario:
+		UBUGrades.host = txtHost.getText();
+		UBUGrades.session = new Session(txtUsername.getText(), txtPassword.getText());
+
+		Boolean correcto = true;
+		progressBar.visibleProperty().set(false);
+
+		try { // Establecemos el token
+			logger.info("Obteniendo el token.");
 			UBUGrades.stage.getScene().setCursor(Cursor.WAIT);
+			UBUGrades.session.setToken();
+		} catch (IOException e) {
+			correcto = false;
+			logger.error("No se ha podido conectar con el host.", e);
+			lblStatus.setText(UBUGrades.resourceBundle.getString("error.host"));
+		}catch (JSONException e) {
+			correcto = false;
+			logger.error("Usuario y/o contraseña incorrectos", e);
+			lblStatus.setText(UBUGrades.resourceBundle.getString("error.login"));
+			txtPassword.setText("");
+		} finally {
+			UBUGrades.stage.getScene().setCursor(Cursor.DEFAULT);
+		}
+		
+		return correcto;
+	}
+	
+	/**
+	 * Permite cambiar la ventana actual.
+	 * 
+	 * @param sceneFXML
+	 *		La ventanan a la que se quiere cambiar.
+	 *
+	 * @throws IOException 
+	 */
+	private void changeScene(URL sceneFXML) throws IOException {
 			// Accedemos a la siguiente ventana
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Welcome.fxml"), UBUGrades.resourceBundle);
+			FXMLLoader loader = new FXMLLoader(sceneFXML, UBUGrades.resourceBundle);
 			UBUGrades.stage.close();
 			UBUGrades.stage = new Stage();
 			Parent root = loader.load();
@@ -168,12 +177,6 @@ public class LoginController implements Initializable {
 			UBUGrades.stage.setTitle("UBUGrades");
 			UBUGrades.stage.setResizable(false);
 			UBUGrades.stage.show();
-			lblStatus.setText("");
-		} catch (IOException e) {
-			logger.info("No se ha podido cargar la ventana de bienvenida: {}", e);
-		} finally {
-			UBUGrades.stage.getScene().setCursor(Cursor.DEFAULT);
-		}
 	}
 	
 	/**

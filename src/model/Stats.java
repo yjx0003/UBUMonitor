@@ -62,17 +62,12 @@ public class Stats {
 	
 	/**
 	 * Constructor de la clase Stats.
+	 * @throws Exception 
 	 */
-	protected Stats() throws Exception {
-		try {
-			generateGeneralStats();
-			generateGroupStats();
-			logger.info("Estadisticas generadas con exito.");
-		} catch (Exception e) {
-			logger.error("Error al generar las estadisticas." , e);
-			throw new Exception("Error al generar las estadisticas.");
-		}
-		
+	protected Stats() throws Exception{
+		generateGeneralStats();
+		generateGroupStats();
+		logger.info("Estadisticas generadas con exito.");	
 	}
 	
 	/**

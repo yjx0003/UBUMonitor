@@ -1,7 +1,5 @@
 package model;
 
-import org.json.JSONObject;
-
 /**
  * Clase Lesson (Leción). Implementar en versiones futuras.
  * 
@@ -22,13 +20,9 @@ public class Lesson extends Activity {
 	/**
 	 * Consturctor de una Lesson.
 	 * 
-	 * @param token
-	 * @param obj
-	 * @throws Exception
 	 */
-	public Lesson(String token, JSONObject obj) throws Exception {
-		super(token, obj);
-		// TODO Auto-generated constructor stub
+	public Lesson(String itemName, String type, float weight, String minRange, String maxRange) {
+		super(itemName, type, weight, minRange, maxRange);
 	}
 
 

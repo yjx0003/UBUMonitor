@@ -2,8 +2,6 @@ package model;
 
 import java.util.Date;
 
-import org.json.JSONObject;
-
 /**
  * Clase Quiz (Cuestionario). Implementar en versiones futuras.
  * 
@@ -20,13 +18,9 @@ public class Quiz extends Activity {
 	/**
 	 * Constructor de un Quiz
 	 * 
-	 * @param token
-	 * @param obj
-	 * @throws Exception
 	 */
-	public Quiz(String token, JSONObject obj) throws Exception {
-		super(token, obj);
-		// TODO Auto-generated constructor stub
+	public Quiz(String itemName, String type, float weight, String minRange, String maxRange) {
+		super(itemName, type, weight, minRange, maxRange);
 	}
 
 	/**

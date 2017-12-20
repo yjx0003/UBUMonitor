@@ -2,8 +2,6 @@ package model;
 
 import java.io.Serializable;
 
-import org.json.JSONObject;
-
 /**
  * Clase Activity. Implementar en el futuro.
  * 
@@ -20,19 +18,6 @@ public class Activity implements Serializable {
 	private String minRange;
 	private String maxRange;
 	private float contributionCourseTotal;
-
-	/**
-	 * Constructor de Activity
-	 * 
-	 * @param token
-	 *            token de MoodleUser
-	 * @param obj
-	 *            objeto JSON con la información de la actividad
-	 * @throws Exception
-	 */
-	public Activity(String token, JSONObject obj) throws Exception {
-		// TODO
-	}
 
 	/**
 	 * Constructor de una actividad con todos sus parámetros

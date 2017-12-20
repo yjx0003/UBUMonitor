@@ -128,8 +128,8 @@ public class CourseWS {
 				// calificaciones):
 				if (tableDataElement.isNull("leader")) {
 					String nameContainer = itemname.getString("content");
-					String nameLine = "";
-					String typeActivity = "";
+					String nameLine;
+					String typeActivity;
 					
 					// Sacamos la nota (grade)
 					JSONObject gradeContainer = tableDataElement.getJSONObject("grade");
@@ -139,8 +139,11 @@ public class CourseWS {
 					JSONObject percentageContainer = tableDataElement.getJSONObject("percentage");
 					Float percentage = getFloat(percentageContainer.getString("content"));
 					// Sacamos el peso
-					JSONObject weightContainer = tableDataElement.getJSONObject("weight");
-					Float weight = getFloat(weightContainer.getString("content"));
+					JSONObject weightContainer = tableDataElement.optJSONObject("weight");
+					Float weight = Float.NaN;
+					if(weightContainer != null) {
+						weight = getFloat(weightContainer.getString("content"));
+					}
 					
 					// Sacamos el rango
 					JSONObject rangeContainer = tableDataElement.getJSONObject("range");
@@ -254,9 +257,29 @@ public class CourseWS {
 				// Si es un item o suma de calificaciones:
 				if (tableDataElement.isNull("leader")) {
 					String nameContainer = itemname.getString("content");
-					String nameLine = "";
-					String typeActivity = "";
+					String nameLine;
+					String typeActivity;
 					
+					// Sacamos la nota (grade)
+					JSONObject gradeContainer = tableDataElement.getJSONObject("grade");
+					String grade = getNumber(gradeContainer.getString("content"));
+
+					// Sacamos el porcentaje
+					JSONObject percentageContainer = tableDataElement.getJSONObject("percentage");
+					Float percentage = getFloat(percentageContainer.getString("content"));
+					
+					// Sacamos el peso
+					JSONObject weightContainer = tableDataElement.optJSONObject("weight");
+					Float weight = Float.NaN;
+					if(weightContainer != null) {
+						weight = getFloat(weightContainer.getString("content"));
+					}
+
+					// Sacamos el rango
+					JSONObject rangeContainer = tableDataElement.getJSONObject("range");
+					String rangeMin = getRange(rangeContainer.getString("content"), true);
+					String rangeMax = getRange(rangeContainer.getString("content"), false);
+
 					// Si es una actividad (assignment o quiz)
 					// Se reconocen por la etiqueta "<a"
 					if (nameContainer.substring(0, 2).equals("<a")) {
@@ -268,22 +291,6 @@ public class CourseWS {
 						nameLine = getNameManualItemOrEndCategory(nameContainer);
 						typeActivity = manualItemOrEndCategory(nameContainer);
 					}
-					// Sacamos la nota (grade)
-					JSONObject gradeContainer = tableDataElement.getJSONObject("grade");
-					String grade = getNumber(gradeContainer.getString("content"));
-
-					// Sacamos el porcentaje
-					JSONObject percentageContainer = tableDataElement.getJSONObject("percentage");
-					Float percentage = getFloat(percentageContainer.getString("content"));
-					
-					// Sacamos el peso
-					JSONObject weightContainer = tableDataElement.getJSONObject("weight");
-					Float weight = getFloat(weightContainer.getString("content"));
-
-					// Sacamos el rango
-					JSONObject rangeContainer = tableDataElement.getJSONObject("range");
-					String rangeMin = getRange(rangeContainer.getString("content"), true);
-					String rangeMax = getRange(rangeContainer.getString("content"), false);
 					
 					boolean typeLine = !typeActivity.equals("Category");
 					
@@ -419,7 +426,7 @@ public class CourseWS {
 		// Busco el final de la cadena única a partir de la cual empieza el
 		// nombre de la categoría
 		int begin = data.lastIndexOf('>') + 1;
-		// El nombre termina al final de todo el texto
+		// El nombre termina al final del texto
 		int end = data.length();
 		// Me quedo con la cadena entre esos índices
 		result = data.substring(begin, end);
@@ -448,7 +455,7 @@ public class CourseWS {
 	public static String getNameManualItemOrEndCategory(String data) {
 		int end = data.indexOf("</span>");
 		data = data.substring(0, end);
-		int begin = data.lastIndexOf("</i>") + 4;
+		int begin = data.lastIndexOf('>') + 1;
 		return data.substring(begin);
 	}
 

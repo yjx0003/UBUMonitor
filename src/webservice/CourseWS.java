@@ -550,7 +550,7 @@ public class CourseWS {
 	 */
 	private static String manualItemOrEndCategory(String data) {
 		//FNS 
-		if(data.contains("Ítem manual")) {
+		if(data.contains("i/manual_item") || data.contains("Ítem manual")) {
 			return "ManualItem";
 		}else if(data.contains("i/agg_sum")
 				// added by RMS

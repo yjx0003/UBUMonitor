@@ -5,6 +5,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -109,7 +110,7 @@ public class CourseWS {
 			// la pila mientran tengan descendencia.
 			// Una vez añadida al árbol toda la descendencia de un nodo,
 			// este nodo se saca de la pila y se añade al árbol.
-			Deque<GradeReportLine> deque = new ArrayDeque<>();
+			Stack<GradeReportLine> deque = new Stack<>();
 
 			JSONArray tables = (JSONArray) graddesData.get("tables");
 			JSONObject alumn = (JSONObject) tables.get(0);
@@ -122,78 +123,45 @@ public class CourseWS {
 				// sea categoría o item, se saca de la misma manera el
 				// nivel del itemname
 				JSONObject itemname = tableDataElement.getJSONObject("itemname");
-				int actualLevel = getActualLevel(itemname.getString("class"));
-				int idLine = getIdLine(itemname.getString("id"));
+
 				// Si es un feedback (item o suma de
 				// calificaciones):
 				if (tableDataElement.isNull("leader")) {
-					String nameContainer = itemname.getString("content");
-					String nameLine;
-					String typeActivity;
-					
-					// Sacamos la nota (grade)
-					JSONObject gradeContainer = tableDataElement.getJSONObject("grade");
-					String grade = getNumber(gradeContainer.getString("content"));
-
-					// Sacamos el porcentaje
-					JSONObject percentageContainer = tableDataElement.getJSONObject("percentage");
-					Float percentage = getFloat(percentageContainer.getString("content"));
-					// Sacamos el peso
-					JSONObject weightContainer = tableDataElement.optJSONObject("weight");
-					Float weight = Float.NaN;
-					if(weightContainer != null) {
-						weight = getFloat(weightContainer.getString("content"));
-					}
-					
-					// Sacamos el rango
-					JSONObject rangeContainer = tableDataElement.getJSONObject("range");
-					String rangeMin = getRange(rangeContainer.getString("content"), true);
-					String rangeMax = getRange(rangeContainer.getString("content"), false);
-					
-					// Si es una actividad (assignment o quiz)
-					// Se reconocen por la etiqueta "<a"
-					if (nameContainer.substring(0, 2).equals("<a")) {
-						nameLine = getNameActivity(nameContainer);
-						typeActivity = assignmentOrQuizOrForum(nameContainer);
-					} else {
-						// Si es un item manual o suma de calificaciones
-						// Se reconocen por la etiqueta "<span"
-						nameLine = getNameManualItemOrEndCategory(nameContainer);
-						typeActivity = manualItemOrEndCategory(nameContainer);
-					}
+					GradeReportLine actualLine = getGradeReportLineData(tableDataElement);
+					String typeActivity = actualLine.getNameType();
 											
 					if (!typeActivity.equals("Category")) { // Si es un item
-						// Añadimos la linea actual
-						GradeReportLine actualLine = new GradeReportLine(idLine, nameLine, actualLevel,
-								true, weight, rangeMin, rangeMax, grade, percentage, typeActivity);
 						// Si es un assignment obtenemos la escala si la tiene
 						if(typeActivity.equals("Assignment")) {
-							Assignment assignment = new Assignment(nameLine, typeActivity, weight, rangeMin, rangeMax);
-							assignment.setScaleId(getAssignmentScale(token, course.getId(), nameLine));
+							Assignment assignment = new Assignment(actualLine.getName(), typeActivity,
+									actualLine.getWeight(),actualLine.getRangeMin(), actualLine.getRangeMax());
+							assignment.setScaleId(getAssignmentScale(token, course.getId(), actualLine.getName()));
 							actualLine.setActivity(assignment);
 						}
 						if (!deque.isEmpty()) {
-							deque.getLast().addChild(actualLine);
+							deque.lastElement().addChild(actualLine);
 						}
 					} else {
 						// Obtenemos el elemento cabecera de la pila
-						GradeReportLine actualLine = deque.pop();
+						GradeReportLine categoryLine = deque.pop();
 						// Establecemos los valores restantes
-						actualLine.setId(idLine);
-						actualLine.setWeight(weight);
-						actualLine.setRangeMin(rangeMin);
-						actualLine.setRangeMax(rangeMax);
-						actualLine.setNameType(typeActivity);
-						actualLine.setGrade(grade);
+						categoryLine.setId(actualLine.getId());
+						categoryLine.setWeight(actualLine.getWeight());
+						categoryLine.setRangeMin(actualLine.getRangeMin());
+						categoryLine.setRangeMax(actualLine.getRangeMax());
+						categoryLine.setNameType(actualLine.getNameType());
+						categoryLine.setGrade(actualLine.getGrade());
 					}
 				} else {// --- Si es una categoría
 					String nameLine = getNameCategorie(itemname.getString("content"));
-
+					int actualLevel = getActualLevel(itemname.getString("class"));
+					int idLine = getIdLine(itemname.getString("id"));
+					
 					// Añadimos la cabecera de la categoria a la pila
 					GradeReportLine actualLine = new GradeReportLine(idLine, nameLine, actualLevel, false);
 					// Lo añadimos como hijo de la categoria anterior
 					if (!deque.isEmpty()) {
-						deque.getLast().addChild(actualLine);
+						deque.lastElement().addChild(actualLine);
 					}
 
 					// Añadimos esta cabecera a la pila
@@ -249,57 +217,11 @@ public class CourseWS {
 			// (que convertiremos a GradeReportLines)
 			for (int i = 0; i < tableData.length(); i++) {
 				JSONObject tableDataElement = tableData.getJSONObject(i);
-				// sea categoría o item, se saca de la misma manera el
-				// nivel del itemname
-				JSONObject itemname = tableDataElement.getJSONObject("itemname");
-				int actualLevel = getActualLevel(itemname.getString("class"));
-				int idLine = getIdLine(itemname.getString("id"));
 				// Si es un item o suma de calificaciones:
 				if (tableDataElement.isNull("leader")) {
-					String nameContainer = itemname.getString("content");
-					String nameLine;
-					String typeActivity;
-					
-					// Sacamos la nota (grade)
-					JSONObject gradeContainer = tableDataElement.getJSONObject("grade");
-					String grade = getNumber(gradeContainer.getString("content"));
-
-					// Sacamos el porcentaje
-					JSONObject percentageContainer = tableDataElement.getJSONObject("percentage");
-					Float percentage = getFloat(percentageContainer.getString("content"));
-					
-					// Sacamos el peso
-					JSONObject weightContainer = tableDataElement.optJSONObject("weight");
-					Float weight = Float.NaN;
-					if(weightContainer != null) {
-						weight = getFloat(weightContainer.getString("content"));
-					}
-
-					// Sacamos el rango
-					JSONObject rangeContainer = tableDataElement.getJSONObject("range");
-					String rangeMin = getRange(rangeContainer.getString("content"), true);
-					String rangeMax = getRange(rangeContainer.getString("content"), false);
-
-					// Si es una actividad (assignment o quiz)
-					// Se reconocen por la etiqueta "<a"
-					if (nameContainer.substring(0, 2).equals("<a")) {
-						nameLine = getNameActivity(nameContainer);
-						typeActivity = assignmentOrQuizOrForum(nameContainer);
-					} else {
-						// Si es un item manual o suma de calificaciones
-						// Se reconocen por la etiqueta "<span"
-						nameLine = getNameManualItemOrEndCategory(nameContainer);
-						typeActivity = manualItemOrEndCategory(nameContainer);
-					}
-					
-					boolean typeLine = !typeActivity.equals("Category");
-					
-					// Añadimos la linea actual
-					GradeReportLine actualLine = new GradeReportLine(idLine, nameLine, actualLevel,
-							typeLine, weight, rangeMin, rangeMax, grade, percentage, typeActivity);
 					// Añadimos el elemento a la lista como item
-					gradeReportLines.add(actualLine);
-				}
+					gradeReportLines.add(getGradeReportLineData(tableDataElement));
+				} 
 			} // End for
 				
 		} catch (IOException e) {
@@ -311,6 +233,57 @@ public class CourseWS {
 			throw new JSONException("Se ha producido un error al obtener las notas del alumno.");
 		}
 		return gradeReportLines;
+	}
+	
+	private static GradeReportLine getGradeReportLineData(JSONObject tableDataElement) throws JSONException {
+		GradeReportLine actualGRL = null;
+		// sea categoría o item, se saca de la misma manera el
+		// nivel del itemname
+		JSONObject itemname = tableDataElement.getJSONObject("itemname");
+		int actualLevel = getActualLevel(itemname.getString("class"));
+		int idLine = getIdLine(itemname.getString("id"));
+		String nameContainer = itemname.getString("content");
+		String nameLine;
+		String typeActivity;
+		
+		// Sacamos la nota (grade)
+		JSONObject gradeContainer = tableDataElement.getJSONObject("grade");
+		String grade = getNumber(gradeContainer.getString("content"));
+
+		// Sacamos el porcentaje
+		JSONObject percentageContainer = tableDataElement.getJSONObject("percentage");
+		Float percentage = getFloat(percentageContainer.getString("content"));
+		
+		// Sacamos el peso
+		JSONObject weightContainer = tableDataElement.optJSONObject("weight");
+		Float weight = Float.NaN;
+		if(weightContainer != null) {
+			weight = getFloat(weightContainer.getString("content"));
+		}
+
+		// Sacamos el rango
+		JSONObject rangeContainer = tableDataElement.getJSONObject("range");
+		String rangeMin = getRange(rangeContainer.getString("content"), true);
+		String rangeMax = getRange(rangeContainer.getString("content"), false);
+
+		// Si es una actividad (assignment o quiz)
+		// Se reconocen por la etiqueta "<a"
+		if (nameContainer.substring(0, 2).equals("<a")) {
+			nameLine = getNameActivity(nameContainer);
+			typeActivity = assignmentOrQuizOrForum(nameContainer);
+		} else {
+			// Si es un item manual o suma de calificaciones
+			// Se reconocen por la etiqueta "<span"
+			nameLine = getNameManualItemOrEndCategory(nameContainer);
+			typeActivity = manualItemOrEndCategory(nameContainer);
+		}
+		
+		boolean typeLine = !typeActivity.equals("Category");
+		
+		// Añadimos la linea actual
+		actualGRL = new GradeReportLine(idLine, nameLine, actualLevel,
+				typeLine, weight, rangeMin, rangeMax, grade, percentage, typeActivity);
+		return actualGRL;
 	}
 
 	/**
@@ -391,7 +364,7 @@ public class CourseWS {
 		}
 		return gradeReportLines;
 	}
-
+	
 	/**
 	 * Devuelve el id del item
 	 * 

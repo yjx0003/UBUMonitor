@@ -55,8 +55,7 @@ public class UBUGrades extends Application {
 			stage.setResizable(false);
 			stage.show();
 		} catch (Exception e) {
-			logger.error("Error al iniciar UBUGrades");
-			e.printStackTrace();
+			logger.error("Error al iniciar UBUGrades: {}", e);
 		}
 	}
 

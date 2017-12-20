@@ -15,8 +15,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import controllers.UBUGrades;
 import javafx.scene.image.Image;
 import model.Course;
 import model.MoodleUser;
@@ -32,7 +30,7 @@ import model.MoodleUser;
 public class MoodleUserWS {
 	
 	static final Logger logger = LoggerFactory.getLogger(MoodleUserWS.class);
-	
+		
 	private MoodleUserWS() {
 	    throw new IllegalStateException("Clase de utilidad");
 	}
@@ -51,11 +49,11 @@ public class MoodleUserWS {
 	 * @throws JSONException 
 	 * @throws Exception
 	 */
-	public static void setMoodleUser(String token, String eMail, MoodleUser mUser) throws IOException, JSONException  {
+	public static void setMoodleUser(String host, String token, String eMail, MoodleUser mUser) throws IOException, JSONException  {
 		logger.info("Obteniendo los datos del usuario.");
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		try {
-			HttpGet httpget = new HttpGet(UBUGrades.host + "/webservice/rest/server.php?wstoken=" + token
+			HttpGet httpget = new HttpGet(host + "/webservice/rest/server.php?wstoken=" + token
 					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_INFO_USUARIO
 					+ "&field=email&values[0]=" + eMail);
 			CloseableHttpResponse response = httpclient.execute(httpget);
@@ -94,12 +92,12 @@ public class MoodleUserWS {
 	 * @throws ClientProtocolException 
 	 * @throws Exception
 	 */
-	public static void setCourses(String token, MoodleUser mUser) throws IOException, JSONException {
+	public static void setCourses(String host, String token, MoodleUser mUser) throws IOException, JSONException {
 		logger.info("Obteniendo los cursos del usuario.");
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		ArrayList<Course> courses = new ArrayList<>();
 		try {
-			HttpGet httpget = new HttpGet(UBUGrades.host + "/webservice/rest/server.php?wstoken=" + token
+			HttpGet httpget = new HttpGet(host + "/webservice/rest/server.php?wstoken=" + token
 					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_CURSOS + "&userid="
 					+ mUser.getId());
 			CloseableHttpResponse response = httpclient.execute(httpget);

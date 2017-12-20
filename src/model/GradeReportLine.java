@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import controllers.UBUGrades;
 import webservice.CourseWS;
 
 /**
@@ -197,15 +196,15 @@ public class GradeReportLine implements Serializable {
 	 * @return
 	 * 		La nota ajustada.
 	 */
-	public String getGradeWithScale() {
+	public String getGradeWithScale(Course course) {
 		Float gradeAdjusted;
 		int scaleId;
 		
-		GradeReportLine grl = UBUGrades.session.getActualCourse().getGradeReportLineByName(name);
+		GradeReportLine grl = course.getGradeReportLineByName(name);
 		scaleId = ((Assignment) grl.getActivity()).getScaleId();
 				
 		if (scaleId != 0 && !grade.equals("NaN")) {
-			Scale scale = UBUGrades.session.getActualCourse().getScale(scaleId);
+			Scale scale = course.getScale(scaleId);
 			gradeAdjusted = (float) scale.getElements().indexOf(this.grade);
 			Float newRangeMax = (float) scale.getElements().size()-1;
 			gradeAdjusted = (float) ((gradeAdjusted*10.0) / newRangeMax); 

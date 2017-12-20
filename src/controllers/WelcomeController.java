@@ -43,6 +43,11 @@ import webservice.CourseWS;
  *
  */
 public class WelcomeController implements Initializable {
+	
+	static final Logger logger = LoggerFactory.getLogger(WelcomeController.class);
+	
+	private UBUGrades ubuGrades = UBUGrades.getInstance();
+	
 	@FXML
 	private Label lblUser;
 	@FXML
@@ -56,19 +61,17 @@ public class WelcomeController implements Initializable {
 	@FXML
 	private Label lblProgress;
 
-	static final Logger logger = LoggerFactory.getLogger(WelcomeController.class);
-
 	/**
 	 * Función initialize. Muestra la lista de cursos del usuario introducido.
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
-			lblUser.setText(UBUGrades.user.getFullName());
+			lblUser.setText(ubuGrades.getUser().getFullName());
 			logger.info("Cargando cursos...");
 			ArrayList<String> nameCourses = new ArrayList<>();
-			for (int i = 0; i < UBUGrades.user.getCourses().size(); i++) {
-				nameCourses.add(UBUGrades.user.getCourses().get(i).getFullName());
+			for (int i = 0; i < ubuGrades.getUser().getCourses().size(); i++) {
+				nameCourses.add(ubuGrades.getUser().getCourses().get(i).getFullName());
 			}
 			Collections.sort(nameCourses);
 			ObservableList<String> list = FXCollections.observableArrayList(nameCourses);
@@ -90,12 +93,12 @@ public class WelcomeController implements Initializable {
 		// Guardamos en una variable el curso seleccionado por el usuario
 		String selectedCourse = listCourses.getSelectionModel().getSelectedItem();
 		if(selectedCourse == null) {
-			lblNoSelect.setText(UBUGrades.resourceBundle.getString("error.nocourse"));
+			lblNoSelect.setText(ubuGrades.getResourceBundle().getString("error.nocourse"));
 			return; 
 		}
 		lblNoSelect.setText("");
-		UBUGrades.session.setActualCourse(Course.getCourseByString(selectedCourse));
-		logger.info(" Curso seleccionado: " + UBUGrades.session.getActualCourse().getFullName());
+		ubuGrades.getSession().setActualCourse(Course.getCourseByString(ubuGrades.getUser().getCourses(), selectedCourse));
+		logger.info(" Curso seleccionado: " + ubuGrades.getSession().getActualCourse().getFullName());
 		btnEntrar.setVisible(false);
 		lblProgress.setVisible(true);
 		progressBar.setProgress(0.0);
@@ -107,19 +110,19 @@ public class WelcomeController implements Initializable {
 				// Cargamos la siguiente ventana
 				try {
 					// Accedemos a la siguiente ventana
-					FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"), UBUGrades.resourceBundle);
-					UBUGrades.stage.close();
-					UBUGrades.stage = new Stage();
+					FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"), ubuGrades.getResourceBundle());
+					ubuGrades.getStage().close();
+					ubuGrades.setStage(new Stage());
 					Parent root = loader.load();
 					Scene scene = new Scene(root);
-					UBUGrades.stage.setScene(scene);
-					UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
-					UBUGrades.stage.setTitle("UBUGrades");
-					UBUGrades.stage.setResizable(true);
-					UBUGrades.stage.setMinHeight(600);
-					UBUGrades.stage.setMinWidth(800);
-					UBUGrades.stage.setMaximized(true);
-					UBUGrades.stage.show();
+					ubuGrades.getStage().setScene(scene);
+					ubuGrades.getStage().getIcons().add(new Image("/img/logo_min.png"));
+					ubuGrades.getStage().setTitle("UBUGrades");
+					ubuGrades.getStage().setResizable(true);
+					ubuGrades.getStage().setMinHeight(600);
+					ubuGrades.getStage().setMinWidth(800);
+					ubuGrades.getStage().setMaximized(true);
+					ubuGrades.getStage().show();
 					lblNoSelect.setText("");
 				} catch (IOException e) {
 					logger.info("No se ha podido cargar la ventana Main.fxml: {}", e);
@@ -145,38 +148,39 @@ public class WelcomeController implements Initializable {
 			@Override
 			protected Void call() {
 				try {
-					UBUGrades.stage.getScene().setCursor(Cursor.WAIT);
-					logger.info("Cargando datos del curso: " + UBUGrades.session.getActualCourse().getFullName());
+					ubuGrades.getStage().getScene().setCursor(Cursor.WAIT);
+					logger.info("Cargando datos del curso: " + ubuGrades.getSession().getActualCourse().getFullName());
 					// Establecemos los usuarios matriculados
-					CourseWS.setEnrolledUsers(UBUGrades.session.getToken(), UBUGrades.session.getActualCourse());
-					int enroledUsersCount = UBUGrades.session.getActualCourse().getEnrolledUsersCount()+8;
+					CourseWS.setEnrolledUsers(ubuGrades.getHost(), 
+							ubuGrades.getSession().getToken(), ubuGrades.getSession().getActualCourse());
+					int enroledUsersCount = ubuGrades.getSession().getActualCourse().getEnrolledUsersCount()+8;
 					int done = 0;
 					updateProgress(done, enroledUsersCount);
 					
-					updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingqualifier"));
+					updateMessage("update_" + ubuGrades.getResourceBundle().getString("label.loadingqualifier"));
 					// Establecemos calificador del curso
-					CourseWS.setGradeReportLines(UBUGrades.session.getToken(),
-							UBUGrades.session.getActualCourse().getEnrolledUsers().get(0).getId(),
-							UBUGrades.session.getActualCourse());
+					CourseWS.setGradeReportLines(ubuGrades.getHost(), ubuGrades.getSession().getToken(),
+							ubuGrades.getSession().getActualCourse().getEnrolledUsers().get(0).getId(),
+							ubuGrades.getSession().getActualCourse());
 					done += 4;
 									
 					updateProgress(done, enroledUsersCount);
-					updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingstudents")
-									+ (done-4) + " " + UBUGrades.resourceBundle.getString("label.of") + " " + (enroledUsersCount-8));
-					for(EnrolledUser user: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
+					updateMessage("update_" + ubuGrades.getResourceBundle().getString("label.loadingstudents")
+									+ (done-4) + " " + ubuGrades.getResourceBundle().getString("label.of") + " " + (enroledUsersCount-8));
+					for(EnrolledUser user: ubuGrades.getSession().getActualCourse().getEnrolledUsers()) {
 						// Obtenemos todas las lineas de calificación del usuario
 						logger.info("Cargando los datos de: " + user.getFullName() + "...");
-						user.setAllGradeReportLines(CourseWS.getUserGradeReportLines(UBUGrades.session.getToken(), user.getId(),
-								UBUGrades.session.getActualCourse().getId()));
+						user.setAllGradeReportLines(CourseWS.getUserGradeReportLines(ubuGrades.getHost(),
+								ubuGrades.getSession().getToken(), user.getId(),ubuGrades.getSession().getActualCourse().getId()));
 						updateProgress(done++, enroledUsersCount);
 						logger.info("Datos cargados.");
-						updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingstudents")
-										+ (done-4) + " " + UBUGrades.resourceBundle.getString("label.of") + " " + (enroledUsersCount-8));
+						updateMessage("update_" + ubuGrades.getResourceBundle().getString("label.loadingstudents")
+										+ (done-4) + " " + ubuGrades.getResourceBundle().getString("label.of") + " " + (enroledUsersCount-8));
 					}
 										
-					updateMessage("update_" + UBUGrades.resourceBundle.getString("label.loadingstats"));
+					updateMessage("update_" + ubuGrades.getResourceBundle().getString("label.loadingstats"));
 					//Establecemos las estadisticas
-					Stats.getStats();
+					Stats.getStats(ubuGrades.getSession());
 					updateProgress(done+4L, enroledUsersCount);
 					
 					Thread.sleep(50);
@@ -186,7 +190,7 @@ public class WelcomeController implements Initializable {
 					logger.error("Error al cargar los datos de los alumnos: {}", e);
 					updateMessage("Se produjo un error inesperado al cargar los datos.\n" + e.getLocalizedMessage());
 				} finally {
-					UBUGrades.stage.getScene().setCursor(Cursor.DEFAULT);
+					ubuGrades.getStage().getScene().setCursor(Cursor.DEFAULT);
 				}
 				return null;
 			}
@@ -199,21 +203,21 @@ public class WelcomeController implements Initializable {
 	 * @param mensaje
 	 * 		El mensaje que se quiere mostrar.
 	 */
-	private static void errorWindow(String mensaje) {
+	private void errorWindow(String mensaje) {
 		Alert alert = new Alert(AlertType.ERROR);
 		
 		alert.setTitle("UbuGrades");
 		alert.setHeaderText("Error");
 		alert.initModality(Modality.APPLICATION_MODAL);
-		alert.initOwner(UBUGrades.stage);
+		alert.initOwner(ubuGrades.getStage());
 		alert.getDialogPane().setContentText(mensaje);
 		
-		ButtonType buttonSalir = new ButtonType(UBUGrades.resourceBundle.getString("label.close"));
+		ButtonType buttonSalir = new ButtonType(ubuGrades.getResourceBundle().getString("label.close"));
 		alert.getButtonTypes().setAll(buttonSalir);
 
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.isPresent() && result.get() == buttonSalir)
-			UBUGrades.stage.close();
+			ubuGrades.getStage().close();
 	}  
 
 }

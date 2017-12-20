@@ -13,7 +13,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.UBUGrades;
 import model.Scale;
 
 /**
@@ -355,13 +354,12 @@ public class Course implements Serializable {
 	 * @param courseName
 	 * @return
 	 */
-	public static Course getCourseByString(String courseName) {
+	public static Course getCourseByString(List<Course> courseList, String courseName) {
 		Course course = null;
-
-		ArrayList<Course> courses = (ArrayList<Course>) UBUGrades.user.getCourses();
-		for (int i = 0; i < courses.size(); i++) {
-			if (courses.get(i).getFullName().equals(courseName)) {
-				course = courses.get(i);
+		
+		for (int i = 0; i < courseList.size(); i++) {
+			if (courseList.get(i).getFullName().equals(courseName)) {
+				course = courseList.get(i);
 			}
 		}
 

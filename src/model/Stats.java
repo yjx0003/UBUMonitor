@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controllers.MainController;
-import controllers.UBUGrades;
+import webservice.Session;
 
 /**
  * Clase Stats para la obtención de estadisticas utilizando
@@ -22,7 +22,7 @@ import controllers.UBUGrades;
 public class Stats {
 	
 	static final Logger logger = LoggerFactory.getLogger(MainController.class);
-	
+		
 	/**
 	 * Instancia de las estadisticas.
 	 */
@@ -46,9 +46,9 @@ public class Stats {
 	 * 		La instancia de las estadisticas.
 	 * @throws Exception
 	 */
-	public static Stats getStats() throws Exception {
+	public static Stats getStats(Session session) throws Exception {
 		if (stats == null) {
-			stats = new Stats();
+			stats = new Stats(session);
 		}
 		return stats;
 	}
@@ -64,9 +64,9 @@ public class Stats {
 	 * Constructor de la clase Stats.
 	 * @throws Exception 
 	 */
-	protected Stats() throws Exception{
-		generateGeneralStats();
-		generateGroupStats();
+	protected Stats(Session session) throws Exception{
+		generateGeneralStats(session);
+		generateGroupStats(session);
 		logger.info("Estadisticas generadas con exito.");	
 	}
 	
@@ -75,19 +75,19 @@ public class Stats {
 	 * 
 	 * @throws Exception
 	 */
-	private void generateGeneralStats() throws Exception {
+	private void generateGeneralStats(Session session) throws Exception {
 		try {
 			logger.info("Generando las estadisticas generales para el curso cargado.");
 			//Estadisticas Generales
 			generalGradesStats = new HashMap<>();
 			String grade = "";
 			// Inicializamos el HashMap con cada una de los Grade Report Lines de la asignatura.
-			for (GradeReportLine actualLine : UBUGrades.session.getActualCourse().getGradeReportLines()) {
+			for (GradeReportLine actualLine : session.getActualCourse().getGradeReportLines()) {
 				generalGradesStats.put(actualLine.getId(), new DescriptiveStatistics());
 			}
 			
 			// Añadimos las notas de cada usuario para cada GradeReportLine
-			for(EnrolledUser enrroledUser: UBUGrades.session.getActualCourse().getEnrolledUsers()) {
+			for(EnrolledUser enrroledUser: session.getActualCourse().getEnrolledUsers()) {
 				for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
 					grade = gradeReportLine.getGradeAdjustedTo10();
 					// Si la nota es "NaN", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos
@@ -107,7 +107,7 @@ public class Stats {
 	 * 
 	 * @throws Exception
 	 */
-	private void generateGroupStats() throws Exception {
+	private void generateGroupStats(Session session) throws Exception {
 		try {
 			logger.info("Generando las estadisticas de los gruopos para el curso cargado.");
 			//Estadisticas de los grupos
@@ -116,15 +116,15 @@ public class Stats {
 			HashMap<Integer, DescriptiveStatistics> currentGroupStats;
 			
 			// Generamos estadisticas para cada uno de los grupos
-			for(String group: UBUGrades.session.getActualCourse().getGroups()) {
+			for(String group: session.getActualCourse().getGroups()) {
 				
 				// Inicializamos el HashMap con cada una de los Grade Report Lines de la asignatura para ese grupo.
 				currentGroupStats = new HashMap<>();
-				for (GradeReportLine actualLine : UBUGrades.session.getActualCourse().getGradeReportLines()) {
+				for (GradeReportLine actualLine : session.getActualCourse().getGradeReportLines()) {
 					currentGroupStats.put(actualLine.getId(), new DescriptiveStatistics());
 				}
 				
-				for(EnrolledUser enrroledUser: UBUGrades.session.getActualCourse().getUsersInGroup(group)) {
+				for(EnrolledUser enrroledUser: session.getActualCourse().getUsersInGroup(group)) {
 					for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
 						grade = gradeReportLine.getGradeAdjustedTo10();
 						// Si la nota es "NaN", es que ese alumno no tiene nota en dicha calificacion, por tanto lo saltamos

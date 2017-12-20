@@ -14,8 +14,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-import controllers.UBUGrades;
 import model.Course;
 
 /**
@@ -65,11 +63,11 @@ public class Session {
 	 * 
 	 * @throws Exception
 	 */
-	public void setToken() throws IOException, JSONException {
+	public void setToken(String host) throws IOException, JSONException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse response = null;
 		try {
-			HttpGet httpget = new HttpGet(UBUGrades.host + "/login/token.php?username=" + this.email + "&password="
+			HttpGet httpget = new HttpGet(host + "/login/token.php?username=" + this.email + "&password="
 					+ this.password + "&service=" + MoodleOptions.SERVICIO_WEB_MOODLE);
 			response = httpclient.execute(httpget);
 			

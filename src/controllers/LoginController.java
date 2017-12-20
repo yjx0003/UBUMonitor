@@ -40,6 +40,8 @@ import webservice.*;
 public class LoginController implements Initializable {
 
 	static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+	
+	private UBUGrades ubuGrades = UBUGrades.getInstance();
 
 	@FXML
 	private Label lblStatus;
@@ -66,12 +68,12 @@ public class LoginController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		languageSelector.setItems(languages);
-		languageSelector.getSelectionModel().select(locale.indexOf(UBUGrades.resourceBundle.getLocale().toString().toLowerCase()));
+		languageSelector.getSelectionModel().select(locale.indexOf(ubuGrades.getResourceBundle().getLocale().toString().toLowerCase()));
 		// Carga la interfaz con el idioma seleccionado
 		languageSelector.getSelectionModel().selectedIndexProperty().addListener((ov, value, newValue) -> {			
 			try {
-				UBUGrades.resourceBundle = ResourceBundle.getBundle("messages/Messages", new Locale(locale.get(newValue.intValue())));
-				logger.info("Idioma cargado: {}", UBUGrades.resourceBundle.getLocale().toString());
+				ubuGrades.setResourceBundle(ResourceBundle.getBundle("messages/Messages", new Locale(locale.get(newValue.intValue()))));
+				logger.info("Idioma cargado: {}", ubuGrades.getResourceBundle().getLocale().toString());
 				logger.info("[Bienvenido a UBUGrades]");
 				changeScene(getClass().getResource("/view/Login.fxml"));
 			} catch (IOException e) {
@@ -89,7 +91,7 @@ public class LoginController implements Initializable {
 	 */
 	public void login(ActionEvent event) {
 		if(txtHost.getText().isEmpty() || txtPassword.getText().isEmpty() || txtUsername.getText().isEmpty()) {
-			lblStatus.setText(UBUGrades.resourceBundle.getString("error.fields"));
+			lblStatus.setText(ubuGrades.getResourceBundle().getString("error.fields"));
 		} else {
 			// Si el login es correcto
 			if (checkLogin()) {
@@ -104,12 +106,12 @@ public class LoginController implements Initializable {
 					if (newValue.equals("end")) {
 						try {
 							// Cargamos la siguiente ventana
-							UBUGrades.stage.getScene().setCursor(Cursor.WAIT);
+							ubuGrades.getStage().getScene().setCursor(Cursor.WAIT);
 							changeScene(getClass().getResource("/view/Welcome.fxml"));
 						} catch (IOException e) {
 							logger.info("No se ha podido cargar la ventana de bienvenida: {}", e);
 						} finally {
-							UBUGrades.stage.getScene().setCursor(Cursor.DEFAULT);
+							ubuGrades.getStage().getScene().setCursor(Cursor.DEFAULT);
 						}
 					} else if (newValue.equals("error")) {
 						progressBar.setVisible(false);
@@ -131,27 +133,27 @@ public class LoginController implements Initializable {
 	 */
 	private Boolean checkLogin() {
 		// Almacenamos los parámetros introducidos por el usuario:
-		UBUGrades.host = txtHost.getText();
-		UBUGrades.session = new Session(txtUsername.getText(), txtPassword.getText());
+		ubuGrades.setHost(txtHost.getText());
+		ubuGrades.setSession(new Session(txtUsername.getText(), txtPassword.getText()));
 
 		Boolean correcto = true;
 		progressBar.visibleProperty().set(false);
 
 		try { // Establecemos el token
 			logger.info("Obteniendo el token.");
-			UBUGrades.stage.getScene().setCursor(Cursor.WAIT);
-			UBUGrades.session.setToken();
+			ubuGrades.getStage().getScene().setCursor(Cursor.WAIT);
+			ubuGrades.getSession().setToken(ubuGrades.getHost());
 		} catch (IOException e) {
 			correcto = false;
 			logger.error("No se ha podido conectar con el host.", e);
-			lblStatus.setText(UBUGrades.resourceBundle.getString("error.host"));
+			lblStatus.setText(ubuGrades.getResourceBundle().getString("error.host"));
 		}catch (JSONException e) {
 			correcto = false;
 			logger.error("Usuario y/o contraseña incorrectos", e);
-			lblStatus.setText(UBUGrades.resourceBundle.getString("error.login"));
+			lblStatus.setText(ubuGrades.getResourceBundle().getString("error.login"));
 			txtPassword.setText("");
 		} finally {
-			UBUGrades.stage.getScene().setCursor(Cursor.DEFAULT);
+			ubuGrades.getStage().getScene().setCursor(Cursor.DEFAULT);
 		}
 		
 		return correcto;
@@ -167,16 +169,17 @@ public class LoginController implements Initializable {
 	 */
 	private void changeScene(URL sceneFXML) throws IOException {
 			// Accedemos a la siguiente ventana
-			FXMLLoader loader = new FXMLLoader(sceneFXML, UBUGrades.resourceBundle);
-			UBUGrades.stage.close();
-			UBUGrades.stage = new Stage();
+			FXMLLoader loader = new FXMLLoader(sceneFXML, ubuGrades.getResourceBundle());
+			ubuGrades.getStage().close();
+			Stage stage = new Stage();
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
-			UBUGrades.stage.setScene(scene);
-			UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
-			UBUGrades.stage.setTitle("UBUGrades");
-			UBUGrades.stage.setResizable(false);
-			UBUGrades.stage.show();
+			stage.setScene(scene);
+			stage.getIcons().add(new Image("/img/logo_min.png"));
+			stage.setTitle("UBUGrades");
+			stage.setResizable(false);
+			stage.show();
+			ubuGrades.setStage(stage);
 	}
 	
 	/**
@@ -190,10 +193,13 @@ public class LoginController implements Initializable {
 			protected Object call() {
 				try {
 					updateProgress(0, 3);
-					MoodleUserWS.setMoodleUser(UBUGrades.session.getToken(), UBUGrades.session.getEmail(),
-					UBUGrades.user = new MoodleUser());
+					ubuGrades.setUser(new MoodleUser());
+					MoodleUserWS.setMoodleUser(ubuGrades.getHost(), 
+							ubuGrades.getSession().getToken(), ubuGrades.getSession().getEmail(),
+					ubuGrades.getUser());
 					updateProgress(1, 3);
-					MoodleUserWS.setCourses(UBUGrades.session.getToken(), UBUGrades.user);
+					MoodleUserWS.setCourses(ubuGrades.getHost(),
+							ubuGrades.getSession().getToken(), ubuGrades.getUser());
 					updateProgress(2, 3);
 					updateProgress(3, 3);
 					Thread.sleep(50);

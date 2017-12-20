@@ -10,7 +10,6 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import controllers.UBUGrades;
 import model.EnrolledUser;
 
 /**
@@ -29,11 +28,11 @@ public class EnrolledUserWS {
 	 *            token de usuario
 	 * @throws Exception
 	 */
-	public void setCourses(String token, EnrolledUser eUser) throws Exception {
+	public void setCourses(String host, String token, EnrolledUser eUser) throws Exception {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		ArrayList<Integer> courses = new ArrayList<>();
 		try {
-			HttpGet httpget = new HttpGet(UBUGrades.host + "/webservice/rest/server.php?wstoken=" + token
+			HttpGet httpget = new HttpGet(host + "/webservice/rest/server.php?wstoken=" + token
 					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_CURSOS + "&userid="
 					+ eUser.getId());
 			CloseableHttpResponse response = httpclient.execute(httpget);

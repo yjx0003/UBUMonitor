@@ -19,7 +19,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.UBUGrades;
 import model.Assignment;
 import model.Course;
 import model.EnrolledUser;
@@ -52,12 +51,12 @@ public class CourseWS {
 	 *            id del curso
 	 * @throws Exception
 	 */
-	public static void setEnrolledUsers(String token, Course course) throws IOException, JSONException {
+	public static void setEnrolledUsers(String host, String token, Course course) throws IOException, JSONException {
 		logger.info("Obteniendo los usuarios del curso.");
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		ArrayList<EnrolledUser> eUsers = new ArrayList<>();
 		try {
-			HttpGet httpget = new HttpGet(UBUGrades.host + "/webservice/rest/server.php?wstoken=" + token
+			HttpGet httpget = new HttpGet(host + "/webservice/rest/server.php?wstoken=" + token
 					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_USUARIOS_MATRICULADOS
 					+ "&courseid=" + course.getId());
 			CloseableHttpResponse response = httpclient.execute(httpget);
@@ -98,11 +97,12 @@ public class CourseWS {
 	 *            id del usuario a cargar
 	 * @throws Exception
 	 */
-	public static void setGradeReportLines(String token, int userId, Course course) throws IOException, JSONException {
+	public static void setGradeReportLines(String host, String token, int userId, Course course)
+			throws IOException, JSONException {
 		logger.info("Generando el arbol del calificador.");
 		try {
 			// Obtenemos el JSON con los datos
-			JSONObject graddesData = getGradesData(token, userId, course.getId());
+			JSONObject graddesData = getGradesData(host, token, userId, course.getId());
 			
 			// En esta pila sólo van a entrar Categorías. Se mantendrán en
 			// la pila mientran tengan descendencia.
@@ -133,7 +133,7 @@ public class CourseWS {
 						if(typeActivity.equals("Assignment")) {
 							Assignment assignment = new Assignment(actualLine.getName(), typeActivity,
 									actualLine.getWeight(),actualLine.getRangeMin(), actualLine.getRangeMax());
-							assignment.setScaleId(getAssignmentScale(token, course.getId(), actualLine.getName()));
+							assignment.setScaleId(getAssignmentScale(host, token, course.getId(), actualLine.getName(), course));
 							actualLine.setActivity(assignment);
 						}
 						if (!deque.isEmpty()) {
@@ -197,13 +197,13 @@ public class CourseWS {
 	 * 		ArrayList con todos los GradeReportLines del usuario.
 	 * @throws Exception
 	 */
-	public static ArrayList<GradeReportLine> getUserGradeReportLines(String token, int userId, int courseId)
+	public static ArrayList<GradeReportLine> getUserGradeReportLines(String host, String token, int userId, int courseId)
 			throws IOException, JSONException {
 		
 		ArrayList<GradeReportLine> gradeReportLines = null;
 		try {
 			// Obtenemos el JSON con los datos
-			JSONObject gradesData = getGradesData(token, userId, courseId);
+			JSONObject gradesData = getGradesData(host, token, userId, courseId);
 			
 			// lista de GradeReportLines
 			gradeReportLines = new ArrayList<>();
@@ -298,14 +298,14 @@ public class CourseWS {
 	 * 		ArrayList con todos los GradeReportLines del usuario.
 	 * @throws Exception
 	 */
-	public static ArrayList<GradeReportLine> getUserGradeReportLinesMoodle33(String token, int userId, int courseId)
+	public static ArrayList<GradeReportLine> getUserGradeReportLinesMoodle33(String host, String token, int userId, int courseId)
 			throws IOException, JSONException {
 		
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse response = null;
 		ArrayList<GradeReportLine> gradeReportLines = null;
 		try {
-			String call = UBUGrades.host + "/webservice/rest/server.php?wstoken=" + token
+			String call = host + "/webservice/rest/server.php?wstoken=" + token
 					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_NOTAS_ALUMNO + "&courseid="
 					+ courseId + "&userid=" + userId;
 			HttpGet httpget = new HttpGet(call);
@@ -580,11 +580,12 @@ public class CourseWS {
 	 * 		el id de la escala o 0 si no hay escala asociada.
 	 * @throws Exception
 	 */
-	private static int getAssignmentScale(String token, int courseId, String assignmentName) throws IOException, JSONException {
+	private static int getAssignmentScale(String host, String token, int courseId, String assignmentName, Course course)
+			throws IOException, JSONException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse response = null;
 		try {
-			HttpGet httpget = new HttpGet(UBUGrades.host + "/webservice/rest/server.php?wstoken=" + token
+			HttpGet httpget = new HttpGet(host + "/webservice/rest/server.php?wstoken=" + token
 					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_ASSIGNMENTS
 					+ "&courseids[]=" + courseId);
 			response = httpclient.execute(httpget);
@@ -600,8 +601,8 @@ public class CourseWS {
 					// Si la nota es negativa indica el id de la escala
 					if(grade<0) {
 						grade = Math.abs(grade);
-						Scale scale = UBUGrades.session.getActualCourse().getScale(grade);
-						return (scale != null) ? scale.getId() : loadScale(token, grade);				
+						Scale scale = course.getScale(grade);
+						return (scale != null) ? scale.getId() : loadScale(host, token, grade, course);				
 					}
 				}
 			}
@@ -629,13 +630,13 @@ public class CourseWS {
 	 * 		el id de la escala.
 	 * @throws Exception
 	 */
-	private static int loadScale(String token, int scaleId) throws IOException, JSONException {
+	private static int loadScale(String host, String token, int scaleId, Course course) throws IOException, JSONException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse response = null;
 		Scale scale = null;
 		List<String> elements = new ArrayList<>();
 		try {
-			HttpGet httpget = new HttpGet(UBUGrades.host + "/webservice/rest/server.php?wstoken=" + token
+			HttpGet httpget = new HttpGet(host + "/webservice/rest/server.php?wstoken=" + token
 					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_ESCALA
 					+ "&scaleid=" + scaleId);
 			response = httpclient.execute(httpget);
@@ -648,7 +649,7 @@ public class CourseWS {
 				}
 			}
 			scale = new Scale(scaleId, elements);
-			UBUGrades.session.getActualCourse().addScale(scale);
+			course.addScale(scale);
 		} catch (IOException e) {
 			logger.error("Error al cargar las escalas, no se ha podido conectar con el webService: {}", e);
 			throw new IOException("Error al cargar las escalas, no se ha podido conectar con el webService", e);
@@ -675,12 +676,12 @@ public class CourseWS {
 	 * 		El JSON con los datos obtenidos.
 	 * @throws Exception
 	 */
-	private static JSONObject getGradesData(String token, int userId, int courseId) throws IOException, JSONException {
+	private static JSONObject getGradesData(String host, String token, int userId, int courseId) throws IOException, JSONException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse response = null;
 		JSONObject gradesData = new JSONObject();
 		try {
-			String call = UBUGrades.host + "/webservice/rest/server.php?wstoken=" + token
+			String call = host + "/webservice/rest/server.php?wstoken=" + token
 					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_TABLA_NOTAS + "&courseid="
 					+ courseId + "&userid=" + userId;
 			HttpGet httpget = new HttpGet(call);

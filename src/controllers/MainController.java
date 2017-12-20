@@ -61,6 +61,7 @@ import model.GradeReportLine;
 import model.Group;
 import model.Role;
 import model.Stats;
+import model.UBUGrades;
 import netscape.javascript.JSException;
 import webservice.CourseWS;
 
@@ -76,6 +77,8 @@ public class MainController implements Initializable {
 	static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
 	private static final String TODOS = "Todos";
+	
+	private UBUGrades ubuGrades = UBUGrades.getInstance();
 	
 	@FXML // Curso actual
 	public Label lblActualCourse;
@@ -135,7 +138,7 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
-			logger.info("Completada la carga del curso '" + UBUGrades.session.getActualCourse().getFullName() + ".");
+			logger.info("Completada la carga del curso '" + ubuGrades.getSession().getActualCourse().getFullName() + ".");
 			
 			// Cargamos el html de los graficos y calificaciones
 			webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
@@ -144,15 +147,15 @@ public class MainController implements Initializable {
 			// Comprobamos cuando se carga la pagina para traducirla
 			webViewChartsEngine.getLoadWorker().stateProperty().addListener(
 					(ov, oldState, newState) ->
-			webViewChartsEngine.executeScript("setLanguage('" + UBUGrades.resourceBundle.getLocale().toString() + "')"));
+			webViewChartsEngine.executeScript("setLanguage('" + ubuGrades.getResourceBundle().getLocale().toString() + "')"));
 			
 
 			// Almacenamos todos participantes en una lista
-			ArrayList<EnrolledUser> users = (ArrayList<EnrolledUser>) UBUGrades.session.getActualCourse()
+			ArrayList<EnrolledUser> users = (ArrayList<EnrolledUser>) ubuGrades.getSession().getActualCourse()
 					.getEnrolledUsers();
 			ArrayList<EnrolledUser> nameUsers = new ArrayList<>();
 
-			stats = Stats.getStats();
+			stats = Stats.getStats(ubuGrades.getSession());
 
 			//////////////////////////////////////////////////////////////////////////
 			// Manejo de roles (MenuButton Rol):
@@ -167,7 +170,7 @@ public class MainController implements Initializable {
 				slcRole.setText(filterRole);
 			});
 			// Cargamos una lista con los nombres de los roles
-			ArrayList<String> rolesList = (ArrayList<String>) UBUGrades.session.getActualCourse().getRoles();
+			ArrayList<String> rolesList = (ArrayList<String>) ubuGrades.getSession().getActualCourse().getRoles();
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
 			ArrayList<MenuItem> rolesItemsList = new ArrayList<>();
 			// En principio se mostrarán todos los usuarios con cualquier rol
@@ -201,7 +204,7 @@ public class MainController implements Initializable {
 				slcGroup.setText(filterGroup);
 			});
 			// Cargamos una lista de los nombres de los grupos
-			ArrayList<String> groupsList = (ArrayList<String>) UBUGrades.session.getActualCourse().getGroups();
+			ArrayList<String> groupsList = (ArrayList<String>) ubuGrades.getSession().getActualCourse().getGroups();
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
 			ArrayList<MenuItem> groupsItemsList = new ArrayList<>();
 			// En principio mostrarán todos los usuarios en cualquier grupo
@@ -242,7 +245,7 @@ public class MainController implements Initializable {
 				slcType.setText(filterType);
 			});
 			// Cargamos una lista de los nombres de los grupos
-			ArrayList<String> nameActivityList = (ArrayList<String>) UBUGrades.session.getActualCourse().getActivities();
+			ArrayList<String> nameActivityList = (ArrayList<String>) ubuGrades.getSession().getActualCourse().getActivities();
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
 			ArrayList<MenuItem> nameActivityItemsList = new ArrayList<>();
 			// En principio se van a mostrar todos los participantes en
@@ -281,8 +284,8 @@ public class MainController implements Initializable {
 			// Coloca el divider a la izquierda al redimensionar la ventana
 			ChangeListener<Number> stageSizeListener =
 					(observable, oldValue, newValue) -> splitPane.setDividerPositions(0);
-			UBUGrades.stage.widthProperty().addListener(stageSizeListener);
-			UBUGrades.stage.heightProperty().addListener(stageSizeListener);
+			ubuGrades.getStage().widthProperty().addListener(stageSizeListener);
+			ubuGrades.getStage().heightProperty().addListener(stageSizeListener);
 
 			// Activamos la selección múltiple en la lista de participantes
 			listParticipants.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -295,7 +298,7 @@ public class MainController implements Initializable {
 			listParticipants.setItems(enrList);
 	
 			// Establecemos la estructura en árbol del calificador
-			ArrayList<GradeReportLine> grcl =  (ArrayList<GradeReportLine>) UBUGrades.session.getActualCourse()
+			ArrayList<GradeReportLine> grcl =  (ArrayList<GradeReportLine>) ubuGrades.getSession().getActualCourse()
 					.getGradeReportLines();
 			// Establecemos la raiz del Treeview
 			TreeItem<GradeReportLine> root = new TreeItem<>(grcl.get(0));
@@ -317,18 +320,18 @@ public class MainController implements Initializable {
 			tvwGradeReport.setOnMouseClicked((EventHandler<Event>) event -> updateChart());
 			
 			// Mostramos nº participantes
-			lblCountParticipants.setText(UBUGrades.resourceBundle.getString("label.participants") 
-					+ " " + UBUGrades.session.getActualCourse().getEnrolledUsersCount());
+			lblCountParticipants.setText(ubuGrades.getResourceBundle().getString("label.participants") 
+					+ " " + ubuGrades.getSession().getActualCourse().getEnrolledUsersCount());
 	
 			// Mostramos Usuario logeado y su imagen
-			lblActualUser.setText(UBUGrades.resourceBundle.getString("label.user") + " " + UBUGrades.user.getFullName());
-			userPhoto.setImage(UBUGrades.user.getUserPhoto());
+			lblActualUser.setText(ubuGrades.getResourceBundle().getString("label.user") + " " + ubuGrades.getUser().getFullName());
+			userPhoto.setImage(ubuGrades.getUser().getUserPhoto());
 	
 			// Mostramos Curso actual
-			lblActualCourse.setText(UBUGrades.resourceBundle.getString("label.course") + " " + UBUGrades.session.getActualCourse().getFullName());
+			lblActualCourse.setText(ubuGrades.getResourceBundle().getString("label.course") + " " + ubuGrades.getSession().getActualCourse().getFullName());
 	
 			// Mostramos Host actual
-			lblActualHost.setText(UBUGrades.resourceBundle.getString("label.host") + " " + UBUGrades.host);
+			lblActualHost.setText(ubuGrades.getResourceBundle().getString("label.host") + " " + ubuGrades.getHost());
 		} catch (Exception e) {
 			logger.error("Error en la inicialización.", e);
 		}
@@ -342,7 +345,7 @@ public class MainController implements Initializable {
 			boolean roleYes;
 			boolean groupYes;
 			boolean patternYes;
-			ArrayList<EnrolledUser> users = (ArrayList<EnrolledUser>) UBUGrades.session.getActualCourse()
+			ArrayList<EnrolledUser> users = (ArrayList<EnrolledUser>) ubuGrades.getSession().getActualCourse()
 					.getEnrolledUsers();
 			// Cargamos la lista de los roles
 			ArrayList<EnrolledUser> nameUsers = new ArrayList<>();
@@ -436,7 +439,7 @@ public class MainController implements Initializable {
 	 */
 	public void filterCalifications() {
 		try {
-			ArrayList<GradeReportLine> grcl = (ArrayList<GradeReportLine>) UBUGrades.session.getActualCourse()
+			ArrayList<GradeReportLine> grcl = (ArrayList<GradeReportLine>) ubuGrades.getSession().getActualCourse()
 					.getGradeReportLines();
 			// Establecemos la raiz del Treeview
 			TreeItem<GradeReportLine> root = new TreeItem<>(grcl.get(0));
@@ -496,7 +499,7 @@ public class MainController implements Initializable {
 		fileChooser.setInitialDirectory(file.getParentFile());
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(".png", "*.png"));
 		try {
-			file = fileChooser.showSaveDialog(UBUGrades.stage);
+			file = fileChooser.showSaveDialog(ubuGrades.getStage());
 			if (file != null) {
 				String str = (String) webViewChartsEngine.executeScript("exportCurrentElemet()");
 				byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
@@ -522,7 +525,7 @@ public class MainController implements Initializable {
 		fileChooser.setTitle("Guardar Todo");
 		fileChooser.setInitialFileName("Gráficos.html");
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(".html", "*.html"));
-		File file = fileChooser.showSaveDialog(UBUGrades.stage);
+		File file = fileChooser.showSaveDialog(ubuGrades.getStage());
 		// Copiamos la plantilla de exportacion, ExportChart.html al nuevo archivo
 		if (file != null) {
 			try (FileWriter fw = new FileWriter(file)) {
@@ -582,15 +585,15 @@ public class MainController implements Initializable {
 	 */
 	private void changeScene(URL sceneFXML) {
 		try {
-			FXMLLoader loader = new FXMLLoader(sceneFXML, UBUGrades.resourceBundle);
+			FXMLLoader loader = new FXMLLoader(sceneFXML, ubuGrades.getResourceBundle());
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
-			UBUGrades.stage.close();
-			UBUGrades.stage = new Stage();
-			UBUGrades.stage.setScene(scene);
-			UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
-			UBUGrades.stage.setTitle("UBUGrades");
-			UBUGrades.stage.show();
+			ubuGrades.getStage().close();
+			ubuGrades.setStage(new Stage());
+			ubuGrades.getStage().setScene(scene);
+			ubuGrades.getStage().getIcons().add(new Image("/img/logo_min.png"));
+			ubuGrades.getStage().setTitle("UBUGrades");
+			ubuGrades.getStage().show();
 		} catch (Exception e) {
 			logger.error("Error al modifcar la ventana de JavaFX: {}", e);
 		}
@@ -629,7 +632,7 @@ public class MainController implements Initializable {
 	 */
 	public void closeApplication(ActionEvent actionEvent) {
 		logger.info("Cerrando aplicación");
-		UBUGrades.stage.close();
+		ubuGrades.getStage().close();
 	}
 
 	private String generateTableData() {
@@ -759,7 +762,7 @@ public class MainController implements Initializable {
 						}
 					}
 					if(actualLine.getNameType().equals("Assignment")) {
-						calculatedGrade = actualLine.getGradeWithScale();
+						calculatedGrade = actualLine.getGradeWithScale(ubuGrades.getSession().getActualCourse());
 					} else {
 						calculatedGrade = actualLine.getGradeAdjustedTo10();
 					}
@@ -938,7 +941,7 @@ public class MainController implements Initializable {
 		alert.setTitle("UbuGrades");
 		alert.setHeaderText("Error");
 		alert.initModality(Modality.APPLICATION_MODAL);
-		alert.initOwner(UBUGrades.stage);
+		alert.initOwner(ubuGrades.getStage());
 		alert.getDialogPane().setContentText(mensaje);
 		
 		if(exit) {
@@ -947,7 +950,7 @@ public class MainController implements Initializable {
 	
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.isPresent() && result.get() == buttonSalir)
-				UBUGrades.stage.close();
+				ubuGrades.getStage().close();
 		}
 	}
 

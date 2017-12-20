@@ -481,33 +481,6 @@ public class MainController implements Initializable {
 	}
 
 	/**
-	 * Cambia la asignatura actual y carga otra
-	 * 
-	 * @param actionEvent
-	 * @throws Exception
-	 */
-	public void changeCourse(ActionEvent actionEvent) throws Exception {
-		try {
-			logger.info("Cambiando de asignatura...");
-			// Borramos las estadisticas para esta asignatura
-			Stats.removeStats();
-			// Accedemos a la siguiente ventana
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Welcome.fxml"), UBUGrades.resourceBundle);
-			UBUGrades.stage.close();
-			logger.info("Accediendo a UBUGrades...");
-			UBUGrades.stage = new Stage();
-			Parent root = loader.load();
-			Scene scene = new Scene(root);
-			UBUGrades.stage.setScene(scene);
-			UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
-			UBUGrades.stage.setTitle("UBUGrades");
-			UBUGrades.stage.show();
-		} catch (Exception e) {
-			logger.error("Error al cambiar el curso: {}", e);
-		}
-	}
-
-	/**
 	 * Exporta el gráfico. Se exportara como imagen en formato png.
 	 * 
 	 * @param actionEvent
@@ -587,28 +560,48 @@ public class MainController implements Initializable {
 			}
 		}
 	}
-
+	
 	/**
-	 * Vuelve a la ventana de login de usuario
+	 * Cambia a la ventana de selección de asignatura.
 	 * 
 	 * @param actionEvent
-	 * @throws Exception
 	 */
-	public void logOut(ActionEvent actionEvent) throws Exception {
+	public void changeCourse(ActionEvent actionEvent) throws Exception {
+		logger.info("Cambiando de asignatura...");
+		Stats.removeStats();
+		changeScene(getClass().getResource("/view/Welcome.fxml"));
+	}
+
+	/**
+	 * Vuelve a la ventana de login de usuario.
+	 * 
+	 * @param actionEvent
+	 */
+	public void logOut(ActionEvent actionEvent) {
+		logger.info("Cerrando sesión de usuario");
+		Stats.removeStats();
+		changeScene(getClass().getResource("/view/Login.fxml"));
+	}
+	
+	/**
+	 * Permite cambiar la ventana actual.
+	 * 
+	 * @param sceneFXML
+	 *		La ventanan a la que se quiere cambiar.
+	 */
+	private void changeScene(URL sceneFXML) {
 		try {
-			Stats.removeStats();
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Login.fxml"), UBUGrades.resourceBundle);
+			FXMLLoader loader = new FXMLLoader(sceneFXML, UBUGrades.resourceBundle);
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
 			UBUGrades.stage.close();
-			logger.info("Cerrando sesión de usuario");
 			UBUGrades.stage = new Stage();
 			UBUGrades.stage.setScene(scene);
 			UBUGrades.stage.getIcons().add(new Image("/img/logo_min.png"));
 			UBUGrades.stage.setTitle("UBUGrades");
 			UBUGrades.stage.show();
-		}  catch (Exception e) {
-			logger.error("Error al cerrar la sesión de usuario: {}", e);
+		} catch (Exception e) {
+			logger.error("Error al modifcar la ventana de JavaFX: {}", e);
 		}
 	}
 

@@ -1,5 +1,6 @@
 package model;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -9,8 +10,9 @@ import java.util.List;
  * @version 1.0
  *
  */
-public class Scale {
-	
+public class Scale implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 	/**
 	 * Id de la escala
 	 */

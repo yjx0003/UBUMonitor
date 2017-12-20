@@ -517,25 +517,22 @@ public class MainController implements Initializable {
 	public void saveAll(ActionEvent actionEvent) {
 		logger.info("Exportando los gráficos");
 		PrintWriter out = null;
-		InputStream fr = null;
-		FileWriter fw = null;
 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Guardar Todo");
 		fileChooser.setInitialFileName("Gráficos.html");
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(".html", "*.html"));
 		File file = fileChooser.showSaveDialog(UBUGrades.stage);
+		// Copiamos la plantilla de exportacion, ExportChart.html al nuevo archivo
 		if (file != null) {
-			try {
-				// Copiamos la plantilla de exportacion, ExportChart.html al nuevo archivo
-				fr = getClass().getResourceAsStream("/graphics/ExportCharts.html");
-				fw = new FileWriter(file);
+			try (FileWriter fw = new FileWriter(file)) {
+				InputStream fr = getClass().getResourceAsStream("/graphics/ExportCharts.html");
 				int c = fr.read();
 				while (c != -1) {
 					fw.write(c);
 					c = fr.read();
 				}
-				
+
 				//Completamos el nuevo archivo con los dataSets de los gráficos
 				out = new PrintWriter(new BufferedWriter(fw));
 				String generalDataSet = generateDataSet();
@@ -545,18 +542,12 @@ public class MainController implements Initializable {
 				out.println("var BoxPlotGroupDataSet = " + generateBoxPlotDataSet(filterGroup) + ";\r\n");
 				out.println("var TableDataSet = " + generateTableData() + ";\r\n");
 				out.println("</script>\r\n</body>\r\n</html>");
-
+				
+				fr.close();
+				out.close();
 			} catch (IOException e) {
 				logger.error("Error al exportar los gráficos.", e);
 				errorWindow("No se han podido exportar los gráficos.", false);
-			} finally {
-				if(out != null) {out.close();}
-				try {
-					if(fr != null) {fr.close();}
-					if(fw != null) {fw.close();}
-				} catch (IOException e) {
-					logger.error("Error al cerrar FileReader y FileWriter", e);
-				}
 			}
 		}
 	}

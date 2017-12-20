@@ -1,13 +1,13 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Clase que representa un usuario matriculado en una asignatura
@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  *
  */
-public class EnrolledUser {
+public class EnrolledUser implements Serializable{
 	
-	static final Logger logger = LoggerFactory.getLogger(EnrolledUser.class);
+	private static final long serialVersionUID = 1L;
 	
 	private int id;
 	private String firstName;
@@ -40,52 +40,40 @@ public class EnrolledUser {
 	/**
 	 * Constructor de EnrolledUser
 	 * 
-	 * @param token
-	 *            token de usuario logueado
 	 * @param obj
 	 *            objeto JSON con la información del usuario
-	 * @throws Exception
+	 * @throws JSONException 
 	 */
-	public EnrolledUser(String token, JSONObject obj) throws Exception {
+	public EnrolledUser(JSONObject obj) throws JSONException {
 		this.id = obj.getInt("id");
 
-		if (obj.getString("firstname") != null)
-			this.firstName = obj.getString("firstname");
-		if (obj.getString("lastname") != null)
-			this.lastName = obj.getString("lastname");
-		if (obj.getString("fullname") != null)
-			this.fullName = obj.getString("fullname");
-		if (new Date(obj.getLong("firstaccess")) != null)
-			this.firstAccess = new Date(obj.getLong("firstaccess") * 1000);
-		if (new Date(obj.getLong("lastaccess")) != null)
-			this.lastAccess = new Date(obj.getLong("lastaccess") * 1000);
-		if (obj.getString("profileimageurl") != null)
-			this.profileImageUrl = obj.getString("profileimageurl");
-		if (obj.getJSONArray("roles") != null) {
-			JSONArray roleArray = obj.getJSONArray("roles");
-			roles = new ArrayList<>();
-			for (int i = 0; i < roleArray.length(); i++) {
-				// Establece un rol con el id, name y shortname obtenido de cada
-				// JSONObject del JSONArray
-				Role rol = new Role(roleArray.getJSONObject(i).getInt("roleid"),
-						roleArray.getJSONObject(i).getString("name"),
-						roleArray.getJSONObject(i).getString("shortname"));
-				roles.add(rol);
-			}
+		this.firstName = obj.getString("firstname");
+		this.lastName = obj.getString("lastname");
+		this.fullName = obj.getString("fullname");
+		this.firstAccess = new Date(obj.getLong("firstaccess") * 1000);
+		this.lastAccess = new Date(obj.getLong("lastaccess") * 1000);
+		this.profileImageUrl = obj.getString("profileimageurl");
+		
+		JSONArray roleArray = obj.getJSONArray("roles");
+		roles = new ArrayList<>();
+		for (int i = 0; i < roleArray.length(); i++) {
+			// Establece un rol con el id, name y shortname obtenido de cada
+			// JSONObject del JSONArray
+			Role rol = new Role(roleArray.getJSONObject(i).getInt("roleid"),
+					roleArray.getJSONObject(i).getString("name"),
+					roleArray.getJSONObject(i).getString("shortname"));
+			roles.add(rol);
 		}
-		if (obj.optJSONArray("groups") != null) {
-			JSONArray groupArray = obj.getJSONArray("groups");
-			groups = new ArrayList<>();
-			for (int i = 0; i < groupArray.length(); i++) {
-				// Establece un grupo con el id, name y description obtenido de
-				// cada JSONObject del JSONArray
-				Group group = new Group(groupArray.getJSONObject(i).getInt("id"),
-						groupArray.getJSONObject(i).getString("name"),
-						groupArray.getJSONObject(i).getString("description"));
-				groups.add(group);
-			}
-		} else {
-			groups = new ArrayList<>(); // to have an empty list, not a null
+		
+		JSONArray groupArray = obj.getJSONArray("groups");
+		groups = new ArrayList<>();
+		for (int i = 0; i < groupArray.length(); i++) {
+			// Establece un grupo con el id, name y description obtenido de
+			// cada JSONObject del JSONArray
+			Group group = new Group(groupArray.getJSONObject(i).getInt("id"),
+					groupArray.getJSONObject(i).getString("name"),
+					groupArray.getJSONObject(i).getString("description"));
+			groups.add(group);
 		}
 		this.courses = new ArrayList<>();
 	}

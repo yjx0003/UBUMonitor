@@ -58,6 +58,9 @@ public class LoginController implements Initializable {
 	@FXML
 	private ChoiceBox<String> languageSelector;
 	
+	//Host por defecto
+	private static final String HOST = "https://ubuvirtual.ubu.es/";
+	
 	// Lista de idiomas disponibles
 	private final List<String> locale = Arrays.asList("es_es", "en_en");
 	private final ObservableList<String> languages = FXCollections.observableArrayList("Español", "English");
@@ -67,6 +70,7 @@ public class LoginController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		txtHost.setText(HOST);
 		languageSelector.setItems(languages);
 		languageSelector.getSelectionModel().select(locale.indexOf(ubuGrades.getResourceBundle().getLocale().toString().toLowerCase()));
 		// Carga la interfaz con el idioma seleccionado

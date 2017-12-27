@@ -10,6 +10,8 @@ El docente puede acceder mediante su correo y contraseña de UBUVirtual, podra s
 
 El proyecto está desarrollado para plataformas Moodle, como es UBUVirtual, y utiliza servicios web que esta plataforma ofrece para obtener los datos.
 
+<p align="center"><img src="https://github.com/huco95/UBUGrades/blob/master/resources/img/ubugrades.png" />
+
 <h2>Autor</h2>
 <ul>
 <li>Félix Nogal Santamaría</li>

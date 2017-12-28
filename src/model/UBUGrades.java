@@ -3,7 +3,6 @@ package model;
 import java.util.ResourceBundle;
 
 import javafx.stage.Stage;
-import webservice.Session;
 
 /**
  * Clase UBUGrades.

@@ -1,4 +1,4 @@
-package webservice;
+package model;
 
 import org.apache.http.client.methods.HttpGet;
 
@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import model.Course;
+import webservice.MoodleOptions;
 
 /**
  * Clase sesión. Obtiene el token de usuario y guarda sus parámetros. Establece

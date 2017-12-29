@@ -778,7 +778,7 @@ public class MainController implements Initializable {
 				}
 			}
 			dataSet.append("]," + "backgroundColor: 'red'," + "borderColor: 'red'," + "pointBorderColor: 'red',"
-					+ "pointBackgroundColor: 'red'," + "borderWidth: 2," + "fill: false}");
+					+ "pointBackgroundColor: 'red'," + "borderWidth: 3," + "fill: false}");
 		}
 		return "{ labels:[" + labels + "],datasets: [" + dataSet + "]}";
 	}
@@ -835,19 +835,19 @@ public class MainController implements Initializable {
 
 		maximos.append("]," + "backgroundColor: 'rgba(244,67,54,1)'," + "borderColor: 'rgba(244,67,54,1)',"
 				+ "pointBorderColor: 'rgba(244,67,54,1)'," + "pointBackgroundColor: 'rgba(244,67,54,1)',"
-				+ "borderWidth: 2," + "fill: false}");
+				+ "borderWidth: 3," + "fill: false}");
 		tercerQuartil.append("]," + "backgroundColor: 'rgba(255,152,0,0.3)" + "'," + "borderColor: 'rgba(255,152,0,1)"
 				+ "'," + "pointBorderColor: 'rgba(255,152,0,1)" + "'," + "pointBackgroundColor: 'rgba(255,152,0,1)"
-				+ "'," + "borderWidth: 2," + "fill: 3}");
+				+ "'," + "borderWidth: 3," + "fill: 3}");
 		medianas.append("]," + "backgroundColor: 'rgba(0,150,136,1)'," + "borderColor: 'rgba(0,150,136,1)',"
 				+ "pointBorderColor: 'rgba(0,150,136,1)'," + "pointBackgroundColor: 'rgba(0,150,136,1)',"
-				+ "borderWidth: 2," + "fill: false}");
+				+ "borderWidth: 3," + "fill: false}");
 		primerQuartil.append("]," + "backgroundColor: 'rgba(255,152,0,0.3)'," + "borderColor: 'rgba(255,152,0,1)',"
 				+ "pointBorderColor: 'rgba(255,152,0,1)'," + "pointBackgroundColor: 'rgba(255,152,0,1)',"
-				+ "borderWidth: 2," + "fill: false}");
+				+ "borderWidth: 3," + "fill: false}");
 		minimos.append("]," + "backgroundColor: 'rgba(81,45,168,1)'," + "borderColor: 'rgba(81,45,168,1)',"
 				+ "pointBorderColor: 'rgba(81,45,168,1)'," + "pointBackgroundColor: 'rgba(81,45,168,1)',"
-				+ "borderWidth: 2," + "fill: false}");
+				+ "borderWidth: 3," + "fill: false}");
 
 		return "{ labels:[" + labels + "]," + "datasets: [" + maximos + "," + tercerQuartil + "," + medianas + ","
 				+ primerQuartil + "," + minimos + "]}";

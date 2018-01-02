@@ -508,7 +508,7 @@ public class MainController implements Initializable {
 			}
 		} catch (Exception e) {
 			logger.error("Error al guardar el gráfico: {}", e);
-			errorWindow("Error al guardar el gráfico", false);
+			errorWindow(ubuGrades.getResourceBundle().getString("error.savechart"), false);
 		}
 	}
 
@@ -550,7 +550,7 @@ public class MainController implements Initializable {
 				out.close();
 			} catch (IOException e) {
 				logger.error("Error al exportar los gráficos.", e);
-				errorWindow("No se han podido exportar los gráficos.", false);
+				errorWindow(ubuGrades.getResourceBundle().getString("error.saveallcharts"), false);
 			}
 		}
 	}
@@ -774,7 +774,7 @@ public class MainController implements Initializable {
 					}
 				} catch (Exception e) {
 					logger.error("Error en la construcción del dataset.", e);
-					errorWindow("Error en la construcción del dataset.", false);
+					errorWindow(ubuGrades.getResourceBundle().getString("error.generatedataset"), false);
 				}
 			}
 			dataSet.append("]," + "backgroundColor: 'red'," + "borderColor: 'red'," + "pointBorderColor: 'red',"
@@ -905,7 +905,7 @@ public class MainController implements Initializable {
 			}
 		} catch (JSException e) {
 			logger.error("Error al generar los gráficos.", e);
-			errorWindow("No se han podido generar los gráficos.", true);
+			errorWindow(ubuGrades.getResourceBundle().getString("error.generateCharts"), true);
 		}
 	}
 
@@ -923,7 +923,7 @@ public class MainController implements Initializable {
 			webViewChartsEngine.executeScript("updateChart('radar'," + data + ")");
 		} catch (JSException e) {
 			logger.error("Error al generar los gráficos.", e);
-			errorWindow("No se han podido generar los gráficos.", true);
+			errorWindow(ubuGrades.getResourceBundle().getString("error.generateCharts"), true);
 		}
 	}
 

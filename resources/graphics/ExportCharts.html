@@ -82,7 +82,7 @@
 
 <body>
 
-<div class="titulos">Gráfico de lineas</div>
+<div class="titulos" id="lines">Gráfico de lineas</div>
 <div id="lineas" class="chart-container">
 	<canvas id="LineChart"></canvas>
 </div>
@@ -90,7 +90,7 @@
 <br>
 <br>
 <br>
-<div class="titulos">Radar</div>
+<div class="titulos" id="radar">Radar</div>
 <div id="radar" class="chart-container">
 	<canvas id="RadarChart"></canvas>
 </div>
@@ -98,7 +98,7 @@
 <br>
 <br>
 <br>
-<div class="titulos">BoxPlot</div>
+<div class="titulos" id="boxplot">BoxPlot</div>
 <div id="boxplot" class="chart-container">
 	<canvas id="BoxPlotChart"></canvas>
 </div>
@@ -106,7 +106,7 @@
 <br>
 <br>
 <br>
-<div class="titulos">BoxPlot del grupo</div>
+<div class="titulos" id="groupboxplot">BoxPlot del grupo</div>
 <div id="boxplotgroup" class="chart-container">
 	<canvas id="BoxPlotGroupChart"></canvas>
 </div>
@@ -114,7 +114,7 @@
 <br>
 <br>
 <br>
-<div class="titulos">Tabla de notas</div>
+<div class="titulos" id="table">Tabla de notas</div>
 <div id="table_div" class="table_div"></div>
 
 <script>
@@ -143,7 +143,7 @@ var optionsLineChart = {
 			hoverRadius: 7
 		}, //points
 		line: {
-			tension: 0.4 //disable bezier curves, better performance
+			tension: 0 //disable bezier curves, better performance
 		}
 	}, //elements
 	legend: {
@@ -161,7 +161,7 @@ var optionsLineChart = {
 		mode: 'index',
 		intersect: false,
 		position: 'average',
-		backgroundColor: 'rgba(0, 0, 0, 0.8)',
+		backgroundColor: 'rgba(0, 0, 0, 1)',
 		bodySpacing: 4,
 		cornerRadius: 0,
 		caretSize: 10,
@@ -257,7 +257,7 @@ var optionsRadarChart = {
 		mode: 'index',
 		intersect: true,
 		position: 'average',
-		backgroundColor: 'rgba(0, 0, 0, 0.8)',
+		backgroundColor: 'rgba(0, 0, 0, 1)',
 		bodySpacing: 4,
 		cornerRadius: 0,
 		caretSize: 10,
@@ -378,7 +378,47 @@ function colorHEX(color){
 }
 
 window.onload = function() {
-  generateChart();
+  generateChart(); 
+  setLanguage(userLang);
+}
+
+//------------------------------------------Traducción-----------------------------------------------------------------
+//Contiene el texto a mostrar para los distintos elementos e idiomas
+var messages = {
+	lines: {
+		es_es: "Gráfico de lineas",
+		en_en: "Lines chart"
+	},
+	radar: {
+		es_es: "Radar",
+		en_en: "Radar"
+	},
+	boxplot: {
+		es_es: "BoxPlot",
+		en_en: "BoxPlot"
+	},
+	groupboxplot: {
+		es_es: "BoxPlot del Grupo",
+		en_en: "Group BoxPlot"
+	},
+	table: {
+		es_es: "Tabla de notas",
+		en_en: "Grades"
+	}
+}
+
+//Establece el idioma
+function setLanguage(lang) {
+	get_i18n('lines', lang);
+	get_i18n('radar', lang);
+	get_i18n('boxplot', lang);
+	get_i18n('groupboxplot', lang);
+	get_i18n('table', lang);
+}
+
+//Modifica el valor de los inputs segun el idioma pasado
+function get_i18n(item, lang) {
+	document.getElementById(item).innerHTML = messages[item][lang];
 }
 
 // Aqui se añaden los datos de los gráficos y la tabla de calificaciones

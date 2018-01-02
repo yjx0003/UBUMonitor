@@ -539,6 +539,7 @@ public class MainController implements Initializable {
 				//Completamos el nuevo archivo con los dataSets de los gráficos
 				out = new PrintWriter(new BufferedWriter(fw));
 				String generalDataSet = generateDataSet();
+				out.println("\r\nvar userLang = \"" + ubuGrades.getResourceBundle().getLocale().toString() + "\";\r\n");
 				out.println("\r\nvar LineDataSet = " + generalDataSet + ";\r\n");
 				out.println("var RadarDataSet = " + generalDataSet + ";\r\n");
 				out.println("var BoxPlotGeneralDataSet = " + generateBoxPlotDataSet(TODOS) + ";\r\n");

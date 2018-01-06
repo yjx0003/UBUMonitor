@@ -69,9 +69,9 @@ public class MoodleUserWS {
 				if (jsonObject.has("email"))
 					mUser.setEmail(jsonObject.getString("email"));
 				if (jsonObject.has("firstaccess"))
-					mUser.setFirstAccess(new Date(jsonObject.getLong("firstaccess") * 1000));
+					mUser.setFirstAccess(new Date(jsonObject.getLong("firstaccess")));
 				if (jsonObject.has("lastaccess"))
-					mUser.setLastAccess(new Date(jsonObject.getLong("lastaccess") * 1000));
+					mUser.setLastAccess(new Date(jsonObject.getLong("lastaccess")));
 				if(jsonObject.has("profileimageurlsmall"))
 					mUser.setUserPhoto(new Image(jsonObject.getString("profileimageurlsmall")));
 			}

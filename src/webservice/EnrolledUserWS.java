@@ -21,6 +21,11 @@ import model.EnrolledUser;
  *
  */
 public class EnrolledUserWS {
+	
+	private EnrolledUserWS() {
+	    throw new IllegalStateException("Clase de utilidad");
+	}
+	
 	/**
 	 * Almacena los cursos de un usuario matriculado
 	 * 
@@ -28,7 +33,7 @@ public class EnrolledUserWS {
 	 *            token de usuario
 	 * @throws Exception
 	 */
-	public void setCourses(String host, String token, EnrolledUser eUser) throws Exception {
+	public static void setCourses(String host, String token, EnrolledUser eUser) throws Exception {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		ArrayList<Integer> courses = new ArrayList<>();
 		try {

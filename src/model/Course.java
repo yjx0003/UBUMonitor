@@ -199,6 +199,7 @@ public class Course implements Serializable {
 		for (EnrolledUser eUser : eUsers) {
 			this.enrolledUsers.add(eUser);
 		}
+		setEnrolledUsersCount(this.enrolledUsers.size());
 	}
 
 	/**

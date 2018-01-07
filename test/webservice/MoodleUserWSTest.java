@@ -1,6 +1,6 @@
 package webservice;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,15 +12,15 @@ import javafx.embed.swing.JFXPanel;
 import model.Course;
 import model.MoodleUser;
 
-class MoodelUserWSTest {
-	
+public class MoodleUserWSTest {
+
 	private final String host = "http://localhost";
 	private final String token = "1";
 	private final String eMail = "prueba@prueba.com";
 	private MoodleUser mUser = new MoodleUser();
 
 	@Test
-	void setMoodleUserTest() {
+	public void setMoodleUserTest() {
 		try {
 			// Inicializamos JavaFX
 			@SuppressWarnings("unused")
@@ -43,7 +43,7 @@ class MoodelUserWSTest {
 	}
 	
 	@Test
-	void setCoursesTest() {
+	public void setCoursesTest() {
 		try {
 			// Inicializamos JavaFX
 			@SuppressWarnings("unused")

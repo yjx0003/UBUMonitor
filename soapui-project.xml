@@ -1,0 +1,2003 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="a483ebab-57c5-484f-b9b7-5fac2353025e" activeEnvironment="Default" name="UBUGrades" soapui-version="5.4.0" abortOnError="false" runType="SEQUENTIAL" resourceRoot="${projectDir}" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:restMockService id="422a9e69-704a-47cb-a0aa-9386abf0e6f3" port="80" path="/" host="localhost" name="REST MockService" docroot=""><con:settings/><con:properties/><con:restMockAction name="Moodle WebSerivces" method="GET" resourcePath="/webservice/rest/server.php" id="8d91328d-a315-4760-986e-adcce54ab06e"><con:settings/><con:defaultResponse>DEFAULT</con:defaultResponse><con:dispatchStyle>SCRIPT</con:dispatchStyle><con:dispatchPath>// Match based on query parameter
+def queryString = mockRequest.getRequest().getQueryString()
+log.info "QueryString: " + queryString
+
+if( queryString.contains("core_user_get_users_by_field") )
+{
+    return "OBTENER_INFO_USUARIO"
+} 
+else if ( queryString.contains("core_enrol_get_users_courses") )
+{
+	return "OBTENER_CURSOS"
+}
+else if ( queryString.contains("core_enrol_get_enrolled_users") )
+{
+	return "OBTENER_USUARIOS_MATRICULADOS"
+}
+else if ( queryString.contains("gradereport_user_get_grade_items") )
+{
+	return "OBTENER_NOTAS_ALUMNO"
+}
+else if ( queryString.contains("core_competency_get_scale_values") )
+{
+	return "OBTENER_ESCALA"
+}
+else if ( queryString.contains("gradereport_user_get_grades_table") )
+{
+	return "OBTENER_TABLA_NOTAS"
+}
+else if ( queryString.contains("mod_assign_get_assignments") )
+{
+	return "OBTENER_ASSIGNMENTS"
+}
+/*
+// Script dispatcher is used to select a response based on the incoming request.
+// Here are few examples showing how to match based on path, query param, header and body
+
+// Match based on path
+def requestPath = mockRequest.getPath()
+log.info "Path: "+ requestPath
+
+if( requestPath.contains("json") )
+{
+    // return the name of the response you want to dispatch
+    return "JSON Response"
+}
+
+
+// Match based on query parameter
+def queryString = mockRequest.getRequest().getQueryString()
+log.info "QueryString: " + queryString
+
+if( queryString.contains("stockholm") )
+{
+    // return the name of the response you want to dispatch
+    return "Response Stockholm"
+}
+else if( queryString.contains("london") )
+{
+    // return the name of the response you want to dispatch
+    return "Response London"
+}
+
+
+// Match based on header
+def acceptEncodingHeaderList = mockRequest.getRequestHeaders().get("Accept-Encoding")
+log.info "AcceptEncoding Header List: " + acceptEncodingHeaderList
+
+if( acceptEncodingHeaderList.contains("gzip,deflate") )
+{
+    // return the name of the response you want to dispatch
+    return "GZiped Response"
+}
+
+
+// Match based on body
+def requestBody = mockRequest.getRequestContent()
+log.info "Request body: " + requestBody
+
+if( requestBody.contains("some data") )
+{
+    // return the name of the response you want to dispatch
+    return "Response N"
+}
+*/
+
+
+</con:dispatchPath><con:response name="OBTENER_INFO_USUARIO" id="7a607474-6c5b-4109-86bd-90a3f1abf218" httpResponseStatus="200" mediaType="application/json"><con:settings/><con:responseContent>[
+{
+"id": 2,
+"username": "pega",
+"firstname": "Pepe",
+"lastname": "Garcia",
+"fullname": "Pepe Garcia",
+"email": "prueba@prueba.com",
+"department": "",
+"firstaccess": 1507054556,
+"lastaccess": 1515151537,
+"auth": "manual",
+"suspended": false,
+"confirmed": true,
+"lang": "es",
+"theme": "",
+"timezone": "99",
+"mailformat": 1,
+"description": "",
+"descriptionformat": 1,
+"profileimageurlsmall": "http://localhost/theme/image.php/boost/core/1512411906/u/f2",
+"profileimageurl": "http://localhost/theme/image.php/boost/core/1512411906/u/f1",
+"preferences": [
+{
+"name": "admin_bookmarks",
+"value": "webservicetokens,webservicedocumentation"
+},
+{
+"name": "auth_manual_passwordupdatetime",
+"value": "1507054913"
+},
+{
+"name": "block_myoverview_last_tab",
+"value": "courses"
+},
+{
+"name": "drawer-open-nav",
+"value": "true"
+},
+{
+"name": "email_bounce_count",
+"value": "1"
+},
+{
+"name": "email_send_count",
+"value": "1"
+},
+{
+"name": "ifirst",
+"value": ""
+},
+{
+"name": "ilast",
+"value": ""
+},
+{
+"name": "login_failed_count_since_success",
+"value": "63"
+},
+{
+"name": "quiz_overview_slotmarks",
+"value": "0"
+},
+{
+"name": "quiz_report_pagesize",
+"value": "30"
+},
+{
+"name": "tool_usertours_tour_completion_time_1",
+"value": "1512411371"
+},
+{
+"name": "tool_usertours_tour_completion_time_2",
+"value": "1507145183"
+},
+{
+"name": "userselector_autoselectunique",
+"value": "0"
+},
+{
+"name": "userselector_optionscollapsed",
+"value": "0"
+},
+{
+"name": "userselector_preserveselected",
+"value": "0"
+},
+{
+"name": "userselector_searchanywhere",
+"value": "0"
+},
+{
+"name": "_lastloaded",
+"value": 1515151592
+}
+]
+}
+]
+</con:responseContent></con:response><con:response name="DEFAULT" id="729e430a-f024-4da0-8614-a71d5e80a1d1" httpResponseStatus="200" mediaType="application/json"><con:settings/><con:responseContent>[
+{
+"error": "No response for this"
+}
+]
+</con:responseContent></con:response><con:response name="OBTENER_CURSOS" id="9fb500e1-ac15-43bd-a5ae-09cdb37638b3" httpResponseStatus="200" mediaType="application/json"><con:settings/><con:responseContent>[
+{
+"id": 3,
+"shortname": "SisOp",
+"fullname": "Sistemas Operativos",
+"enrolledusercount": 7,
+"idnumber": "",
+"visible": 1,
+"summary": "",
+"summaryformat": 1,
+"format": "topics",
+"showgrades": true,
+"lang": "",
+"enablecompletion": true,
+"category": 1,
+"progress": null,
+"startdate": 1515279600,
+"enddate": 1546815600
+},
+{
+"id": 2,
+"shortname": "Prog",
+"fullname": "Programacion",
+"enrolledusercount": 7,
+"idnumber": "",
+"visible": 1,
+"summary": "",
+"summaryformat": 1,
+"format": "topics",
+"showgrades": true,
+"lang": "es",
+"enablecompletion": true,
+"category": 1,
+"progress": 0,
+"startdate": 1507068000,
+"enddate": 0
+}
+]
+</con:responseContent></con:response><con:response name="OBTENER_USUARIOS_MATRICULADOS" id="e4acf062-df43-4905-bb5f-e4db0e4ba4a7" httpResponseStatus="200" mediaType="application/json"><con:settings/><con:responseContent>[
+{
+"id": 2,
+"username": "luga",
+"firstname": "Luis",
+"lastname": "Garcia",
+"fullname": "Luis Garcia",
+"email": "luga@prueba.es",
+"department": "",
+"firstaccess": 1507054556,
+"lastaccess": 1515335178,
+"description": "",
+"descriptionformat": 1,
+"profileimageurlsmall": "http://localhost/theme/image.php/boost/core/1512411906/u/f2",
+"profileimageurl": "http://localhost/theme/image.php/boost/core/1512411906/u/f1",
+"groups": [
+{
+"id": 2,
+"name": "0002",
+"description": "",
+"descriptionformat": 1
+}
+],
+"roles": [
+{
+"roleid": 1,
+"name": "Manager",
+"shortname": "manager",
+"sortorder": 0
+},
+{
+"roleid": 3,
+"name": "Teacher",
+"shortname": "editingteacher",
+"sortorder": 0
+},
+{
+"roleid": 5,
+"name": "Student",
+"shortname": "student",
+"sortorder": 0
+}
+],
+"preferences": [
+{
+"name": "admin_bookmarks",
+"value": "webservicetokens,webservicedocumentation"
+},
+{
+"name": "auth_manual_passwordupdatetime",
+"value": "1507054913"
+},
+{
+"name": "block_myoverview_last_tab",
+"value": "courses"
+},
+{
+"name": "drawer-open-nav",
+"value": "true"
+},
+{
+"name": "email_bounce_count",
+"value": "1"
+},
+{
+"name": "email_send_count",
+"value": "1"
+},
+{
+"name": "ifirst",
+"value": ""
+},
+{
+"name": "ilast",
+"value": ""
+},
+{
+"name": "login_failed_count_since_success",
+"value": "64"
+},
+{
+"name": "quiz_overview_slotmarks",
+"value": "0"
+},
+{
+"name": "quiz_report_pagesize",
+"value": "30"
+},
+{
+"name": "tool_usertours_tour_completion_time_1",
+"value": "1512411371"
+},
+{
+"name": "tool_usertours_tour_completion_time_2",
+"value": "1507145183"
+},
+{
+"name": "userselector_autoselectunique",
+"value": "0"
+},
+{
+"name": "userselector_optionscollapsed",
+"value": "0"
+},
+{
+"name": "userselector_preserveselected",
+"value": "0"
+},
+{
+"name": "userselector_searchanywhere",
+"value": "0"
+},
+{
+"name": "_lastloaded",
+"value": 1515335182
+}
+],
+"enrolledcourses": [
+{
+"id": 3,
+"fullname": "Sistemas Operativos",
+"shortname": "SisOp"
+},
+{
+"id": 2,
+"fullname": "Programación",
+"shortname": "Prog"
+}
+]
+},
+{
+"id": 3,
+"username": "pega",
+"firstname": "Pepe",
+"lastname": "Garcia",
+"fullname": "Pepe Garcia",
+"email": "pega@prueba.es",
+"department": "",
+"firstaccess": 1507488151,
+"lastaccess": 1507560937,
+"description": "",
+"descriptionformat": 1,
+"profileimageurlsmall": "http://localhost/theme/image.php/boost/core/1512411906/u/f2",
+"profileimageurl": "http://localhost/theme/image.php/boost/core/1512411906/u/f1",
+"groups": [
+{
+"id": 1,
+"name": "0001",
+"description": "",
+"descriptionformat": 1
+}
+],
+"roles": [
+{
+"roleid": 5,
+"name": "Student",
+"shortname": "student",
+"sortorder": 0
+}
+],
+"enrolledcourses": [
+{
+"id": 3,
+"fullname": "Sistemas Operativos",
+"shortname": "SisOp"
+},
+{
+"id": 2,
+"fullname": "Programación",
+"shortname": "Prog"
+}
+]
+}
+]</con:responseContent></con:response><con:response name="OBTENER_NOTAS_ALUMNO" id="bd1327c3-45c1-487b-a898-50930bc6e6ab" httpResponseStatus="200" mediaType="application/json"><con:settings/><con:responseContent><![CDATA[{
+"usergrades": [
+{
+"courseid": 2,
+"userid": 2,
+"userfullname": "Felix Nogal",
+"maxdepth": 4,
+"gradeitems": [
+{
+"id": 10,
+"itemname": "Practica 1",
+"itemtype": "manual",
+"itemmodule": null,
+"iteminstance": null,
+"itemnumber": 0,
+"categoryid": 4,
+"outcomeid": null,
+"scaleid": null,
+"weightraw": 0.5,
+"weightformatted": "50,00 %",
+"graderaw": 7,
+"gradedatesubmitted": null,
+"gradedategraded": 1507475422,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "7,00",
+"grademin": 0,
+"grademax": 10,
+"rangeformatted": "0&ndash;10",
+"percentageformatted": "70,00 %",
+"feedback": "",
+"feedbackformat": 0
+},
+{
+"id": 11,
+"itemname": "Practica 2",
+"itemtype": "manual",
+"itemmodule": null,
+"iteminstance": null,
+"itemnumber": 0,
+"categoryid": 4,
+"outcomeid": null,
+"scaleid": null,
+"weightraw": 0.5,
+"weightformatted": "50,00 %",
+"graderaw": 6,
+"gradedatesubmitted": null,
+"gradedategraded": 1507475422,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "6,00",
+"grademin": 0,
+"grademax": 10,
+"rangeformatted": "0&ndash;10",
+"percentageformatted": "60,00 %",
+"feedback": "",
+"feedbackformat": 0
+},
+{
+"id": 18,
+"itemname": "Cuestionario Tema 1",
+"itemtype": "mod",
+"itemmodule": "quiz",
+"iteminstance": 1,
+"itemnumber": 0,
+"categoryid": 4,
+"outcomeid": null,
+"scaleid": null,
+"cmid": 2,
+"graderaw": null,
+"gradedatesubmitted": null,
+"gradedategraded": null,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "-",
+"grademin": 0,
+"grademax": 10,
+"rangeformatted": "0&ndash;10",
+"percentageformatted": "-",
+"feedback": "",
+"feedbackformat": 0
+},
+{
+"id": 19,
+"itemname": "Tarea Tema 1",
+"itemtype": "mod",
+"itemmodule": "assign",
+"iteminstance": 1,
+"itemnumber": 0,
+"categoryid": 4,
+"outcomeid": null,
+"scaleid": null,
+"cmid": 3,
+"graderaw": 5.5,
+"gradedatesubmitted": null,
+"gradedategraded": 1507487447,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "5,50",
+"grademin": 0,
+"grademax": 10,
+"rangeformatted": "0&ndash;10",
+"percentageformatted": "55,00 %",
+"feedback": "",
+"feedbackformat": 0
+},
+{
+"id": 8,
+"itemname": "Practicas",
+"itemtype": "category",
+"itemmodule": null,
+"iteminstance": 4,
+"itemnumber": null,
+"categoryid": null,
+"outcomeid": null,
+"scaleid": null,
+"graderaw": 4.625,
+"gradedatesubmitted": null,
+"gradedategraded": 1507488389,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "4,63",
+"grademin": 0,
+"grademax": 10,
+"rangeformatted": "0&ndash;10",
+"percentageformatted": "46,25 %",
+"feedback": "",
+"feedbackformat": 0
+},
+{
+"id": 15,
+"itemname": "Examen 1",
+"itemtype": "manual",
+"itemmodule": null,
+"iteminstance": null,
+"itemnumber": 0,
+"categoryid": 8,
+"outcomeid": null,
+"scaleid": null,
+"weightraw": 0.5,
+"weightformatted": "50,00 %",
+"graderaw": 4,
+"gradedatesubmitted": null,
+"gradedategraded": 1507475724,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "4,00",
+"grademin": 0,
+"grademax": 10,
+"rangeformatted": "0&ndash;10",
+"percentageformatted": "40,00 %",
+"feedback": "",
+"feedbackformat": 0
+},
+{
+"id": 17,
+"itemname": "Examen 2",
+"itemtype": "manual",
+"itemmodule": null,
+"iteminstance": null,
+"itemnumber": 0,
+"categoryid": 8,
+"outcomeid": null,
+"scaleid": null,
+"weightraw": 0.5,
+"weightformatted": "50,00 %",
+"graderaw": 8,
+"gradedatesubmitted": null,
+"gradedategraded": 1507475724,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "8,00",
+"grademin": 0,
+"grademax": 10,
+"rangeformatted": "0&ndash;10",
+"percentageformatted": "80,00 %",
+"feedback": "",
+"feedbackformat": 0
+},
+{
+"id": 21,
+"itemname": "Examenes",
+"itemtype": "category",
+"itemmodule": null,
+"iteminstance": 8,
+"itemnumber": null,
+"categoryid": null,
+"outcomeid": null,
+"scaleid": null,
+"graderaw": 6,
+"gradedatesubmitted": null,
+"gradedategraded": 1510065034,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "6,00",
+"grademin": 0,
+"grademax": 10,
+"rangeformatted": "0&ndash;10",
+"percentageformatted": "60,00 %",
+"feedback": "",
+"feedbackformat": 0
+},
+{
+"id": 31,
+"itemname": "Foro Tema 1",
+"itemtype": "mod",
+"itemmodule": "forum",
+"iteminstance": 2,
+"itemnumber": 0,
+"categoryid": 6,
+"outcomeid": null,
+"scaleid": null,
+"cmid": 6,
+"graderaw": null,
+"gradedatesubmitted": null,
+"gradedategraded": null,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "-",
+"grademin": 0,
+"grademax": 100,
+"rangeformatted": "0&ndash;100",
+"percentageformatted": "-",
+"feedback": "",
+"feedbackformat": 0
+},
+{
+"id": 14,
+"itemname": "Teoría",
+"itemtype": "category",
+"itemmodule": null,
+"iteminstance": 6,
+"itemnumber": null,
+"categoryid": null,
+"outcomeid": null,
+"scaleid": null,
+"graderaw": 6,
+"gradedatesubmitted": null,
+"gradedategraded": 1507485367,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "6,00",
+"grademin": 0,
+"grademax": 10,
+"rangeformatted": "0&ndash;10",
+"percentageformatted": "60,00 %",
+"feedback": "",
+"feedbackformat": 0
+},
+{
+"id": 24,
+"itemname": "Tipo texto",
+"itemtype": "manual",
+"itemmodule": null,
+"iteminstance": null,
+"itemnumber": 0,
+"categoryid": 1,
+"outcomeid": null,
+"scaleid": null,
+"graderaw": null,
+"gradedatesubmitted": null,
+"gradedategraded": null,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "",
+"grademin": 0,
+"grademax": 100,
+"rangeformatted": "&ndash;",
+"percentageformatted": "",
+"feedback": "",
+"feedbackformat": 0
+},
+{
+"id": 25,
+"itemname": "Rango 10-20",
+"itemtype": "manual",
+"itemmodule": null,
+"iteminstance": null,
+"itemnumber": 0,
+"categoryid": 1,
+"outcomeid": null,
+"scaleid": null,
+"graderaw": null,
+"gradedatesubmitted": null,
+"gradedategraded": null,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "-",
+"grademin": 10,
+"grademax": 20,
+"rangeformatted": "10&ndash;20",
+"percentageformatted": "-",
+"feedback": "",
+"feedbackformat": 0
+},
+{
+"id": 26,
+"itemname": "Tipo escala",
+"itemtype": "manual",
+"itemmodule": null,
+"iteminstance": null,
+"itemnumber": 0,
+"categoryid": 1,
+"outcomeid": null,
+"scaleid": null,
+"graderaw": null,
+"gradedatesubmitted": null,
+"gradedategraded": null,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "-",
+"grademin": 1,
+"grademax": 2,
+"rangeformatted": "Yes&ndash;No",
+"percentageformatted": "-",
+"feedback": "",
+"feedbackformat": 0
+},
+{
+"id": 27,
+"itemname": "Mas escalas",
+"itemtype": "manual",
+"itemmodule": null,
+"iteminstance": null,
+"itemnumber": 0,
+"categoryid": 1,
+"outcomeid": null,
+"scaleid": null,
+"graderaw": 2,
+"gradedatesubmitted": null,
+"gradedategraded": 1511615046,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "Notable",
+"grademin": 1,
+"grademax": 4,
+"rangeformatted": "Sobresaliente&ndash;Suspenso",
+"percentageformatted": "33,33 %",
+"feedback": "",
+"feedbackformat": 0
+},
+{
+"id": 28,
+"itemname": "Taller 1 (envío)",
+"itemtype": "mod",
+"itemmodule": "workshop",
+"iteminstance": 1,
+"itemnumber": 0,
+"categoryid": 1,
+"outcomeid": null,
+"scaleid": null,
+"cmid": 4,
+"graderaw": 0,
+"gradedatesubmitted": 1512069721,
+"gradedategraded": 1512069783,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "0,00",
+"grademin": 0,
+"grademax": 80,
+"rangeformatted": "0&ndash;80",
+"percentageformatted": "0,00 %",
+"feedback": "",
+"feedbackformat": 1
+},
+{
+"id": 29,
+"itemname": "Taller 1 (evaluación)",
+"itemtype": "mod",
+"itemmodule": "workshop",
+"iteminstance": 1,
+"itemnumber": 1,
+"categoryid": 1,
+"outcomeid": null,
+"scaleid": null,
+"cmid": 4,
+"graderaw": null,
+"gradedatesubmitted": null,
+"gradedategraded": null,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "-",
+"grademin": 0,
+"grademax": 20,
+"rangeformatted": "0&ndash;20",
+"percentageformatted": "-",
+"feedback": "",
+"feedbackformat": 0
+},
+{
+"id": 30,
+"itemname": "Leccion Tema 1",
+"itemtype": "mod",
+"itemmodule": "lesson",
+"iteminstance": 1,
+"itemnumber": 0,
+"categoryid": 1,
+"outcomeid": null,
+"scaleid": null,
+"cmid": 5,
+"graderaw": null,
+"gradedatesubmitted": null,
+"gradedategraded": null,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "-",
+"grademin": 0,
+"grademax": 100,
+"rangeformatted": "0&ndash;100",
+"percentageformatted": "-",
+"feedback": "",
+"feedbackformat": 0
+},
+{
+"id": 32,
+"itemname": "Tarea con escala",
+"itemtype": "mod",
+"itemmodule": "assign",
+"iteminstance": 2,
+"itemnumber": 0,
+"categoryid": 1,
+"outcomeid": null,
+"scaleid": null,
+"cmid": 7,
+"graderaw": null,
+"gradedatesubmitted": null,
+"gradedategraded": null,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "-",
+"grademin": 1,
+"grademax": 2,
+"rangeformatted": "Yes&ndash;No",
+"percentageformatted": "-",
+"feedback": "",
+"feedbackformat": 0
+},
+{
+"id": 33,
+"itemname": "Tarea con escala 2",
+"itemtype": "mod",
+"itemmodule": "assign",
+"iteminstance": 3,
+"itemnumber": 0,
+"categoryid": 1,
+"outcomeid": null,
+"scaleid": null,
+"cmid": 8,
+"graderaw": 1,
+"gradedatesubmitted": null,
+"gradedategraded": 1512669624,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "Sobresaliente",
+"grademin": 1,
+"grademax": 4,
+"rangeformatted": "Sobresaliente&ndash;Suspenso",
+"percentageformatted": "0,00 %",
+"feedback": "",
+"feedbackformat": 0
+},
+{
+"id": 1,
+"itemname": "Programación",
+"itemtype": "course",
+"itemmodule": null,
+"iteminstance": 1,
+"itemnumber": null,
+"categoryid": null,
+"outcomeid": null,
+"scaleid": null,
+"graderaw": 5,
+"gradedatesubmitted": null,
+"gradedategraded": 1507489402,
+"gradehiddenbydate": false,
+"gradeneedsupdate": false,
+"gradeishidden": false,
+"gradeformatted": "5,00",
+"grademin": 0,
+"grademax": 10,
+"rangeformatted": "0&ndash;10",
+"percentageformatted": "50,00 %",
+"feedback": null,
+"feedbackformat": 0
+}
+]
+}
+],
+"warnings": []
+}
+]]></con:responseContent></con:response><con:response name="OBTENER_ESCALA" id="97276027-ed29-420b-94c1-5f3488563458" httpResponseStatus="200" mediaType="application/json"><con:settings/><con:responseContent>[
+{
+"id": 1,
+"name": "No"
+},
+{
+"id": 2,
+"name": "Yes"
+}
+]</con:responseContent></con:response><con:response name="OBTENER_TABLA_NOTAS" id="43c9d6a5-af08-45e7-bd5c-cae685506361" httpResponseStatus="200" mediaType="application/json"><con:settings/><con:responseContent><![CDATA[{
+"tables": [
+{
+"courseid": 2,
+"userid": 2,
+"userfullname": "Pepe Garcia",
+"maxdepth": 4,
+"tabledata": [
+{
+"itemname": {
+"class": "level1 levelodd oddd1 b1b b1t column-itemname",
+"colspan": 9,
+"content": "<i class=\"icon fa fa-folder fa-fw icon itemicon\" aria-hidden=\"true\" title=\"Categoría\" aria-label=\"Categoría\"></i>Programación",
+"celltype": "th",
+"id": "cat_1_2"
+},
+"leader": {
+"class": "level1 levelodd oddd1 b1t b2b b1l column-leader",
+"rowspan": 24
+}
+},
+{
+"itemname": {
+"class": "level2 leveleven oddd2 b1b b1t column-itemname",
+"colspan": 8,
+"content": "<i class=\"icon fa fa-folder fa-fw icon itemicon\" aria-hidden=\"true\" title=\"Categoría\" aria-label=\"Categoría\"></i>Practicas",
+"celltype": "th",
+"id": "cat_4_2"
+},
+"leader": {
+"class": "level2 leveleven oddd2 b1t b2b b1l column-leader",
+"rowspan": 6
+}
+},
+{
+"itemname": {
+"class": "level3 levelodd item b1b column-itemname",
+"colspan": 2,
+"content": "<span class=\"gradeitemheader\" title=\"Practica 1\" tabindex=\"0\"><i class=\"icon fa fa-square-o fa-fw icon itemicon\" aria-hidden=\"true\" title=\"Ítem manual\" aria-label=\"Ítem manual\"></i>Practica 1</span>",
+"celltype": "th",
+"id": "row_10_2"
+},
+"weight": {
+"class": "level3 levelodd item b1b itemcenter  column-weight",
+"content": "50,00 %",
+"headers": "cat_4_2 row_10_2 weight"
+},
+"grade": {
+"class": "level3 levelodd item b1b itemcenter  column-grade",
+"content": "7,00",
+"headers": "cat_4_2 row_10_2 grade"
+},
+"range": {
+"class": "level3 levelodd item b1b itemcenter  column-range",
+"content": "0&ndash;10",
+"headers": "cat_4_2 row_10_2 range"
+},
+"percentage": {
+"class": "level3 levelodd item b1b itemcenter  column-percentage",
+"content": "70,00 %",
+"headers": "cat_4_2 row_10_2 percentage"
+},
+"feedback": {
+"class": "level3 levelodd item b1b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_4_2 row_10_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level3 levelodd item b1b itemcenter  column-contributiontocoursetotal",
+"content": "35,00 %",
+"headers": "cat_4_2 row_10_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level3 levelodd item b1b column-itemname",
+"colspan": 2,
+"content": "<span class=\"gradeitemheader\" title=\"Practica 2\" tabindex=\"0\"><i class=\"icon fa fa-square-o fa-fw icon itemicon\" aria-hidden=\"true\" title=\"Ítem manual\" aria-label=\"Ítem manual\"></i>Practica 2</span>",
+"celltype": "th",
+"id": "row_11_2"
+},
+"weight": {
+"class": "level3 levelodd item b1b itemcenter  column-weight",
+"content": "50,00 %",
+"headers": "cat_4_2 row_11_2 weight"
+},
+"grade": {
+"class": "level3 levelodd item b1b itemcenter  column-grade",
+"content": "6,00",
+"headers": "cat_4_2 row_11_2 grade"
+},
+"range": {
+"class": "level3 levelodd item b1b itemcenter  column-range",
+"content": "0&ndash;10",
+"headers": "cat_4_2 row_11_2 range"
+},
+"percentage": {
+"class": "level3 levelodd item b1b itemcenter  column-percentage",
+"content": "60,00 %",
+"headers": "cat_4_2 row_11_2 percentage"
+},
+"feedback": {
+"class": "level3 levelodd item b1b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_4_2 row_11_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level3 levelodd item b1b itemcenter  column-contributiontocoursetotal",
+"content": "30,00 %",
+"headers": "cat_4_2 row_11_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level3 levelodd item b1b column-itemname",
+"colspan": 2,
+"content": "<a title=\"Enlazar a la actividad Cuestionario\" class=\"gradeitemheader\" href=\"http://localhost/mod/quiz/grade.php?id=2&amp;itemnumber=0&amp;userid=2\"><img class=\"icon itemicon\" src=\"http://localhost/theme/image.php/boost/quiz/1512411906/icon\" alt=\"Cuestionario\" />Cuestionario Tema 1</a>",
+"celltype": "th",
+"id": "row_18_2"
+},
+"weight": {
+"class": "level3 levelodd item b1b itemcenter  column-weight",
+"content": "-",
+"headers": "cat_4_2 row_18_2 weight"
+},
+"grade": {
+"class": "level3 levelodd item b1b itemcenter  column-grade",
+"content": "-",
+"headers": "cat_4_2 row_18_2 grade"
+},
+"range": {
+"class": "level3 levelodd item b1b itemcenter  column-range",
+"content": "0&ndash;10",
+"headers": "cat_4_2 row_18_2 range"
+},
+"percentage": {
+"class": "level3 levelodd item b1b itemcenter  column-percentage",
+"content": "-",
+"headers": "cat_4_2 row_18_2 percentage"
+},
+"feedback": {
+"class": "level3 levelodd item b1b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_4_2 row_18_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level3 levelodd item b1b itemcenter  column-contributiontocoursetotal",
+"content": "-",
+"headers": "cat_4_2 row_18_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level3 levelodd item b1b column-itemname",
+"colspan": 2,
+"content": "<a title=\"Enlazar a la actividad Tarea\" class=\"gradeitemheader\" href=\"http://localhost/mod/assign/view.php?id=3\"><img class=\"icon itemicon\" src=\"http://localhost/theme/image.php/boost/assign/1512411906/icon\" alt=\"Tarea\" />Tarea Tema 1</a>",
+"celltype": "th",
+"id": "row_19_2"
+},
+"weight": {
+"class": "level3 levelodd item b1b itemcenter  column-weight",
+"content": "-",
+"headers": "cat_4_2 row_19_2 weight"
+},
+"grade": {
+"class": "level3 levelodd item b1b itemcenter  column-grade",
+"content": "5,50",
+"headers": "cat_4_2 row_19_2 grade"
+},
+"range": {
+"class": "level3 levelodd item b1b itemcenter  column-range",
+"content": "0&ndash;10",
+"headers": "cat_4_2 row_19_2 range"
+},
+"percentage": {
+"class": "level3 levelodd item b1b itemcenter  column-percentage",
+"content": "55,00 %",
+"headers": "cat_4_2 row_19_2 percentage"
+},
+"feedback": {
+"class": "level3 levelodd item b1b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_4_2 row_19_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level3 levelodd item b1b itemcenter  column-contributiontocoursetotal",
+"content": "-",
+"headers": "cat_4_2 row_19_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level2 leveleven oddd2 baggt b2b column-itemname",
+"colspan": 2,
+"content": "<span class=\"gradeitemheader\" title=\"Practicas\" tabindex=\"0\"><i class=\"icon fa fa-calculator fa-fw icon itemicon\" aria-hidden=\"true\" title=\"Calificación calculada\" aria-label=\"Calificación calculada\"></i>Practicas</span><div class=\"gradeitemdescription\">Incluye calificaciones vacías.</div><div class=\"gradeitemdescriptionfiller\"></div>",
+"celltype": "th",
+"id": "row_8_2"
+},
+"weight": {
+"class": "level2 leveleven oddd2 baggt b2b itemcenter  column-weight",
+"content": "-",
+"headers": "cat_4_2 row_8_2 weight"
+},
+"grade": {
+"class": "level2 leveleven oddd2 baggt b2b itemcenter  column-grade",
+"content": "4,63",
+"headers": "cat_4_2 row_8_2 grade"
+},
+"range": {
+"class": "level2 leveleven oddd2 baggt b2b itemcenter  column-range",
+"content": "0&ndash;10",
+"headers": "cat_4_2 row_8_2 range"
+},
+"percentage": {
+"class": "level2 leveleven oddd2 baggt b2b itemcenter  column-percentage",
+"content": "46,25 %",
+"headers": "cat_4_2 row_8_2 percentage"
+},
+"feedback": {
+"class": "level2 leveleven oddd2 baggt b2b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_4_2 row_8_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level2 leveleven oddd2 baggt b2b itemcenter  column-contributiontocoursetotal",
+"content": "-",
+"headers": "cat_4_2 row_8_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level2 leveleven evend2 b1b b1t column-itemname",
+"colspan": 8,
+"content": "<i class=\"icon fa fa-folder fa-fw icon itemicon\" aria-hidden=\"true\" title=\"Categoría\" aria-label=\"Categoría\"></i>Teoría",
+"celltype": "th",
+"id": "cat_6_2"
+},
+"leader": {
+"class": "level2 leveleven evend2 b1t b2b b1l column-leader",
+"rowspan": 7
+}
+},
+{
+"itemname": {
+"class": "level3 levelodd oddd3 b1b b1t column-itemname",
+"colspan": 7,
+"content": "<i class=\"icon fa fa-folder fa-fw icon itemicon\" aria-hidden=\"true\" title=\"Categoría\" aria-label=\"Categoría\"></i>Examenes",
+"celltype": "th",
+"id": "cat_8_2"
+},
+"leader": {
+"class": "level3 levelodd oddd3 b1t b2b b1l column-leader",
+"rowspan": 4
+}
+},
+{
+"itemname": {
+"class": "level4 leveleven item b1b column-itemname",
+"colspan": 1,
+"content": "<span class=\"gradeitemheader\" title=\"Examen 1\" tabindex=\"0\"><i class=\"icon fa fa-square-o fa-fw icon itemicon\" aria-hidden=\"true\" title=\"Ítem manual\" aria-label=\"Ítem manual\"></i>Examen 1</span>",
+"celltype": "th",
+"id": "row_15_2"
+},
+"weight": {
+"class": "level4 leveleven item b1b itemcenter  column-weight",
+"content": "50,00 %",
+"headers": "cat_8_2 row_15_2 weight"
+},
+"grade": {
+"class": "level4 leveleven item b1b itemcenter  column-grade",
+"content": "4,00",
+"headers": "cat_8_2 row_15_2 grade"
+},
+"range": {
+"class": "level4 leveleven item b1b itemcenter  column-range",
+"content": "0&ndash;10",
+"headers": "cat_8_2 row_15_2 range"
+},
+"percentage": {
+"class": "level4 leveleven item b1b itemcenter  column-percentage",
+"content": "40,00 %",
+"headers": "cat_8_2 row_15_2 percentage"
+},
+"feedback": {
+"class": "level4 leveleven item b1b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_8_2 row_15_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level4 leveleven item b1b itemcenter  column-contributiontocoursetotal",
+"content": "20,00 %",
+"headers": "cat_8_2 row_15_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level4 leveleven item b1b column-itemname",
+"colspan": 1,
+"content": "<span class=\"gradeitemheader\" title=\"Examen 2\" tabindex=\"0\"><i class=\"icon fa fa-square-o fa-fw icon itemicon\" aria-hidden=\"true\" title=\"Ítem manual\" aria-label=\"Ítem manual\"></i>Examen 2</span>",
+"celltype": "th",
+"id": "row_17_2"
+},
+"weight": {
+"class": "level4 leveleven item b1b itemcenter  column-weight",
+"content": "50,00 %",
+"headers": "cat_8_2 row_17_2 weight"
+},
+"grade": {
+"class": "level4 leveleven item b1b itemcenter  column-grade",
+"content": "8,00",
+"headers": "cat_8_2 row_17_2 grade"
+},
+"range": {
+"class": "level4 leveleven item b1b itemcenter  column-range",
+"content": "0&ndash;10",
+"headers": "cat_8_2 row_17_2 range"
+},
+"percentage": {
+"class": "level4 leveleven item b1b itemcenter  column-percentage",
+"content": "80,00 %",
+"headers": "cat_8_2 row_17_2 percentage"
+},
+"feedback": {
+"class": "level4 leveleven item b1b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_8_2 row_17_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level4 leveleven item b1b itemcenter  column-contributiontocoursetotal",
+"content": "40,00 %",
+"headers": "cat_8_2 row_17_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level3 levelodd oddd3 baggt b2b column-itemname",
+"colspan": 1,
+"content": "<span class=\"gradeitemheader\" title=\"Examenes\" tabindex=\"0\"><i class=\"icon fa fa-calculator fa-fw icon itemicon\" aria-hidden=\"true\" title=\"Calificación calculada\" aria-label=\"Calificación calculada\"></i>Examenes</span><div class=\"gradeitemdescription\">Incluye calificaciones vacías.</div><div class=\"gradeitemdescriptionfiller\"></div>",
+"celltype": "th",
+"id": "row_21_2"
+},
+"weight": {
+"class": "level3 levelodd oddd3 baggt b2b itemcenter  column-weight",
+"content": "-",
+"headers": "cat_8_2 row_21_2 weight"
+},
+"grade": {
+"class": "level3 levelodd oddd3 baggt b2b itemcenter  column-grade",
+"content": "6,00",
+"headers": "cat_8_2 row_21_2 grade"
+},
+"range": {
+"class": "level3 levelodd oddd3 baggt b2b itemcenter  column-range",
+"content": "0&ndash;10",
+"headers": "cat_8_2 row_21_2 range"
+},
+"percentage": {
+"class": "level3 levelodd oddd3 baggt b2b itemcenter  column-percentage",
+"content": "60,00 %",
+"headers": "cat_8_2 row_21_2 percentage"
+},
+"feedback": {
+"class": "level3 levelodd oddd3 baggt b2b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_8_2 row_21_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level3 levelodd oddd3 baggt b2b itemcenter  column-contributiontocoursetotal",
+"content": "-",
+"headers": "cat_8_2 row_21_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level3 levelodd item b1b column-itemname",
+"colspan": 2,
+"content": "<a title=\"Enlazar a la actividad Foro\" class=\"gradeitemheader\" href=\"http://localhost/mod/forum/view.php?id=6\"><img class=\"icon itemicon\" src=\"http://localhost/theme/image.php/boost/forum/1512411906/icon\" alt=\"Foro\" />Foro Tema 1</a>",
+"celltype": "th",
+"id": "row_31_2"
+},
+"weight": {
+"class": "level3 levelodd item b1b itemcenter  column-weight",
+"content": "-",
+"headers": "cat_6_2 row_31_2 weight"
+},
+"grade": {
+"class": "level3 levelodd item b1b itemcenter  column-grade",
+"content": "-",
+"headers": "cat_6_2 row_31_2 grade"
+},
+"range": {
+"class": "level3 levelodd item b1b itemcenter  column-range",
+"content": "0&ndash;100",
+"headers": "cat_6_2 row_31_2 range"
+},
+"percentage": {
+"class": "level3 levelodd item b1b itemcenter  column-percentage",
+"content": "-",
+"headers": "cat_6_2 row_31_2 percentage"
+},
+"feedback": {
+"class": "level3 levelodd item b1b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_6_2 row_31_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level3 levelodd item b1b itemcenter  column-contributiontocoursetotal",
+"content": "-",
+"headers": "cat_6_2 row_31_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level2 leveleven evend2 baggt b2b column-itemname",
+"colspan": 2,
+"content": "<span class=\"gradeitemheader\" title=\"Teoría\" tabindex=\"0\"><i class=\"icon fa fa-calculator fa-fw icon itemicon\" aria-hidden=\"true\" title=\"Calificación calculada\" aria-label=\"Calificación calculada\"></i>Teoría</span><div class=\"gradeitemdescription\">Incluye calificaciones vacías.</div><div class=\"gradeitemdescriptionfiller\"></div>",
+"celltype": "th",
+"id": "row_14_2"
+},
+"weight": {
+"class": "level2 leveleven evend2 baggt b2b itemcenter  column-weight",
+"content": "-",
+"headers": "cat_6_2 row_14_2 weight"
+},
+"grade": {
+"class": "level2 leveleven evend2 baggt b2b itemcenter  column-grade",
+"content": "6,00",
+"headers": "cat_6_2 row_14_2 grade"
+},
+"range": {
+"class": "level2 leveleven evend2 baggt b2b itemcenter  column-range",
+"content": "0&ndash;10",
+"headers": "cat_6_2 row_14_2 range"
+},
+"percentage": {
+"class": "level2 leveleven evend2 baggt b2b itemcenter  column-percentage",
+"content": "60,00 %",
+"headers": "cat_6_2 row_14_2 percentage"
+},
+"feedback": {
+"class": "level2 leveleven evend2 baggt b2b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_6_2 row_14_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level2 leveleven evend2 baggt b2b itemcenter  column-contributiontocoursetotal",
+"content": "-",
+"headers": "cat_6_2 row_14_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level2 leveleven item b1b column-itemname",
+"colspan": 3,
+"content": "<span class=\"gradeitemheader\" title=\"Tipo texto\" tabindex=\"0\"><i class=\"icon fa fa-square-o fa-fw icon itemicon\" aria-hidden=\"true\" title=\"Ítem manual\" aria-label=\"Ítem manual\"></i>Tipo texto</span>",
+"celltype": "th",
+"id": "row_24_2"
+},
+"weight": {
+"class": "level2 leveleven item b1b itemcenter  column-weight",
+"content": "-",
+"headers": "cat_1_2 row_24_2 weight"
+},
+"grade": {
+"class": "level2 leveleven item b1b itemcenter  column-grade",
+"content": "",
+"headers": "cat_1_2 row_24_2 grade"
+},
+"range": {
+"class": "level2 leveleven item b1b itemcenter  column-range",
+"content": "&ndash;",
+"headers": "cat_1_2 row_24_2 range"
+},
+"percentage": {
+"class": "level2 leveleven item b1b itemcenter  column-percentage",
+"content": "",
+"headers": "cat_1_2 row_24_2 percentage"
+},
+"feedback": {
+"class": "level2 leveleven item b1b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_1_2 row_24_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level2 leveleven item b1b itemcenter  column-contributiontocoursetotal",
+"content": "-",
+"headers": "cat_1_2 row_24_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level2 leveleven item b1b column-itemname",
+"colspan": 3,
+"content": "<span class=\"gradeitemheader\" title=\"Rango 10-20\" tabindex=\"0\"><i class=\"icon fa fa-square-o fa-fw icon itemicon\" aria-hidden=\"true\" title=\"Ítem manual\" aria-label=\"Ítem manual\"></i>Rango 10-20</span>",
+"celltype": "th",
+"id": "row_25_2"
+},
+"weight": {
+"class": "level2 leveleven item b1b itemcenter  column-weight",
+"content": "-",
+"headers": "cat_1_2 row_25_2 weight"
+},
+"grade": {
+"class": "level2 leveleven item b1b itemcenter  column-grade",
+"content": "15,60",
+"headers": "cat_1_2 row_25_2 grade"
+},
+"range": {
+"class": "level2 leveleven item b1b itemcenter  column-range",
+"content": "10&ndash;20",
+"headers": "cat_1_2 row_25_2 range"
+},
+"percentage": {
+"class": "level2 leveleven item b1b itemcenter  column-percentage",
+"content": "-",
+"headers": "cat_1_2 row_25_2 percentage"
+},
+"feedback": {
+"class": "level2 leveleven item b1b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_1_2 row_25_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level2 leveleven item b1b itemcenter  column-contributiontocoursetotal",
+"content": "-",
+"headers": "cat_1_2 row_25_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level2 leveleven item b1b column-itemname",
+"colspan": 3,
+"content": "<span class=\"gradeitemheader\" title=\"Tipo escala\" tabindex=\"0\"><i class=\"icon fa fa-square-o fa-fw icon itemicon\" aria-hidden=\"true\" title=\"Ítem manual\" aria-label=\"Ítem manual\"></i>Tipo escala</span>",
+"celltype": "th",
+"id": "row_26_2"
+},
+"weight": {
+"class": "level2 leveleven item b1b itemcenter  column-weight",
+"content": "-",
+"headers": "cat_1_2 row_26_2 weight"
+},
+"grade": {
+"class": "level2 leveleven item b1b itemcenter  column-grade",
+"content": "-",
+"headers": "cat_1_2 row_26_2 grade"
+},
+"range": {
+"class": "level2 leveleven item b1b itemcenter  column-range",
+"content": "Yes&ndash;No",
+"headers": "cat_1_2 row_26_2 range"
+},
+"percentage": {
+"class": "level2 leveleven item b1b itemcenter  column-percentage",
+"content": "-",
+"headers": "cat_1_2 row_26_2 percentage"
+},
+"feedback": {
+"class": "level2 leveleven item b1b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_1_2 row_26_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level2 leveleven item b1b itemcenter  column-contributiontocoursetotal",
+"content": "-",
+"headers": "cat_1_2 row_26_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level2 leveleven item b1b column-itemname",
+"colspan": 3,
+"content": "<span class=\"gradeitemheader\" title=\"Mas escalas\" tabindex=\"0\"><i class=\"icon fa fa-square-o fa-fw icon itemicon\" aria-hidden=\"true\" title=\"Ítem manual\" aria-label=\"Ítem manual\"></i>Mas escalas</span>",
+"celltype": "th",
+"id": "row_27_2"
+},
+"weight": {
+"class": "level2 leveleven item b1b itemcenter  column-weight",
+"content": "-",
+"headers": "cat_1_2 row_27_2 weight"
+},
+"grade": {
+"class": "level2 leveleven item b1b itemcenter  column-grade",
+"content": "Notable",
+"headers": "cat_1_2 row_27_2 grade"
+},
+"range": {
+"class": "level2 leveleven item b1b itemcenter  column-range",
+"content": "Suspenso&ndash;Sobresaliente",
+"headers": "cat_1_2 row_27_2 range"
+},
+"percentage": {
+"class": "level2 leveleven item b1b itemcenter  column-percentage",
+"content": "33,33 %",
+"headers": "cat_1_2 row_27_2 percentage"
+},
+"feedback": {
+"class": "level2 leveleven item b1b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_1_2 row_27_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level2 leveleven item b1b itemcenter  column-contributiontocoursetotal",
+"content": "-",
+"headers": "cat_1_2 row_27_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level2 leveleven item b1b column-itemname",
+"colspan": 3,
+"content": "<a title=\"Enlazar a la actividad Taller\" class=\"gradeitemheader\" href=\"http://localhost/mod/workshop/view.php?id=4\"><img class=\"icon itemicon\" src=\"http://localhost/theme/image.php/boost/workshop/1512411906/icon\" alt=\"Taller\" />Taller 1 (envío)</a>",
+"celltype": "th",
+"id": "row_28_2"
+},
+"weight": {
+"class": "level2 leveleven item b1b itemcenter  column-weight",
+"content": "-",
+"headers": "cat_1_2 row_28_2 weight"
+},
+"grade": {
+"class": "level2 leveleven item b1b itemcenter  column-grade",
+"content": "0,00",
+"headers": "cat_1_2 row_28_2 grade"
+},
+"range": {
+"class": "level2 leveleven item b1b itemcenter  column-range",
+"content": "0&ndash;80",
+"headers": "cat_1_2 row_28_2 range"
+},
+"percentage": {
+"class": "level2 leveleven item b1b itemcenter  column-percentage",
+"content": "0,00 %",
+"headers": "cat_1_2 row_28_2 percentage"
+},
+"feedback": {
+"class": "level2 leveleven item b1b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_1_2 row_28_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level2 leveleven item b1b itemcenter  column-contributiontocoursetotal",
+"content": "-",
+"headers": "cat_1_2 row_28_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level2 leveleven item b1b column-itemname",
+"colspan": 3,
+"content": "<a title=\"Enlazar a la actividad Taller\" class=\"gradeitemheader\" href=\"http://localhost/mod/workshop/view.php?id=4\"><img class=\"icon itemicon\" src=\"http://localhost/theme/image.php/boost/workshop/1512411906/icon\" alt=\"Taller\" />Taller 1 (evaluación)</a>",
+"celltype": "th",
+"id": "row_29_2"
+},
+"weight": {
+"class": "level2 leveleven item b1b itemcenter  column-weight",
+"content": "-",
+"headers": "cat_1_2 row_29_2 weight"
+},
+"grade": {
+"class": "level2 leveleven item b1b itemcenter  column-grade",
+"content": "-",
+"headers": "cat_1_2 row_29_2 grade"
+},
+"range": {
+"class": "level2 leveleven item b1b itemcenter  column-range",
+"content": "0&ndash;20",
+"headers": "cat_1_2 row_29_2 range"
+},
+"percentage": {
+"class": "level2 leveleven item b1b itemcenter  column-percentage",
+"content": "-",
+"headers": "cat_1_2 row_29_2 percentage"
+},
+"feedback": {
+"class": "level2 leveleven item b1b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_1_2 row_29_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level2 leveleven item b1b itemcenter  column-contributiontocoursetotal",
+"content": "-",
+"headers": "cat_1_2 row_29_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level2 leveleven item b1b column-itemname",
+"colspan": 3,
+"content": "<a title=\"Enlazar a la actividad Lección\" class=\"gradeitemheader\" href=\"http://localhost/mod/lesson/grade.php?id=5&amp;itemnumber=0&amp;userid=2\"><img class=\"icon itemicon\" src=\"http://localhost/theme/image.php/boost/lesson/1512411906/icon\" alt=\"Lección\" />Leccion Tema 1</a>",
+"celltype": "th",
+"id": "row_30_2"
+},
+"weight": {
+"class": "level2 leveleven item b1b itemcenter  column-weight",
+"content": "-",
+"headers": "cat_1_2 row_30_2 weight"
+},
+"grade": {
+"class": "level2 leveleven item b1b itemcenter  column-grade",
+"content": "-",
+"headers": "cat_1_2 row_30_2 grade"
+},
+"range": {
+"class": "level2 leveleven item b1b itemcenter  column-range",
+"content": "0&ndash;100",
+"headers": "cat_1_2 row_30_2 range"
+},
+"percentage": {
+"class": "level2 leveleven item b1b itemcenter  column-percentage",
+"content": "-",
+"headers": "cat_1_2 row_30_2 percentage"
+},
+"feedback": {
+"class": "level2 leveleven item b1b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_1_2 row_30_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level2 leveleven item b1b itemcenter  column-contributiontocoursetotal",
+"content": "-",
+"headers": "cat_1_2 row_30_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level2 leveleven item b1b column-itemname",
+"colspan": 3,
+"content": "<a title=\"Enlazar a la actividad Tarea\" class=\"gradeitemheader\" href=\"http://localhost/mod/assign/view.php?id=7\"><img class=\"icon itemicon\" src=\"http://localhost/theme/image.php/boost/assign/1512411906/icon\" alt=\"Tarea\" />Tarea con escala</a>",
+"celltype": "th",
+"id": "row_32_2"
+},
+"weight": {
+"class": "level2 leveleven item b1b itemcenter  column-weight",
+"content": "-",
+"headers": "cat_1_2 row_32_2 weight"
+},
+"grade": {
+"class": "level2 leveleven item b1b itemcenter  column-grade",
+"content": "Yes",
+"headers": "cat_1_2 row_32_2 grade"
+},
+"range": {
+"class": "level2 leveleven item b1b itemcenter  column-range",
+"content": "No&ndash;Yes",
+"headers": "cat_1_2 row_32_2 range"
+},
+"percentage": {
+"class": "level2 leveleven item b1b itemcenter  column-percentage",
+"content": "33,33",
+"headers": "cat_1_2 row_32_2 percentage"
+},
+"feedback": {
+"class": "level2 leveleven item b1b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_1_2 row_32_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level2 leveleven item b1b itemcenter  column-contributiontocoursetotal",
+"content": "-",
+"headers": "cat_1_2 row_32_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level2 leveleven item b1b column-itemname",
+"colspan": 3,
+"content": "<a title=\"Enlazar a la actividad Tarea\" class=\"gradeitemheader\" href=\"http://localhost/mod/assign/view.php?id=8\"><img class=\"icon itemicon\" src=\"http://localhost/theme/image.php/boost/assign/1512411906/icon\" alt=\"Tarea\" />Tarea con escala 2</a>",
+"celltype": "th",
+"id": "row_33_2"
+},
+"weight": {
+"class": "level2 leveleven item b1b itemcenter  column-weight",
+"content": "-",
+"headers": "cat_1_2 row_33_2 weight"
+},
+"grade": {
+"class": "level2 leveleven item b1b itemcenter  column-grade",
+"content": "Sobresaliente",
+"headers": "cat_1_2 row_33_2 grade"
+},
+"range": {
+"class": "level2 leveleven item b1b itemcenter  column-range",
+"content": "Sobresaliente&ndash;Suspenso",
+"headers": "cat_1_2 row_33_2 range"
+},
+"percentage": {
+"class": "level2 leveleven item b1b itemcenter  column-percentage",
+"content": "0,00 %",
+"headers": "cat_1_2 row_33_2 percentage"
+},
+"feedback": {
+"class": "level2 leveleven item b1b feedbacktext column-feedback",
+"content": "&nbsp;",
+"headers": "cat_1_2 row_33_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level2 leveleven item b1b itemcenter  column-contributiontocoursetotal",
+"content": "-",
+"headers": "cat_1_2 row_33_2 contributiontocoursetotal"
+}
+},
+{
+"itemname": {
+"class": "level1 levelodd oddd1 baggt b2b column-itemname",
+"colspan": 3,
+"content": "<span class=\"gradeitemheader\" title=\"Programación\" tabindex=\"0\"><i class=\"icon fa fa-calculator fa-fw icon itemicon\" aria-hidden=\"true\" title=\"Calificación calculada\" aria-label=\"Calificación calculada\"></i>Programación</span><div class=\"gradeitemdescription\">Incluye calificaciones vacías.</div><div class=\"gradeitemdescriptionfiller\"></div>",
+"celltype": "th",
+"id": "row_1_2"
+},
+"weight": {
+"class": "level1 levelodd oddd1 baggt b2b itemcenter  column-weight",
+"content": "-",
+"headers": "cat_1_2 row_1_2 weight"
+},
+"grade": {
+"class": "level1 levelodd oddd1 baggt b2b itemcenter  column-grade",
+"content": "5,00",
+"headers": "cat_1_2 row_1_2 grade"
+},
+"range": {
+"class": "level1 levelodd oddd1 baggt b2b itemcenter  column-range",
+"content": "0&ndash;10",
+"headers": "cat_1_2 row_1_2 range"
+},
+"percentage": {
+"class": "level1 levelodd oddd1 baggt b2b itemcenter  column-percentage",
+"content": "50,00 %",
+"headers": "cat_1_2 row_1_2 percentage"
+},
+"feedback": {
+"class": "level1 levelodd oddd1 baggt b2b feedbacktext column-feedback",
+"content": "Anuladas: ",
+"headers": "cat_1_2 row_1_2 feedback"
+},
+"contributiontocoursetotal": {
+"class": "level1 levelodd oddd1 baggt b2b itemcenter  column-contributiontocoursetotal",
+"content": "-",
+"headers": "cat_1_2 row_1_2 contributiontocoursetotal"
+}
+}
+]
+}
+],
+"warnings": []
+}
+]]></con:responseContent></con:response><con:response name="OBTENER_ASSIGNMENTS" id="0aa73884-9f4d-4b5a-84f8-81606fa4ac42" httpResponseStatus="200" mediaType="application/json"><con:settings/><con:responseContent>{
+"courses": [
+{
+"id": 2,
+"fullname": "Programación",
+"shortname": "Prog",
+"timemodified": 1507146366,
+"assignments": [
+{
+"id": 1,
+"cmid": 3,
+"course": 2,
+"name": "Tarea Tema 1",
+"nosubmissions": 0,
+"submissiondrafts": 0,
+"sendnotifications": 0,
+"sendlatenotifications": 0,
+"sendstudentnotifications": 1,
+"duedate": 1508018400,
+"allowsubmissionsfromdate": 1507413600,
+"grade": 10,
+"timemodified": 1507487516,
+"completionsubmit": 1,
+"cutoffdate": 0,
+"gradingduedate": 1508623200,
+"teamsubmission": 0,
+"requireallteammemberssubmit": 0,
+"teamsubmissiongroupingid": 0,
+"blindmarking": 0,
+"revealidentities": 0,
+"attemptreopenmethod": "none",
+"maxattempts": -1,
+"markingworkflow": 0,
+"markingallocation": 0,
+"requiresubmissionstatement": 0,
+"preventsubmissionnotingroup": 0,
+"configs": [
+{
+"plugin": "onlinetext",
+"subtype": "assignsubmission",
+"name": "enabled",
+"value": "1"
+},
+{
+"plugin": "onlinetext",
+"subtype": "assignsubmission",
+"name": "wordlimit",
+"value": "0"
+},
+{
+"plugin": "onlinetext",
+"subtype": "assignsubmission",
+"name": "wordlimitenabled",
+"value": "0"
+},
+{
+"plugin": "comments",
+"subtype": "assignsubmission",
+"name": "enabled",
+"value": "1"
+},
+{
+"plugin": "comments",
+"subtype": "assignfeedback",
+"name": "enabled",
+"value": "1"
+},
+{
+"plugin": "comments",
+"subtype": "assignfeedback",
+"name": "commentinline",
+"value": "0"
+}
+],
+"intro": "",
+"introformat": 1,
+"introfiles": [],
+"introattachments": []
+},
+{
+"id": 2,
+"cmid": 7,
+"course": 2,
+"name": "Tarea con escala",
+"nosubmissions": 0,
+"submissiondrafts": 0,
+"sendnotifications": 0,
+"sendlatenotifications": 0,
+"sendstudentnotifications": 1,
+"duedate": 1513033200,
+"allowsubmissionsfromdate": 1512428400,
+"grade": -3,
+"timemodified": 1512501594,
+"completionsubmit": 1,
+"cutoffdate": 0,
+"gradingduedate": 1513638000,
+"teamsubmission": 0,
+"requireallteammemberssubmit": 0,
+"teamsubmissiongroupingid": 0,
+"blindmarking": 0,
+"revealidentities": 0,
+"attemptreopenmethod": "none",
+"maxattempts": -1,
+"markingworkflow": 0,
+"markingallocation": 0,
+"requiresubmissionstatement": 0,
+"preventsubmissionnotingroup": 0,
+"configs": [
+{
+"plugin": "file",
+"subtype": "assignsubmission",
+"name": "enabled",
+"value": "1"
+},
+{
+"plugin": "file",
+"subtype": "assignsubmission",
+"name": "maxfilesubmissions",
+"value": "1"
+},
+{
+"plugin": "file",
+"subtype": "assignsubmission",
+"name": "maxsubmissionsizebytes",
+"value": "8388608"
+},
+{
+"plugin": "file",
+"subtype": "assignsubmission",
+"name": "filetypeslist",
+"value": ""
+},
+{
+"plugin": "comments",
+"subtype": "assignsubmission",
+"name": "enabled",
+"value": "1"
+},
+{
+"plugin": "comments",
+"subtype": "assignfeedback",
+"name": "enabled",
+"value": "1"
+},
+{
+"plugin": "comments",
+"subtype": "assignfeedback",
+"name": "commentinline",
+"value": "0"
+}
+],
+"intro": "",
+"introformat": 1,
+"introfiles": [],
+"introattachments": []
+},
+{
+"id": 3,
+"cmid": 8,
+"course": 2,
+"name": "Tarea con escala 2",
+"nosubmissions": 0,
+"submissiondrafts": 0,
+"sendnotifications": 0,
+"sendlatenotifications": 0,
+"sendstudentnotifications": 1,
+"duedate": 1513206000,
+"allowsubmissionsfromdate": 1512601200,
+"grade": -4,
+"timemodified": 1512669573,
+"completionsubmit": 1,
+"cutoffdate": 0,
+"gradingduedate": 1513810800,
+"teamsubmission": 0,
+"requireallteammemberssubmit": 0,
+"teamsubmissiongroupingid": 0,
+"blindmarking": 0,
+"revealidentities": 0,
+"attemptreopenmethod": "none",
+"maxattempts": -1,
+"markingworkflow": 0,
+"markingallocation": 0,
+"requiresubmissionstatement": 0,
+"preventsubmissionnotingroup": 0,
+"configs": [
+{
+"plugin": "file",
+"subtype": "assignsubmission",
+"name": "enabled",
+"value": "1"
+},
+{
+"plugin": "file",
+"subtype": "assignsubmission",
+"name": "maxfilesubmissions",
+"value": "1"
+},
+{
+"plugin": "file",
+"subtype": "assignsubmission",
+"name": "maxsubmissionsizebytes",
+"value": "8388608"
+},
+{
+"plugin": "file",
+"subtype": "assignsubmission",
+"name": "filetypeslist",
+"value": ""
+},
+{
+"plugin": "comments",
+"subtype": "assignsubmission",
+"name": "enabled",
+"value": "1"
+},
+{
+"plugin": "comments",
+"subtype": "assignfeedback",
+"name": "enabled",
+"value": "1"
+},
+{
+"plugin": "comments",
+"subtype": "assignfeedback",
+"name": "commentinline",
+"value": "0"
+}
+],
+"intro": "",
+"introformat": 1,
+"introfiles": [],
+"introattachments": []
+}
+]
+}
+],
+"warnings": []
+}
+</con:responseContent></con:response></con:restMockAction></con:restMockService><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:sensitiveInformation/></con:soapui-project>

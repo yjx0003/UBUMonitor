@@ -642,7 +642,7 @@ public class MainController implements Initializable {
 		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
 
 		StringBuilder tableData = new StringBuilder();
-		tableData.append("[['Nombre'");
+		tableData.append("[['" + ubuGrades.getResourceBundle().getString("chartlabel.name") + "'");
 		Boolean firstElement = true;
 
 		// Por cada ítem seleccionado lo añadimos como label

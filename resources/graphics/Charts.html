@@ -17,6 +17,25 @@
 		margin: auto;
 		padding: 10% 0;
 	}
+	
+	.noradar
+	{
+		display: none;
+		padding: 10% 0;
+		margin: auto;
+		text-align: center;
+	}
+	
+	.noradarText
+	{
+		display: inline-block;
+		margin: auto;
+		padding: 10px;
+		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    	text-align: center;
+    	font-size: 20px;
+    	font-weight: bold;
+	}
 		
 	.table_div
 	{
@@ -170,6 +189,10 @@
 
 <div id="inicio" class="inicio">
 	<img class="imginicio" src="../img/logo.png">
+</div>
+
+<div id="noradar" class="noradar">
+	<div id="noradarText" class="noradarText">Selecciona al menos 3 actividades para mostrar el gráfico</div>
 </div>
 
 <div id="chart-container" class="chart-container">
@@ -433,6 +456,7 @@ function generateChart(type){
 	document.getElementById('table_div').style.display = 'none';
 	document.getElementById('chart-container').style.display = 'block';
 	document.getElementById('inicio').style.display = 'none';
+	document.getElementById('noradar').style.display = 'none';
 	document.getElementById('btnLegend').style.display = 'inline';
 	
 	switch (type) {
@@ -523,6 +547,10 @@ function generateChart(type){
 				dataset.pointBorderColor = color + '1)';
 				dataset.fill = true;
 			});
+			if(myChart.data.labels.length < 3) {
+				document.getElementById('chart-container').style.display = 'none';
+				document.getElementById('noradar').style.display = 'block';
+			}
 			break;
 	}
 
@@ -532,6 +560,8 @@ function generateChart(type){
 // Funcion que recibe el tipo de grafico y su data set y lo actualiza
 function updateChart(type, dataSet){
 	if(currentType != 'table') {
+		document.getElementById('chart-container').style.display = 'block';
+		document.getElementById('inicio').style.display = 'none';
 		switch (type) {
 			case 'line':
 				LineDataSet = dataSet;
@@ -575,12 +605,16 @@ function updateChart(type, dataSet){
 					});
 					if (GeneralMeanActive) {myChart.data.datasets.push(GeneralMeanDataSet);}
 					if (GroupMeanActive) {myChart.data.datasets.push(GroupMeanDataSet);}
+					if(myChart.data.labels.length < 3) {
+						document.getElementById('chart-container').style.display = 'none';
+						document.getElementById('noradar').style.display = 'block';
+					} else {
+						document.getElementById('noradar').style.display = 'none';
+					}
 				}
 				break;
 		}
 		myChart.update();
-		document.getElementById('chart-container').style.display = 'block';
-		document.getElementById('inicio').style.display = 'none';
 	}
 }
 
@@ -737,6 +771,10 @@ var messages = {
 	btnGroupMean: {
 		es_es: "Media Del Grupo",
 		en_en: "Group Mean"
+	},
+	noradarText: {
+		es_es: "Selecciona al menos 3 actividades para mostrar el gráfico",
+		en_en: "Select at least 3 activities to show the chart"
 	}
 }
 
@@ -750,6 +788,8 @@ function setLanguage(lang) {
 	get_i18n('btnLegend', lang);
 	get_i18n('btnMean', lang);
 	get_i18n('btnGroupMean', lang);
+	document.getElementById('noradarText').innerHTML = messages['noradarText'][lang];
+	
 }
 
 // Modifica el valor de los inputs segun el idioma pasado

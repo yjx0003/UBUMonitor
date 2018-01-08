@@ -13,6 +13,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
@@ -800,9 +801,9 @@ public class MainController implements Initializable {
 		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
 
 		StringBuilder labels = new StringBuilder();
-		StringBuilder maximos = new StringBuilder("{label:'Máximo',data: [");
+		StringBuilder upperLimit = new StringBuilder("{label:'Limite Superor',data: [");
 		StringBuilder medianas = new StringBuilder("{label:'Mediana',data: [");
-		StringBuilder minimos = new StringBuilder("{label:'Mínimo',data: [");
+		StringBuilder lowerLimit = new StringBuilder("{label:'Limite Inferior',data: [");
 		StringBuilder primerQuartil = new StringBuilder("{label:'Primer Quartil',data: [");
 		StringBuilder tercerQuartil = new StringBuilder("{label:'Tercer Quartil',data: [");
 		boolean firstLabel = true;
@@ -819,22 +820,22 @@ public class MainController implements Initializable {
 
 			gradeId = structTree.getValue().getId();
 			if (firstGrade) {
-				maximos.append(stats.getMaxmimum(boxPlotStats, gradeId));
+				upperLimit.append(stats.getUpperLimit(boxPlotStats, gradeId));
 				medianas.append(stats.getMedian(boxPlotStats, gradeId));
-				minimos.append(stats.getMinimum(boxPlotStats, gradeId));
+				lowerLimit.append(stats.getLowerLimit(boxPlotStats, gradeId));
 				primerQuartil.append(stats.getElementPercentile(boxPlotStats, gradeId, 25));
 				tercerQuartil.append(stats.getElementPercentile(boxPlotStats, gradeId, 75));
 				firstGrade = false;
 			} else {
-				maximos.append("," + stats.getMaxmimum(boxPlotStats, gradeId));
+				upperLimit.append("," + stats.getUpperLimit(boxPlotStats, gradeId));
 				medianas.append("," + stats.getMedian(boxPlotStats, gradeId));
-				minimos.append("," + stats.getMinimum(boxPlotStats, gradeId));
+				lowerLimit.append("," + stats.getLowerLimit(boxPlotStats, gradeId));
 				primerQuartil.append( "," + stats.getElementPercentile(boxPlotStats, gradeId, 25));
 				tercerQuartil.append("," + stats.getElementPercentile(boxPlotStats, gradeId, 75));
 			}
 		}
 
-		maximos.append("]," + "backgroundColor: 'rgba(244,67,54,1)'," + "borderColor: 'rgba(244,67,54,1)',"
+		upperLimit.append("]," + "backgroundColor: 'rgba(244,67,54,1)'," + "borderColor: 'rgba(244,67,54,1)',"
 				+ "pointBorderColor: 'rgba(244,67,54,1)'," + "pointBackgroundColor: 'rgba(244,67,54,1)',"
 				+ "borderWidth: 3," + "fill: false}");
 		tercerQuartil.append("]," + "backgroundColor: 'rgba(255,152,0,0.3)" + "'," + "borderColor: 'rgba(255,152,0,1)"
@@ -846,14 +847,53 @@ public class MainController implements Initializable {
 		primerQuartil.append("]," + "backgroundColor: 'rgba(255,152,0,0.3)'," + "borderColor: 'rgba(255,152,0,1)',"
 				+ "pointBorderColor: 'rgba(255,152,0,1)'," + "pointBackgroundColor: 'rgba(255,152,0,1)',"
 				+ "borderWidth: 3," + "fill: false}");
-		minimos.append("]," + "backgroundColor: 'rgba(81,45,168,1)'," + "borderColor: 'rgba(81,45,168,1)',"
+		lowerLimit.append("]," + "backgroundColor: 'rgba(81,45,168,1)'," + "borderColor: 'rgba(81,45,168,1)',"
 				+ "pointBorderColor: 'rgba(81,45,168,1)'," + "pointBackgroundColor: 'rgba(81,45,168,1)',"
 				+ "borderWidth: 3," + "fill: false}");
+		
+		
 
-		return "{ labels:[" + labels + "]," + "datasets: [" + maximos + "," + tercerQuartil + "," + medianas + ","
-				+ primerQuartil + "," + minimos + "]}";
+		return "{ labels:[" + labels + "]," + "datasets: [" + upperLimit + "," + tercerQuartil + "," + medianas + ","
+				+ primerQuartil + "," + lowerLimit + "," + generateAtypicalValuesDataSet(boxPlotStats) + "]}";
 	}
 
+	private String generateAtypicalValuesDataSet(HashMap<Integer, DescriptiveStatistics> statistics) {
+		StringBuilder dataset = new StringBuilder();
+		int gradeId;
+		
+		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
+		
+		for(int i = 0; i < selectedGRL.size(); i++) {
+			gradeId = selectedGRL.get(i).getValue().getId();
+			List<String> atypicalValues = stats.getAtypicalValues(statistics, gradeId);
+			
+			if(dataset.length() != 0 && !atypicalValues.isEmpty()) {
+				dataset.append(",");
+			}
+			
+			for(int j = 0; j < atypicalValues.size(); j++) {
+				if(j != 0) {
+					dataset.append(",");
+				}
+				dataset.append("{label:'Valor Atipico',data: [");
+				for(int x = 0; x < selectedGRL.size(); x++) {
+					if(x != 0) {
+						dataset.append(",");
+					}
+					if(x == i) {
+						dataset.append(atypicalValues.get(j));
+					} else {
+						dataset.append("NaN");
+					}
+				}
+				dataset.append("]," + "backgroundColor: 'rgba(0, 97, 255, 1)'," + "borderColor: 'rgba(0, 97, 255, 1)',"
+						+ "pointBorderColor: 'rgba(0, 97, 255, 1)'," + "pointBackgroundColor: 'rgba(0, 97, 255, 1)',"
+						+ "borderWidth: 3," + "fill: false}");
+			}
+		}
+		return dataset.toString();
+	}
+	
 	/**
 	 * Función que genera el dataSet de la media de todos los alumnos.
 	 * 

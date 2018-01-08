@@ -1,7 +1,10 @@
 package model;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -264,6 +267,83 @@ public class Stats {
 		String minimum  = String.valueOf(statistics.getMin()).equals("NaN") ? "NaN" : df.format(statistics.getMin());
 		minimum = minimum.replace(",", ".");
 		return minimum;
+	}
+	
+	/**
+	 * Permite obtener el limite superior para el diagrama de tipo boxplot.
+	 * 
+	 * @param statsHs
+	 * 		Las estadisticas.
+	 * @param gradeId
+	 * 		El id del Grade Report Line.
+	 * @return
+	 * 		El limite superior.
+	 */
+	public String getUpperLimit(Map<Integer,DescriptiveStatistics> statsHs, int gradeId) {
+		DescriptiveStatistics statistics = statsHs.get(gradeId);
+		// Calculamos el rango intercuartilico
+		double ric = statistics.getPercentile(75) - statistics.getPercentile(25);
+		double upperLimit = statistics.getPercentile(75) + ric * 1.5;
+		upperLimit = Math.min(upperLimit, statistics.getMax());
+		DecimalFormat df = new DecimalFormat("#.##");
+		String upperLimitString = String.valueOf(upperLimit).equals("NaN") ? "NaN" : df.format(upperLimit);
+		upperLimitString = upperLimitString.replace(",", ".");
+		return upperLimitString;	
+	}
+
+	/**
+	 * Permite obtener el limite inferior para el diagrama de tipo boxplot.
+	 * 
+	 * @param statsHs
+	 * 		Las estadisticas.
+	 * @param gradeId
+	 * 		El id del Grade Report Line.
+	 * @return
+	 * 		El limite inferior.
+	 */
+	public String getLowerLimit(Map<Integer,DescriptiveStatistics> statsHs, int gradeId) {
+		DescriptiveStatistics statistics = statsHs.get(gradeId);
+		// Calculamos el rango intercuartilico
+		double ric = statistics.getPercentile(75) - statistics.getPercentile(25);
+		double lowerLimit = statistics.getPercentile(25) - ric * 1.5;
+		lowerLimit = Math.max(lowerLimit, statistics.getMin());
+		DecimalFormat df = new DecimalFormat("#.##");
+		String lowerLimitString = String.valueOf(lowerLimit).equals("NaN") ? "NaN" : df.format(lowerLimit);
+		lowerLimitString = lowerLimitString.replace(",", ".");
+		return lowerLimitString;
+	}
+	
+	public List<String> getAtypicalValues(Map<Integer,DescriptiveStatistics> statsHs, int gradeId) {
+		DescriptiveStatistics statistics = statsHs.get(gradeId);
+		List<String> atypicalValues = new ArrayList<>();
+		double lowerLimit = Double.parseDouble(getLowerLimit(statsHs, gradeId));
+		double upperLimit = Double.parseDouble(getUpperLimit(statsHs, gradeId));	
+		double[] values = statistics.getValues();
+		Arrays.sort(values);
+		
+		DecimalFormat df = new DecimalFormat("#.##");
+	
+		for(int i = 0; i < values.length; i++) {
+			if(values[i] < lowerLimit) {
+				String temp = df.format(values[i]);
+				temp = temp.replaceAll(",", ".");
+				atypicalValues.add(temp);
+			} else {
+				break;
+			}
+		}
+		
+		for(int i = values.length-1; i >= 0; i--) {
+			if(values[i] > upperLimit) {
+				String temp = df.format(values[i]);
+				temp = temp.replaceAll(",", ".");
+				atypicalValues.add(temp);
+			} else {
+				break;
+			}
+		}
+		
+		return atypicalValues;
 	}
 	
     /**

@@ -387,6 +387,7 @@ var GeneralMeanActive = false;
 var GroupMeanActive = false;
 var legendActive = true;
 var currentType = 'line';
+var language = 'es_es';
 
 //
 var colorHash = new ColorHash();
@@ -663,7 +664,7 @@ function showGeneralMean() {
 		document.getElementById('btnMean').style.backgroundImage = 'url(./../img/visibility.png)';
 	} else if(GeneralMeanActive == true){
 		GeneralMeanActive = false;
-		removeDataSet('Media general');
+		removeDataSet(messages['btnMean'][language]);
 		document.getElementById('btnMean').style.backgroundImage = 'url(./../img/visibility_off.png)';
 	}
 }
@@ -677,7 +678,7 @@ function showGroupMean() {
 		document.getElementById('btnGroupMean').style.backgroundImage = 'url(./../img/visibility.png)';
 	} else if(GroupMeanActive == true){
 		GroupMeanActive = false;
-		removeDataSet('Media del grupo');
+		removeDataSet(messages['btnGroupMean'][language]);
 		document.getElementById('btnGroupMean').style.backgroundImage = 'url(./../img/visibility_off.png)';
 	}
 }
@@ -801,6 +802,7 @@ var messages = {
 
 // Establece el idioma
 function setLanguage(lang) {
+	language = lang;
 	get_i18n('btnLineas', lang);
 	get_i18n('btnRadar', lang);
 	get_i18n('btnBoxPlot', lang);

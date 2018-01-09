@@ -689,7 +689,7 @@ public class MainController implements Initializable {
 	private String generateTableMean() {
 		// Añadimos la media general
 		StringBuilder tableData = new StringBuilder(); 
-		tableData.append(",['Media'");
+		tableData.append(",['" + ubuGrades.getResourceBundle().getString("chartlabel.tableMean") + "'");
 		for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 			String grade = stats.getElementMean(stats.getGeneralStats(), structTree.getValue().getId());
 			if (grade.equals("NaN")) {
@@ -703,7 +703,7 @@ public class MainController implements Initializable {
 		// Añadimos la media de los grupos
 		for (MenuItem grupo : slcGroup.getItems()) {
 			if (!grupo.getText().equals(TODOS)) {
-				tableData.append(",['Media grupo " + grupo.getText() + "'");
+				tableData.append(",['" + ubuGrades.getResourceBundle().getString("chartlabel.tableGroupMean") + " " + grupo.getText() + "'");
 				for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 					String grade = stats.getElementMean(stats.getGroupStats(grupo.getText()),
 							structTree.getValue().getId());
@@ -798,17 +798,18 @@ public class MainController implements Initializable {
 			boxPlotStats = stats.getGroupStats(group);
 		}
 
-		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
-
+		ResourceBundle rs = ubuGrades.getResourceBundle();
 		StringBuilder labels = new StringBuilder();
-		StringBuilder upperLimit = new StringBuilder("{label:'Limite Superor',data: [");
-		StringBuilder medianas = new StringBuilder("{label:'Mediana',data: [");
-		StringBuilder lowerLimit = new StringBuilder("{label:'Limite Inferior',data: [");
-		StringBuilder primerQuartil = new StringBuilder("{label:'Primer Quartil',data: [");
-		StringBuilder tercerQuartil = new StringBuilder("{label:'Tercer Quartil',data: [");
+		StringBuilder upperLimit = new StringBuilder("{label:'" + rs.getString("chartlabel.upperlimit") + "',data: [");
+		StringBuilder median = new StringBuilder("{label:'" + rs.getString("chartlabel.median") + "',data: [");
+		StringBuilder lowerLimit = new StringBuilder("{label:'" + rs.getString("chartlabel.lowerlimit") + "',data: [");
+		StringBuilder firstQuartile = new StringBuilder("{label:'" + rs.getString("chartlabel.firstquartile") + "',data: [");
+		StringBuilder thirdQuartile = new StringBuilder("{label:'" + rs.getString("chartlabel.thirdquartile") + "',data: [");
 		boolean firstLabel = true;
 		boolean firstGrade = true;
 		int gradeId;
+		
+		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
 
 		for (TreeItem<GradeReportLine> structTree : selectedGRL) {
 			if (firstLabel) {
@@ -821,30 +822,30 @@ public class MainController implements Initializable {
 			gradeId = structTree.getValue().getId();
 			if (firstGrade) {
 				upperLimit.append(stats.getUpperLimit(boxPlotStats, gradeId));
-				medianas.append(stats.getMedian(boxPlotStats, gradeId));
+				median.append(stats.getMedian(boxPlotStats, gradeId));
 				lowerLimit.append(stats.getLowerLimit(boxPlotStats, gradeId));
-				primerQuartil.append(stats.getElementPercentile(boxPlotStats, gradeId, 25));
-				tercerQuartil.append(stats.getElementPercentile(boxPlotStats, gradeId, 75));
+				firstQuartile.append(stats.getElementPercentile(boxPlotStats, gradeId, 25));
+				thirdQuartile.append(stats.getElementPercentile(boxPlotStats, gradeId, 75));
 				firstGrade = false;
 			} else {
 				upperLimit.append("," + stats.getUpperLimit(boxPlotStats, gradeId));
-				medianas.append("," + stats.getMedian(boxPlotStats, gradeId));
+				median.append("," + stats.getMedian(boxPlotStats, gradeId));
 				lowerLimit.append("," + stats.getLowerLimit(boxPlotStats, gradeId));
-				primerQuartil.append( "," + stats.getElementPercentile(boxPlotStats, gradeId, 25));
-				tercerQuartil.append("," + stats.getElementPercentile(boxPlotStats, gradeId, 75));
+				firstQuartile.append( "," + stats.getElementPercentile(boxPlotStats, gradeId, 25));
+				thirdQuartile.append("," + stats.getElementPercentile(boxPlotStats, gradeId, 75));
 			}
 		}
 
 		upperLimit.append("]," + "backgroundColor: 'rgba(244,67,54,1)'," + "borderColor: 'rgba(244,67,54,1)',"
 				+ "pointBorderColor: 'rgba(244,67,54,1)'," + "pointBackgroundColor: 'rgba(244,67,54,1)',"
 				+ "borderWidth: 3," + "fill: false}");
-		tercerQuartil.append("]," + "backgroundColor: 'rgba(255,152,0,0.3)" + "'," + "borderColor: 'rgba(255,152,0,1)"
+		thirdQuartile.append("]," + "backgroundColor: 'rgba(255,152,0,0.3)" + "'," + "borderColor: 'rgba(255,152,0,1)"
 				+ "'," + "pointBorderColor: 'rgba(255,152,0,1)" + "'," + "pointBackgroundColor: 'rgba(255,152,0,1)"
 				+ "'," + "borderWidth: 3," + "fill: 3}");
-		medianas.append("]," + "backgroundColor: 'rgba(0,150,136,1)'," + "borderColor: 'rgba(0,150,136,1)',"
+		median.append("]," + "backgroundColor: 'rgba(0,150,136,1)'," + "borderColor: 'rgba(0,150,136,1)',"
 				+ "pointBorderColor: 'rgba(0,150,136,1)'," + "pointBackgroundColor: 'rgba(0,150,136,1)',"
 				+ "borderWidth: 3," + "fill: false}");
-		primerQuartil.append("]," + "backgroundColor: 'rgba(255,152,0,0.3)'," + "borderColor: 'rgba(255,152,0,1)',"
+		firstQuartile.append("]," + "backgroundColor: 'rgba(255,152,0,0.3)'," + "borderColor: 'rgba(255,152,0,1)',"
 				+ "pointBorderColor: 'rgba(255,152,0,1)'," + "pointBackgroundColor: 'rgba(255,152,0,1)',"
 				+ "borderWidth: 3," + "fill: false}");
 		lowerLimit.append("]," + "backgroundColor: 'rgba(81,45,168,1)'," + "borderColor: 'rgba(81,45,168,1)',"
@@ -853,8 +854,8 @@ public class MainController implements Initializable {
 		
 		
 
-		return "{ labels:[" + labels + "]," + "datasets: [" + upperLimit + "," + tercerQuartil + "," + medianas + ","
-				+ primerQuartil + "," + lowerLimit + "," + generateAtypicalValuesDataSet(boxPlotStats) + "]}";
+		return "{ labels:[" + labels + "]," + "datasets: [" + upperLimit + "," + thirdQuartile + "," + median + ","
+				+ firstQuartile + "," + lowerLimit + "," + generateAtypicalValuesDataSet(boxPlotStats) + "]}";
 	}
 
 	private String generateAtypicalValuesDataSet(HashMap<Integer, DescriptiveStatistics> statistics) {
@@ -875,7 +876,7 @@ public class MainController implements Initializable {
 				if(j != 0) {
 					dataset.append(",");
 				}
-				dataset.append("{label:'Valor Atipico',data: [");
+				dataset.append("{label:'" + ubuGrades.getResourceBundle().getString("chartlabel.atypicalValue") + "',data: [");
 				for(int x = 0; x < selectedGRL.size(); x++) {
 					if(x != 0) {
 						dataset.append(",");
@@ -907,11 +908,11 @@ public class MainController implements Initializable {
 
 		if (group.equals(TODOS)) {
 			meanStats = stats.getGeneralStats();
-			meanDataset.append("{label:'Media general',data:[");
+			meanDataset.append("{label:'" + ubuGrades.getResourceBundle().getString("chartlabel.generalMean") + "',data:[");
 			color = "rgba(255, 152, 0, ";
 		} else {
 			meanStats = stats.getGroupStats(group);
-			meanDataset.append("{label:'Media del grupo',data:[");
+			meanDataset.append("{label:'" + ubuGrades.getResourceBundle().getString("chartlabel.groupMean") + "',data:[");
 			color = "rgba(0, 150, 136, ";
 		}
 

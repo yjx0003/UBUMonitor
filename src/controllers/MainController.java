@@ -12,8 +12,8 @@ import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
@@ -246,7 +246,7 @@ public class MainController implements Initializable {
 				slcType.setText(filterType);
 			});
 			// Cargamos una lista de los nombres de los grupos
-			ArrayList<String> nameActivityList = (ArrayList<String>) ubuGrades.getSession().getActualCourse().getActivities();
+			List<String> nameActivityList =  ubuGrades.getSession().getActualCourse().getActivities();
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
 			ArrayList<MenuItem> nameActivityItemsList = new ArrayList<>();
 			// En principio se van a mostrar todos los participantes en
@@ -299,7 +299,7 @@ public class MainController implements Initializable {
 			listParticipants.setItems(enrList);
 	
 			// Establecemos la estructura en árbol del calificador
-			ArrayList<GradeReportLine> grcl =  (ArrayList<GradeReportLine>) ubuGrades.getSession().getActualCourse()
+			List<GradeReportLine> grcl = ubuGrades.getSession().getActualCourse()
 					.getGradeReportLines();
 			// Establecemos la raiz del Treeview
 			TreeItem<GradeReportLine> root = new TreeItem<>(grcl.get(0));
@@ -346,15 +346,14 @@ public class MainController implements Initializable {
 			boolean roleYes;
 			boolean groupYes;
 			boolean patternYes;
-			ArrayList<EnrolledUser> users = (ArrayList<EnrolledUser>) ubuGrades.getSession().getActualCourse()
-					.getEnrolledUsers();
+			List<EnrolledUser> users = ubuGrades.getSession().getActualCourse().getEnrolledUsers();
 			// Cargamos la lista de los roles
 			ArrayList<EnrolledUser> nameUsers = new ArrayList<>();
 			// Obtenemos los participantes que tienen el rol elegido
 			for (int i = 0; i < users.size(); i++) {
 				// Filtrado por rol:
 				roleYes = false;
-				ArrayList<Role> roles = (ArrayList<Role>) users.get(i).getRoles();
+				List<Role> roles = users.get(i).getRoles();
 				// Si no tiene rol
 				if (roles.isEmpty() && filterRole.equals(TODOS)) {
 					roleYes = true;
@@ -368,7 +367,7 @@ public class MainController implements Initializable {
 				}
 				// Filtrado por grupo:
 				groupYes = false;
-				ArrayList<Group> groups = (ArrayList<Group>) users.get(i).getGroups();
+				List<Group> groups = users.get(i).getGroups();
 				if (groups.isEmpty() && filterGroup.equals(TODOS)) {
 					groupYes = true;
 				} else {
@@ -440,8 +439,7 @@ public class MainController implements Initializable {
 	 */
 	public void filterCalifications() {
 		try {
-			ArrayList<GradeReportLine> grcl = (ArrayList<GradeReportLine>) ubuGrades.getSession().getActualCourse()
-					.getGradeReportLines();
+			List<GradeReportLine> grcl = ubuGrades.getSession().getActualCourse().getGradeReportLines();
 			// Establecemos la raiz del Treeview
 			TreeItem<GradeReportLine> root = new TreeItem<>(grcl.get(0));
 			MainController.setIcon(root);
@@ -791,7 +789,7 @@ public class MainController implements Initializable {
 	 * @return BoxPlot DataSet.
 	 */
 	private String generateBoxPlotDataSet(String group) {
-		HashMap<Integer, DescriptiveStatistics> boxPlotStats;
+		Map<Integer, DescriptiveStatistics> boxPlotStats;
 		if (group.equals(TODOS)) {
 			boxPlotStats = stats.getGeneralStats();
 		} else {
@@ -858,7 +856,7 @@ public class MainController implements Initializable {
 				+ firstQuartile + "," + lowerLimit + "," + generateAtypicalValuesDataSet(boxPlotStats) + "]}";
 	}
 
-	private String generateAtypicalValuesDataSet(HashMap<Integer, DescriptiveStatistics> statistics) {
+	private String generateAtypicalValuesDataSet(Map<Integer, DescriptiveStatistics> statistics) {
 		StringBuilder dataset = new StringBuilder();
 		int gradeId;
 		
@@ -901,7 +899,7 @@ public class MainController implements Initializable {
 	 * @return Mean DataSet.
 	 */
 	private String generateMeanDataSet(String group) {
-		HashMap<Integer, DescriptiveStatistics> meanStats;
+		Map<Integer, DescriptiveStatistics> meanStats;
 		Boolean firstElement = true;
 		StringBuilder meanDataset = new StringBuilder();
 		String color;

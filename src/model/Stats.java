@@ -31,16 +31,16 @@ public class Stats {
 	private static Stats stats = null;
 	
 	/**
-	 * HashMap que almacena como clave el id del GradeReporLine(GRL)
+	 * Map que almacena como clave el id del GradeReporLine(GRL)
 	 * y como valor el objeto de estadisticas de Apache Commons Math.
 	 */
-	private HashMap<Integer, DescriptiveStatistics> generalGradesStats;
+	private Map<Integer, DescriptiveStatistics> generalGradesStats;
 	
 	/**
-	 * HashMap que almacena como clave el nombre del grupo
+	 * Map que almacena como clave el nombre del grupo
 	 * y como valor un HashMap con clave el id del GRL y valor el objeto de estadisticas de Apahce Commons Math.
 	 */
-	private HashMap<String, HashMap<Integer, DescriptiveStatistics>> groupsStats;
+	private Map<String, HashMap<Integer, DescriptiveStatistics>> groupsStats;
 	
 	/**
 	 * Genera las estadisticas en caso de no estar ya generadas.
@@ -148,7 +148,7 @@ public class Stats {
 	 * @return
 	 * 		HashMap con las estadisticas.
 	 */
-	public HashMap<Integer , DescriptiveStatistics> getGeneralStats() {
+	public Map<Integer , DescriptiveStatistics> getGeneralStats() {
 		return generalGradesStats;
 	}
 	
@@ -159,7 +159,7 @@ public class Stats {
 	 * @return
 	 * 		HashMap con las estadisticas de dicho grupo.
 	 */
-	public HashMap<Integer , DescriptiveStatistics> getGroupStats(String group) {
+	public Map<Integer , DescriptiveStatistics> getGroupStats(String group) {
 		return groupsStats.get(group);
 	}
 		
@@ -313,6 +313,17 @@ public class Stats {
 		return lowerLimitString;
 	}
 	
+	
+	/**
+	 * Devuelve una lista con los valores atipicos para el digarama de tipo boxplot.
+	 * 
+	 * @param statsHs
+	 * 		Las estadisticas.
+	 * @param gradeId
+	 * 		El id del Grade Report Line.
+	 * @return
+	 * 		Lista con los valores atipicos.
+	 */
 	public List<String> getAtypicalValues(Map<Integer,DescriptiveStatistics> statsHs, int gradeId) {
 		DescriptiveStatistics statistics = statsHs.get(gradeId);
 		List<String> atypicalValues = new ArrayList<>();

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -38,16 +37,17 @@ public class MoodleUserWS {
 	/**
 	 * Establece los parámetros del usuario logueado.
 	 * 
+	 * @param host
+	 * 		El nombre del host.
 	 * @param token
-	 *            token de usuario
+	 * 		Token de usuario.
 	 * @param eMail
-	 *            email de usuario
+	 * 		Email de usuario.
 	 * @param mUser
-	 *            moodleUser
+	 * 		MoodleUser.
+	 * 
 	 * @throws IOException 
-	 * @throws ClientProtocolException 
 	 * @throws JSONException 
-	 * @throws Exception
 	 */
 	public static void setMoodleUser(String host, String token, String eMail, MoodleUser mUser) throws IOException, JSONException  {
 		logger.info("Obteniendo los datos del usuario.");
@@ -83,14 +83,15 @@ public class MoodleUserWS {
 	/**
 	 * Almacena los cursos del usuario
 	 * 
+	 * @param host
+	 * 		El nombre del host.
 	 * @param token
-	 *            token de usuario
+	 * 		Token de usuario.
 	 * @param mUser
-	 *            usuario
+	 * 		MoodleUser.
+	 * 
 	 * @throws IOException 
 	 * @throws JSONException 
-	 * @throws ClientProtocolException 
-	 * @throws Exception
 	 */
 	public static void setCourses(String host, String token, MoodleUser mUser) throws IOException, JSONException {
 		logger.info("Obteniendo los cursos del usuario.");

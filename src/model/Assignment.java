@@ -34,6 +34,7 @@ public class Assignment extends Activity {
 	 * Modifica la fecha de vencimiento
 	 * 
 	 * @param dueDate
+	 * 		la fecha
 	 */
 	public void setDueDate(Date dueDate) {
 		this.dueDate = dueDate;
@@ -52,6 +53,7 @@ public class Assignment extends Activity {
 	 * Modifica el inicio de la fecha de entrega
 	 * 
 	 * @param allowSubmissionsFromDate
+	 * 		la fecha de entrega
 	 */
 	public void setAllowSubmissionsFromDate(Date allowSubmissionsFromDate) {
 		this.allowSubmissionsFromDate = allowSubmissionsFromDate;
@@ -67,9 +69,11 @@ public class Assignment extends Activity {
 	}
 
 	/**
-	 * Modifica
+	 * Modifica la fecha de modificación
 	 * 
 	 * @param timeModified
+	 * 		la fecha
+	 * 
 	 */
 	public void setTimeModified(Date timeModified) {
 		this.timeModified = timeModified;

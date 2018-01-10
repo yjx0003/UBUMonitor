@@ -34,16 +34,17 @@ public class GradeReportLine implements Serializable {
 
 	/**
 	 * Contructor GRL con 4 parámetros. Le añadimos solo los necesarios a la hora de generar el grafico de lineas.
+	 * 
 	 * @param id
-	 * 			id de la categoría
+	 * 		Id de la categoría.
 	 * @param name
-	 * 			nombre de la categoria
+	 * 		Nombre de la categoria.
 	 * @param grade
-	 * 			la nota del elemento
+	 * 		La nota del elemento.
 	 * @param rangeMin
-	 * 			rango minimo de la calificación
+	 * 		Rango minimo de la calificación.
 	 * @param rangeMax
-	 * 			rango maximo de la calificaión
+	 * 		Rango maximo de la calificaión.
 	 */
 	public GradeReportLine(int id, String name, String grade, String rangeMin, String rangeMax) {
 		this.id = id;
@@ -55,16 +56,16 @@ public class GradeReportLine implements Serializable {
 	
 	/**
 	 * Constructor GRL con 4 parámetros. Se le añaden a posteriori los elementos
-	 * de su suma de calificaciones
+	 * de su suma de calificaciones.
 	 * 
 	 * @param id
-	 *            id de la categoría
+	 * 		Id de la categoría.
 	 * @param name
-	 *            nombre de la categoría
+	 * 		Nombre de la categoría.
 	 * @param level
-	 *            nivel de profundidad
+	 * 		Nivel de profundidad.
 	 * @param type
-	 *            categoría o item
+	 * 		Categoría o item.
 	 */
 	public GradeReportLine(int id, String name, int level, boolean type) {
 		this.id = id;
@@ -78,19 +79,25 @@ public class GradeReportLine implements Serializable {
 	 * Constructor de GRL con 7 parámetros.
 	 * 
 	 * @param id
-	 *            id de la categoría
+	 * 		Id de la categoría.
 	 * @param name
-	 *            nombre de la categoría
+	 * 		Nombre de la categoría.
 	 * @param level
-	 *            nivel de profundidad
+	 * 		Nivel de profundidad.
 	 * @param type
-	 *            categoría o item
+	 * 		Categoría o item.
 	 * @param weight
-	 *            peso
+	 * 		Peso.
 	 * @param rangeMin
-	 *            rango mínimo de calificación
+	 * 		Rango mínimo de calificación.
 	 * @param rangeMax
-	 *            rango máximo de calificación
+	 * 		Rango máximo de calificación.
+	 * @param grade
+	 * 		La Nota.
+	 * @param percentage
+	 * 		El porcentaje de la actividad.
+	 * @param nameType
+	 * 		El tipo de actividad.
 	 */
 	public GradeReportLine(int id, String name, int level, boolean type, float weight, String rangeMin, String rangeMax,
 			String grade, float percentage, String nameType) {
@@ -108,7 +115,7 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Devuelve el id del GradeReportLine
+	 * Devuelve el id del GradeReportLine.
 	 * 
 	 * @return id
 	 */
@@ -117,16 +124,17 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Modifica el id del GradeReportLine
+	 * Modifica el id del GradeReportLine.
 	 * 
 	 * @param id
+	 * 		El id.
 	 */
 	public void setId(int id) {
 		this.id = id;
 	}
 
 	/**
-	 * Devuelve el nombre del GradeReportLine
+	 * Devuelve el nombre del GradeReportLine.
 	 * 
 	 * @return name
 	 */
@@ -135,16 +143,17 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Modifica el nombre del GradeReportLine
+	 * Modifica el nombre del GradeReportLine.
 	 * 
 	 * @param name
+	 * 		El nombre.
 	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
 	/**
-	 * Devuelve el nivel del GradeReportLine en el árbol del calificador
+	 * Devuelve el nivel del GradeReportLine en el árbol del calificador.
 	 * 
 	 * @return level
 	 */
@@ -153,16 +162,17 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Modifica el nivel del GradeReportLine en el árbol del calificador
+	 * Modifica el nivel del GradeReportLine en el árbol del calificador.
 	 * 
 	 * @param level
+	 * 		El nivel.
 	 */
 	public void setLevel(int level) {
 		this.level = level;
 	}
 
 	/**
-	 * Devuelve la nota del GradeReportLine
+	 * Devuelve la nota del GradeReportLine.
 	 * 
 	 * @return grade
 	 */
@@ -171,7 +181,7 @@ public class GradeReportLine implements Serializable {
 	}
 	
 	/**
-	 * Devuelve la nota del GradeReportLine ajustada al rango de 0 a 10
+	 * Devuelve la nota del GradeReportLine ajustada al rango de 0 a 10.
 	 * 
 	 * @return
 	 * 		La nota ajustada.
@@ -191,7 +201,10 @@ public class GradeReportLine implements Serializable {
 	}
 	
 	/**
-	 * Devuelve la nota de una escala ajustada al rango de 0 a 10
+	 * Devuelve la nota de una escala ajustada al rango de 0 a 10.
+	 * 
+	 * @param course
+	 * 		El curso del que obtener la escala.
 	 * 
 	 * @return
 	 * 		La nota ajustada.
@@ -215,16 +228,17 @@ public class GradeReportLine implements Serializable {
 	}
 	
 	/**
-	 * Modifica la nota del GradeReportLine
+	 * Modifica la nota del GradeReportLine.
 	 * 
 	 * @param grade
+	 * 		La nota.
 	 */
 	public void setGrade(String grade) {
 		this.grade = grade;
 	}
 
 	/**
-	 * Devuelve el peso del GradeReportLine
+	 * Devuelve el peso del GradeReportLine.
 	 * 
 	 * @return weight
 	 */
@@ -233,16 +247,17 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Modifica el peso del GradeReportLine
+	 * Modifica el peso del GradeReportLine.
 	 * 
 	 * @param weight
+	 * 		El peso.
 	 */
 	public void setWeight(float weight) {
 		this.weight = weight;
 	}
 
 	/**
-	 * Devuelve el rango máximo de nota
+	 * Devuelve el rango máximo de nota.
 	 * 
 	 * @return rangeMax
 	 */
@@ -252,16 +267,17 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Modifica el rango máximo de nota
+	 * Modifica el rango máximo de nota.
 	 * 
 	 * @param rangeMax
+	 * 		EL rango máximo.
 	 */
 	public void setRangeMax(String rangeMax) {
 		this.rangeMax = rangeMax;
 	}
 
 	/**
-	 * Devuelve el rango mínimo de nota
+	 * Devuelve el rango mínimo de nota.
 	 * 
 	 * @return rangeMin
 	 */
@@ -270,16 +286,17 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Modifica el rango mínimo de nota
+	 * Modifica el rango mínimo de nota.
 	 * 
 	 * @param rangeMin
+	 * 		El rango mínimo.
 	 */
 	public void setRangeMin(String rangeMin) {
 		this.rangeMin = rangeMin;
 	}
 
 	/**
-	 * Devuelve el porcentaje del GradeReportLine
+	 * Devuelve el porcentaje del GradeReportLine.
 	 * 
 	 * @return percentage
 	 */
@@ -288,16 +305,18 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Modifica el porcentaje del GradeReportLine
+	 * Modifica el porcentaje del GradeReportLine.
 	 * 
 	 * @param percentage
+	 * 		El porcentaje.
 	 */
 	public void setPercentage(float percentage) {
 		this.percentage = percentage;
 	}
 
 	/**
-	 * Devuelve el tipo (boolean) de GradeReportLine
+	 * Devuelve el tipo (boolean) de GradeReportLine.
+	 * False = Category, True = Item.
 	 * 
 	 * @return type
 	 */
@@ -306,16 +325,17 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Modifica el tipo (boolean) del GradeReportLine
+	 * Modifica el tipo (boolean) del GradeReportLine.
 	 * 
 	 * @param type
+	 * 		El tipo. False = Category, True = Item.
 	 */
 	public void setType(boolean type) {
 		this.type = type;
 	}
 
 	/**
-	 * Devuelve el tipo de GradeReportLine
+	 * Devuelve el tipo de GradeReportLine.
 	 * 
 	 * @return nameType
 	 */
@@ -324,16 +344,17 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Modifica el tipo de GradeReportLine
+	 * Modifica el tipo de GradeReportLine.
 	 * 
 	 * @param nameType
+	 * 		El tipo.
 	 */
 	public void setNameType(String nameType) {
 		this.typeName = nameType;
 	}
 
 	/**
-	 * Devuelve la actividad asociada al GradeReportLine
+	 * Devuelve la actividad asociada al GradeReportLine.
 	 * 
 	 * @return activity
 	 */
@@ -342,14 +363,17 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Crea una actividad a partir del GradeReportLine
+	 * Crea una actividad a partir del GradeReportLine.
+	 * 
+	 * @param activity
+	 * 		La actividad.
 	 */
 	public void setActivity(Activity activity) {
 		this.activity = activity;
 	}
 
 	/**
-	 * Devuelve los hijos que tiene el GradeReportLine
+	 * Devuelve los hijos que tiene el GradeReportLine.
 	 * 
 	 * @return children
 	 */
@@ -358,9 +382,10 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Añade un hijo al GradeReportLine
+	 * Añade un hijo al GradeReportLine.
 	 * 
-	 * @param kid
+	 * @param child
+	 * 		El hijo.
 	 */
 	public void addChild(GradeReportLine child) {
 		this.children.add(child);

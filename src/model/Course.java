@@ -53,7 +53,6 @@ public class Course implements Serializable {
 	 * @param obj
 	 *            objeto JSON con la información del curso
 	 * @throws JSONException 
-	 * @throws Exception
 	 */
 	public Course(JSONObject obj) throws JSONException {
 		this.id = obj.getInt("id");
@@ -81,16 +80,17 @@ public class Course implements Serializable {
 	}
 
 	/**
-	 * Modifica el id del curso
+	 * Modifica el id del curso.
 	 * 
 	 * @param id
+	 * 		El id.
 	 */
 	public void setId(int id) {
 		this.id = id;
 	}
 
 	/**
-	 * Devuelve el nombre corto del curso
+	 * Devuelve el nombre corto del curso.
 	 * 
 	 * @return shortName
 	 */
@@ -99,16 +99,17 @@ public class Course implements Serializable {
 	}
 
 	/**
-	 * Modifica el nombre corto del curso
+	 * Modifica el nombre corto del curso.
 	 * 
 	 * @param shortName
+	 * 		El nombre corto.
 	 */
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
 	}
 
 	/**
-	 * Devuelve el nombre del curso
+	 * Devuelve el nombre del curso.
 	 * 
 	 * @return fullName
 	 */
@@ -117,16 +118,17 @@ public class Course implements Serializable {
 	}
 
 	/**
-	 * Modifica el nombre del curso
+	 * Modifica el nombre del curso.
 	 * 
 	 * @param fullName
+	 * 		El nombre completo-
 	 */
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
 	}
 
 	/**
-	 * Devuelve el nº de usuarios del curso
+	 * Devuelve el nº de usuarios del curso.
 	 * 
 	 * @return enrolledUsersCount
 	 */
@@ -135,9 +137,10 @@ public class Course implements Serializable {
 	}
 
 	/**
-	 * Modifica el nº de usuarios del curso
+	 * Modifica el nº de usuarios del curso.
 	 * 
 	 * @param enrolledUserCount
+	 * 		El número de usuarios.
 	 */
 	public void setEnrolledUsersCount(int enrolledUserCount) {
 		this.enrolledUsersCount = enrolledUserCount;
@@ -153,16 +156,17 @@ public class Course implements Serializable {
 	}
 
 	/**
-	 * Modifica el idNumber del curso
+	 * Modifica el idNumber del curso.
 	 * 
 	 * @param idNumber
+	 * 		El id del curso.
 	 */
 	public void setIdNumber(String idNumber) {
 		this.idNumber = idNumber;
 	}
 
 	/**
-	 * Devuelve el resumen del curso
+	 * Devuelve el resumen del curso.
 	 * 
 	 * @return summary
 	 */
@@ -171,9 +175,10 @@ public class Course implements Serializable {
 	}
 
 	/**
-	 * Modifica el resumen del curso
+	 * Modifica el resumen del curso.
 	 * 
 	 * @param summary
+	 * 		El resumen.
 	 */
 	public void setSummary(String summary) {
 		this.summary = summary;
@@ -193,6 +198,7 @@ public class Course implements Serializable {
 	 * Modifica la lista de usuarios matriculados en el curso
 	 * 
 	 * @param eUsers
+	 * 		La lista de usuarios matriculados.
 	 */
 	public void setEnrolledUsers(List<EnrolledUser> eUsers) {
 		this.enrolledUsers.clear();
@@ -222,7 +228,7 @@ public class Course implements Serializable {
 	 * Almacena en un set los roles que hay en el curso.
 	 * 
 	 * @param users
-	 *            usuarios matriculados en el curso
+	 * 		Usuarios matriculados en el curso.
 	 */
 	public void setRoles(List<EnrolledUser> users) {
 		// Creamos el set de roles
@@ -259,7 +265,7 @@ public class Course implements Serializable {
 	 * usuarios que están matriculados.
 	 * 
 	 * @param users
-	 *            usuarios del curso
+	 * 		 Usuarios del curso.
 	 */
 	public void setGroups(List<EnrolledUser> users) {
 		// Creamos el set de grupos
@@ -279,7 +285,7 @@ public class Course implements Serializable {
 	 * Devuelve la lista de gradeReportLines que hay en el curso. (El
 	 * calificador)
 	 * 
-	 * @return lista de gradeReportConfigurationLines
+	 * @return lista de gradeReportConfigurationLines.
 	 */
 	public List<GradeReportLine> getGradeReportLines() {
 		List<GradeReportLine> listGRL = new ArrayList<>();
@@ -295,6 +301,7 @@ public class Course implements Serializable {
 	 * @param children
 	 * 		La lista de hijos.
 	 * @return
+	 * 		La lista de hijos de cada GRL.
 	 * 
 	 */
 	private List<GradeReportLine> getChildrens(List<GradeReportLine> children) {
@@ -309,10 +316,10 @@ public class Course implements Serializable {
 	}
 
 	/**
-	 * Establece la lista de gradeReportLines del curso (el calificador)
+	 * Establece la lista de gradeReportLines del curso (el calificador).
 	 * 
 	 * @param grcl
-	 * 		EL gradeReportLine
+	 * 		EL gradeReportLine.
 	 */
 	public void setGradeReportLine(GradeReportLine grcl) {
 		gradeReportLines = grcl;
@@ -338,7 +345,7 @@ public class Course implements Serializable {
 	 * Almacena en un set las actividades que hay en el curso.
 	 * 
 	 * @param grcl
-	 *            gradeReportConfigurationLines
+	 * 		gradeReportConfigurationLines.
 	 */
 	public void setActivities(List<GradeReportLine> grcl) {
 		// Creamos el set de roles
@@ -349,11 +356,16 @@ public class Course implements Serializable {
 		}
 	}
 
+
 	/**
-	 * Devuelve el id de un curso a partir de su nombre
+	 * Devuelve el curso de la lista cuyo nombre coincide con la cadena pasada.
 	 * 
+	 * @param courseList
+	 * 		La lista de cursos.
 	 * @param courseName
+	 * 		El nombre del curso.
 	 * @return
+	 * 		EL curso.
 	 */
 	public static Course getCourseByString(List<Course> courseList, String courseName) {
 		Course course = null;

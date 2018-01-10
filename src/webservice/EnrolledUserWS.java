@@ -29,8 +29,12 @@ public class EnrolledUserWS {
 	/**
 	 * Almacena los cursos de un usuario matriculado
 	 * 
+	 * @param host
+	 * 		El nombre del host.
 	 * @param token
-	 *            token de usuario
+	 * 		El token del usuario.
+	 * @param eUser
+	 * 		EnrolledUser.
 	 * @throws Exception
 	 */
 	public static void setCourses(String host, String token, EnrolledUser eUser) throws Exception {

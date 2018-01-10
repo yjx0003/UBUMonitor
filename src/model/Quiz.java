@@ -16,8 +16,18 @@ public class Quiz extends Activity {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Constructor de un Quiz
+	 * Constructor de una actividad con todos sus parámetros
 	 * 
+	 * @param itemName
+	 *            nombre de la actividad
+	 * @param type
+	 *            tipo de actividad
+	 * @param weight
+	 *            peso
+	 * @param minRange
+	 *            rango mínimo de nota
+	 * @param maxRange
+	 *            rango máximo de nota
 	 */
 	public Quiz(String itemName, String type, float weight, String minRange, String maxRange) {
 		super(itemName, type, weight, minRange, maxRange);
@@ -43,7 +53,7 @@ public class Quiz extends Activity {
 	}
 
 	/**
-	 * Devuelve la fecha de cierre del cuestionario
+	 * Devuelve la fecha de cierre del cuestionario.
 	 * 
 	 * @return fecha de cierre
 	 */
@@ -52,17 +62,17 @@ public class Quiz extends Activity {
 	}
 
 	/**
-	 * Modifica la fecha de cierre del cuestionario
+	 * Modifica la fecha de cierre del cuestionario.
 	 * 
 	 * @param timeClose
-	 *            fecha de cierre
+	 * 		Fecha de cierre.
 	 */
 	public void setTimeClose(Date timeClose) {
 		this.timeClose = timeClose;
 	}
 
 	/**
-	 * Devuelve la contraseña del cuestionario
+	 * Devuelve la contraseña del cuestionario.
 	 * 
 	 * @return contraseña
 	 */
@@ -71,9 +81,10 @@ public class Quiz extends Activity {
 	}
 
 	/**
-	 * Modifica la contraseña del usuario
+	 * Modifica la contraseña del cuestionario.
 	 * 
 	 * @param password
+	 * 		La contraseña.
 	 */
 	public void setPassword(String password) {
 		this.password = password;

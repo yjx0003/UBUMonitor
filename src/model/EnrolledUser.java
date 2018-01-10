@@ -42,6 +42,7 @@ public class EnrolledUser implements Serializable{
 	 * 
 	 * @param obj
 	 *            objeto JSON con la información del usuario
+	 *            
 	 * @throws JSONException 
 	 */
 	public EnrolledUser(JSONObject obj) throws JSONException {
@@ -79,7 +80,7 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Devuelve el id del usuario
+	 * Devuelve el id del usuario.
 	 * 
 	 * @return id de usuario matriculado
 	 */
@@ -88,16 +89,17 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica el id del usuario
+	 * Modifica el id del usuario.
 	 * 
 	 * @param id
+	 * 		El id.
 	 */
 	public void setId(int id) {
 		this.id = id;
 	}
 
 	/**
-	 * Devuelve el nombre del usuario
+	 * Devuelve el nombre del usuario.
 	 * 
 	 * @return firstName
 	 */
@@ -106,9 +108,10 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica el nombre del usuario
+	 * Modifica el nombre del usuario.
 	 * 
 	 * @param firstName
+	 * 		El nombre del usuario.
 	 */
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
@@ -124,16 +127,17 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica el apellido del usuario
+	 * Modifica el apellido del usuario.
 	 * 
 	 * @param lastName
+	 * 		El apellido del usuario.
 	 */
 	public void setlastName(String lastName) {
 		this.lastName = lastName;
 	}
 
 	/**
-	 * Devuelve el nombre completo del usuario
+	 * Devuelve el nombre completo del usuario.
 	 * 
 	 * @return fullName
 	 */
@@ -142,16 +146,17 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica el nombre completo del usuario
+	 * Modifica el nombre completo del usuario.
 	 * 
 	 * @param fullName
+	 * 		El nombre completo.
 	 */
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
 	}
 
 	/**
-	 * Devuelve el primer acceso del usuario a la plataforma
+	 * Devuelve el primer acceso del usuario a la plataforma.
 	 * 
 	 * @return firstAccess
 	 */
@@ -160,16 +165,17 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica el primer acceso del usuario a la plataforma
+	 * Modifica el primer acceso del usuario a la plataforma.
 	 * 
-	 * @param fisrtAccess
+	 * @param firstAccess
+	 * 		La fecha de primer acceso.
 	 */
 	public void setFirstAccess(Date firstAccess) {
 		this.firstAccess = firstAccess;
 	}
 
 	/**
-	 * Devuelve la última fecha de acceso a la plataforma
+	 * Devuelve la última fecha de acceso a la plataforma.
 	 * 
 	 * @return lastAccess
 	 */
@@ -178,16 +184,17 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica la última fecha de acceso a la plataforma
+	 * Modifica la última fecha de acceso a la plataforma.
 	 * 
 	 * @param lastAccess
+	 * 		La fecha de úlimo acceso.
 	 */
 	public void setLastAccess(Date lastAccess) {
 		this.lastAccess = lastAccess;
 	}
 
 	/**
-	 * Devuelve la descripción del usuario
+	 * Devuelve la descripción del usuario.
 	 * 
 	 * @return description
 	 */
@@ -196,16 +203,17 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica la descripción del usuario
+	 * Modifica la descripción del usuario.
 	 * 
 	 * @param description
+	 * 		La descripción del usuario.
 	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
 	/**
-	 * Devuelve el formato de la descripción
+	 * Devuelve el formato de la descripción.
 	 * 
 	 * @return descriptionFormat
 	 */
@@ -214,16 +222,17 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica el formato de la descripción
+	 * Modifica el formato de la descripción.
 	 * 
 	 * @param descriptionFormat
+	 * 		El formato de la descripción.
 	 */
 	public void setDescriptionFormat(String descriptionFormat) {
 		this.descriptionFormat = descriptionFormat;
 	}
 
 	/**
-	 * Devuelve la ciudad del usuario
+	 * Devuelve la ciudad del usuario.
 	 * 
 	 * @return city
 	 */
@@ -232,16 +241,17 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica la ciudad del usuario
+	 * Modifica la ciudad del usuario.
 	 * 
 	 * @param city
+	 * 		La ciudad.
 	 */
 	public void setCity(String city) {
 		this.city = city;
 	}
 
 	/**
-	 * Devuelve el país del usuario
+	 * Devuelve el país del usuario.
 	 * 
 	 * @return country
 	 */
@@ -250,16 +260,17 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica el país del usuario
+	 * Modifica el país del usuario.
 	 * 
 	 * @param country
+	 * 		El país.
 	 */
 	public void setCountry(String country) {
 		this.country = country;
 	}
 
 	/**
-	 * Devuelve la url de la foto de usuario en icono
+	 * Devuelve la url de la foto de usuario en icono.
 	 * 
 	 * @return profileImageUrlSmall
 	 */
@@ -268,16 +279,17 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica la url de la foto de usuario en icono
+	 * Modifica la url de la imagen de usuario en icono.
 	 * 
 	 * @param profileImageUrlSmall
+	 * 		La url de la imagen.
 	 */
 	public void setProfileImageUrlSmall(String profileImageUrlSmall) {
 		this.profileImageUrlSmall = profileImageUrlSmall;
 	}
 
 	/**
-	 * Devuelve la url de la foto del usuario
+	 * Devuelve la url de la imagen del usuario.
 	 * 
 	 * @return profileImageUrl
 	 */
@@ -286,16 +298,17 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica la url de la foto del usuario
+	 * Modifica la url de la imagen del usuario.
 	 * 
 	 * @param profileImageUrl
+	 * 		La url de la imagen.
 	 */
 	public void setProfileImageUrl(String profileImageUrl) {
 		this.profileImageUrl = profileImageUrl;
 	}
 
 	/**
-	 * Devuelve la lista de roles que tiene el usuario
+	 * Devuelve la lista de roles que tiene el usuario.
 	 * 
 	 * @return roles
 	 */
@@ -304,9 +317,10 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica la lista de roles que tiene el usuario
+	 * Modifica la lista de roles que tiene el usuario.
 	 * 
 	 * @param roles
+	 * 		La lista de roles.
 	 */
 	public void setRoles(List<Role> roles) {
 		this.roles.clear();
@@ -316,7 +330,7 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Devuelve la lista de grupos en los que está el usuario
+	 * Devuelve la lista de grupos en los que está el usuario.
 	 * 
 	 * @return groups
 	 */
@@ -325,9 +339,10 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica la lista de grupos en los que está el usuario
+	 * Modifica la lista de grupos en los que está el usuario.
 	 * 
 	 * @param groups
+	 * 		La lista de grupos.
 	 */
 	public void setGroups(List<Group> groups) {
 		this.groups.clear();
@@ -337,7 +352,7 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Devuelve la lista de cursos en los que está matriculado el usuario
+	 * Devuelve la lista de cursos en los que está matriculado el usuario.
 	 * 
 	 * @return courses
 	 */
@@ -346,9 +361,10 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica la lista de cursos en los que está matriculado el usuario
+	 * Modifica la lista de cursos en los que está matriculado el usuario.
 	 * 
 	 * @param courses
+	 * 		La lista de cursos.
 	 */
 	public void setEnrolledCourses(List<Integer> courses) {
 		this.courses.clear();
@@ -389,7 +405,7 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Convierte el EnrolledUser a un String con su nombre
+	 * Convierte el EnrolledUser a un String con su nombre.
 	 */
 	public String toString() {
 		return this.getLastName() + ", " + this.getFirstName();

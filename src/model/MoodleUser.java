@@ -76,9 +76,10 @@ public class MoodleUser {
 	}
 
 	/**
-	 * Modifica el id del usuario
+	 * Modifica el id del usuario.
 	 * 
 	 * @param id
+	 * 		El id.
 	 */
 	public void setId(int id) {
 		this.id = id;
@@ -94,9 +95,10 @@ public class MoodleUser {
 	}
 
 	/**
-	 * Modifica el nombre del usuario
+	 * Modifica el nombre del usuario.
 	 * 
 	 * @param userName
+	 * 		El nombre de usuario.
 	 */
 	public void setUserName(String userName) {
 		this.userName = userName;
@@ -112,9 +114,10 @@ public class MoodleUser {
 	}
 
 	/**
-	 * Modifica el nombre completo del usuario
+	 * Modifica el nombre completo del usuario.
 	 * 
 	 * @param fullName
+	 * 		El nombre completo.
 	 */
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
@@ -130,9 +133,10 @@ public class MoodleUser {
 	}
 
 	/**
-	 * Modifica el email del usuario
+	 * Modifica el email del usuario.
 	 * 
 	 * @param email
+	 * 		EL email.
 	 */
 	public void setEmail(String email) {
 		this.email = email;
@@ -148,9 +152,10 @@ public class MoodleUser {
 	}
 
 	/**
-	 * Modifica la fecha de primer acceso
+	 * Modifica la fecha de primer acceso.
 	 * 
 	 * @param firstAccess
+	 * 		La fecha de primer acceso.
 	 */
 	public void setFirstAccess(Date firstAccess) {
 		this.firstAccess = firstAccess;
@@ -166,9 +171,10 @@ public class MoodleUser {
 	}
 
 	/**
-	 * Modifica la fecha de último acceso
+	 * Modifica la fecha de último acceso.
 	 * 
 	 * @param lastAccess
+	 * 		La fecha de último acceso.
 	 */
 	public void setLastAccess(Date lastAccess) {
 		this.lastAccess = lastAccess;
@@ -184,9 +190,10 @@ public class MoodleUser {
 	}
 
 	/**
-	 * Modifica la ciudad del usuario
+	 * Modifica la ciudad del usuario.
 	 * 
 	 * @param city
+	 * 		La ciudad.
 	 */
 	public void setCity(String city) {
 		this.city = city;
@@ -202,9 +209,10 @@ public class MoodleUser {
 	}
 
 	/**
-	 * Modifica el país del usuario
+	 * Modifica el país del usuario.
 	 * 
 	 * @param country
+	 * 		El país.
 	 */
 	public void setCountry(String country) {
 		this.country = country;
@@ -234,9 +242,10 @@ public class MoodleUser {
 	}
 
 	/**
-	 * Modifica la lista de cursos en los que está atriculado el usuario
+	 * Modifica la lista de cursos en los que está matriculado el usuario.
 	 * 
 	 * @param courses
+	 * 		La lista de cursos.
 	 */
 	public void setCourses(ArrayList<Course> courses) {
 		this.courses.clear();

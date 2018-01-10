@@ -18,8 +18,18 @@ public class Lesson extends Activity {
 	private boolean retake; // indica si se puede repetir la lección
 	
 	/**
-	 * Consturctor de una Lesson.
+	 * Consturctor de una Lección(Lesson).
 	 * 
+	 * @param itemName
+	 * 		El nombre de la lección.
+	 * @param type
+	 * 		El tipo.
+	 * @param weight
+	 * 		El peso.
+	 * @param minRange
+	 * 		El rango mínimo.
+	 * @param maxRange
+	 * 		El rango máximo.
 	 */
 	public Lesson(String itemName, String type, float weight, String minRange, String maxRange) {
 		super(itemName, type, weight, minRange, maxRange);
@@ -28,6 +38,8 @@ public class Lesson extends Activity {
 
 
 	/**
+	 * Devuelve la contraseña de la lección.
+	 * 
 	 * @return the password
 	 */
 	public String getPassword() {
@@ -37,7 +49,9 @@ public class Lesson extends Activity {
 
 
 	/**
-	 * @param password the password to set
+	 * Modifica la contraseña de la lección.
+	 * @param password
+	 * 		La contraseña.
 	 */
 	public void setPassword(String password) {
 		this.password = password;
@@ -46,6 +60,8 @@ public class Lesson extends Activity {
 
 
 	/**
+	 * Devuelve el número máximo de respuestas.
+	 * 
 	 * @return the maxAnswers
 	 */
 	public int getMaxAnswers() {
@@ -55,7 +71,9 @@ public class Lesson extends Activity {
 
 
 	/**
-	 * @param maxAnswers the maxAnswers to set
+	 * Modifica el número máximo de respuestas.
+	 * @param maxAnswers
+	 * 		El número máximo de respuestas.
 	 */
 	public void setMaxAnswers(int maxAnswers) {
 		this.maxAnswers = maxAnswers;
@@ -64,6 +82,8 @@ public class Lesson extends Activity {
 
 
 	/**
+	 * Devuelve el numero maximo de intentos.
+	 * 
 	 * @return the maxAttempts
 	 */
 	public int getMaxAttempts() {
@@ -73,7 +93,9 @@ public class Lesson extends Activity {
 
 
 	/**
-	 * @param maxAttempts the maxAttempts to set
+	 * Modifica el número máximo de intentos.
+	 * @param maxAttempts
+	 * 		El número máximo de intentos.
 	 */
 	public void setMaxAttempts(int maxAttempts) {
 		this.maxAttempts = maxAttempts;
@@ -82,6 +104,8 @@ public class Lesson extends Activity {
 
 
 	/**
+	 * Devuelve 1 si la lección tiene tiempo límite y 0 si no.
+	 * 
 	 * @return the timeLimit
 	 */
 	public int getTimeLimit() {
@@ -91,7 +115,10 @@ public class Lesson extends Activity {
 
 
 	/**
-	 * @param timeLimit the timeLimit to set
+	 * Modifica el tiempo límite de la lección.
+	 * 
+	 * @param timeLimit
+	 * 		El tiempo límite de la lección.
 	 */
 	public void setTimeLimit(int timeLimit) {
 		this.timeLimit = timeLimit;
@@ -100,6 +127,8 @@ public class Lesson extends Activity {
 
 
 	/**
+	 * Devuelve 0 si la lección tiene deadline y 0 si no.
+	 *
 	 * @return the deadLine
 	 */
 	public int getDeadLine() {
@@ -109,7 +138,10 @@ public class Lesson extends Activity {
 
 
 	/**
-	 * @param deadLine the deadLine to set
+	 * Modifica la deadLine de la lección.
+	 * 
+	 * @param deadLine
+	 * 		El deadLine.
 	 */
 	public void setDeadLine(int deadLine) {
 		this.deadLine = deadLine;
@@ -118,6 +150,8 @@ public class Lesson extends Activity {
 
 
 	/**
+	 * Devuelve si la lección se puede repetir o no.
+	 * 
 	 * @return the retake
 	 */
 	public boolean isRetake() {
@@ -127,7 +161,11 @@ public class Lesson extends Activity {
 
 
 	/**
-	 * @param retake the retake to set
+	 * Modifica si la leccion se puede repetir o no.
+	 * 
+	 * @param retake
+	 * 		True si se pude, False si no se puede.
+	 * 	
 	 */
 	public void setRetake(boolean retake) {
 		this.retake = retake;

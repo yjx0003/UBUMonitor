@@ -45,11 +45,15 @@ public class CourseWS {
 	 * Establece los usuarios que están matriculados en un curso junto con su
 	 * rol y grupo.
 	 * 
+	 * @param host
+	 * 		El nombre del host.
 	 * @param token
-	 *            token de usuario
-	 * @param idCurso
-	 *            id del curso
-	 * @throws Exception
+	 *      El token de usuario.
+	 * @param course
+	 *      El curso.
+	 *      
+	 * @throws IOException
+	 * @throws JSONException
 	 */
 	public static void setEnrolledUsers(String host, String token, Course course) throws IOException, JSONException {
 		logger.info("Obteniendo los usuarios del curso.");
@@ -89,13 +93,17 @@ public class CourseWS {
 	 * matriculado y así sacar la estructura del calificador del curso para
 	 * después mostrarla como TreeView en la vista.
 	 * 
+	 * @param host
+	 * 		El nombre del host.
 	 * @param token
-	 *            token del profesor logueado
-	 * @param courseId
-	 *            curso del que se quieren cargar los datos
+	 *      Token del profesor logueado.
 	 * @param userId
-	 *            id del usuario a cargar
-	 * @throws Exception
+	 *      Id del usuario a cargar.
+	 * @param course
+	 * 		El curso a cargar.
+	 * 
+	 * @throws IOException
+	 * @throws JSONException
 	 */
 	public static void setGradeReportLines(String host, String token, int userId, Course course)
 			throws IOException, JSONException {
@@ -187,15 +195,19 @@ public class CourseWS {
 	 * Genera todos los GradeReportLines de un curso para un usuario.Este proceso se realiza al inicio
 	 * alamcenando en memoria los datos.
 	 * 
+	 * @param host
+	 * 		El nombre del host.
 	 * @param token
-	 *            token del profesor logueado
-	 * @param courseId
-	 *            curso del que se quieren cargar los datos
+	 * 		Token del profesor logueado.
 	 * @param userId
-	 *            id del usuario a cargar
+	 * 		Id del usuario a cargar.
+	 * @param courseId
+	 * 		Curso del que se quieren cargar los datos.
 	 * @return
 	 * 		ArrayList con todos los GradeReportLines del usuario.
-	 * @throws Exception
+	 * 
+	 * @throws JSONException
+	 * @throws IOException
 	 */
 	public static ArrayList<GradeReportLine> getUserGradeReportLines(String host, String token, int userId, int courseId)
 			throws IOException, JSONException {
@@ -286,17 +298,21 @@ public class CourseWS {
 
 	/**
 	 * Genera todos los GradeReportLines de un curso para un usuario.Este proceso se realiza al inicio
-	 * alamcenando en memoria los datos. Moodle 3.3
+	 * alamcenando en memoria los datos. Moodle 3.3.
 	 * 
+	 * @param host
+	 * 		El nombre del host.
 	 * @param token
-	 *            token del profesor logueado.
+	 * 		Token del profesor logueado.
 	 * @param userId
-	 *            id del usuario a cargar.
+	 * 		Id del usuario a cargar.
 	 * @param courseId
-	 *            curso del que se quieren cargar los datos.
+	 * 		Curso del que se quieren cargar los datos.
 	 * @return
 	 * 		ArrayList con todos los GradeReportLines del usuario.
-	 * @throws Exception
+	 * 
+	 * @throws IOException
+	 * @throws JSONException
 	 */
 	public static ArrayList<GradeReportLine> getUserGradeReportLinesMoodle33(String host, String token, int userId, int courseId)
 			throws IOException, JSONException {
@@ -367,6 +383,7 @@ public class CourseWS {
 	 * Devuelve el id del item
 	 * 
 	 * @param data
+	 * 		La cadena a analizar.
 	 * @return id de un item
 	 */
 	public static int getIdLine(String data) {
@@ -378,6 +395,7 @@ public class CourseWS {
 	 * Devuelve el nivel del GradeReportLine que está siendo leída.
 	 * 
 	 * @param data
+	 * 		La cadena a analizar.
 	 * @return nivel de la línea
 	 */
 	public static int getActualLevel(String data) {
@@ -390,7 +408,9 @@ public class CourseWS {
 	 * Devuelve el nombre de una categoría
 	 * 
 	 * @param data
+	 * 		La cadena a analizar.
 	 * @return
+	 * 		El nombre de la categoría.
 	 */
 	public static String getNameCategorie(String data) {
 		String result = "";
@@ -406,10 +426,12 @@ public class CourseWS {
 	}
 
 	/**
-	 * Devuelve el nombre de una actividad
+	 * Devuelve el nombre de una actividad.
 	 * 
 	 * @param data
+	 * 		La cadena a analizar.
 	 * @return
+	 * 		El nombre de la actividad.
 	 */
 	public static String getNameActivity(String data) {
 		int begin = data.indexOf(" />") + 3;
@@ -421,7 +443,9 @@ public class CourseWS {
 	 * Devuelve el nombre de un item manual o un cierre de categoría
 	 * 
 	 * @param data
+	 * 		La cadena a analizar.
 	 * @return
+	 * 		El nombre del elemento.
 	 */
 	public static String getNameManualItemOrEndCategory(String data) {
 		int end = data.indexOf("</span>");
@@ -434,6 +458,7 @@ public class CourseWS {
 	 * Devuelve el tipo de un GradeReportLine (actividad o categoría)
 	 * 
 	 * @param data
+	 * 		La cadena a anlizar.
 	 * @return tipo de línea (cebecera de categoría, suma de calificaciones o
 	 *         item)
 	 */
@@ -444,9 +469,10 @@ public class CourseWS {
 
 	/**
 	 * Comprueba si la línea es una suma de calificaciones de categoría (un
-	 * cierre de categoría)
+	 * cierre de categoría).
 	 * 
 	 * @param data
+	 * 		La cadena a analizar.
 	 * @return true si la línea es una suma de calificaciones, false si no
 	 */
 	public static boolean getBaggtLine(String data) {
@@ -455,11 +481,14 @@ public class CourseWS {
 	}
 
 	/**
-	 * Devuelve el rango mínimo o máximo
+	 * Devuelve el rango mínimo o máximo.
 	 * 
 	 * @param data
+	 * 		La cadena a analizar.
 	 * @param option
-	 * @return rango máximo o mínimo
+	 * 		True si es rango mínimo. False si es máximo.
+	 * @return 
+	 * 		rango máximo o mínimo
 	 */
 	public static String getRange(String data, boolean option) {
 		String[] ranges = data.split("&ndash;");
@@ -493,9 +522,10 @@ public class CourseWS {
 	/**
 	 * Diferencia si la actividad es un quiz o un assignment.
 	 * 
-	 * @param nameContainer
+	 * @param data
+	 * 		La cadena a analizar.
 	 * @return 
-	 * 		el nombre del assignment
+	 * 		El nombre de la actividad.
 	 */
 	private static String assignmentOrQuizOrForum(String data) {
 		String url = data.substring(data.lastIndexOf("href="), data.indexOf("?id="));
@@ -517,7 +547,10 @@ public class CourseWS {
 	 * Diferencia si la línea es un item manual o un cierre de categoría.
 	 * 
 	 * @param data
+	 * 		La cadena a analizar.
 	 * @return
+	 * 		ManualItem si es un item manual, Category si es un cierre de categoría
+	 * 		o una cadena vacia si no es niguna de las anteriores.
 	 */
 	private static String manualItemOrEndCategory(String data) {
 		//FNS 
@@ -535,10 +568,12 @@ public class CourseWS {
 	}
 
 	/**
-	 * Devuelve un número en formato Float si se encuentra en la cadena pasada
+	 * Devuelve un número en formato Float si se encuentra en la cadena pasada.
 	 * 
 	 * @param data
+	 * 		La cadena a transformar.
 	 * @return
+	 * 		Un Float si es un número, Float.NaN si no lo es.
 	 */
 	public static Float getFloat(String data) {
 		Pattern pattern = Pattern.compile("[0-9]{1,3},{1}[0-9]{1,2}");
@@ -555,7 +590,11 @@ public class CourseWS {
 	 * pasada si es una escala.
 	 * 
 	 * @param data
+	 * 		La cadena a transformar.
 	 * @return
+	 * 		NaN si no hay nota("-"), la cadena pasada si es una escala
+	 * 		o el número si es un número.
+	 * 
 	 */
 	private static String getNumber(String data) {
 		Pattern pattern = Pattern.compile("[0-9]{1,3},{1}[0-9]{1,2}");
@@ -570,15 +609,21 @@ public class CourseWS {
 	/**
 	 * Devuelve el id de la escala asociada a la tarea(Assignment) o 0 si no hay ninguna escala asociada.
 	 * 
+	 * @param host
+	 * 		El nombre del host.
 	 * @param token
-	 *            token del profesor logueado
+	 * 		El token del profesor logueado.
 	 * @param courseId
-	 *            curso del que se quiere obtener la escala
+	 * 		Curso del que se quiere obtener la escala.
 	 * @param assignmentName
-	 * 			  tarea de la que se quiere obtener la escala
+	 * 		Tarea de la que se quiere obtener la escala.
+	 * @param course
+	 * 		El curso donde almacenar los datos.
 	 * @return
-	 * 		el id de la escala o 0 si no hay escala asociada.
-	 * @throws Exception
+	 * 		El id de la escala o 0 si no hay escala asociada.
+	 * 
+	 * @throws IOException
+	 * @throws JSONException
 	 */
 	private static int getAssignmentScale(String host, String token, int courseId, String assignmentName, Course course)
 			throws IOException, JSONException {
@@ -622,13 +667,19 @@ public class CourseWS {
 	/**
 	 * Obtiene los datos de una escala y los alamacena.
 	 * 
+	 * @param host
+	 * 		El nombre del host.
 	 * @param token
-	 * 		token del profesor logueado.
+	 * 		El token del profesor logueado.
 	 * @param scaleId
-	 * 		el id de la escala.
+	 * 		El id de la escala.
+	 * @param course
+	 * 	 	El curso al que añadir los datos.
 	 * @return
 	 * 		el id de la escala.
-	 * @throws Exception
+	 * 
+	 * @throws IOException
+	 * @throws JSONException
 	 */
 	private static int loadScale(String host, String token, int scaleId, Course course) throws IOException, JSONException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -666,6 +717,8 @@ public class CourseWS {
 	/**
 	 * Obtiene los datos de las calificaciaones para el alumno y el curso que recibe.
 	 * 
+	 * @param host
+	 * 		El nombre del host.
 	 * @param token
 	 *      Token del profesor logueado
 	 * @param courseId
@@ -674,7 +727,9 @@ public class CourseWS {
 	 *      Id del usuario a cargar
 	 * @return
 	 * 		El JSON con los datos obtenidos.
-	 * @throws Exception
+	 * 
+	 * @throws IOException
+	 * @throws JSONException
 	 */
 	private static JSONObject getGradesData(String host, String token, int userId, int courseId) throws IOException, JSONException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();

@@ -86,7 +86,7 @@ public class WelcomeController implements Initializable {
 	 * Botón entrar, accede a la siguiente ventana
 	 * 
 	 * @param event
-	 * @throws Exception
+	 * 		El evento.
 	 */
 	public void enterCourse(ActionEvent event) {
 
@@ -142,6 +142,7 @@ public class WelcomeController implements Initializable {
 	 * y generación de las estadisticas.
 	 * 
 	 * @return
+	 * 		La tarea a realizar.
 	 */
 	private Task<Void> getUserDataWorker() {
 		return new Task<Void>() {

@@ -91,7 +91,7 @@ public class LoginController implements Initializable {
 	 * incorrecto, muestra un mensaje de error.
 	 * 
 	 * @param event
-	 * @throws Exception
+	 * 		El ActionEvent.
 	 */
 	public void login(ActionEvent event) {
 		if(txtHost.getText().isEmpty() || txtPassword.getText().isEmpty() || txtUsername.getText().isEmpty()) {
@@ -221,7 +221,7 @@ public class LoginController implements Initializable {
 	 * Borra los parámetros introducidos en los campos
 	 * 
 	 * @param event
-	 * @throws Exception
+	 * 		El ActionEvent.
 	 */
 	public void clear(ActionEvent event) {
 		txtUsername.setText("");

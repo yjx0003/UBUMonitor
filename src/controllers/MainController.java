@@ -408,7 +408,9 @@ public class MainController implements Initializable {
 	 * hijos del elemento treeItem equivalente de line
 	 * 
 	 * @param parent
+	 * 		El padre al que añadir los elementos.
 	 * @param line
+	 * 		La linea con los elementos a añadir.
 	 */
 	public void setTreeview(TreeItem<GradeReportLine> parent, GradeReportLine line) {
 		for (int j = 0; j < line.getChildren().size(); j++) {
@@ -424,6 +426,7 @@ public class MainController implements Initializable {
 	 * Añade un icono a cada elemento del árbol según su tipo de actividad
 	 * 
 	 * @param item
+	 * 		El item al que añadir el icono.
 	 */
 	public static void setIcon(TreeItem<GradeReportLine> item) {
 		try {
@@ -486,6 +489,7 @@ public class MainController implements Initializable {
 	 * Exporta el gráfico. Se exportara como imagen en formato png.
 	 * 
 	 * @param actionEvent
+	 * 		El ActionEvent.
 	 * @throws Exception
 	 */
 	public void saveChart(ActionEvent actionEvent) throws Exception {
@@ -515,6 +519,7 @@ public class MainController implements Initializable {
 	 * Exporta todos los gráficos a un html.
 	 * 
 	 * @param actionEvent
+	 * 		El ActionEvent.
 	 */
 	public void saveAll(ActionEvent actionEvent) {
 		logger.info("Exportando los gráficos");
@@ -559,6 +564,9 @@ public class MainController implements Initializable {
 	 * Cambia a la ventana de selección de asignatura.
 	 * 
 	 * @param actionEvent
+	 * 		El ActionEvent.
+	 * 
+	 * @throws Exception
 	 */
 	public void changeCourse(ActionEvent actionEvent) throws Exception {
 		logger.info("Cambiando de asignatura...");
@@ -570,6 +578,7 @@ public class MainController implements Initializable {
 	 * Vuelve a la ventana de login de usuario.
 	 * 
 	 * @param actionEvent
+	 * 		El ActionEvent.
 	 */
 	public void logOut(ActionEvent actionEvent) {
 		logger.info("Cerrando sesión de usuario");
@@ -603,7 +612,7 @@ public class MainController implements Initializable {
 	 * Deja de seleccionar los participantes/actividades y borra el gráfico.
 	 * 
 	 * @param actionEvent
-	 * @throws Exception
+	 * 		El ActionEvent.
 	 */
 	public void clearSelection(ActionEvent actionEvent) {
 		listParticipants.getSelectionModel().clearSelection();
@@ -614,7 +623,7 @@ public class MainController implements Initializable {
 	 * Abre en el navegador el repositorio del proyecto.
 	 * 
 	 * @param actionEvent
-	 * @throws Exception
+	 * 		El ActionEvent.
 	 */
 	public void aboutUBUGrades(ActionEvent actionEvent) {
 		try {
@@ -628,13 +637,19 @@ public class MainController implements Initializable {
 	 * Botón "Salir". Cierra la aplicación.
 	 * 
 	 * @param actionEvent
-	 * @throws Exception
+	 * 		El ActionEvent.
 	 */
 	public void closeApplication(ActionEvent actionEvent) {
 		logger.info("Cerrando aplicación");
 		ubuGrades.getStage().close();
 	}
 
+	/**
+	 * Genera el dataset para la tabal de calificaciones.
+	 * 
+	 * @return
+	 * 		El dataset.
+	 */
 	private String generateTableData() {
 		// Lista de alumnos y calificaciones seleccionadas
 		ObservableList<EnrolledUser> selectedParticipants = listParticipants.getSelectionModel().getSelectedItems();
@@ -786,6 +801,9 @@ public class MainController implements Initializable {
 	/**
 	 * Funcion que genera el DataSet para el boxplot.
 	 * 
+	 * @param group
+	 * 		El grupo sobre el que generar el dataset.
+	 * 
 	 * @return BoxPlot DataSet.
 	 */
 	private String generateBoxPlotDataSet(String group) {
@@ -895,6 +913,9 @@ public class MainController implements Initializable {
 	
 	/**
 	 * Función que genera el dataSet de la media de todos los alumnos.
+	 * 
+	 * @param group
+	 * 		El grupo del que obtener la media.
 	 * 
 	 * @return Mean DataSet.
 	 */

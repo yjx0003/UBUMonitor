@@ -44,8 +44,12 @@ public class Stats {
 	
 	/**
 	 * Genera las estadisticas en caso de no estar ya generadas.
+	 * 
+	 * @param session
+	 * 		La sesión de la cual obtener las notas.
 	 * @return
 	 * 		La instancia de las estadisticas.
+	 * 
 	 * @throws Exception
 	 */
 	public static Stats getStats(Session session) throws Exception {
@@ -64,6 +68,10 @@ public class Stats {
 	
 	/**
 	 * Constructor de la clase Stats.
+	 * 
+	 * @param session
+	 * 		La sesión de la cual obtener las notas.
+	 * 
 	 * @throws Exception 
 	 */
 	protected Stats(Session session) throws Exception{
@@ -74,6 +82,9 @@ public class Stats {
 	
 	/**
 	 * Genera las estatisticas generales del curso.
+	 * 
+	 * @param session
+	 * 		La sesión de la cual obtener las notas.
 	 * 
 	 * @throws Exception
 	 */
@@ -107,6 +118,8 @@ public class Stats {
 	/**
 	 * Genera las estadisticas para cada grupo del curso.
 	 * 
+	 * @param session
+	 * 		La sesión de la cual obtener las notas.
 	 * @throws Exception
 	 */
 	private void generateGroupStats(Session session) throws Exception {
@@ -154,6 +167,7 @@ public class Stats {
 	
 	/**
 	 * Devuelve las estadisticas de un grupo.
+	 * 
 	 * @param group
 	 * 		El grupo.
 	 * @return
@@ -166,6 +180,8 @@ public class Stats {
 	/**
 	 * Añadimos una nota.
 	 * 
+	 * @param statsHs
+	 * 		EL mapa con las estadisticas. 
 	 * @param gradeId
 	 * 		El id del Grade Report Line.
 	 * @param value
@@ -180,6 +196,8 @@ public class Stats {
 	/**
 	 * Obtenemos la media del GRL.
 	 * 
+	 * @param statsHs
+	 * 		EL mapa con las estadisticas. 
 	 * @param gradeId
 	 * 		El id del Grade Report Line
 	 * @return
@@ -198,6 +216,8 @@ public class Stats {
 	/**
 	 * Obtenemos la mediana del GRL.
 	 * 
+	 * @param statsHs
+	 * 		EL mapa con las estadisticas. 
 	 * @param gradeId
 	 * 		El id del Grade Report Line
 	 * @return
@@ -216,6 +236,8 @@ public class Stats {
 	/**
 	 * Obtenemos el percentil del GRL.
 	 * 
+	 * @param statsHs
+	 * 		EL mapa con las estadisticas. 
 	 * @param gradeId
 	 * 		El id del Grade Report Line.
 	 * @param percentil
@@ -236,6 +258,8 @@ public class Stats {
 	/**
 	 * Obtenemos el maximo del GRL.
 	 * 
+	 * @param statsHs
+	 * 		EL mapa con las estadisticas. 
 	 * @param gradeId
 	 * 		El id del Grade Report Line.
 	 * @return
@@ -254,6 +278,8 @@ public class Stats {
 	/**
 	 * Obtenemos el minimo del GRL.
 	 * 
+	 * @param statsHs
+	 * 		EL mapa con las estadisticas. 
 	 * @param gradeId
 	 * 		El id del Grade Report Line.
 	 * @return
@@ -273,7 +299,7 @@ public class Stats {
 	 * Permite obtener el limite superior para el diagrama de tipo boxplot.
 	 * 
 	 * @param statsHs
-	 * 		Las estadisticas.
+	 * 		EL mapa con las estadisticas. 
 	 * @param gradeId
 	 * 		El id del Grade Report Line.
 	 * @return
@@ -295,7 +321,7 @@ public class Stats {
 	 * Permite obtener el limite inferior para el diagrama de tipo boxplot.
 	 * 
 	 * @param statsHs
-	 * 		Las estadisticas.
+	 * 		EL mapa con las estadisticas. 
 	 * @param gradeId
 	 * 		El id del Grade Report Line.
 	 * @return
@@ -318,7 +344,7 @@ public class Stats {
 	 * Devuelve una lista con los valores atipicos para el digarama de tipo boxplot.
 	 * 
 	 * @param statsHs
-	 * 		Las estadisticas.
+	 * 		EL mapa con las estadisticas. 
 	 * @param gradeId
 	 * 		El id del Grade Report Line.
 	 * @return

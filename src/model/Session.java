@@ -4,7 +4,6 @@ import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -49,6 +48,7 @@ public class Session {
 	 * Obtiene el token de usuario
 	 * 
 	 * @return
+	 * 		El token del usuario.
 	 */
 	public String getToken() {
 		return this.tokenUser;
@@ -56,12 +56,13 @@ public class Session {
 
 	/**
 	 * Establece el token del usuario a partir de usuario y contraseña. Se
-	 * realiza mediante una petición http al webservice de Moodle
-	 * @throws IOException 
-	 * @throws ClientProtocolException 
-	 * @throws JSONException 
+	 * realiza mediante una petición http al webservice de Moodle.
 	 * 
-	 * @throws Exception
+	 * @param host
+	 * 		El nombre del host.
+	 * 
+	 * @throws IOException 
+	 * @throws JSONException 
 	 */
 	public void setToken(String host) throws IOException, JSONException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -93,6 +94,7 @@ public class Session {
 	 * Modifica el email del usuario
 	 * 
 	 * @param email
+	 * 		El email.
 	 */
 	public void setEmail(String email) {
 		this.email = email;
@@ -108,9 +110,10 @@ public class Session {
 	}
 
 	/**
-	 * Modifica el curso actual
+	 * Modifica el curso actual.
 	 * 
 	 * @param course
+	 * 		El curso.
 	 */
 	public void setActualCourse(Course course) {
 		this.actualCourse = course;

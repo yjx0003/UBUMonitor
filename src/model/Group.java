@@ -17,11 +17,11 @@ public class Group {
 	 * Constructor de la clase Group. Establece un grupo.
 	 * 
 	 * @param id
-	 *            id del grupo
+	 * 		Id del grupo.
 	 * @param name
-	 *            nombre del grupo
+	 * 		Nombre del grupo.
 	 * @param description
-	 *            descripción del grupo
+	 * 		Descripción del grupo.
 	 */
 	public Group(int id, String name, String description) {
 		this.id = id;
@@ -30,7 +30,7 @@ public class Group {
 	}
 
 	/**
-	 * Devuelve el id del grupo
+	 * Devuelve el id del grupo.
 	 * 
 	 * @return id
 	 */
@@ -39,16 +39,17 @@ public class Group {
 	}
 
 	/**
-	 * Modifica el id del grupo
+	 * Modifica el id del grupo.
 	 * 
 	 * @param id
+	 * 		El id.
 	 */
 	public void setId(int id) {
 		this.id = id;
 	}
 
 	/**
-	 * Devuelve el nombre del grupo
+	 * Devuelve el nombre del grupo.
 	 * 
 	 * @return name
 	 */
@@ -57,16 +58,17 @@ public class Group {
 	}
 
 	/**
-	 * Modifica el nombre del grupo
+	 * Modifica el nombre del grupo.
 	 * 
 	 * @param name
+	 * 		El nombre.
 	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
 	/**
-	 * Devuelve la descripción del grupo
+	 * Devuelve la descripción del grupo.
 	 * 
 	 * @return description
 	 */
@@ -75,9 +77,10 @@ public class Group {
 	}
 
 	/**
-	 * Modifica la descripción del grupo
+	 * Modifica la descripción del grupo.
 	 * 
 	 * @param description
+	 * 		La descripción.
 	 */
 	public void setDescription(String description) {
 		this.description = description;

@@ -54,6 +54,7 @@ public class Activity implements Serializable {
 	 * Modifica el nombre de la actividad
 	 * 
 	 * @param itemName
+	 * 		nombre del item
 	 */
 	public void setItemName(String itemName) {
 		this.itemName = itemName;
@@ -72,6 +73,7 @@ public class Activity implements Serializable {
 	 * Modifica el tipo de la actividad
 	 * 
 	 * @param activityType
+	 * 		tipo de actividad
 	 */
 	public void setActivityType(String activityType) {
 		this.activityType = activityType;
@@ -90,6 +92,7 @@ public class Activity implements Serializable {
 	 * Modifica el peso de la actividad
 	 * 
 	 * @param weight
+	 * 		el peso
 	 */
 	public void setWeight(float weight) {
 		this.weight = weight;
@@ -108,6 +111,7 @@ public class Activity implements Serializable {
 	 * Modifica el rango mínimo
 	 * 
 	 * @param minRange
+	 * 		el rango minimo
 	 */
 	public void setMinRange(String minRange) {
 		this.minRange = minRange;
@@ -126,6 +130,7 @@ public class Activity implements Serializable {
 	 * Modifica el rango máximo
 	 * 
 	 * @param maxRange
+	 * 		el rango maximo
 	 */
 	public void setMaxRange(String maxRange) {
 		this.maxRange = maxRange;
@@ -141,9 +146,10 @@ public class Activity implements Serializable {
 	}
 
 	/**
-	 * Modifica contrila bución total de la actividad
+	 * Modifica contribución total de la actividad
 	 * 
 	 * @param contributionCourseTotal
+	 * 		la contribución de la actividad
 	 */
 	public void setContributionCourseTotal(float contributionCourseTotal) {
 		this.contributionCourseTotal = contributionCourseTotal;

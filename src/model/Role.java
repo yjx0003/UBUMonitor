@@ -41,6 +41,7 @@ public class Role {
 	 * Modifica el id del rol
 	 * 
 	 * @param id
+	 * 		El id.
 	 */
 	public void setId(int id) {
 		this.id = id;
@@ -56,9 +57,10 @@ public class Role {
 	}
 
 	/**
-	 * Modifica el nombre del rol
+	 * Modifica el nombre del rol.
 	 * 
 	 * @param name
+	 * 		El nombre.
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -77,7 +79,7 @@ public class Role {
 	 * Modifica el nombre corto del rol
 	 * 
 	 * @param shortName
-	 * 
+	 * 		El nombre corto.
 	 */
 	public void setShortName(String shortName) {
 		this.shortName = shortName;

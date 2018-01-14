@@ -771,9 +771,9 @@ public class MainController implements Initializable {
 						countB++;
 						// Añadidimos el nombre del elemento como label
 						if (firstGrade) {
-							labels.append("'" + actualLine.getName() + "'");
+							labels.append("'" + structTree.getValue().getName()  + "'");
 						} else {
-							labels.append(",'" + actualLine.getName() + "'");
+							labels.append(",'" + structTree.getValue().getName()  + "'");
 						}
 					}
 					if(actualLine.getNameType().equals("Assignment")) {

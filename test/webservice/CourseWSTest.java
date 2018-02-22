@@ -72,6 +72,8 @@ public class CourseWSTest {
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 		
 		List<GradeReportLine> grlList = course.getGradeReportLines();
@@ -133,6 +135,8 @@ public class CourseWSTest {
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 		
 		assertEquals(20, grlList.size());

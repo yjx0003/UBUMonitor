@@ -189,8 +189,10 @@ public class Stats {
 	 */
 	public void addElementValue (Map<Integer,DescriptiveStatistics> statsHs, int gradeId, double value) {
 		DescriptiveStatistics statistics = statsHs.get(gradeId);
-		statistics.addValue(value);
-		statsHs.put(gradeId, statistics);
+		if (statistics != null) { // FIX RMS 1.5.2
+			statistics.addValue(value);
+			statsHs.put(gradeId, statistics);
+		}
 	}
 	
 	/**

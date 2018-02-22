@@ -38,20 +38,20 @@ public class CourseWS {
 	static final Logger logger = LoggerFactory.getLogger(CourseWS.class);
 
 	private CourseWS() {
-	    throw new IllegalStateException("Clase de utilidad");
+		throw new IllegalStateException("Clase de utilidad");
 	}
-	
+
 	/**
-	 * Establece los usuarios que están matriculados en un curso junto con su
-	 * rol y grupo.
+	 * Establece los usuarios que están matriculados en un curso junto con su rol y
+	 * grupo.
 	 * 
 	 * @param host
-	 * 		El nombre del host.
+	 *            El nombre del host.
 	 * @param token
-	 *      El token de usuario.
+	 *            El token de usuario.
 	 * @param course
-	 *      El curso.
-	 *      
+	 *            El curso.
+	 * 
 	 * @throws IOException
 	 * @throws JSONException
 	 */
@@ -60,11 +60,11 @@ public class CourseWS {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		ArrayList<EnrolledUser> eUsers = new ArrayList<>();
 		try {
-			HttpGet httpget = new HttpGet(host + "/webservice/rest/server.php?wstoken=" + token
-					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_USUARIOS_MATRICULADOS
-					+ "&courseid=" + course.getId());
+			HttpGet httpget = new HttpGet(
+					host + "/webservice/rest/server.php?wstoken=" + token + "&moodlewsrestformat=json&wsfunction="
+							+ MoodleOptions.OBTENER_USUARIOS_MATRICULADOS + "&courseid=" + course.getId());
 			CloseableHttpResponse response = httpclient.execute(httpget);
-			
+
 			String respuesta = EntityUtils.toString(response.getEntity());
 			JSONArray jsonArray = new JSONArray(respuesta);
 			for (int i = 0; i < jsonArray.length(); i++) {
@@ -89,29 +89,29 @@ public class CourseWS {
 	}
 
 	/**
-	 * Esta función se usará para obtener todos los GradeReportLine del primer usuario
-	 * matriculado y así sacar la estructura del calificador del curso para
+	 * Esta función se usará para obtener todos los GradeReportLine del primer
+	 * usuario matriculado y así sacar la estructura del calificador del curso para
 	 * después mostrarla como TreeView en la vista.
 	 * 
 	 * @param host
-	 * 		El nombre del host.
+	 *            El nombre del host.
 	 * @param token
-	 *      Token del profesor logueado.
+	 *            Token del profesor logueado.
 	 * @param userId
-	 *      Id del usuario a cargar.
+	 *            Id del usuario a cargar.
 	 * @param course
-	 * 		El curso a cargar.
+	 *            El curso a cargar.
 	 * 
 	 * @throws IOException
 	 * @throws JSONException
 	 */
 	public static void setGradeReportLines(String host, String token, int userId, Course course)
-			throws IOException, JSONException {
+			throws IOException, JSONException, Exception {
 		logger.info("Generando el arbol del calificador.");
 		try {
 			// Obtenemos el JSON con los datos
 			JSONObject graddesData = getGradesData(host, token, userId, course.getId());
-			
+
 			// En esta pila sólo van a entrar Categorías. Se mantendrán en
 			// la pila mientran tengan descendencia.
 			// Una vez añadida al árbol toda la descendencia de un nodo,
@@ -135,34 +135,37 @@ public class CourseWS {
 				if (tableDataElement.isNull("leader")) {
 					GradeReportLine actualLine = getGradeReportLineData(tableDataElement);
 					String typeActivity = actualLine.getNameType();
-											
+
 					if (!typeActivity.equals("Category")) { // Si es un item
 						// Si es un assignment obtenemos la escala si la tiene
-						if(typeActivity.equals("Assignment")) {
+						if (typeActivity.equals("Assignment")) {
 							Assignment assignment = new Assignment(actualLine.getName(), typeActivity,
-									actualLine.getWeight(),actualLine.getRangeMin(), actualLine.getRangeMax());
-							assignment.setScaleId(getAssignmentScale(host, token, course.getId(), actualLine.getName(), course));
+									actualLine.getWeight(), actualLine.getRangeMin(), actualLine.getRangeMax());
+							assignment.setScaleId(
+									getAssignmentScale(host, token, course.getId(), actualLine.getName(), course));
 							actualLine.setActivity(assignment);
 						}
 						if (!deque.isEmpty()) {
 							deque.lastElement().addChild(actualLine);
 						}
 					} else {
-						// Obtenemos el elemento cabecera de la pila
-						GradeReportLine categoryLine = deque.pop();
-						// Establecemos los valores restantes
-						categoryLine.setId(actualLine.getId());
-						categoryLine.setWeight(actualLine.getWeight());
-						categoryLine.setRangeMin(actualLine.getRangeMin());
-						categoryLine.setRangeMax(actualLine.getRangeMax());
-						categoryLine.setNameType(actualLine.getNameType());
-						categoryLine.setGrade(actualLine.getGrade());
+						if (!deque.isEmpty()) { // FIX RMS 1.5.2
+							// Obtenemos el elemento cabecera de la pila
+							GradeReportLine categoryLine = deque.pop();
+							// Establecemos los valores restantes
+							categoryLine.setId(actualLine.getId());
+							categoryLine.setWeight(actualLine.getWeight());
+							categoryLine.setRangeMin(actualLine.getRangeMin());
+							categoryLine.setRangeMax(actualLine.getRangeMax());
+							categoryLine.setNameType(actualLine.getNameType());
+							categoryLine.setGrade(actualLine.getGrade());
+						}
 					}
 				} else {// --- Si es una categoría
 					String nameLine = getNameCategorie(itemname.getString("content"));
 					int actualLevel = getActualLevel(itemname.getString("class"));
 					int idLine = getIdLine(itemname.getString("id"));
-					
+
 					// Añadimos la cabecera de la categoria a la pila
 					GradeReportLine actualLine = new GradeReportLine(idLine, nameLine, actualLevel, false);
 					// Lo añadimos como hijo de la categoria anterior
@@ -172,51 +175,56 @@ public class CourseWS {
 
 					// Añadimos esta cabecera a la pila
 					deque.add(actualLine);
-					
+
 					// Si es el elemento del primer nivel lo añadimos, es la raiz del arbol
-					if(actualLevel == 1) {
+					if (actualLevel == 1) {
 						course.setGradeReportLine(actualLine);
 					}
 				}
 			} // End for
 			course.setActivities(course.getGradeReportLines());
 
-		} catch (IOException e) {
+		} catch (
+
+		IOException e) {
 			logger.error("Error de conexion con Moodle al generar el arbol del calificador.", e);
 			throw new IOException("Error de conexion con Moodle al generar el arbol del calificador."
 					+ "\n Es posible que su equipo haya perdido la conexion a internet.");
-		} catch (JSONException e ) {
+		} catch (JSONException e) {
 			logger.error("Se ha producido un error al generar el arbol del calificador.", e);
 			throw new JSONException("Se ha producido un error al generar el arbol del calificador.");
+		} catch (Exception ex) {
+			logger.error("Se ha producido un error al obtener la estructura del libro de calificcciones.", ex);
+			throw new Exception("Se ha producido un error al obtener la estructura del libro de calificaciones.");
 		}
+
 	}
-	
+
 	/**
-	 * Genera todos los GradeReportLines de un curso para un usuario.Este proceso se realiza al inicio
-	 * alamcenando en memoria los datos.
+	 * Genera todos los GradeReportLines de un curso para un usuario.Este proceso se
+	 * realiza al inicio alamcenando en memoria los datos.
 	 * 
 	 * @param host
-	 * 		El nombre del host.
+	 *            El nombre del host.
 	 * @param token
-	 * 		Token del profesor logueado.
+	 *            Token del profesor logueado.
 	 * @param userId
-	 * 		Id del usuario a cargar.
+	 *            Id del usuario a cargar.
 	 * @param courseId
-	 * 		Curso del que se quieren cargar los datos.
-	 * @return
-	 * 		ArrayList con todos los GradeReportLines del usuario.
+	 *            Curso del que se quieren cargar los datos.
+	 * @return ArrayList con todos los GradeReportLines del usuario.
 	 * 
 	 * @throws JSONException
 	 * @throws IOException
 	 */
-	public static ArrayList<GradeReportLine> getUserGradeReportLines(String host, String token, int userId, int courseId)
-			throws IOException, JSONException {
-		
+	public static ArrayList<GradeReportLine> getUserGradeReportLines(String host, String token, int userId,
+			int courseId) throws IOException, JSONException, Exception {
+
 		ArrayList<GradeReportLine> gradeReportLines = null;
 		try {
 			// Obtenemos el JSON con los datos
 			JSONObject gradesData = getGradesData(host, token, userId, courseId);
-			
+
 			// lista de GradeReportLines
 			gradeReportLines = new ArrayList<>();
 
@@ -231,119 +239,136 @@ public class CourseWS {
 				if (tableDataElement.isNull("leader")) {
 					// Añadimos el elemento a la lista como item
 					gradeReportLines.add(getGradeReportLineData(tableDataElement));
-				} 
+				}
 			} // End for
-				
+
 		} catch (IOException e) {
 			logger.error("Error de conexion con Moodle al obtener las notas del alumno.", e);
 			throw new IOException("Error de conexion con Moodle al obtener las notas del alumno."
 					+ "\n Es posible que su equipo haya perdido la conexion a internet.");
-		} catch (JSONException e ) {
+		} catch (JSONException e) {
 			logger.error("Se ha producido un error al obtener las notas del alumno.", e);
 			throw new JSONException("Se ha producido un error al obtener las notas del alumno.");
+		} catch (Exception ex) {
+			logger.error("Se ha producido un error al obtener la estructura del libro de calificcciones.", ex);
+			throw new Exception("Se ha producido un error al obtener la estructura del libro de calificaciones.");
 		}
+
 		return gradeReportLines;
 	}
-	
-	private static GradeReportLine getGradeReportLineData(JSONObject tableDataElement) throws JSONException {
-		GradeReportLine actualGRL = null;
-		// sea categoría o item, se saca de la misma manera el
-		// nivel del itemname
-		JSONObject itemname = tableDataElement.getJSONObject("itemname");
-		int actualLevel = getActualLevel(itemname.getString("class"));
-		int idLine = getIdLine(itemname.getString("id"));
-		String nameContainer = itemname.getString("content");
-		String nameLine;
-		String typeActivity;
-		
-		// Sacamos la nota (grade)
-		JSONObject gradeContainer = tableDataElement.getJSONObject("grade");
-		String grade = getNumber(gradeContainer.getString("content"));
 
-		// Sacamos el porcentaje
-		JSONObject percentageContainer = tableDataElement.getJSONObject("percentage");
-		Float percentage = getFloat(percentageContainer.getString("content"));
-		
-		// Sacamos el peso
-		JSONObject weightContainer = tableDataElement.optJSONObject("weight");
-		Float weight = Float.NaN;
-		if(weightContainer != null) {
-			weight = getFloat(weightContainer.getString("content"));
+	private static GradeReportLine getGradeReportLineData(JSONObject tableDataElement) throws Exception {
+		try {
+			GradeReportLine actualGRL = null;
+			// sea categoría o item, se saca de la misma manera el
+			// nivel del itemname
+			JSONObject itemname = tableDataElement.getJSONObject("itemname");
+			int actualLevel = getActualLevel(itemname.getString("class"));
+			int idLine = getIdLine(itemname.getString("id"));
+			String nameContainer = itemname.getString("content");
+			String nameLine;
+			String typeActivity;
+
+			// Sacamos la nota (grade)
+			String grade = "0"; // Default value
+			JSONObject gradeContainer = tableDataElement.optJSONObject("grade");
+			if (gradeContainer != null) {
+				grade = getNumber(gradeContainer.getString("content"));
+			}
+
+			// Sacamos el porcentaje
+			Float percentage = 0.0F; // FIX BUG IN VERSION 1.5.2 RMS
+			JSONObject percentageContainer = tableDataElement.optJSONObject("percentage");
+			if (percentageContainer != null) {
+				percentage = getFloat(percentageContainer.getString("content"));
+			}
+
+			// Sacamos el peso
+			JSONObject weightContainer = tableDataElement.optJSONObject("weight");
+			Float weight = Float.NaN;
+			if (weightContainer != null) {
+				weight = getFloat(weightContainer.getString("content"));
+			}
+
+			// Sacamos el rango
+			String rangeMin = "NA"; // default value Non Available
+			String rangeMax = "NA"; // default value Non Available
+			JSONObject rangeContainer = tableDataElement.optJSONObject("range");
+			if (rangeContainer != null) {
+				rangeMin = getRange(rangeContainer.getString("content"), true);
+				rangeMax = getRange(rangeContainer.getString("content"), false);
+			}
+
+			// Si es una actividad (assignment o quiz)
+			// Se reconocen por la etiqueta "<a"
+			if (nameContainer.substring(0, 2).equals("<a")) {
+				nameLine = getNameActivity(nameContainer);
+				typeActivity = assignmentOrQuizOrForum(nameContainer);
+			} else {
+				// Si es un item manual o suma de calificaciones
+				// Se reconocen por la etiqueta "<span"
+				nameLine = getNameManualItemOrEndCategory(nameContainer);
+				typeActivity = manualItemOrEndCategory(nameContainer);
+			}
+
+			boolean typeLine = !typeActivity.equals("Category");
+
+			// Añadimos la linea actual
+			actualGRL = new GradeReportLine(idLine, nameLine, actualLevel, typeLine, weight, rangeMin, rangeMax, grade,
+					percentage, typeActivity);
+			return actualGRL;
+		} catch (Exception ex) {
+			logger.error("Error loading grade book: {}", ex.getMessage());
+			throw ex;
 		}
-
-		// Sacamos el rango
-		JSONObject rangeContainer = tableDataElement.getJSONObject("range");
-		String rangeMin = getRange(rangeContainer.getString("content"), true);
-		String rangeMax = getRange(rangeContainer.getString("content"), false);
-
-		// Si es una actividad (assignment o quiz)
-		// Se reconocen por la etiqueta "<a"
-		if (nameContainer.substring(0, 2).equals("<a")) {
-			nameLine = getNameActivity(nameContainer);
-			typeActivity = assignmentOrQuizOrForum(nameContainer);
-		} else {
-			// Si es un item manual o suma de calificaciones
-			// Se reconocen por la etiqueta "<span"
-			nameLine = getNameManualItemOrEndCategory(nameContainer);
-			typeActivity = manualItemOrEndCategory(nameContainer);
-		}
-		
-		boolean typeLine = !typeActivity.equals("Category");
-		
-		// Añadimos la linea actual
-		actualGRL = new GradeReportLine(idLine, nameLine, actualLevel,
-				typeLine, weight, rangeMin, rangeMax, grade, percentage, typeActivity);
-		return actualGRL;
 	}
 
 	/**
-	 * Genera todos los GradeReportLines de un curso para un usuario.Este proceso se realiza al inicio
-	 * alamcenando en memoria los datos. Moodle 3.3.
+	 * Genera todos los GradeReportLines de un curso para un usuario.Este proceso se
+	 * realiza al inicio alamcenando en memoria los datos. Moodle 3.3.
 	 * 
 	 * @param host
-	 * 		El nombre del host.
+	 *            El nombre del host.
 	 * @param token
-	 * 		Token del profesor logueado.
+	 *            Token del profesor logueado.
 	 * @param userId
-	 * 		Id del usuario a cargar.
+	 *            Id del usuario a cargar.
 	 * @param courseId
-	 * 		Curso del que se quieren cargar los datos.
-	 * @return
-	 * 		ArrayList con todos los GradeReportLines del usuario.
+	 *            Curso del que se quieren cargar los datos.
+	 * @return ArrayList con todos los GradeReportLines del usuario.
 	 * 
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public static ArrayList<GradeReportLine> getUserGradeReportLinesMoodle33(String host, String token, int userId, int courseId)
-			throws IOException, JSONException {
-		
+	public static ArrayList<GradeReportLine> getUserGradeReportLinesMoodle33(String host, String token, int userId,
+			int courseId) throws IOException, JSONException {
+
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse response = null;
 		ArrayList<GradeReportLine> gradeReportLines = null;
 		try {
-			String call = host + "/webservice/rest/server.php?wstoken=" + token
-					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_NOTAS_ALUMNO + "&courseid="
-					+ courseId + "&userid=" + userId;
+			String call = host + "/webservice/rest/server.php?wstoken=" + token + "&moodlewsrestformat=json&wsfunction="
+					+ MoodleOptions.OBTENER_NOTAS_ALUMNO + "&courseid=" + courseId + "&userid=" + userId;
 			HttpGet httpget = new HttpGet(call);
 			response = httpclient.execute(httpget);
-			
+
 			String respuesta = EntityUtils.toString(response.getEntity());
 			JSONObject jsonArray = new JSONObject(respuesta);
-			
-			//lista de GradeReportLines
+
+			// lista de GradeReportLines
 			gradeReportLines = new ArrayList<>();
-			
-			if(jsonArray != null ) {
+
+			if (jsonArray != null) {
 				JSONArray usergrades = (JSONArray) jsonArray.get("usergrades");
 				JSONObject alumn = (JSONObject) usergrades.get(0);
-				
+
 				JSONArray gradeItems = alumn.getJSONArray("gradeitems");
-				
+
 				// El elemento gradeitems tiene cada linea del calificador
 				// que convertiremos en GradeReportLines
-				for(int i = 0; i < gradeItems.length(); i++) {
+				for (int i = 0; i < gradeItems.length(); i++) {
 					JSONObject gradeItemsElement = gradeItems.getJSONObject(i);
-					
+
 					// Obtenemos los datos necesarios
 					int id;
 					String name = gradeItemsElement.getString("itemname");
@@ -369,21 +394,23 @@ public class CourseWS {
 			logger.error("Error de conexion con Moodle al obtener las notas de alumno.", e);
 			throw new IOException("Error de conexion con Moodle al generar el arbol del calificador."
 					+ "\n Es posible que su equipo haya perdido la conexion a internet.");
-		} catch (JSONException e ) {
+		} catch (JSONException e) {
 			logger.error("Se ha producido un error al obtener las notas del alumno.", e);
 			throw new JSONException("Se ha producido un error al obtener las notas del alumno.");
 		} finally {
-			if(response!=null) {response.close();}
+			if (response != null) {
+				response.close();
+			}
 			httpclient.close();
 		}
 		return gradeReportLines;
 	}
-	
+
 	/**
 	 * Devuelve el id del item
 	 * 
 	 * @param data
-	 * 		La cadena a analizar.
+	 *            La cadena a analizar.
 	 * @return id de un item
 	 */
 	public static int getIdLine(String data) {
@@ -395,7 +422,7 @@ public class CourseWS {
 	 * Devuelve el nivel del GradeReportLine que está siendo leída.
 	 * 
 	 * @param data
-	 * 		La cadena a analizar.
+	 *            La cadena a analizar.
 	 * @return nivel de la línea
 	 */
 	public static int getActualLevel(String data) {
@@ -408,9 +435,8 @@ public class CourseWS {
 	 * Devuelve el nombre de una categoría
 	 * 
 	 * @param data
-	 * 		La cadena a analizar.
-	 * @return
-	 * 		El nombre de la categoría.
+	 *            La cadena a analizar.
+	 * @return El nombre de la categoría.
 	 */
 	public static String getNameCategorie(String data) {
 		String result = "";
@@ -429,9 +455,8 @@ public class CourseWS {
 	 * Devuelve el nombre de una actividad.
 	 * 
 	 * @param data
-	 * 		La cadena a analizar.
-	 * @return
-	 * 		El nombre de la actividad.
+	 *            La cadena a analizar.
+	 * @return El nombre de la actividad.
 	 */
 	public static String getNameActivity(String data) {
 		int begin = data.indexOf(" />") + 3;
@@ -443,9 +468,8 @@ public class CourseWS {
 	 * Devuelve el nombre de un item manual o un cierre de categoría
 	 * 
 	 * @param data
-	 * 		La cadena a analizar.
-	 * @return
-	 * 		El nombre del elemento.
+	 *            La cadena a analizar.
+	 * @return El nombre del elemento.
 	 */
 	public static String getNameManualItemOrEndCategory(String data) {
 		int end = data.indexOf("</span>");
@@ -458,9 +482,8 @@ public class CourseWS {
 	 * Devuelve el tipo de un GradeReportLine (actividad o categoría)
 	 * 
 	 * @param data
-	 * 		La cadena a anlizar.
-	 * @return tipo de línea (cebecera de categoría, suma de calificaciones o
-	 *         item)
+	 *            La cadena a anlizar.
+	 * @return tipo de línea (cebecera de categoría, suma de calificaciones o item)
 	 */
 	public static boolean getTypeLine(String data) {
 		String[] matrix = data.split(" ");
@@ -468,11 +491,11 @@ public class CourseWS {
 	}
 
 	/**
-	 * Comprueba si la línea es una suma de calificaciones de categoría (un
-	 * cierre de categoría).
+	 * Comprueba si la línea es una suma de calificaciones de categoría (un cierre
+	 * de categoría).
 	 * 
 	 * @param data
-	 * 		La cadena a analizar.
+	 *            La cadena a analizar.
 	 * @return true si la línea es una suma de calificaciones, false si no
 	 */
 	public static boolean getBaggtLine(String data) {
@@ -484,11 +507,10 @@ public class CourseWS {
 	 * Devuelve el rango mínimo o máximo.
 	 * 
 	 * @param data
-	 * 		La cadena a analizar.
+	 *            La cadena a analizar.
 	 * @param option
-	 * 		True si es rango mínimo. False si es máximo.
-	 * @return 
-	 * 		rango máximo o mínimo
+	 *            True si es rango mínimo. False si es máximo.
+	 * @return rango máximo o mínimo
 	 */
 	public static String getRange(String data, boolean option) {
 		String[] ranges = data.split("&ndash;");
@@ -500,7 +522,7 @@ public class CourseWS {
 		} catch (ArrayIndexOutOfBoundsException e) {
 			return "0";
 		}
-		
+
 	}
 
 	/**
@@ -523,9 +545,8 @@ public class CourseWS {
 	 * Diferencia si la actividad es un quiz o un assignment.
 	 * 
 	 * @param data
-	 * 		La cadena a analizar.
-	 * @return 
-	 * 		El nombre de la actividad.
+	 *            La cadena a analizar.
+	 * @return El nombre de la actividad.
 	 */
 	private static String assignmentOrQuizOrForum(String data) {
 		String url = data.substring(data.lastIndexOf("href="), data.indexOf("?id="));
@@ -547,22 +568,21 @@ public class CourseWS {
 	 * Diferencia si la línea es un item manual o un cierre de categoría.
 	 * 
 	 * @param data
-	 * 		La cadena a analizar.
-	 * @return
-	 * 		ManualItem si es un item manual, Category si es un cierre de categoría
-	 * 		o una cadena vacia si no es niguna de las anteriores.
+	 *            La cadena a analizar.
+	 * @return ManualItem si es un item manual, Category si es un cierre de
+	 *         categoría o una cadena vacia si no es niguna de las anteriores.
 	 */
 	private static String manualItemOrEndCategory(String data) {
-		//FNS 
-		if(data.contains("i/manual_item") || data.contains("Ítem manual")) {
+		// FNS
+		if (data.contains("i/manual_item") || data.contains("Ítem manual")) {
 			return "ManualItem";
-		}else if(data.contains("i/agg_sum")
+		} else if (data.contains("i/agg_sum")
 				// added by RMS
 				|| data.contains("i/calc") || data.contains("i/agg_mean")
-				//FNS
+				// FNS
 				|| data.contains("Calificación calculada")) {
 			return "Category";
-		}else {
+		} else {
 			return "";
 		}
 	}
@@ -571,9 +591,8 @@ public class CourseWS {
 	 * Devuelve un número en formato Float si se encuentra en la cadena pasada.
 	 * 
 	 * @param data
-	 * 		La cadena a transformar.
-	 * @return
-	 * 		Un Float si es un número, Float.NaN si no lo es.
+	 *            La cadena a transformar.
+	 * @return Un Float si es un número, Float.NaN si no lo es.
 	 */
 	public static Float getFloat(String data) {
 		Pattern pattern = Pattern.compile("[0-9]{1,3},{1}[0-9]{1,2}");
@@ -590,10 +609,9 @@ public class CourseWS {
 	 * pasada si es una escala.
 	 * 
 	 * @param data
-	 * 		La cadena a transformar.
-	 * @return
-	 * 		NaN si no hay nota("-"), la cadena pasada si es una escala
-	 * 		o el número si es un número.
+	 *            La cadena a transformar.
+	 * @return NaN si no hay nota("-"), la cadena pasada si es una escala o el
+	 *         número si es un número.
 	 * 
 	 */
 	private static String getNumber(String data) {
@@ -603,24 +621,24 @@ public class CourseWS {
 			return data.substring(match.start(), match.end());
 		}
 		// Si es un - es que no hay nota, sino es que es un texto de una escala
-		return data.equals("-") ?  "NaN": data;
+		return data.equals("-") ? "NaN" : data;
 	}
-		
+
 	/**
-	 * Devuelve el id de la escala asociada a la tarea(Assignment) o 0 si no hay ninguna escala asociada.
+	 * Devuelve el id de la escala asociada a la tarea(Assignment) o 0 si no hay
+	 * ninguna escala asociada.
 	 * 
 	 * @param host
-	 * 		El nombre del host.
+	 *            El nombre del host.
 	 * @param token
-	 * 		El token del profesor logueado.
+	 *            El token del profesor logueado.
 	 * @param courseId
-	 * 		Curso del que se quiere obtener la escala.
+	 *            Curso del que se quiere obtener la escala.
 	 * @param assignmentName
-	 * 		Tarea de la que se quiere obtener la escala.
+	 *            Tarea de la que se quiere obtener la escala.
 	 * @param course
-	 * 		El curso donde almacenar los datos.
-	 * @return
-	 * 		El id de la escala o 0 si no hay escala asociada.
+	 *            El curso donde almacenar los datos.
+	 * @return El id de la escala o 0 si no hay escala asociada.
 	 * 
 	 * @throws IOException
 	 * @throws JSONException
@@ -630,66 +648,68 @@ public class CourseWS {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse response = null;
 		try {
-			HttpGet httpget = new HttpGet(host + "/webservice/rest/server.php?wstoken=" + token
-					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_ASSIGNMENTS
-					+ "&courseids[]=" + courseId);
+			HttpGet httpget = new HttpGet(
+					host + "/webservice/rest/server.php?wstoken=" + token + "&moodlewsrestformat=json&wsfunction="
+							+ MoodleOptions.OBTENER_ASSIGNMENTS + "&courseids[]=" + courseId);
 			response = httpclient.execute(httpget);
-			
+
 			String respuesta = EntityUtils.toString(response.getEntity());
 			JSONObject jsonArray = new JSONObject(respuesta);
 			JSONObject coruses = (JSONObject) ((JSONArray) jsonArray.get("courses")).get(0);
 			JSONArray assignments = (JSONArray) coruses.get("assignments");
 			for (int i = 0; i < assignments.length(); i++) {
 				JSONObject assignment = assignments.getJSONObject(i);
-				if(assignment.get("name").equals(assignmentName)) {
+				if (assignment.get("name").equals(assignmentName)) {
 					int grade = (int) assignment.get("grade");
 					// Si la nota es negativa indica el id de la escala
-					if(grade<0) {
+					if (grade < 0) {
 						grade = Math.abs(grade);
 						Scale scale = course.getScale(grade);
-						return (scale != null) ? scale.getId() : loadScale(host, token, grade, course);				
+						return (scale != null) ? scale.getId() : loadScale(host, token, grade, course);
 					}
 				}
 			}
 		} catch (IOException e) {
 			logger.error("Error al obtener la escala de la tarea, no se ha podido conectar con el webService: {}", e);
-			throw new IOException("Error al obtener la escala de la tarea, no se ha podido conectar con el webService.", e);
+			throw new IOException("Error al obtener la escala de la tarea, no se ha podido conectar con el webService.",
+					e);
 		} catch (JSONException e) {
 			logger.error("Error al obtener la esacal de la tarea: {}", e);
 			throw new JSONException(e);
 		} finally {
-			if(response!=null) {response.close();}
+			if (response != null) {
+				response.close();
+			}
 			httpclient.close();
 		}
 		return 0;
 	}
-	
+
 	/**
 	 * Obtiene los datos de una escala y los alamacena.
 	 * 
 	 * @param host
-	 * 		El nombre del host.
+	 *            El nombre del host.
 	 * @param token
-	 * 		El token del profesor logueado.
+	 *            El token del profesor logueado.
 	 * @param scaleId
-	 * 		El id de la escala.
+	 *            El id de la escala.
 	 * @param course
-	 * 	 	El curso al que añadir los datos.
-	 * @return
-	 * 		el id de la escala.
+	 *            El curso al que añadir los datos.
+	 * @return el id de la escala.
 	 * 
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	private static int loadScale(String host, String token, int scaleId, Course course) throws IOException, JSONException {
+	private static int loadScale(String host, String token, int scaleId, Course course)
+			throws IOException, JSONException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse response = null;
 		Scale scale = null;
 		List<String> elements = new ArrayList<>();
 		try {
 			HttpGet httpget = new HttpGet(host + "/webservice/rest/server.php?wstoken=" + token
-					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_ESCALA
-					+ "&scaleid=" + scaleId);
+					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_ESCALA + "&scaleid=" + scaleId);
 			response = httpclient.execute(httpget);
 			String respuesta = EntityUtils.toString(response.getEntity());
 			JSONArray jsonArray = new JSONArray(respuesta);
@@ -708,49 +728,54 @@ public class CourseWS {
 			logger.error("Error al cargar las escalas: {}", e);
 			throw new JSONException(e);
 		} finally {
-			if(response!=null) {response.close();}
+			if (response != null) {
+				response.close();
+			}
 			httpclient.close();
 		}
 		return scale.getId();
 	}
-	
+
 	/**
-	 * Obtiene los datos de las calificaciaones para el alumno y el curso que recibe.
+	 * Obtiene los datos de las calificaciaones para el alumno y el curso que
+	 * recibe.
 	 * 
 	 * @param host
-	 * 		El nombre del host.
+	 *            El nombre del host.
 	 * @param token
-	 *      Token del profesor logueado
+	 *            Token del profesor logueado
 	 * @param courseId
-	 *      Curso del que se quieren cargar los datos
+	 *            Curso del que se quieren cargar los datos
 	 * @param userId
-	 *      Id del usuario a cargar
-	 * @return
-	 * 		El JSON con los datos obtenidos.
+	 *            Id del usuario a cargar
+	 * @return El JSON con los datos obtenidos.
 	 * 
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	private static JSONObject getGradesData(String host, String token, int userId, int courseId) throws IOException, JSONException {
+	private static JSONObject getGradesData(String host, String token, int userId, int courseId)
+			throws IOException, JSONException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse response = null;
 		JSONObject gradesData = new JSONObject();
 		try {
-			String call = host + "/webservice/rest/server.php?wstoken=" + token
-					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_TABLA_NOTAS + "&courseid="
-					+ courseId + "&userid=" + userId;
+			String call = host + "/webservice/rest/server.php?wstoken=" + token + "&moodlewsrestformat=json&wsfunction="
+					+ MoodleOptions.OBTENER_TABLA_NOTAS + "&courseid=" + courseId + "&userid=" + userId;
 			HttpGet httpget = new HttpGet(call);
 			response = httpclient.execute(httpget);
-		
+
 			gradesData = new JSONObject(EntityUtils.toString(response.getEntity()));
 		} catch (IOException e) {
-			logger.error("Error al obtener los datos de las escalas, no se ha podido conectar con el webService: {}", e);
+			logger.error("Error al obtener los datos de las escalas, no se ha podido conectar con el webService: {}",
+					e);
 			throw new IOException("Error al cargar las escalas, no se ha podido conectar con el webService", e);
 		} catch (JSONException e) {
 			logger.error("Error al obtener los datos de las escalas: {}", e);
 			throw new JSONException(e);
 		} finally {
-			if(response!=null) {response.close();}
+			if (response != null) {
+				response.close();
+			}
 			httpclient.close();
 		}
 		return gradesData;

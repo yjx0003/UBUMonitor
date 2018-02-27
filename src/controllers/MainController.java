@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -78,9 +79,9 @@ public class MainController implements Initializable {
 	static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
 	private static final String TODOS = "Todos";
-	
+
 	private UBUGrades ubuGrades = UBUGrades.getInstance();
-	
+
 	@FXML // Curso actual
 	public Label lblActualCourse;
 	@FXML // Usuario actual
@@ -126,7 +127,7 @@ public class MainController implements Initializable {
 	@FXML // Gráfico de lineas
 	private WebView webViewCharts;
 	private WebEngine webViewChartsEngine;
-	
+
 	@FXML
 	private SplitPane splitPane;
 
@@ -139,17 +140,17 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
-			logger.info("Completada la carga del curso '" + ubuGrades.getSession().getActualCourse().getFullName() + ".");
-			
+			logger.info(
+					"Completada la carga del curso '" + ubuGrades.getSession().getActualCourse().getFullName() + ".");
+
 			// Cargamos el html de los graficos y calificaciones
 			webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
 			webViewChartsEngine = webViewCharts.getEngine();
 			webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html").toExternalForm());
 			// Comprobamos cuando se carga la pagina para traducirla
-			webViewChartsEngine.getLoadWorker().stateProperty().addListener(
-					(ov, oldState, newState) ->
-			webViewChartsEngine.executeScript("setLanguage('" + ubuGrades.getResourceBundle().getLocale().toString() + "')"));
-			
+			webViewChartsEngine.getLoadWorker().stateProperty()
+					.addListener((ov, oldState, newState) -> webViewChartsEngine.executeScript(
+							"setLanguage('" + ubuGrades.getResourceBundle().getLocale().toString() + "')"));
 
 			// Almacenamos todos participantes en una lista
 			ArrayList<EnrolledUser> users = (ArrayList<EnrolledUser>) ubuGrades.getSession().getActualCourse()
@@ -246,7 +247,7 @@ public class MainController implements Initializable {
 				slcType.setText(filterType);
 			});
 			// Cargamos una lista de los nombres de los grupos
-			List<String> nameActivityList =  ubuGrades.getSession().getActualCourse().getActivities();
+			List<String> nameActivityList = ubuGrades.getSession().getActualCourse().getActivities();
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
 			ArrayList<MenuItem> nameActivityItemsList = new ArrayList<>();
 			// En principio se van a mostrar todos los participantes en
@@ -281,10 +282,10 @@ public class MainController implements Initializable {
 				logger.info("-> Filtrando calificador por nombre: {}", patternCalifications);
 				filterCalifications();
 			});
-			
+
 			// Coloca el divider a la izquierda al redimensionar la ventana
-			ChangeListener<Number> stageSizeListener =
-					(observable, oldValue, newValue) -> splitPane.setDividerPositions(0);
+			ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) -> splitPane
+					.setDividerPositions(0);
 			ubuGrades.getStage().widthProperty().addListener(stageSizeListener);
 			ubuGrades.getStage().heightProperty().addListener(stageSizeListener);
 
@@ -293,14 +294,14 @@ public class MainController implements Initializable {
 			// Asignamos el manejador de eventos de la lista
 			// Al clickar en la lista, se recalcula el nº de elementos seleccionados
 			// Generamos el gráfico con los elementos selecionados
+			listParticipants.refresh(); // FIX RMS
 			listParticipants.setOnMouseClicked((EventHandler<Event>) event -> updateChart());
-	
+
 			/// Mostramos la lista de participantes
 			listParticipants.setItems(enrList);
-	
+
 			// Establecemos la estructura en árbol del calificador
-			List<GradeReportLine> grcl = ubuGrades.getSession().getActualCourse()
-					.getGradeReportLines();
+			List<GradeReportLine> grcl = ubuGrades.getSession().getActualCourse().getGradeReportLines();
 			// Establecemos la raiz del Treeview
 			TreeItem<GradeReportLine> root = new TreeItem<>(grcl.get(0));
 			MainController.setIcon(root);
@@ -319,18 +320,20 @@ public class MainController implements Initializable {
 			// Al clickar en la lista, se recalcula el nº de elementos seleccionados
 			// Generamos el gráfico con los elementos selecionados
 			tvwGradeReport.setOnMouseClicked((EventHandler<Event>) event -> updateChart());
-			
+
 			// Mostramos nº participantes
-			lblCountParticipants.setText(ubuGrades.getResourceBundle().getString("label.participants") 
-					+ " " + ubuGrades.getSession().getActualCourse().getEnrolledUsersCount());
-	
+			lblCountParticipants.setText(ubuGrades.getResourceBundle().getString("label.participants") + " "
+					+ ubuGrades.getSession().getActualCourse().getEnrolledUsersCount());
+
 			// Mostramos Usuario logeado y su imagen
-			lblActualUser.setText(ubuGrades.getResourceBundle().getString("label.user") + " " + ubuGrades.getUser().getFullName());
+			lblActualUser.setText(
+					ubuGrades.getResourceBundle().getString("label.user") + " " + ubuGrades.getUser().getFullName());
 			userPhoto.setImage(ubuGrades.getUser().getUserPhoto());
-	
+
 			// Mostramos Curso actual
-			lblActualCourse.setText(ubuGrades.getResourceBundle().getString("label.course") + " " + ubuGrades.getSession().getActualCourse().getFullName());
-	
+			lblActualCourse.setText(ubuGrades.getResourceBundle().getString("label.course") + " "
+					+ ubuGrades.getSession().getActualCourse().getFullName());
+
 			// Mostramos Host actual
 			lblActualHost.setText(ubuGrades.getResourceBundle().getString("label.host") + " " + ubuGrades.getHost());
 		} catch (Exception e) {
@@ -408,9 +411,9 @@ public class MainController implements Initializable {
 	 * hijos del elemento treeItem equivalente de line
 	 * 
 	 * @param parent
-	 * 		El padre al que añadir los elementos.
+	 *            El padre al que añadir los elementos.
 	 * @param line
-	 * 		La linea con los elementos a añadir.
+	 *            La linea con los elementos a añadir.
 	 */
 	public void setTreeview(TreeItem<GradeReportLine> parent, GradeReportLine line) {
 		for (int j = 0; j < line.getChildren().size(); j++) {
@@ -426,13 +429,13 @@ public class MainController implements Initializable {
 	 * Añade un icono a cada elemento del árbol según su tipo de actividad
 	 * 
 	 * @param item
-	 * 		El item al que añadir el icono.
+	 *            El item al que añadir el icono.
 	 */
 	public static void setIcon(TreeItem<GradeReportLine> item) {
 		try {
 			item.setGraphic((Node) new ImageView(new Image("/img/" + item.getValue().getNameType() + ".png")));
-		} catch(Exception e) {
-			logger.error("No se ha podido cargar la imagen del elemento " + item +" : {}", e);
+		} catch (Exception e) {
+			logger.error("No se ha podido cargar la imagen del elemento " + item + " : {}", e);
 		}
 	}
 
@@ -456,12 +459,11 @@ public class MainController implements Initializable {
 					root.setExpanded(true);
 					setTreeview(item, grcl.get(0).getChildren().get(k));
 				}
-			} else { // Con filtro	
+			} else { // Con filtro
 				for (int k = 1; k < grcl.size(); k++) {
 					TreeItem<GradeReportLine> item = new TreeItem<>(grcl.get(k));
 					boolean activityYes = false;
-					if (grcl.get(k).getNameType().equals(filterType)
-							|| filterType.equals(TODOS)) {
+					if (grcl.get(k).getNameType().equals(filterType) || filterType.equals(TODOS)) {
 						activityYes = true;
 					}
 					Pattern pattern = Pattern.compile(patternCalifications.toLowerCase());
@@ -489,7 +491,7 @@ public class MainController implements Initializable {
 	 * Exporta el gráfico. Se exportara como imagen en formato png.
 	 * 
 	 * @param actionEvent
-	 * 		El ActionEvent.
+	 *            El ActionEvent.
 	 * @throws Exception
 	 */
 	public void saveChart(ActionEvent actionEvent) throws Exception {
@@ -519,7 +521,7 @@ public class MainController implements Initializable {
 	 * Exporta todos los gráficos a un html.
 	 * 
 	 * @param actionEvent
-	 * 		El ActionEvent.
+	 *            El ActionEvent.
 	 */
 	public void saveAll(ActionEvent actionEvent) {
 		logger.info("Exportando los gráficos");
@@ -540,7 +542,7 @@ public class MainController implements Initializable {
 					c = fr.read();
 				}
 
-				//Completamos el nuevo archivo con los dataSets de los gráficos
+				// Completamos el nuevo archivo con los dataSets de los gráficos
 				out = new PrintWriter(new BufferedWriter(fw));
 				String generalDataSet = generateDataSet();
 				out.println("\r\nvar userLang = \"" + ubuGrades.getResourceBundle().getLocale().toString() + "\";\r\n");
@@ -550,7 +552,7 @@ public class MainController implements Initializable {
 				out.println("var BoxPlotGroupDataSet = " + generateBoxPlotDataSet(filterGroup) + ";\r\n");
 				out.println("var TableDataSet = " + generateTableData() + ";\r\n");
 				out.println("</script>\r\n</body>\r\n</html>");
-				
+
 				fr.close();
 				out.close();
 			} catch (IOException e) {
@@ -559,12 +561,12 @@ public class MainController implements Initializable {
 			}
 		}
 	}
-	
+
 	/**
 	 * Cambia a la ventana de selección de asignatura.
 	 * 
 	 * @param actionEvent
-	 * 		El ActionEvent.
+	 *            El ActionEvent.
 	 * 
 	 * @throws Exception
 	 */
@@ -578,19 +580,19 @@ public class MainController implements Initializable {
 	 * Vuelve a la ventana de login de usuario.
 	 * 
 	 * @param actionEvent
-	 * 		El ActionEvent.
+	 *            El ActionEvent.
 	 */
 	public void logOut(ActionEvent actionEvent) {
 		logger.info("Cerrando sesión de usuario");
 		Stats.removeStats();
 		changeScene(getClass().getResource("/view/Login.fxml"));
 	}
-	
+
 	/**
 	 * Permite cambiar la ventana actual.
 	 * 
 	 * @param sceneFXML
-	 *		La ventanan a la que se quiere cambiar.
+	 *            La ventanan a la que se quiere cambiar.
 	 */
 	private void changeScene(URL sceneFXML) {
 		try {
@@ -612,7 +614,7 @@ public class MainController implements Initializable {
 	 * Deja de seleccionar los participantes/actividades y borra el gráfico.
 	 * 
 	 * @param actionEvent
-	 * 		El ActionEvent.
+	 *            El ActionEvent.
 	 */
 	public void clearSelection(ActionEvent actionEvent) {
 		listParticipants.getSelectionModel().clearSelection();
@@ -623,7 +625,7 @@ public class MainController implements Initializable {
 	 * Abre en el navegador el repositorio del proyecto.
 	 * 
 	 * @param actionEvent
-	 * 		El ActionEvent.
+	 *            El ActionEvent.
 	 */
 	public void aboutUBUGrades(ActionEvent actionEvent) {
 		try {
@@ -637,7 +639,7 @@ public class MainController implements Initializable {
 	 * Botón "Salir". Cierra la aplicación.
 	 * 
 	 * @param actionEvent
-	 * 		El ActionEvent.
+	 *            El ActionEvent.
 	 */
 	public void closeApplication(ActionEvent actionEvent) {
 		logger.info("Cerrando aplicación");
@@ -647,11 +649,13 @@ public class MainController implements Initializable {
 	/**
 	 * Genera el dataset para la tabal de calificaciones.
 	 * 
-	 * @return
-	 * 		El dataset.
+	 * @return El dataset.
 	 */
 	private String generateTableData() {
 		// Lista de alumnos y calificaciones seleccionadas
+		listParticipants.refresh(); // FIX RMS
+		tvwGradeReport.refresh(); // FIX RMS
+
 		ObservableList<EnrolledUser> selectedParticipants = listParticipants.getSelectionModel().getSelectedItems();
 		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
 
@@ -661,7 +665,7 @@ public class MainController implements Initializable {
 
 		// Por cada ítem seleccionado lo añadimos como label
 		for (TreeItem<GradeReportLine> structTree : selectedGRL) {
-			tableData.append(",'" + structTree.getValue().getName() + "'");
+			tableData.append(",'" + escapeJavaScriptText(structTree.getValue().getName()) + "'");
 		}
 		tableData.append("],");
 
@@ -670,9 +674,9 @@ public class MainController implements Initializable {
 			// Añadimos el nombre del alumno al dataset
 			if (firstElement) {
 				firstElement = false;
-				tableData.append("['" + actualUser.getFullName() + "'");
+				tableData.append("['" + escapeJavaScriptText(actualUser.getFullName()) + "'");
 			} else {
-				tableData.append(",['" + actualUser.getFullName() + "'");
+				tableData.append(",['" + escapeJavaScriptText(actualUser.getFullName()) + "'");
 			}
 			// Por cada ítem seleccionado
 			for (TreeItem<GradeReportLine> structTree : selectedGRL) {
@@ -689,19 +693,24 @@ public class MainController implements Initializable {
 			}
 			tableData.append("]");
 		}
+		// FIX RMS
+		if (selectedParticipants.isEmpty()) {
+			// Remove last comma, if there are not students selected in screen.
+			tableData.deleteCharAt(tableData.length() - 1);
+		}
 		// Añadimos las medias
 		tableData.append(generateTableMean());
 		return tableData.toString();
 	}
-	
+
 	/**
 	 * Genera el dataset de las medias para la tabla de calificaciones.
-	 * @return
-	 * 		El dataset.
+	 * 
+	 * @return El dataset.
 	 */
 	private String generateTableMean() {
 		// Añadimos la media general
-		StringBuilder tableData = new StringBuilder(); 
+		StringBuilder tableData = new StringBuilder();
 		tableData.append(",['" + ubuGrades.getResourceBundle().getString("chartlabel.tableMean") + "'");
 		for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 			String grade = stats.getElementMean(stats.getGeneralStats(), structTree.getValue().getId());
@@ -716,7 +725,8 @@ public class MainController implements Initializable {
 		// Añadimos la media de los grupos
 		for (MenuItem grupo : slcGroup.getItems()) {
 			if (!grupo.getText().equals(TODOS)) {
-				tableData.append(",['" + ubuGrades.getResourceBundle().getString("chartlabel.tableGroupMean") + " " + grupo.getText() + "'");
+				tableData.append(",['" + ubuGrades.getResourceBundle().getString("chartlabel.tableGroupMean") + " "
+						+ grupo.getText() + "'");
 				for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 					String grade = stats.getElementMean(stats.getGroupStats(grupo.getText()),
 							structTree.getValue().getId());
@@ -741,6 +751,9 @@ public class MainController implements Initializable {
 	 */
 	private String generateDataSet() {
 		// Lista de alumnos y calificaciones seleccionadas
+		listParticipants.refresh(); // FIX RMS
+		tvwGradeReport.refresh(); // FIX RMS
+
 		ObservableList<EnrolledUser> selectedParticipants = listParticipants.getSelectionModel().getSelectedItems();
 		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
 		int countA = 0;
@@ -749,60 +762,76 @@ public class MainController implements Initializable {
 		StringBuilder dataSet = new StringBuilder();
 		StringBuilder labels = new StringBuilder();
 
+		logger.debug("Selected participant: {}", selectedParticipants.size());
 		// Por cada usuario seleccionado
 		for (EnrolledUser actualUser : selectedParticipants) {
-			String actualUserFullName = actualUser.getFullName();
-			// Añadimos el nombre del alumno al dataset		
-			if (firstUser) {
-				dataSet.append("{label:'" + actualUserFullName + "',data: [");
-				firstUser = false;
-			} else {
-				dataSet.append(",{label:'" + actualUserFullName + "',data: [");
-			}
-			int countB = 1;
-			firstGrade = true;
-			// Por cada ítem seleccionado
-			for (TreeItem<GradeReportLine> structTree : selectedGRL) {
-				countA++;
-				GradeReportLine actualLine = actualUser.getGradeReportLine(structTree.getValue().getId());
-				try {
-					String calculatedGrade;
-					if (countA == countB) {
-						countB++;
-						// Añadidimos el nombre del elemento como label
-						if (firstGrade) {
-							labels.append("'" + structTree.getValue().getName()  + "'");
-						} else {
-							labels.append(",'" + structTree.getValue().getName()  + "'");
-						}
-					}
-					if(actualLine.getNameType().equals("Assignment")) {
-						calculatedGrade = actualLine.getGradeWithScale(ubuGrades.getSession().getActualCourse());
-					} else {
-						calculatedGrade = actualLine.getGradeAdjustedTo10();
-					}
-					if (firstGrade) {
-						dataSet.append(calculatedGrade);
-						firstGrade = false;
-					} else {
-						dataSet.append("," + calculatedGrade);
-					}
-				} catch (Exception e) {
-					logger.error("Error en la construcción del dataset.", e);
-					errorWindow(ubuGrades.getResourceBundle().getString("error.generatedataset"), false);
+			if (actualUser != null) { // BUG when we deselect the penultimate student, some student can have null value. TODO
+				logger.debug("Enroller user: {}", actualUser.getFirstName());
+				String actualUserFullName = actualUser.getFullName();
+				// Añadimos el nombre del alumno al dataset
+				if (firstUser) {
+					dataSet.append("{label:'" + actualUserFullName + "',data: [");
+					firstUser = false;
+				} else {
+					dataSet.append(",{label:'" + actualUserFullName + "',data: [");
 				}
+				int countB = 1;
+				firstGrade = true;
+				// Por cada ítem seleccionado
+				for (TreeItem<GradeReportLine> structTree : selectedGRL) {
+					countA++;
+					try {
+						GradeReportLine actualLine = actualUser.getGradeReportLine(structTree.getValue().getId());
+						String calculatedGrade;
+						if (countA == countB) {
+							countB++;
+							// Añadidimos el nombre del elemento como label
+							logger.debug("Parsing: {}", structTree.getValue().getName());
+							if (firstGrade) {								
+								labels.append("'" + escapeJavaScriptText(structTree.getValue().getName()) + "'");
+							} else {
+								labels.append(",'" + escapeJavaScriptText(structTree.getValue().getName()) + "'");
+							}
+						}
+						if (actualLine.getNameType().equals("Assignment")) {
+							calculatedGrade = actualLine.getGradeWithScale(ubuGrades.getSession().getActualCourse());
+						} else {
+							calculatedGrade = actualLine.getGradeAdjustedTo10();
+						}
+						if (firstGrade) {
+							dataSet.append(calculatedGrade);
+							firstGrade = false;
+						} else {
+							dataSet.append("," + calculatedGrade);
+						}
+					} catch (Exception e) {
+						logger.error("Error en la construcción del dataset.", e);
+						errorWindow(ubuGrades.getResourceBundle().getString("error.generatedataset"), false);
+					}
+				}
+				dataSet.append("]," + "backgroundColor: 'red'," + "borderColor: 'red'," + "pointBorderColor: 'red',"
+						+ "pointBackgroundColor: 'red'," + "borderWidth: 3," + "fill: false}");
 			}
-			dataSet.append("]," + "backgroundColor: 'red'," + "borderColor: 'red'," + "pointBorderColor: 'red',"
-					+ "pointBackgroundColor: 'red'," + "borderWidth: 3," + "fill: false}");
 		}
 		return "{ labels:[" + labels + "],datasets: [" + dataSet + "]}";
+	}
+	
+	
+	/**
+	 * Excape the commas in the text. For example 'Law D'Hont' is changed to 'Law D\'Hont'.
+	 *
+	 * @author Raúl Marticorena
+	 * @since 1.5.3
+	 */
+	private static String escapeJavaScriptText(String input) {
+		return input.replaceAll("'", "\\\\'");
 	}
 
 	/**
 	 * Funcion que genera el DataSet para el boxplot.
 	 * 
 	 * @param group
-	 * 		El grupo sobre el que generar el dataset.
+	 *            El grupo sobre el que generar el dataset.
 	 * 
 	 * @return BoxPlot DataSet.
 	 */
@@ -819,20 +848,22 @@ public class MainController implements Initializable {
 		StringBuilder upperLimit = new StringBuilder("{label:'" + rs.getString("chartlabel.upperlimit") + "',data: [");
 		StringBuilder median = new StringBuilder("{label:'" + rs.getString("chartlabel.median") + "',data: [");
 		StringBuilder lowerLimit = new StringBuilder("{label:'" + rs.getString("chartlabel.lowerlimit") + "',data: [");
-		StringBuilder firstQuartile = new StringBuilder("{label:'" + rs.getString("chartlabel.firstquartile") + "',data: [");
-		StringBuilder thirdQuartile = new StringBuilder("{label:'" + rs.getString("chartlabel.thirdquartile") + "',data: [");
+		StringBuilder firstQuartile = new StringBuilder(
+				"{label:'" + rs.getString("chartlabel.firstquartile") + "',data: [");
+		StringBuilder thirdQuartile = new StringBuilder(
+				"{label:'" + rs.getString("chartlabel.thirdquartile") + "',data: [");
 		boolean firstLabel = true;
 		boolean firstGrade = true;
 		int gradeId;
-		
+
 		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
 
 		for (TreeItem<GradeReportLine> structTree : selectedGRL) {
 			if (firstLabel) {
-				labels.append("'" + structTree.getValue().getName() + "'");
+				labels.append("'" + escapeJavaScriptText(structTree.getValue().getName()) + "'");
 				firstLabel = false;
 			} else {
-				labels.append(",'" + structTree.getValue().getName() + "'");
+				labels.append(",'" + escapeJavaScriptText(structTree.getValue().getName()) + "'");
 			}
 
 			gradeId = structTree.getValue().getId();
@@ -847,7 +878,7 @@ public class MainController implements Initializable {
 				upperLimit.append("," + stats.getUpperLimit(boxPlotStats, gradeId));
 				median.append("," + stats.getMedian(boxPlotStats, gradeId));
 				lowerLimit.append("," + stats.getLowerLimit(boxPlotStats, gradeId));
-				firstQuartile.append( "," + stats.getElementPercentile(boxPlotStats, gradeId, 25));
+				firstQuartile.append("," + stats.getElementPercentile(boxPlotStats, gradeId, 25));
 				thirdQuartile.append("," + stats.getElementPercentile(boxPlotStats, gradeId, 75));
 			}
 		}
@@ -867,8 +898,6 @@ public class MainController implements Initializable {
 		lowerLimit.append("]," + "backgroundColor: 'rgba(81,45,168,1)'," + "borderColor: 'rgba(81,45,168,1)',"
 				+ "pointBorderColor: 'rgba(81,45,168,1)'," + "pointBackgroundColor: 'rgba(81,45,168,1)',"
 				+ "borderWidth: 3," + "fill: false}");
-		
-		
 
 		return "{ labels:[" + labels + "]," + "datasets: [" + upperLimit + "," + thirdQuartile + "," + median + ","
 				+ firstQuartile + "," + lowerLimit + "," + generateAtypicalValuesDataSet(boxPlotStats) + "]}";
@@ -877,27 +906,28 @@ public class MainController implements Initializable {
 	private String generateAtypicalValuesDataSet(Map<Integer, DescriptiveStatistics> statistics) {
 		StringBuilder dataset = new StringBuilder();
 		int gradeId;
-		
+
 		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
-		
-		for(int i = 0; i < selectedGRL.size(); i++) {
+
+		for (int i = 0; i < selectedGRL.size(); i++) {
 			gradeId = selectedGRL.get(i).getValue().getId();
 			List<String> atypicalValues = stats.getAtypicalValues(statistics, gradeId);
-			
-			if(dataset.length() != 0 && !atypicalValues.isEmpty()) {
+
+			if (dataset.length() != 0 && !atypicalValues.isEmpty()) {
 				dataset.append(",");
 			}
-			
-			for(int j = 0; j < atypicalValues.size(); j++) {
-				if(j != 0) {
+
+			for (int j = 0; j < atypicalValues.size(); j++) {
+				if (j != 0) {
 					dataset.append(",");
 				}
-				dataset.append("{label:'" + ubuGrades.getResourceBundle().getString("chartlabel.atypicalValue") + "',data: [");
-				for(int x = 0; x < selectedGRL.size(); x++) {
-					if(x != 0) {
+				dataset.append(
+						"{label:'" + ubuGrades.getResourceBundle().getString("chartlabel.atypicalValue") + "',data: [");
+				for (int x = 0; x < selectedGRL.size(); x++) {
+					if (x != 0) {
 						dataset.append(",");
 					}
-					if(x == i) {
+					if (x == i) {
 						dataset.append(atypicalValues.get(j));
 					} else {
 						dataset.append("NaN");
@@ -910,12 +940,12 @@ public class MainController implements Initializable {
 		}
 		return dataset.toString();
 	}
-	
+
 	/**
 	 * Función que genera el dataSet de la media de todos los alumnos.
 	 * 
 	 * @param group
-	 * 		El grupo del que obtener la media.
+	 *            El grupo del que obtener la media.
 	 * 
 	 * @return Mean DataSet.
 	 */
@@ -927,11 +957,13 @@ public class MainController implements Initializable {
 
 		if (group.equals(TODOS)) {
 			meanStats = stats.getGeneralStats();
-			meanDataset.append("{label:'" + ubuGrades.getResourceBundle().getString("chartlabel.generalMean") + "',data:[");
+			meanDataset.append(
+					"{label:'" + ubuGrades.getResourceBundle().getString("chartlabel.generalMean") + "',data:[");
 			color = "rgba(255, 152, 0, ";
 		} else {
 			meanStats = stats.getGroupStats(group);
-			meanDataset.append("{label:'" + ubuGrades.getResourceBundle().getString("chartlabel.groupMean") + "',data:[");
+			meanDataset
+					.append("{label:'" + ubuGrades.getResourceBundle().getString("chartlabel.groupMean") + "',data:[");
 			color = "rgba(0, 150, 136, ";
 		}
 
@@ -976,15 +1008,22 @@ public class MainController implements Initializable {
 	private void updateChart() {
 		try {
 			String data = generateDataSet();
+			logger.debug("Data: {}", data);
 			updateGroupData(filterGroup);
-			webViewChartsEngine.executeScript("saveTableData(" + generateTableData() + ")");
+			String tableData = generateTableData();
+			logger.debug("Table data for chart: {}", tableData);
+			webViewChartsEngine.executeScript("saveTableData(" + tableData + ")");
 			webViewChartsEngine.executeScript("saveMean(" + generateMeanDataSet(TODOS) + ")");
 			webViewChartsEngine.executeScript("updateChart('boxplot'," + generateBoxPlotDataSet(TODOS) + ")");
 			webViewChartsEngine.executeScript("updateChart('line'," + data + ")");
 			webViewChartsEngine.executeScript("updateChart('radar'," + data + ")");
 		} catch (JSException e) {
 			logger.error("Error al generar los gráficos.", e);
-			errorWindow(ubuGrades.getResourceBundle().getString("error.generateCharts"), true);
+			errorWindow(ubuGrades.getResourceBundle().getString("error.generateCharts"), false); // FIX RMS Review true
+																									// or false
+		} catch (Exception e) {
+			logger.error("Error general al generar los gráficos.", e);
+			errorWindow(ubuGrades.getResourceBundle().getString("error.generateCharts"), false);
 		}
 	}
 
@@ -994,7 +1033,7 @@ public class MainController implements Initializable {
 	 * @param mensaje
 	 *            El mensaje que se quiere mostrar.
 	 * @param exit
-	 * 			Indica si se quiere mostar el boton de salir o no.
+	 *            Indica si se quiere mostar el boton de salir o no.
 	 */
 	private void errorWindow(String mensaje, Boolean exit) {
 		Alert alert = new Alert(AlertType.ERROR);
@@ -1004,11 +1043,11 @@ public class MainController implements Initializable {
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.initOwner(ubuGrades.getStage());
 		alert.getDialogPane().setContentText(mensaje);
-		
-		if(exit) {
+
+		if (exit) {
 			ButtonType buttonSalir = new ButtonType("Cerrar UBUGrades");
 			alert.getButtonTypes().setAll(buttonSalir);
-	
+
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.isPresent() && result.get() == buttonSalir)
 				ubuGrades.getStage().close();

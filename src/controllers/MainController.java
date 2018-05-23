@@ -766,7 +766,7 @@ public class MainController implements Initializable {
 		// Por cada usuario seleccionado
 		for (EnrolledUser actualUser : selectedParticipants) {
 			if (actualUser != null) { // BUG when we deselect the penultimate student, some student can have null value. TODO
-				logger.debug("Enroller user: {}", actualUser.getFirstName());
+				// TODO logger.debug("Enroller user: {}", actualUser.getFirstName());
 				String actualUserFullName = actualUser.getFullName();
 				// Añadimos el nombre del alumno al dataset
 				if (firstUser) {
@@ -785,8 +785,7 @@ public class MainController implements Initializable {
 						String calculatedGrade;
 						if (countA == countB) {
 							countB++;
-							// Añadidimos el nombre del elemento como label
-							logger.debug("Parsing: {}", structTree.getValue().getName());
+							// Añadidimos el nombre del elemento como label							
 							if (firstGrade) {								
 								labels.append("'" + escapeJavaScriptText(structTree.getValue().getName()) + "'");
 							} else {
@@ -818,7 +817,7 @@ public class MainController implements Initializable {
 	
 	
 	/**
-	 * Excape the commas in the text. For example 'Law D'Hont' is changed to 'Law D\'Hont'.
+	 * Escape the commas in the text. For example 'Law D'Hont' is changed to 'Law D\'Hont'.
 	 *
 	 * @author Raúl Marticorena
 	 * @since 1.5.3

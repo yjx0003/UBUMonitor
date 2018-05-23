@@ -121,11 +121,13 @@ public class CourseWS {
 			JSONArray tables = (JSONArray) graddesData.get("tables");
 			JSONObject alumn = (JSONObject) tables.get(0);
 			JSONArray tableData = alumn.getJSONArray("tabledata");
+			logger.debug("Contenido del calificador en bruto: {}", tableData.toString());
 
 			// El elemento table data tiene las líneas del configurador
 			// (que convertiremos a GradeReportLines)
 			for (int i = 0; i < tableData.length(); i++) {
 				JSONObject tableDataElement = tableData.getJSONObject(i);
+				logger.debug("Categoría o item leido del calificador: {}", tableDataElement.toString());
 				// sea categoría o item, se saca de la misma manera el
 				// nivel del itemname
 				JSONObject itemname = tableDataElement.getJSONObject("itemname");
@@ -194,7 +196,7 @@ public class CourseWS {
 			logger.error("Se ha producido un error al generar el arbol del calificador.", e);
 			throw new JSONException("Se ha producido un error al generar el arbol del calificador.");
 		} catch (Exception ex) {
-			logger.error("Se ha producido un error al obtener la estructura del libro de calificcciones.", ex);
+			logger.error("Se ha producido un error al obtener la estructura del libro de calificaciones.", ex);
 			throw new Exception("Se ha producido un error al obtener la estructura del libro de calificaciones.");
 		}
 
@@ -259,6 +261,7 @@ public class CourseWS {
 
 	private static GradeReportLine getGradeReportLineData(JSONObject tableDataElement) throws Exception {
 		try {
+			logger.debug("Añadiendo línea de calificaciones: {}", tableDataElement.toString());
 			GradeReportLine actualGRL = null;
 			// sea categoría o item, se saca de la misma manera el
 			// nivel del itemname

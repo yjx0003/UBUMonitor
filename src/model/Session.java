@@ -24,7 +24,7 @@ import webservice.MoodleOptions;
  *
  */
 public class Session {
-	private String email;
+	private String userName;
 	private String password;
 	private String tokenUser;
 	private Course actualCourse;
@@ -39,8 +39,8 @@ public class Session {
 	 * @param pass
 	 *            contraseña de usuario
 	 */
-	public Session(String mail, String pass) {
-		this.email = mail;
+	public Session(String userName, String pass) {
+		this.userName = userName;
 		this.password = pass;
 	}
 
@@ -68,7 +68,7 @@ public class Session {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse response = null;
 		try {
-			HttpGet httpget = new HttpGet(host + "/login/token.php?username=" + this.email + "&password="
+			HttpGet httpget = new HttpGet(host + "/login/token.php?username=" + this.userName + "&password="
 					+ this.password + "&service=" + MoodleOptions.SERVICIO_WEB_MOODLE);
 			response = httpclient.execute(httpget);
 			
@@ -82,22 +82,22 @@ public class Session {
 	}
 
 	/**
-	 * Devuelve el email del usuario
+	 * Devuelve el nombre de usuario del usuario
 	 * 
-	 * @return email
+	 * @return userName
 	 */
-	public String getEmail() {
-		return this.email;
+	public String getUserName() {
+		return this.userName;
 	}
 
 	/**
-	 * Modifica el email del usuario
+	 * Modifica el nombre de usuario usuario
 	 * 
-	 * @param email
-	 * 		El email.
+	 * @param userName
+	 * 		El nombre de usuario.
 	 */
-	public void setEmail(String email) {
-		this.email = email;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 	/**
@@ -107,6 +107,15 @@ public class Session {
 	 */
 	public Course getActualCourse() {
 		return this.actualCourse;
+	}
+	
+	/**
+	 * Devuelve el password de la cuenta
+	 * 
+	 * @return password
+	 */
+	public String getPassword() {
+		return password;
 	}
 
 	/**

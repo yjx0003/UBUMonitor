@@ -49,13 +49,13 @@ public class MoodleUserWS {
 	 * @throws IOException 
 	 * @throws JSONException 
 	 */
-	public static void setMoodleUser(String host, String token, String eMail, MoodleUser mUser) throws IOException, JSONException  {
+	public static void setMoodleUser(String host, String token, String username, MoodleUser mUser) throws IOException, JSONException  {
 		logger.info("Obteniendo los datos del usuario.");
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		try {
 			HttpGet httpget = new HttpGet(host + "/webservice/rest/server.php?wstoken=" + token
 					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_INFO_USUARIO
-					+ "&field=email&values[0]=" + eMail);
+					+ "&field=email&values[0]=" + username);
 			CloseableHttpResponse response = httpclient.execute(httpget);
 			String respuesta = EntityUtils.toString(response.getEntity());
 			JSONArray jsonArray = new JSONArray(respuesta);

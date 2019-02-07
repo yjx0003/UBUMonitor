@@ -59,7 +59,7 @@ public class LoginController implements Initializable {
 	private ChoiceBox<String> languageSelector;
 	
 	//Host por defecto
-	private static final String HOST = "https://ubuvirtual.ubu.es/";
+	private static final String HOST = "http://localhost";
 	
 	// Lista de idiomas disponibles
 	private final List<String> locale = Arrays.asList("es_es", "en_en");
@@ -199,7 +199,7 @@ public class LoginController implements Initializable {
 					updateProgress(0, 3);
 					ubuGrades.setUser(new MoodleUser());
 					MoodleUserWS.setMoodleUser(ubuGrades.getHost(), 
-							ubuGrades.getSession().getToken(), ubuGrades.getSession().getEmail(),
+							ubuGrades.getSession().getToken(), ubuGrades.getSession().getUserName(),
 					ubuGrades.getUser());
 					updateProgress(1, 3);
 					MoodleUserWS.setCourses(ubuGrades.getHost(),

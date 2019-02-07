@@ -59,7 +59,7 @@ public class LoginController implements Initializable {
 	private ChoiceBox<String> languageSelector;
 	
 	//Host por defecto
-	private static final String HOST = "http://localhost";
+	private static final String HOST = "https://ubuvirtual.ubu.es/";
 	
 	// Lista de idiomas disponibles
 	private final List<String> locale = Arrays.asList("es_es", "en_en");

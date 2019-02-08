@@ -1,5 +1,7 @@
 package model;
 
+import java.io.Serializable;
+
 /**
  * Clase Role para distinguir el rol de los usuarios matriculados en un curso.
  * 
@@ -7,7 +9,11 @@ package model;
  * @version 1.0
  *
  */
-public class Role {
+public class Role implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int id;
 	private String name;
 	private String shortName;

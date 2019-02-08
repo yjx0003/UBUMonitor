@@ -17,7 +17,7 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" styleClass="anchorpane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.WelcomeController">
 	<children>
-      <Label fx:id="lblNoSelect" alignment="CENTER" layoutX="136.0" layoutY="543.0" prefHeight="21.0" prefWidth="540.0" style="-fx-text-fill: #ff5050;" textAlignment="CENTER" textFill="#e11010">
+      <Label fx:id="lblNoSelect" alignment="CENTER" layoutX="139.0" layoutY="562.0" prefHeight="21.0" prefWidth="540.0" style="-fx-text-fill: #ff5050;" textAlignment="CENTER" textFill="#e11010">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
@@ -42,7 +42,7 @@
 				<Font size="25.0" />
 			</font>
 		</Label>
-		<ListView fx:id="listCourses" layoutX="139.0" layoutY="216.0" prefHeight="265.0" prefWidth="540.0" styleClass="list-view-intro" stylesheets="@/css/style.css">
+		<ListView fx:id="listCourses" layoutX="139.0" layoutY="216.0" prefHeight="219.0" prefWidth="540.0" styleClass="list-view-intro" stylesheets="@/css/style.css">
          <cursor>
             <Cursor fx:constant="DEFAULT" />
          </cursor></ListView>
@@ -51,7 +51,7 @@
 				<Font size="15.0" />
 			</font>
 		</Label>
-		<Button fx:id="btnEntrar" layoutX="364.0" layoutY="496.0" mnemonicParsing="false" onAction="#enterCourse" prefHeight="39.0" prefWidth="86.0" style="-fx-font-size: 16;" styleClass="rich-blue" stylesheets="@/css/style.css" text="%btn.enter">
+		<Button fx:id="btnEntrar" layoutX="368.0" layoutY="517.0" mnemonicParsing="false" onAction="#enterCourse" prefHeight="39.0" prefWidth="86.0" style="-fx-font-size: 16;" styleClass="rich-blue" stylesheets="@/css/style.css" text="%btn.enter">
 			<font>
 				<Font size="19.0" />
 			</font>
@@ -59,10 +59,13 @@
 				<Cursor fx:constant="HAND" />
 			</cursor>
 		</Button>
-      <ProgressBar fx:id="progressBar" layoutX="340.0" layoutY="507.0" prefHeight="18.0" prefWidth="139.0" progress="0.0" />
+      <ProgressBar fx:id="progressBar" layoutX="340.0" layoutY="528.0" prefHeight="18.0" prefWidth="139.0" progress="0.0" />
       <Label fx:id="lblProgress" alignment="CENTER" layoutX="136.0" layoutY="545.0" prefHeight="17.0" prefWidth="540.0" text="Progress" textAlignment="CENTER" visible="false">
          <font>
             <Font name="System Bold" size="12.0" />
          </font></Label>
+      <Label layoutX="139.0" layoutY="455.0" prefHeight="21.0" prefWidth="258.0" text="%label.lastupdate" />
+      <CheckBox fx:id="chkUpdateData" layoutX="139.0" layoutY="489.0" mnemonicParsing="false" text="%checkbox.updatedata" />
+      <Label fx:id="lblDateUpdate" layoutX="406.0" layoutY="455.0" prefHeight="21.0" prefWidth="146.0" />
 	</children>
 </AnchorPane>

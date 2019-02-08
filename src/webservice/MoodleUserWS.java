@@ -55,7 +55,7 @@ public class MoodleUserWS {
 		try {
 			HttpGet httpget = new HttpGet(host + "/webservice/rest/server.php?wstoken=" + token
 					+ "&moodlewsrestformat=json&wsfunction=" + MoodleOptions.OBTENER_INFO_USUARIO
-					+ "&field=email&values[0]=" + username);
+					+ "&field=username&values[0]=" + username);
 			CloseableHttpResponse response = httpclient.execute(httpget);
 			String respuesta = EntityUtils.toString(response.getEntity());
 			JSONArray jsonArray = new JSONArray(respuesta);

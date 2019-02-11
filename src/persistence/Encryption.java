@@ -29,9 +29,9 @@ public class Encryption {
 	private static Cipher initCipher(String key, int cipherMode) {
 		Cipher cipher = null;
 		try {
-			SecretKey key64 = new SecretKeySpec(key.getBytes(), "AES");
+			SecretKey key64 = new SecretKeySpec(key.getBytes(), "Blowfish");
 
-			cipher = Cipher.getInstance("AES");
+			cipher = Cipher.getInstance("Blowfish");
 			cipher.init(cipherMode, key64);
 		} catch (InvalidKeyException e) {
 			logger.error("Problemas con la clave al intentar descifrar {}", e);

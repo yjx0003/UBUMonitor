@@ -6,13 +6,11 @@ import java.io.Serializable;
  * Clase Role para distinguir el rol de los usuarios matriculados en un curso.
  * 
  * @author Claudia Martínez Herrero
- * @version 1.0
- *
+ * @version 2.0.1
+ * @since 2.0.1
  */
 public class Role implements Serializable{
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private String name;

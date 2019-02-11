@@ -1,14 +1,19 @@
 package model;
 
+import java.io.Serializable;
+
 /**
  * Clase Group para distinguir los grupos que hay en un curso, así como los
  * grupos en los que se encuentra un usuario.
  * 
  * @author Claudia Martínez Herrero
- * @version 1.0
- *
+ * @author Yi Peng Ji
+ * @version 2.0.1
+ * @since 2.0.1
  */
-public class Group {
+public class Group implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
 	private int id;
 	private String name;
 	private String description;

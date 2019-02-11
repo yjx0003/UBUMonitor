@@ -29,9 +29,9 @@ public class Encryption {
 	private static Cipher initCipher(String key, int cipherMode) {
 		Cipher cipher = null;
 		try {
-			SecretKey key64 = new SecretKeySpec(key.getBytes(), "Blowfish");
+			SecretKey key64 = new SecretKeySpec(key.getBytes(), "AES");
 
-			cipher = Cipher.getInstance("Blowfish");
+			cipher = Cipher.getInstance("AES");
 			cipher.init(cipherMode, key64);
 		} catch (InvalidKeyException e) {
 			logger.error("Problemas con la clave al intentar descifrar {}", e);
@@ -44,15 +44,15 @@ public class Encryption {
 
 	public static Object decrypt(String key, String ruta) {
 		Cipher cipher = initCipher(key, Cipher.DECRYPT_MODE);
-
+		logger.info("Intentando descifrar el fichero: {}",ruta);
 		try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(ruta))) {
 
 			SealedObject sealedObject = (SealedObject) inputStream.readObject();
 			return sealedObject.getObject(cipher);
 
 		} catch (Exception e) {
-			logger.error("No se ha podido abrir {}\n{}", ruta, e);
-			e.printStackTrace();
+			logger.error("No se ha podido abrir el fichero al intentar descifrar {}", e);
+	
 		}
 		return null;
 	}

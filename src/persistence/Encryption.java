@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 
 
 
+
+
 public class Encryption {
 	static final Logger logger = LoggerFactory.getLogger(Encryption.class);
 
@@ -34,7 +36,7 @@ public class Encryption {
 			cipher = Cipher.getInstance("Blowfish");
 			cipher.init(cipherMode, key64);
 		} catch (InvalidKeyException e) {
-			logger.error("Problemas con la clave al intentar descifrar {}", e);
+			logger.error("Problemas con la clave de encriptacion {}", e);
 
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
 			logger.error("Problemas con el algoritmo de encriptación usado {}", e);
@@ -59,9 +61,9 @@ public class Encryption {
 
 	public static <T extends Serializable> void encrypt(String key, String ruta, T object) {
 
-		logger.info("Intendado encriptar fichero: ", ruta);
+		logger.info("Intendado encriptar fichero: {}", ruta);
 
-		Cipher cipher = initCipher(key, Cipher.ENCRYPT_MODE);
+		Cipher cipher = initCipher(key, Cipher.ENCRYPT_MODE);	
 
 		try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(ruta))) {
 			SealedObject sealedObject = new SealedObject(object, cipher);

@@ -151,10 +151,11 @@ public class WelcomeController implements Initializable {
 	private void saveData() {
 		File f = new File(directoryObject);
 			if (!f.isDirectory()) {
+				logger.info("No existe el directorio, se va a crear: {}",directoryObject);
 				f.mkdirs();
 			}
 		
-		logger.info("Guardando los datos encriptados en: ", f.getAbsolutePath().toString());
+		logger.info("Guardando los datos encriptados en: {}", f.getAbsolutePath());
 		Encryption.encrypt(ubuGrades.getSession().getPassword(), directoryObject+listCourses.selectionModelProperty().getValue().getSelectedItem(),ubuGrades.getSession().getActualCourse());
 		
 	}

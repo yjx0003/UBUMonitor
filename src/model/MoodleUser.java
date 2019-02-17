@@ -24,6 +24,7 @@ public class MoodleUser {
 	private String country;
 	private Image userPhoto;
 	private ArrayList<Course> courses;
+	private String timezone;
 
 	/**
 	 * Constructor de MoodleUser sin parámetros
@@ -252,6 +253,14 @@ public class MoodleUser {
 		for (Course element : courses) {
 			this.courses.add(element);
 		}
+	}
+
+	public void setTimezone(String timezone) {
+		this.timezone=timezone;
+		
+	}
+	public String getTimezone() {
+		return this.timezone;
 	}
 
 }

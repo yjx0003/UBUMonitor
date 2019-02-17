@@ -74,6 +74,8 @@ public class MoodleUserWS {
 					mUser.setLastAccess(new Date(jsonObject.getLong("lastaccess")));
 				if(jsonObject.has("profileimageurlsmall"))
 					mUser.setUserPhoto(new Image(jsonObject.getString("profileimageurlsmall")));
+				if(jsonObject.has("timezone"))
+						mUser.setTimezone(jsonObject.getString("timezone"));
 			}
 		} finally {
 			httpclient.close();

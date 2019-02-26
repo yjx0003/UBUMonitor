@@ -38,6 +38,7 @@ public class Course implements Serializable {
 	private GradeReportLine gradeReportLines;
 	private Set<String> typeActivities;
 	private List<Scale> scales;
+	private List<Log> logs;
 
 	static final Logger logger = LoggerFactory.getLogger(Course.class);
 

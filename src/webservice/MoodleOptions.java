@@ -3,7 +3,7 @@ package webservice;
 /**
  * Clase que recoge las funciones de servicios web a utilizar.
  * 
- * @author Claudia MartÌnez Herrero
+ * @author Claudia Mart√≠nez Herrero
  * @version 1.0
  *
  */
@@ -18,11 +18,11 @@ public class MoodleOptions {
 	 */
 	public static final String SERVICIO_WEB_MOODLE = "moodle_mobile_app";
 	/**
-	 * Devuelve informaciÛn relativa al usuario
+	 * Devuelve informaci√≥n relativa al usuario
 	 */
 	public static final String OBTENER_INFO_USUARIO = "core_user_get_users_by_field";
 	/**
-	 * Devuelve los cursos en los que est· matriculado el usuario
+	 * Devuelve los cursos en los que est√° matriculado el usuario
 	 */
 	public static final String OBTENER_CURSOS = "core_enrol_get_users_courses";
 	/**
@@ -30,15 +30,15 @@ public class MoodleOptions {
 	 */
 	public static final String OBTENER_USUARIOS_MATRICULADOS = "core_enrol_get_enrolled_users";
 	/**
-	 * Devuelve todas las categorÌas y elementos evaluables de un curso
+	 * Devuelve todas las categor√≠as y elementos evaluables de un curso
 	 */
 	public static final String OBTENER_TABLA_NOTAS = "gradereport_user_get_grades_table";
 	/**
-	 * Devuelve informaciÛn sobre los assignments (tareas) que hay en un curso
+	 * Devuelve informaci√≥n sobre los assignments (tareas) que hay en un curso
 	 */
 	public static final String OBTENER_ASSIGNMENTS = "mod_assign_get_assignments";
 	/**
-	 * Devuelve informaciÛn sobre los quizs (cuestionarios) que hay en un curso
+	 * Devuelve informaci√≥n sobre los quizs (cuestionarios) que hay en un curso
 	 */
 	public static final String OBTENER_QUIZZES = "mod_quiz_get_quizzes_by_courses";
 	/**
@@ -46,11 +46,11 @@ public class MoodleOptions {
 	 */
 	public static final String OBTENER_NOTAS_ALUMNO = "gradereport_user_get_grade_items";
 	/**
-	 * Devuelve informaciÛn sobre una lecciÛn (Moodel 3.3)
+	 * Devuelve informaci√≥n sobre una lecci√≥n (Moodel 3.3)
 	 */
 	public static final String OBTENER_INFO_LECCION = "mod_lesson_get_lesson";	
 	/**
-	 * Devuelve informaciÛn sobre una escala.
+	 * Devuelve informaci√≥n sobre una escala.
 	 */
 	public static final String OBTENER_ESCALA = "core_competency_get_scale_values";	
 }

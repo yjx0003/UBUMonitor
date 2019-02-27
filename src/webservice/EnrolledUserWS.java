@@ -13,10 +13,10 @@ import org.json.JSONObject;
 import model.EnrolledUser;
 
 /**
- * Clase EnrolledUser para webservices.Recoge funciones útiles para servicios
+ * Clase EnrolledUser para webservices.Recoge funciones Ãºtiles para servicios
  * web relacionados con un EnrolledUser.
  * 
- * @author Claudia Martínez Herrero
+ * @author Claudia MartÃ­nez Herrero
  * @version 1.0
  *
  */

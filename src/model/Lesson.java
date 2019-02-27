@@ -1,9 +1,9 @@
 package model;
 
 /**
- * Clase Lesson (Leci髇). Implementar en versiones futuras.
+ * Clase Lesson (Leci贸n). Implementar en versiones futuras.
  * 
- * @author F閘ix Nogal Santamar韆
+ * @author F茅lix Nogal Santamar铆a
  * @version 1.0
  *
  */
@@ -15,21 +15,21 @@ public class Lesson extends Activity {
 	private int maxAttempts;
 	private int timeLimit; // 0 indica que no hay tiempo limite
 	private int deadLine; // 0 indica que no hay fecha limite
-	private boolean retake; // indica si se puede repetir la lecci髇
+	private boolean retake; // indica si se puede repetir la lecci贸n
 	
 	/**
-	 * Consturctor de una Lecci髇(Lesson).
+	 * Consturctor de una Lecci贸n(Lesson).
 	 * 
 	 * @param itemName
-	 * 		El nombre de la lecci髇.
+	 * 		El nombre de la lecci贸n.
 	 * @param type
 	 * 		El tipo.
 	 * @param weight
 	 * 		El peso.
 	 * @param minRange
-	 * 		El rango m韓imo.
+	 * 		El rango m铆nimo.
 	 * @param maxRange
-	 * 		El rango m醲imo.
+	 * 		El rango m谩ximo.
 	 */
 	public Lesson(String itemName, String type, float weight, String minRange, String maxRange) {
 		super(itemName, type, weight, minRange, maxRange);
@@ -38,7 +38,7 @@ public class Lesson extends Activity {
 
 
 	/**
-	 * Devuelve la contrase馻 de la lecci髇.
+	 * Devuelve la contrase帽a de la lecci贸n.
 	 * 
 	 * @return the password
 	 */
@@ -49,9 +49,9 @@ public class Lesson extends Activity {
 
 
 	/**
-	 * Modifica la contrase馻 de la lecci髇.
+	 * Modifica la contrase帽a de la lecci贸n.
 	 * @param password
-	 * 		La contrase馻.
+	 * 		La contrase帽a.
 	 */
 	public void setPassword(String password) {
 		this.password = password;
@@ -60,7 +60,7 @@ public class Lesson extends Activity {
 
 
 	/**
-	 * Devuelve el n鷐ero m醲imo de respuestas.
+	 * Devuelve el n煤mero m谩ximo de respuestas.
 	 * 
 	 * @return the maxAnswers
 	 */
@@ -71,9 +71,9 @@ public class Lesson extends Activity {
 
 
 	/**
-	 * Modifica el n鷐ero m醲imo de respuestas.
+	 * Modifica el n煤mero m谩ximo de respuestas.
 	 * @param maxAnswers
-	 * 		El n鷐ero m醲imo de respuestas.
+	 * 		El n煤mero m谩ximo de respuestas.
 	 */
 	public void setMaxAnswers(int maxAnswers) {
 		this.maxAnswers = maxAnswers;
@@ -93,9 +93,9 @@ public class Lesson extends Activity {
 
 
 	/**
-	 * Modifica el n鷐ero m醲imo de intentos.
+	 * Modifica el n煤mero m谩ximo de intentos.
 	 * @param maxAttempts
-	 * 		El n鷐ero m醲imo de intentos.
+	 * 		El n煤mero m谩ximo de intentos.
 	 */
 	public void setMaxAttempts(int maxAttempts) {
 		this.maxAttempts = maxAttempts;
@@ -104,7 +104,7 @@ public class Lesson extends Activity {
 
 
 	/**
-	 * Devuelve 1 si la lecci髇 tiene tiempo l韒ite y 0 si no.
+	 * Devuelve 1 si la lecci贸n tiene tiempo l铆mite y 0 si no.
 	 * 
 	 * @return the timeLimit
 	 */
@@ -115,10 +115,10 @@ public class Lesson extends Activity {
 
 
 	/**
-	 * Modifica el tiempo l韒ite de la lecci髇.
+	 * Modifica el tiempo l铆mite de la lecci贸n.
 	 * 
 	 * @param timeLimit
-	 * 		El tiempo l韒ite de la lecci髇.
+	 * 		El tiempo l铆mite de la lecci贸n.
 	 */
 	public void setTimeLimit(int timeLimit) {
 		this.timeLimit = timeLimit;
@@ -127,7 +127,7 @@ public class Lesson extends Activity {
 
 
 	/**
-	 * Devuelve 0 si la lecci髇 tiene deadline y 0 si no.
+	 * Devuelve 0 si la lecci贸n tiene deadline y 0 si no.
 	 *
 	 * @return the deadLine
 	 */
@@ -138,7 +138,7 @@ public class Lesson extends Activity {
 
 
 	/**
-	 * Modifica la deadLine de la lecci髇.
+	 * Modifica la deadLine de la lecci贸n.
 	 * 
 	 * @param deadLine
 	 * 		El deadLine.
@@ -150,7 +150,7 @@ public class Lesson extends Activity {
 
 
 	/**
-	 * Devuelve si la lecci髇 se puede repetir o no.
+	 * Devuelve si la lecci贸n se puede repetir o no.
 	 * 
 	 * @return the retake
 	 */

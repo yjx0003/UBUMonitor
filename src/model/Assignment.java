@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Clase Assignment (Tarea). Implementar versiones futuras.
  * 
- * @author Claudia Martínez Herrero
+ * @author Claudia MartÃ­nez Herrero
  * @version 1.0
  *
  */
@@ -69,7 +69,7 @@ public class Assignment extends Activity {
 	}
 
 	/**
-	 * Modifica la fecha de modificación
+	 * Modifica la fecha de modificaciÃ³n
 	 * 
 	 * @param timeModified
 	 * 		la fecha

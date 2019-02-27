@@ -39,7 +39,7 @@ public class Encryption {
 			logger.error("Problemas con la clave de encriptacion {}", e);
 
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-			logger.error("Problemas con el algoritmo de encriptación usado {}", e);
+			logger.error("Problemas con el algoritmo de encriptaciÃ³n usado {}", e);
 		}
 		return cipher;
 	}
@@ -68,7 +68,7 @@ public class Encryption {
 		try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(ruta))) {
 			SealedObject sealedObject = new SealedObject(object, cipher);
 			outputStream.writeObject(sealedObject);
-			logger.info("Encriptación correcta en {}", ruta);
+			logger.info("EncriptaciÃ³n correcta en {}", ruta);
 
 		} catch (Exception e) {
 			logger.error("Problemas al guardar con los outputStream el objeto {}", e);

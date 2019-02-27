@@ -18,7 +18,7 @@ import model.*;
 /**
  * Clase Loader. Inicializa la ventana de login
  * 
- * @author Félix Nogal Santamaría
+ * @author FÃ©lix Nogal SantamarÃ­a
  * @version 1.0
  *
  */
@@ -28,7 +28,7 @@ public class Loader extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		// Si no existe el recurso de idioma especificado cargamos el Español
+		// Si no existe el recurso de idioma especificado cargamos el EspaÃ±ol
 		try {
 			ubuGrades.setResourceBundle(ResourceBundle.getBundle("messages/Messages",
 					new Locale(Locale.getDefault().toString().toLowerCase())));

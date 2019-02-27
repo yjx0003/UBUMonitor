@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Clase Quiz (Cuestionario). Implementar en versiones futuras.
  * 
- * @author Claudia Martínez Herrero
+ * @author Claudia MartÃ­nez Herrero
  * @version 1.0
  *
  */
@@ -16,7 +16,7 @@ public class Quiz extends Activity {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Constructor de una actividad con todos sus parámetros
+	 * Constructor de una actividad con todos sus parÃ¡metros
 	 * 
 	 * @param itemName
 	 *            nombre de la actividad
@@ -25,9 +25,9 @@ public class Quiz extends Activity {
 	 * @param weight
 	 *            peso
 	 * @param minRange
-	 *            rango mínimo de nota
+	 *            rango mÃ­nimo de nota
 	 * @param maxRange
-	 *            rango máximo de nota
+	 *            rango mÃ¡ximo de nota
 	 */
 	public Quiz(String itemName, String type, float weight, String minRange, String maxRange) {
 		super(itemName, type, weight, minRange, maxRange);
@@ -72,19 +72,19 @@ public class Quiz extends Activity {
 	}
 
 	/**
-	 * Devuelve la contraseña del cuestionario.
+	 * Devuelve la contraseÃ±a del cuestionario.
 	 * 
-	 * @return contraseña
+	 * @return contraseÃ±a
 	 */
 	public String getPassword() {
 		return password;
 	}
 
 	/**
-	 * Modifica la contraseña del cuestionario.
+	 * Modifica la contraseÃ±a del cuestionario.
 	 * 
 	 * @param password
-	 * 		La contraseña.
+	 * 		La contraseÃ±a.
 	 */
 	public void setPassword(String password) {
 		this.password = password;

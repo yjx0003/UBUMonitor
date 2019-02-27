@@ -12,7 +12,7 @@ import org.json.JSONObject;
 /**
  * Clase que representa un usuario matriculado en una asignatura
  * 
- * @author Claudia Martínez Herrero
+ * @author Claudia MartÃ­nez Herrero
  * @version 1.0
  *
  */
@@ -41,7 +41,7 @@ public class EnrolledUser implements Serializable{
 	 * Constructor de EnrolledUser
 	 * 
 	 * @param obj
-	 *            objeto JSON con la información del usuario
+	 *            objeto JSON con la informaciÃ³n del usuario
 	 *            
 	 * @throws JSONException 
 	 */
@@ -175,7 +175,7 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Devuelve la última fecha de acceso a la plataforma.
+	 * Devuelve la Ãºltima fecha de acceso a la plataforma.
 	 * 
 	 * @return lastAccess
 	 */
@@ -184,17 +184,17 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica la última fecha de acceso a la plataforma.
+	 * Modifica la Ãºltima fecha de acceso a la plataforma.
 	 * 
 	 * @param lastAccess
-	 * 		La fecha de úlimo acceso.
+	 * 		La fecha de Ãºlimo acceso.
 	 */
 	public void setLastAccess(Date lastAccess) {
 		this.lastAccess = lastAccess;
 	}
 
 	/**
-	 * Devuelve la descripción del usuario.
+	 * Devuelve la descripciÃ³n del usuario.
 	 * 
 	 * @return description
 	 */
@@ -203,17 +203,17 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica la descripción del usuario.
+	 * Modifica la descripciÃ³n del usuario.
 	 * 
 	 * @param description
-	 * 		La descripción del usuario.
+	 * 		La descripciÃ³n del usuario.
 	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
 	/**
-	 * Devuelve el formato de la descripción.
+	 * Devuelve el formato de la descripciÃ³n.
 	 * 
 	 * @return descriptionFormat
 	 */
@@ -222,10 +222,10 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica el formato de la descripción.
+	 * Modifica el formato de la descripciÃ³n.
 	 * 
 	 * @param descriptionFormat
-	 * 		El formato de la descripción.
+	 * 		El formato de la descripciÃ³n.
 	 */
 	public void setDescriptionFormat(String descriptionFormat) {
 		this.descriptionFormat = descriptionFormat;
@@ -251,7 +251,7 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Devuelve el país del usuario.
+	 * Devuelve el paÃ­s del usuario.
 	 * 
 	 * @return country
 	 */
@@ -260,10 +260,10 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica el país del usuario.
+	 * Modifica el paÃ­s del usuario.
 	 * 
 	 * @param country
-	 * 		El país.
+	 * 		El paÃ­s.
 	 */
 	public void setCountry(String country) {
 		this.country = country;
@@ -330,7 +330,7 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Devuelve la lista de grupos en los que está el usuario.
+	 * Devuelve la lista de grupos en los que estÃ¡ el usuario.
 	 * 
 	 * @return groups
 	 */
@@ -339,7 +339,7 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica la lista de grupos en los que está el usuario.
+	 * Modifica la lista de grupos en los que estÃ¡ el usuario.
 	 * 
 	 * @param groups
 	 * 		La lista de grupos.
@@ -352,7 +352,7 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Devuelve la lista de cursos en los que está matriculado el usuario.
+	 * Devuelve la lista de cursos en los que estÃ¡ matriculado el usuario.
 	 * 
 	 * @return courses
 	 */
@@ -361,7 +361,7 @@ public class EnrolledUser implements Serializable{
 	}
 
 	/**
-	 * Modifica la lista de cursos en los que está matriculado el usuario.
+	 * Modifica la lista de cursos en los que estÃ¡ matriculado el usuario.
 	 * 
 	 * @param courses
 	 * 		La lista de cursos.
@@ -374,7 +374,7 @@ public class EnrolledUser implements Serializable{
 	}
 	
 	/**
-	 * Devuelve un GradeReportLine según el id.
+	 * Devuelve un GradeReportLine segÃºn el id.
 	 * 
 	 * @param id
 	 * 		El id del GradeReportLine.

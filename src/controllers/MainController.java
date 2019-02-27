@@ -70,7 +70,7 @@ import webservice.CourseWS;
 /**
  * Clase controlador de la ventana principal
  * 
- * @author Claudia MartÌnez Herrero
+ * @author Claudia Mart√≠nez Herrero
  * @version 1.0
  *
  */
@@ -91,40 +91,40 @@ public class MainController implements Initializable {
 	@FXML // Imagen del usuario
 	public ImageView userPhoto;
 
-	@FXML // N∫ participantes
+	@FXML // N¬∫ participantes
 	public Label lblCountParticipants;
 	@FXML // lista de participantes
 	public ListView<EnrolledUser> listParticipants;
 	ObservableList<EnrolledUser> enrList;
 
-	@FXML // BotÛn filtro por rol
+	@FXML // Bot√≥n filtro por rol
 	public MenuButton slcRole;
 	MenuItem[] roleMenuItems;
 	String filterRole = TODOS;
 
-	@FXML // BotÛn filtro por grupo
+	@FXML // Bot√≥n filtro por grupo
 	public MenuButton slcGroup;
 	MenuItem[] groupMenuItems;
 	String filterGroup = TODOS;
 
-	@FXML // Entrada de filtro de usuarios por patrÛn
+	@FXML // Entrada de filtro de usuarios por patr√≥n
 	public TextField tfdParticipants;
 	String patternParticipants = "";
 
-	@FXML // Vista en ·rbol de actividades
+	@FXML // Vista en √°rbol de actividades
 	public TreeView<GradeReportLine> tvwGradeReport;
 	ArrayList<GradeReportLine> gradeReportList;
 
-	@FXML // Entrada de filtro de actividades por patrÛn
+	@FXML // Entrada de filtro de actividades por patr√≥n
 	public TextField tfdItems;
 	String patternCalifications = "";
 
-	@FXML // BotÛn filtro por tipo de actividad
+	@FXML // Bot√≥n filtro por tipo de actividad
 	public MenuButton slcType;
 	MenuItem[] typeMenuItems;
 	String filterType = TODOS;
 
-	@FXML // Gr·fico de lineas
+	@FXML // Gr√°fico de lineas
 	private WebView webViewCharts;
 	private WebEngine webViewChartsEngine;
 
@@ -134,7 +134,7 @@ public class MainController implements Initializable {
 	private Stats stats;
 
 	/**
-	 * Muestra los usuarios matriculados en el curso, asÌ como las actividades de
+	 * Muestra los usuarios matriculados en el curso, as√≠ como las actividades de
 	 * las que se compone.
 	 */
 	@Override
@@ -161,9 +161,9 @@ public class MainController implements Initializable {
 
 			//////////////////////////////////////////////////////////////////////////
 			// Manejo de roles (MenuButton Rol):
-			// Manejador de eventos para el botÛn de filtro por roles.
+			// Manejador de eventos para el bot√≥n de filtro por roles.
 			EventHandler<ActionEvent> actionRole = ((ActionEvent event) -> {
-				// Obtenemos el Ìtem que se ha seleccionado
+				// Obtenemos el √≠tem que se ha seleccionado
 				MenuItem mItem = (MenuItem) event.getSource();
 				// Obtenemos el rol por el que se quiere filtrar
 				filterRole = mItem.getText();
@@ -175,9 +175,9 @@ public class MainController implements Initializable {
 			ArrayList<String> rolesList = (ArrayList<String>) ubuGrades.getSession().getActualCourse().getRoles();
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
 			ArrayList<MenuItem> rolesItemsList = new ArrayList<>();
-			// En principio se mostrar·n todos los usuarios con cualquier rol
+			// En principio se mostrar√°n todos los usuarios con cualquier rol
 			MenuItem mi = (new MenuItem(TODOS));
-			// AÒadimos el manejador de eventos al primer MenuItem
+			// A√±adimos el manejador de eventos al primer MenuItem
 			mi.setOnAction(actionRole);
 			rolesItemsList.add(mi);
 
@@ -185,7 +185,7 @@ public class MainController implements Initializable {
 				String rol = rolesList.get(i);
 				mi = (new MenuItem(rol));
 				mi.setOnAction(actionRole);
-				// AÒadimos el manejador de eventos a cada MenuItem
+				// A√±adimos el manejador de eventos a cada MenuItem
 				rolesItemsList.add(mi);
 			}
 
@@ -195,9 +195,9 @@ public class MainController implements Initializable {
 
 			//////////////////////////////////////////////////////////////////////////
 			// Manejo de grupos (MenuButton Grupo):
-			// Manejador de eventos para el botÛn de filtro por grupos.
+			// Manejador de eventos para el bot√≥n de filtro por grupos.
 			EventHandler<ActionEvent> actionGroup = ((ActionEvent event) -> {
-				// Obtenemos el Ìtem que se ha seleccionado
+				// Obtenemos el √≠tem que se ha seleccionado
 				MenuItem mItem = (MenuItem) event.getSource();
 				// Obtenemos el grupo por el que se quire filtrar
 				filterGroup = mItem.getText();
@@ -209,16 +209,16 @@ public class MainController implements Initializable {
 			ArrayList<String> groupsList = (ArrayList<String>) ubuGrades.getSession().getActualCourse().getGroups();
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
 			ArrayList<MenuItem> groupsItemsList = new ArrayList<>();
-			// En principio mostrar·n todos los usuarios en cualquier grupo
+			// En principio mostrar√°n todos los usuarios en cualquier grupo
 			mi = (new MenuItem(TODOS));
-			// AÒadimos el manejador de eventos al primer MenuItem
+			// A√±adimos el manejador de eventos al primer MenuItem
 			mi.setOnAction(actionGroup);
 			groupsItemsList.add(mi);
 
 			for (int i = 0; i < groupsList.size(); i++) {
 				String group = groupsList.get(i);
 				mi = (new MenuItem(group));
-				// AÒadimos el manejador de eventos a cada MenuItem
+				// A√±adimos el manejador de eventos a cada MenuItem
 				mi.setOnAction(actionGroup);
 				groupsItemsList.add(mi);
 			}
@@ -227,7 +227,7 @@ public class MainController implements Initializable {
 			slcGroup.setText(TODOS);
 
 			////////////////////////////////////////////////////////
-			// AÒadimos todos los participantes a la lista de visualizaciÛn
+			// A√±adimos todos los participantes a la lista de visualizaci√≥n
 			for (int j = 0; j < users.size(); j++) {
 				nameUsers.add(users.get(j));
 			}
@@ -253,13 +253,13 @@ public class MainController implements Initializable {
 			// En principio se van a mostrar todos los participantes en
 			// cualquier grupo
 			mi = (new MenuItem(TODOS));
-			// AÒadimos el manejador de eventos al primer MenuItem
+			// A√±adimos el manejador de eventos al primer MenuItem
 			mi.setOnAction(actionActivity);
 			nameActivityItemsList.add(mi);
 			for (int i = 0; i < nameActivityList.size(); i++) {
 				String nameActivity = nameActivityList.get(i);
 				mi = (new MenuItem(nameActivity));
-				// AÒadimos el manejador de eventos a cada MenuItem
+				// A√±adimos el manejador de eventos a cada MenuItem
 				mi.setOnAction(actionActivity);
 				nameActivityItemsList.add(mi);
 			}
@@ -289,18 +289,18 @@ public class MainController implements Initializable {
 			ubuGrades.getStage().widthProperty().addListener(stageSizeListener);
 			ubuGrades.getStage().heightProperty().addListener(stageSizeListener);
 
-			// Activamos la selecciÛn m˙ltiple en la lista de participantes
+			// Activamos la selecci√≥n m√∫ltiple en la lista de participantes
 			listParticipants.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 			// Asignamos el manejador de eventos de la lista
-			// Al clickar en la lista, se recalcula el n∫ de elementos seleccionados
-			// Generamos el gr·fico con los elementos selecionados
+			// Al clickar en la lista, se recalcula el n¬∫ de elementos seleccionados
+			// Generamos el gr√°fico con los elementos selecionados
 			listParticipants.refresh(); // FIX RMS
 			listParticipants.setOnMouseClicked((EventHandler<Event>) event -> updateChart());
 
 			/// Mostramos la lista de participantes
 			listParticipants.setItems(enrList);
 
-			// Establecemos la estructura en ·rbol del calificador
+			// Establecemos la estructura en √°rbol del calificador
 			List<GradeReportLine> grcl = ubuGrades.getSession().getActualCourse().getGradeReportLines();
 			// Establecemos la raiz del Treeview
 			TreeItem<GradeReportLine> root = new TreeItem<>(grcl.get(0));
@@ -317,11 +317,11 @@ public class MainController implements Initializable {
 			tvwGradeReport.setRoot(root);
 			tvwGradeReport.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 			// Asignamos el manejador de eventos de la lista
-			// Al clickar en la lista, se recalcula el n∫ de elementos seleccionados
-			// Generamos el gr·fico con los elementos selecionados
+			// Al clickar en la lista, se recalcula el n¬∫ de elementos seleccionados
+			// Generamos el gr√°fico con los elementos selecionados
 			tvwGradeReport.setOnMouseClicked((EventHandler<Event>) event -> updateChart());
 
-			// Mostramos n∫ participantes
+			// Mostramos n¬∫ participantes
 			lblCountParticipants.setText(ubuGrades.getResourceBundle().getString("label.participants") + " "
 					+ ubuGrades.getSession().getActualCourse().getEnrolledUsersCount());
 
@@ -337,12 +337,12 @@ public class MainController implements Initializable {
 			// Mostramos Host actual
 			lblActualHost.setText(ubuGrades.getResourceBundle().getString("label.host") + " " + ubuGrades.getHost());
 		} catch (Exception e) {
-			logger.error("Error en la inicializaciÛn.", e);
+			logger.error("Error en la inicializaci√≥n.", e);
 		}
 	}
 
 	/**
-	 * Filtra los participantes seg˙n el rol, el grupo y el patrÛn indicados
+	 * Filtra los participantes seg√∫n el rol, el grupo y el patr√≥n indicados
 	 */
 	public void filterParticipants() {
 		try {
@@ -381,7 +381,7 @@ public class MainController implements Initializable {
 						}
 					}
 				}
-				// Filtrado por patrÛn:
+				// Filtrado por patr√≥n:
 				patternYes = false;
 				if (patternParticipants.equals("")) {
 					patternYes = true;
@@ -401,19 +401,19 @@ public class MainController implements Initializable {
 			logger.error("Error al filtrar los participantes: {}", e);
 		}
 		listParticipants.setItems(enrList);
-		// Actualizamos los gr·ficos al cambiar el grupo
+		// Actualizamos los gr√°ficos al cambiar el grupo
 		updateChart();
 	}
 
 	/**
-	 * Rellena el ·rbol de actividades (GradeReportLines). Obtiene los hijos de la
-	 * lÌnea pasada por par·metro, los transforma en treeitems y los establece como
+	 * Rellena el √°rbol de actividades (GradeReportLines). Obtiene los hijos de la
+	 * l√≠nea pasada por par√°metro, los transforma en treeitems y los establece como
 	 * hijos del elemento treeItem equivalente de line
 	 * 
 	 * @param parent
-	 *            El padre al que aÒadir los elementos.
+	 *            El padre al que a√±adir los elementos.
 	 * @param line
-	 *            La linea con los elementos a aÒadir.
+	 *            La linea con los elementos a a√±adir.
 	 */
 	public void setTreeview(TreeItem<GradeReportLine> parent, GradeReportLine line) {
 		for (int j = 0; j < line.getChildren().size(); j++) {
@@ -426,10 +426,10 @@ public class MainController implements Initializable {
 	}
 
 	/**
-	 * AÒade un icono a cada elemento del ·rbol seg˙n su tipo de actividad
+	 * A√±ade un icono a cada elemento del √°rbol seg√∫n su tipo de actividad
 	 * 
 	 * @param item
-	 *            El item al que aÒadir el icono.
+	 *            El item al que a√±adir el icono.
 	 */
 	public static void setIcon(TreeItem<GradeReportLine> item) {
 		try {
@@ -440,7 +440,7 @@ public class MainController implements Initializable {
 	}
 
 	/**
-	 * Filtra la lista de actividades del calificador seg˙n el tipo y el patrÛn
+	 * Filtra la lista de actividades del calificador seg√∫n el tipo y el patr√≥n
 	 * introducidos.
 	 */
 	public void filterCalifications() {
@@ -451,7 +451,7 @@ public class MainController implements Initializable {
 			MainController.setIcon(root);
 			// Llamamos recursivamente para llenar el Treeview
 			if (filterType.equals(TODOS) && patternCalifications.equals("")) {
-				// Sin filtro y sin patrÛn
+				// Sin filtro y sin patr√≥n
 				for (int k = 0; k < grcl.get(0).getChildren().size(); k++) {
 					TreeItem<GradeReportLine> item = new TreeItem<>(grcl.get(0).getChildren().get(k));
 					MainController.setIcon(item);
@@ -488,7 +488,7 @@ public class MainController implements Initializable {
 	}
 
 	/**
-	 * Exporta el gr·fico. Se exportara como imagen en formato png.
+	 * Exporta el gr√°fico. Se exportara como imagen en formato png.
 	 * 
 	 * @param actionEvent
 	 *            El ActionEvent.
@@ -498,7 +498,7 @@ public class MainController implements Initializable {
 		File file = new File("chart.png");
 
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Guardar gr·fico");
+		fileChooser.setTitle("Guardar gr√°fico");
 
 		fileChooser.setInitialFileName("chart.png");
 		fileChooser.setInitialDirectory(file.getParentFile());
@@ -512,24 +512,24 @@ public class MainController implements Initializable {
 				ImageIO.write(bufferedImage, "png", file);
 			}
 		} catch (Exception e) {
-			logger.error("Error al guardar el gr·fico: {}", e);
+			logger.error("Error al guardar el gr√°fico: {}", e);
 			errorWindow(ubuGrades.getResourceBundle().getString("error.savechart"), false);
 		}
 	}
 
 	/**
-	 * Exporta todos los gr·ficos a un html.
+	 * Exporta todos los gr√°ficos a un html.
 	 * 
 	 * @param actionEvent
 	 *            El ActionEvent.
 	 */
 	public void saveAll(ActionEvent actionEvent) {
-		logger.info("Exportando los gr·ficos");
+		logger.info("Exportando los gr√°ficos");
 		PrintWriter out = null;
 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Guardar Todo");
-		fileChooser.setInitialFileName("Gr·ficos.html");
+		fileChooser.setInitialFileName("Gr√°ficos.html");
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(".html", "*.html"));
 		File file = fileChooser.showSaveDialog(ubuGrades.getStage());
 		// Copiamos la plantilla de exportacion, ExportChart.html al nuevo archivo
@@ -542,7 +542,7 @@ public class MainController implements Initializable {
 					c = fr.read();
 				}
 
-				// Completamos el nuevo archivo con los dataSets de los gr·ficos
+				// Completamos el nuevo archivo con los dataSets de los gr√°ficos
 				out = new PrintWriter(new BufferedWriter(fw));
 				String generalDataSet = generateDataSet();
 				out.println("\r\nvar userLang = \"" + ubuGrades.getResourceBundle().getLocale().toString() + "\";\r\n");
@@ -556,14 +556,14 @@ public class MainController implements Initializable {
 				fr.close();
 				out.close();
 			} catch (IOException e) {
-				logger.error("Error al exportar los gr·ficos.", e);
+				logger.error("Error al exportar los gr√°ficos.", e);
 				errorWindow(ubuGrades.getResourceBundle().getString("error.saveallcharts"), false);
 			}
 		}
 	}
 
 	/**
-	 * Cambia a la ventana de selecciÛn de asignatura.
+	 * Cambia a la ventana de selecci√≥n de asignatura.
 	 * 
 	 * @param actionEvent
 	 *            El ActionEvent.
@@ -583,7 +583,7 @@ public class MainController implements Initializable {
 	 *            El ActionEvent.
 	 */
 	public void logOut(ActionEvent actionEvent) {
-		logger.info("Cerrando sesiÛn de usuario");
+		logger.info("Cerrando sesi√≥n de usuario");
 		Stats.removeStats();
 		changeScene(getClass().getResource("/view/Login.fxml"));
 	}
@@ -611,7 +611,7 @@ public class MainController implements Initializable {
 	}
 
 	/**
-	 * Deja de seleccionar los participantes/actividades y borra el gr·fico.
+	 * Deja de seleccionar los participantes/actividades y borra el gr√°fico.
 	 * 
 	 * @param actionEvent
 	 *            El ActionEvent.
@@ -636,13 +636,13 @@ public class MainController implements Initializable {
 	}
 
 	/**
-	 * BotÛn "Salir". Cierra la aplicaciÛn.
+	 * Bot√≥n "Salir". Cierra la aplicaci√≥n.
 	 * 
 	 * @param actionEvent
 	 *            El ActionEvent.
 	 */
 	public void closeApplication(ActionEvent actionEvent) {
-		logger.info("Cerrando aplicaciÛn");
+		logger.info("Cerrando aplicaci√≥n");
 		ubuGrades.getStage().close();
 	}
 
@@ -663,7 +663,7 @@ public class MainController implements Initializable {
 		tableData.append("[['" + ubuGrades.getResourceBundle().getString("chartlabel.name") + "'");
 		Boolean firstElement = true;
 
-		// Por cada Ìtem seleccionado lo aÒadimos como label
+		// Por cada √≠tem seleccionado lo a√±adimos como label
 		for (TreeItem<GradeReportLine> structTree : selectedGRL) {
 			tableData.append(",'" + escapeJavaScriptText(structTree.getValue().getName()) + "'");
 		}
@@ -671,21 +671,21 @@ public class MainController implements Initializable {
 
 		// Por cada usuario seleccionado
 		for (EnrolledUser actualUser : selectedParticipants) {
-			// AÒadimos el nombre del alumno al dataset
+			// A√±adimos el nombre del alumno al dataset
 			if (firstElement) {
 				firstElement = false;
 				tableData.append("['" + escapeJavaScriptText(actualUser.getFullName()) + "'");
 			} else {
 				tableData.append(",['" + escapeJavaScriptText(actualUser.getFullName()) + "'");
 			}
-			// Por cada Ìtem seleccionado
+			// Por cada √≠tem seleccionado
 			for (TreeItem<GradeReportLine> structTree : selectedGRL) {
 				GradeReportLine actualLine = actualUser.getGradeReportLine(structTree.getValue().getId());
 				String calculatedGrade = actualLine.getGrade();
-				// Si es numÈrico lo graficamos y lo mostramos en la tabla
+				// Si es num√©rico lo graficamos y lo mostramos en la tabla
 				if (!Float.isNaN(CourseWS.getFloat(calculatedGrade))) {
 					Double grade = Math.round(CourseWS.getFloat(calculatedGrade) * 100.0) / 100.0;
-					// AÒadimos la nota al gr·fico
+					// A√±adimos la nota al gr√°fico
 					tableData.append(",{v:" + grade + ", f:'" + grade + "/" + actualLine.getRangeMax() + "'}");
 				} else {
 					tableData.append(",{v:0, f:'" + calculatedGrade + "'}");
@@ -698,7 +698,7 @@ public class MainController implements Initializable {
 			// Remove last comma, if there are not students selected in screen.
 			tableData.deleteCharAt(tableData.length() - 1);
 		}
-		// AÒadimos las medias
+		// A√±adimos las medias
 		tableData.append(generateTableMean());
 		return tableData.toString();
 	}
@@ -709,7 +709,7 @@ public class MainController implements Initializable {
 	 * @return El dataset.
 	 */
 	private String generateTableMean() {
-		// AÒadimos la media general
+		// A√±adimos la media general
 		StringBuilder tableData = new StringBuilder();
 		tableData.append(",['" + ubuGrades.getResourceBundle().getString("chartlabel.tableMean") + "'");
 		for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
@@ -722,7 +722,7 @@ public class MainController implements Initializable {
 		}
 		tableData.append("]");
 
-		// AÒadimos la media de los grupos
+		// A√±adimos la media de los grupos
 		for (MenuItem grupo : slcGroup.getItems()) {
 			if (!grupo.getText().equals(TODOS)) {
 				tableData.append(",['" + ubuGrades.getResourceBundle().getString("chartlabel.tableGroupMean") + " "
@@ -745,7 +745,7 @@ public class MainController implements Initializable {
 
 	/**
 	 * 
-	 * Metodo que genera el data set para los gr·ficos.
+	 * Metodo que genera el data set para los gr√°ficos.
 	 * 
 	 * @return El data set.
 	 */
@@ -768,7 +768,7 @@ public class MainController implements Initializable {
 			if (actualUser != null) { // BUG when we deselect the penultimate student, some student can have null value. TODO
 				// TODO logger.debug("Enroller user: {}", actualUser.getFirstName());
 				String actualUserFullName = actualUser.getFullName();
-				// AÒadimos el nombre del alumno al dataset
+				// A√±adimos el nombre del alumno al dataset
 				if (firstUser) {
 					dataSet.append("{label:'" + actualUserFullName + "',data: [");
 					firstUser = false;
@@ -777,7 +777,7 @@ public class MainController implements Initializable {
 				}
 				int countB = 1;
 				firstGrade = true;
-				// Por cada Ìtem seleccionado
+				// Por cada √≠tem seleccionado
 				for (TreeItem<GradeReportLine> structTree : selectedGRL) {
 					countA++;
 					try {
@@ -785,7 +785,7 @@ public class MainController implements Initializable {
 						String calculatedGrade;
 						if (countA == countB) {
 							countB++;
-							// AÒadidimos el nombre del elemento como label							
+							// A√±adidimos el nombre del elemento como label							
 							if (firstGrade) {								
 								labels.append("'" + escapeJavaScriptText(structTree.getValue().getName()) + "'");
 							} else {
@@ -804,7 +804,7 @@ public class MainController implements Initializable {
 							dataSet.append("," + calculatedGrade);
 						}
 					} catch (Exception e) {
-						logger.error("Error en la construcciÛn del dataset.", e);
+						logger.error("Error en la construcci√≥n del dataset.", e);
 						errorWindow(ubuGrades.getResourceBundle().getString("error.generatedataset"), false);
 					}
 				}
@@ -819,7 +819,7 @@ public class MainController implements Initializable {
 	/**
 	 * Escape the commas in the text. For example 'Law D'Hont' is changed to 'Law D\'Hont'.
 	 *
-	 * @author Ra˙l Marticorena
+	 * @author Ra√∫l Marticorena
 	 * @since 1.5.3
 	 */
 	private static String escapeJavaScriptText(String input) {
@@ -941,7 +941,7 @@ public class MainController implements Initializable {
 	}
 
 	/**
-	 * FunciÛn que genera el dataSet de la media de todos los alumnos.
+	 * Funci√≥n que genera el dataSet de la media de todos los alumnos.
 	 * 
 	 * @param group
 	 *            El grupo del que obtener la media.
@@ -996,13 +996,13 @@ public class MainController implements Initializable {
 				webViewChartsEngine.executeScript("updateChart('boxplotgroup'," + generateBoxPlotDataSet(group) + ")");
 			}
 		} catch (JSException e) {
-			logger.error("Error al generar los gr·ficos.", e);
+			logger.error("Error al generar los gr√°ficos.", e);
 			errorWindow(ubuGrades.getResourceBundle().getString("error.generateCharts"), true);
 		}
 	}
 
 	/**
-	 * Actualiza los gr·ficos.
+	 * Actualiza los gr√°ficos.
 	 */
 	private void updateChart() {
 		try {
@@ -1017,11 +1017,11 @@ public class MainController implements Initializable {
 			webViewChartsEngine.executeScript("updateChart('line'," + data + ")");
 			webViewChartsEngine.executeScript("updateChart('radar'," + data + ")");
 		} catch (JSException e) {
-			logger.error("Error al generar los gr·ficos.", e);
+			logger.error("Error al generar los gr√°ficos.", e);
 			errorWindow(ubuGrades.getResourceBundle().getString("error.generateCharts"), false); // FIX RMS Review true
 																									// or false
 		} catch (Exception e) {
-			logger.error("Error general al generar los gr·ficos.", e);
+			logger.error("Error general al generar los gr√°ficos.", e);
 			errorWindow(ubuGrades.getResourceBundle().getString("error.generateCharts"), false);
 		}
 	}

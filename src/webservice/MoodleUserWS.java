@@ -19,10 +19,10 @@ import model.Course;
 import model.MoodleUser;
 
 /**
- * Clase MoodleUser para webservices. Recoge funciones útiles para servicios web
+ * Clase MoodleUser para webservices. Recoge funciones Ãºtiles para servicios web
  * relacionados con un MoodleUser.
  * 
- * @author Claudia Martínez Herrero
+ * @author Claudia MartÃ­nez Herrero
  * @version 1.0
  *
  */
@@ -35,7 +35,7 @@ public class MoodleUserWS {
 	}
 	
 	/**
-	 * Establece los parámetros del usuario logueado.
+	 * Establece los parÃ¡metros del usuario logueado.
 	 * 
 	 * @param host
 	 * 		El nombre del host.

@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Clase Scale para almacenar las escalas.
  * 
- * @author Félix Nogal Santamaría
+ * @author FÃ©lix Nogal SantamarÃ­a
  * @version 1.0
  *
  */

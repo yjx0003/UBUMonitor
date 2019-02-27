@@ -14,10 +14,10 @@ import org.slf4j.LoggerFactory;
 import controllers.MainController;
 
 /**
- * Clase Stats para la obtención de estadisticas utilizando
+ * Clase Stats para la obtenciÃ³n de estadisticas utilizando
  * Apache Commons Math.
  * 
- * @author Félix Nogal Santamaría
+ * @author FÃ©lix Nogal SantamarÃ­a
  * @version 1.0
  *
  */
@@ -46,7 +46,7 @@ public class Stats {
 	 * Genera las estadisticas en caso de no estar ya generadas.
 	 * 
 	 * @param session
-	 * 		La sesión de la cual obtener las notas.
+	 * 		La sesiÃ³n de la cual obtener las notas.
 	 * @return
 	 * 		La instancia de las estadisticas.
 	 * 
@@ -70,7 +70,7 @@ public class Stats {
 	 * Constructor de la clase Stats.
 	 * 
 	 * @param session
-	 * 		La sesión de la cual obtener las notas.
+	 * 		La sesiÃ³n de la cual obtener las notas.
 	 * 
 	 * @throws Exception 
 	 */
@@ -84,7 +84,7 @@ public class Stats {
 	 * Genera las estatisticas generales del curso.
 	 * 
 	 * @param session
-	 * 		La sesión de la cual obtener las notas.
+	 * 		La sesiÃ³n de la cual obtener las notas.
 	 * 
 	 * @throws Exception
 	 */
@@ -99,7 +99,7 @@ public class Stats {
 				generalGradesStats.put(actualLine.getId(), new DescriptiveStatistics());
 			}
 			
-			// Añadimos las notas de cada usuario para cada GradeReportLine
+			// AÃ±adimos las notas de cada usuario para cada GradeReportLine
 			for(EnrolledUser enrroledUser: session.getActualCourse().getEnrolledUsers()) {
 				for(GradeReportLine gradeReportLine: enrroledUser.getAllGradeReportLines()) {
 					grade = gradeReportLine.getGradeAdjustedTo10();
@@ -119,7 +119,7 @@ public class Stats {
 	 * Genera las estadisticas para cada grupo del curso.
 	 * 
 	 * @param session
-	 * 		La sesión de la cual obtener las notas.
+	 * 		La sesiÃ³n de la cual obtener las notas.
 	 * @throws Exception
 	 */
 	private void generateGroupStats(Session session) throws Exception {
@@ -178,14 +178,14 @@ public class Stats {
 	}
 		
 	/**
-	 * Añadimos una nota.
+	 * AÃ±adimos una nota.
 	 * 
 	 * @param statsHs
 	 * 		EL mapa con las estadisticas. 
 	 * @param gradeId
 	 * 		El id del Grade Report Line.
 	 * @param value
-	 * 		La nota a añadir.
+	 * 		La nota a aÃ±adir.
 	 */
 	public void addElementValue (Map<Integer,DescriptiveStatistics> statsHs, int gradeId, double value) {
 		DescriptiveStatistics statistics = statsHs.get(gradeId);
@@ -207,7 +207,7 @@ public class Stats {
 	 */
 	public String getElementMean(Map<Integer,DescriptiveStatistics> statsHs, int gradeId) {
 		// Hacemos que la media tenga el formato #.## para mostrarlo
-		// sin problemas en el gráfico
+		// sin problemas en el grÃ¡fico
 		DecimalFormat df = new DecimalFormat("#.##");
 		DescriptiveStatistics statistics = statsHs.get(gradeId);
 		String mean  = String.valueOf(statistics.getMean()).equals("NaN") ? "NaN" : df.format(statistics.getMean());
@@ -227,7 +227,7 @@ public class Stats {
 	 */
 	public String getMedian(Map<Integer,DescriptiveStatistics> statsHs, int gradeId) {
 		// Hacemos que la media tenga el formato #.## para mostrarlo
-		// sin problemas en el gráfico
+		// sin problemas en el grÃ¡fico
 		DecimalFormat df = new DecimalFormat("#.##");
 		DescriptiveStatistics statistics = statsHs.get(gradeId);
 		String median  = String.valueOf(statistics.getPercentile(50)).equals("NaN") ? "NaN" : df.format(statistics.getPercentile(50));
@@ -249,7 +249,7 @@ public class Stats {
 	 */
 	public String getElementPercentile(Map<Integer,DescriptiveStatistics> statsHs, int gradeId, double percentil) {
 		// Hacemos que el percentil tenga el formato #.## para mostrarlo
-		// sin problemas en el gráfico
+		// sin problemas en el grÃ¡fico
 		DecimalFormat df = new DecimalFormat("#.##");
 		DescriptiveStatistics statistics = statsHs.get(gradeId);
 		String percentile  = String.valueOf(statistics.getPercentile(percentil)).equals("NaN") ? "NaN" : df.format(statistics.getPercentile(percentil));
@@ -269,7 +269,7 @@ public class Stats {
 	 */
 	public String getMaxmimum(Map<Integer,DescriptiveStatistics> statsHs, int gradeId) {
 		// Hacemos que el maximo tenga el formato #.## para mostrarlo
-		// sin problemas en el gráfico
+		// sin problemas en el grÃ¡fico
 		DecimalFormat df = new DecimalFormat("#.##");
 		DescriptiveStatistics statistics = statsHs.get(gradeId);
 		String maximum  = String.valueOf(statistics.getMax()).equals("NaN") ? "NaN" : df.format(statistics.getMax());
@@ -289,7 +289,7 @@ public class Stats {
 	 */
 	public String getMinimum(Map<Integer,DescriptiveStatistics> statsHs, int gradeId) {
 		// Hacemos que el minimo tenga el formato #.## para mostrarlo
-		// sin problemas en el gráfico
+		// sin problemas en el grÃ¡fico
 		DecimalFormat df = new DecimalFormat("#.##");
 		DescriptiveStatistics statistics = statsHs.get(gradeId);
 		String minimum  = String.valueOf(statistics.getMin()).equals("NaN") ? "NaN" : df.format(statistics.getMin());

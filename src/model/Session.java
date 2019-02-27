@@ -16,10 +16,10 @@ import org.slf4j.LoggerFactory;
 import webservice.MoodleOptions;
 
 /**
- * Clase sesión. Obtiene el token de usuario y guarda sus parámetros. Establece
- * la sesión.
+ * Clase sesiÃ³n. Obtiene el token de usuario y guarda sus parÃ¡metros. Establece
+ * la sesiÃ³n.
  * 
- * @author Claudia Martínez Herrero
+ * @author Claudia MartÃ­nez Herrero
  * @version 1.0
  *
  */
@@ -37,7 +37,7 @@ public class Session {
 	 * @param mail
 	 *            correo del usuario
 	 * @param pass
-	 *            contraseña de usuario
+	 *            contraseÃ±a de usuario
 	 */
 	public Session(String userName, String pass) {
 		this.userName = userName;
@@ -55,8 +55,8 @@ public class Session {
 	}
 
 	/**
-	 * Establece el token del usuario a partir de usuario y contraseña. Se
-	 * realiza mediante una petición http al webservice de Moodle.
+	 * Establece el token del usuario a partir de usuario y contraseÃ±a. Se
+	 * realiza mediante una peticiÃ³n http al webservice de Moodle.
 	 * 
 	 * @param host
 	 * 		El nombre del host.

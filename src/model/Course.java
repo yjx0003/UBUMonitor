@@ -17,10 +17,10 @@ import model.Scale;
 
 /**
  * Clase curso (asignatura). Cada curso tiene un calificador (compuesto por
- * líneas de calificación o GradeReportLines); y varios grupos, roles de
+ * lÃ­neas de calificaciÃ³n o GradeReportLines); y varios grupos, roles de
  * participantes, y tipos de actividades.
  * 
- * @author Claudia Martínez Herrero
+ * @author Claudia MartÃ­nez Herrero
  * @version 1.0
  *
  */
@@ -49,10 +49,10 @@ public class Course implements Serializable {
 
 	/**
 	 * Constructor de un curso a partir de contenido JSON. Establece los
-	 * parámetros de un curso.
+	 * parÃ¡metros de un curso.
 	 * 
 	 * @param obj
-	 *            objeto JSON con la información del curso
+	 *            objeto JSON con la informaciÃ³n del curso
 	 * @throws JSONException 
 	 */
 	public Course(JSONObject obj) throws JSONException {
@@ -129,7 +129,7 @@ public class Course implements Serializable {
 	}
 
 	/**
-	 * Devuelve el nº de usuarios del curso.
+	 * Devuelve el nÂº de usuarios del curso.
 	 * 
 	 * @return enrolledUsersCount
 	 */
@@ -138,10 +138,10 @@ public class Course implements Serializable {
 	}
 
 	/**
-	 * Modifica el nº de usuarios del curso.
+	 * Modifica el nÂº de usuarios del curso.
 	 * 
 	 * @param enrolledUserCount
-	 * 		El número de usuarios.
+	 * 		El nÃºmero de usuarios.
 	 */
 	public void setEnrolledUsersCount(int enrolledUserCount) {
 		this.enrolledUsersCount = enrolledUserCount;
@@ -238,7 +238,7 @@ public class Course implements Serializable {
 		for (int i = 0; i < users.size(); i++) {
 			// sacamos el rol del usuario
 			ArrayList<Role> roleArray = (ArrayList<Role>) users.get(i).getRoles();
-			// cada rol nuevo se añade al set roles
+			// cada rol nuevo se aÃ±ade al set roles
 			for (int j = 0; j < roleArray.size(); j++) {
 				roles.add(roleArray.get(j).getName());
 			}
@@ -263,7 +263,7 @@ public class Course implements Serializable {
 
 	/**
 	 * Almacena en una lista los grupos que hay en un curso, a partir de los
-	 * usuarios que están matriculados.
+	 * usuarios que estÃ¡n matriculados.
 	 * 
 	 * @param users
 	 * 		 Usuarios del curso.
@@ -275,7 +275,7 @@ public class Course implements Serializable {
 		for (int i = 0; i < users.size(); i++) {
 			// Sacamos el grupo del usuario
 			ArrayList<Group> groupsArray = (ArrayList<Group>) users.get(i).getGroups();
-			// Cada grupo nuevo se añade al set de grupos
+			// Cada grupo nuevo se aÃ±ade al set de grupos
 			for (int j = 0; j < groupsArray.size(); j++) {
 				groups.add(groupsArray.get(j).getName());
 			}
@@ -297,7 +297,7 @@ public class Course implements Serializable {
 	}
 
 	/**
-	 * Función auxiliar para obtener los hijos de cada GRL de forma recursiva.
+	 * FunciÃ³n auxiliar para obtener los hijos de cada GRL de forma recursiva.
 	 * 
 	 * @param children
 	 * 		La lista de hijos.
@@ -404,9 +404,9 @@ public class Course implements Serializable {
 	}
 	
 	/**
-	 * Añade una escala a la lista de escalas.
+	 * AÃ±ade una escala a la lista de escalas.
 	 * @param scale
-	 * 		La escala a añadadir.
+	 * 		La escala a aÃ±adadir.
 	 */
 	public void addScale(Scale scale) {
 		scales.add(scale);

@@ -33,7 +33,7 @@ import webservice.*;
 /**
  * Clase controlador de la ventana de Login
  * 
- * @author Claudia Martínez Herrero
+ * @author Claudia MartÃ­nez Herrero
  * @version 1.0
  *
  */
@@ -63,7 +63,7 @@ public class LoginController implements Initializable {
 	
 	// Lista de idiomas disponibles
 	private final List<String> locale = Arrays.asList("es_es", "en_en");
-	private final ObservableList<String> languages = FXCollections.observableArrayList("Español", "English");
+	private final ObservableList<String> languages = FXCollections.observableArrayList("EspaÃ±ol", "English");
 	
 	/**
 	 * Crea el selector de idioma.
@@ -87,7 +87,7 @@ public class LoginController implements Initializable {
 	}
 	
 	/**
-	 * Hace el login de usuario al pulsar el botón Entrar. Si el usuario es
+	 * Hace el login de usuario al pulsar el botÃ³n Entrar. Si el usuario es
 	 * incorrecto, muestra un mensaje de error.
 	 * 
 	 * @param event
@@ -136,7 +136,7 @@ public class LoginController implements Initializable {
 	 * 		True si el login es correcto.Falso si no lo es.
 	 */
 	private Boolean checkLogin() {
-		// Almacenamos los parámetros introducidos por el usuario:
+		// Almacenamos los parÃ¡metros introducidos por el usuario:
 		ubuGrades.setHost(txtHost.getText());
 		ubuGrades.setSession(new Session(txtUsername.getText(), txtPassword.getText()));
 
@@ -153,7 +153,7 @@ public class LoginController implements Initializable {
 			lblStatus.setText(ubuGrades.getResourceBundle().getString("error.host"));
 		}catch (JSONException e) {
 			correcto = false;
-			logger.error("Usuario y/o contraseña incorrectos", e);
+			logger.error("Usuario y/o contraseÃ±a incorrectos", e);
 			lblStatus.setText(ubuGrades.getResourceBundle().getString("error.login"));
 			txtPassword.setText("");
 		} finally {
@@ -218,7 +218,7 @@ public class LoginController implements Initializable {
 	}
 
 	/**
-	 * Borra los parámetros introducidos en los campos
+	 * Borra los parÃ¡metros introducidos en los campos
 	 * 
 	 * @param event
 	 * 		El ActionEvent.

@@ -7,11 +7,11 @@ import java.util.List;
 import webservice.CourseWS;
 
 /**
- * Clase GradeReportLine (GRL). Representa a una línea en el calificador de un
- * alumno. Cada línea se compone de su id, nombre, nivel, nota, porcentaje,
+ * Clase GradeReportLine (GRL). Representa a una lÃ­nea en el calificador de un
+ * alumno. Cada lÃ­nea se compone de su id, nombre, nivel, nota, porcentaje,
  * peso, rango y tipo principalmente.
  * 
- * @author Claudia Martínez Herrero
+ * @author Claudia MartÃ­nez Herrero
  * @version 1.0
  *
  */
@@ -33,18 +33,18 @@ public class GradeReportLine implements Serializable {
 	private Activity activity;
 
 	/**
-	 * Contructor GRL con 4 parámetros. Le añadimos solo los necesarios a la hora de generar el grafico de lineas.
+	 * Contructor GRL con 4 parÃ¡metros. Le aÃ±adimos solo los necesarios a la hora de generar el grafico de lineas.
 	 * 
 	 * @param id
-	 * 		Id de la categoría.
+	 * 		Id de la categorÃ­a.
 	 * @param name
 	 * 		Nombre de la categoria.
 	 * @param grade
 	 * 		La nota del elemento.
 	 * @param rangeMin
-	 * 		Rango minimo de la calificación.
+	 * 		Rango minimo de la calificaciÃ³n.
 	 * @param rangeMax
-	 * 		Rango maximo de la calificaión.
+	 * 		Rango maximo de la calificaiÃ³n.
 	 */
 	public GradeReportLine(int id, String name, String grade, String rangeMin, String rangeMax) {
 		this.id = id;
@@ -55,17 +55,17 @@ public class GradeReportLine implements Serializable {
 	}
 	
 	/**
-	 * Constructor GRL con 4 parámetros. Se le añaden a posteriori los elementos
+	 * Constructor GRL con 4 parÃ¡metros. Se le aÃ±aden a posteriori los elementos
 	 * de su suma de calificaciones.
 	 * 
 	 * @param id
-	 * 		Id de la categoría.
+	 * 		Id de la categorÃ­a.
 	 * @param name
-	 * 		Nombre de la categoría.
+	 * 		Nombre de la categorÃ­a.
 	 * @param level
 	 * 		Nivel de profundidad.
 	 * @param type
-	 * 		Categoría o item.
+	 * 		CategorÃ­a o item.
 	 */
 	public GradeReportLine(int id, String name, int level, boolean type) {
 		this.id = id;
@@ -76,22 +76,22 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Constructor de GRL con 7 parámetros.
+	 * Constructor de GRL con 7 parÃ¡metros.
 	 * 
 	 * @param id
-	 * 		Id de la categoría.
+	 * 		Id de la categorÃ­a.
 	 * @param name
-	 * 		Nombre de la categoría.
+	 * 		Nombre de la categorÃ­a.
 	 * @param level
 	 * 		Nivel de profundidad.
 	 * @param type
-	 * 		Categoría o item.
+	 * 		CategorÃ­a o item.
 	 * @param weight
 	 * 		Peso.
 	 * @param rangeMin
-	 * 		Rango mínimo de calificación.
+	 * 		Rango mÃ­nimo de calificaciÃ³n.
 	 * @param rangeMax
-	 * 		Rango máximo de calificación.
+	 * 		Rango mÃ¡ximo de calificaciÃ³n.
 	 * @param grade
 	 * 		La Nota.
 	 * @param percentage
@@ -153,7 +153,7 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Devuelve el nivel del GradeReportLine en el árbol del calificador.
+	 * Devuelve el nivel del GradeReportLine en el Ã¡rbol del calificador.
 	 * 
 	 * @return level
 	 */
@@ -162,7 +162,7 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Modifica el nivel del GradeReportLine en el árbol del calificador.
+	 * Modifica el nivel del GradeReportLine en el Ã¡rbol del calificador.
 	 * 
 	 * @param level
 	 * 		El nivel.
@@ -257,7 +257,7 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Devuelve el rango máximo de nota.
+	 * Devuelve el rango mÃ¡ximo de nota.
 	 * 
 	 * @return rangeMax
 	 */
@@ -267,17 +267,17 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Modifica el rango máximo de nota.
+	 * Modifica el rango mÃ¡ximo de nota.
 	 * 
 	 * @param rangeMax
-	 * 		EL rango máximo.
+	 * 		EL rango mÃ¡ximo.
 	 */
 	public void setRangeMax(String rangeMax) {
 		this.rangeMax = rangeMax;
 	}
 
 	/**
-	 * Devuelve el rango mínimo de nota.
+	 * Devuelve el rango mÃ­nimo de nota.
 	 * 
 	 * @return rangeMin
 	 */
@@ -286,10 +286,10 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Modifica el rango mínimo de nota.
+	 * Modifica el rango mÃ­nimo de nota.
 	 * 
 	 * @param rangeMin
-	 * 		El rango mínimo.
+	 * 		El rango mÃ­nimo.
 	 */
 	public void setRangeMin(String rangeMin) {
 		this.rangeMin = rangeMin;
@@ -382,7 +382,7 @@ public class GradeReportLine implements Serializable {
 	}
 
 	/**
-	 * Añade un hijo al GradeReportLine.
+	 * AÃ±ade un hijo al GradeReportLine.
 	 * 
 	 * @param child
 	 * 		El hijo.

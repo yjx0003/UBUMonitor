@@ -26,10 +26,10 @@ import model.GradeReportLine;
 import model.Scale;
 
 /**
- * Clase Course para webservices. Recoge funciones ˙tiles para servicios web
+ * Clase Course para webservices. Recoge funciones √∫tiles para servicios web
  * relacionados con un curso.
  * 
- * @author Claudia MartÌnez Herrero
+ * @author Claudia Mart√≠nez Herrero
  * @version 1.0
  *
  */
@@ -42,7 +42,7 @@ public class CourseWS {
 	}
 
 	/**
-	 * Establece los usuarios que est·n matriculados en un curso junto con su rol y
+	 * Establece los usuarios que est√°n matriculados en un curso junto con su rol y
 	 * grupo.
 	 * 
 	 * @param host
@@ -89,9 +89,9 @@ public class CourseWS {
 	}
 
 	/**
-	 * Esta funciÛn se usar· para obtener todos los GradeReportLine del primer
-	 * usuario matriculado y asÌ sacar la estructura del calificador del curso para
-	 * despuÈs mostrarla como TreeView en la vista.
+	 * Esta funci√≥n se usar√° para obtener todos los GradeReportLine del primer
+	 * usuario matriculado y as√≠ sacar la estructura del calificador del curso para
+	 * despu√©s mostrarla como TreeView en la vista.
 	 * 
 	 * @param host
 	 *            El nombre del host.
@@ -112,10 +112,10 @@ public class CourseWS {
 			// Obtenemos el JSON con los datos
 			JSONObject graddesData = getGradesData(host, token, userId, course.getId());
 
-			// En esta pila sÛlo van a entrar CategorÌas. Se mantendr·n en
+			// En esta pila s√≥lo van a entrar Categor√≠as. Se mantendr√°n en
 			// la pila mientran tengan descendencia.
-			// Una vez aÒadida al ·rbol toda la descendencia de un nodo,
-			// este nodo se saca de la pila y se aÒade al ·rbol.
+			// Una vez a√±adida al √°rbol toda la descendencia de un nodo,
+			// este nodo se saca de la pila y se a√±ade al √°rbol.
 			Stack<GradeReportLine> deque = new Stack<>();
 
 			JSONArray tables = (JSONArray) graddesData.get("tables");
@@ -123,12 +123,12 @@ public class CourseWS {
 			JSONArray tableData = alumn.getJSONArray("tabledata");
 			logger.debug("Contenido del calificador en bruto: {}", tableData.toString());
 
-			// El elemento table data tiene las lÌneas del configurador
+			// El elemento table data tiene las l√≠neas del configurador
 			// (que convertiremos a GradeReportLines)
 			for (int i = 0; i < tableData.length(); i++) {
 				JSONObject tableDataElement = tableData.getJSONObject(i);
-				logger.debug("CategorÌa o item leido del calificador: {}", tableDataElement.toString());
-				// sea categorÌa o item, se saca de la misma manera el
+				logger.debug("Categor√≠a o item leido del calificador: {}", tableDataElement.toString());
+				// sea categor√≠a o item, se saca de la misma manera el
 				// nivel del itemname
 				JSONObject itemname = tableDataElement.getJSONObject("itemname");
 
@@ -163,22 +163,22 @@ public class CourseWS {
 							categoryLine.setGrade(actualLine.getGrade());
 						}
 					}
-				} else {// --- Si es una categorÌa
+				} else {// --- Si es una categor√≠a
 					String nameLine = getNameCategorie(itemname.getString("content"));
 					int actualLevel = getActualLevel(itemname.getString("class"));
 					int idLine = getIdLine(itemname.getString("id"));
 
-					// AÒadimos la cabecera de la categoria a la pila
+					// A√±adimos la cabecera de la categoria a la pila
 					GradeReportLine actualLine = new GradeReportLine(idLine, nameLine, actualLevel, false);
-					// Lo aÒadimos como hijo de la categoria anterior
+					// Lo a√±adimos como hijo de la categoria anterior
 					if (!deque.isEmpty()) {
 						deque.lastElement().addChild(actualLine);
 					}
 
-					// AÒadimos esta cabecera a la pila
+					// A√±adimos esta cabecera a la pila
 					deque.add(actualLine);
 
-					// Si es el elemento del primer nivel lo aÒadimos, es la raiz del arbol
+					// Si es el elemento del primer nivel lo a√±adimos, es la raiz del arbol
 					if (actualLevel == 1) {
 						course.setGradeReportLine(actualLine);
 					}
@@ -233,13 +233,13 @@ public class CourseWS {
 			JSONArray tables = (JSONArray) gradesData.get("tables");
 			JSONObject alumn = (JSONObject) tables.get(0);
 			JSONArray tableData = alumn.getJSONArray("tabledata");
-			// El elemento table data tiene las lÌneas del configurador
+			// El elemento table data tiene las l√≠neas del configurador
 			// (que convertiremos a GradeReportLines)
 			for (int i = 0; i < tableData.length(); i++) {
 				JSONObject tableDataElement = tableData.getJSONObject(i);
 				// Si es un item o suma de calificaciones:
 				if (tableDataElement.isNull("leader")) {
-					// AÒadimos el elemento a la lista como item
+					// A√±adimos el elemento a la lista como item
 					gradeReportLines.add(getGradeReportLineData(tableDataElement));
 				}
 			} // End for
@@ -261,9 +261,9 @@ public class CourseWS {
 
 	private static GradeReportLine getGradeReportLineData(JSONObject tableDataElement) throws Exception {
 		try {
-			logger.debug("AÒadiendo lÌnea de calificaciones: {}", tableDataElement.toString());
+			logger.debug("A√±adiendo l√≠nea de calificaciones: {}", tableDataElement.toString());
 			GradeReportLine actualGRL = null;
-			// sea categorÌa o item, se saca de la misma manera el
+			// sea categor√≠a o item, se saca de la misma manera el
 			// nivel del itemname
 			JSONObject itemname = tableDataElement.getJSONObject("itemname");
 			int actualLevel = getActualLevel(itemname.getString("class"));
@@ -316,7 +316,7 @@ public class CourseWS {
 
 			boolean typeLine = !typeActivity.equals("Category");
 
-			// AÒadimos la linea actual
+			// A√±adimos la linea actual
 			actualGRL = new GradeReportLine(idLine, nameLine, actualLevel, typeLine, weight, rangeMin, rangeMax, grade,
 					percentage, typeActivity);
 			return actualGRL;
@@ -387,10 +387,10 @@ public class CourseWS {
 					int rangeMax = gradeItemsElement.getInt("grademax");
 					String grade = gradeItemsElement.getString("gradeformatted");
 
-					// AÒadimos el nuevo GradeReportLine
+					// A√±adimos el nuevo GradeReportLine
 					gradeReportLines.add(
 							new GradeReportLine(id, name, grade, String.valueOf(rangeMin), String.valueOf(rangeMax)));
-					logger.info("AÒadiendo el GRL obtenido");
+					logger.info("A√±adiendo el GRL obtenido");
 				}
 			}
 		} catch (IOException e) {
@@ -422,11 +422,11 @@ public class CourseWS {
 	}
 
 	/**
-	 * Devuelve el nivel del GradeReportLine que est· siendo leÌda.
+	 * Devuelve el nivel del GradeReportLine que est√° siendo le√≠da.
 	 * 
 	 * @param data
 	 *            La cadena a analizar.
-	 * @return nivel de la lÌnea
+	 * @return nivel de la l√≠nea
 	 */
 	public static int getActualLevel(String data) {
 		int result = 0;
@@ -435,20 +435,20 @@ public class CourseWS {
 	}
 
 	/**
-	 * Devuelve el nombre de una categorÌa
+	 * Devuelve el nombre de una categor√≠a
 	 * 
 	 * @param data
 	 *            La cadena a analizar.
-	 * @return El nombre de la categorÌa.
+	 * @return El nombre de la categor√≠a.
 	 */
 	public static String getNameCategorie(String data) {
 		String result = "";
-		// Busco el final de la cadena ˙nica a partir de la cual empieza el
-		// nombre de la categorÌa
+		// Busco el final de la cadena √∫nica a partir de la cual empieza el
+		// nombre de la categor√≠a
 		int begin = data.lastIndexOf('>') + 1;
 		// El nombre termina al final del texto
 		int end = data.length();
-		// Me quedo con la cadena entre esos Ìndices
+		// Me quedo con la cadena entre esos √≠ndices
 		result = data.substring(begin, end);
 
 		return result;
@@ -468,7 +468,7 @@ public class CourseWS {
 	}
 
 	/**
-	 * Devuelve el nombre de un item manual o un cierre de categorÌa
+	 * Devuelve el nombre de un item manual o un cierre de categor√≠a
 	 * 
 	 * @param data
 	 *            La cadena a analizar.
@@ -482,11 +482,11 @@ public class CourseWS {
 	}
 
 	/**
-	 * Devuelve el tipo de un GradeReportLine (actividad o categorÌa)
+	 * Devuelve el tipo de un GradeReportLine (actividad o categor√≠a)
 	 * 
 	 * @param data
 	 *            La cadena a anlizar.
-	 * @return tipo de lÌnea (cebecera de categorÌa, suma de calificaciones o item)
+	 * @return tipo de l√≠nea (cebecera de categor√≠a, suma de calificaciones o item)
 	 */
 	public static boolean getTypeLine(String data) {
 		String[] matrix = data.split(" ");
@@ -494,12 +494,12 @@ public class CourseWS {
 	}
 
 	/**
-	 * Comprueba si la lÌnea es una suma de calificaciones de categorÌa (un cierre
-	 * de categorÌa).
+	 * Comprueba si la l√≠nea es una suma de calificaciones de categor√≠a (un cierre
+	 * de categor√≠a).
 	 * 
 	 * @param data
 	 *            La cadena a analizar.
-	 * @return true si la lÌnea es una suma de calificaciones, false si no
+	 * @return true si la l√≠nea es una suma de calificaciones, false si no
 	 */
 	public static boolean getBaggtLine(String data) {
 		String[] matrix = data.split(" ");
@@ -507,20 +507,20 @@ public class CourseWS {
 	}
 
 	/**
-	 * Devuelve el rango mÌnimo o m·ximo.
+	 * Devuelve el rango m√≠nimo o m√°ximo.
 	 * 
 	 * @param data
 	 *            La cadena a analizar.
 	 * @param option
-	 *            True si es rango mÌnimo. False si es m·ximo.
-	 * @return rango m·ximo o mÌnimo
+	 *            True si es rango m√≠nimo. False si es m√°ximo.
+	 * @return rango m√°ximo o m√≠nimo
 	 */
 	public static String getRange(String data, boolean option) {
 		String[] ranges = data.split("&ndash;");
 		try {
-			if (option) // true = rango mÌnimo
+			if (option) // true = rango m√≠nimo
 				return ranges[0];
-			else // false = rango m·ximo
+			else // false = rango m√°ximo
 				return ranges[1];
 		} catch (ArrayIndexOutOfBoundsException e) {
 			return "0";
@@ -529,7 +529,7 @@ public class CourseWS {
 	}
 
 	/**
-	 * Comprueba si una cadena de texto contiene un n˙mero decimal.
+	 * Comprueba si una cadena de texto contiene un n√∫mero decimal.
 	 * 
 	 * @param cad
 	 *            texto
@@ -568,22 +568,22 @@ public class CourseWS {
 	}
 
 	/**
-	 * Diferencia si la lÌnea es un item manual o un cierre de categorÌa.
+	 * Diferencia si la l√≠nea es un item manual o un cierre de categor√≠a.
 	 * 
 	 * @param data
 	 *            La cadena a analizar.
 	 * @return ManualItem si es un item manual, Category si es un cierre de
-	 *         categorÌa o una cadena vacia si no es niguna de las anteriores.
+	 *         categor√≠a o una cadena vacia si no es niguna de las anteriores.
 	 */
 	private static String manualItemOrEndCategory(String data) {
 		// FNS
-		if (data.contains("i/manual_item") || data.contains("Õtem manual")) {
+		if (data.contains("i/manual_item") || data.contains("√çtem manual")) {
 			return "ManualItem";
 		} else if (data.contains("i/agg_sum")
 				// added by RMS
 				|| data.contains("i/calc") || data.contains("i/agg_mean")
 				// FNS
-				|| data.contains("CalificaciÛn calculada")) {
+				|| data.contains("Calificaci√≥n calculada")) {
 			return "Category";
 		} else {
 			return "";
@@ -591,11 +591,11 @@ public class CourseWS {
 	}
 
 	/**
-	 * Devuelve un n˙mero en formato Float si se encuentra en la cadena pasada.
+	 * Devuelve un n√∫mero en formato Float si se encuentra en la cadena pasada.
 	 * 
 	 * @param data
 	 *            La cadena a transformar.
-	 * @return Un Float si es un n˙mero, Float.NaN si no lo es.
+	 * @return Un Float si es un n√∫mero, Float.NaN si no lo es.
 	 */
 	public static Float getFloat(String data) {
 		Pattern pattern = Pattern.compile("[0-9]{1,3},{1}[0-9]{1,2}");
@@ -614,7 +614,7 @@ public class CourseWS {
 	 * @param data
 	 *            La cadena a transformar.
 	 * @return NaN si no hay nota("-"), la cadena pasada si es una escala o el
-	 *         n˙mero si es un n˙mero.
+	 *         n√∫mero si es un n√∫mero.
 	 * 
 	 */
 	private static String getNumber(String data) {
@@ -698,7 +698,7 @@ public class CourseWS {
 	 * @param scaleId
 	 *            El id de la escala.
 	 * @param course
-	 *            El curso al que aÒadir los datos.
+	 *            El curso al que a√±adir los datos.
 	 * @return el id de la escala.
 	 * 
 	 * @throws IOException

@@ -3,10 +3,10 @@ package model;
 import java.io.Serializable;
 
 /**
- * Clase Group para distinguir los grupos que hay en un curso, así como los
+ * Clase Group para distinguir los grupos que hay en un curso, asÃ­ como los
  * grupos en los que se encuentra un usuario.
  * 
- * @author Claudia Martínez Herrero
+ * @author Claudia MartÃ­nez Herrero
  * @author Yi Peng Ji
  * @version 2.0.1
  * @since 2.0.1
@@ -26,7 +26,7 @@ public class Group implements Serializable{
 	 * @param name
 	 * 		Nombre del grupo.
 	 * @param description
-	 * 		Descripción del grupo.
+	 * 		DescripciÃ³n del grupo.
 	 */
 	public Group(int id, String name, String description) {
 		this.id = id;
@@ -73,7 +73,7 @@ public class Group implements Serializable{
 	}
 
 	/**
-	 * Devuelve la descripción del grupo.
+	 * Devuelve la descripciÃ³n del grupo.
 	 * 
 	 * @return description
 	 */
@@ -82,10 +82,10 @@ public class Group implements Serializable{
 	}
 
 	/**
-	 * Modifica la descripción del grupo.
+	 * Modifica la descripciÃ³n del grupo.
 	 * 
 	 * @param description
-	 * 		La descripción.
+	 * 		La descripciÃ³n.
 	 */
 	public void setDescription(String description) {
 		this.description = description;

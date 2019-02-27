@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 /**
  * Clase UBUGrades.
  * 
- * @author Félix Nogal Santamaría
+ * @author FÃ©lix Nogal SantamarÃ­a
  * @version 1.0
  *
  */
@@ -17,7 +17,7 @@ public class UBUGrades {
 	 */
 	private static UBUGrades ubuGrades = null;
 	/**
-	 * Host sobre el que se utiliza la aplicación.
+	 * Host sobre el que se utiliza la aplicaciÃ³n.
 	 */
 	private String host;
 	/**

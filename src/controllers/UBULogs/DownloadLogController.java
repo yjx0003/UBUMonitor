@@ -60,7 +60,7 @@ public class DownloadLogController {
 	 * @param username
 	 *            nombre de usuario cuenta
 	 * @param password
-	 *            contraseña de la cuenta
+	 *            contraseÃ±a de la cuenta
 	 * @param idUser
 	 *            id del usuario de la cuenta
 	 * @param idCourse
@@ -81,7 +81,7 @@ public class DownloadLogController {
 	 * @param username
 	 *            nombre de usuario cuenta
 	 * @param password
-	 *            contraseña de la cuenta
+	 *            contraseÃ±a de la cuenta
 	 * @param idUser
 	 *            id del usuario de la cuenta
 	 * @param idCourse
@@ -103,7 +103,7 @@ public class DownloadLogController {
 	 * @param username
 	 *            nombre de usuario cuenta
 	 * @param password
-	 *            contraseña de la cuenta
+	 *            contraseÃ±a de la cuenta
 	 * @param idUser
 	 *            id del usuario de la cuenta
 	 * @param idCourse
@@ -141,7 +141,7 @@ public class DownloadLogController {
 	 * @param username
 	 *            nombre de usuario de l.a cuenta
 	 * @param password
-	 *            password contraseña321
+	 *            password contraseÃ±a321
 	 * @return las cookies que se usan para navegar dentro del servidor despues de
 	 *         loguearse
 	 */

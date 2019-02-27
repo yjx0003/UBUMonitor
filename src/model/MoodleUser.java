@@ -7,9 +7,9 @@ import java.util.List;
 import javafx.scene.image.Image;
 
 /**
- * Clase para el usuario logeado en la aplicación
+ * Clase para el usuario logeado en la aplicaciÃ³n
  * 
- * @author Claudia Martínez Herrero
+ * @author Claudia MartÃ­nez Herrero
  * @version 1.0
  *
  */
@@ -27,7 +27,7 @@ public class MoodleUser {
 	private String timezone;
 
 	/**
-	 * Constructor de MoodleUser sin parámetros
+	 * Constructor de MoodleUser sin parÃ¡metros
 	 */
 	public MoodleUser() {
 		this.setId(0);
@@ -35,7 +35,7 @@ public class MoodleUser {
 	}
 
 	/**
-	 * Constructor de MoodleUser con parámetros
+	 * Constructor de MoodleUser con parÃ¡metros
 	 * 
 	 * @param id
 	 *            id del usuario logueado
@@ -44,15 +44,15 @@ public class MoodleUser {
 	 * @param fullName
 	 *            nombre completo
 	 * @param eMail
-	 *            correo electrónico
+	 *            correo electrÃ³nico
 	 * @param firstAccess
 	 *            fecha de primer acceso
 	 * @param lastAccess
-	 *            fecha de último acceso
+	 *            fecha de Ãºltimo acceso
 	 * @param city
 	 *            ciudad
 	 * @param country
-	 *            país
+	 *            paÃ­s
 	 */
 	public MoodleUser(int id, String userName, String fullName, String eMail, Date firstAccess, Date lastAccess,
 			String city, String country) {
@@ -163,7 +163,7 @@ public class MoodleUser {
 	}
 
 	/**
-	 * Devuelve la fecha de último acceso
+	 * Devuelve la fecha de Ãºltimo acceso
 	 * 
 	 * @return lastAccess
 	 */
@@ -172,10 +172,10 @@ public class MoodleUser {
 	}
 
 	/**
-	 * Modifica la fecha de último acceso.
+	 * Modifica la fecha de Ãºltimo acceso.
 	 * 
 	 * @param lastAccess
-	 * 		La fecha de último acceso.
+	 * 		La fecha de Ãºltimo acceso.
 	 */
 	public void setLastAccess(Date lastAccess) {
 		this.lastAccess = lastAccess;
@@ -201,7 +201,7 @@ public class MoodleUser {
 	}
 
 	/**
-	 * Devuelve el país
+	 * Devuelve el paÃ­s
 	 * 
 	 * @return country
 	 */
@@ -210,10 +210,10 @@ public class MoodleUser {
 	}
 
 	/**
-	 * Modifica el país del usuario.
+	 * Modifica el paÃ­s del usuario.
 	 * 
 	 * @param country
-	 * 		El país.
+	 * 		El paÃ­s.
 	 */
 	public void setCountry(String country) {
 		this.country = country;
@@ -234,7 +234,7 @@ public class MoodleUser {
 	}
 
 	/**
-	 * Devuelve la lista de cursos que en los que está atriculado el usuario
+	 * Devuelve la lista de cursos que en los que estÃ¡ atriculado el usuario
 	 * 
 	 * @return lista de cursos
 	 */
@@ -243,7 +243,7 @@ public class MoodleUser {
 	}
 
 	/**
-	 * Modifica la lista de cursos en los que está matriculado el usuario.
+	 * Modifica la lista de cursos en los que estÃ¡ matriculado el usuario.
 	 * 
 	 * @param courses
 	 * 		La lista de cursos.

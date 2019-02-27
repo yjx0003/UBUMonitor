@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Clase Role para distinguir el rol de los usuarios matriculados en un curso.
  * 
- * @author Claudia Martínez Herrero
+ * @author Claudia MartÃ­nez Herrero
  * @version 2.0.1
  * @since 2.0.1
  */

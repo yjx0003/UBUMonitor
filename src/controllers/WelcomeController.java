@@ -45,7 +45,7 @@ import webservice.CourseWS;
  * Clase controlador de la pantalla de bienvenida en la que se muestran los
  * cursos del usuario logueado.
  * 
- * @author Claudia Mart韓ez Herrero
+ * @author Claudia Mart铆nez Herrero
  * @version 1.0
  *
  */
@@ -73,7 +73,7 @@ public class WelcomeController implements Initializable {
 	private CheckBox chkUpdateData;
 
 	/**
-	 * Funci髇 initialize. Muestra la lista de cursos del usuario introducido.
+	 * Funci贸n initialize. Muestra la lista de cursos del usuario introducido.
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -120,7 +120,7 @@ public class WelcomeController implements Initializable {
 	}
 
 	/**
-	 * Bot髇 entrar, accede a la siguiente ventana
+	 * Bot贸n entrar, accede a la siguiente ventana
 	 * 
 	 * @param event
 	 *            El evento.
@@ -219,7 +219,7 @@ public class WelcomeController implements Initializable {
 
 	/**
 	 * Realiza el proceso de carga de las notas de los alumnos, carga del arbol del
-	 * calificador y generaci髇 de las estadisticas.
+	 * calificador y generaci贸n de las estadisticas.
 	 * 
 	 * @return La tarea a realizar.
 	 */
@@ -249,7 +249,7 @@ public class WelcomeController implements Initializable {
 							+ (done - 4) + " " + ubuGrades.getResourceBundle().getString("label.of") + " "
 							+ (enroledUsersCount - 8));
 					for (EnrolledUser user : ubuGrades.getSession().getActualCourse().getEnrolledUsers()) {
-						// Obtenemos todas las lineas de calificaci髇 del usuario
+						// Obtenemos todas las lineas de calificaci贸n del usuario
 						logger.info("Cargando los datos de: " + user.getFullName() + "...");
 						user.setAllGradeReportLines(
 								CourseWS.getUserGradeReportLines(ubuGrades.getHost(), ubuGrades.getSession().getToken(),

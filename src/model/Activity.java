@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Clase Activity. Implementar en el futuro.
  * 
- * @author Claudia Martínez Herrero
+ * @author Claudia MartÃ­nez Herrero
  * @version 1.0
  *
  */
@@ -20,7 +20,7 @@ public class Activity implements Serializable {
 	private float contributionCourseTotal;
 
 	/**
-	 * Constructor de una actividad con todos sus parámetros
+	 * Constructor de una actividad con todos sus parÃ¡metros
 	 * 
 	 * @param itemName
 	 *            nombre de la actividad
@@ -29,9 +29,9 @@ public class Activity implements Serializable {
 	 * @param weight
 	 *            peso
 	 * @param minRange
-	 *            rango mínimo de nota
+	 *            rango mÃ­nimo de nota
 	 * @param maxRange
-	 *            rango máximo de nota
+	 *            rango mÃ¡ximo de nota
 	 */
 	public Activity(String itemName, String type, float weight, String minRange, String maxRange) {
 		this.itemName = itemName;
@@ -99,7 +99,7 @@ public class Activity implements Serializable {
 	}
 
 	/**
-	 * Devuelve el rango mínimo
+	 * Devuelve el rango mÃ­nimo
 	 * 
 	 * @return minRange
 	 */
@@ -108,7 +108,7 @@ public class Activity implements Serializable {
 	}
 
 	/**
-	 * Modifica el rango mínimo
+	 * Modifica el rango mÃ­nimo
 	 * 
 	 * @param minRange
 	 * 		el rango minimo
@@ -118,7 +118,7 @@ public class Activity implements Serializable {
 	}
 
 	/**
-	 * Devuelve el rango máximo
+	 * Devuelve el rango mÃ¡ximo
 	 * 
 	 * @return maxRange
 	 */
@@ -127,7 +127,7 @@ public class Activity implements Serializable {
 	}
 
 	/**
-	 * Modifica el rango máximo
+	 * Modifica el rango mÃ¡ximo
 	 * 
 	 * @param maxRange
 	 * 		el rango maximo
@@ -137,7 +137,7 @@ public class Activity implements Serializable {
 	}
 
 	/**
-	 * Devuelve la contribución total de la actividad
+	 * Devuelve la contribuciÃ³n total de la actividad
 	 * 
 	 * @return contributionCourseTotal
 	 */
@@ -146,10 +146,10 @@ public class Activity implements Serializable {
 	}
 
 	/**
-	 * Modifica contribución total de la actividad
+	 * Modifica contribuciÃ³n total de la actividad
 	 * 
 	 * @param contributionCourseTotal
-	 * 		la contribución de la actividad
+	 * 		la contribuciÃ³n de la actividad
 	 */
 	public void setContributionCourseTotal(float contributionCourseTotal) {
 		this.contributionCourseTotal = contributionCourseTotal;

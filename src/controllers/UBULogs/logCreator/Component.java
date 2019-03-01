@@ -43,7 +43,7 @@ public enum Component {
 			map.put(component.toString(), component);
 		}
 	}
-	public Component get(String name) {
+	public static Component get(String name) {
 		return map.get(name);
 	}
 	

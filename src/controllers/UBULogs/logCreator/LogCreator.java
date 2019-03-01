@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 import controllers.UBULogs.logCreator.logsTypes.ReferencesLog;
 import model.Course;
 import model.Log;
@@ -16,7 +17,7 @@ public class LogCreator {
 	
 	
 	private static final Pattern INTEGER_PATTERN = Pattern.compile("\\d+");
-	private static final Pattern STRING_PATTERN = Pattern.compile("\\D+");
+
 	
 	public static final String TIME = "Time";
 	public static final String USER_FULL_NAME = "User full name";
@@ -63,14 +64,14 @@ public class LogCreator {
 		
 
 		
-		
+		//cogemos el texto de la descripcion y buscamos todos los numeros que hay en la descripcion
 		String description = mapLog.get(DESCRIPTION);
-		String keyDescription = getStringDescription(description);
 		List<Integer> ids=getIdsInDescription(description);
-		ReferencesLog referencesLog=LogTypes.getReferenceLog(keyDescription);
 		
-		Log log=referencesLog.createLogWithAttributes(mapLog, ids);
+		Log log=ReferencesLog.createLogWithAttributes(mapLog);
 		
+		ReferencesLog referencesLog=ReferencesLog.getReferenceLog(log.getComponent(), log.getEventName());
+		referencesLog.setLogReferencesAttributes(log, ids);
 		
 		return log;
 	}
@@ -78,15 +79,6 @@ public class LogCreator {
 	
 
 
-	
-	private String getStringDescription(String description) {
-		Matcher m= STRING_PATTERN.matcher(description);
-		StringBuilder stringBuilder =new StringBuilder();
-		while(m.find()) {
-			stringBuilder.append(m.group(0));
-		}
-		return stringBuilder.toString();
-	}
 	
 	private List<Integer> getIdsInDescription(String description){
 		Matcher m=INTEGER_PATTERN.matcher(description);

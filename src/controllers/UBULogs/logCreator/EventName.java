@@ -102,7 +102,7 @@ public enum EventName {
 		}
 	}
 	
-	public EventName get(String name) {
+	public static EventName get(String name) {
 		return map.get(name);
 	}
 	

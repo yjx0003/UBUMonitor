@@ -5,11 +5,11 @@ import java.util.List;
 import model.Course;
 import model.Log;
 
-public class CourseViewedLog extends ReferencesLog {
+public class UserCourse extends ReferencesLog {
 
 
 	@Override
-	protected void setLogReferencesAttributes(Log log, List<Integer> ids) {
+	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
 		// TODO Auto-generated method stub
 		
 	}

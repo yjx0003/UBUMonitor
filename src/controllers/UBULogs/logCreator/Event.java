@@ -3,7 +3,7 @@ package controllers.UBULogs.logCreator;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum EventName {
+public enum Event {
 	
 	A_FILE_HAS_BEEN_UPLOADED("A file has been uploaded."),
 	A_SUBMISSION_HAS_BEEN_SUBMITTED("A submission has been submitted."),
@@ -89,20 +89,20 @@ public enum EventName {
 	
 	
 	private String name;
-	private static Map<String,EventName> map;
+	private static Map<String,Event> map;
 	
-	EventName(String name){
+	Event(String name){
 		this.name=name;
 	}
 	
 	static {
-		map=new HashMap<String,EventName>();
-		for(EventName eventName:EventName.values()) {
+		map=new HashMap<String,Event>();
+		for(Event eventName:Event.values()) {
 			map.put(eventName.toString(), eventName);
 		}
 	}
 	
-	public static EventName get(String name) {
+	public static Event get(String name) {
 		return map.get(name);
 	}
 	

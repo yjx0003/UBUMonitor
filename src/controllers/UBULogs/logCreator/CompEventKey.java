@@ -1,26 +1,26 @@
 package controllers.UBULogs.logCreator;
 
-public class ComponentEventKey {
+public class CompEventKey {
 	
 
 
 	private Component component;
-	private EventName eventName;
+	private Event eventName;
 	
-	public ComponentEventKey(Component component,EventName eventName) {
+	public CompEventKey(Component component,Event eventName) {
 		this.component=component;
 		this.eventName=eventName;
 	}
 	
-	public ComponentEventKey(String component,String eventName) {
-		this(Component.get(component),EventName.get(eventName));
+	public CompEventKey(String component,String eventName) {
+		this(Component.get(component),Event.get(eventName));
 	}
 
 	public Component getComponent() {
 		return component;
 	}
 
-	public EventName getEventName() {
+	public Event getEventName() {
 		return eventName;
 	}
 
@@ -41,7 +41,7 @@ public class ComponentEventKey {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ComponentEventKey other = (ComponentEventKey) obj;
+		CompEventKey other = (CompEventKey) obj;
 		if (component != other.component)
 			return false;
 		if (eventName != other.eventName)

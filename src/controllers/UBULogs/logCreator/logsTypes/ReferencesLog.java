@@ -146,7 +146,7 @@ public abstract class ReferencesLog {
 		ReferencesLog.dateTimeFormatter = dateTimeFormatter.withZone(zoneId);
 	}
 
-	public static Log createLogWithAttributes(Map<String, String> mapLog) {
+	public static Log createLogWithBasicAttributes(Map<String, String> mapLog) {
 
 		Log log = new Log();
 		if (mapLog.containsKey(LogCreator.TIME)) {

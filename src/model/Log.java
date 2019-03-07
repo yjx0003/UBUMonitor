@@ -3,13 +3,13 @@ package model;
 import java.time.ZonedDateTime;
 
 import controllers.UBULogs.logCreator.Component;
-import controllers.UBULogs.logCreator.EventName;
+import controllers.UBULogs.logCreator.Event;
 
 public class Log {
 	private ZonedDateTime time;
 	private String eventContext;
 	private Component component;
-	private EventName eventName;
+	private Event eventName;
 	private String description;
 	private String origin;
 	private String IPAdress;
@@ -42,11 +42,11 @@ public class Log {
 		this.component = component;
 	}
 
-	public EventName getEventName() {
+	public Event getEventName() {
 		return eventName;
 	}
 
-	public void setEventName(EventName eventName) {
+	public void setEventName(Event eventName) {
 		this.eventName = eventName;
 	}
 

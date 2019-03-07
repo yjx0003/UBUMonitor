@@ -39,7 +39,7 @@ public class DownloadLogController {
 	/**
 	 * id del curso que se quiere descargar el log
 	 */
-	private String idCourse;
+	private int idCourse;
 
 	/**
 	 * Zona horaria usada como referencia en las descargas segun el tiempo. Solo se
@@ -62,7 +62,7 @@ public class DownloadLogController {
 	 */
 	private DownloadLogController(String host, String username, String password, int idCourse) {
 		this.host = host;
-		this.idCourse = Integer.toString(idCourse);
+		this.idCourse = idCourse;
 		this.cookies = login(username, password);
 	}
 
@@ -80,8 +80,7 @@ public class DownloadLogController {
 	 * @param timezone
 	 *            zona horaria usada como referencia al descargar el log
 	 */
-	public DownloadLogController(String host, String username, String password, int idCourse,
-			ZoneId timezone) {
+	public DownloadLogController(String host, String username, String password, int idCourse, ZoneId timezone) {
 		this(host, username, password, idCourse);
 		this.timezone = timezone;
 	}
@@ -102,8 +101,7 @@ public class DownloadLogController {
 	 *            de 99 si es la hora del servidor o la nomenclatura IANA de tiempo.
 	 *            Por ejemplo Europe/Madrid.
 	 */
-	public DownloadLogController(String host, String username, String password, int idUser, int idCourse,
-			String timezone) {
+	public DownloadLogController(String host, String username, String password, int idCourse, String timezone) {
 		this(host, username, password, idCourse);
 
 		// 99 significa que el usuario esta usando la zona horaria del servidor
@@ -119,8 +117,7 @@ public class DownloadLogController {
 	 */
 	public DownloadLogController(UBUGrades ubugrades) {
 		this(ubugrades.getHost(), ubugrades.getSession().getUserName(), ubugrades.getSession().getPassword(),
-				ubugrades.getUser().getId(), ubugrades.getSession().getActualCourse().getId(),
-				ubugrades.getUser().getTimezone());
+				ubugrades.getSession().getActualCourse().getId(), ubugrades.getUser().getTimezone());
 
 	}
 
@@ -306,7 +303,7 @@ public class DownloadLogController {
 	 * @return lista de log diarios de fecha inicio hasta fin
 	 */
 	public List<String> downloadLog(LocalDateTime inicio, LocalDateTime fin) {
-		return downloadLog(inicio.atZone(timezone), inicio.atZone(timezone));
+		return downloadLog(inicio.atZone(timezone), fin.atZone(timezone));
 	}
 
 	/**
@@ -324,10 +321,8 @@ public class DownloadLogController {
 	 * @param idCourse
 	 *            idCourse
 	 */
-	public void setIdCourse(String idCourse) {
+	public void setIdCourse(int idCourse) {
 		this.idCourse = idCourse;
 	}
-
-	
 
 }

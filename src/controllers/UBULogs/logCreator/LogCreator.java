@@ -68,7 +68,7 @@ public class LogCreator {
 		String description = mapLog.get(DESCRIPTION);
 		List<Integer> ids=getIdsInDescription(description);
 		
-		Log log=ReferencesLog.createLogWithAttributes(mapLog);
+		Log log=ReferencesLog.createLogWithBasicAttributes(mapLog);
 		
 		ReferencesLog referencesLog=ReferencesLog.getReferenceLog(log.getComponent(), log.getEventName());
 		referencesLog.setLogReferencesAttributes(log, ids);

@@ -46,10 +46,6 @@ public class DownloadLogController {
 	 * usa si es una descarga de un dia en concreto.
 	 */
 	private ZoneId timezone;
-	/**
-	 * id del usuario con el que se va loguear.
-	 */
-	private String idUser;
 
 	/**
 	 * Constructor privado que solo asigna atributos basicos. Evita la repeticion de
@@ -61,14 +57,11 @@ public class DownloadLogController {
 	 *            nombre de usuario cuenta
 	 * @param password
 	 *            contraseña de la cuenta
-	 * @param idUser
-	 *            id del usuario de la cuenta
 	 * @param idCourse
 	 *            id del curso que se quiere descargar el log
 	 */
-	private DownloadLogController(String host, String username, String password, int idUser, int idCourse) {
+	private DownloadLogController(String host, String username, String password, int idCourse) {
 		this.host = host;
-		this.idUser = Integer.toString(idUser);
 		this.idCourse = Integer.toString(idCourse);
 		this.cookies = login(username, password);
 	}
@@ -82,16 +75,14 @@ public class DownloadLogController {
 	 *            nombre de usuario cuenta
 	 * @param password
 	 *            contraseña de la cuenta
-	 * @param idUser
-	 *            id del usuario de la cuenta
 	 * @param idCourse
 	 *            id del curso que se quiere descargar el log
 	 * @param timezone
 	 *            zona horaria usada como referencia al descargar el log
 	 */
-	public DownloadLogController(String host, String username, String password, int idUser, int idCourse,
+	public DownloadLogController(String host, String username, String password, int idCourse,
 			ZoneId timezone) {
-		this(host, username, password, idUser, idCourse);
+		this(host, username, password, idCourse);
 		this.timezone = timezone;
 	}
 
@@ -104,8 +95,6 @@ public class DownloadLogController {
 	 *            nombre de usuario cuenta
 	 * @param password
 	 *            contraseña de la cuenta
-	 * @param idUser
-	 *            id del usuario de la cuenta
 	 * @param idCourse
 	 *            id del curso que se quiere descargar el log
 	 * @param timezone
@@ -115,7 +104,7 @@ public class DownloadLogController {
 	 */
 	public DownloadLogController(String host, String username, String password, int idUser, int idCourse,
 			String timezone) {
-		this(host, username, password, idUser, idCourse);
+		this(host, username, password, idCourse);
 
 		// 99 significa que el usuario esta usando la zona horaria del servidor
 		this.timezone = (timezone.equals("99")) ? findServerTimezone() : ZoneId.of(timezone);
@@ -173,7 +162,7 @@ public class DownloadLogController {
 
 			// vamos a la edicion del perfil de usuario para ver la zona horaria del
 			// servidor
-			Document d = Jsoup.connect(host + "/user/edit.php?lang=en&id=" + idUser).cookies(cookies).get();
+			Document d = Jsoup.connect(host + "/user/edit.php?lang=en").cookies(cookies).get();
 
 			// timezone tendra una estructuctura parecida a: Server timezone (Europe/Madrid)
 			// lo unico que nos interesa es lo que hay dentro de los parentesis:

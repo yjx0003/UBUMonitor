@@ -16,7 +16,7 @@ import model.Log;
 
 public abstract class ReferencesLog {
 	protected static Course course;
-	public final static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yy, kk:mm");
+	public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yy, kk:mm");
 
 	private static Map<CompEventKey, ReferencesLog> logTypes = new HashMap<CompEventKey, ReferencesLog>();
 

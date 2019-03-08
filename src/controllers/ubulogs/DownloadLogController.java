@@ -125,9 +125,9 @@ public class DownloadLogController {
 	 * Se loguea en el servidor de moodle mediante web scraping.
 	 * 
 	 * @param username
-	 *            nombre de usuario de l.a cuenta
+	 *            nombre de usuario de la cuenta
 	 * @param password
-	 *            password contraseña321
+	 *            password contraseña
 	 * @return las cookies que se usan para navegar dentro del servidor despues de
 	 *         loguearse
 	 */
@@ -256,12 +256,12 @@ public class DownloadLogController {
 	 */
 	public String downloadLog(String dateSeconds) {
 		try {
-			Document response = Jsoup
+			Response response = Jsoup
 					.connect(host + "/report/log/index.php?lang=en&download=csv&id=" + idCourse + "&date=" + dateSeconds
 							+ "&modid=&chooselog=1&logreader=logstore_standard")
-					.cookies(cookies).timeout(0).maxBodySize(0).get();
+					.cookies(cookies).ignoreContentType(true).timeout(0).maxBodySize(0).execute();
 
-			return response.wholeText();
+			return response.body();
 
 		} catch (Exception e) {
 			logger.error("Error al descargar el log", e);

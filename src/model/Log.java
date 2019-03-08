@@ -2,8 +2,8 @@ package model;
 
 import java.time.ZonedDateTime;
 
-import controllers.UBULogs.logCreator.Component;
-import controllers.UBULogs.logCreator.Event;
+import controllers.ubulogs.logcreator.Component;
+import controllers.ubulogs.logcreator.Event;
 
 public class Log {
 	private ZonedDateTime time;

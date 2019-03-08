@@ -25,12 +25,24 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/UBUGrades/libs/docs/jsoup-1.11.3-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="libs/log4j-1.2.17.jar"/>
-	<classpathentry kind="lib" path="libs/slf4j-api-1.7.1.jar"/>
-	<classpathentry kind="lib" path="libs/slf4j-log4j12-1.7.1.jar"/>
 	<classpathentry kind="lib" path="libs/json-20180813.jar" sourcepath="libs/src/json-20180813-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:platform:/resource/UBUGrades/libs/docs/json-20180813-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/slf4j-api-1.7.26.jar" sourcepath="libs/src/slf4j-api-1.7.26-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="https://www.slf4j.org/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/slf4j-log4j12-1.7.26.jar" sourcepath="libs/src/slf4j-log4j12-1.7.26-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="https://www.slf4j.org/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/log4j-1.2.17.jar" sourcepath="libs/src/log4j-1.2.17-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/UBUGrades/libs/docs/log4j-1.2.17-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>

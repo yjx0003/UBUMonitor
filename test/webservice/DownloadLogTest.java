@@ -14,7 +14,7 @@ import java.util.Scanner;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import controllers.UBULogs.DownloadLogController;
+import controllers.ubulogs.DownloadLogController;
 
 public class DownloadLogTest {
 

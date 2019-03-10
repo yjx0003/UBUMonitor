@@ -1,4 +1,4 @@
-package webservice;
+package webserviceTest;
 
 import static org.junit.Assert.*;
 
@@ -11,6 +11,7 @@ import org.junit.Test;
 import javafx.embed.swing.JFXPanel;
 import model.Course;
 import model.MoodleUser;
+import webservice.MoodleUserWS;
 
 public class MoodleUserWSTest {
 

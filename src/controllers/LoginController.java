@@ -1,21 +1,6 @@
 
 package controllers;
 
-import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Cursor;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
@@ -27,8 +12,30 @@ import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import model.*;
-import webservice.*;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
+import model.MoodleUser;
+import model.Session;
+import model.UBUGrades;
+import webservice.MoodleUserWS;
+import webservice.WebService;
 
 /**
  * Clase controlador de la ventana de Login
@@ -135,32 +142,41 @@ public class LoginController implements Initializable {
 	 * @return
 	 * 		True si el login es correcto.Falso si no lo es.
 	 */
-	private Boolean checkLogin() {
+	private boolean checkLogin() {
 		// Almacenamos los parámetros introducidos por el usuario:
-		ubuGrades.setHost(txtHost.getText());
-		ubuGrades.setSession(new Session(txtUsername.getText(), txtPassword.getText()));
+	
+		
 
-		Boolean correcto = true;
+		
 		progressBar.visibleProperty().set(false);
 
 		try { // Establecemos el token
 			logger.info("Obteniendo el token.");
 			ubuGrades.getStage().getScene().setCursor(Cursor.WAIT);
-			ubuGrades.getSession().setToken(ubuGrades.getHost());
+			
+			WebService.initialize(txtHost.getText(), txtUsername.getText(), txtPassword.getText());
+			
+			ubuGrades.setHost(txtHost.getText());
+			
+			ubuGrades.setSession(new Session(txtUsername.getText(), txtPassword.getText()));
+			
+			ubuGrades.getSession().setToken(WebService.getToken());
+			
+			return true;
+			
 		} catch (IOException e) {
-			correcto = false;
 			logger.error("No se ha podido conectar con el host.", e);
 			lblStatus.setText(ubuGrades.getResourceBundle().getString("error.host"));
 		}catch (JSONException e) {
-			correcto = false;
+			
 			logger.error("Usuario y/o contraseña incorrectos", e);
 			lblStatus.setText(ubuGrades.getResourceBundle().getString("error.login"));
 			txtPassword.setText("");
 		} finally {
 			ubuGrades.getStage().getScene().setCursor(Cursor.DEFAULT);
 		}
-		
-		return correcto;
+		return false;
+
 	}
 	
 	/**

@@ -1,4 +1,4 @@
-package webservice;
+package webserviceTest;
 
 import static org.junit.Assert.*;
 
@@ -12,6 +12,7 @@ import model.Course;
 import model.EnrolledUser;
 import model.GradeReportLine;
 import model.Role;
+import webservice.CourseWS;
 
 public class CourseWSTest {
 
@@ -80,7 +81,7 @@ public class CourseWSTest {
 		assertEquals(20, grlList.size());
 		
 		GradeReportLine grl = grlList.get(0);
-		assertEquals("Programación", grl.getName());
+		assertEquals("Programaciï¿½n", grl.getName());
 		assertEquals("Category", grl.getNameType());
 		assertEquals(1, grl.getLevel());
 		assertEquals("5,00", grl.getGrade());
@@ -91,8 +92,8 @@ public class CourseWSTest {
 
 		List<GradeReportLine> children = grl.getChildren();
 		assertEquals(11, children.size());
-		String childrenList = "[Practicas, Teoría, Tipo texto, Rango 10-20, Tipo escala, Mas escalas,"
-				+ " Taller 1 (envío), Taller 1 (evaluación), Leccion Tema 1, Tarea con escala, Tarea con escala 2]";
+		String childrenList = "[Practicas, Teorï¿½a, Tipo texto, Rango 10-20, Tipo escala, Mas escalas,"
+				+ " Taller 1 (envï¿½o), Taller 1 (evaluaciï¿½n), Leccion Tema 1, Tarea con escala, Tarea con escala 2]";
 		assertEquals(childrenList, children.toString());
 		
 		grl = grlList.get(12);
@@ -142,7 +143,7 @@ public class CourseWSTest {
 		assertEquals(20, grlList.size());
 		
 		GradeReportLine grl = grlList.get(19);
-		assertEquals("Programación", grl.getName());
+		assertEquals("Programaciï¿½n", grl.getName());
 		assertEquals("Category", grl.getNameType());
 		assertEquals(1, grl.getLevel());
 		assertEquals("5,00", grl.getGrade());

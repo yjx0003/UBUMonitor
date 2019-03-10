@@ -1,11 +1,10 @@
 package webservice.core;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import webservice.MoodleOptions;
+import webservice.WSFunctions;
 import webservice.WebService;
 
 public class CoreUserGetUsersByField extends WebService {
@@ -14,11 +13,19 @@ public class CoreUserGetUsersByField extends WebService {
 	private Set<String> values;
 
 	public enum Field {
-		id, idnumber, username, email;
+		ID("id"), IDNUMBER("idnumber"), USERNAME("username"), EMAIL("email");
+		
+		private String field;
+		Field(String field){
+			this.field=field;
+		}
+		@Override
+		public String toString() {
+			return field;
+		}
 	}
 
 	private CoreUserGetUsersByField(Field field) {
-		super(MoodleOptions.OBTENER_INFO_USUARIO);
 		this.field = field;
 		
 	}
@@ -34,22 +41,21 @@ public class CoreUserGetUsersByField extends WebService {
 		this.values = values;
 
 	}
-	
+	@Override
+	public WSFunctions getWSFunction() {
+		
+		return WSFunctions.OBTENER_INFO_USUARIO;
+	}
 	
 	@Override
-	public String getResponse() throws IOException {
-
+	public void appendToUrlParameters() {
 		if (field == null || values.size() == 0) {
 			throw new IllegalStateException("Field no puede ser nulo y tiene que haber al menos un value");
 		}
 
-		String url = this.url;
-
 		appendToUrlField(field);
 		appendToUrlValues(values);
 		
-
-		return getContentWithJsoup(url);
 	}
 
 	public Field getField() {
@@ -75,6 +81,10 @@ public class CoreUserGetUsersByField extends WebService {
 	public void removeValue(String value) {
 		this.values.remove(value);
 	}
+
+
+
+
 
 
 

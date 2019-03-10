@@ -5,73 +5,124 @@ import java.util.Set;
 
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import webservice.core.CoreUserGetUsersByField.Field;
 
 public abstract class WebService {
 
-	protected static String token;
-	protected static String urlWithToken;
-	protected String url;
+	static final Logger logger = LoggerFactory.getLogger(WebService.class);
 
-	public WebService(String moodleOption) {
-		if (token == null) {
-			throw new IllegalStateException(
-					"Token no configurado, llama al metodo setHostAndToken de la clase WebService para configurarlo.");
-		}
+	private static String token;
+	private static String urlWithToken;
+	private final static String REST_FORMAT = "json";
+	private String parameters;
 
-		url = urlWithToken;
-		url += moodleOption;
+	public WebService() {
+
+		checkToken();
+
+		this.parameters = "";
 
 	}
 
-	public static void setToken(String host, String username, String password) throws IOException {
+	public static void initialize(String host, String token) {
 
-		String url = host + "/login/token.php?username=" + username + "&password=" + password + "&service="
-				+ MoodleOptions.SERVICIO_WEB_MOODLE;
+		WebService.token = token;
 
-		String JSON = getContentWithJsoup(url);
+		urlWithToken = host + "/webservice/rest/server.php?wstoken=" + token + "&moodlewsrestformat=" + REST_FORMAT
+				+ "&wsfunction=";
+
+	}
+
+	public static void initialize(String host, String userName, String password) throws IOException {
+		String url = host + "/login/token.php?username=" + userName + "&password=" + password + "&service="
+				+ WSFunctions.SERVICIO_WEB_MOODLE;
+
+		String JSON = Jsoup.connect(url).ignoreContentType(true).execute().body();
 
 		JSONObject jsonObject = new JSONObject(JSON);
 
-		token = jsonObject.getString("token");
+		String token = jsonObject.getString("token");
 
-		urlWithToken = host + "/webservice/rest/server.php?moodlewsrestformat=json&wstoken=" + token;
+		initialize(host, token);
+	}
+
+	public static void checkToken() {
+		if (token == null) {
+			throw new IllegalStateException(
+					"Token no configurado, llama al metodo setToken de la clase WebService para configurarlo.");
+		}
+	}
+
+	public static String getToken() {
+		checkToken();
+		return token;
+	}
+
+	public String getResponse() throws IOException {
+
+		parameters = "";
+
+		appendToUrlParameters();
+
+		String url = urlWithToken + getWSFunction() + parameters;
+
+		logger.info("Usando la url de moodle web service: " + getWSFunction() + parameters);
+
+		return getContentWithJsoup(url);
 
 	}
 
-	public void appendToUrlUserid(int userid) {
-		url += "&userid=" + userid;
+	public abstract WSFunctions getWSFunction();
+
+	public String geCompletetUrl() {
+		return urlWithToken + getWSFunction() + parameters;
 	}
 
-	public void appendToUrlCourseid(int courseid) {
-		url += "&courseid=" + courseid;
+	protected abstract void appendToUrlParameters();
+
+	protected void appendToUrlUserid(int userid) {
+		parameters += "&userid=" + userid;
 	}
 
-	public void appendToUrlGruopid(int groupid) {
-		url += "&groupid=" + groupid;
+	protected void appendToUrlCourseid(int courseid) {
+		parameters += "&courseid=" + courseid;
 	}
 
-	public void appendToUrlValues(Set<String> values) {
-		
+	protected void appendToUrlCoursesids(Set<Integer> coursesids) {
+
+		for (Integer courseid : coursesids) {
+			parameters += "&courseids[]=" + courseid;
+		}
+	}
+
+	protected void appendToUrlGruopid(int groupid) {
+		parameters += "&groupid=" + groupid;
+	}
+
+	protected void appendToUrlValues(Set<String> values) {
+
 		for (String value : values) {
-			url += "&values[]=" + value;
+			parameters += "&values[]=" + value;
 		}
 	}
-	
-	public void appendToUrlField(Field field) {
-		url+="&field="+field;
+
+	protected void appendToUrlField(Field field) {
+		parameters += "&field=" + field;
 	}
-	
-	public void appendToUrlCoursesids(Set<Integer> coursesids) {
-		for (Integer courseid:coursesids) {
-			url += "&courseids[]=" + courseid;
-		}
+
+	protected void appendToUrlOptions(int index, String name, String value) {
+		parameters+="&options["+index+"][name]="+name+"&options["+index+"][value]="+value;
 	}
-	
-	public static String getContentWithJsoup(String url) throws IOException {
+
+	protected void appendToUrlOptions(int index, String name, int value) {
+		parameters+="&options["+index+"][name]="+name+"&options["+index+"][value]="+value;
+	}
+
+	private static String getContentWithJsoup(String url) throws IOException {
 		return Jsoup.connect(url).ignoreContentType(true).execute().body();
 	}
 
-	public abstract String getResponse() throws IOException;
 }

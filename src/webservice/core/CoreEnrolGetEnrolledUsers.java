@@ -63,7 +63,7 @@ public class CoreEnrolGetEnrolledUsers extends Courseid {
 		super(courseid);
 	}
 
-	public CoreEnrolGetEnrolledUsers(CoreEnrolGetEnrolledUsersBuilder builder) {
+	public CoreEnrolGetEnrolledUsers(Builder builder) {
 		super(builder.courseid);
 		withcapability = builder.withcapability;
 		groupid = builder.groupid;
@@ -87,7 +87,6 @@ public class CoreEnrolGetEnrolledUsers extends Courseid {
 		appendIfNotZero("limitnumber", limitnumber);
 		appendIfNotNull("sortby", sortby);
 		appendIfNotNull("sortdirection", sortdirection);
-		
 
 	}
 
@@ -95,20 +94,20 @@ public class CoreEnrolGetEnrolledUsers extends Courseid {
 		if (value != null)
 			appendToUrlOptions(index++, name, value);
 	}
-	
-	private void appendIfNotZero(String name,int value) {
-		if (value!=0) 
+
+	private void appendIfNotZero(String name, int value) {
+		if (value != 0)
 			appendToUrlOptions(index++, name, value);
 	}
-	
-	private void appendIfNotNull(String name,Set<String> value) {
-		if (value!=null) 
-			appendToUrlOptions(index++, name, String.join(",",value));
+
+	private void appendIfNotNull(String name, Set<String> value) {
+		if (value != null)
+			appendToUrlOptions(index++, name, String.join(",", value));
 	}
 
 	@Override
 	public WSFunctions getWSFunction() {
-		return WSFunctions.OBTENER_USUARIOS_MATRICULADOS;
+		return WSFunctions.CORE_ENROL_GET_ENROLLED_USERS;
 	}
 
 	public String getWithcapability() {
@@ -175,7 +174,9 @@ public class CoreEnrolGetEnrolledUsers extends Courseid {
 		this.sortdirection = sortdirection;
 	}
 
-	public static class CoreEnrolGetEnrolledUsersBuilder {
+
+
+	public static class Builder {
 
 		private int courseid;
 		private String withcapability;
@@ -187,83 +188,81 @@ public class CoreEnrolGetEnrolledUsers extends Courseid {
 		private String sortby;
 		private String sortdirection;
 
-		public CoreEnrolGetEnrolledUsersBuilder(int courseid) {
+		public Builder(int courseid) {
 			this.courseid = courseid;
 		}
 
-		public CoreEnrolGetEnrolledUsersBuilder setGroupid(int groupid) {
+		public Builder setGroupid(int groupid) {
 			this.groupid = groupid;
 			return this;
 		}
 
-		public CoreEnrolGetEnrolledUsersBuilder setWithcapability(String withcapability) {
+		public Builder setWithcapability(String withcapability) {
 			this.withcapability = withcapability;
 			return this;
 		}
 
-		public CoreEnrolGetEnrolledUsersBuilder setOnlyactive(int onlyactive) {
+		public Builder setOnlyactive(int onlyactive) {
 
 			this.onlyactive = onlyactive;
 			return this;
 		}
 
-		public CoreEnrolGetEnrolledUsersBuilder setUserfields(Set<String> userfields) {
+		public Builder setUserfields(Set<String> userfields) {
 			this.userfields = userfields;
 			return this;
 		}
 
-		public CoreEnrolGetEnrolledUsersBuilder addUserfield(String userfield) {
+		public Builder addUserfield(String userfield) {
 			if (userfield == null)
 				userfields = new HashSet<String>();
 			userfields.add(userfield);
 			return this;
 		}
 
-		public CoreEnrolGetEnrolledUsersBuilder setLimitfrom(int limitfrom) {
+		public Builder setLimitfrom(int limitfrom) {
 			this.limitfrom = limitfrom;
 			return this;
 		}
 
-		public CoreEnrolGetEnrolledUsersBuilder setLimitnumber(int limitnumber) {
+		public Builder setLimitnumber(int limitnumber) {
 			this.limitnumber = limitnumber;
 			return this;
 		}
 
-		public CoreEnrolGetEnrolledUsersBuilder setSortbyId() {
+		public Builder setSortbyId() {
 			this.sortby = "id";
 			return this;
 		}
 
-		public CoreEnrolGetEnrolledUsersBuilder setSortbyFirstname() {
+		public Builder setSortbyFirstname() {
 			this.sortby = "firstname";
 			return this;
 		}
 
-		public CoreEnrolGetEnrolledUsersBuilder setSortbyLastname() {
+		public Builder setSortbyLastname() {
 			this.sortby = "lastname";
 			return this;
 		}
 
-		public CoreEnrolGetEnrolledUsersBuilder setSortbySiteorder() {
+		public Builder setSortbySiteorder() {
 			this.sortby = "siteorder";
 			return this;
 		}
 
-		public CoreEnrolGetEnrolledUsersBuilder setSortdirectionASC() {
+		public Builder setSortdirectionASC() {
 			this.sortdirection = "ASC";
 			return this;
 		}
 
-		public CoreEnrolGetEnrolledUsersBuilder setSortdirectionDESC() {
+		public Builder setSortdirectionDESC() {
 			this.sortdirection = "DESC";
 			return this;
 		}
 
 		public CoreEnrolGetEnrolledUsers build() {
 
-			CoreEnrolGetEnrolledUsers build = new CoreEnrolGetEnrolledUsers(this);
-
-			return build;
+			return new CoreEnrolGetEnrolledUsers(this);
 
 		}
 

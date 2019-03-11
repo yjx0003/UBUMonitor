@@ -25,7 +25,7 @@ public class ModQuizGetQuizzesByCourses extends Coursesids {
 	@Override
 	public WSFunctions getWSFunction() {
 	
-		return WSFunctions.OBTENER_QUIZZES;
+		return WSFunctions.MOD_QUIZ_GET_QUIZZES_BY_COURSES;
 	}
 
 

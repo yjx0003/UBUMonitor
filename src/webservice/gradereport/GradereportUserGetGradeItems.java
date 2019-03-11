@@ -17,7 +17,7 @@ public class GradereportUserGetGradeItems extends CourseidUseridGroupid {
 	@Override
 	public WSFunctions getWSFunction() {
 		
-		return  WSFunctions.OBTENER_NOTAS_ALUMNO;
+		return  WSFunctions.GRADEREPORT_USER_GET_GRADE_ITEMS;
 	}
 
 }

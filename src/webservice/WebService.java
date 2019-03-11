@@ -38,7 +38,7 @@ public abstract class WebService {
 
 	public static void initialize(String host, String userName, String password) throws IOException {
 		String url = host + "/login/token.php?username=" + userName + "&password=" + password + "&service="
-				+ WSFunctions.SERVICIO_WEB_MOODLE;
+				+ WSFunctions.MOODLE_MOBILE_APP;
 
 		String JSON = Jsoup.connect(url).ignoreContentType(true).execute().body();
 
@@ -121,6 +121,10 @@ public abstract class WebService {
 		parameters+="&options["+index+"][name]="+name+"&options["+index+"][value]="+value;
 	}
 
+	protected void appendToUrlOptions(int index, String name,boolean value) {
+		parameters+="&options["+index+"][name]="+name+"&options["+index+"][value]="+value;
+	}
+	
 	private static String getContentWithJsoup(String url) throws IOException {
 		return Jsoup.connect(url).ignoreContentType(true).execute().body();
 	}

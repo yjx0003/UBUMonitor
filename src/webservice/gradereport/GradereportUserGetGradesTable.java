@@ -10,14 +10,14 @@ public class GradereportUserGetGradesTable extends CourseidUseridGroupid {
 		super( courseid, optionalParameter, userOrGroupid);
 	}
 
-	public GradereportUserGetGradesTable(WSFunctions wsFunction, int courseid) {
+	public GradereportUserGetGradesTable(int courseid) {
 		super(courseid);
 
 	}
 
 	@Override
 	public WSFunctions getWSFunction() {
-		return WSFunctions.OBTENER_TABLA_NOTAS;
+		return WSFunctions.GRADEREPORT_USER_GET_GRADES_TABLE;
 	}
 
 }

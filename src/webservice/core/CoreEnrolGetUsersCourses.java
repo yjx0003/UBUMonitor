@@ -1,18 +1,18 @@
 package webservice.core;
 
-import webservice.Courseid;
+import webservice.Userid;
 import webservice.WSFunctions;
 
-public class CoreEnrolGetUsersCourses extends Courseid {
+public class CoreEnrolGetUsersCourses extends Userid {
 
-	public CoreEnrolGetUsersCourses(int courseid) {
-		super(courseid);
+	public CoreEnrolGetUsersCourses(int userid) {
+		super(userid);
 	}
 
 	@Override
 	public WSFunctions getWSFunction() {
 	
-		return WSFunctions.OBTENER_CURSOS;
+		return WSFunctions.CORE_ENROL_GET_USERS_COURSES;
 	}
 
 	

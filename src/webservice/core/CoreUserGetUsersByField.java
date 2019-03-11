@@ -44,7 +44,7 @@ public class CoreUserGetUsersByField extends WebService {
 	@Override
 	public WSFunctions getWSFunction() {
 		
-		return WSFunctions.OBTENER_INFO_USUARIO;
+		return WSFunctions.CORE_USER_GET_USERS_BY_FIELD;
 	}
 	
 	@Override

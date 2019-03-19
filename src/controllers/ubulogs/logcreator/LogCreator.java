@@ -30,7 +30,7 @@ public class LogCreator {
 
 	
 
-	private LogCreator(Course course, ZoneId zoneId) {
+	public LogCreator(Course course, ZoneId zoneId) {
 
 		
 		ReferencesLog.setCourse(course);

@@ -36,7 +36,9 @@ public class UserFilesCmid extends ReferencesLog {
 
 	@Override
 	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
-		// TODO Auto-generated method stub
+		setUserById(log, ids.get(0));
+		//number of files ids.get(1);
+		setCourseModuleById(log, ids.get(2));
 
 	}
 

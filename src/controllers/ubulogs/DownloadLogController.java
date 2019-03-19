@@ -116,8 +116,8 @@ public class DownloadLogController {
 	 *            instancia de UBUGrades
 	 */
 	public DownloadLogController(UBUGrades ubugrades) {
-		this(ubugrades.getHost(), ubugrades.getSession().getUserName(), ubugrades.getSession().getPassword(),
-				ubugrades.getSession().getActualCourse().getId(), ubugrades.getUser().getTimezone());
+		this(ubugrades.getHost(), ubugrades.getUsername(), ubugrades.getPassword(),
+				ubugrades.getActualCourse().getId(), ubugrades.getUser().getTimezone());
 
 	}
 
@@ -156,7 +156,7 @@ public class DownloadLogController {
 
 	private ZoneId findServerTimezone() {
 		try {
-
+			logger.info("Buscando el tiempo del servidor desde el perfil del usuario.");
 			// vamos a la edicion del perfil de usuario para ver la zona horaria del
 			// servidor
 			Document d = Jsoup.connect(host + "/user/edit.php?lang=en").cookies(cookies).get();
@@ -264,7 +264,7 @@ public class DownloadLogController {
 			return response.body();
 
 		} catch (Exception e) {
-			logger.error("Error al descargar el log", e);
+			logger.error("Error al descargar el log a partir de los segundos: "+dateSeconds, e);
 		}
 		return null;
 	}

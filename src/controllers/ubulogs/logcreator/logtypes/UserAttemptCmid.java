@@ -35,7 +35,9 @@ public class UserAttemptCmid extends ReferencesLog {
 
 	@Override
 	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
-		// TODO Auto-generated method stub
+		setUserById(log, ids.get(0));
+		//TODO Habria que usar la funcion mod_quiz_get_user_attempts de moodle para recoger las ids de los intentos de quiz
+		setCourseModuleById(log, ids.get(2));
 
 	}
 

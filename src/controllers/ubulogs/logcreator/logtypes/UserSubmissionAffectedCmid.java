@@ -35,7 +35,10 @@ public class UserSubmissionAffectedCmid extends ReferencesLog {
 	
 	@Override
 	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
-		// TODO Auto-generated method stub
+		setUserById(log, ids.get(0));
+		//submission
+		setAffectedUserById(log, ids.get(2));
+		setCourseModuleById(log, ids.get(3));
 		
 	}
 

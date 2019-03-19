@@ -53,8 +53,8 @@ public class UserCmid extends ReferencesLog {
 
 	@Override
 	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
-		// TODO Auto-generated method stub
-
+		setUserById(log, ids.get(0));
+		setCourseModuleById(log, ids.get(1));
 	}
 
 }

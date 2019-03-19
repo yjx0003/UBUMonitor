@@ -1,7 +1,8 @@
 package model;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.List;
 
 import javafx.scene.image.Image;
@@ -18,12 +19,12 @@ public class MoodleUser {
 	private String userName;
 	private String fullName;
 	private String email;
-	private Date firstAccess;
-	private Date lastAccess;
+	private Instant firstAccess;
+	private Instant lastAccess;
 	private String city;
 	private String country;
 	private Image userPhoto;
-	private ArrayList<Course> courses;
+	private List<Course> courses;
 	private String timezone;
 
 	/**
@@ -54,8 +55,8 @@ public class MoodleUser {
 	 * @param country
 	 *            país
 	 */
-	public MoodleUser(int id, String userName, String fullName, String eMail, Date firstAccess, Date lastAccess,
-			String city, String country) {
+	public MoodleUser(int id, String userName, String fullName, String eMail, Instant firstAccess, Instant lastAccess,
+			String city, String country,String timezone) {
 		this.setId(id);
 		this.setUserName(userName);
 		this.setFullName(fullName);
@@ -64,6 +65,7 @@ public class MoodleUser {
 		this.setLastAccess(lastAccess);
 		this.setCity(city);
 		this.setCountry(country);
+		this.setTimezone(timezone);
 		this.courses = new ArrayList<>();
 	}
 
@@ -148,7 +150,7 @@ public class MoodleUser {
 	 * 
 	 * @return firstAccess
 	 */
-	public Date getFirstAccess() {
+	public Instant getFirstAccess() {
 		return this.firstAccess;
 	}
 
@@ -158,7 +160,7 @@ public class MoodleUser {
 	 * @param firstAccess
 	 * 		La fecha de primer acceso.
 	 */
-	public void setFirstAccess(Date firstAccess) {
+	public void setFirstAccess(Instant firstAccess) {
 		this.firstAccess = firstAccess;
 	}
 
@@ -167,7 +169,7 @@ public class MoodleUser {
 	 * 
 	 * @return lastAccess
 	 */
-	public Date getLastAccess() {
+	public Instant getLastAccess() {
 		return this.lastAccess;
 	}
 
@@ -177,7 +179,7 @@ public class MoodleUser {
 	 * @param lastAccess
 	 * 		La fecha de último acceso.
 	 */
-	public void setLastAccess(Date lastAccess) {
+	public void setLastAccess(Instant lastAccess) {
 		this.lastAccess = lastAccess;
 	}
 
@@ -248,11 +250,8 @@ public class MoodleUser {
 	 * @param courses
 	 * 		La lista de cursos.
 	 */
-	public void setCourses(ArrayList<Course> courses) {
-		this.courses.clear();
-		for (Course element : courses) {
-			this.courses.add(element);
-		}
+	public void setCourses(List<Course> courses) {
+		this.courses=courses;
 	}
 
 	public void setTimezone(String timezone) {

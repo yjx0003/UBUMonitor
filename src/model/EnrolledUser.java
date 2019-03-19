@@ -1,413 +1,678 @@
 package model;
 
-import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+public class EnrolledUser {
 
-/**
- * Clase que representa un usuario matriculado en una asignatura
- * 
- * @author Claudia Martínez Herrero
- * @version 1.0
- *
- */
-public class EnrolledUser implements Serializable{
-	
-	private static final long serialVersionUID = 1L;
-	
+	/**
+	 * ID of the user
+	 */
 	private int id;
-	private String firstName;
-	private String lastName;
+	/**
+	 * Optional. Username policy is defined in Moodle security config
+	 */
+	private String userName;
+	/**
+	 * Optional. The first name(s) of the user
+	 */
+	private String firstname;
+	/**
+	 * Optional. The family name of the user
+	 */
+	private String lastname;
+
+	/**
+	 * . The fullname of the user
+	 */
 	private String fullName;
-	private Date firstAccess;
-	private Date lastAccess;
+	/**
+	 * Optional. An email address
+	 */
+	private String email;
+	/**
+	 * Optional. Postal address
+	 */
+	private String address;
+
+	/**
+	 * Optional. Phone 1
+	 */
+	private String phone1;
+	/**
+	 * Optional. Phone 2
+	 */
+	private String phone2;
+
+	/**
+	 * Optional. icq number
+	 */
+	private String icq;
+
+	/**
+	 * Optional. skype id
+	 */
+	private String skype;
+	/**
+	 * Optional. yahoo id
+	 */
+	private String yahoo;
+	/**
+	 * Optional. aim id
+	 */
+	private String aim;
+	/**
+	 * Optional. msn number
+	 */
+	private String msn;
+	/**
+	 * Optional. department
+	 */
+	private String department;
+
+	/**
+	 * Optional. institution
+	 */
+	private String institution;
+
+	/**
+	 * Optional. An arbitrary ID code number perhaps from the institution
+	 */
+	private String idnumber;
+
+	/**
+	 * Optional. user interests (separated by commas)
+	 */
+	private String interests;
+
+	/**
+	 * Optional. first access to the site (0 if never)
+	 */
+	private Instant firstaccess;
+	/**
+	 * Optional. last access to the site (0 if never)
+	 */
+	private Instant lastaccess;
+
+	/**
+	 * Optional. User profile description
+	 */
 	private String description;
-	private String descriptionFormat;
+	/**
+	 * Optional. description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 =
+	 * MARKDOWN)
+	 */
+	private DescriptionFormat descriptionformat;
+
+	/**
+	 * Optional. Home city of the user
+	 */
 	private String city;
+	/**
+	 * Optional. URL of the user
+	 */
+	private String url;
+	/**
+	 * Optional. Home country code of the user, such as AU or CZ
+	 */
 	private String country;
-	private String profileImageUrlSmall;
-	private String profileImageUrl;
-	private ArrayList<Role> roles;
-	private ArrayList<Group> groups;
-	private ArrayList<Integer> courses;
-	private ArrayList<GradeReportLine> gradeReportLines;
+	/**
+	 * Optional. User image profile URL - small version
+	 */
+	private String profileimageurlsmall;
 
 	/**
-	 * Constructor de EnrolledUser
-	 * 
-	 * @param obj
-	 *            objeto JSON con la información del usuario
-	 *            
-	 * @throws JSONException 
+	 * Optional. User image profile URL - big version
 	 */
-	public EnrolledUser(JSONObject obj) throws JSONException {
-		this.id = obj.getInt("id");
+	private String profileimageurl;
+	/**
+	 * Optional. user groups
+	 */
+	private List<Group> groups;
 
-		this.firstName = obj.getString("firstname");
-		this.lastName = obj.getString("lastname");
-		this.fullName = obj.getString("fullname");
-		this.firstAccess = new Date(obj.getLong("firstaccess") * 1000);
-		this.lastAccess = new Date(obj.getLong("lastaccess") * 1000);
-		this.profileImageUrl = obj.getString("profileimageurl");
+	/**
+	 * Opcional. user roles
+	 */
+	private List<Role> roles;
+	
+	/**
+	 * Opcional. Courses where the user is enrolled - limited by which courses the user is able to see
+	 */
+	private List<Course> enrolledcourses;
+
+	private List<Log> logs;
+
+	private EnrolledUser(Builder builder) {
+		id = builder.id;
+		userName = builder.username;
+		firstname = builder.firstname;
+		lastname = builder.lastname;
+		fullName = builder.fullname;
+		email = builder.email;
+		address = builder.address;
+		phone1 = builder.phone1;
+		phone2 = builder.phone2;
+		icq = builder.icq;
+		skype = builder.skype;
+		yahoo = builder.yahoo;
+		aim = builder.aim;
+		msn = builder.msn;
+		department = builder.department;
+		institution = builder.institution;
+		idnumber = builder.idnumber;
+		interests = builder.interests;
+		firstaccess = builder.firstaccess;
+		lastaccess = builder.lastaccess;
+		description = builder.description;
+		descriptionformat = builder.descriptionformat;
+		city = builder.city;
+		url = builder.url;
+		country = builder.country;
+		profileimageurlsmall = builder.profileimageurlsmall;
+		profileimageurl = builder.profileimageurl;
 		
-		JSONArray roleArray = obj.getJSONArray("roles");
-		roles = new ArrayList<>();
-		for (int i = 0; i < roleArray.length(); i++) {
-			// Establece un rol con el id, name y shortname obtenido de cada
-			// JSONObject del JSONArray
-			Role rol = new Role(roleArray.getJSONObject(i).getInt("roleid"),
-					roleArray.getJSONObject(i).getString("name"),
-					roleArray.getJSONObject(i).getString("shortname"));
-			roles.add(rol);
-		}
-		
-		JSONArray groupArray = obj.getJSONArray("groups");
-		groups = new ArrayList<>();
-		for (int i = 0; i < groupArray.length(); i++) {
-			// Establece un grupo con el id, name y description obtenido de
-			// cada JSONObject del JSONArray
-			Group group = new Group(groupArray.getJSONObject(i).getInt("id"),
-					groupArray.getJSONObject(i).getString("name"),
-					groupArray.getJSONObject(i).getString("description"));
-			groups.add(group);
-		}
-		this.courses = new ArrayList<>();
+		groups = builder.groups;
+		roles = builder.roles;
+		enrolledcourses=builder.enrolledcourses;
 	}
 
-	/**
-	 * Devuelve el id del usuario.
-	 * 
-	 * @return id de usuario matriculado
-	 */
 	public int getId() {
-		return this.id;
+		return id;
 	}
 
-	/**
-	 * Modifica el id del usuario.
-	 * 
-	 * @param id
-	 * 		El id.
-	 */
 	public void setId(int id) {
 		this.id = id;
 	}
 
-	/**
-	 * Devuelve el nombre del usuario.
-	 * 
-	 * @return firstName
-	 */
-	public String getFirstName() {
-		return this.firstName;
+	public String getUserName() {
+		return userName;
 	}
 
-	/**
-	 * Modifica el nombre del usuario.
-	 * 
-	 * @param firstName
-	 * 		El nombre del usuario.
-	 */
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	public void setUserName(String username) {
+		this.userName = username;
 	}
 
-	/**
-	 * Devuelve el apellido del usuario
-	 * 
-	 * @return lastName
-	 */
-	public String getLastName() {
-		return this.lastName;
+	public String getFirstname() {
+		return firstname;
 	}
 
-	/**
-	 * Modifica el apellido del usuario.
-	 * 
-	 * @param lastName
-	 * 		El apellido del usuario.
-	 */
-	public void setlastName(String lastName) {
-		this.lastName = lastName;
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
 	}
 
-	/**
-	 * Devuelve el nombre completo del usuario.
-	 * 
-	 * @return fullName
-	 */
+	public String getLastname() {
+		return lastname;
+	}
+
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
+	}
+
 	public String getFullName() {
-		return this.fullName;
+		return fullName;
 	}
 
-	/**
-	 * Modifica el nombre completo del usuario.
-	 * 
-	 * @param fullName
-	 * 		El nombre completo.
-	 */
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
+	public void setFullName(String fullname) {
+		this.fullName = fullname;
 	}
 
-	/**
-	 * Devuelve el primer acceso del usuario a la plataforma.
-	 * 
-	 * @return firstAccess
-	 */
-	public Date getFirstAccess() {
-		return this.firstAccess;
+	public String getEmail() {
+		return email;
 	}
 
-	/**
-	 * Modifica el primer acceso del usuario a la plataforma.
-	 * 
-	 * @param firstAccess
-	 * 		La fecha de primer acceso.
-	 */
-	public void setFirstAccess(Date firstAccess) {
-		this.firstAccess = firstAccess;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
-	/**
-	 * Devuelve la última fecha de acceso a la plataforma.
-	 * 
-	 * @return lastAccess
-	 */
-	public Date getLastAccess() {
-		return this.lastAccess;
+	public String getAddress() {
+		return address;
 	}
 
-	/**
-	 * Modifica la última fecha de acceso a la plataforma.
-	 * 
-	 * @param lastAccess
-	 * 		La fecha de úlimo acceso.
-	 */
-	public void setLastAccess(Date lastAccess) {
-		this.lastAccess = lastAccess;
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
-	/**
-	 * Devuelve la descripción del usuario.
-	 * 
-	 * @return description
-	 */
+	public String getPhone1() {
+		return phone1;
+	}
+
+	public void setPhone1(String phone1) {
+		this.phone1 = phone1;
+	}
+
+	public String getPhone2() {
+		return phone2;
+	}
+
+	public void setPhone2(String phone2) {
+		this.phone2 = phone2;
+	}
+
+	public String getIcq() {
+		return icq;
+	}
+
+	public void setIcq(String icq) {
+		this.icq = icq;
+	}
+
+	public String getSkype() {
+		return skype;
+	}
+
+	public void setSkype(String skype) {
+		this.skype = skype;
+	}
+
+	public String getYahoo() {
+		return yahoo;
+	}
+
+	public void setYahoo(String yahoo) {
+		this.yahoo = yahoo;
+	}
+
+	public String getAim() {
+		return aim;
+	}
+
+	public void setAim(String aim) {
+		this.aim = aim;
+	}
+
+	public String getMsn() {
+		return msn;
+	}
+
+	public void setMsn(String msn) {
+		this.msn = msn;
+	}
+
+	public String getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+	public String getInstitution() {
+		return institution;
+	}
+
+	public void setInstitution(String institution) {
+		this.institution = institution;
+	}
+
+	public String getIdnumber() {
+		return idnumber;
+	}
+
+	public void setIdnumber(String idnumber) {
+		this.idnumber = idnumber;
+	}
+
+	public String getInterests() {
+		return interests;
+	}
+
+	public void setInterests(String interests) {
+		this.interests = interests;
+	}
+
+	public Instant getFirstaccess() {
+		return firstaccess;
+	}
+
+	public void setFirstaccess(Instant firstaccess) {
+		this.firstaccess = firstaccess;
+	}
+
+	public Instant getLastaccess() {
+		return lastaccess;
+	}
+
+	public void setLastaccess(Instant lastaccess) {
+		this.lastaccess = lastaccess;
+	}
+
 	public String getDescription() {
-		return this.description;
+		return description;
 	}
 
-	/**
-	 * Modifica la descripción del usuario.
-	 * 
-	 * @param description
-	 * 		La descripción del usuario.
-	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
-	/**
-	 * Devuelve el formato de la descripción.
-	 * 
-	 * @return descriptionFormat
-	 */
-	public String getDescriptionFormat() {
-		return this.descriptionFormat;
+	public DescriptionFormat getDescriptionformat() {
+		return descriptionformat;
 	}
 
-	/**
-	 * Modifica el formato de la descripción.
-	 * 
-	 * @param descriptionFormat
-	 * 		El formato de la descripción.
-	 */
-	public void setDescriptionFormat(String descriptionFormat) {
-		this.descriptionFormat = descriptionFormat;
+	public void setDescriptionformat(DescriptionFormat descriptionformat) {
+		this.descriptionformat = descriptionformat;
 	}
 
-	/**
-	 * Devuelve la ciudad del usuario.
-	 * 
-	 * @return city
-	 */
 	public String getCity() {
-		return this.city;
+		return city;
 	}
 
-	/**
-	 * Modifica la ciudad del usuario.
-	 * 
-	 * @param city
-	 * 		La ciudad.
-	 */
 	public void setCity(String city) {
 		this.city = city;
 	}
 
-	/**
-	 * Devuelve el país del usuario.
-	 * 
-	 * @return country
-	 */
-	public String getCountry() {
-		return this.country;
+	public String getUrl() {
+		return url;
 	}
 
-	/**
-	 * Modifica el país del usuario.
-	 * 
-	 * @param country
-	 * 		El país.
-	 */
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
 	public void setCountry(String country) {
 		this.country = country;
 	}
 
-	/**
-	 * Devuelve la url de la foto de usuario en icono.
-	 * 
-	 * @return profileImageUrlSmall
-	 */
-	public String getProfileImageUrlSmall() {
-		return this.profileImageUrlSmall;
+	public String getProfileimageurlsmall() {
+		return profileimageurlsmall;
 	}
 
-	/**
-	 * Modifica la url de la imagen de usuario en icono.
-	 * 
-	 * @param profileImageUrlSmall
-	 * 		La url de la imagen.
-	 */
-	public void setProfileImageUrlSmall(String profileImageUrlSmall) {
-		this.profileImageUrlSmall = profileImageUrlSmall;
+	public void setProfileimageurlsmall(String profileimageurlsmall) {
+		this.profileimageurlsmall = profileimageurlsmall;
 	}
 
-	/**
-	 * Devuelve la url de la imagen del usuario.
-	 * 
-	 * @return profileImageUrl
-	 */
-	public String getProfileImageUrl() {
-		return this.profileImageUrl;
+	public String getProfileimageurl() {
+		return profileimageurl;
 	}
 
-	/**
-	 * Modifica la url de la imagen del usuario.
-	 * 
-	 * @param profileImageUrl
-	 * 		La url de la imagen.
-	 */
-	public void setProfileImageUrl(String profileImageUrl) {
-		this.profileImageUrl = profileImageUrl;
+	public void setProfileimageurl(String profileimageurl) {
+		this.profileimageurl = profileimageurl;
 	}
 
-	/**
-	 * Devuelve la lista de roles que tiene el usuario.
-	 * 
-	 * @return roles
-	 */
-	public List<Role> getRoles() {
-		return this.roles;
-	}
-
-	/**
-	 * Modifica la lista de roles que tiene el usuario.
-	 * 
-	 * @param roles
-	 * 		La lista de roles.
-	 */
-	public void setRoles(List<Role> roles) {
-		this.roles.clear();
-		for (Role role : roles) {
-			this.roles.add(role);
-		}
-	}
-
-	/**
-	 * Devuelve la lista de grupos en los que está el usuario.
-	 * 
-	 * @return groups
-	 */
 	public List<Group> getGroups() {
-		return this.groups;
+		return groups;
 	}
 
-	/**
-	 * Modifica la lista de grupos en los que está el usuario.
-	 * 
-	 * @param groups
-	 * 		La lista de grupos.
-	 */
 	public void setGroups(List<Group> groups) {
-		this.groups.clear();
-		for (Group group : groups) {
-			this.groups.add(group);
-		}
+		this.groups = groups;
 	}
 
-	/**
-	 * Devuelve la lista de cursos en los que está matriculado el usuario.
-	 * 
-	 * @return courses
-	 */
-	public List<Integer> getEnrolledCourses() {
-		return this.courses;
+	public List<Role> getRoles() {
+		return roles;
 	}
 
-	/**
-	 * Modifica la lista de cursos en los que está matriculado el usuario.
-	 * 
-	 * @param courses
-	 * 		La lista de cursos.
-	 */
-	public void setEnrolledCourses(List<Integer> courses) {
-		this.courses.clear();
-		for (Integer course : courses) {
-			this.courses.add(course);
-		}
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
 	}
 	
-	/**
-	 * Devuelve un GradeReportLine según el id.
-	 * 
-	 * @param id
-	 * 		El id del GradeReportLine.
-	 * @return
-	 * 		El GradeReportLine.
-	 */
-	public GradeReportLine getGradeReportLine(int id) {
-		for(GradeReportLine grl : this.gradeReportLines) {
-			if(grl.getId() == id) {
-				return grl;
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * Devuelve todos los GradeReportLines del usuario.
-	 * 
-	 * @return
-	 * 		La lista de GRL.
-	 */
-	public List<GradeReportLine> getAllGradeReportLines() {
-		return gradeReportLines;
-	}
-	
-	public void setAllGradeReportLines(List<GradeReportLine> gradeReportLines) {
-		this.gradeReportLines = (ArrayList<GradeReportLine>) gradeReportLines;
+
+	public List<Course> getEnrolledcourses() {
+		return enrolledcourses;
 	}
 
-	/**
-	 * Convierte el EnrolledUser a un String con su nombre.
-	 */
+	public void setEnrolledcourses(List<Course> enrolledcourses) {
+		this.enrolledcourses = enrolledcourses;
+	}
+	
+	public void addLog(Log log) {
+		this.logs.add(log);
+	}
+
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EnrolledUser other = (EnrolledUser) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+
+	@Override
 	public String toString() {
-		return this.getLastName() + ", " + this.getFirstName();
+		return lastname+", "+firstname;
 	}
+	
+	public static Builder newBuilder() {
+		return new Builder();
+	}
+
+	public static class Builder {
+
+	
+		private int id;
+		private String username;
+		private String firstname;
+		private String lastname;
+		private String fullname;
+		private String email;
+		private String address;
+		private String phone1;
+		private String phone2;
+		private String icq;
+		private String skype;
+		private String yahoo;
+		private String aim;
+		private String msn;
+		private String department;
+		private String institution;
+		private String idnumber;
+		private String interests;
+		private Instant firstaccess;
+		private Instant lastaccess;
+		private String description;
+		private DescriptionFormat descriptionformat;
+		private String city;
+		private String url;
+		private String country;
+		private String profileimageurlsmall;
+		private String profileimageurl;
+		private List<Group> groups;
+		private List<Role> roles;
+		private List<Course> enrolledcourses;
+		private List<Log> logs;
+		
+		public Builder() {
+			groups=new ArrayList<Group>();
+			roles=new ArrayList<Role>();
+			enrolledcourses=new ArrayList<Course>();
+			logs=new ArrayList<Log>();
+		}
+		public Builder setId(int id) {
+			this.id = id;
+			return this;
+		}
+
+		public Builder setUsername(String username) {
+			this.username = username;
+			return this;
+		}
+
+		public Builder setFirstname(String firstname) {
+			this.firstname = firstname;
+			return this;
+		}
+
+		public Builder setLastname(String lastname) {
+			this.lastname = lastname;
+			return this;
+		}
+
+		public Builder setFullname(String fullname) {
+			this.fullname = fullname;
+			return this;
+		}
+
+		public Builder setEmail(String email) {
+			this.email = email;
+			return this;
+		}
+
+		public Builder setAddress(String address) {
+			this.address = address;
+			return this;
+		}
+
+		public Builder setPhone1(String phone1) {
+			this.phone1 = phone1;
+			return this;
+		}
+
+		public Builder setPhone2(String phone2) {
+			this.phone2 = phone2;
+			return this;
+		}
+
+		public Builder setIcq(String icq) {
+			this.icq = icq;
+			return this;
+		}
+
+		public Builder setSkype(String skype) {
+			this.skype = skype;
+			return this;
+		}
+
+		public Builder setYahoo(String yahoo) {
+			this.yahoo = yahoo;
+			return this;
+		}
+
+		public Builder setAim(String aim) {
+			this.aim = aim;
+			return this;
+		}
+
+		public Builder setMsn(String msn) {
+			this.msn = msn;
+			return this;
+		}
+
+		public Builder setDepartment(String department) {
+			this.department = department;
+			return this;
+		}
+
+		public Builder setInstitution(String institution) {
+			this.institution = institution;
+			return this;
+		}
+
+		public Builder setIdnumber(String idnumber) {
+			this.idnumber = idnumber;
+			return this;
+		}
+
+		public Builder setInterests(String interests) {
+			this.interests = interests;
+			return this;
+		}
+
+		public Builder setFirstaccess(Instant firstaccess) {
+			this.firstaccess = firstaccess;
+			return this;
+		}
+
+		public Builder setLastaccess(Instant lastaccess) {
+			this.lastaccess = lastaccess;
+			return this;
+		}
+
+		public Builder setDescription(String description) {
+			this.description = description;
+			return this;
+		}
+
+		public Builder setDescriptionformat(DescriptionFormat descriptionformat) {
+			this.descriptionformat = descriptionformat;
+			return this;
+		}
+
+		public Builder setCity(String city) {
+			this.city = city;
+			return this;
+		}
+
+		public Builder setUrl(String url) {
+			this.url = url;
+			return this;
+		}
+
+		public Builder setCountry(String country) {
+			this.country = country;
+			return this;
+		}
+
+		public Builder setProfileimageurlsmall(String profileimageurlsmall) {
+			this.profileimageurlsmall = profileimageurlsmall;
+			return this;
+		}
+
+		public Builder setProfileimageurl(String profileimageurl) {
+			this.profileimageurl = profileimageurl;
+			return this;
+		}
+
+		public Builder setRoles(List<Role> roles) {
+			this.roles = roles;
+			return this;
+		}
+
+		public Builder setGroups(List<Group> groups) {
+			this.groups = groups;
+			return this;
+		}
+		
+
+		public Builder setEnrolledcourses(List<Course> enrolledcourses) {
+			this.enrolledcourses = enrolledcourses;
+			return this;
+		}
+
+
+		public Builder setFirstaccess(int firstaccess) {
+			this.firstaccess=Instant.ofEpochSecond(firstaccess);
+			return this;
+		}
+
+		public Builder setLastaccess(int lastaccess) {
+			this.lastaccess=Instant.ofEpochSecond(lastaccess);
+			return this;
+		}
+
+		public Builder setDescriptionformat(int descriptionformat) {
+			this.descriptionformat=DescriptionFormat.get(descriptionformat);
+			return this;
+		}
+		
+		public Builder setLogs(List<Log> logs) {
+			this.logs = logs;
+			return this;
+		}
+		
+		public EnrolledUser build() {
+			return new EnrolledUser(this);
+		}
+
+	}
+
+
+
 }

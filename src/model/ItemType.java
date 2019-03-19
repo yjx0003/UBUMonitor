@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum ItemType {
-
+	
+	MOD("mod"),
 	MANUAL("manual"), 
 	CATEGORY("category");
 

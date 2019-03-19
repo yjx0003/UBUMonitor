@@ -2,6 +2,8 @@ package model;
 
 import java.util.ResourceBundle;
 
+import controllers.ubugrades.GettersUBUGrades;
+import controllers.ubugrades.UbuGradesFactory;
 import javafx.stage.Stage;
 
 /**
@@ -24,10 +26,10 @@ public class UBUGrades {
 	 * Stage actual.
 	 */
 	private Stage stage;
-	/**
-	 * Session actual.
-	 */
-	private Session session;
+	
+	private String password;
+	private String username;
+	private Course actualCourse;
 	/**
 	 * Usuario actual.
 	 */
@@ -82,18 +84,29 @@ public class UBUGrades {
 		this.stage = stage;
 	}
 
-	/**
-	 * @return the session
-	 */
-	public Session getSession() {
-		return session;
+
+	public String getPassword() {
+		return password;
 	}
 
-	/**
-	 * @param session the session to set
-	 */
-	public void setSession(Session session) {
-		this.session = session;
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public Course getActualCourse() {
+		return actualCourse;
+	}
+
+	public void setActualCourse(Course actualCourse) {
+		this.actualCourse = actualCourse;
 	}
 
 	/**

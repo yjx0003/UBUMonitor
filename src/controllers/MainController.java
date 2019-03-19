@@ -58,13 +58,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.EnrolledUser;
-import model.GradeReportLine;
+import model.GradeItem;
 import model.Group;
 import model.Role;
 import model.Stats;
 import model.UBUGrades;
 import netscape.javascript.JSException;
-import webservice.CourseWS;
 
 /**
  * Clase controlador de la ventana principal
@@ -111,8 +110,8 @@ public class MainController implements Initializable {
 	String patternParticipants = "";
 
 	@FXML // Vista en árbol de actividades
-	public TreeView<GradeReportLine> tvwGradeReport;
-	ArrayList<GradeReportLine> gradeReportList;
+	public TreeView<GradeItem> tvwGradeReport;
+	ArrayList<GradeItem> gradeReportList;
 
 	@FXML // Entrada de filtro de actividades por patrón
 	public TextField tfdItems;
@@ -233,7 +232,7 @@ public class MainController implements Initializable {
 			enrList = FXCollections.observableArrayList(nameUsers);
 
 			//////////////////////////////////////////////////////////////////////////
-			// Manejo de actividades (TreeView<GradeReportLine>):
+			// Manejo de actividades (TreeView<GradeItem>):
 			// Manejador de eventos para las actividades.
 			EventHandler<ActionEvent> actionActivity = ((ActionEvent event) -> {
 				// Obtenemos el item que se ha seleccionado
@@ -300,13 +299,13 @@ public class MainController implements Initializable {
 			listParticipants.setItems(enrList);
 
 			// Establecemos la estructura en árbol del calificador
-			List<GradeReportLine> grcl = ubuGrades.getSession().getActualCourse().getGradeReportLines();
+			List<GradeItem> grcl = ubuGrades.getSession().getActualCourse().getGradeItems();
 			// Establecemos la raiz del Treeview
-			TreeItem<GradeReportLine> root = new TreeItem<>(grcl.get(0));
+			TreeItem<GradeItem> root = new TreeItem<>(grcl.get(0));
 			MainController.setIcon(root);
 			// Llamamos recursivamente para llenar el Treeview
 			for (int k = 0; k < grcl.get(0).getChildren().size(); k++) {
-				TreeItem<GradeReportLine> item = new TreeItem<>(grcl.get(0).getChildren().get(k));
+				TreeItem<GradeItem> item = new TreeItem<>(grcl.get(0).getChildren().get(k));
 				MainController.setIcon(item);
 				root.getChildren().add(item);
 				root.setExpanded(true);
@@ -322,7 +321,7 @@ public class MainController implements Initializable {
 
 			// Mostramos nº participantes
 			lblCountParticipants.setText(ubuGrades.getResourceBundle().getString("label.participants") + " "
-					+ ubuGrades.getSession().getActualCourse().getEnrolledUsersCount());
+					+ ubuGrades.getActualCourse().getEnrolledUsersCount());
 
 			// Mostramos Usuario logeado y su imagen
 			lblActualUser.setText(
@@ -405,7 +404,7 @@ public class MainController implements Initializable {
 	}
 
 	/**
-	 * Rellena el árbol de actividades (GradeReportLines). Obtiene los hijos de la
+	 * Rellena el árbol de actividades (GradeItems). Obtiene los hijos de la
 	 * línea pasada por parámetro, los transforma en treeitems y los establece como
 	 * hijos del elemento treeItem equivalente de line
 	 * 
@@ -414,9 +413,9 @@ public class MainController implements Initializable {
 	 * @param line
 	 *            La linea con los elementos a añadir.
 	 */
-	public void setTreeview(TreeItem<GradeReportLine> parent, GradeReportLine line) {
+	public void setTreeview(TreeItem<GradeItem> parent, GradeItem line) {
 		for (int j = 0; j < line.getChildren().size(); j++) {
-			TreeItem<GradeReportLine> item = new TreeItem<>(line.getChildren().get(j));
+			TreeItem<GradeItem> item = new TreeItem<>(line.getChildren().get(j));
 			MainController.setIcon(item);
 			parent.getChildren().add(item);
 			parent.setExpanded(true);
@@ -430,9 +429,9 @@ public class MainController implements Initializable {
 	 * @param item
 	 *            El item al que añadir el icono.
 	 */
-	public static void setIcon(TreeItem<GradeReportLine> item) {
+	public static void setIcon(TreeItem<GradeItem> item) {
 		try {
-			item.setGraphic((Node) new ImageView(new Image("/img/" + item.getValue().getNameType() + ".png")));
+			item.setGraphic((Node) new ImageView(new Image("/img/" + item.getValue().getItemtype() + ".png")));
 		} catch (Exception e) {
 			logger.error("No se ha podido cargar la imagen del elemento " + item + " : {}", e);
 		}
@@ -444,15 +443,15 @@ public class MainController implements Initializable {
 	 */
 	public void filterCalifications() {
 		try {
-			List<GradeReportLine> grcl = ubuGrades.getSession().getActualCourse().getGradeReportLines();
+			List<GradeItem> grcl = ubuGrades.getSession().getActualCourse().getGradeItems();
 			// Establecemos la raiz del Treeview
-			TreeItem<GradeReportLine> root = new TreeItem<>(grcl.get(0));
+			TreeItem<GradeItem> root = new TreeItem<>(grcl.get(0));
 			MainController.setIcon(root);
 			// Llamamos recursivamente para llenar el Treeview
 			if (filterType.equals(TODOS) && patternCalifications.equals("")) {
 				// Sin filtro y sin patrón
 				for (int k = 0; k < grcl.get(0).getChildren().size(); k++) {
-					TreeItem<GradeReportLine> item = new TreeItem<>(grcl.get(0).getChildren().get(k));
+					TreeItem<GradeItem> item = new TreeItem<>(grcl.get(0).getChildren().get(k));
 					MainController.setIcon(item);
 					root.getChildren().add(item);
 					root.setExpanded(true);
@@ -460,7 +459,7 @@ public class MainController implements Initializable {
 				}
 			} else { // Con filtro
 				for (int k = 1; k < grcl.size(); k++) {
-					TreeItem<GradeReportLine> item = new TreeItem<>(grcl.get(k));
+					TreeItem<GradeItem> item = new TreeItem<>(grcl.get(k));
 					boolean activityYes = false;
 					if (grcl.get(k).getNameType().equals(filterType) || filterType.equals(TODOS)) {
 						activityYes = true;
@@ -656,14 +655,14 @@ public class MainController implements Initializable {
 		tvwGradeReport.refresh(); // FIX RMS
 
 		ObservableList<EnrolledUser> selectedParticipants = listParticipants.getSelectionModel().getSelectedItems();
-		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
+		ObservableList<TreeItem<GradeItem>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
 
 		StringBuilder tableData = new StringBuilder();
 		tableData.append("[['" + ubuGrades.getResourceBundle().getString("chartlabel.name") + "'");
 		Boolean firstElement = true;
 
 		// Por cada ítem seleccionado lo añadimos como label
-		for (TreeItem<GradeReportLine> structTree : selectedGRL) {
+		for (TreeItem<GradeItem> structTree : selectedGRL) {
 			tableData.append(",'" + escapeJavaScriptText(structTree.getValue().getName()) + "'");
 		}
 		tableData.append("],");
@@ -678,8 +677,8 @@ public class MainController implements Initializable {
 				tableData.append(",['" + escapeJavaScriptText(actualUser.getFullName()) + "'");
 			}
 			// Por cada ítem seleccionado
-			for (TreeItem<GradeReportLine> structTree : selectedGRL) {
-				GradeReportLine actualLine = actualUser.getGradeReportLine(structTree.getValue().getId());
+			for (TreeItem<GradeItem> structTree : selectedGRL) {
+				GradeItem actualLine = actualUser.getGradeItem(structTree.getValue().getId());
 				String calculatedGrade = actualLine.getGrade();
 				// Si es numérico lo graficamos y lo mostramos en la tabla
 				if (!Float.isNaN(CourseWS.getFloat(calculatedGrade))) {
@@ -711,7 +710,7 @@ public class MainController implements Initializable {
 		// Añadimos la media general
 		StringBuilder tableData = new StringBuilder();
 		tableData.append(",['" + ubuGrades.getResourceBundle().getString("chartlabel.tableMean") + "'");
-		for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
+		for (TreeItem<GradeItem> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 			String grade = stats.getElementMean(stats.getGeneralStats(), structTree.getValue().getId());
 			if (grade.equals("NaN")) {
 				tableData.append(",{v:0, f:'NaN'}");
@@ -726,7 +725,7 @@ public class MainController implements Initializable {
 			if (!grupo.getText().equals(TODOS)) {
 				tableData.append(",['" + ubuGrades.getResourceBundle().getString("chartlabel.tableGroupMean") + " "
 						+ grupo.getText() + "'");
-				for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
+				for (TreeItem<GradeItem> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 					String grade = stats.getElementMean(stats.getGroupStats(grupo.getText()),
 							structTree.getValue().getId());
 					if (grade.equals("NaN")) {
@@ -754,7 +753,7 @@ public class MainController implements Initializable {
 		tvwGradeReport.refresh(); // FIX RMS
 
 		ObservableList<EnrolledUser> selectedParticipants = listParticipants.getSelectionModel().getSelectedItems();
-		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
+		ObservableList<TreeItem<GradeItem>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
 		int countA = 0;
 		boolean firstUser = true;
 		boolean firstGrade = true;
@@ -764,7 +763,8 @@ public class MainController implements Initializable {
 		logger.debug("Selected participant: {}", selectedParticipants.size());
 		// Por cada usuario seleccionado
 		for (EnrolledUser actualUser : selectedParticipants) {
-			if (actualUser != null) { // BUG when we deselect the penultimate student, some student can have null value. TODO
+			if (actualUser != null) { // BUG when we deselect the penultimate student, some student can have null
+										// value. TODO
 				// TODO logger.debug("Enroller user: {}", actualUser.getFirstName());
 				String actualUserFullName = actualUser.getFullName();
 				// Añadimos el nombre del alumno al dataset
@@ -777,15 +777,15 @@ public class MainController implements Initializable {
 				int countB = 1;
 				firstGrade = true;
 				// Por cada ítem seleccionado
-				for (TreeItem<GradeReportLine> structTree : selectedGRL) {
+				for (TreeItem<GradeItem> structTree : selectedGRL) {
 					countA++;
 					try {
-						GradeReportLine actualLine = actualUser.getGradeReportLine(structTree.getValue().getId());
+						GradeItem actualLine = actualUser.getGradeItem(structTree.getValue().getId());
 						String calculatedGrade;
 						if (countA == countB) {
 							countB++;
-							// Añadidimos el nombre del elemento como label							
-							if (firstGrade) {								
+							// Añadidimos el nombre del elemento como label
+							if (firstGrade) {
 								labels.append("'" + escapeJavaScriptText(structTree.getValue().getName()) + "'");
 							} else {
 								labels.append(",'" + escapeJavaScriptText(structTree.getValue().getName()) + "'");
@@ -813,10 +813,10 @@ public class MainController implements Initializable {
 		}
 		return "{ labels:[" + labels + "],datasets: [" + dataSet + "]}";
 	}
-	
-	
+
 	/**
-	 * Escape the commas in the text. For example 'Law D'Hont' is changed to 'Law D\'Hont'.
+	 * Escape the commas in the text. For example 'Law D'Hont' is changed to 'Law
+	 * D\'Hont'.
 	 *
 	 * @author Raúl Marticorena
 	 * @since 1.5.3
@@ -854,9 +854,9 @@ public class MainController implements Initializable {
 		boolean firstGrade = true;
 		int gradeId;
 
-		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
+		ObservableList<TreeItem<GradeItem>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
 
-		for (TreeItem<GradeReportLine> structTree : selectedGRL) {
+		for (TreeItem<GradeItem> structTree : selectedGRL) {
 			if (firstLabel) {
 				labels.append("'" + escapeJavaScriptText(structTree.getValue().getName()) + "'");
 				firstLabel = false;
@@ -905,7 +905,7 @@ public class MainController implements Initializable {
 		StringBuilder dataset = new StringBuilder();
 		int gradeId;
 
-		ObservableList<TreeItem<GradeReportLine>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
+		ObservableList<TreeItem<GradeItem>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
 
 		for (int i = 0; i < selectedGRL.size(); i++) {
 			gradeId = selectedGRL.get(i).getValue().getId();
@@ -965,7 +965,7 @@ public class MainController implements Initializable {
 			color = "rgba(0, 150, 136, ";
 		}
 
-		for (TreeItem<GradeReportLine> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
+		for (TreeItem<GradeItem> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 			if (firstElement) {
 				meanDataset.append(stats.getElementMean(meanStats, structTree.getValue().getId()));
 				firstElement = false;

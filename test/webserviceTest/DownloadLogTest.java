@@ -82,6 +82,15 @@ public class DownloadLogTest {
 		List<String> stringLog = log.downloadLog(fecha, LocalDateTime.now());
 		saveInFile(PATH + "sinceToNow", String.join("\n", stringLog));
 	}
+	
+	
+	@Test
+	public void downloadLog() {
+		System.out.println("Descargando log desde 15/02/2019 18:40 hasta ahora");
+		LocalDateTime fecha = LocalDateTime.of(2019, 2, 15, 18, 40);
+		String stringLog = log.downloadLog(fecha);
+		System.out.println(stringLog);
+	}
 
 	@Test
 	public void downloadLogUsingTimezone() throws FileNotFoundException, IOException {

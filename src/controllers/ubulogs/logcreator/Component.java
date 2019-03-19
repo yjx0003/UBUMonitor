@@ -40,7 +40,7 @@ public enum Component {
 	static {
 		map=new HashMap<String,Component>();
 		for(Component component:Component.values()) {
-			map.put(component.toString(), component);
+			map.put(component.name, component);
 		}
 	}
 	public static Component get(String name) {

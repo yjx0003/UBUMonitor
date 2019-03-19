@@ -38,7 +38,10 @@ public class UserOverrideCmidAffected extends ReferencesLog {
 	
 	@Override
 	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
-	
+		setUserById(log, ids.get(0));
+		//TODO override id
+		setCourseModuleById(log, ids.get(1));
+		setAffectedUserById(log, ids.get(2));
 
 	}
 

@@ -36,8 +36,9 @@ public class UserAffectedGroup extends ReferencesLog {
 
 	@Override
 	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
-		// TODO Auto-generated method stub
-
+		setUserById(log, ids.get(0));
+		setAffectedUserById(log, ids.get(1));
+		
 	}
 
 }

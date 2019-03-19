@@ -33,7 +33,7 @@ public class Course extends ReferencesLog {
 	}
 	@Override
 	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
-		// TODO Auto-generated method stub
+		// El curso ya se enlaza al crear el log en createLogWithBasicAttributes de la clase ReferencesLog
 
 	}
 

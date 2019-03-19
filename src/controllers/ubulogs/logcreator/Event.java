@@ -98,7 +98,7 @@ public enum Event {
 	static {
 		map=new HashMap<String,Event>();
 		for(Event eventName:Event.values()) {
-			map.put(eventName.toString(), eventName);
+			map.put(eventName.name, eventName);
 		}
 	}
 	

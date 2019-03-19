@@ -34,7 +34,8 @@ public class UserGroup extends  ReferencesLog{
 	
 	@Override
 	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
-		// TODO Auto-generated method stub
+		setUserById(log, ids.get(0));
+		//TODO group id
 		
 	}
 

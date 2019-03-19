@@ -32,8 +32,10 @@ public class UserAffectedCourse extends ReferencesLog{
 	}
 	@Override
 	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
-		// TODO Auto-generated method stub
-		
+		setUserById(log, ids.get(0));
+		setAffectedUserById(log, ids.get(1));
+		// El curso ya se enlaza al crear el log en createLogWithBasicAttributes de la clase ReferencesLog
+
 	}
 
 }

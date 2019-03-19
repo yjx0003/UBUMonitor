@@ -34,8 +34,8 @@ public class UserCalendar extends ReferencesLog {
 	}
 	@Override
 	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
-		// TODO Auto-generated method stub
-
+		setUserById(log, ids.get(0));
+		//TODO core_calendar_get_calendar_events
 	}
 
 }

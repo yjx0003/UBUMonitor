@@ -2,10 +2,10 @@ package webservice.mod;
 
 import java.util.Set;
 
-import webservice.Coursesids;
+import webservice.ParametersCoursesids;
 import webservice.WSFunctions;
 
-public class ModQuizGetQuizzesByCourses extends Coursesids {
+public class ModQuizGetQuizzesByCourses extends ParametersCoursesids {
 
 	public ModQuizGetQuizzesByCourses() {
 		super();

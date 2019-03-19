@@ -1,9 +1,9 @@
 package webservice.core;
 
-import webservice.Userid;
+import webservice.ParametersUserid;
 import webservice.WSFunctions;
 
-public class CoreEnrolGetUsersCourses extends Userid {
+public class CoreEnrolGetUsersCourses extends ParametersUserid {
 
 	public CoreEnrolGetUsersCourses(int userid) {
 		super(userid);

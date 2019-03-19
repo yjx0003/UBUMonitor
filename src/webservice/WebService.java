@@ -49,7 +49,7 @@ public abstract class WebService {
 		initialize(host, token);
 	}
 
-	public static void checkToken() {
+	private static void checkToken() {
 		if (token == null) {
 			throw new IllegalStateException(
 					"Token no configurado, llama al metodo setToken de la clase WebService para configurarlo.");
@@ -69,7 +69,7 @@ public abstract class WebService {
 
 		String url = urlWithToken + getWSFunction() + parameters;
 
-		logger.info("Usando la url de moodle web service: " + getWSFunction() + parameters);
+		logger.info("Usando la url de moodle web service: " + "&wsfunction=" + getWSFunction() + parameters);
 
 		return getContentWithJsoup(url);
 
@@ -84,47 +84,53 @@ public abstract class WebService {
 	protected abstract void appendToUrlParameters();
 
 	protected void appendToUrlUserid(int userid) {
-		parameters += "&userid=" + userid;
+		if (userid != 0)
+			parameters += "&userid=" + userid;
 	}
 
 	protected void appendToUrlCourseid(int courseid) {
-		parameters += "&courseid=" + courseid;
+		if (courseid != 0)
+			parameters += "&courseid=" + courseid;
 	}
 
 	protected void appendToUrlCoursesids(Set<Integer> coursesids) {
-
-		for (Integer courseid : coursesids) {
-			parameters += "&courseids[]=" + courseid;
+		if (coursesids != null) {
+			for (Integer courseid : coursesids) {
+				parameters += "&courseids[]=" + courseid;
+			}
 		}
 	}
 
 	protected void appendToUrlGruopid(int groupid) {
-		parameters += "&groupid=" + groupid;
+		if (groupid != 0)
+			parameters += "&groupid=" + groupid;
 	}
 
 	protected void appendToUrlValues(Set<String> values) {
-
-		for (String value : values) {
-			parameters += "&values[]=" + value;
+		if (values != null) {
+			for (String value : values) {
+				parameters += "&values[]=" + value;
+			}
 		}
 	}
 
 	protected void appendToUrlField(Field field) {
-		parameters += "&field=" + field;
+		if (field != null)
+			parameters += "&field=" + field;
 	}
 
 	protected void appendToUrlOptions(int index, String name, String value) {
-		parameters+="&options["+index+"][name]="+name+"&options["+index+"][value]="+value;
+		parameters += "&options[" + index + "][name]=" + name + "&options[" + index + "][value]=" + value;
 	}
 
 	protected void appendToUrlOptions(int index, String name, int value) {
-		parameters+="&options["+index+"][name]="+name+"&options["+index+"][value]="+value;
+		parameters += "&options[" + index + "][name]=" + name + "&options[" + index + "][value]=" + value;
 	}
 
-	protected void appendToUrlOptions(int index, String name,boolean value) {
-		parameters+="&options["+index+"][name]="+name+"&options["+index+"][value]="+value;
+	protected void appendToUrlOptions(int index, String name, boolean value) {
+		parameters += "&options[" + index + "][name]=" + name + "&options[" + index + "][value]=" + value;
 	}
-	
+
 	private static String getContentWithJsoup(String url) throws IOException {
 		return Jsoup.connect(url).ignoreContentType(true).execute().body();
 	}

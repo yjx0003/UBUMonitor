@@ -3,10 +3,10 @@ package webservice.core;
 import java.util.HashSet;
 import java.util.Set;
 
-import webservice.Courseid;
+import webservice.ParametersCourseid;
 import webservice.WSFunctions;
 
-public class CoreEnrolGetEnrolledUsers extends Courseid {
+public class CoreEnrolGetEnrolledUsers extends ParametersCourseid {
 
 	/**
 	 * return only users with this capability. This option requires
@@ -63,7 +63,7 @@ public class CoreEnrolGetEnrolledUsers extends Courseid {
 		super(courseid);
 	}
 
-	public CoreEnrolGetEnrolledUsers(Builder builder) {
+	private CoreEnrolGetEnrolledUsers(Builder builder) {
 		super(builder.courseid);
 		withcapability = builder.withcapability;
 		groupid = builder.groupid;
@@ -174,7 +174,9 @@ public class CoreEnrolGetEnrolledUsers extends Courseid {
 		this.sortdirection = sortdirection;
 	}
 
-
+	public static Builder newBuilder(int courseid) {
+		return new Builder(courseid);
+	}
 
 	public static class Builder {
 

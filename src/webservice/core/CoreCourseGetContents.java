@@ -1,9 +1,9 @@
 package webservice.core;
 
-import webservice.Courseid;
+import webservice.ParametersCourseid;
 import webservice.WSFunctions;
 
-public class CoreCourseGetContents extends Courseid {
+public class CoreCourseGetContents extends ParametersCourseid {
 	/**
 	 * Do not return modules, return only the sections structure
 	 */
@@ -51,7 +51,7 @@ public class CoreCourseGetContents extends Courseid {
 
 	}
 
-	public CoreCourseGetContents(Builder builder) {
+	private CoreCourseGetContents(Builder builder) {
 		super(builder.courseid);
 
 		excludemodules = builder.excludemodules;
@@ -94,7 +94,7 @@ public class CoreCourseGetContents extends Courseid {
 	}
 
 	private void appendIfPossible(String name, boolean value) {
-		if (!value)
+		if (value)
 			appendToUrlOptions(index++, name, value);
 	}
 
@@ -166,6 +166,10 @@ public class CoreCourseGetContents extends Courseid {
 
 	public void setModid(int modid) {
 		this.modid = modid;
+	}
+	
+	public static Builder newBuilder(int courseid) {
+		return new Builder(courseid);
 	}
 
 	public static class Builder {

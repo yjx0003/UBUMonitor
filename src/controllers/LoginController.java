@@ -12,7 +12,7 @@ import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.beans.value.ChangeListener;
+import controllers.ubugrades.CreatorUBUGradesController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -32,9 +32,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import model.MoodleUser;
-import model.Session;
 import model.UBUGrades;
-import webservice.MoodleUserWS;
 import webservice.WebService;
 
 /**
@@ -47,7 +45,7 @@ import webservice.WebService;
 public class LoginController implements Initializable {
 
 	static final Logger logger = LoggerFactory.getLogger(LoginController.class);
-	
+
 	private UBUGrades ubuGrades = UBUGrades.getInstance();
 
 	@FXML
@@ -64,14 +62,14 @@ public class LoginController implements Initializable {
 	private ProgressBar progressBar;
 	@FXML
 	private ChoiceBox<String> languageSelector;
-	
-	//Host por defecto
+
+	// Host por defecto
 	private static final String HOST = "https://ubuvirtual.ubu.es/";
-	
+
 	// Lista de idiomas disponibles
 	private final List<String> locale = Arrays.asList("es_es", "en_en");
 	private final ObservableList<String> languages = FXCollections.observableArrayList("Español", "English");
-	
+
 	/**
 	 * Crea el selector de idioma.
 	 */
@@ -79,96 +77,73 @@ public class LoginController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		txtHost.setText(HOST);
 		languageSelector.setItems(languages);
-		languageSelector.getSelectionModel().select(locale.indexOf(ubuGrades.getResourceBundle().getLocale().toString().toLowerCase()));
+		languageSelector.getSelectionModel()
+				.select(locale.indexOf(ubuGrades.getResourceBundle().getLocale().toString().toLowerCase()));
 		// Carga la interfaz con el idioma seleccionado
-		languageSelector.getSelectionModel().selectedIndexProperty().addListener((ov, value, newValue) -> {			
-			try {
-				ubuGrades.setResourceBundle(ResourceBundle.getBundle("messages/Messages", new Locale(locale.get(newValue.intValue()))));
-				logger.info("Idioma cargado: {}", ubuGrades.getResourceBundle().getLocale().toString());
-				logger.info("[Bienvenido a UBUGrades]");
-				changeScene(getClass().getResource("/view/Login.fxml"));
-			} catch (IOException e) {
-				logger.error("Error al cambiar el idioma: {}", e);
-			}
+		languageSelector.getSelectionModel().selectedIndexProperty().addListener((ov, value, newValue) -> {
+			ubuGrades.setResourceBundle(
+					ResourceBundle.getBundle("messages/Messages", new Locale(locale.get(newValue.intValue()))));
+			logger.info("Idioma cargado: {}", ubuGrades.getResourceBundle().getLocale().toString());
+			logger.info("[Bienvenido a UBUGrades]");
+			changeScene(getClass().getResource("/view/Login.fxml"));
 		});
 	}
-	
+
 	/**
 	 * Hace el login de usuario al pulsar el botón Entrar. Si el usuario es
 	 * incorrecto, muestra un mensaje de error.
 	 * 
 	 * @param event
-	 * 		El ActionEvent.
+	 *            El ActionEvent.
 	 */
 	public void login(ActionEvent event) {
-		if(txtHost.getText().isEmpty() || txtPassword.getText().isEmpty() || txtUsername.getText().isEmpty()) {
+		if (txtHost.getText().isEmpty() || txtPassword.getText().isEmpty() || txtUsername.getText().isEmpty()) {
 			lblStatus.setText(ubuGrades.getResourceBundle().getString("error.fields"));
 		} else {
 			// Si el login es correcto
 			if (checkLogin()) {
 				logger.info("Login Correcto");
 				lblStatus.setVisible(false);
-	
+
 				Task<Object> loginTask = getUserDataWorker();
-				progressBar.progressProperty().unbind();
-				progressBar.progressProperty().bind(loginTask.progressProperty());
 				progressBar.visibleProperty().set(true);
-				loginTask.messageProperty().addListener((ChangeListener<String>)(observable, oldValue, newValue) -> {
-					if (newValue.equals("end")) {
-						try {
-							// Cargamos la siguiente ventana
-							ubuGrades.getStage().getScene().setCursor(Cursor.WAIT);
-							changeScene(getClass().getResource("/view/Welcome.fxml"));
-						} catch (IOException e) {
-							logger.info("No se ha podido cargar la ventana de bienvenida: {}", e);
-						} finally {
-							ubuGrades.getStage().getScene().setCursor(Cursor.DEFAULT);
-						}
-					} else if (newValue.equals("error")) {
-						progressBar.setVisible(false);
-						lblStatus.setVisible(true);
-						lblStatus.setText("Error al obtener los datos del usuario.");
-					}
-				});
+				ubuGrades.getStage().getScene().setCursor(Cursor.WAIT);
+				loginTask.setOnSucceeded(s->changeScene(getClass().getResource("/view/Welcome.fxml")));
 				Thread th = new Thread(loginTask, "login");
+				
 				th.start();
 			}
 		}
 	}
-	
+
 	/**
 	 * Comprueba si los datos de login introducidos son correctos.
 	 * 
-	 * @return
-	 * 		True si el login es correcto.Falso si no lo es.
+	 * @return True si el login es correcto.Falso si no lo es.
 	 */
 	private boolean checkLogin() {
 		// Almacenamos los parámetros introducidos por el usuario:
-	
-		
 
-		
 		progressBar.visibleProperty().set(false);
 
 		try { // Establecemos el token
 			logger.info("Obteniendo el token.");
 			ubuGrades.getStage().getScene().setCursor(Cursor.WAIT);
-			
+
 			WebService.initialize(txtHost.getText(), txtUsername.getText(), txtPassword.getText());
-			
+
 			ubuGrades.setHost(txtHost.getText());
-			
-			ubuGrades.setSession(new Session(txtUsername.getText(), txtPassword.getText()));
-			
-			ubuGrades.getSession().setToken(WebService.getToken());
-			
+
+			ubuGrades.setUsername(txtUsername.getText());
+			ubuGrades.setPassword(txtPassword.getText());
+
 			return true;
-			
+
 		} catch (IOException e) {
 			logger.error("No se ha podido conectar con el host.", e);
 			lblStatus.setText(ubuGrades.getResourceBundle().getString("error.host"));
-		}catch (JSONException e) {
-			
+		} catch (JSONException e) {
+
 			logger.error("Usuario y/o contraseña incorrectos", e);
 			lblStatus.setText(ubuGrades.getResourceBundle().getString("error.login"));
 			txtPassword.setText("");
@@ -178,16 +153,17 @@ public class LoginController implements Initializable {
 		return false;
 
 	}
-	
+
 	/**
 	 * Permite cambiar la ventana actual.
 	 * 
 	 * @param sceneFXML
-	 *		La ventanan a la que se quiere cambiar.
+	 *            La ventanan a la que se quiere cambiar.
 	 *
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	private void changeScene(URL sceneFXML) throws IOException {
+	private void changeScene(URL sceneFXML) {
+		try {
 			// Accedemos a la siguiente ventana
 			FXMLLoader loader = new FXMLLoader(sceneFXML, ubuGrades.getResourceBundle());
 			ubuGrades.getStage().close();
@@ -200,8 +176,12 @@ public class LoginController implements Initializable {
 			stage.setResizable(false);
 			stage.show();
 			ubuGrades.setStage(stage);
+			ubuGrades.getStage().getScene().setCursor(Cursor.DEFAULT);
+		} catch (IOException e) {
+			logger.info("No se ha podido cargar la ventana de bienvenida: {}", e);
+		}
 	}
-	
+
 	/**
 	 * Realiza las tareas mientras carga la barra de progreso
 	 * 
@@ -212,21 +192,15 @@ public class LoginController implements Initializable {
 			@Override
 			protected Object call() {
 				try {
-					updateProgress(0, 3);
-					ubuGrades.setUser(new MoodleUser());
-					MoodleUserWS.setMoodleUser(ubuGrades.getHost(), 
-							ubuGrades.getSession().getToken(), ubuGrades.getSession().getUserName(),
-					ubuGrades.getUser());
-					updateProgress(1, 3);
-					MoodleUserWS.setCourses(ubuGrades.getHost(),
-							ubuGrades.getSession().getToken(), ubuGrades.getUser());
-					updateProgress(2, 3);
-					updateProgress(3, 3);
-					Thread.sleep(50);
-					updateMessage("end");
+					MoodleUser moodleUser = CreatorUBUGradesController.createMoodleUser(ubuGrades.getUsername());
+					ubuGrades.setUser(moodleUser);
+			
 				} catch (Exception e) {
 					logger.error("Error al obtener los datos del usuario.", e);
 					updateMessage("error");
+					progressBar.setVisible(false);
+					lblStatus.setVisible(true);
+					lblStatus.setText("Error al obtener los datos del usuario.");
 				}
 				return true;
 			}
@@ -237,7 +211,7 @@ public class LoginController implements Initializable {
 	 * Borra los parámetros introducidos en los campos
 	 * 
 	 * @param event
-	 * 		El ActionEvent.
+	 *            El ActionEvent.
 	 */
 	public void clear(ActionEvent event) {
 		txtUsername.setText("");

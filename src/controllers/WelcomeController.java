@@ -4,14 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.ubugrades.CreatorUBUGradesController;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -39,7 +39,7 @@ import model.EnrolledUser;
 import model.Stats;
 import model.UBUGrades;
 import persistence.Encryption;
-import webservice.CourseWS;
+import sun.font.CreatedFontTracker;
 
 /**
  * Clase controlador de la pantalla de bienvenida en la que se muestran los
@@ -58,7 +58,7 @@ public class WelcomeController implements Initializable {
 	@FXML
 	private Label lblUser;
 	@FXML
-	private ListView<String> listCourses;
+	private ListView<Course> listCourses;
 	@FXML
 	private Label lblNoSelect;
 	@FXML
@@ -82,12 +82,9 @@ public class WelcomeController implements Initializable {
 			directoryObject = "./cache/" + ubuGrades.getUser().getFullName() + "/";
 			lblUser.setText(ubuGrades.getUser().getFullName());
 			logger.info("Cargando cursos...");
-			ArrayList<String> nameCourses = new ArrayList<>();
-			for (int i = 0; i < ubuGrades.getUser().getCourses().size(); i++) {
-				nameCourses.add(ubuGrades.getUser().getCourses().get(i).getFullName());
-			}
-			Collections.sort(nameCourses);
-			ObservableList<String> list = FXCollections.observableArrayList(nameCourses);
+
+			ObservableList<Course> list = FXCollections.observableArrayList(ubuGrades.getUser().getCourses());
+			list.sort(Comparator.comparing(Course::getFullName));
 			progressBar.visibleProperty().set(false);
 			listCourses.setItems(list);
 			chkUpdateData.setDisable(true);
@@ -97,8 +94,8 @@ public class WelcomeController implements Initializable {
 			listCourses.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
 
 				logger.debug("Buscando si existe " + directoryObject + newValue);
-				
-				File f = new File(directoryObject+newValue);
+
+				File f = new File(directoryObject + newValue);
 
 				if (f.exists() && f.isFile()) {
 					chkUpdateData.setSelected(false);
@@ -128,14 +125,13 @@ public class WelcomeController implements Initializable {
 	public void enterCourse(ActionEvent event) {
 
 		// Guardamos en una variable el curso seleccionado por el usuario
-		String selectedCourse = listCourses.getSelectionModel().getSelectedItem();
+		Course selectedCourse = listCourses.getSelectionModel().getSelectedItem();
 		if (selectedCourse == null) {
 			lblNoSelect.setText(ubuGrades.getResourceBundle().getString("error.nocourse"));
 			return;
 		}
-		ubuGrades.getSession()
-				.setActualCourse(Course.getCourseByString(ubuGrades.getUser().getCourses(), selectedCourse));
-		logger.info(" Curso seleccionado: " + ubuGrades.getSession().getActualCourse().getFullName());
+		ubuGrades.setActualCourse(selectedCourse);
+		logger.info(" Curso seleccionado: " + ubuGrades.getActualCourse().getFullName());
 
 		if (chkUpdateData.isSelected()) {
 			downloadData();
@@ -150,34 +146,31 @@ public class WelcomeController implements Initializable {
 
 	private void saveData() {
 		File f = new File(directoryObject);
-			if (!f.isDirectory()) {
-				logger.info("No existe el directorio, se va a crear: {}",directoryObject);
-				f.mkdirs();
-			}
-		
+		if (!f.isDirectory()) {
+			logger.info("No existe el directorio, se va a crear: {}", directoryObject);
+			f.mkdirs();
+		}
+
 		logger.info("Guardando los datos encriptados en: {}", f.getAbsolutePath());
-		Encryption.encrypt(ubuGrades.getSession().getPassword(), directoryObject+listCourses.selectionModelProperty().getValue().getSelectedItem(),ubuGrades.getSession().getActualCourse());
-		
+		Encryption.encrypt(ubuGrades.getPassword(),
+				directoryObject + listCourses.selectionModelProperty().getValue().getSelectedItem(),
+				ubuGrades.getActualCourse());
+
 	}
 
 	private void loadData() {
-		Course curso= (Course) Encryption.decrypt(ubuGrades.getSession().getPassword(), directoryObject+listCourses.selectionModelProperty().getValue().getSelectedItem());
+		Course curso = (Course) Encryption.decrypt(ubuGrades.getPassword(),
+				directoryObject + listCourses.selectionModelProperty().getValue().getSelectedItem());
 		if (curso != null) {
-			ubuGrades.getSession().setActualCourse(curso);
+			ubuGrades.setActualCourse(curso);
 		}
 
 	}
 
-
-	
-
 	private void downloadData() {
 		btnEntrar.setVisible(false);
 		lblProgress.setVisible(true);
-		progressBar.setProgress(0.0);
 		Task<Void> task = getUserDataWorker();
-		progressBar.progressProperty().bind(task.progressProperty());
-		progressBar.visibleProperty().set(true);
 		task.messageProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
 			if (newValue.equals("end")) {
 				// Cargamos la siguiente ventana
@@ -229,42 +222,21 @@ public class WelcomeController implements Initializable {
 			protected Void call() {
 				try {
 					ubuGrades.getStage().getScene().setCursor(Cursor.WAIT);
-					logger.info("Cargando datos del curso: " + ubuGrades.getSession().getActualCourse().getFullName());
+					logger.info("Cargando datos del curso: " + ubuGrades.getActualCourse().getFullName());
 					// Establecemos los usuarios matriculados
-					CourseWS.setEnrolledUsers(ubuGrades.getHost(), ubuGrades.getSession().getToken(),
-							ubuGrades.getSession().getActualCourse());
-					int enroledUsersCount = ubuGrades.getSession().getActualCourse().getEnrolledUsersCount() + 8;
-					int done = 0;
-					updateProgress(done, enroledUsersCount);
+					updateMessage("update_" + ubuGrades.getResourceBundle().getString("label.loadingstudents"));
+					CreatorUBUGradesController.createEnrolledUsers(ubuGrades.getActualCourse().getId());
+		
+		
 
 					updateMessage("update_" + ubuGrades.getResourceBundle().getString("label.loadingqualifier"));
 					// Establecemos calificador del curso
-					CourseWS.setGradeReportLines(ubuGrades.getHost(), ubuGrades.getSession().getToken(),
-							ubuGrades.getSession().getActualCourse().getEnrolledUsers().get(0).getId(),
-							ubuGrades.getSession().getActualCourse());
-					done += 4;
-
-					updateProgress(done, enroledUsersCount);
-					updateMessage("update_" + ubuGrades.getResourceBundle().getString("label.loadingstudents")
-							+ (done - 4) + " " + ubuGrades.getResourceBundle().getString("label.of") + " "
-							+ (enroledUsersCount - 8));
-					for (EnrolledUser user : ubuGrades.getSession().getActualCourse().getEnrolledUsers()) {
-						// Obtenemos todas las lineas de calificación del usuario
-						logger.info("Cargando los datos de: " + user.getFullName() + "...");
-						user.setAllGradeReportLines(
-								CourseWS.getUserGradeReportLines(ubuGrades.getHost(), ubuGrades.getSession().getToken(),
-										user.getId(), ubuGrades.getSession().getActualCourse().getId()));
-						updateProgress(done++, enroledUsersCount);
-						logger.info("Datos cargados.");
-						updateMessage("update_" + ubuGrades.getResourceBundle().getString("label.loadingstudents")
-								+ (done - 4) + " " + ubuGrades.getResourceBundle().getString("label.of") + " "
-								+ (enroledUsersCount - 8));
-					}
+					CreatorUBUGradesController.createGradeItems(ubuGrades.getActualCourse().getId());
+					
 
 					updateMessage("update_" + ubuGrades.getResourceBundle().getString("label.loadingstats"));
 					// Establecemos las estadisticas
 					Stats.getStats(ubuGrades.getSession());
-					updateProgress(done + 4L, enroledUsersCount);
 
 					Thread.sleep(50);
 					// Indica que se ha terminado el trabajo

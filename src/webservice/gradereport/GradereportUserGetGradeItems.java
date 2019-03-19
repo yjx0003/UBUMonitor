@@ -1,9 +1,9 @@
 package webservice.gradereport;
 
-import webservice.CourseidUseridGroupid;
+import webservice.ParametersCourseidUseridGroupid;
 import webservice.WSFunctions;
 
-public class GradereportUserGetGradeItems extends CourseidUseridGroupid {
+public class GradereportUserGetGradeItems extends ParametersCourseidUseridGroupid {
 
 	public GradereportUserGetGradeItems(int courseid, OptionalParameter optionalParameter, int userOrGroupid) {
 		super(courseid, optionalParameter, userOrGroupid);

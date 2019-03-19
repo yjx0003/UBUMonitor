@@ -3,16 +3,16 @@ package webservice;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class Coursesids extends WebService {
+public abstract class ParametersCoursesids extends WebService {
 
 	private Set<Integer> coursesids;
 
-	public Coursesids(Set<Integer> coursesIds) {
+	public ParametersCoursesids(Set<Integer> coursesIds) {
 		this.coursesids = coursesIds;
 
 	}
 
-	public Coursesids() {
+	public ParametersCoursesids() {
 		coursesids = new HashSet<Integer>();
 
 	}
@@ -24,7 +24,7 @@ public abstract class Coursesids extends WebService {
 
 	}
 
-	public Coursesids(int courseid) {
+	public ParametersCoursesids(int courseid) {
 		this();
 		coursesids.add(courseid);
 

@@ -1,10 +1,10 @@
 package webservice;
 
-public abstract class Courseid extends WebService{
+public abstract class ParametersCourseid extends WebService{
 
 	private int courseid;
 	
-	public Courseid(int courseid) {
+	public ParametersCourseid(int courseid) {
 	
 		this.courseid=courseid;
 		

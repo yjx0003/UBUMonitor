@@ -1,6 +1,6 @@
 package webservice;
 
-public abstract class CourseidUseridGroupid extends WebService {
+public abstract class ParametersCourseidUseridGroupid extends WebService {
 
 	private int courseid;
 	private int groupid;
@@ -10,11 +10,11 @@ public abstract class CourseidUseridGroupid extends WebService {
 		USERID, GROUPID;
 	}
 
-	public CourseidUseridGroupid(int courseid) {
+	public ParametersCourseidUseridGroupid(int courseid) {
 		this.courseid = courseid;
 	}
 
-	public CourseidUseridGroupid(int courseid, OptionalParameter optionalParameter, int userOrGroupid) {
+	public ParametersCourseidUseridGroupid(int courseid, OptionalParameter optionalParameter, int userOrGroupid) {
 
 		this(courseid);
 
@@ -33,7 +33,9 @@ public abstract class CourseidUseridGroupid extends WebService {
 	public void appendToUrlParameters() {
 
 		appendToUrlCourseid(courseid);
+		if (userid!=0)
 		appendToUrlUserid(userid);
+		if(groupid!=0)
 		appendToUrlGruopid(groupid);
 
 	}

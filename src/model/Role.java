@@ -88,4 +88,9 @@ public class Role implements Serializable{
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
 	}
+	
+	@Override
+	public String toString(){
+		return name;
+	}
 }

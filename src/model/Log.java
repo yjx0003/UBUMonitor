@@ -1,11 +1,15 @@
 package model;
 
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 import controllers.ubulogs.logcreator.Component;
 import controllers.ubulogs.logcreator.Event;
+import model.mod.Module;
 
-public class Log {
+public class Log implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
 	private ZonedDateTime time;
 	private String eventContext;
 	private Component component;
@@ -14,9 +18,19 @@ public class Log {
 	private String origin;
 	private String IPAdress;
 
-	private EnrolledUser userFullNameEnrolledUser;
-	private EnrolledUser affectedUserEnrolledUser;
+	private EnrolledUser user;
+	private EnrolledUser affectedUser;
 	private Course course;
+	private Module courseModule;
+	
+
+	public Module getCourseModule() {
+		return courseModule;
+	}
+
+	public void setCourseModule(Module courseModule) {
+		this.courseModule = courseModule;
+	}
 
 	public ZonedDateTime getTime() {
 		return time;
@@ -74,20 +88,20 @@ public class Log {
 		IPAdress = iPAdress;
 	}
 
-	public EnrolledUser getUserFullNameEnrolledUser() {
-		return userFullNameEnrolledUser;
+	public EnrolledUser getUser() {
+		return user;
 	}
 
-	public void setUserFullNameEnrolledUser(EnrolledUser userFullNameEnrolledUser) {
-		this.userFullNameEnrolledUser = userFullNameEnrolledUser;
+	public void setUser(EnrolledUser user) {
+		this.user = user;
 	}
 
-	public EnrolledUser getAffectedUserEnrolledUser() {
-		return affectedUserEnrolledUser;
+	public EnrolledUser getAffectedUser() {
+		return affectedUser;
 	}
 
-	public void setAffectedUserEnrolledUser(EnrolledUser affectedUserEnrolledUser) {
-		this.affectedUserEnrolledUser = affectedUserEnrolledUser;
+	public void setAffectedUser(EnrolledUser affectedUser) {
+		this.affectedUser = affectedUser;
 	}
 
 	public Course getCourse() {
@@ -97,13 +111,16 @@ public class Log {
 	public void setCourse(Course course) {
 		this.course = course;
 	}
+	
 
 	@Override
 	public String toString() {
 		return "Log [time=" + time + ", userFullName=" + ", affectedUser=" + ", eventContext=" + eventContext
 				+ ", component=" + component + ", eventName=" + eventName + ", description=" + description + ", origin="
-				+ origin + ", IPAdress=" + IPAdress + ", userFullNameEnrolledUser=" + userFullNameEnrolledUser
-				+ ", affectedUserEnrolledUser=" + affectedUserEnrolledUser + ", course=" + course + "]";
+				+ origin + ", IPAdress=" + IPAdress + ", userFullNameEnrolledUser=" + user
+				+ ", affectedUserEnrolledUser=" + affectedUser + ", course=" + course + "]";
 	}
+
+
 
 }

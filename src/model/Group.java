@@ -17,6 +17,7 @@ public class Group implements Serializable{
 	private int id;
 	private String name;
 	private String description;
+	private DescriptionFormat descriptionFormat;
 
 	/**
 	 * Constructor de la clase Group. Establece un grupo.
@@ -27,11 +28,19 @@ public class Group implements Serializable{
 	 * 		Nombre del grupo.
 	 * @param description
 	 * 		Descripción del grupo.
+	 * 
 	 */
 	public Group(int id, String name, String description) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
+	}
+
+	public Group(int id, String name, String description, DescriptionFormat descriptionFormat) {
+		this.id = id;
+		this.name = name;
+		this.description = description;
+		this.descriptionFormat=descriptionFormat;
 	}
 
 	/**
@@ -90,4 +99,17 @@ public class Group implements Serializable{
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	public DescriptionFormat getDescriptionFormat() {
+		return descriptionFormat;
+	}
+
+	public void setDescriptionFormat(DescriptionFormat descriptionFormat) {
+		this.descriptionFormat = descriptionFormat;
+	}
+	@Override
+	public String toString() {
+		return name;
+	}
+	
 }

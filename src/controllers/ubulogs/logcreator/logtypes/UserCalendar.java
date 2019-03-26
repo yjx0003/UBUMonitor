@@ -2,7 +2,7 @@ package controllers.ubulogs.logcreator.logtypes;
 
 import java.util.List;
 
-import model.Log;
+import model.LogLine;
 /**
  * The user with id '' created the event '' with id ''.
  * The user with id '' deleted the event '' with id ''.
@@ -33,7 +33,7 @@ public class UserCalendar extends ReferencesLog {
 		return instance;
 	}
 	@Override
-	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
+	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
 		//TODO core_calendar_get_calendar_events
 	}

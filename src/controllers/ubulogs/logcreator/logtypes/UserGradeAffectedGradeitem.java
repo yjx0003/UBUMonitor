@@ -2,7 +2,7 @@ package controllers.ubulogs.logcreator.logtypes;
 
 import java.util.List;
 
-import model.Log;
+import model.LogLine;
 /**
  * The user with id '' deleted the grade with id '' for the user with id '' for the grade item with id ''.
  * @author Yi Peng Ji
@@ -32,7 +32,7 @@ public class UserGradeAffectedGradeitem extends ReferencesLog {
 	}
 	
 	@Override
-	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
+	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
 		//TODO grade id
 		setAffectedUserById(log, ids.get(2));

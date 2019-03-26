@@ -1,6 +1,8 @@
 package model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Clase Group para distinguir los grupos que hay en un curso, así como los
@@ -11,36 +13,33 @@ import java.io.Serializable;
  * @version 2.0.1
  * @since 2.0.1
  */
-public class Group implements Serializable{
-	
+public class Group implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private String name;
 	private String description;
 	private DescriptionFormat descriptionFormat;
 
+	private List<EnrolledUser> enrolledUsers;
+
 	/**
 	 * Constructor de la clase Group. Establece un grupo.
 	 * 
 	 * @param id
-	 * 		Id del grupo.
+	 *            Id del grupo.
 	 * @param name
-	 * 		Nombre del grupo.
+	 *            Nombre del grupo.
 	 * @param description
-	 * 		Descripción del grupo.
+	 *            Descripción del grupo.
 	 * 
 	 */
-	public Group(int id, String name, String description) {
-		this.id = id;
-		this.name = name;
-		this.description = description;
-	}
-
 	public Group(int id, String name, String description, DescriptionFormat descriptionFormat) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
-		this.descriptionFormat=descriptionFormat;
+		this.descriptionFormat = descriptionFormat;
+		this.enrolledUsers=new ArrayList<>();
 	}
 
 	/**
@@ -56,7 +55,7 @@ public class Group implements Serializable{
 	 * Modifica el id del grupo.
 	 * 
 	 * @param id
-	 * 		El id.
+	 *            El id.
 	 */
 	public void setId(int id) {
 		this.id = id;
@@ -75,7 +74,7 @@ public class Group implements Serializable{
 	 * Modifica el nombre del grupo.
 	 * 
 	 * @param name
-	 * 		El nombre.
+	 *            El nombre.
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -94,7 +93,7 @@ public class Group implements Serializable{
 	 * Modifica la descripción del grupo.
 	 * 
 	 * @param description
-	 * 		La descripción.
+	 *            La descripción.
 	 */
 	public void setDescription(String description) {
 		this.description = description;
@@ -107,9 +106,41 @@ public class Group implements Serializable{
 	public void setDescriptionFormat(DescriptionFormat descriptionFormat) {
 		this.descriptionFormat = descriptionFormat;
 	}
+
+	public List<EnrolledUser> getEnrolledUsers() {
+		return enrolledUsers;
+	}
+
+	public void setEnrolledUsers(List<EnrolledUser> enrolledUsers) {
+		this.enrolledUsers = enrolledUsers;
+	}
+
 	@Override
 	public String toString() {
 		return name;
 	}
+
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	public void addEnrolledUser(EnrolledUser user) {
+		enrolledUsers.add(user);
+	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Group other = (Group) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+
 }

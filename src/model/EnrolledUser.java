@@ -1,11 +1,18 @@
 package model;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class EnrolledUser {
+public class EnrolledUser implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**
 	 * ID of the user
 	 */
@@ -135,13 +142,16 @@ public class EnrolledUser {
 	 * Opcional. user roles
 	 */
 	private List<Role> roles;
-	
+
 	/**
-	 * Opcional. Courses where the user is enrolled - limited by which courses the user is able to see
+	 * Opcional. Courses where the user is enrolled - limited by which courses the
+	 * user is able to see
 	 */
 	private List<Course> enrolledcourses;
 
-	private List<Log> logs;
+	private List<LogLine> logs;
+
+	private Map<GradeItem, Double> grades;
 
 	private EnrolledUser(Builder builder) {
 		id = builder.id;
@@ -171,10 +181,12 @@ public class EnrolledUser {
 		country = builder.country;
 		profileimageurlsmall = builder.profileimageurlsmall;
 		profileimageurl = builder.profileimageurl;
-		
+
 		groups = builder.groups;
 		roles = builder.roles;
-		enrolledcourses=builder.enrolledcourses;
+		enrolledcourses = builder.enrolledcourses;
+		logs = builder.logs;
+		grades=builder.grades;
 	}
 
 	public int getId() {
@@ -408,27 +420,29 @@ public class EnrolledUser {
 	public void setRoles(List<Role> roles) {
 		this.roles = roles;
 	}
-	
 
 	public List<Course> getEnrolledcourses() {
 		return enrolledcourses;
 	}
 
-	public void setEnrolledcourses(List<Course> enrolledcourses) {
-		this.enrolledcourses = enrolledcourses;
+	public void setEnrolledcourses(List<Course> courses) {
+		this.enrolledcourses = courses;
 	}
-	
-	public void addLog(Log log) {
+
+	public void addLog(LogLine log) {
 		this.logs.add(log);
 	}
 
-	
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + id;
-		return result;
+		return id;
+	}
+	
+	public double getGrade(GradeItem gradeItem) {
+		return grades.get(gradeItem);
+	}
+	public void addGrade(GradeItem gradeItem,double grade) {
+		grades.put(gradeItem , grade);
 	}
 
 	@Override
@@ -447,16 +461,15 @@ public class EnrolledUser {
 
 	@Override
 	public String toString() {
-		return lastname+", "+firstname;
+		return lastname + ", " + firstname;
 	}
-	
+
 	public static Builder newBuilder() {
 		return new Builder();
 	}
 
 	public static class Builder {
 
-	
 		private int id;
 		private String username;
 		private String firstname;
@@ -487,14 +500,17 @@ public class EnrolledUser {
 		private List<Group> groups;
 		private List<Role> roles;
 		private List<Course> enrolledcourses;
-		private List<Log> logs;
-		
+		private List<LogLine> logs;
+		private Map<GradeItem, Double> grades;
+
 		public Builder() {
-			groups=new ArrayList<Group>();
-			roles=new ArrayList<Role>();
-			enrolledcourses=new ArrayList<Course>();
-			logs=new ArrayList<Log>();
+			groups = new ArrayList<Group>();
+			roles = new ArrayList<Role>();
+			enrolledcourses = new ArrayList<Course>();
+			logs = new ArrayList<LogLine>();
+			grades = new HashMap<>();
 		}
+
 		public Builder setId(int id) {
 			this.id = id;
 			return this;
@@ -639,40 +655,41 @@ public class EnrolledUser {
 			this.groups = groups;
 			return this;
 		}
-		
 
 		public Builder setEnrolledcourses(List<Course> enrolledcourses) {
 			this.enrolledcourses = enrolledcourses;
 			return this;
 		}
 
-
 		public Builder setFirstaccess(int firstaccess) {
-			this.firstaccess=Instant.ofEpochSecond(firstaccess);
+			this.firstaccess = Instant.ofEpochSecond(firstaccess);
 			return this;
 		}
 
 		public Builder setLastaccess(int lastaccess) {
-			this.lastaccess=Instant.ofEpochSecond(lastaccess);
+			this.lastaccess = Instant.ofEpochSecond(lastaccess);
 			return this;
 		}
 
 		public Builder setDescriptionformat(int descriptionformat) {
-			this.descriptionformat=DescriptionFormat.get(descriptionformat);
+			this.descriptionformat = DescriptionFormat.get(descriptionformat);
 			return this;
 		}
-		
-		public Builder setLogs(List<Log> logs) {
+
+		public Builder setLogs(List<LogLine> logs) {
 			this.logs = logs;
 			return this;
 		}
-		
+
+		public Builder setGrades(Map<GradeItem, Double> grades) {
+			this.grades = grades;
+			return this;
+		}
+
 		public EnrolledUser build() {
 			return new EnrolledUser(this);
 		}
 
 	}
-
-
 
 }

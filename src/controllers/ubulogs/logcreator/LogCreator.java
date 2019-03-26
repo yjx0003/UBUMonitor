@@ -1,6 +1,5 @@
 package controllers.ubulogs.logcreator;
 
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -8,8 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import controllers.ubulogs.logcreator.logtypes.ReferencesLog;
-import model.Course;
-import model.Log;
+import model.LogLine;
 
 public class LogCreator {
 
@@ -29,37 +27,16 @@ public class LogCreator {
 	public static final String IP_ADRESS = "IP address";
 
 	
-
-	public LogCreator(Course course, ZoneId zoneId) {
-
-		
-		ReferencesLog.setCourse(course);
-		ReferencesLog.setZoneId(zoneId);
-
-	}
 	
-
-
-	public void setCourse(Course course) {
-
-		ReferencesLog.setCourse(course);
-	}
-	
-	public void setZoneId(ZoneId zoneId) {
-	
-		ReferencesLog.setZoneId(zoneId);
-	}
-	
-	
-	public List<Log> createLogs(List<Map<String, String>> allLogs) {
-		List<Log> logs=new ArrayList<Log>();
+	public List<LogLine> createLogs(List<Map<String, String>> allLogs) {
+		List<LogLine> logs=new ArrayList<LogLine>();
 		for (Map<String,String> log:allLogs) {
 			logs.add(createLog(log));
 		}
 		return logs;
 	}
 
-	public Log createLog(Map<String, String> mapLog) {
+	public LogLine createLog(Map<String, String> mapLog) {
 		
 
 		
@@ -67,7 +44,7 @@ public class LogCreator {
 		String description = mapLog.get(DESCRIPTION);
 		List<Integer> ids=getIdsInDescription(description);
 		
-		Log log=ReferencesLog.createLogWithBasicAttributes(mapLog);
+		LogLine log=ReferencesLog.createLogWithBasicAttributes(mapLog);
 		
 		ReferencesLog referencesLog=ReferencesLog.getReferenceLog(log.getComponent(), log.getEventName());
 		referencesLog.setLogReferencesAttributes(log, ids);

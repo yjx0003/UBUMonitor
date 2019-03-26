@@ -2,7 +2,7 @@ package controllers.ubulogs.logcreator.logtypes;
 
 import java.util.List;
 
-import model.Log;
+import model.LogLine;
 
 
 /**
@@ -35,7 +35,7 @@ public class SystemCourseViewed extends ReferencesLog {
 		return instance;
 	}
 	@Override
-	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
+	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		ReferencesLog referencesLog = ids.size()==2? UserCourse.getInstance():UserSectionCourse.getInstance();
 		referencesLog.setLogReferencesAttributes(log, ids);
 

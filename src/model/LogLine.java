@@ -7,7 +7,7 @@ import controllers.ubulogs.logcreator.Component;
 import controllers.ubulogs.logcreator.Event;
 import model.mod.Module;
 
-public class Log implements Serializable{
+public class LogLine implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	private ZonedDateTime time;
@@ -20,7 +20,6 @@ public class Log implements Serializable{
 
 	private EnrolledUser user;
 	private EnrolledUser affectedUser;
-	private Course course;
 	private Module courseModule;
 	
 
@@ -104,13 +103,7 @@ public class Log implements Serializable{
 		this.affectedUser = affectedUser;
 	}
 
-	public Course getCourse() {
-		return course;
-	}
 
-	public void setCourse(Course course) {
-		this.course = course;
-	}
 	
 
 	@Override
@@ -118,7 +111,7 @@ public class Log implements Serializable{
 		return "Log [time=" + time + ", userFullName=" + ", affectedUser=" + ", eventContext=" + eventContext
 				+ ", component=" + component + ", eventName=" + eventName + ", description=" + description + ", origin="
 				+ origin + ", IPAdress=" + IPAdress + ", userFullNameEnrolledUser=" + user
-				+ ", affectedUserEnrolledUser=" + affectedUser + ", course=" + course + "]";
+				+ ", affectedUserEnrolledUser=" + affectedUser +"]";
 	}
 
 

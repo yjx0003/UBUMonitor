@@ -2,7 +2,7 @@ package controllers.ubulogs.logcreator.logtypes;
 
 import java.util.List;
 
-import model.Log;
+import model.LogLine;
 /**
  * The user with id '' updated the completion state for the course module with id '' for the user with id ''.
  * @author Yi Peng Ji
@@ -32,7 +32,7 @@ public class UserCmidAffected extends ReferencesLog {
 	}
 	
 	@Override
-	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
+	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
 		setCourseModuleById(log, ids.get(1));
 		setAffectedUserById(log, ids.get(2));

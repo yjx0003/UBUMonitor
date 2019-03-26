@@ -2,7 +2,7 @@ package controllers.ubulogs.logcreator.logtypes;
 
 import java.util.List;
 
-import model.Log;
+import model.LogLine;
 /**
  * The user with id '' viewed the profile for the user with id '' in the course with id ''.
  * @author Yi Peng Ji
@@ -31,7 +31,7 @@ public class UserAffectedCourse extends ReferencesLog{
 		return instance;
 	}
 	@Override
-	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
+	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
 		setAffectedUserById(log, ids.get(1));
 		// El curso ya se enlaza al crear el log en createLogWithBasicAttributes de la clase ReferencesLog

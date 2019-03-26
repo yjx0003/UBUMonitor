@@ -1,7 +1,5 @@
 package model.mod;
 
-import java.util.Date;
-
 /**
  * Clase Quiz (Cuestionario). Implementar en versiones futuras.
  * 

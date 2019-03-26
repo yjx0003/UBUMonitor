@@ -15,8 +15,6 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import model.UBUGrades;
-
 /**
  * Clase encargada de descargar el log de un curso mediante web scraping.
  * 
@@ -108,18 +106,6 @@ public class DownloadLogController {
 		this.timezone = (timezone.equals("99")) ? findServerTimezone() : ZoneId.of(timezone);
 	}
 
-	/**
-	 * Constructor que recibe la instancia de ubugrades y recoge los datos
-	 * necesarios para llamar a los demas constructores.
-	 * 
-	 * @param ubugrades
-	 *            instancia de UBUGrades
-	 */
-	public DownloadLogController(UBUGrades ubugrades) {
-		this(ubugrades.getHost(), ubugrades.getUsername(), ubugrades.getPassword(),
-				ubugrades.getActualCourse().getId(), ubugrades.getUser().getTimezone());
-
-	}
 
 	/**
 	 * Se loguea en el servidor de moodle mediante web scraping.

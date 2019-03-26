@@ -2,7 +2,7 @@ package controllers.ubulogs.logcreator.logtypes;
 
 import java.util.List;
 
-import model.Log;
+import model.LogLine;
 /**
  * The user with id '' created the group with id ''.
  * The user with id '' deleted the group with id ''.
@@ -33,7 +33,7 @@ public class UserGroup extends  ReferencesLog{
 	}
 	
 	@Override
-	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
+	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
 		//TODO group id
 		

@@ -17,11 +17,9 @@
 		padding-bottom: 20px;
 		width: 98%;
 	}
-
 	.actividades
 	{
 	}
-
 	.actividadesCelda
 	{
 		cursor: pointer;
@@ -29,7 +27,6 @@
 		font-weight: bold;
 	    background-color: #ab263c;
 	}
-
 	.filasTabla
 	{
 	    background-color: #ffffff;
@@ -39,14 +36,12 @@
 	{
 		background-color: #f0f0f0f0;
 	}
-
 	.filasTabla td:first-child
 	{
 		background-color: #ffffff;
 		color: #000000;
     	font-weight: bold;
 	}
-
 	/*Primera columna de cada fila(la de los nombres de los alumnos)*/
 	.filasImpares td:first-child
 	{
@@ -62,7 +57,6 @@
 		height: 90vh;
 		width: 90vw;
 	}	
-
 	.titulos
 	{
 		padding-top: 5px;
@@ -82,7 +76,7 @@
 
 <body>
 
-<div class="titulos" id="lines">Gráfico de lineas</div>
+<div class="titulos" id="lines">GrÃ¡fico de lineas</div>
 <div id="lineas" class="chart-container">
 	<canvas id="LineChart"></canvas>
 </div>
@@ -118,10 +112,8 @@
 <div id="table_div" class="table_div"></div>
 
 <script>
-
 //------------------------------------------Opciones para los graficos------------------------------------------------------------------
-
-// Opciones para el gráfico de lineas y el boxplot
+// Opciones para el grÃ¡fico de lineas y el boxplot
 var optionsLineChart = {
 	maintainAspectRatio: false,
 	responsive: true,
@@ -280,18 +272,13 @@ var optionsRadarChart = {
     	backgroundColor: 'rgba(255,255,255,1)'
     } //chartArea
 } //options
-
 //------------------------------------------Variables globales-------------------------------------------------------------
-
 //
 var colorHash = new ColorHash();
-
 // Cargamos la librearia de google para la tabla de calificaciones
 var table;
-
 google.charts.load('current', {'packages':['table']});
 google.charts.setOnLoadCallback(drawTable);
-
 function drawTable() {
 	var cssClassNames = {
 	    headerRow: 'actividades',
@@ -301,12 +288,10 @@ function drawTable() {
 	    hoverTableRow: 'filaHover',
 	    headerCell: 'actividadesCelda',
 	    tableCell: 'tablaCelda'};
-
 	var data = google.visualization.arrayToDataTable(TableDataSet, false); // 'false' indica que la primera fila son labels, no datos.
 	table = new google.visualization.Table(document.getElementById('table_div'));
    	table.draw(data, {showRowNumber: false, allowHTML: true, width: '100%',  cssClassNames: cssClassNames, frozenColumns: 1});
 }
-
 //------------------------------------------Funciones------------------------------------------------------------------
 function generateChart(){
 	
@@ -325,7 +310,6 @@ function generateChart(){
 			dataset.fill = false;
 		});
 		LineChart.update();
-
 		var radarctx = document.getElementById('RadarChart');
 		var RadarChart = new Chart(radarctx,{
 			type: 'radar',
@@ -349,7 +333,6 @@ function generateChart(){
 			options: optionsLineChart
 		});
 		BoxPlotChart.update();
-
 		var BoxPlotGroupctx = document.getElementById('BoxPlotGroupChart');
 		BoxPlotGroupChart = new Chart(BoxPlotGroupctx,{
 			type: 'line',
@@ -358,7 +341,6 @@ function generateChart(){
 		});
 		BoxPlotGroupChart.update();
 }
-
 //Funcion que devuelve un color en formato 'rgba(r,g,b', a falta de la transpaerncia
 //en base a el string que se le pasa
 function colorRGB(color){
@@ -370,43 +352,39 @@ function colorRGB(color){
 	}
 	return rgbaColor;
 }
-
 //Funcion que devuelve un color en formato hexadecimal
 //en base a el string que se le pasa
 function colorHEX(color){
 	return colorHash.hex(color);
 }
-
 window.onload = function() {
   generateChart(); 
   setLanguage(userLang);
 }
-
-//------------------------------------------Traducción-----------------------------------------------------------------
+//------------------------------------------TraducciÃ³n-----------------------------------------------------------------
 //Contiene el texto a mostrar para los distintos elementos e idiomas
 var messages = {
 	lines: {
-		es_es: "Gráfico de lineas",
-		en_en: "Lines chart"
+		es: "GrÃ¡fico de lineas",
+		en: "Lines chart"
 	},
 	radar: {
-		es_es: "Radar",
-		en_en: "Radar"
+		es: "Radar",
+		en: "Radar"
 	},
 	boxplot: {
-		es_es: "BoxPlot",
-		en_en: "BoxPlot"
+		es: "BoxPlot",
+		en: "BoxPlot"
 	},
 	groupboxplot: {
-		es_es: "BoxPlot del Grupo",
-		en_en: "Group BoxPlot"
+		es: "BoxPlot del Grupo",
+		en: "Group BoxPlot"
 	},
 	table: {
-		es_es: "Tabla de notas",
-		en_en: "Grades"
+		es: "Tabla de notas",
+		en: "Grades"
 	}
 }
-
 //Establece el idioma
 function setLanguage(lang) {
 	get_i18n('lines', lang);
@@ -415,10 +393,8 @@ function setLanguage(lang) {
 	get_i18n('groupboxplot', lang);
 	get_i18n('table', lang);
 }
-
 //Modifica el valor de los inputs segun el idioma pasado
 function get_i18n(item, lang) {
 	document.getElementById(item).innerHTML = messages[item][lang];
 }
-
-// Aqui se añaden los datos de los gráficos y la tabla de calificaciones
+// Aqui se aÃ±aden los datos de los grÃ¡ficos y la tabla de calificaciones

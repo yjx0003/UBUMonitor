@@ -2,7 +2,7 @@ package controllers.ubulogs.logcreator.logtypes;
 
 import java.util.List;
 
-import model.Log;
+import model.LogLine;
 /**
  * 
  * The user with id '' has created the post with id '' in the discussion with id '' in the forum with course module id ''.
@@ -36,7 +36,7 @@ public class UserPostDiscussionCmid extends ReferencesLog {
 	}
 	
 	@Override
-	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
+	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
 		//TODO post id
 		//TODO discussion id

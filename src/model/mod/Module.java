@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Log;
+import model.LogLine;
 
 public class Module implements Serializable {
 
@@ -79,22 +79,22 @@ public class Module implements Serializable {
 	 */
 	private int indent;
 
-	private List<Log> logs;
+	private List<LogLine> logs;
 
 	public Module() {
-		logs = new ArrayList<Log>();
+		logs = new ArrayList<LogLine>();
 	}
 
 	
-	public void addLog(Log log) {
+	public void addLog(LogLine log) {
 		logs.add(log);
 	}
 	
-	public List<Log> getLogs() {
+	public List<LogLine> getLogs() {
 		return logs;
 	}
 
-	public void setLogs(List<Log> logs) {
+	public void setLogs(List<LogLine> logs) {
 		this.logs = logs;
 	}
 

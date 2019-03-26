@@ -8,7 +8,6 @@
 		padding: 0px;
 		margin: 0px;
 	}
-
 	.imginicio
 	{
 		height: 350px;
@@ -48,7 +47,6 @@
 	.actividades
 	{
 	}
-
 	.actividadesCelda
 	{
 		cursor: pointer;
@@ -56,7 +54,6 @@
 		font-weight: bold;
 	    background-color: #ab263c;
 	}
-
 	.filasTabla
 	{
 	    background-color: #ffffff;
@@ -66,14 +63,12 @@
 	{
 		background-color: #f0f0f0f0;
 	}
-
 	.filasTabla td:first-child
 	{
 		background-color: #ffffff;
 		color: #000000;
     	font-weight: bold;
 	}
-
 	/*Primera columna de cada fila(la de los nombres de los alumnos)*/
 	.filasImpares td:first-child
 	{
@@ -132,14 +127,14 @@
 		box-shadow: inset 0 -4px 0px 0px #25c5d8;
 	}
 		
-	.pestañas {
+	.pestaÃ±as {
 		height: 30px;
 		position: relative;
 		display: inline-block;
 		padding-right: 2px;
 	}
 	
-	.pestañas .btn {
+	.pestaÃ±as .btn {
 		height: 100%;
 		background-color: #f2f2f2;
 		border: none;
@@ -148,17 +143,14 @@
 		font-weight: bold;
 		cursor: pointer;
 	}
-
-	.pestañas .btn:hover {
+	.pestaÃ±as .btn:hover {
 		background-color:  #f2f2f2;
 		box-shadow: inset 0 -3px 0px 0px #25c5d8;
 	}
-
 	input[type="button"][disabled] {
 		background-color:  #f2f2f2;
 		box-shadow: inset 0 -3px 0px 0px #25c5d8;
 	}
-
 </style>
 
 <script type="text/javascript" src="./lib/Chart.js"></script>
@@ -171,7 +163,7 @@
 <body>
 
 <div class="controles">
-<div class="pestañas">
+<div class="pestaÃ±as">
 	<input type="button" value="Lineas" class="btn" id="btnLineas" onclick="generateChart('line')"/>
 	<input type="button" value="Radar" class="btn" id="btnRadar" onclick="generateChart('radar')"/>
 	<input type="button" value="BoxPlot General" class="btn" id="btnBoxPlot" onclick="generateChart('boxplot')"/>
@@ -192,11 +184,11 @@
 </div>
 
 <div id="noradar" class="card">
-	<div id="noradarText" class="cardText">Selecciona al menos 3 actividades para mostrar el gráfico</div>
+	<div id="noradarText" class="cardText">Selecciona al menos 3 actividades para mostrar el grÃ¡fico</div>
 </div>
 
 <div id="noGroup" class="card">
-	<div id="noGroupText" class="cardText">Selecciona un grupo para mostrar el gráfico</div>
+	<div id="noGroupText" class="cardText">Selecciona un grupo para mostrar el grÃ¡fico</div>
 </div>
 
 <div id="chart-container" class="chart-container">
@@ -208,10 +200,8 @@
 <div id="table_img" style="display: none;"></div>
 
 <script type="text/javascript">
-
 //------------------------------------------Opciones para los graficos------------------------------------------------------------------
-
-// Opciones para el gráfico de lineas y el boxplot
+// Opciones para el grÃ¡fico de lineas y el boxplot
 var optionsLineChart = {
 	maintainAspectRatio: false,
 	responsive: true,
@@ -370,9 +360,7 @@ var optionsRadarChart = {
     	backgroundColor: 'rgba(255,255,255,1)'
     } //chartArea
 } //options
-
 //------------------------------------------Variables globales-------------------------------------------------------------
-
 // DataSets
 var GeneralMeanDataSet = '';
 var GroupMeanDataSet = '';
@@ -381,38 +369,30 @@ var RadarDataSet = '';
 var BoxPlotGeneralDataSet = '';
 var BoxPlotGroupDataSet = '';
 var TableDataSet = '';
-
 //
 var GeneralMeanActive = false;
 var GroupMeanActive = false;
 var legendActive = true;
 var currentType = 'line';
-var language = 'es_es';
-
+var language = 'es';
 //
 var colorHash = new ColorHash();
 var ctx = document.getElementById('myChart');
-
 var myChart = new Chart(ctx,{
 	type: 'line',
 	data:LineDataSet,
 	options: optionsLineChart
 });
-
 // Cargamos la librearia de google para la tabla de calificaciones
 google.charts.load('current', {'packages':['table']});
 var table;
-
-// Al iniciar el boton del gráfico de lineas esta deshabilitado
+// Al iniciar el boton del grÃ¡fico de lineas esta deshabilitado
 document.getElementById('btnLineas').disabled = true;
 //Al iniciar el div de la tabla de calificaciones esta oculto
 document.getElementById('table_div').style.display = 'none';
 //
 document.getElementById('btnLegend').style.backgroundImage = 'url(./../img/visibility.png)';
-
 //------------------------------------------Funciones------------------------------------------------------------------
-
-
 // Funcion que crea la tabla de calificaciones
 function drawTable() {
 	
@@ -445,7 +425,7 @@ function drawTable() {
 	table = new google.visualization.Table(document.getElementById('table_div'));
     table.draw(data, {showRowNumber: false, allowHTML: true, width: '100%', cssClassNames: cssClassNames, frozenColumns: 1});
     
-    // Al generar la tabla generamos la imagen para la exportación
+    // Al generar la tabla generamos la imagen para la exportaciÃ³n
 	html2canvas(document.getElementById('table_div'), {
 		onrendered: function(canvas) {
 			elem = document.querySelector('#table_img canvas');
@@ -456,10 +436,8 @@ function drawTable() {
 		}	
 	});
  }
-
 // Funcion que genera y muestra el grafico segun el tipo que se le pase.
 function generateChart(type){
-
 	document.getElementById('table_div').style.display = 'none';
 	document.getElementById('chart-container').style.display = 'block';
 	document.getElementById('inicio').style.display = 'none';
@@ -565,10 +543,8 @@ function generateChart(type){
 			}
 			break;
 	}
-
 	myChart.update();
 }
-
 // Funcion que recibe el tipo de grafico y su data set y lo actualiza
 function updateChart(type, dataSet){
 	if(currentType != 'table') {
@@ -635,17 +611,14 @@ function updateChart(type, dataSet){
 		myChart.update();
 	}
 }
-
 //Funcion que almacena la media general.
 function saveMean(mean) {
 	GeneralMeanDataSet = mean;
 }
-
 //Funcion que almacena la media del grupo.
 function saveGroupMean(mean){
 	GroupMeanDataSet = mean;
 }
-
 //Funcion que almacena la media del grupo.
 function saveTableData(dataSet){
 	TableDataSet = dataSet;
@@ -653,9 +626,7 @@ function saveTableData(dataSet){
 		drawTable();
 	}
 }
-
-
-//Funcion que muestra u oculta la media general del gráfico
+//Funcion que muestra u oculta la media general del grÃ¡fico
 function showGeneralMean() {
 	if('' != GeneralMeanDataSet && GeneralMeanActive == false){
 		GeneralMeanActive = true;
@@ -668,8 +639,7 @@ function showGeneralMean() {
 		document.getElementById('btnMean').style.backgroundImage = 'url(./../img/visibility_off.png)';
 	}
 }
-
-//Funcion que muestra u oculta la media del grupo del gráfico
+//Funcion que muestra u oculta la media del grupo del grÃ¡fico
 function showGroupMean() {
 	if('' != GroupMeanDataSet && GroupMeanActive == false){
 		GroupMeanActive = true;
@@ -682,8 +652,7 @@ function showGroupMean() {
 		document.getElementById('btnGroupMean').style.backgroundImage = 'url(./../img/visibility_off.png)';
 	}
 }
-
-//Elimina el DataSet del gráfico que conincida con la label pasada
+//Elimina el DataSet del grÃ¡fico que conincida con la label pasada
 function removeDataSet(DataSetLabel) {
 	var arrayLength = myChart.data.datasets.length;
 	
@@ -695,8 +664,7 @@ function removeDataSet(DataSetLabel) {
 		}
 	}
 }
-
-//Funcion que muestra u oculta la leyenda del gráfico
+//Funcion que muestra u oculta la leyenda del grÃ¡fico
 function hideLegend(){
 	if(legendActive == true){
 		legendActive = false;
@@ -710,7 +678,6 @@ function hideLegend(){
 		document.getElementById('btnLegend').style.backgroundImage = 'url(./../img/visibility.png)';
 	}
 }
-
 //Funcion que devuelve un color en formato 'rgba(r,g,b', a falta de la transpaerncia
 //en base a el string que se le pasa
 function colorRGB(color){
@@ -722,13 +689,11 @@ function colorRGB(color){
 	}
 	return rgbaColor;
 }
-
 //Funcion que devuelve un color en formato hexadecimal
 //en base a el string que se le pasa
 function colorHEX(color){
 	return colorHash.hex(color);
 }
-
 // Exporta el elemento actual
 function exportCurrentElemet() {
 	if(currentType == 'table') {
@@ -737,8 +702,7 @@ function exportCurrentElemet() {
 		return myChart.toBase64Image();
 	}
 }
-
-// Plugin que nos permite establecer el color de fondo del gráfico
+// Plugin que nos permite establecer el color de fondo del grÃ¡fico
 // el color se define en opciones->chartArea->backgroundColor
 Chart.pluginService.register({
 	beforeDraw: function (chart, easing) {
@@ -754,52 +718,50 @@ Chart.pluginService.register({
 		}
 	}
 });
-
-//------------------------------------------Traducción-----------------------------------------------------------------
+//------------------------------------------TraducciÃ³n-----------------------------------------------------------------
 // Contiene el texto a mostrar para los distintos elementos e idiomas
 var messages = {
 	btnLineas: {
-		es_es: "Lineas",
-		en_en: "Lines"
+		es: "Lineas",
+		en: "Lines"
 	},
 	btnRadar: {
-		es_es: "Radar",
-		en_en: "Radar"
+		es: "Radar",
+		en: "Radar"
 	},
 	btnBoxPlot: {
-		es_es: "BoxPlot General",
-		en_en: "General BoxPlot"
+		es: "BoxPlot General",
+		en: "General BoxPlot"
 	},
 	btnBoxPlotGroup: {
-		es_es: "BoxPlot Del Grupo",
-		en_en: "Group BoxPlot"
+		es: "BoxPlot Del Grupo",
+		en: "Group BoxPlot"
 	},
 	btnCalificaciones: {
-		es_es: "Calificaciones",
-		en_en: "Grades"
+		es: "Calificaciones",
+		en: "Grades"
 	},
 	btnLegend: {
-		es_es: "Leyenda",
-		en_en: "Legend"
+		es: "Leyenda",
+		en: "Legend"
 	},
 	btnMean: {
-		es_es: "Media General",
-		en_en: "General Mean"
+		es: "Media General",
+		en: "General Mean"
 	},
 	btnGroupMean: {
-		es_es: "Media Del Grupo",
-		en_en: "Group Mean"
+		es: "Media Del Grupo",
+		en: "Group Mean"
 	},
 	noradarText: {
-		es_es: "Selecciona al menos 3 actividades para mostrar el gráfico",
-		en_en: "Select at least 3 activities to show the chart"
+		es: "Selecciona al menos 3 actividades para mostrar el grÃ¡fico",
+		en: "Select at least 3 activities to show the chart"
 	},
 	noGroupText: {
-		es_es: "Selecciona un grupo para mostrar el gráfico",
-		en_en: "Select a group to show the chart"
+		es: "Selecciona un grupo para mostrar el grÃ¡fico",
+		en: "Select a group to show the chart"
 	}
 }
-
 // Establece el idioma
 function setLanguage(lang) {
 	language = lang;
@@ -815,7 +777,6 @@ function setLanguage(lang) {
 	document.getElementById('noGroupText').innerHTML = messages['noGroupText'][lang];
 	
 }
-
 // Modifica el valor de los inputs segun el idioma pasado
 function get_i18n(item, lang) {
 	document.getElementById(item).value = messages[item][lang];

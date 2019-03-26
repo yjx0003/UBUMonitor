@@ -26,6 +26,10 @@ public enum ItemType {
 	public static ItemType get(String name) {
 		return map.getOrDefault(name, CATEGORY);
 	}
+	
+	public String getItemTypeName() {
+		return name;
+	}
 
 	@Override
 	public String toString() {

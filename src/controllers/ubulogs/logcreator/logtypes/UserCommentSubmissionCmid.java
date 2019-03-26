@@ -2,7 +2,7 @@ package controllers.ubulogs.logcreator.logtypes;
 
 import java.util.List;
 
-import model.Log;
+import model.LogLine;
 /**
  * 
  * The user with id '' added the comment with id '' to the submission with id '' for the assignment with course module id ''.
@@ -35,7 +35,7 @@ public class UserCommentSubmissionCmid extends ReferencesLog{
 	}
 
 	@Override
-	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
+	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
 		//TODO core_comment_get_comments
 		//TODO mod_assign_get_submissions

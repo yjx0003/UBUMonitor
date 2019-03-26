@@ -2,7 +2,7 @@ package controllers.ubulogs.logcreator.logtypes;
 
 import java.util.List;
 
-import model.Log;
+import model.LogLine;
 /**
  * The reset of the course with id '' has ended.
  * 
@@ -32,7 +32,7 @@ public class Course extends ReferencesLog {
 		return instance;
 	}
 	@Override
-	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
+	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		// El curso ya se enlaza al crear el log en createLogWithBasicAttributes de la clase ReferencesLog
 
 	}

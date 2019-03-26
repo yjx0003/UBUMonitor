@@ -2,7 +2,7 @@ package controllers.ubulogs.logcreator.logtypes;
 
 import java.util.List;
 
-import model.Log;
+import model.LogLine;
 /**
  * The user with id '' has had their attempt with id '' reviewed by the user with id '' for the quiz with course module id ''.
  * The user with id '' has viewed the summary for the attempt with id '' belonging to the user with id '' for the quiz with course module id ''.
@@ -34,7 +34,7 @@ public class UserAttemptAffectedCmid extends ReferencesLog {
 	}
 	
 	@Override
-	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
+	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
 		//TODO mod_quiz_get_user_attempts
 		setAffectedUserById(log, ids.get(2));

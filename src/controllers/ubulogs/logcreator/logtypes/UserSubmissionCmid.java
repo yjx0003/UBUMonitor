@@ -2,7 +2,7 @@ package controllers.ubulogs.logcreator.logtypes;
 
 import java.util.List;
 
-import model.Log;
+import model.LogLine;
 
 
 /**
@@ -39,7 +39,7 @@ public class UserSubmissionCmid extends ReferencesLog {
 		return instance;
 	}
 	@Override
-	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
+	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
 		//TODO submission id
 		setCourseModuleById(log, ids.get(2));

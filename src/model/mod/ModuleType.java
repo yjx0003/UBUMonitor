@@ -41,7 +41,7 @@ public enum ModuleType {
 			return new Feedback();
 		}
 	},
-	FILE("resource"){
+	FILE("resource") {
 		@Override
 		protected Module create() {
 			return new File();
@@ -59,8 +59,8 @@ public enum ModuleType {
 			return new Forum();
 		}
 	},
-	
-	IMS_PACKAGE("imscp"){
+
+	IMS_PACKAGE("imscp") {
 		@Override
 		protected Module create() {
 			return new IMSContentPackage();
@@ -102,7 +102,7 @@ public enum ModuleType {
 			return new Quiz();
 		}
 	},
-	SCORM_PACKAGE("lti"){
+	SCORM_PACKAGE("scorm") {
 		@Override
 		protected Module create() {
 			return new SCORMPackage();
@@ -135,11 +135,6 @@ public enum ModuleType {
 
 	private String modname;
 	private static Map<String, ModuleType> modTypes;
-
-	ModuleType(String modname) {
-		this.modname = modname;
-	}
-
 	static {
 		modTypes = new HashMap<String, ModuleType>();
 		for (ModuleType mod : ModuleType.values()) {
@@ -147,10 +142,18 @@ public enum ModuleType {
 		}
 	}
 
+	ModuleType(String modname) {
+		this.modname = modname;
+	}
+
 	protected abstract Module create();
 
 	public static ModuleType get(String modname) {
 		return modTypes.get(modname);
+	}
+
+	public String getModName() {
+		return modname;
 	}
 
 	public static Module createInstance(String modname) {

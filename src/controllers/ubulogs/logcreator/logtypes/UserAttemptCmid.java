@@ -2,7 +2,7 @@ package controllers.ubulogs.logcreator.logtypes;
 
 import java.util.List;
 
-import model.Log;
+import model.LogLine;
 
 /**
  * The user with id '' has had their attempt with id '' marked as abandoned for the quiz with course module id ''.
@@ -34,7 +34,7 @@ public class UserAttemptCmid extends ReferencesLog {
 	}
 
 	@Override
-	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
+	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
 		//TODO Habria que usar la funcion mod_quiz_get_user_attempts de moodle para recoger las ids de los intentos de quiz
 		setCourseModuleById(log, ids.get(2));

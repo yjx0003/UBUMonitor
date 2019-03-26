@@ -1,6 +1,8 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +10,12 @@ import java.util.Map;
 import model.mod.Module;
 import model.mod.ModuleType;
 
-public class GradeItem {
+public class GradeItem implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Grade item id
 	 */
@@ -18,7 +25,7 @@ public class GradeItem {
 	 * Grade item name
 	 */
 	private String itemname;
-	
+
 	private ItemType itemtype;
 	private ModuleType itemModule;
 	private Module module;
@@ -129,9 +136,29 @@ public class GradeItem {
 	public void setLevel(int level) {
 		this.level = level;
 	}
-	
-	public void addUserGrade(EnrolledUser enrolledUser,double grade) {
+
+	public void addUserGrade(EnrolledUser enrolledUser, double grade) {
 		graderaw.put(enrolledUser, grade);
+	}
+
+	public ModuleType getItemModule() {
+		return itemModule;
+	}
+
+	public void setItemModule(ModuleType itemModule) {
+		this.itemModule = itemModule;
+	}
+
+	public Collection<Double> getEnrolledUserGrades() {
+		return graderaw.values();
+	}
+
+	public double getEnrolledUserGrade(EnrolledUser user) {
+		return graderaw.get(user);
+	}
+
+	public String getIconName() {
+		return itemtype == ItemType.MOD ? itemModule.getModName() : itemtype.getItemTypeName();
 	}
 
 	@Override
@@ -147,12 +174,32 @@ public class GradeItem {
 				+ "]";
 	}
 
-	public ModuleType getItemModule() {
-		return itemModule;
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
-	public void setItemModule(ModuleType itemModule) {
-		this.itemModule = itemModule;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		GradeItem other = (GradeItem) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+
+	public String getGradeAdjustedTo10(EnrolledUser  user) {
+		double grade=getEnrolledUserGrade(user);
+		if (Double.isNaN(grade)) {
+			return "Nan";
+		}
+		//Normalizacion de la nota del alumno en rango [0,10]
+		return Double.toString(((grade-grademin)/(grademax-grademin))*10);
 	}
 
 }

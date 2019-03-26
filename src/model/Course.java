@@ -2,18 +2,13 @@ package model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import model.mod.Module;
+import model.mod.ModuleType;
 
 /**
  * Clase curso (asignatura). Cada curso tiene un calificador (compuesto por
@@ -33,20 +28,20 @@ public class Course implements Serializable {
 	private String summary;
 	private DescriptionFormat summaryformat;
 
-	private Map<Integer, EnrolledUser> enrolledUsers;
-	private Map<Integer, Role> roles; // roles que hay en el curso
-	private Map<Integer, Group> groups; // grupos que hay en el curso
-	private Map<Integer,Module> modules;
-	private GradeItem rootGradeItem;
-	private List<Log> logs;
+	private List<EnrolledUser> enrolledUsers;
+	private List<Role> roles; // roles que hay en el curso
+	private List<Group> groups; // grupos que hay en el curso
+	private List<Module> modules;
+	private List<GradeItem> gradeItems;
+	private List<LogLine> logs;
 
 	static final Logger logger = LoggerFactory.getLogger(Course.class);
 
 	public Course() {
-		this.enrolledUsers = new HashMap<>();
-		this.roles= new HashMap<>();
-		this.groups= new HashMap<>();
-
+		this.enrolledUsers = new ArrayList<>();
+		this.roles = new ArrayList<>();
+		this.groups = new ArrayList<>();
+		this.gradeItems=new ArrayList<>();
 		this.logs = new ArrayList<>();
 	}
 
@@ -164,8 +159,6 @@ public class Course implements Serializable {
 	public void setSummary(String summary) {
 		this.summary = summary;
 	}
-	
-	
 
 	public DescriptionFormat getSummaryformat() {
 		return summaryformat;
@@ -175,62 +168,108 @@ public class Course implements Serializable {
 		this.summaryformat = summaryformat;
 	}
 
-	public Map<Integer, Group> getGroups() {
-		return groups;
-	}
-
-	public void setGroups(Map<Integer, Group> groups) {
-		this.groups = groups;
-	}
-
-	public Map<Integer, Module> getModules() {
-		return modules;
-	}
-
-	public void setModules(Map<Integer, Module> modules) {
-		this.modules = modules;
-	}
-
 	public GradeItem getRootGradeItem() {
-		return rootGradeItem;
+		return gradeItems.stream()
+				.filter(g -> g.getFather() == null)
+				.findFirst()
+				.get();
 	}
 
-	public void setRootGradeItem(GradeItem rootGradeItem) {
-		this.rootGradeItem = rootGradeItem;
+	public List<GradeItem> getGradeItems() {
+		return gradeItems;
 	}
 
-	public List<Log> getLogs() {
+	public void setGradeItems(List<GradeItem> gradeItems) {
+		this.gradeItems = gradeItems;
+	}
+
+	public List<LogLine> getLogs() {
 		return logs;
 	}
 
-	public void setLogs(List<Log> logs) {
+	public void setLogs(List<LogLine> logs) {
 		this.logs = logs;
 	}
 
-	public void setEnrolledUsers(Map<Integer, EnrolledUser> enrolledUsers) {
-		this.enrolledUsers = enrolledUsers;
+	public List<Role> getRoles() {
+		return roles;
 	}
 
-	public void setRoles(Map<Integer, Role> roles) {
+	public void setRoles(List<Role> roles) {
 		this.roles = roles;
 	}
 
-
-
-	public void addEnrolledUser(int id,EnrolledUser user) {
-		enrolledUsers.put(id,user);
+	public List<Group> getGroups() {
+		return groups;
 	}
 
-	  
+	public void setGroups(List<Group> groups) {
+		this.groups = groups;
+	}
 
-	public void addLog(Log log) {
+	public List<Module> getModules() {
+		return modules;
+	}
+
+	public void setModules(List<Module> modules) {
+		this.modules = modules;
+	}
+
+	public void setEnrolledUsers(List<EnrolledUser> enrolledUsers) {
+		this.enrolledUsers = enrolledUsers;
+	}
+
+	public void addEnrolledUser(EnrolledUser user) {
+		enrolledUsers.add(user);
+	}
+
+	public void addLog(LogLine log) {
 		logs.add(log);
 
+	}
+
+	public List<EnrolledUser> getEnrolledUsers() {
+		return enrolledUsers;
+	}
+
+	public void addRole(Role role) {
+		roles.add(role);
+
+	}
+
+	public List<ModuleType> getUniqueModuleTypes() {
+		List<ModuleType> uniqueModulesTypes = new ArrayList<>();
+		for (GradeItem gradeItem : gradeItems) {
+			ModuleType moduleType = gradeItem.getItemModule();
+			if (moduleType != null && uniqueModulesTypes.contains(moduleType)) {
+				uniqueModulesTypes.add(moduleType);
+			}
+		}
+		return uniqueModulesTypes;
 	}
 
 	@Override
 	public String toString() {
 		return this.fullName;
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Course other = (Course) obj;
+		if (id != other.id)
+			return false;
+		return true;
 	}
 
 }

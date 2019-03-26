@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -35,11 +39,8 @@ import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Course;
-import model.EnrolledUser;
 import model.Stats;
-import model.UBUGrades;
 import persistence.Encryption;
-import sun.font.CreatedFontTracker;
 
 /**
  * Clase controlador de la pantalla de bienvenida en la que se muestran los
@@ -53,7 +54,7 @@ public class WelcomeController implements Initializable {
 
 	static final Logger logger = LoggerFactory.getLogger(WelcomeController.class);
 	private String directoryObject;
-	private UBUGrades ubuGrades = UBUGrades.getInstance();
+	private Controller controller = Controller.getInstance();
 
 	@FXML
 	private Label lblUser;
@@ -79,11 +80,11 @@ public class WelcomeController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		try {
-			directoryObject = "./cache/" + ubuGrades.getUser().getFullName() + "/";
-			lblUser.setText(ubuGrades.getUser().getFullName());
+			directoryObject = "./cache/" + controller.getUser().getFullName() + "/";
+			lblUser.setText(controller.getUser().getFullName());
 			logger.info("Cargando cursos...");
 
-			ObservableList<Course> list = FXCollections.observableArrayList(ubuGrades.getUser().getCourses());
+			ObservableList<Course> list = FXCollections.observableArrayList(controller.getUser().getCourses());
 			list.sort(Comparator.comparing(Course::getFullName));
 			progressBar.visibleProperty().set(false);
 			listCourses.setItems(list);
@@ -100,12 +101,12 @@ public class WelcomeController implements Initializable {
 				if (f.exists() && f.isFile()) {
 					chkUpdateData.setSelected(false);
 					chkUpdateData.setDisable(false);
-					SimpleDateFormat fecha = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-					lblDateUpdate.setText(fecha.format(f.lastModified()));
+					
+					//LocalDateTime fecha=LocalDateTime.ofInstant(Instant.ofEpochMilli(f.lastModified()), ZoneId.systemDefault())
 				} else {
 					chkUpdateData.setSelected(true);
 					chkUpdateData.setDisable(true);
-					lblDateUpdate.setText(ubuGrades.getResourceBundle().getString("label.never"));
+					lblDateUpdate.setText(controller.getResourceBundle().getString("label.never"));
 
 				}
 			});
@@ -127,11 +128,11 @@ public class WelcomeController implements Initializable {
 		// Guardamos en una variable el curso seleccionado por el usuario
 		Course selectedCourse = listCourses.getSelectionModel().getSelectedItem();
 		if (selectedCourse == null) {
-			lblNoSelect.setText(ubuGrades.getResourceBundle().getString("error.nocourse"));
+			lblNoSelect.setText(controller.getResourceBundle().getString("error.nocourse"));
 			return;
 		}
-		ubuGrades.setActualCourse(selectedCourse);
-		logger.info(" Curso seleccionado: " + ubuGrades.getActualCourse().getFullName());
+		controller.setActualCourse(selectedCourse);
+		logger.info(" Curso seleccionado: " + controller.getActualCourse().getFullName());
 
 		if (chkUpdateData.isSelected()) {
 			downloadData();
@@ -152,17 +153,17 @@ public class WelcomeController implements Initializable {
 		}
 
 		logger.info("Guardando los datos encriptados en: {}", f.getAbsolutePath());
-		Encryption.encrypt(ubuGrades.getPassword(),
+		Encryption.encrypt(controller.getPassword(),
 				directoryObject + listCourses.selectionModelProperty().getValue().getSelectedItem(),
-				ubuGrades.getActualCourse());
+				controller.getActualCourse());
 
 	}
 
 	private void loadData() {
-		Course curso = (Course) Encryption.decrypt(ubuGrades.getPassword(),
+		Course curso = (Course) Encryption.decrypt(controller.getPassword(),
 				directoryObject + listCourses.selectionModelProperty().getValue().getSelectedItem());
 		if (curso != null) {
-			ubuGrades.setActualCourse(curso);
+			controller.setActualCourse(curso);
 		}
 
 	}
@@ -191,19 +192,19 @@ public class WelcomeController implements Initializable {
 		try {
 			// Accedemos a la siguiente ventana
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"),
-					ubuGrades.getResourceBundle());
-			ubuGrades.getStage().close();
-			ubuGrades.setStage(new Stage());
+					controller.getResourceBundle());
+			controller.getStage().close();
+			controller.setStage(new Stage());
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
-			ubuGrades.getStage().setScene(scene);
-			ubuGrades.getStage().getIcons().add(new Image("/img/logo_min.png"));
-			ubuGrades.getStage().setTitle("UBUGrades");
-			ubuGrades.getStage().setResizable(true);
-			ubuGrades.getStage().setMinHeight(600);
-			ubuGrades.getStage().setMinWidth(800);
-			ubuGrades.getStage().setMaximized(true);
-			ubuGrades.getStage().show();
+			controller.getStage().setScene(scene);
+			controller.getStage().getIcons().add(new Image("/img/logo_min.png"));
+			controller.getStage().setTitle("UBUGrades");
+			controller.getStage().setResizable(true);
+			controller.getStage().setMinHeight(600);
+			controller.getStage().setMinWidth(800);
+			controller.getStage().setMaximized(true);
+			controller.getStage().show();
 			lblNoSelect.setText("");
 		} catch (IOException e) {
 			logger.info("No se ha podido cargar la ventana Main.fxml: {}", e);
@@ -221,31 +222,30 @@ public class WelcomeController implements Initializable {
 			@Override
 			protected Void call() {
 				try {
-					ubuGrades.getStage().getScene().setCursor(Cursor.WAIT);
-					logger.info("Cargando datos del curso: " + ubuGrades.getActualCourse().getFullName());
+					
+					logger.info("Cargando datos del curso: " + controller.getActualCourse().getFullName());
 					// Establecemos los usuarios matriculados
-					updateMessage("update_" + ubuGrades.getResourceBundle().getString("label.loadingstudents"));
-					CreatorUBUGradesController.createEnrolledUsers(ubuGrades.getActualCourse().getId());
+					updateMessage("update_" + controller.getResourceBundle().getString("label.loadingstudents"));
+					CreatorUBUGradesController.createEnrolledUsers(controller.getActualCourse().getId());
 		
 		
 
-					updateMessage("update_" + ubuGrades.getResourceBundle().getString("label.loadingqualifier"));
+					updateMessage("update_" + controller.getResourceBundle().getString("label.loadingqualifier"));
 					// Establecemos calificador del curso
-					CreatorUBUGradesController.createGradeItems(ubuGrades.getActualCourse().getId());
+					CreatorUBUGradesController.createGradeItems(controller.getActualCourse().getId());
 					
 
-					updateMessage("update_" + ubuGrades.getResourceBundle().getString("label.loadingstats"));
+					updateMessage("update_" + controller.getResourceBundle().getString("label.loadingstats"));
 					// Establecemos las estadisticas
-					Stats.getStats(ubuGrades.getSession());
+					controller.createStats();
 
-					Thread.sleep(50);
 					// Indica que se ha terminado el trabajo
 					updateMessage("end");
 				} catch (Exception e) {
 					logger.error("Error al cargar los datos de los alumnos: {}", e);
 					updateMessage("Se produjo un error inesperado al cargar los datos.\n" + e.getLocalizedMessage());
 				} finally {
-					ubuGrades.getStage().getScene().setCursor(Cursor.DEFAULT);
+					controller.getStage().getScene().setCursor(Cursor.DEFAULT);
 				}
 				return null;
 			}
@@ -264,15 +264,15 @@ public class WelcomeController implements Initializable {
 		alert.setTitle("UbuGrades");
 		alert.setHeaderText("Error");
 		alert.initModality(Modality.APPLICATION_MODAL);
-		alert.initOwner(ubuGrades.getStage());
+		alert.initOwner(controller.getStage());
 		alert.getDialogPane().setContentText(mensaje);
 
-		ButtonType buttonSalir = new ButtonType(ubuGrades.getResourceBundle().getString("label.close"));
+		ButtonType buttonSalir = new ButtonType(controller.getResourceBundle().getString("label.close"));
 		alert.getButtonTypes().setAll(buttonSalir);
 
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.isPresent() && result.get() == buttonSalir)
-			ubuGrades.getStage().close();
+			controller.getStage().close();
 	}
 
 }

@@ -2,7 +2,7 @@ package controllers.ubulogs.logcreator.logtypes;
 
 import java.util.List;
 
-import model.Log;
+import model.LogLine;
 
 
 /**
@@ -35,7 +35,7 @@ public class UserFilesCmid extends ReferencesLog {
 	}
 
 	@Override
-	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
+	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
 		//number of files ids.get(1);
 		setCourseModuleById(log, ids.get(2));

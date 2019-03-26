@@ -2,7 +2,7 @@ package controllers.ubulogs.logcreator.logtypes;
 
 import java.util.List;
 
-import model.Log;
+import model.LogLine;
 /**
  * The user with id '' updated section number '' for the course with id ''
  * The user with id '' viewed the section number '3' of the course with id ''.
@@ -36,7 +36,7 @@ public class UserSectionCourse extends ReferencesLog{
 	}
 	
 	@Override
-	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
+	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
 		//section id
 		// El curso ya se enlaza al crear el log en createLogWithBasicAttributes de la clase ReferencesLog

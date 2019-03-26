@@ -2,7 +2,7 @@ package controllers.ubulogs.logcreator.logtypes;
 
 import java.util.List;
 
-import model.Log;
+import model.LogLine;
 /**
  * Item created with ID .
  * Item with ID  deleted.
@@ -31,7 +31,7 @@ public class Item extends ReferencesLog {
 		return instance;
 	}
 	@Override
-	public void setLogReferencesAttributes(Log log, List<Integer> ids) {
+	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		// TODO Auto-generated method stub
 
 	}

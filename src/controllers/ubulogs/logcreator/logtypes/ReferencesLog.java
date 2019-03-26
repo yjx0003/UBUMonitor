@@ -7,18 +7,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import controllers.ubugrades.GettersUBUGrades;
 import controllers.ubulogs.logcreator.CompEventKey;
 import controllers.ubulogs.logcreator.Component;
 import controllers.ubulogs.logcreator.Event;
 import controllers.ubulogs.logcreator.LogCreator;
-import model.Course;
+import model.BBDD;
 import model.EnrolledUser;
-import model.Log;
+import model.LogLine;
 import model.mod.Module;
 
 public abstract class ReferencesLog {
-	protected static Course course;
+	private static BBDD BBDD;
+	
 	public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yy, kk:mm");
 
 	private static Map<CompEventKey, ReferencesLog> logTypes = new HashMap<CompEventKey, ReferencesLog>();
@@ -165,20 +165,22 @@ public abstract class ReferencesLog {
 	}
 
 	public static ReferencesLog getReferenceLog(Component component, Event eventName) {
-		return logTypes.get(new CompEventKey(component, eventName));
+		return logTypes.getOrDefault(new CompEventKey(component, eventName), Default.getInstance());
 	}
 
-	public static void setCourse(Course course) {
-		ReferencesLog.course = course;
+
+	
+	public static void setBBDD(BBDD BBDD) {
+		ReferencesLog.BBDD=BBDD;
 	}
 
 	public static void setZoneId(ZoneId zoneId) {
 		ReferencesLog.dateTimeFormatter = dateTimeFormatter.withZone(zoneId);
 	}
 
-	public static Log createLogWithBasicAttributes(Map<String, String> mapLog) {
+	public static LogLine createLogWithBasicAttributes(Map<String, String> mapLog) {
 
-		Log log = new Log();
+		LogLine log = new LogLine();
 		if (mapLog.containsKey(LogCreator.TIME)) {
 			log.setTime(ZonedDateTime.parse(mapLog.get(LogCreator.TIME), dateTimeFormatter));
 		}
@@ -190,29 +192,28 @@ public abstract class ReferencesLog {
 		log.setOrigin(mapLog.get(LogCreator.ORIGIN));
 		log.setIPAdress(mapLog.get(LogCreator.IP_ADRESS));
 
-		log.setCourse(course);
-		course.addLog(log);
+		BBDD.getActualCourse().addLog(log);
 
 		return log;
 	}
 
-	public static void setUserById(Log log, int id) {
-		EnrolledUser user = GettersUBUGrades.getEnrolledUserById(id);
+	public static void setUserById(LogLine log, int id) {
+		EnrolledUser user = BBDD.getEnrolledUserById(id);
 		user.addLog(log);
 		log.setUser(user);
 	}
 
-	public static void setAffectedUserById(Log log, int id) {
-		EnrolledUser affectedUser = GettersUBUGrades.getEnrolledUserById(id);
+	public static void setAffectedUserById(LogLine log, int id) {
+		EnrolledUser affectedUser = BBDD.getEnrolledUserById(id);
 		affectedUser.addLog(log);
 		log.setAffectedUser(affectedUser);
 	}
 
-	public static void setCourseModuleById(Log log, int id) {
-		Module courseModule = GettersUBUGrades.getCourseModuleById(id);
+	public static void setCourseModuleById(LogLine log, int id) {
+		Module courseModule = BBDD.getCourseModuleById(id);
 		courseModule.addLog(log);
 		log.setCourseModule(courseModule);
 	}
 
-	public abstract void setLogReferencesAttributes(Log log, List<Integer> ids);
+	public abstract void setLogReferencesAttributes(LogLine log, List<Integer> ids);
 }

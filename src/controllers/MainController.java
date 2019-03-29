@@ -440,42 +440,43 @@ public class MainController implements Initializable {
 	 */
 	public void filterCalifications() {
 		try {
-			List<GradeItem> grcl = controller.getActualCourse().getGradeItems();
+			GradeItem root=controller.getActualCourse().getRootGradeItem();
+			List<GradeItem> gradeItems=controller.getActualCourse().getGradeItems();
 			// Establecemos la raiz del Treeview
-			TreeItem<GradeItem> root = new TreeItem<>(grcl.get(0));
-			MainController.setIcon(root);
+			TreeItem<GradeItem> treeItemRoot = new TreeItem<>(root);
+			MainController.setIcon(treeItemRoot);
 			// Llamamos recursivamente para llenar el Treeview
 			if (filterType.equals(TODOS) && patternCalifications.equals("")) {
 				// Sin filtro y sin patrón
-				for (int k = 0; k < grcl.get(0).getChildren().size(); k++) {
-					TreeItem<GradeItem> item = new TreeItem<>(grcl.get(0).getChildren().get(k));
+				for (int k = 0; k < root.getChildren().size(); k++) {
+					TreeItem<GradeItem> item = new TreeItem<>(root.getChildren().get(k));
 					MainController.setIcon(item);
-					root.getChildren().add(item);
-					root.setExpanded(true);
-					setTreeview(item, grcl.get(0).getChildren().get(k));
+					treeItemRoot.getChildren().add(item);
+					treeItemRoot.setExpanded(true);
+					setTreeview(item, root.getChildren().get(k));
 				}
 			} else { // Con filtro
-				for (int k = 1; k < grcl.size(); k++) {
-					TreeItem<GradeItem> item = new TreeItem<>(grcl.get(k));
+				for (int k = 1; k < gradeItems.size(); k++) {
+					TreeItem<GradeItem> item = new TreeItem<>(gradeItems.get(k));
 					boolean activityYes = false;
-					if (filterType.equals(grcl.get(k).getItemModule().getModName()) || filterType.equals(TODOS)) {
+					if (filterType.equals(gradeItems.get(k).getIconName()) || filterType.equals(TODOS)) {
 						activityYes = true;
 					}
 					Pattern pattern = Pattern.compile(patternCalifications.toLowerCase());
-					Matcher match = pattern.matcher(grcl.get(k).getItemname().toLowerCase());
+					Matcher match = pattern.matcher(gradeItems.get(k).getItemname().toLowerCase());
 					boolean patternYes = false;
 					if (patternCalifications.equals("") || match.find()) {
 						patternYes = true;
 					}
 					if (activityYes && patternYes) {
 						MainController.setIcon(item);
-						root.getChildren().add(item);
+						treeItemRoot.getChildren().add(item);
 					}
-					root.setExpanded(true);
+					treeItemRoot.setExpanded(true);
 				}
 			}
 			// Establecemos la raiz del treeview
-			tvwGradeReport.setRoot(root);
+			tvwGradeReport.setRoot(treeItemRoot);
 		} catch (Exception e) {
 			logger.error("Error al filtrar los elementos del calificador: {}", e);
 		}

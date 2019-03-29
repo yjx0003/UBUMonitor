@@ -139,6 +139,8 @@ public class GradeItem implements Serializable{
 
 	public void addUserGrade(EnrolledUser enrolledUser, double grade) {
 		graderaw.put(enrolledUser, grade);
+		enrolledUser.addGrade(this, grade);
+		
 	}
 
 	public ModuleType getItemModule() {
@@ -163,15 +165,7 @@ public class GradeItem implements Serializable{
 
 	@Override
 	public String toString() {
-		List<String> children = new ArrayList<String>();
-		for (GradeItem g : this.children) {
-			children.add(g.getItemname());
-		}
-		String father = this.father == null ? null : this.father.itemname;
-		return "GradeItem [id=" + id + ", itemname=" + itemname + ", itemtype=" + itemtype + ", module=" + module
-				+ ", weightraw=" + weightraw + ", graderaw=" + graderaw + ", grademin=" + grademin + ", grademax="
-				+ grademax + ", course=" + course + ", father=" + father + ", children=" + children + ", level=" + level
-				+ "]";
+	return this.itemname;
 	}
 
 	@Override
@@ -195,11 +189,13 @@ public class GradeItem implements Serializable{
 
 	public String getGradeAdjustedTo10(EnrolledUser  user) {
 		double grade=getEnrolledUserGrade(user);
-		if (Double.isNaN(grade)) {
-			return "Nan";
+		if (!Double.isNaN(grade)) {
+			//Normalizacion de la nota del alumno en rango [0,10]
+			grade=((grade-grademin)/(grademax-grademin))*10;
+			
 		}
-		//Normalizacion de la nota del alumno en rango [0,10]
-		return Double.toString(((grade-grademin)/(grademax-grademin))*10);
+		
+		return Double.toString(grade);
 	}
 
 }

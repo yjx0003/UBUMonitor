@@ -153,40 +153,12 @@ public class EnrolledUser implements Serializable {
 
 	private Map<GradeItem, Double> grades;
 
-	private EnrolledUser(Builder builder) {
-		id = builder.id;
-		userName = builder.username;
-		firstname = builder.firstname;
-		lastname = builder.lastname;
-		fullName = builder.fullname;
-		email = builder.email;
-		address = builder.address;
-		phone1 = builder.phone1;
-		phone2 = builder.phone2;
-		icq = builder.icq;
-		skype = builder.skype;
-		yahoo = builder.yahoo;
-		aim = builder.aim;
-		msn = builder.msn;
-		department = builder.department;
-		institution = builder.institution;
-		idnumber = builder.idnumber;
-		interests = builder.interests;
-		firstaccess = builder.firstaccess;
-		lastaccess = builder.lastaccess;
-		description = builder.description;
-		descriptionformat = builder.descriptionformat;
-		city = builder.city;
-		url = builder.url;
-		country = builder.country;
-		profileimageurlsmall = builder.profileimageurlsmall;
-		profileimageurl = builder.profileimageurl;
-
-		groups = builder.groups;
-		roles = builder.roles;
-		enrolledcourses = builder.enrolledcourses;
-		logs = builder.logs;
-		grades=builder.grades;
+	public EnrolledUser() {
+		roles = new ArrayList<>();
+		logs = new ArrayList<>();
+		enrolledcourses = new ArrayList<>();
+		grades=new HashMap<>();
+		groups=new ArrayList<>();
 	}
 
 	public int getId() {
@@ -405,6 +377,22 @@ public class EnrolledUser implements Serializable {
 		this.profileimageurl = profileimageurl;
 	}
 
+	public List<LogLine> getLogs() {
+		return logs;
+	}
+
+	public void setLogs(List<LogLine> logs) {
+		this.logs = logs;
+	}
+
+	public Map<GradeItem, Double> getGrades() {
+		return grades;
+	}
+
+	public void setGrades(Map<GradeItem, Double> grades) {
+		this.grades = grades;
+	}
+
 	public List<Group> getGroups() {
 		return groups;
 	}
@@ -433,16 +421,31 @@ public class EnrolledUser implements Serializable {
 		this.logs.add(log);
 	}
 
+	public void addCourse(Course couse) {
+		this.enrolledcourses.add(couse);
+	}
+
+	public void addGroup(Group group) {
+		this.groups.add(group);
+		group.addEnrolledUser(this);
+	}
+
+	public void addRole(Role role) {
+		this.roles.add(role);
+		role.addEnrolledUser(this);
+	}
+
 	@Override
 	public int hashCode() {
 		return id;
 	}
-	
+
 	public double getGrade(GradeItem gradeItem) {
 		return grades.get(gradeItem);
 	}
-	public void addGrade(GradeItem gradeItem,double grade) {
-		grades.put(gradeItem , grade);
+
+	public void addGrade(GradeItem gradeItem, double grade) {
+		grades.put(gradeItem, grade);
 	}
 
 	@Override
@@ -462,234 +465,6 @@ public class EnrolledUser implements Serializable {
 	@Override
 	public String toString() {
 		return lastname + ", " + firstname;
-	}
-
-	public static Builder newBuilder() {
-		return new Builder();
-	}
-
-	public static class Builder {
-
-		private int id;
-		private String username;
-		private String firstname;
-		private String lastname;
-		private String fullname;
-		private String email;
-		private String address;
-		private String phone1;
-		private String phone2;
-		private String icq;
-		private String skype;
-		private String yahoo;
-		private String aim;
-		private String msn;
-		private String department;
-		private String institution;
-		private String idnumber;
-		private String interests;
-		private Instant firstaccess;
-		private Instant lastaccess;
-		private String description;
-		private DescriptionFormat descriptionformat;
-		private String city;
-		private String url;
-		private String country;
-		private String profileimageurlsmall;
-		private String profileimageurl;
-		private List<Group> groups;
-		private List<Role> roles;
-		private List<Course> enrolledcourses;
-		private List<LogLine> logs;
-		private Map<GradeItem, Double> grades;
-
-		public Builder() {
-			groups = new ArrayList<Group>();
-			roles = new ArrayList<Role>();
-			enrolledcourses = new ArrayList<Course>();
-			logs = new ArrayList<LogLine>();
-			grades = new HashMap<>();
-		}
-
-		public Builder setId(int id) {
-			this.id = id;
-			return this;
-		}
-
-		public Builder setUsername(String username) {
-			this.username = username;
-			return this;
-		}
-
-		public Builder setFirstname(String firstname) {
-			this.firstname = firstname;
-			return this;
-		}
-
-		public Builder setLastname(String lastname) {
-			this.lastname = lastname;
-			return this;
-		}
-
-		public Builder setFullname(String fullname) {
-			this.fullname = fullname;
-			return this;
-		}
-
-		public Builder setEmail(String email) {
-			this.email = email;
-			return this;
-		}
-
-		public Builder setAddress(String address) {
-			this.address = address;
-			return this;
-		}
-
-		public Builder setPhone1(String phone1) {
-			this.phone1 = phone1;
-			return this;
-		}
-
-		public Builder setPhone2(String phone2) {
-			this.phone2 = phone2;
-			return this;
-		}
-
-		public Builder setIcq(String icq) {
-			this.icq = icq;
-			return this;
-		}
-
-		public Builder setSkype(String skype) {
-			this.skype = skype;
-			return this;
-		}
-
-		public Builder setYahoo(String yahoo) {
-			this.yahoo = yahoo;
-			return this;
-		}
-
-		public Builder setAim(String aim) {
-			this.aim = aim;
-			return this;
-		}
-
-		public Builder setMsn(String msn) {
-			this.msn = msn;
-			return this;
-		}
-
-		public Builder setDepartment(String department) {
-			this.department = department;
-			return this;
-		}
-
-		public Builder setInstitution(String institution) {
-			this.institution = institution;
-			return this;
-		}
-
-		public Builder setIdnumber(String idnumber) {
-			this.idnumber = idnumber;
-			return this;
-		}
-
-		public Builder setInterests(String interests) {
-			this.interests = interests;
-			return this;
-		}
-
-		public Builder setFirstaccess(Instant firstaccess) {
-			this.firstaccess = firstaccess;
-			return this;
-		}
-
-		public Builder setLastaccess(Instant lastaccess) {
-			this.lastaccess = lastaccess;
-			return this;
-		}
-
-		public Builder setDescription(String description) {
-			this.description = description;
-			return this;
-		}
-
-		public Builder setDescriptionformat(DescriptionFormat descriptionformat) {
-			this.descriptionformat = descriptionformat;
-			return this;
-		}
-
-		public Builder setCity(String city) {
-			this.city = city;
-			return this;
-		}
-
-		public Builder setUrl(String url) {
-			this.url = url;
-			return this;
-		}
-
-		public Builder setCountry(String country) {
-			this.country = country;
-			return this;
-		}
-
-		public Builder setProfileimageurlsmall(String profileimageurlsmall) {
-			this.profileimageurlsmall = profileimageurlsmall;
-			return this;
-		}
-
-		public Builder setProfileimageurl(String profileimageurl) {
-			this.profileimageurl = profileimageurl;
-			return this;
-		}
-
-		public Builder setRoles(List<Role> roles) {
-			this.roles = roles;
-			return this;
-		}
-
-		public Builder setGroups(List<Group> groups) {
-			this.groups = groups;
-			return this;
-		}
-
-		public Builder setEnrolledcourses(List<Course> enrolledcourses) {
-			this.enrolledcourses = enrolledcourses;
-			return this;
-		}
-
-		public Builder setFirstaccess(int firstaccess) {
-			this.firstaccess = Instant.ofEpochSecond(firstaccess);
-			return this;
-		}
-
-		public Builder setLastaccess(int lastaccess) {
-			this.lastaccess = Instant.ofEpochSecond(lastaccess);
-			return this;
-		}
-
-		public Builder setDescriptionformat(int descriptionformat) {
-			this.descriptionformat = DescriptionFormat.get(descriptionformat);
-			return this;
-		}
-
-		public Builder setLogs(List<LogLine> logs) {
-			this.logs = logs;
-			return this;
-		}
-
-		public Builder setGrades(Map<GradeItem, Double> grades) {
-			this.grades = grades;
-			return this;
-		}
-
-		public EnrolledUser build() {
-			return new EnrolledUser(this);
-		}
-
 	}
 
 }

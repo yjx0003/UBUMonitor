@@ -149,7 +149,7 @@ public enum ModuleType {
 	protected abstract Module create();
 
 	public static ModuleType get(String modname) {
-		return modTypes.get(modname);
+		return modTypes.getOrDefault(modname, MODULE);
 	}
 
 	public String getModName() {
@@ -157,6 +157,10 @@ public enum ModuleType {
 	}
 
 	public static Module createInstance(String modname) {
-		return modTypes.getOrDefault(modname, MODULE).create();
+		return modTypes.get(modname).create();
+	}
+	@Override
+	public String toString() {
+		return modname;
 	}
 }

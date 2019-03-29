@@ -22,6 +22,7 @@ public class Group implements Serializable {
 	private DescriptionFormat descriptionFormat;
 
 	private List<EnrolledUser> enrolledUsers;
+	private Course course;
 
 	/**
 	 * Constructor de la clase Group. Establece un grupo.
@@ -114,6 +115,20 @@ public class Group implements Serializable {
 	public void setEnrolledUsers(List<EnrolledUser> enrolledUsers) {
 		this.enrolledUsers = enrolledUsers;
 	}
+	
+	
+	public Course getCourse() {
+		return course;
+	}
+
+	public void addEnrolledUser(EnrolledUser user) {
+		enrolledUsers.add(user);
+	}
+	
+
+	public void setCourse(Course course) {
+		this.course = course;
+	}
 
 	@Override
 	public String toString() {
@@ -125,9 +140,7 @@ public class Group implements Serializable {
 		return id;
 	}
 
-	public void addEnrolledUser(EnrolledUser user) {
-		enrolledUsers.add(user);
-	}
+
 	
 	@Override
 	public boolean equals(Object obj) {
@@ -142,5 +155,6 @@ public class Group implements Serializable {
 			return false;
 		return true;
 	}
+
 
 }

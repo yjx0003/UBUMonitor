@@ -3,11 +3,6 @@ package controllers;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -39,7 +34,6 @@ import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Course;
-import model.Stats;
 import persistence.Encryption;
 
 /**
@@ -101,8 +95,10 @@ public class WelcomeController implements Initializable {
 				if (f.exists() && f.isFile()) {
 					chkUpdateData.setSelected(false);
 					chkUpdateData.setDisable(false);
-					
-					//LocalDateTime fecha=LocalDateTime.ofInstant(Instant.ofEpochMilli(f.lastModified()), ZoneId.systemDefault())
+
+					// LocalDateTime
+					// fecha=LocalDateTime.ofInstant(Instant.ofEpochMilli(f.lastModified()),
+					// ZoneId.systemDefault())
 				} else {
 					chkUpdateData.setSelected(true);
 					chkUpdateData.setDisable(true);
@@ -222,18 +218,15 @@ public class WelcomeController implements Initializable {
 			@Override
 			protected Void call() {
 				try {
-					
+
 					logger.info("Cargando datos del curso: " + controller.getActualCourse().getFullName());
 					// Establecemos los usuarios matriculados
 					updateMessage("update_" + controller.getResourceBundle().getString("label.loadingstudents"));
 					CreatorUBUGradesController.createEnrolledUsers(controller.getActualCourse().getId());
-		
-		
 
 					updateMessage("update_" + controller.getResourceBundle().getString("label.loadingqualifier"));
 					// Establecemos calificador del curso
 					CreatorUBUGradesController.createGradeItems(controller.getActualCourse().getId());
-					
 
 					updateMessage("update_" + controller.getResourceBundle().getString("label.loadingstats"));
 					// Establecemos las estadisticas

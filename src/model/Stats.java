@@ -1,5 +1,7 @@
 package model;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +25,7 @@ public class Stats {
 
 	static final Logger logger = LoggerFactory.getLogger(Stats.class);
 
-	private final NumberFormat numberFormat;
+	private final DecimalFormat decimalFormat;
 	private static final int MAX_DECIMAL_DIGITS = 2;
 	private static final int MIN_DECIMAL_DIGITS = 0;
 
@@ -39,10 +41,16 @@ public class Stats {
 	 */
 	private Map<Group, Map<GradeItem, DescriptiveStatistics>> groupsStats;
 
-	public Stats(Course course, Locale locale) throws Exception {
-		numberFormat = NumberFormat.getInstance(locale);
-		numberFormat.setMaximumFractionDigits(MAX_DECIMAL_DIGITS);
-		numberFormat.setMinimumFractionDigits(MIN_DECIMAL_DIGITS);
+	public Stats(Course course) throws Exception {
+		decimalFormat = new DecimalFormat();
+	
+		decimalFormat.setMaximumFractionDigits(MAX_DECIMAL_DIGITS);
+		decimalFormat.setMinimumFractionDigits(MIN_DECIMAL_DIGITS);
+		
+		DecimalFormatSymbols decimalFormatSymbols = decimalFormat.getDecimalFormatSymbols();
+		decimalFormatSymbols.setDecimalSeparator('.');
+		decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
+		
 		generateGeneralStats(course);
 		generateGroupStats(course);
 		logger.info("Estadisticas generadas con exito.");
@@ -139,7 +147,7 @@ public class Stats {
 	}
 
 	private String format(double value) {
-		return Double.isNaN(value) ? "NaN" : numberFormat.format(value);
+		return Double.isNaN(value) ? "NaN" : decimalFormat.format(value);
 	}
 
 	/**

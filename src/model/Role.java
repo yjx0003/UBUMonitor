@@ -1,8 +1,8 @@
 package model;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Clase Role para distinguir el rol de los usuarios matriculados en un curso.
@@ -17,7 +17,9 @@ public class Role implements Serializable{
 	private int id;
 	private String name;
 	private String shortName;
-	private Set<EnrolledUser> enrolledUsers;
+	private List<EnrolledUser> enrolledUsers;
+	private Course course;
+	
 
 	/**
 	 * Constructor de un rol.
@@ -33,7 +35,8 @@ public class Role implements Serializable{
 		this.id = id;
 		this.name = name;
 		this.shortName = shortName;
-		this.enrolledUsers=new HashSet<>();
+		this.enrolledUsers=new ArrayList<>();
+		
 	}
 
 	/**
@@ -95,11 +98,11 @@ public class Role implements Serializable{
 	
 	
 	
-	public Set<EnrolledUser> getEnrolledUsers() {
+	public List<EnrolledUser> getEnrolledUsers() {
 		return enrolledUsers;
 	}
 
-	public void setEnrolledUsers(Set<EnrolledUser> enrolledUsers) {
+	public void setEnrolledUsers(List<EnrolledUser> enrolledUsers) {
 		this.enrolledUsers = enrolledUsers;
 	}
 
@@ -107,6 +110,14 @@ public class Role implements Serializable{
 		enrolledUsers.add(user);
 	}
 	
+	public Course getCourse() {
+		return course;
+	}
+
+	public void setCourse(Course course) {
+		this.course = course;
+	}
+
 	@Override
 	public String toString(){
 		return name;
@@ -130,6 +141,7 @@ public class Role implements Serializable{
 			return false;
 		return true;
 	}
+
 	
 	
 }

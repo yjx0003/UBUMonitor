@@ -94,6 +94,7 @@ public class CreatorUBUGradesController {
 		Role role = new Role(jsonObject.getInt("roleid"), jsonObject.getString("name"),
 				jsonObject.getString("shortname"));
 
+		BBDD.getActualCourse().addRole(role);
 		BBDD.putRole(role);
 		return role;
 
@@ -128,7 +129,7 @@ public class CreatorUBUGradesController {
 		DescriptionFormat descriptionFormat = DescriptionFormat.get(jsonObject.getInt("descriptionformat"));
 
 		Group group = new Group(groupid, name, description, descriptionFormat);
-
+		BBDD.getActualCourse().addGroup(group);
 		BBDD.putGroup(group);
 
 		return group;
@@ -145,31 +146,29 @@ public class CreatorUBUGradesController {
 			return users.get(id);
 		}
 
-		EnrolledUser enrolledUser = EnrolledUser.newBuilder()
-				.setId(id)
-				.setFirstname(user.optString("firstname"))
-				.setLastname(user.optString("lastname"))
-				.setFullname(user.optString("fullname"))
-				.setFirstaccess(user.optInt("firstaccess"))
-				.setLastaccess(user.optInt("lastaccess"))
-				.setDescription(user.optString("description"))
-				.setDescriptionformat(user.optInt("descriptionformat"))
-				.setCity(user.optString("city"))
-				.setCountry(user.optString("country"))
-				.setProfileimageurlsmall(user.optString("profileimageurlsmall"))
-				.setProfileimageurl(user.optString("profileimageurl"))
-				.build();
+		EnrolledUser enrolledUser = new EnrolledUser();
+		enrolledUser.setId(id);
+		enrolledUser.setFirstname(user.optString("firstname"));
+		enrolledUser.setLastname(user.optString("lastname"));
+		enrolledUser.setFullName(user.optString("fullname"));
+		enrolledUser.setFirstaccess(Instant.ofEpochSecond(user.optInt("firstaccess")));
+		enrolledUser.setLastaccess(Instant.ofEpochSecond(user.optInt("lastaccess")));
+		enrolledUser.setDescription(user.optString("description"));
+		enrolledUser.setDescriptionformat(DescriptionFormat.get(user.optInt("descriptionformat")));
+		enrolledUser.setCity(user.optString("city"));
+		enrolledUser.setCountry(user.optString("country"));
+		enrolledUser.setProfileimageurlsmall(user.optString("profileimageurlsmall"));
+		enrolledUser.setProfileimageurl(user.optString("profileimageurl"));
 
 		List<Course> courses = createCourses(user.optJSONArray("enrolledcourses"));
 		courses.forEach(course -> course.addEnrolledUser(enrolledUser));
-		enrolledUser.setEnrolledcourses(courses);
 
 		List<Role> roles = createRoles(user.optJSONArray("roles"));
-		roles.forEach(role -> role.addEnrolledUser(enrolledUser));
-		enrolledUser.setRoles(roles);
+		roles.forEach(role->enrolledUser.addRole(role));
 
 		List<Group> groups = createGroups(user.optJSONArray("groups"));
-		groups.forEach(group -> group.addEnrolledUser(enrolledUser));
+		groups.forEach(group ->enrolledUser.addGroup(group));
+
 		users.put(id, enrolledUser);
 
 		return enrolledUser;
@@ -231,6 +230,7 @@ public class CreatorUBUGradesController {
 
 		attributesModule(jsonObject, module);
 
+		BBDD.getActualCourse().addModule(module);
 		BBDD.putModule(module);
 
 		return module;
@@ -248,7 +248,7 @@ public class CreatorUBUGradesController {
 		module.setUservisible(jsonObject.optBoolean("uservisible"));
 		module.setVisibleoncoursepage(jsonObject.optInt("visibleoncoursepage"));
 		module.setModicon(jsonObject.optString("modicon"));
-		module.setModname(jsonObject.getString("modname"));
+		module.setModuleType(ModuleType.get(jsonObject.getString("modname")));
 		module.setIndent(jsonObject.optInt("indent"));
 	}
 
@@ -334,7 +334,7 @@ public class CreatorUBUGradesController {
 		return gradeItems;
 	}
 
-	public static List<GradeItem> createHierarchyGradeItems(JSONObject jsonObject) throws IOException {
+	private static List<GradeItem> createHierarchyGradeItems(JSONObject jsonObject) throws IOException {
 
 		JSONObject table = jsonObject.getJSONArray("tables").getJSONObject(0);
 
@@ -358,7 +358,7 @@ public class CreatorUBUGradesController {
 			Document content = Jsoup.parseBodyFragment(itemname.getString("content"));
 
 			GradeItem gradeItem = new GradeItem();
-			BBDD.putGradeItem(gradeItem);
+
 			gradeItem.setLevel(nivel);
 			gradeItem.setItemname(content.text());
 			Element element;
@@ -383,7 +383,10 @@ public class CreatorUBUGradesController {
 		return gradeItems;
 	}
 
-	public static void setBasicAttributes(List<GradeItem> gradeItems, JSONObject jsonObject) throws IOException {
+	private static List<GradeItem> setBasicAttributes(List<GradeItem> gradeItems, JSONObject jsonObject)
+			throws IOException {
+
+		List<GradeItem> finalGradeItems = new ArrayList<>();
 
 		JSONObject usergrade = jsonObject.getJSONArray("usergrades").getJSONObject(0);
 
@@ -406,16 +409,23 @@ public class CreatorUBUGradesController {
 			JSONObject gradeitem = gradeitems.getJSONObject(i);
 			GradeItem gradeItem = gradeItems.get(i);
 
-			gradeItem.setCourse(course);
 			gradeItem.setId(gradeitem.getInt("id"));
 
-			String itemtype = gradeitem.getString("itemtype");
+			GradeItem previusGradeItem = BBDD.putGradeItem(gradeItem);
+			if (previusGradeItem != null) {
+				gradeItem = previusGradeItem;
+			}else {
+				BBDD.getActualCourse().addGradeItem(gradeItem);
+			}
 
+			finalGradeItems.add(gradeItem);
+			String itemtype = gradeitem.getString("itemtype");
+			gradeItem.setCourse(course);
 			ItemType itemType = ItemType.get(itemtype);
 			gradeItem.setItemtype(itemType);
 
 			if (itemType == ItemType.MOD) {
-				Module module = BBDD.getCourseModuleById(gradeitem.optInt("cmid"));
+				Module module = BBDD.getCourseModuleById(gradeitem.getInt("cmid"));
 				gradeItem.setModule(module);
 				ModuleType moduleType = ModuleType.get(gradeitem.getString("itemmodule"));
 				gradeItem.setItemModule(moduleType);
@@ -428,9 +438,10 @@ public class CreatorUBUGradesController {
 
 		}
 
+		return finalGradeItems;
 	}
 
-	public static void setEnrolledUserGrades(List<GradeItem> gradeItems, JSONObject jsonObject) {
+	private static void setEnrolledUserGrades(List<GradeItem> gradeItems, JSONObject jsonObject) {
 		JSONArray usergrades = jsonObject.getJSONArray("usergrades");
 
 		for (int i = 0; i < usergrades.length(); i++) {

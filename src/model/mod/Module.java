@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.Course;
 import model.LogLine;
 
 public class Module implements Serializable {
@@ -62,7 +63,7 @@ public class Module implements Serializable {
 	/**
 	 * activity module type
 	 */
-	private String modname;
+	private ModuleType moduleType;
 
 	/**
 	 * activity module plural name
@@ -80,10 +81,24 @@ public class Module implements Serializable {
 	private int indent;
 
 	private List<LogLine> logs;
+	
+	private Course course;
+
 
 	public Module() {
 		logs = new ArrayList<LogLine>();
 	}
+
+	
+	public Course getCourse() {
+		return course;
+	}
+
+
+	public void setCourse(Course course) {
+		this.course = course;
+	}
+
 
 	
 	public void addLog(LogLine log) {
@@ -180,12 +195,12 @@ public class Module implements Serializable {
 		this.modicon = modicon;
 	}
 
-	public String getModname() {
-		return modname;
+	public ModuleType getModuleType() {
+		return moduleType;
 	}
 
-	public void setModname(String modname) {
-		this.modname = modname;
+	public void setModuleType(ModuleType modname) {
+		this.moduleType = modname;
 	}
 
 	public String getModplural() {
@@ -222,11 +237,12 @@ public class Module implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Module [id=" + id + ", url=" + url + ", name=" + name + ", instance=" + instance + ", description="
-				+ description + ", visible=" + visible + ", uservisible=" + uservisible + ", availabilityinfo="
-				+ availabilityinfo + ", visibleoncoursepage=" + visibleoncoursepage + ", modicon=" + modicon
-				+ ", modname=" + modname + ", modplural=" + modplural + ", availability=" + availability + ", indent="
-				+ indent + "]";
+		return name;
 	}
+
+
+
+
+
 
 }

@@ -3,6 +3,8 @@ package model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,7 @@ import model.mod.ModuleType;
  *
  */
 public class Course implements Serializable {
+	
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private String shortName;
@@ -41,7 +44,7 @@ public class Course implements Serializable {
 		this.enrolledUsers = new ArrayList<>();
 		this.roles = new ArrayList<>();
 		this.groups = new ArrayList<>();
-		this.gradeItems=new ArrayList<>();
+		this.gradeItems = new ArrayList<>();
 		this.logs = new ArrayList<>();
 	}
 
@@ -234,19 +237,38 @@ public class Course implements Serializable {
 
 	public void addRole(Role role) {
 		roles.add(role);
+		role.setCourse(this);
 
+	}
+	public void addGroup(Group group) {
+		groups.add(group);
+		group.setCourse(this);
+		
+	}
+	
+	public void addGradeItem(GradeItem gradeItem) {
+		gradeItems.add(gradeItem);
+		gradeItem.setCourse(this);
+		
 	}
 
 	public List<ModuleType> getUniqueModuleTypes() {
-		List<ModuleType> uniqueModulesTypes = new ArrayList<>();
-		for (GradeItem gradeItem : gradeItems) {
-			ModuleType moduleType = gradeItem.getItemModule();
-			if (moduleType != null && uniqueModulesTypes.contains(moduleType)) {
-				uniqueModulesTypes.add(moduleType);
-			}
-		}
+		// List<ModuleType> uniqueModulesTypes = new ArrayList<>();
+		// for (GradeItem gradeItem : gradeItems) {
+		// ModuleType moduleType = gradeItem.getItemModule();
+		// if (moduleType != null && uniqueModulesTypes.contains(moduleType)) {
+		// uniqueModulesTypes.add(moduleType);
+		// }
+		// }
+		List<ModuleType> uniqueModulesTypes = gradeItems.stream()
+				.map(GradeItem::getItemModule)
+				.filter(Objects::nonNull)
+				.distinct()
+				.collect(Collectors.toList());
 		return uniqueModulesTypes;
 	}
+	
+	
 
 	@Override
 	public String toString() {
@@ -271,5 +293,15 @@ public class Course implements Serializable {
 			return false;
 		return true;
 	}
+
+	public void addModule(Module module) {
+		modules.add(module);
+		module.setCourse(this);
+		
+	}
+
+
+
+
 
 }

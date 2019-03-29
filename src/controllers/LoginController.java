@@ -145,7 +145,7 @@ public class LoginController implements Initializable {
 			@Override
 			protected Void call() throws IOException {
 				try {
-
+					
 					controller.tryLogin(txtHost.getText(), txtUsername.getText(), txtPassword.getText());
 
 				} catch (IOException e) {

@@ -134,6 +134,12 @@ public class BBDD implements Serializable{
 	public GradeItem getGradeItemById(int id) {
 		return gradeItems.get(id);
 	}
+	/**
+	 * Añade el grade item a la base de datos si no existia anteriormente.
+	 * 
+	 * @param gradeItem
+	 * @return el valor anterior asociado al id del grade item, null si no contenia.
+	 */
 	public GradeItem putGradeItem(GradeItem gradeItem) {
 		return gradeItems.putIfAbsent(gradeItem.getId(), gradeItem);
 	}

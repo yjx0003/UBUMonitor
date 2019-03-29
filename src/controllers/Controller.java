@@ -1,9 +1,6 @@
 package controllers;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -192,13 +189,12 @@ public class Controller {
 	}
 
 	public void createStats() throws Exception {
-		stats = new Stats(BBDD.getActualCourse(), selectedLanguage.getLocale());
+		stats = new Stats(BBDD.getActualCourse());
 
 	}
 
 	public void setActualCourse(Course selectedCourse) {
 		BBDD.setActualCourse(selectedCourse);
-
 	}
 
 }

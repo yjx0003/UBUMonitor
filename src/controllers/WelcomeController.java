@@ -3,7 +3,13 @@ package controllers;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Comparator;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -11,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controllers.ubugrades.CreatorUBUGradesController;
+import controllers.ubulogs.UBULogController;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -33,6 +40,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.BBDD;
 import model.Course;
 import persistence.Encryption;
 
@@ -49,6 +57,7 @@ public class WelcomeController implements Initializable {
 	static final Logger logger = LoggerFactory.getLogger(WelcomeController.class);
 	private String directoryObject;
 	private Controller controller = Controller.getInstance();
+	private boolean isUpdateLog;
 
 	@FXML
 	private Label lblUser;
@@ -66,6 +75,8 @@ public class WelcomeController implements Initializable {
 	private Label lblDateUpdate;
 	@FXML
 	private CheckBox chkUpdateData;
+	
+	
 
 	/**
 	 * Función initialize. Muestra la lista de cursos del usuario introducido.
@@ -80,7 +91,7 @@ public class WelcomeController implements Initializable {
 
 			ObservableList<Course> list = FXCollections.observableArrayList(controller.getUser().getCourses());
 			list.sort(Comparator.comparing(Course::getFullName));
-			progressBar.visibleProperty().set(false);
+			progressBar.setVisible(false);
 			listCourses.setItems(list);
 			chkUpdateData.setDisable(true);
 			// Deshabilitar boton hasta que se seleccione un elemento de la lista
@@ -95,15 +106,17 @@ public class WelcomeController implements Initializable {
 				if (f.exists() && f.isFile()) {
 					chkUpdateData.setSelected(false);
 					chkUpdateData.setDisable(false);
-
-					// LocalDateTime
-					// fecha=LocalDateTime.ofInstant(Instant.ofEpochMilli(f.lastModified()),
-					// ZoneId.systemDefault())
+					long lastModified = f.lastModified();
+					DateTimeFormatter dtf = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+							.withLocale(controller.getSelectedLanguage().getLocale());
+					LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastModified),
+							ZoneId.systemDefault());
+					lblDateUpdate.setText(localDateTime.format(dtf));
 				} else {
 					chkUpdateData.setSelected(true);
 					chkUpdateData.setDisable(true);
 					lblDateUpdate.setText(controller.getResourceBundle().getString("label.never"));
-
+					isUpdateLog=true;
 				}
 			});
 
@@ -151,15 +164,15 @@ public class WelcomeController implements Initializable {
 		logger.info("Guardando los datos encriptados en: {}", f.getAbsolutePath());
 		Encryption.encrypt(controller.getPassword(),
 				directoryObject + listCourses.selectionModelProperty().getValue().getSelectedItem(),
-				controller.getActualCourse());
+				controller.getBBDD());
 
 	}
 
 	private void loadData() {
-		Course curso = (Course) Encryption.decrypt(controller.getPassword(),
+		BBDD BBDD = (BBDD) Encryption.decrypt(controller.getPassword(),
 				directoryObject + listCourses.selectionModelProperty().getValue().getSelectedItem());
-		if (curso != null) {
-			controller.setActualCourse(curso);
+		if (BBDD != null) {
+			controller.setBBDD(BBDD);
 		}
 
 	}
@@ -167,18 +180,11 @@ public class WelcomeController implements Initializable {
 	private void downloadData() {
 		btnEntrar.setVisible(false);
 		lblProgress.setVisible(true);
+
 		Task<Void> task = getUserDataWorker();
-		task.messageProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
-			if (newValue.equals("end")) {
-				// Cargamos la siguiente ventana
-				loadNextWindow();
-				saveData();
-			} else if (newValue.substring(0, 6).equals("update")) {
-				lblProgress.setText(newValue.substring(7));
-			} else {
-				errorWindow(newValue);
-			}
-		});
+		lblProgress.textProperty().bind(task.messageProperty());
+		task.setOnSucceeded(v -> loadNextWindow());
+
 		Thread thread = new Thread(task, "datos");
 		thread.start();
 
@@ -218,22 +224,29 @@ public class WelcomeController implements Initializable {
 			@Override
 			protected Void call() {
 				try {
-
+					controller.getActualCourse().clear();
 					logger.info("Cargando datos del curso: " + controller.getActualCourse().getFullName());
 					// Establecemos los usuarios matriculados
-					updateMessage("update_" + controller.getResourceBundle().getString("label.loadingstudents"));
+					updateMessage(controller.getResourceBundle().getString("label.loadingstudents"));
 					CreatorUBUGradesController.createEnrolledUsers(controller.getActualCourse().getId());
 
-					updateMessage("update_" + controller.getResourceBundle().getString("label.loadingqualifier"));
+					updateMessage(controller.getResourceBundle().getString("label.loadingqualifier"));
 					// Establecemos calificador del curso
 					CreatorUBUGradesController.createGradeItems(controller.getActualCourse().getId());
 
-					updateMessage("update_" + controller.getResourceBundle().getString("label.loadingstats"));
+					updateMessage(controller.getResourceBundle().getString("label.loadingstats"));
 					// Establecemos las estadisticas
 					controller.createStats();
+					
+					updateMessage("Actualizando el log");
+					if(isUpdateLog) {
+						UBULogController.getInstance().updateCourseLog(controller.getActualCourse().getLogs());
+					}else {
+						UBULogController.getInstance().createCourseLog();
+					}
+					updateMessage("Guardando en local");
+					saveData();
 
-					// Indica que se ha terminado el trabajo
-					updateMessage("end");
 				} catch (Exception e) {
 					logger.error("Error al cargar los datos de los alumnos: {}", e);
 					updateMessage("Se produjo un error inesperado al cargar los datos.\n" + e.getLocalizedMessage());

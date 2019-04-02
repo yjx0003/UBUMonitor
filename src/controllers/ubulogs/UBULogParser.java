@@ -16,9 +16,6 @@ import org.slf4j.LoggerFactory;
 public class UBULogParser {
 
 	static final Logger logger = LoggerFactory.getLogger(UBULogParser.class);
-	
-
-	
 
 	private UBULogParser() {
 
@@ -27,24 +24,23 @@ public class UBULogParser {
 	public static List<Map<String, String>> parse(Reader reader) {
 
 		try (CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
-			
+
 			List<Map<String, String>> logs = new ArrayList<Map<String, String>>();
-			Set<String> headers= csvParser.getHeaderMap().keySet();
-			
-			logger.info("Las columnas el parser del csv son: ",headers);
-			
+			Set<String> headers = csvParser.getHeaderMap().keySet();
+
+			logger.info("Las columnas el parser del csv son: " + headers);
+
 			for (CSVRecord csvRecord : csvParser) {
-				
-				Map<String,String> log = new HashMap<String, String>();
+
+				Map<String, String> log = new HashMap<String, String>();
 				logs.add(log);
-				
-				for (String header :headers) {
+
+				for (String header : headers) {
 					log.put(header, csvRecord.get(header));
 				}
 
 			}
-		return logs;
-			
+			return logs;
 
 		} catch (Exception e) {
 			logger.error("No se ha podido parsear el contenido", e);

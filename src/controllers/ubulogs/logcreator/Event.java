@@ -38,7 +38,7 @@ public enum Event {
 	GRADER_REPORT_VIEWED("Grade deleted"),
 	GRADE_DELETED("Grade overview report viewed"),
 	GRADE_OVERVIEW_REPORT_VIEWED("Grade single view report viewed."),
-	GRADE_SINGLE_VIEW_REPORT_VIEWED("Grade user report viewed"),
+	GRADE_SINGLE_VIEW_REPORT_VIEWED("Grade single view report viewed"),
 	GRADE_USER_REPORT_VIEWED("Grader report viewed"),
 	GRADING_FORM_VIEWED("Grading form viewed"),
 	GRADING_TABLE_VIEWED("Grading table viewed"),

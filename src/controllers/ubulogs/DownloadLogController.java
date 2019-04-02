@@ -107,6 +107,10 @@ public class DownloadLogController {
 	}
 
 
+	public ZoneId getTimezone() {
+		return timezone;
+	}
+
 	/**
 	 * Se loguea en el servidor de moodle mediante web scraping.
 	 * 

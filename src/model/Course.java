@@ -1,8 +1,8 @@
 package model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -22,7 +22,7 @@ import model.mod.ModuleType;
  *
  */
 public class Course implements Serializable {
-	
+
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private String shortName;
@@ -31,21 +31,21 @@ public class Course implements Serializable {
 	private String summary;
 	private DescriptionFormat summaryformat;
 
-	private List<EnrolledUser> enrolledUsers;
-	private List<Role> roles; // roles que hay en el curso
-	private List<Group> groups; // grupos que hay en el curso
-	private List<Module> modules;
-	private List<GradeItem> gradeItems;
-	private List<LogLine> logs;
+	private Set<EnrolledUser> enrolledUsers;
+	private Set<Role> roles; // roles que hay en el curso
+	private Set<Group> groups; // grupos que hay en el curso
+	private Set<Module> modules;
+	private Set<GradeItem> gradeItems;
+	private Logs logs;
 
 	static final Logger logger = LoggerFactory.getLogger(Course.class);
 
 	public Course() {
-		this.enrolledUsers = new ArrayList<>();
-		this.roles = new ArrayList<>();
-		this.groups = new ArrayList<>();
-		this.gradeItems = new ArrayList<>();
-		this.logs = new ArrayList<>();
+		this.enrolledUsers = new HashSet<>();
+		this.roles = new HashSet<>();
+		this.groups = new HashSet<>();
+		this.gradeItems = new HashSet<>();
+
 	}
 
 	public Course(int id, String shortName, String fullName, String idNumber, String summary,
@@ -178,47 +178,47 @@ public class Course implements Serializable {
 				.get();
 	}
 
-	public List<GradeItem> getGradeItems() {
+	public Set<GradeItem> getGradeItems() {
 		return gradeItems;
 	}
 
-	public void setGradeItems(List<GradeItem> gradeItems) {
+	public void setGradeItems(Set<GradeItem> gradeItems) {
 		this.gradeItems = gradeItems;
 	}
 
-	public List<LogLine> getLogs() {
+	public Logs getLogs() {
 		return logs;
 	}
 
-	public void setLogs(List<LogLine> logs) {
+	public void setLogs(Logs logs) {
 		this.logs = logs;
 	}
 
-	public List<Role> getRoles() {
+	public Set<Role> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(List<Role> roles) {
+	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
 	}
 
-	public List<Group> getGroups() {
+	public Set<Group> getGroups() {
 		return groups;
 	}
 
-	public void setGroups(List<Group> groups) {
+	public void setGroups(Set<Group> groups) {
 		this.groups = groups;
 	}
 
-	public List<Module> getModules() {
+	public Set<Module> getModules() {
 		return modules;
 	}
 
-	public void setModules(List<Module> modules) {
+	public void setModules(Set<Module> modules) {
 		this.modules = modules;
 	}
 
-	public void setEnrolledUsers(List<EnrolledUser> enrolledUsers) {
+	public void setEnrolledUsers(Set<EnrolledUser> enrolledUsers) {
 		this.enrolledUsers = enrolledUsers;
 	}
 
@@ -226,12 +226,7 @@ public class Course implements Serializable {
 		enrolledUsers.add(user);
 	}
 
-	public void addLog(LogLine log) {
-		logs.add(log);
-
-	}
-
-	public List<EnrolledUser> getEnrolledUsers() {
+	public Set<EnrolledUser> getEnrolledUsers() {
 		return enrolledUsers;
 	}
 
@@ -240,35 +235,40 @@ public class Course implements Serializable {
 		role.setCourse(this);
 
 	}
+
 	public void addGroup(Group group) {
 		groups.add(group);
 		group.setCourse(this);
-		
+
 	}
-	
+
 	public void addGradeItem(GradeItem gradeItem) {
 		gradeItems.add(gradeItem);
 		gradeItem.setCourse(this);
-		
+
+	}
+	
+	public void clear() {
+		this.enrolledUsers.clear();
+		this.roles.clear();
+		this.groups.clear();
 	}
 
-	public List<ModuleType> getUniqueModuleTypes() {
-		// List<ModuleType> uniqueModulesTypes = new ArrayList<>();
+	public Set<ModuleType> getUniqueModuleTypes() {
+		// Set<ModuleType> uniqueModulesTypes = new HashSet<>();
 		// for (GradeItem gradeItem : gradeItems) {
 		// ModuleType moduleType = gradeItem.getItemModule();
 		// if (moduleType != null && uniqueModulesTypes.contains(moduleType)) {
 		// uniqueModulesTypes.add(moduleType);
 		// }
 		// }
-		List<ModuleType> uniqueModulesTypes = gradeItems.stream()
+		Set<ModuleType> uniqueModulesTypes = gradeItems.stream()
 				.map(GradeItem::getItemModule)
 				.filter(Objects::nonNull)
 				.distinct()
-				.collect(Collectors.toList());
+				.collect(Collectors.toSet());
 		return uniqueModulesTypes;
 	}
-	
-	
 
 	@Override
 	public String toString() {
@@ -297,11 +297,7 @@ public class Course implements Serializable {
 	public void addModule(Module module) {
 		modules.add(module);
 		module.setCourse(this);
-		
+
 	}
-
-
-
-
 
 }

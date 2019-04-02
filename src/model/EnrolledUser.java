@@ -2,9 +2,9 @@ package model;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Set;
 import java.util.Map;
 
 public class EnrolledUser implements Serializable {
@@ -136,29 +136,29 @@ public class EnrolledUser implements Serializable {
 	/**
 	 * Optional. user groups
 	 */
-	private List<Group> groups;
+	private Set<Group> groups;
 
 	/**
 	 * Opcional. user roles
 	 */
-	private List<Role> roles;
+	private Set<Role> roles;
 
 	/**
 	 * Opcional. Courses where the user is enrolled - limited by which courses the
 	 * user is able to see
 	 */
-	private List<Course> enrolledcourses;
+	private Set<Course> enrolledcourses;
 
-	private List<LogLine> logs;
+	private Set<LogLine> logs;
 
 	private Map<GradeItem, Double> grades;
 
 	public EnrolledUser() {
-		roles = new ArrayList<>();
-		logs = new ArrayList<>();
-		enrolledcourses = new ArrayList<>();
+		roles = new HashSet<>();
+		logs = new HashSet<>();
+		enrolledcourses = new HashSet<>();
 		grades=new HashMap<>();
-		groups=new ArrayList<>();
+		groups=new HashSet<>();
 	}
 
 	public int getId() {
@@ -377,11 +377,11 @@ public class EnrolledUser implements Serializable {
 		this.profileimageurl = profileimageurl;
 	}
 
-	public List<LogLine> getLogs() {
+	public Set<LogLine> getLogs() {
 		return logs;
 	}
 
-	public void setLogs(List<LogLine> logs) {
+	public void setLogs(Set<LogLine> logs) {
 		this.logs = logs;
 	}
 
@@ -393,27 +393,27 @@ public class EnrolledUser implements Serializable {
 		this.grades = grades;
 	}
 
-	public List<Group> getGroups() {
+	public Set<Group> getGroups() {
 		return groups;
 	}
 
-	public void setGroups(List<Group> groups) {
+	public void setGroups(Set<Group> groups) {
 		this.groups = groups;
 	}
 
-	public List<Role> getRoles() {
+	public Set<Role> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(List<Role> roles) {
+	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
 	}
 
-	public List<Course> getEnrolledcourses() {
+	public Set<Course> getEnrolledcourses() {
 		return enrolledcourses;
 	}
 
-	public void setEnrolledcourses(List<Course> courses) {
+	public void setEnrolledcourses(Set<Course> courses) {
 		this.enrolledcourses = courses;
 	}
 
@@ -435,18 +435,23 @@ public class EnrolledUser implements Serializable {
 		role.addEnrolledUser(this);
 	}
 
+	public void addGrade(GradeItem gradeItem, double grade) {
+		grades.put(gradeItem, grade);
+		gradeItem.addUserGrade(this, grade);
+	}
+	
+	public double getGrade(GradeItem gradeItem) {
+		return grades.get(gradeItem);
+	}
+
+	
 	@Override
 	public int hashCode() {
 		return id;
 	}
 
-	public double getGrade(GradeItem gradeItem) {
-		return grades.get(gradeItem);
-	}
 
-	public void addGrade(GradeItem gradeItem, double grade) {
-		grades.put(gradeItem, grade);
-	}
+
 
 	@Override
 	public boolean equals(Object obj) {

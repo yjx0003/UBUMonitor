@@ -7,6 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import controllers.Controller;
 import controllers.ubulogs.logcreator.CompEventKey;
 import controllers.ubulogs.logcreator.Component;
 import controllers.ubulogs.logcreator.Event;
@@ -17,9 +21,13 @@ import model.LogLine;
 import model.mod.Module;
 
 public abstract class ReferencesLog {
-	private static BBDD BBDD;
 	
-	public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yy, kk:mm");
+	static final Logger logger = LoggerFactory.getLogger(ReferencesLog.class);
+
+	
+	private static BBDD BBDD;
+
+	public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/MM/yy, kk:mm");
 
 	private static Map<CompEventKey, ReferencesLog> logTypes = new HashMap<CompEventKey, ReferencesLog>();
 	static {
@@ -47,7 +55,7 @@ public abstract class ReferencesLog {
 				new CompEventKey(Component.ASSIGNMENT, Event.THE_USER_HAS_ACCEPTED_THE_STATEMENT_OF_THE_SUBMISSION),
 				UserSubmissionCmid.getInstance());
 
-		logTypes.put(new CompEventKey(Component.CHOICE, Event.CHOICE_ANSWER_ADDED), null);
+//		logTypes.put(new CompEventKey(Component.CHOICE, Event.CHOICE_ANSWER_ADDED), null);
 		logTypes.put(new CompEventKey(Component.CHOICE, Event.CHOICE_REPORT_VIEWED), UserCmid.getInstance());
 		logTypes.put(new CompEventKey(Component.CHOICE, Event.COURSE_MODULE_INSTANCE_LIST_VIEWED),
 				UserCourse.getInstance());
@@ -144,17 +152,17 @@ public abstract class ReferencesLog {
 		logTypes.put(new CompEventKey(Component.SYSTEM, Event.COURSE_USER_REPORT_VIEWED),
 				UserCourseAffected.getInstance());
 		logTypes.put(new CompEventKey(Component.SYSTEM, Event.COURSE_VIEWED), SystemCourseViewed.getInstance());
-		logTypes.put(new CompEventKey(Component.SYSTEM, Event.ENROLMENT_INSTANCE_CREATED), null);
+//		logTypes.put(new CompEventKey(Component.SYSTEM, Event.ENROLMENT_INSTANCE_CREATED), null);
 		logTypes.put(new CompEventKey(Component.SYSTEM, Event.GRADE_DELETED), UserGradeAffectedGradeitem.getInstance());
 		logTypes.put(new CompEventKey(Component.SYSTEM, Event.GROUP_CREATED), UserGroup.getInstance());
 		logTypes.put(new CompEventKey(Component.SYSTEM, Event.GROUP_DELETED), UserGroup.getInstance());
 		logTypes.put(new CompEventKey(Component.SYSTEM, Event.GROUP_MEMBER_ADDED), UserAffectedGroup.getInstance());
 		logTypes.put(new CompEventKey(Component.SYSTEM, Event.GROUP_MEMBER_REMOVED), UserAffectedGroup.getInstance());
 		logTypes.put(new CompEventKey(Component.SYSTEM, Event.RECENT_ACTIVITY_VIEWED), UserCourse.getInstance());
-		logTypes.put(new CompEventKey(Component.SYSTEM, Event.ROLE_ASSIGNED), null);
-		logTypes.put(new CompEventKey(Component.SYSTEM, Event.ROLE_UNASSIGNED), null);
-		logTypes.put(new CompEventKey(Component.SYSTEM, Event.USER_ENROLLED_IN_COURSE), null);
-		logTypes.put(new CompEventKey(Component.SYSTEM, Event.USER_GRADED), null);
+//		logTypes.put(new CompEventKey(Component.SYSTEM, Event.ROLE_ASSIGNED), null);
+//		logTypes.put(new CompEventKey(Component.SYSTEM, Event.ROLE_UNASSIGNED), null);
+//		logTypes.put(new CompEventKey(Component.SYSTEM, Event.USER_ENROLLED_IN_COURSE), null);
+//		logTypes.put(new CompEventKey(Component.SYSTEM, Event.USER_GRADED), null);
 		logTypes.put(new CompEventKey(Component.SYSTEM, Event.USER_LIST_VIEWED), UserCourse.getInstance());
 		logTypes.put(new CompEventKey(Component.SYSTEM, Event.USER_PROFILE_VIEWED), UserAffectedCourse.getInstance());
 		logTypes.put(new CompEventKey(Component.SYSTEM, Event.USER_UNENROLLED_FROM_COURSE),
@@ -168,10 +176,8 @@ public abstract class ReferencesLog {
 		return logTypes.getOrDefault(new CompEventKey(component, eventName), Default.getInstance());
 	}
 
-
-	
 	public static void setBBDD(BBDD BBDD) {
-		ReferencesLog.BBDD=BBDD;
+		ReferencesLog.BBDD = BBDD;
 	}
 
 	public static void setZoneId(ZoneId zoneId) {
@@ -179,11 +185,11 @@ public abstract class ReferencesLog {
 	}
 
 	public static LogLine createLogWithBasicAttributes(Map<String, String> mapLog) {
-
+		
 		LogLine log = new LogLine();
-		if (mapLog.containsKey(LogCreator.TIME)) {
-			log.setTime(ZonedDateTime.parse(mapLog.get(LogCreator.TIME), dateTimeFormatter));
-		}
+		String time=mapLog.get(LogCreator.TIME);
+		ZonedDateTime zdt=ZonedDateTime.parse(time, dateTimeFormatter);
+		log.setTime(zdt);
 
 		log.setComponent(Component.get(mapLog.get(LogCreator.COMPONENT)));
 		log.setEventName(Event.get(mapLog.get(LogCreator.EVENT_NAME)));
@@ -192,27 +198,32 @@ public abstract class ReferencesLog {
 		log.setOrigin(mapLog.get(LogCreator.ORIGIN));
 		log.setIPAdress(mapLog.get(LogCreator.IP_ADRESS));
 
-		BBDD.getActualCourse().addLog(log);
-
 		return log;
 	}
 
 	public static void setUserById(LogLine log, int id) {
 		EnrolledUser user = BBDD.getEnrolledUserById(id);
-		user.addLog(log);
-		log.setUser(user);
+		if (user != null) {
+			log.setUser(user);
+		}
 	}
 
 	public static void setAffectedUserById(LogLine log, int id) {
 		EnrolledUser affectedUser = BBDD.getEnrolledUserById(id);
-		affectedUser.addLog(log);
-		log.setAffectedUser(affectedUser);
+		if(affectedUser!=null) {
+	
+			log.setAffectedUser(affectedUser);
+		}
+		
 	}
 
 	public static void setCourseModuleById(LogLine log, int id) {
 		Module courseModule = BBDD.getCourseModuleById(id);
-		courseModule.addLog(log);
-		log.setCourseModule(courseModule);
+		if(courseModule!=null) {
+	
+			log.setCourseModule(courseModule);
+		}
+
 	}
 
 	public abstract void setLogReferencesAttributes(LogLine log, List<Integer> ids);

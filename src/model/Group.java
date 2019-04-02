@@ -1,8 +1,8 @@
 package model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Clase Group para distinguir los grupos que hay en un curso, así como los
@@ -21,7 +21,7 @@ public class Group implements Serializable {
 	private String description;
 	private DescriptionFormat descriptionFormat;
 
-	private List<EnrolledUser> enrolledUsers;
+	private Set<EnrolledUser> enrolledUsers;
 	private Course course;
 
 	/**
@@ -40,7 +40,7 @@ public class Group implements Serializable {
 		this.name = name;
 		this.description = description;
 		this.descriptionFormat = descriptionFormat;
-		this.enrolledUsers=new ArrayList<>();
+		this.enrolledUsers=new HashSet<>();
 	}
 
 	/**
@@ -108,11 +108,11 @@ public class Group implements Serializable {
 		this.descriptionFormat = descriptionFormat;
 	}
 
-	public List<EnrolledUser> getEnrolledUsers() {
+	public Set<EnrolledUser> getEnrolledUsers() {
 		return enrolledUsers;
 	}
 
-	public void setEnrolledUsers(List<EnrolledUser> enrolledUsers) {
+	public void setEnrolledUsers(Set<EnrolledUser> enrolledUsers) {
 		this.enrolledUsers = enrolledUsers;
 	}
 	

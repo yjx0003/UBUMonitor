@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -168,7 +169,7 @@ public class MainController implements Initializable {
 				slcRole.setText(filterRole);
 			});
 			// Cargamos una lista con los nombres de los roles
-			List<Role> rolesList =  controller.getActualCourse().getRoles();
+			Set<Role> rolesList =  controller.getActualCourse().getRoles();
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
 			List<MenuItem> rolesItemsList = new ArrayList<>();
 			// En principio se mostrarán todos los usuarios con cualquier rol
@@ -201,7 +202,7 @@ public class MainController implements Initializable {
 				slcGroup.setText(filterGroup);
 			});
 			// Cargamos una lista de los nombres de los grupos
-			List<Group> groupsList =  controller.getActualCourse().getGroups();
+			Set<Group> groupsList =  controller.getActualCourse().getGroups();
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
 			ArrayList<MenuItem> groupsItemsList = new ArrayList<>();
 			// En principio mostrarán todos los usuarios en cualquier grupo
@@ -210,8 +211,7 @@ public class MainController implements Initializable {
 			mi.setOnAction(actionGroup);
 			groupsItemsList.add(mi);
 
-			for (int i = 0; i < groupsList.size(); i++) {
-				Group group = groupsList.get(i);
+			for (Group group:groupsList) {
 				mi = new MenuItem(group.toString());
 				// Añadimos el manejador de eventos a cada MenuItem
 				mi.setOnAction(actionGroup);
@@ -222,7 +222,7 @@ public class MainController implements Initializable {
 			slcGroup.setText(TODOS);
 
 			// Almacenamos todos participantes en una lista
-			List<EnrolledUser> users =  controller.getActualCourse().getEnrolledUsers();
+			Set<EnrolledUser> users =  controller.getActualCourse().getEnrolledUsers();
 			////////////////////////////////////////////////////////
 			// Añadimos todos los participantes a la lista de visualización
 			
@@ -242,7 +242,7 @@ public class MainController implements Initializable {
 				slcType.setText(filterType);
 			});
 			// Cargamos una lista de los tipos de modulos
-			List<ModuleType> modulesTypes = controller.getActualCourse().getUniqueModuleTypes();
+			Set<ModuleType> modulesTypes = controller.getActualCourse().getUniqueModuleTypes();
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
 			List<MenuItem> nameActivityItemsList = new ArrayList<>();
 			// En principio se van a mostrar todos los participantes en
@@ -251,9 +251,9 @@ public class MainController implements Initializable {
 			// Añadimos el manejador de eventos al primer MenuItem
 			mi.setOnAction(actionActivity);
 			nameActivityItemsList.add(mi);
-			for (int i = 0; i < modulesTypes.size(); i++) {
+			for (ModuleType moduleType:modulesTypes) {
 			
-				mi = new MenuItem(modulesTypes.get(i).toString());
+				mi = new MenuItem(moduleType.toString());
 				// Añadimos el manejador de eventos a cada MenuItem
 				mi.setOnAction(actionActivity);
 				nameActivityItemsList.add(mi);
@@ -344,34 +344,34 @@ public class MainController implements Initializable {
 			boolean roleYes;
 			boolean groupYes;
 			boolean patternYes;
-			List<EnrolledUser> users = controller.getActualCourse().getEnrolledUsers();
+			Set<EnrolledUser> users = controller.getActualCourse().getEnrolledUsers();
 			// Cargamos la lista de los roles
 			List<EnrolledUser> nameUsers = new ArrayList<>();
 			// Obtenemos los participantes que tienen el rol elegido
-			for (int i = 0; i < users.size(); i++) {
+			for (EnrolledUser user:users) {
 				// Filtrado por rol:
 				roleYes = false;
-				List<Role> roles = users.get(i).getRoles();
+				Set<Role> roles = user.getRoles();
 				// Si no tiene rol
 				if (roles.isEmpty() && filterRole.equals(TODOS)) {
 					roleYes = true;
 				} else {
-					for (int j = 0; j < roles.size(); j++) {
+					for (Role role:roles) {
 						// Comprobamos si el usuario pasa el filtro de "rol"
-						if (roles.get(j).getName().equals(filterRole) || filterRole.equals(TODOS)) {
+						if (role.getName().equals(filterRole) || filterRole.equals(TODOS)) {
 							roleYes = true;
 						}
 					}
 				}
 				// Filtrado por grupo:
 				groupYes = false;
-				List<Group> groups = users.get(i).getGroups();
+				Set<Group> groups = user.getGroups();
 				if (groups.isEmpty() && filterGroup.equals(TODOS)) {
 					groupYes = true;
 				} else {
-					for (int k = 0; k < groups.size(); k++) {
+					for (Group group:groups) {
 						// Comprobamos si el usuario pasa el filtro de "grupo"
-						if (groups.get(k).getName().equals(filterGroup) || filterGroup.equals(TODOS)) {
+						if (group.getName().equals(filterGroup) || filterGroup.equals(TODOS)) {
 							groupYes = true;
 						}
 					}
@@ -382,14 +382,14 @@ public class MainController implements Initializable {
 					patternYes = true;
 				} else {
 					Pattern pattern = Pattern.compile(patternParticipants.toLowerCase());
-					Matcher match = pattern.matcher(users.get(i).getFullName().toLowerCase());
+					Matcher match = pattern.matcher(user.getFullName().toLowerCase());
 					if (match.find()) {
 						patternYes = true;
 					}
 				}
 				// Si el usuario se corresponde con los filtros
 				if (groupYes && roleYes && patternYes)
-					nameUsers.add(users.get(i));
+					nameUsers.add(user);
 			}
 			enrList = FXCollections.observableArrayList(nameUsers);
 		} catch (Exception e) {
@@ -441,7 +441,7 @@ public class MainController implements Initializable {
 	public void filterCalifications() {
 		try {
 			GradeItem root=controller.getActualCourse().getRootGradeItem();
-			List<GradeItem> gradeItems=controller.getActualCourse().getGradeItems();
+			Set<GradeItem> gradeItems=controller.getActualCourse().getGradeItems();
 			// Establecemos la raiz del Treeview
 			TreeItem<GradeItem> treeItemRoot = new TreeItem<>(root);
 			MainController.setIcon(treeItemRoot);
@@ -456,14 +456,14 @@ public class MainController implements Initializable {
 					setTreeview(item, root.getChildren().get(k));
 				}
 			} else { // Con filtro
-				for (int k = 1; k < gradeItems.size(); k++) {
-					TreeItem<GradeItem> item = new TreeItem<>(gradeItems.get(k));
+				for (GradeItem gradeItem:gradeItems) {
+					TreeItem<GradeItem> item = new TreeItem<>(gradeItem);
 					boolean activityYes = false;
-					if (filterType.equals(gradeItems.get(k).getIconName()) || filterType.equals(TODOS)) {
+					if (filterType.equals(gradeItem.getIconName()) || filterType.equals(TODOS)) {
 						activityYes = true;
 					}
 					Pattern pattern = Pattern.compile(patternCalifications.toLowerCase());
-					Matcher match = pattern.matcher(gradeItems.get(k).getItemname().toLowerCase());
+					Matcher match = pattern.matcher(gradeItem.getItemname().toLowerCase());
 					boolean patternYes = false;
 					if (patternCalifications.equals("") || match.find()) {
 						patternYes = true;

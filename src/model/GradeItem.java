@@ -85,6 +85,14 @@ public class GradeItem implements Serializable{
 		this.weightraw = weightraw;
 	}
 
+	public Map<EnrolledUser, Double> getGraderaw() {
+		return graderaw;
+	}
+
+	public void setGraderaw(Map<EnrolledUser, Double> graderaw) {
+		this.graderaw = graderaw;
+	}
+
 	public double getGrademin() {
 		return grademin;
 	}
@@ -139,7 +147,6 @@ public class GradeItem implements Serializable{
 
 	public void addUserGrade(EnrolledUser enrolledUser, double grade) {
 		graderaw.put(enrolledUser, grade);
-		enrolledUser.addGrade(this, grade);
 		
 	}
 

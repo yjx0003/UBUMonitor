@@ -88,11 +88,16 @@ public class CreatorUBUGradesController {
 
 		int roleid = jsonObject.getInt("roleid");
 
+		String name = jsonObject.getString("name");
+		String shortName = jsonObject.getString("shortname");
+		
 		if (BBDD.containsRole(roleid)) {
-			return BBDD.getRoleById(roleid);
+			Role role = BBDD.getRoleById(roleid);
+			role.setName(name);
+			role.setShortName(shortName);
+			return role;
 		}
-		Role role = new Role(jsonObject.getInt("roleid"), jsonObject.getString("name"),
-				jsonObject.getString("shortname"));
+		Role role = new Role(roleid, name, shortName);
 
 		BBDD.getActualCourse().addRole(role);
 		BBDD.putRole(role);
@@ -119,14 +124,16 @@ public class CreatorUBUGradesController {
 			return null;
 
 		int groupid = jsonObject.getInt("id");
-
-		if (BBDD.containsGroup(groupid)) {
-			return BBDD.getGroupById(groupid);
-		}
-
 		String name = jsonObject.getString("name");
 		String description = jsonObject.getString("description");
 		DescriptionFormat descriptionFormat = DescriptionFormat.get(jsonObject.getInt("descriptionformat"));
+		if (BBDD.containsGroup(groupid)) {
+			Group group = BBDD.getGroupById(groupid);
+			group.setName(name);
+			group.setDescription(description);
+			group.setDescriptionFormat(descriptionFormat);
+			return group;
+		}
 
 		Group group = new Group(groupid, name, description, descriptionFormat);
 		BBDD.getActualCourse().addGroup(group);
@@ -164,10 +171,10 @@ public class CreatorUBUGradesController {
 		courses.forEach(course -> course.addEnrolledUser(enrolledUser));
 
 		List<Role> roles = createRoles(user.optJSONArray("roles"));
-		roles.forEach(role->enrolledUser.addRole(role));
+		roles.forEach(role -> enrolledUser.addRole(role));
 
 		List<Group> groups = createGroups(user.optJSONArray("groups"));
-		groups.forEach(group ->enrolledUser.addGroup(group));
+		groups.forEach(group -> enrolledUser.addGroup(group));
 
 		users.put(id, enrolledUser);
 
@@ -330,8 +337,36 @@ public class CreatorUBUGradesController {
 		jsonObject = new JSONObject(response);
 		setBasicAttributes(gradeItems, jsonObject);
 		setEnrolledUserGrades(gradeItems, jsonObject);
+		updateToOriginalGradeItem(gradeItems);
 
 		return gradeItems;
+	}
+
+	private static void updateToOriginalGradeItem(List<GradeItem> gradeItems) {
+		for (GradeItem gradeItem : gradeItems) {
+			GradeItem original = BBDD.getGradeItemById(gradeItem.getId());
+			BBDD.getActualCourse().addGradeItem(original);
+
+			// comparamos si son diferente instancia. OJO no confundirse con != de Python
+			if (gradeItem != original) {
+				GradeItem originalFather = BBDD.getGradeItemById(gradeItem.getFather().getId());
+				original.setFather(originalFather);
+
+				List<GradeItem> originalChildren = new ArrayList<>();
+				for (GradeItem child : gradeItem.getChildren()) {
+					originalChildren.add(BBDD.getGradeItemById(child.getId()));
+				}
+				original.setChildren(originalChildren);
+
+				original.setItemname(gradeItem.getItemname());
+				original.setLevel(gradeItem.getLevel());
+				original.setWeightraw(gradeItem.getWeightraw());
+				original.setGraderaw(gradeItem.getGraderaw());
+				original.setGrademax(gradeItem.getGrademax());
+				original.setGrademin(gradeItem.getGrademin());
+			}
+
+		}
 	}
 
 	private static List<GradeItem> createHierarchyGradeItems(JSONObject jsonObject) throws IOException {
@@ -383,10 +418,8 @@ public class CreatorUBUGradesController {
 		return gradeItems;
 	}
 
-	private static List<GradeItem> setBasicAttributes(List<GradeItem> gradeItems, JSONObject jsonObject)
+	private static void setBasicAttributes(List<GradeItem> gradeItems, JSONObject jsonObject)
 			throws IOException {
-
-		List<GradeItem> finalGradeItems = new ArrayList<>();
 
 		JSONObject usergrade = jsonObject.getJSONArray("usergrades").getJSONObject(0);
 
@@ -411,14 +444,7 @@ public class CreatorUBUGradesController {
 
 			gradeItem.setId(gradeitem.getInt("id"));
 
-			GradeItem previusGradeItem = BBDD.putGradeItem(gradeItem);
-			if (previusGradeItem != null) {
-				gradeItem = previusGradeItem;
-			}else {
-				BBDD.getActualCourse().addGradeItem(gradeItem);
-			}
-
-			finalGradeItems.add(gradeItem);
+			BBDD.putGradeItem(gradeItem);
 			String itemtype = gradeitem.getString("itemtype");
 			gradeItem.setCourse(course);
 			ItemType itemType = ItemType.get(itemtype);
@@ -438,7 +464,6 @@ public class CreatorUBUGradesController {
 
 		}
 
-		return finalGradeItems;
 	}
 
 	private static void setEnrolledUserGrades(List<GradeItem> gradeItems, JSONObject jsonObject) {
@@ -455,7 +480,7 @@ public class CreatorUBUGradesController {
 				JSONObject gradeitem = gradeitems.getJSONObject(j);
 				GradeItem gradeItem = gradeItems.get(j);
 
-				gradeItem.addUserGrade(enrolledUser, gradeitem.optDouble("graderaw"));
+				enrolledUser.addGrade(gradeItem, gradeitem.optDouble("graderaw"));
 
 			}
 		}

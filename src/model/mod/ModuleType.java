@@ -7,9 +7,18 @@ public enum ModuleType {
 
 	ASSIGNMENT("assign") {
 		@Override
-		public Module create() {
+		protected Module create() {
 			return new Assignment();
 		}
+	},
+	CATEGORY("category"){
+
+		@Override
+		protected Module create() {
+			
+			return new Category();
+		}
+		
 	},
 	CHAT("chat") {
 		@Override
@@ -19,7 +28,7 @@ public enum ModuleType {
 	},
 	CHOICE("choice") {
 		@Override
-		public Module create() {
+		protected Module create() {
 			return new Choice();
 		}
 	},
@@ -49,13 +58,13 @@ public enum ModuleType {
 	},
 	FOLDER("folder") {
 		@Override
-		public Module create() {
+		protected Module create() {
 			return new Folder();
 		}
 	},
 	FORUM("forum") {
 		@Override
-		public Module create() {
+		protected Module create() {
 			return new Forum();
 		}
 	},
@@ -74,31 +83,37 @@ public enum ModuleType {
 	},
 	LABEL("label") {
 		@Override
-		public Module create() {
+		protected Module create() {
 			return new Label();
 		}
 	},
 	LESSON("lesson") {
 		@Override
-		public Module create() {
+		protected Module create() {
 			return new Lesson();
+		}
+	},
+	MANUAL_ITEM("manual"){
+		@Override
+		protected Module create() {
+			return new ManualItem();
 		}
 	},
 	MODULE("module") {
 		@Override
-		public Module create() {
+		protected Module create() {
 			return new Module();
 		}
 	},
 	PAGE("page") {
 		@Override
-		public Module create() {
+		protected Module create() {
 			return new Page();
 		}
 	},
 	QUIZ("quiz") {
 		@Override
-		public Module create() {
+		protected Module create() {
 			return new Quiz();
 		}
 	},
@@ -116,7 +131,7 @@ public enum ModuleType {
 	},
 	URL("url") {
 		@Override
-		public Module create() {
+		protected Module create() {
 			return new URL();
 		}
 	},
@@ -128,7 +143,7 @@ public enum ModuleType {
 	},
 	WORKSHOP("workshop") {
 		@Override
-		public Module create() {
+		protected Module create() {
 			return new Workshop();
 		}
 	};
@@ -158,9 +173,5 @@ public enum ModuleType {
 
 	public static Module createInstance(String modname) {
 		return modTypes.get(modname).create();
-	}
-	@Override
-	public String toString() {
-		return modname;
 	}
 }

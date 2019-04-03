@@ -132,7 +132,7 @@ public abstract class WebService {
 	}
 
 	private static String getContentWithJsoup(String url) throws IOException {
-		return Jsoup.connect(url).ignoreContentType(true).execute().body();
+		return Jsoup.connect(url).ignoreContentType(true).maxBodySize(0).timeout(0).execute().body();
 	}
 
 }

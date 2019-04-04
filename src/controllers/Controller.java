@@ -1,6 +1,7 @@
 package controllers;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -41,7 +42,6 @@ public class Controller {
 
 	private ResourceBundle resourceBundle;
 
-	private Stats stats;
 	/**
 	 * static Singleton instance.
 	 */
@@ -68,22 +68,33 @@ public class Controller {
 
 		// Si no existe el recurso de idioma especificado cargamos el Español
 		try {
-			Languages language = Languages.getLanguageByCode(System.getProperty("user.language"));
-			resourceBundle = ResourceBundle.getBundle(RESOURCE_FILE_NAME,
-					language.getLocale());
-			setSelectedLanguage(language);
-			logger.info("Cargando idoma del sistema: {}", getResourceBundle().getLocale());
+			Languages lang = Languages.getLanguageByLocale(Locale.getDefault());
+			if (lang == null) {
+				logger.info("No existe fichero de idioma para: " + Locale.getDefault());
+				logger.info("Cargando idioma: " + Languages.SPANISH);
+				setSelectedLanguage(Languages.SPANISH);
+			} else {
+				setSelectedLanguage(lang);
+			}
+			resourceBundle = ResourceBundle.getBundle(RESOURCE_FILE_NAME);
+
 		} catch (NullPointerException | MissingResourceException e) {
-			logger.error("No se ha podido encontrar el recurso de idioma, cargando en_en: {}", e);
+			logger.error(
+					"No se ha podido encontrar el recurso de idioma, cargando idioma " + Languages.SPANISH + ": {}", e);
+			setSelectedLanguage(Languages.SPANISH);
 		}
 	}
 
 	public Languages getSelectedLanguage() {
 		return selectedLanguage;
+
 	}
 
 	public void setSelectedLanguage(Languages selectedLanguage) {
 		this.selectedLanguage = selectedLanguage;
+		Locale a = selectedLanguage.getLocale();
+		Locale.setDefault(a);
+		this.resourceBundle = ResourceBundle.getBundle(RESOURCE_FILE_NAME);
 	}
 
 	public void setBBDD(BBDD BBDD) {
@@ -169,11 +180,6 @@ public class Controller {
 		return resourceBundle;
 	}
 
-	public void setResourceBundle(Languages language) {
-		setSelectedLanguage(language);
-		this.resourceBundle = ResourceBundle.getBundle(RESOURCE_FILE_NAME, language.getLocale());
-	}
-
 	public void tryLogin(String host, String username, String password) throws JSONException, IOException {
 		WebService.initialize(host, username, password);
 
@@ -185,12 +191,12 @@ public class Controller {
 
 	public Stats getStats() {
 
-		return stats;
+		return getActualCourse().getStats();
 	}
 
 	public void createStats() throws Exception {
-		stats = new Stats(BBDD.getActualCourse());
-
+		Stats stats = new Stats(getActualCourse());
+		getActualCourse().setStats(stats);
 	}
 
 	public void setActualCourse(Course selectedCourse) {

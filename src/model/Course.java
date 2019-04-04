@@ -1,9 +1,11 @@
 package model;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -30,6 +32,8 @@ public class Course implements Serializable {
 	private String idNumber;
 	private String summary;
 	private DescriptionFormat summaryformat;
+	private Instant startDate;
+	private Instant endDate;
 
 	private Set<EnrolledUser> enrolledUsers;
 	private Set<Role> roles; // roles que hay en el curso
@@ -37,19 +41,20 @@ public class Course implements Serializable {
 	private Set<Module> modules;
 	private Set<GradeItem> gradeItems;
 	private Logs logs;
+	private Stats stats;
 
 	static final Logger logger = LoggerFactory.getLogger(Course.class);
 
 	public Course() {
-		this.enrolledUsers = new HashSet<>();
+		this.enrolledUsers = new TreeSet<>();
 		this.roles = new HashSet<>();
 		this.groups = new HashSet<>();
 		this.gradeItems = new HashSet<>();
-
+		this.modules = new HashSet<>();
 	}
 
 	public Course(int id, String shortName, String fullName, String idNumber, String summary,
-			DescriptionFormat summaryformat) {
+			DescriptionFormat summaryformat, Instant startDate, Instant endDate) {
 		this();
 		this.id = id;
 		this.shortName = shortName;
@@ -57,6 +62,13 @@ public class Course implements Serializable {
 		this.idNumber = idNumber;
 		this.summary = summary;
 		this.summaryformat = summaryformat;
+		this.startDate = startDate;
+		this.endDate = endDate;
+	}
+
+	public Course(int id) {
+		this();
+		this.id = id;
 	}
 
 	/**
@@ -172,10 +184,12 @@ public class Course implements Serializable {
 	}
 
 	public GradeItem getRootGradeItem() {
-		return gradeItems.stream()
-				.filter(g -> g.getFather() == null)
-				.findFirst()
-				.get();
+		for (GradeItem gradeItem : gradeItems) {
+			if (gradeItem.getFather() == null)
+				return gradeItem;
+		}
+		throw new IllegalStateException(
+				"No existe el nodo raíz, no hay un nodo que tenga como atributo 'father' en null");
 	}
 
 	public Set<GradeItem> getGradeItems() {
@@ -184,6 +198,30 @@ public class Course implements Serializable {
 
 	public void setGradeItems(Set<GradeItem> gradeItems) {
 		this.gradeItems = gradeItems;
+	}
+
+	public Instant getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Instant startDate) {
+		this.startDate = startDate;
+	}
+
+	public Instant getEndDate() {
+		return endDate;
+	}
+
+	public Stats getStats() {
+		return stats;
+	}
+
+	public void setStats(Stats stats) {
+		this.stats = stats;
+	}
+
+	public void setEndDate(Instant endDate) {
+		this.endDate = endDate;
 	}
 
 	public Logs getLogs() {
@@ -247,26 +285,19 @@ public class Course implements Serializable {
 		gradeItem.setCourse(this);
 
 	}
-	
+
 	public void clear() {
 		this.enrolledUsers.clear();
 		this.roles.clear();
 		this.groups.clear();
+		this.modules.clear();
 	}
 
 	public Set<ModuleType> getUniqueModuleTypes() {
-		// Set<ModuleType> uniqueModulesTypes = new HashSet<>();
-		// for (GradeItem gradeItem : gradeItems) {
-		// ModuleType moduleType = gradeItem.getItemModule();
-		// if (moduleType != null && uniqueModulesTypes.contains(moduleType)) {
-		// uniqueModulesTypes.add(moduleType);
-		// }
-		// }
 		Set<ModuleType> uniqueModulesTypes = gradeItems.stream()
 				.map(GradeItem::getItemModule)
 				.filter(Objects::nonNull)
-				.distinct()
-				.collect(Collectors.toSet());
+				.collect(Collectors.toCollection(TreeSet::new));
 		return uniqueModulesTypes;
 	}
 

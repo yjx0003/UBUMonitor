@@ -47,7 +47,8 @@ public class UBULogController {
 				CONTROLLER.getPassword(), CONTROLLER.getActualCourse().getId(), CONTROLLER.getUser().getTimezone());
 		
 		ReferencesLog.setZoneId(download.getTimezone());
-		List<String> dailyLogs = download.downloadLog(logs.getLastDatetime(), ZonedDateTime.now());
+		ZonedDateTime lastDateTime=logs.getLastDatetime();
+		List<String> dailyLogs = download.downloadLog(lastDateTime, ZonedDateTime.now());
 		for (String dailyLog : dailyLogs) {
 			List<Map<String, String>> parsedLog = UBULogParser.parse(new StringReader(dailyLog));
 			List<LogLine> logList = LogCreator.createLogs(parsedLog);
@@ -62,11 +63,14 @@ public class UBULogController {
 	public Logs createCourseLog() {
 		DownloadLogController download = new DownloadLogController(CONTROLLER.getHost(), CONTROLLER.getUsername(),
 				CONTROLLER.getPassword(), CONTROLLER.getActualCourse().getId(), CONTROLLER.getUser().getTimezone());
+		
 		ReferencesLog.setZoneId(download.getTimezone());
+		
 		List<Map<String, String>> parsedLog = UBULogParser.parse(new StringReader(download.downloadLog()));
 		List<LogLine> logList = LogCreator.createLogs(parsedLog);
 		Collections.reverse(logList);
 		Logs logs = new Logs(CONTROLLER.getUser().getTimezone(), download.getTimezone(), logList);
+		
 		return logs;
 	}
 

@@ -143,4 +143,10 @@ public class BBDD implements Serializable{
 	public GradeItem putGradeItem(GradeItem gradeItem) {
 		return gradeItems.putIfAbsent(gradeItem.getId(), gradeItem);
 	}
+
+	@Override
+	public String toString() {
+		return "BBDD [roles=" + roles + ",\n groups=" + groups + ",\n users=" + users + ",\n modules=" + modules
+				+ ",\n courses=" + courses + ",\n gradeItems=" + gradeItems + ",\n actualCourse=" + actualCourse + "]";
+	}
 }

@@ -56,7 +56,7 @@ public class LoginController implements Initializable {
 	private ChoiceBox<Languages> languageSelector;
 
 	// Host por defecto
-	private static final String HOST = "https://ubuvirtual.ubu.es/";
+	private static final String HOST = "http://localhost";
 
 	/**
 	 * Crea el selector de idioma.
@@ -70,7 +70,8 @@ public class LoginController implements Initializable {
 
 		// Carga la interfaz con el idioma seleccionado
 		languageSelector.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
-			controller.setResourceBundle(newValue);
+			
+			controller.setSelectedLanguage(newValue);
 			logger.info("Idioma cargado: {}", controller.getResourceBundle().getLocale().toString());
 			logger.info("[Bienvenido a UBUGrades]");
 			changeScene(getClass().getResource("/view/Login.fxml"));

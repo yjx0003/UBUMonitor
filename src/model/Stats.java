@@ -1,13 +1,12 @@
 package model;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -21,7 +20,12 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  *
  */
-public class Stats {
+public class Stats implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	static final Logger logger = LoggerFactory.getLogger(Stats.class);
 

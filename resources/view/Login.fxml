@@ -23,7 +23,7 @@
 	<!-- TODO Add Nodes -->
 
 	<children>
-		<Group id="Group" layoutX="50.0" layoutY="280.0">
+		<Group id="Group" layoutX="43.0" layoutY="250.0">
 			<children>
 				<Label id="loginLabels" layoutX="20.0" layoutY="30.0" text="%label.user">
 					<font>
@@ -34,9 +34,9 @@
 				<Label id="loginLabels" font="$x1" layoutX="20.0" layoutY="105.0" text="%label.host" />
 			</children>
 		</Group>
-		<Group id="Group" layoutX="152.0" layoutY="280.0">
+		<Group id="Group" layoutX="145.0" layoutY="250.0">
 			<children>
-				<TextField id="txtUname" fx:id="txtUsername" layoutY="27.0" prefWidth="173.0" styleClass="text-field-login" stylesheets="@/css/style.css" />
+      				<TextField id="txtUname" fx:id="txtUsername" layoutY="27.0" prefWidth="173.0" styleClass="text-field-login" stylesheets="@/css/style.css" />
 				<PasswordField id="yxyPassword" fx:id="txtPassword" layoutY="63.0" prefWidth="173.00009999999747" styleClass="text-field-login" stylesheets="@/css/style.css" />
 				<TextField fx:id="txtHost" layoutY="100.0" prefWidth="173.0" styleClass="text-field-login" stylesheets="@/css/style.css" />
 			</children>
@@ -54,7 +54,7 @@
 				<Cursor fx:constant="HAND" />
 			</cursor>
 		</Button>
-		<ImageView fitHeight="271.0" fitWidth="276.0" layoutX="64.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true">
+		<ImageView fitHeight="271.0" fitWidth="276.0" layoutX="70.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true">
 			<image>
 				<Image url="@../img/logo.png" />
 			</image>
@@ -64,6 +64,8 @@
             <Font name="System Bold" size="12.0" />
          </font></Label>
       <ChoiceBox fx:id="languageSelector" layoutX="295.0" layoutY="14.0" prefHeight="25.0" prefWidth="94.0" />
+      <CheckBox fx:id="chkSaveUsername" layoutX="65.0" layoutY="391.0" mnemonicParsing="false" text="%chk.saveusername" />
+      <CheckBox fx:id="chkSaveHost" layoutX="257.0" layoutY="391.0" mnemonicParsing="false" text="%chk.savehost" />
       
 	</children>
 </AnchorPane>

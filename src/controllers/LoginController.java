@@ -1,8 +1,11 @@
 
 package controllers;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 import org.json.JSONException;
@@ -21,6 +24,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -39,9 +43,9 @@ import model.MoodleUser;
 public class LoginController implements Initializable {
 
 	static final Logger logger = LoggerFactory.getLogger(LoginController.class);
-
+	private static final String PROPERTIES_PATH = "config.properties";
 	private Controller controller = Controller.getInstance();
-
+	Properties properties;
 	@FXML
 	private Label lblStatus;
 	@FXML
@@ -55,27 +59,67 @@ public class LoginController implements Initializable {
 	@FXML
 	private ChoiceBox<Languages> languageSelector;
 
-	// Host por defecto
-	private static final String HOST = "http://localhost";
+	@FXML
+	private CheckBox chkSaveUsername;
+
+	@FXML
+	private CheckBox chkSaveHost;
 
 	/**
 	 * Crea el selector de idioma.
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		txtHost.setText(HOST);
+		initializeProperties();
 		ObservableList<Languages> languages = FXCollections.observableArrayList(Languages.values());
 		languageSelector.setItems(languages);
 		languageSelector.setValue(controller.getSelectedLanguage());
 
 		// Carga la interfaz con el idioma seleccionado
 		languageSelector.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
-			
+
 			controller.setSelectedLanguage(newValue);
 			logger.info("Idioma cargado: {}", controller.getResourceBundle().getLocale().toString());
 			logger.info("[Bienvenido a UBUGrades]");
 			changeScene(getClass().getResource("/view/Login.fxml"));
 		});
+	}
+
+	private void initializeProperties() {
+
+		properties = new Properties();
+		try (InputStream in=getClass().getClassLoader().getResourceAsStream(PROPERTIES_PATH)){
+			
+			properties.load(in);
+			txtHost.setText(properties.getProperty("host"));
+			txtUsername.setText(properties.getProperty("username"));
+			chkSaveUsername.setSelected(Boolean.parseBoolean(properties.getProperty("saveUsername")));
+			chkSaveHost.setSelected(Boolean.parseBoolean(properties.getProperty("saveHost")));
+		} catch (IOException e) {
+			logger.error("No se ha podido cargar " + PROPERTIES_PATH);
+		}
+
+	}
+
+	private void saveProperties() {
+		
+		
+		String username = chkSaveUsername.isSelected() ? txtUsername.getText() : "";
+		properties.setProperty("username", username);
+		properties.setProperty("saveUsername", Boolean.toString(chkSaveUsername.isSelected()));
+		
+		String host=chkSaveHost.isSelected()?txtHost.getText():"";
+		properties.setProperty("host", host);
+		properties.setProperty("saveHost", Boolean.toString(chkSaveHost.isSelected()));
+
+		
+		String path=getClass().getClassLoader().getResource(PROPERTIES_PATH).getFile();
+		try(FileOutputStream out=new FileOutputStream(path)){
+			properties.store(out, null);
+	
+		} catch (IOException e) {
+			logger.error("No se ha podido guardar el fichero"+ path);
+		}
 	}
 
 	/**
@@ -95,6 +139,7 @@ public class LoginController implements Initializable {
 			lblStatus.textProperty().bind(loginTask.messageProperty());
 
 			loginTask.setOnSucceeded(s -> {
+				saveProperties();
 				controller.getStage().getScene().setCursor(Cursor.DEFAULT);
 				changeScene(getClass().getResource("/view/Welcome.fxml"));
 			});
@@ -119,6 +164,7 @@ public class LoginController implements Initializable {
 	 */
 	private void changeScene(URL sceneFXML) {
 		try {
+
 			// Accedemos a la siguiente ventana
 			FXMLLoader loader = new FXMLLoader(sceneFXML, controller.getResourceBundle());
 			controller.getStage().close();
@@ -146,7 +192,7 @@ public class LoginController implements Initializable {
 			@Override
 			protected Void call() throws IOException {
 				try {
-					
+
 					controller.tryLogin(txtHost.getText(), txtUsername.getText(), txtPassword.getText());
 
 				} catch (IOException e) {

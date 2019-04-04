@@ -1,10 +1,21 @@
 package model;
 
+import java.io.Serializable;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-public class Logs {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class Logs implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	static final Logger logger = LoggerFactory.getLogger(Logs.class);
 
 	private List<LogLine> logLines;
 
@@ -39,7 +50,8 @@ public class Logs {
 	}
 
 	public void addAll(List<LogLine> logLines) {
-		if (!isEmpty(logLines)) {
+
+		if (isEmpty(logLines)) {
 			return;
 		}
 		if (!logLines.get(0).getTime().getZone().equals(zoneId)) {
@@ -53,6 +65,11 @@ public class Logs {
 
 	public boolean isEmpty(List<LogLine> logLines) {
 		return logLines == null || logLines.isEmpty();
+	}
+
+	@Override
+	public String toString() {
+		return "Logs [logLines=" + logLines + "]";
 	}
 
 }

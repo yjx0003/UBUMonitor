@@ -24,6 +24,10 @@ public class Group implements Serializable {
 	private Set<EnrolledUser> enrolledUsers;
 	private Course course;
 
+	public Group() {
+		this.enrolledUsers=new HashSet<>();
+	}
+	
 	/**
 	 * Constructor de la clase Group. Establece un grupo.
 	 * 
@@ -36,11 +40,17 @@ public class Group implements Serializable {
 	 * 
 	 */
 	public Group(int id, String name, String description, DescriptionFormat descriptionFormat) {
+		this();
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.descriptionFormat = descriptionFormat;
-		this.enrolledUsers=new HashSet<>();
+		
+	}
+	
+	public Group(int id) {
+		this();
+		this.id=id;
 	}
 
 	/**

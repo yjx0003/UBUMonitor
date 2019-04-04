@@ -20,12 +20,15 @@ public enum Languages {
 	private String code;
 	private Locale locale;
 
-	private static Map<String, Languages> localeMap;
+	private static Map<String, Languages> codeMap;
+	private static Map<Locale,Languages> localeMap;
 
 	static {
-		localeMap = new HashMap<>();
+		codeMap = new HashMap<>();
+		localeMap=new HashMap<>();
 		for (Languages language : Languages.values()) {
-			localeMap.put(language.code, language);
+			codeMap.put(language.code, language);
+			localeMap.put(language.locale, language);
 		}
 	}
 
@@ -36,7 +39,11 @@ public enum Languages {
 	}
 
 	public static Languages getLanguageByCode(String code) {
-		return localeMap.get(code);
+		return codeMap.get(code);
+	}
+	
+	public static Languages getLanguageByLocale(Locale locale) {
+		return localeMap.get(locale);
 	}
 
 	public String getLanguage() {

@@ -9,7 +9,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Comparator;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -18,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import controllers.ubugrades.CreatorUBUGradesController;
 import controllers.ubulogs.UBULogController;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -42,6 +40,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.BBDD;
 import model.Course;
+import model.Logs;
 import persistence.Encryption;
 
 /**
@@ -57,7 +56,7 @@ public class WelcomeController implements Initializable {
 	static final Logger logger = LoggerFactory.getLogger(WelcomeController.class);
 	private String directoryObject;
 	private Controller controller = Controller.getInstance();
-	private boolean isUpdateLog;
+	private boolean isFileCacheExists;
 
 	@FXML
 	private Label lblUser;
@@ -107,16 +106,16 @@ public class WelcomeController implements Initializable {
 					chkUpdateData.setSelected(false);
 					chkUpdateData.setDisable(false);
 					long lastModified = f.lastModified();
-					DateTimeFormatter dtf = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
-							.withLocale(controller.getSelectedLanguage().getLocale());
+					DateTimeFormatter dtf = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
 					LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastModified),
 							ZoneId.systemDefault());
 					lblDateUpdate.setText(localDateTime.format(dtf));
+					isFileCacheExists=false;
 				} else {
 					chkUpdateData.setSelected(true);
 					chkUpdateData.setDisable(true);
 					lblDateUpdate.setText(controller.getResourceBundle().getString("label.never"));
-					isUpdateLog=true;
+					isFileCacheExists=true;
 				}
 			});
 
@@ -144,6 +143,10 @@ public class WelcomeController implements Initializable {
 		logger.info(" Curso seleccionado: " + controller.getActualCourse().getFullName());
 
 		if (chkUpdateData.isSelected()) {
+			if(!isFileCacheExists) {
+				loadData();
+			}
+			
 			downloadData();
 
 		} else {
@@ -180,7 +183,7 @@ public class WelcomeController implements Initializable {
 	private void downloadData() {
 		btnEntrar.setVisible(false);
 		lblProgress.setVisible(true);
-
+		progressBar.setVisible(true);
 		Task<Void> task = getUserDataWorker();
 		lblProgress.textProperty().bind(task.messageProperty());
 		task.setOnSucceeded(v -> loadNextWindow());
@@ -229,7 +232,7 @@ public class WelcomeController implements Initializable {
 					// Establecemos los usuarios matriculados
 					updateMessage(controller.getResourceBundle().getString("label.loadingstudents"));
 					CreatorUBUGradesController.createEnrolledUsers(controller.getActualCourse().getId());
-
+					CreatorUBUGradesController.createModules(controller.getActualCourse().getId());
 					updateMessage(controller.getResourceBundle().getString("label.loadingqualifier"));
 					// Establecemos calificador del curso
 					CreatorUBUGradesController.createGradeItems(controller.getActualCourse().getId());
@@ -239,14 +242,19 @@ public class WelcomeController implements Initializable {
 					controller.createStats();
 					
 					updateMessage("Actualizando el log");
-					if(isUpdateLog) {
-						UBULogController.getInstance().updateCourseLog(controller.getActualCourse().getLogs());
+					if(isFileCacheExists) {
+						Logs logs=UBULogController.getInstance().createCourseLog();
+						controller.getActualCourse().setLogs(logs);
 					}else {
-						UBULogController.getInstance().createCourseLog();
+						Logs logs=controller.getActualCourse().getLogs();
+						UBULogController.getInstance().updateCourseLog(logs);
+						
 					}
 					updateMessage("Guardando en local");
 					saveData();
-
+					logger.debug(controller.getActualCourse().getLogs().toString());
+					logger.debug(controller.getBBDD().toString());
+					
 				} catch (Exception e) {
 					logger.error("Error al cargar los datos de los alumnos: {}", e);
 					updateMessage("Se produjo un error inesperado al cargar los datos.\n" + e.getLocalizedMessage());

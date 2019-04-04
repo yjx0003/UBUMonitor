@@ -2,12 +2,14 @@ package model;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-public class EnrolledUser implements Serializable {
+public class EnrolledUser implements Serializable,Comparable<EnrolledUser>{
 
 	/**
 	 * 
@@ -149,16 +151,21 @@ public class EnrolledUser implements Serializable {
 	 */
 	private Set<Course> enrolledcourses;
 
-	private Set<LogLine> logs;
+	private List<LogLine> logs;
 
 	private Map<GradeItem, Double> grades;
 
 	public EnrolledUser() {
 		roles = new HashSet<>();
-		logs = new HashSet<>();
+		logs = new ArrayList<>();
 		enrolledcourses = new HashSet<>();
-		grades=new HashMap<>();
-		groups=new HashSet<>();
+		grades = new HashMap<>();
+		groups = new HashSet<>();
+	}
+
+	public EnrolledUser(int id) {
+		this();
+		this.id = id;
 	}
 
 	public int getId() {
@@ -377,11 +384,11 @@ public class EnrolledUser implements Serializable {
 		this.profileimageurl = profileimageurl;
 	}
 
-	public Set<LogLine> getLogs() {
+	public List<LogLine> getLogs() {
 		return logs;
 	}
 
-	public void setLogs(Set<LogLine> logs) {
+	public void setLogs(List<LogLine> logs) {
 		this.logs = logs;
 	}
 
@@ -439,19 +446,25 @@ public class EnrolledUser implements Serializable {
 		grades.put(gradeItem, grade);
 		gradeItem.addUserGrade(this, grade);
 	}
-	
+
 	public double getGrade(GradeItem gradeItem) {
 		return grades.get(gradeItem);
 	}
-
 	
+	@Override
+	public int compareTo(EnrolledUser o) {
+		int compareFirsName=firstname.compareTo(o.firstname);
+		if(compareFirsName==0) {
+			return lastname.compareTo(o.lastname);
+		}
+		return compareFirsName;
+	}
+
+
 	@Override
 	public int hashCode() {
 		return id;
 	}
-
-
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -471,5 +484,6 @@ public class EnrolledUser implements Serializable {
 	public String toString() {
 		return lastname + ", " + firstname;
 	}
+
 
 }

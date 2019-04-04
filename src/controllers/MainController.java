@@ -427,10 +427,12 @@ public class MainController implements Initializable {
 	 *            El item al que añadir el icono.
 	 */
 	public static void setIcon(TreeItem<GradeItem> item) {
+		String path="/img/" + item.getValue().getItemModule().getModName()+ ".png";
 		try {
-			item.setGraphic((Node) new ImageView(new Image("/img/" + item.getValue().getIconName() + ".png")));
+			
+			item.setGraphic((Node) new ImageView(new Image(path)));
 		} catch (Exception e) {
-			logger.error("No se ha podido cargar la imagen del elemento " + item + " : {}", e);
+			logger.error("No se ha podido cargar la imagen del elemento " + item +  "en la ruta "+path+") : {}", e);
 		}
 	}
 
@@ -459,7 +461,7 @@ public class MainController implements Initializable {
 				for (GradeItem gradeItem:gradeItems) {
 					TreeItem<GradeItem> item = new TreeItem<>(gradeItem);
 					boolean activityYes = false;
-					if (filterType.equals(gradeItem.getIconName()) || filterType.equals(TODOS)) {
+					if (filterType.equals(gradeItem.getItemModule().toString()) || filterType.equals(TODOS)) {
 						activityYes = true;
 					}
 					Pattern pattern = Pattern.compile(patternCalifications.toLowerCase());

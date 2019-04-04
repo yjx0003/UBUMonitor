@@ -106,7 +106,6 @@ public class DownloadLogController {
 		this.timezone = (timezone.equals("99")) ? findServerTimezone() : ZoneId.of(timezone);
 	}
 
-
 	public ZoneId getTimezone() {
 		return timezone;
 	}
@@ -246,9 +245,11 @@ public class DownloadLogController {
 	 */
 	public String downloadLog(String dateSeconds) {
 		try {
+			String URL=host + "/report/log/index.php?lang=en&download=csv&id=" + idCourse + "&date=" + dateSeconds
+					+ "&modid=&chooselog=1&logreader=logstore_standard";
+			logger.info("Descargando log con la URL: "+URL);
 			Response response = Jsoup
-					.connect(host + "/report/log/index.php?lang=en&download=csv&id=" + idCourse + "&date=" + dateSeconds
-							+ "&modid=&chooselog=1&logreader=logstore_standard")
+					.connect(URL)
 					.cookies(cookies).ignoreContentType(true).timeout(0).maxBodySize(0).execute();
 
 			return response.body();

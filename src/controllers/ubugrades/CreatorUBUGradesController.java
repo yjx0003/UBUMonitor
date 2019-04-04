@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,7 +22,7 @@ import model.DescriptionFormat;
 import model.EnrolledUser;
 import model.GradeItem;
 import model.Group;
-import model.ItemType;
+
 import model.MoodleUser;
 import model.Role;
 import model.mod.Module;
@@ -88,19 +87,22 @@ public class CreatorUBUGradesController {
 
 		int roleid = jsonObject.getInt("roleid");
 
+		Role role;
+		if (BBDD.containsRole(roleid)) {
+			role = BBDD.getRoleById(roleid);
+		} else {
+			role = new Role(roleid);
+
+			BBDD.putRole(role);
+		}
 		String name = jsonObject.getString("name");
 		String shortName = jsonObject.getString("shortname");
-		
-		if (BBDD.containsRole(roleid)) {
-			Role role = BBDD.getRoleById(roleid);
-			role.setName(name);
-			role.setShortName(shortName);
-			return role;
-		}
-		Role role = new Role(roleid, name, shortName);
+
+		role.setName(name);
+		role.setShortName(shortName);
 
 		BBDD.getActualCourse().addRole(role);
-		BBDD.putRole(role);
+
 		return role;
 
 	}
@@ -124,20 +126,24 @@ public class CreatorUBUGradesController {
 			return null;
 
 		int groupid = jsonObject.getInt("id");
+		Group group;
+		if (BBDD.containsGroup(groupid)) {
+			group = BBDD.getGroupById(groupid);
+
+		} else {
+			group = new Group(groupid);
+			BBDD.putGroup(group);
+		}
+
 		String name = jsonObject.getString("name");
 		String description = jsonObject.getString("description");
 		DescriptionFormat descriptionFormat = DescriptionFormat.get(jsonObject.getInt("descriptionformat"));
-		if (BBDD.containsGroup(groupid)) {
-			Group group = BBDD.getGroupById(groupid);
-			group.setName(name);
-			group.setDescription(description);
-			group.setDescriptionFormat(descriptionFormat);
-			return group;
-		}
 
-		Group group = new Group(groupid, name, description, descriptionFormat);
+		group.setName(name);
+		group.setDescription(description);
+		group.setDescriptionFormat(descriptionFormat);
+
 		BBDD.getActualCourse().addGroup(group);
-		BBDD.putGroup(group);
 
 		return group;
 
@@ -147,14 +153,15 @@ public class CreatorUBUGradesController {
 
 		int id = user.getInt("id");
 
-		Map<Integer, EnrolledUser> users = BBDD.getUsers();
+		EnrolledUser enrolledUser;
+		if (BBDD.containsEnrolledUser(id)) {
+			enrolledUser = BBDD.getEnrolledUserById(id);
 
-		if (users.containsKey(id)) {
-			return users.get(id);
+		} else {
+			enrolledUser = new EnrolledUser(id);
+			BBDD.putEnrolledUser(enrolledUser);
 		}
 
-		EnrolledUser enrolledUser = new EnrolledUser();
-		enrolledUser.setId(id);
 		enrolledUser.setFirstname(user.optString("firstname"));
 		enrolledUser.setLastname(user.optString("lastname"));
 		enrolledUser.setFullName(user.optString("fullname"));
@@ -175,8 +182,6 @@ public class CreatorUBUGradesController {
 
 		List<Group> groups = createGroups(user.optJSONArray("groups"));
 		groups.forEach(group -> enrolledUser.addGroup(group));
-
-		users.put(id, enrolledUser);
 
 		return enrolledUser;
 
@@ -200,9 +205,12 @@ public class CreatorUBUGradesController {
 			return null;
 
 		int id = jsonObject.getInt("id");
-
+		Course course;
 		if (BBDD.containsCourse(id)) {
-			return BBDD.getCourseById(id);
+			course = BBDD.getCourseById(id);
+		} else {
+			course = new Course(id);
+			BBDD.putCourse(course);
 		}
 
 		String shortName = jsonObject.getString("shortname");
@@ -211,8 +219,16 @@ public class CreatorUBUGradesController {
 		String idNumber = jsonObject.optString("idnumber");
 		String summary = jsonObject.optString("summary");
 		DescriptionFormat summaryFormat = DescriptionFormat.get(jsonObject.optInt("summaryformat"));
+		Instant startDate = Instant.ofEpochSecond(jsonObject.optInt("startdate"));
+		Instant endDate = Instant.ofEpochSecond(jsonObject.optInt("enddate"));
 
-		Course course = new Course(id, shortName, fullName, idNumber, summary, summaryFormat);
+		course.setShortName(shortName);
+		course.setFullName(fullName);
+		course.setIdNumber(idNumber);
+		course.setSummary(summary);
+		course.setSummaryformat(summaryFormat);
+		course.setStartDate(startDate);
+		course.setEndDate(endDate);
 
 		BBDD.putCourse(course);
 
@@ -226,25 +242,17 @@ public class CreatorUBUGradesController {
 			return null;
 
 		int cmid = jsonObject.getInt("id");
-
+		Module module;
 		if (BBDD.containsModule(cmid)) {
 
-			return BBDD.getCourseModuleById(cmid);
+			module = BBDD.getCourseModuleById(cmid);
+		} else {
+			String modname = jsonObject.getString("modname");
+			module = ModuleType.createInstance(modname);
+			module.setId(cmid);
+			
+			BBDD.putModule(module);
 		}
-		String modname = jsonObject.getString("modname");
-
-		Module module = ModuleType.createInstance(modname);
-
-		attributesModule(jsonObject, module);
-
-		BBDD.getActualCourse().addModule(module);
-		BBDD.putModule(module);
-
-		return module;
-
-	}
-
-	public static void attributesModule(JSONObject jsonObject, Module module) {
 
 		module.setId(jsonObject.getInt("id"));
 		module.setUrl(jsonObject.optString("url"));
@@ -257,6 +265,11 @@ public class CreatorUBUGradesController {
 		module.setModicon(jsonObject.optString("modicon"));
 		module.setModuleType(ModuleType.get(jsonObject.getString("modname")));
 		module.setIndent(jsonObject.optInt("indent"));
+
+		BBDD.getActualCourse().addModule(module);
+
+		return module;
+
 	}
 
 	public static MoodleUser createMoodleUser(String username) throws IOException {
@@ -349,9 +362,10 @@ public class CreatorUBUGradesController {
 
 			// comparamos si son diferente instancia. OJO no confundirse con != de Python
 			if (gradeItem != original) {
-				GradeItem originalFather = BBDD.getGradeItemById(gradeItem.getFather().getId());
-				original.setFather(originalFather);
-
+				if (gradeItem.getFather() != null) {
+					GradeItem originalFather = BBDD.getGradeItemById(gradeItem.getFather().getId());
+					original.setFather(originalFather);
+				}
 				List<GradeItem> originalChildren = new ArrayList<>();
 				for (GradeItem child : gradeItem.getChildren()) {
 					originalChildren.add(BBDD.getGradeItemById(child.getId()));
@@ -445,18 +459,23 @@ public class CreatorUBUGradesController {
 			gradeItem.setId(gradeitem.getInt("id"));
 
 			BBDD.putGradeItem(gradeItem);
-			String itemtype = gradeitem.getString("itemtype");
-			gradeItem.setCourse(course);
-			ItemType itemType = ItemType.get(itemtype);
-			gradeItem.setItemtype(itemType);
 
-			if (itemType == ItemType.MOD) {
+			gradeItem.setCourse(course);
+			String itemtype = gradeitem.getString("itemtype");
+			ModuleType moduleType;
+
+			if (itemtype.equals("mod")) {
 				Module module = BBDD.getCourseModuleById(gradeitem.getInt("cmid"));
 				gradeItem.setModule(module);
-				ModuleType moduleType = ModuleType.get(gradeitem.getString("itemmodule"));
-				gradeItem.setItemModule(moduleType);
-			}
+				moduleType = ModuleType.get(gradeitem.getString("itemmodule"));
 
+			} else if (itemtype.equals("course")) {
+				moduleType = ModuleType.CATEGORY;
+
+			} else {
+				moduleType = ModuleType.get(itemtype);
+			}
+			gradeItem.setItemModule(moduleType);
 			gradeItem.setWeightraw(gradeitem.optDouble("weightraw"));
 
 			gradeItem.setGrademin(gradeitem.optDouble("grademin"));

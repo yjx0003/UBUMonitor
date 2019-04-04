@@ -11,16 +11,19 @@ import java.util.Set;
  * @version 2.0.1
  * @since 2.0.1
  */
-public class Role implements Serializable{
-	
+public class Role implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private String name;
 	private String shortName;
 	private Set<EnrolledUser> enrolledUsers;
 	private Course course;
-	
 
+	public Role() {
+		this.enrolledUsers=new HashSet<>();
+	}
+	
 	/**
 	 * Constructor de un rol.
 	 * 
@@ -32,11 +35,17 @@ public class Role implements Serializable{
 	 *            nombre corto
 	 */
 	public Role(int id, String name, String shortName) {
+		this();
 		this.id = id;
 		this.name = name;
 		this.shortName = shortName;
-		this.enrolledUsers=new HashSet<>();
-		
+		this.enrolledUsers = new HashSet<>();
+
+	}
+
+	public Role(int id) {
+		this();
+		this.id = id;
 	}
 
 	/**
@@ -52,7 +61,7 @@ public class Role implements Serializable{
 	 * Modifica el id del rol
 	 * 
 	 * @param id
-	 * 		El id.
+	 *            El id.
 	 */
 	public void setId(int id) {
 		this.id = id;
@@ -71,7 +80,7 @@ public class Role implements Serializable{
 	 * Modifica el nombre del rol.
 	 * 
 	 * @param name
-	 * 		El nombre.
+	 *            El nombre.
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -90,14 +99,12 @@ public class Role implements Serializable{
 	 * Modifica el nombre corto del rol
 	 * 
 	 * @param shortName
-	 * 		El nombre corto.
+	 *            El nombre corto.
 	 */
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
 	}
-	
-	
-	
+
 	public Set<EnrolledUser> getEnrolledUsers() {
 		return enrolledUsers;
 	}
@@ -109,7 +116,7 @@ public class Role implements Serializable{
 	public void addEnrolledUser(EnrolledUser user) {
 		enrolledUsers.add(user);
 	}
-	
+
 	public Course getCourse() {
 		return course;
 	}
@@ -119,7 +126,7 @@ public class Role implements Serializable{
 	}
 
 	@Override
-	public String toString(){
+	public String toString() {
 		return name;
 	}
 
@@ -142,6 +149,4 @@ public class Role implements Serializable{
 		return true;
 	}
 
-	
-	
 }

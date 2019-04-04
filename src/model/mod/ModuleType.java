@@ -11,14 +11,17 @@ public enum ModuleType {
 			return new Assignment();
 		}
 	},
-	CATEGORY("category"){
-
+	BOOK("book"){
 		@Override
 		protected Module create() {
-			
+			return new Book();
+		}
+	},
+	CATEGORY("category") {
+		@Override
+		protected Module create() {
 			return new Category();
 		}
-		
 	},
 	CHAT("chat") {
 		@Override
@@ -93,7 +96,7 @@ public enum ModuleType {
 			return new Lesson();
 		}
 	},
-	MANUAL_ITEM("manual"){
+	MANUAL_ITEM("manual") {
 		@Override
 		protected Module create() {
 			return new ManualItem();
@@ -172,6 +175,6 @@ public enum ModuleType {
 	}
 
 	public static Module createInstance(String modname) {
-		return modTypes.get(modname).create();
+		return modTypes.getOrDefault(modname, MODULE).create();
 	}
 }

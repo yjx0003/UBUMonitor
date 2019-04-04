@@ -132,7 +132,7 @@ public class LogLine implements Serializable {
 	public String toString() {
 		return "LogLine [time=" + time + ", eventContext=" + eventContext + ", component=" + component + ", eventName="
 				+ eventName + ", description=" + description + ", origin=" + origin + ", IPAdress=" + IPAdress
-				+ ", user=" + user + ", affectedUser=" + affectedUser + ", courseModule=" + courseModule + "]";
+				+ ", user=" + user + ", affectedUser=" + affectedUser + ", courseModule=" + courseModule + "]\n";
 	}
 
 

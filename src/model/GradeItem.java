@@ -26,7 +26,7 @@ public class GradeItem implements Serializable{
 	 */
 	private String itemname;
 
-	private ItemType itemtype;
+
 	private ModuleType itemModule;
 	private Module module;
 	private double weightraw;
@@ -61,13 +61,6 @@ public class GradeItem implements Serializable{
 		this.itemname = itemname;
 	}
 
-	public ItemType getItemtype() {
-		return itemtype;
-	}
-
-	public void setItemtype(ItemType itemtype) {
-		this.itemtype = itemtype;
-	}
 
 	public Module getModule() {
 		return module;
@@ -166,9 +159,6 @@ public class GradeItem implements Serializable{
 		return graderaw.get(user);
 	}
 
-	public String getIconName() {
-		return itemtype == ItemType.MOD ? itemModule.getModName() : itemtype.getItemTypeName();
-	}
 
 	@Override
 	public String toString() {

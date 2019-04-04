@@ -47,7 +47,7 @@ public class LogCreator {
 		ReferencesLog referencesLog = ReferencesLog.getReferenceLog(log.getComponent(), log.getEventName());
 		
 		referencesLog.setLogReferencesAttributes(log, ids);
-		logger.debug(log.toString());
+		
 		return log;
 	}
 

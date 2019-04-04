@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  *
  */
-public class Stats implements Serializable{
+public class Stats implements Serializable {
 
 	/**
 	 * 
@@ -47,14 +47,14 @@ public class Stats implements Serializable{
 
 	public Stats(Course course) throws Exception {
 		decimalFormat = new DecimalFormat();
-	
+
 		decimalFormat.setMaximumFractionDigits(MAX_DECIMAL_DIGITS);
 		decimalFormat.setMinimumFractionDigits(MIN_DECIMAL_DIGITS);
-		
+
 		DecimalFormatSymbols decimalFormatSymbols = decimalFormat.getDecimalFormatSymbols();
 		decimalFormatSymbols.setDecimalSeparator('.');
 		decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
-		
+
 		generateGeneralStats(course);
 		generateGroupStats(course);
 		logger.info("Estadisticas generadas con exito.");
@@ -77,13 +77,17 @@ public class Stats implements Serializable{
 			for (GradeItem gradeItem : course.getGradeItems()) {
 				// guardamos las calificaciones de los matriculados de un gradeItem ignorando
 				// los que no tienen notas (NaN)
-				double[] gradesWithoutNaN = gradeItem.getEnrolledUserGrades()
-						.stream()
-						.mapToDouble(Double::doubleValue)
-						.filter(grade -> !Double.isNaN(grade))
-						.toArray();
-
-				generalGradesStats.put(gradeItem, new DescriptiveStatistics(gradesWithoutNaN));
+				DescriptiveStatistics descriptive = new DescriptiveStatistics();
+				generalGradesStats.put(gradeItem, descriptive);
+				
+				for (double grade : gradeItem.getEnrolledUserGrades()) {
+					
+					double gradeAdjustedTo10 = gradeItem.adjustTo10(grade);
+					
+					if (!Double.isNaN(gradeAdjustedTo10)) {
+						descriptive.addValue(gradeAdjustedTo10);
+					}
+				}
 
 			}
 
@@ -114,7 +118,7 @@ public class Stats implements Serializable{
 					DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
 					mapGradeItems.put(gradeItem, descriptiveStatistics);
 					for (EnrolledUser user : group.getEnrolledUsers()) {
-						double grade = gradeItem.getEnrolledUserGrade(user);
+						double grade = gradeItem.getGradeAdjustedTo10(user);
 						if (!Double.isNaN(grade)) {
 							descriptiveStatistics.addValue(grade);
 						}
@@ -204,7 +208,6 @@ public class Stats implements Serializable{
 
 		DescriptiveStatistics statistics = statsHs.get(gradeItem);
 		double percentile = statistics.getPercentile(percentil);
-
 		return format(percentile);
 	}
 
@@ -255,7 +258,6 @@ public class Stats implements Serializable{
 		double ric = statistics.getPercentile(75) - statistics.getPercentile(25);
 		double upperLimit = statistics.getPercentile(75) + ric * 1.5;
 		upperLimit = Math.min(upperLimit, statistics.getMax());
-
 		return format(upperLimit);
 	}
 

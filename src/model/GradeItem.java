@@ -156,7 +156,7 @@ public class GradeItem implements Serializable{
 	}
 
 	public double getEnrolledUserGrade(EnrolledUser user) {
-		return graderaw.get(user);
+		return graderaw.getOrDefault(user,Double.NaN);
 	}
 
 
@@ -184,15 +184,20 @@ public class GradeItem implements Serializable{
 		return true;
 	}
 
-	public String getGradeAdjustedTo10(EnrolledUser  user) {
+	public double getGradeAdjustedTo10(EnrolledUser  user) {
 		double grade=getEnrolledUserGrade(user);
+		
+		return adjustTo10(grade);
+	}
+	
+	public double adjustTo10(double grade) {
 		if (!Double.isNaN(grade)) {
 			//Normalizacion de la nota del alumno en rango [0,10]
 			grade=((grade-grademin)/(grademax-grademin))*10;
 			
 		}
 		
-		return Double.toString(grade);
+		return grade;
 	}
 
 }

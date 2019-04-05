@@ -2,10 +2,12 @@ package model;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -46,7 +48,12 @@ public class Course implements Serializable {
 	static final Logger logger = LoggerFactory.getLogger(Course.class);
 
 	public Course() {
-		this.enrolledUsers = new TreeSet<>();
+		this.enrolledUsers = new TreeSet<>(
+				Comparator.comparing((Function<EnrolledUser, String> & Serializable) EnrolledUser::getLastname,
+							String.CASE_INSENSITIVE_ORDER)
+					.thenComparing(
+							(Function<EnrolledUser, String> & Serializable) EnrolledUser::getFirstname,
+							String.CASE_INSENSITIVE_ORDER));
 		this.roles = new HashSet<>();
 		this.groups = new HashSet<>();
 		this.gradeItems = new HashSet<>();

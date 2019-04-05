@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -151,9 +152,6 @@ public class MainController implements Initializable {
 					.addListener((ov, oldState, newState) -> webViewChartsEngine.executeScript(
 							"setLanguage('" + controller.getResourceBundle().getLocale() + "')"));
 
-		
-		
-
 			stats = controller.getStats();
 
 			//////////////////////////////////////////////////////////////////////////
@@ -169,7 +167,7 @@ public class MainController implements Initializable {
 				slcRole.setText(filterRole);
 			});
 			// Cargamos una lista con los nombres de los roles
-			Set<Role> rolesList =  controller.getActualCourse().getRoles();
+			Set<Role> rolesList = controller.getActualCourse().getRoles();
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
 			List<MenuItem> rolesItemsList = new ArrayList<>();
 			// En principio se mostrarán todos los usuarios con cualquier rol
@@ -178,7 +176,7 @@ public class MainController implements Initializable {
 			mi.setOnAction(actionRole);
 			rolesItemsList.add(mi);
 
-			for (Role role:rolesList) {
+			for (Role role : rolesList) {
 				mi = (new MenuItem(role.toString()));
 				mi.setOnAction(actionRole);
 				// Añadimos el manejador de eventos a cada MenuItem
@@ -202,7 +200,7 @@ public class MainController implements Initializable {
 				slcGroup.setText(filterGroup);
 			});
 			// Cargamos una lista de los nombres de los grupos
-			Set<Group> groupsList =  controller.getActualCourse().getGroups();
+			Set<Group> groupsList = controller.getActualCourse().getGroups();
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
 			ArrayList<MenuItem> groupsItemsList = new ArrayList<>();
 			// En principio mostrarán todos los usuarios en cualquier grupo
@@ -211,7 +209,7 @@ public class MainController implements Initializable {
 			mi.setOnAction(actionGroup);
 			groupsItemsList.add(mi);
 
-			for (Group group:groupsList) {
+			for (Group group : groupsList) {
 				mi = new MenuItem(group.toString());
 				// Añadimos el manejador de eventos a cada MenuItem
 				mi.setOnAction(actionGroup);
@@ -222,12 +220,13 @@ public class MainController implements Initializable {
 			slcGroup.setText(TODOS);
 
 			// Almacenamos todos participantes en una lista
-			Set<EnrolledUser> users =  controller.getActualCourse().getEnrolledUsers();
+			Set<EnrolledUser> users = controller.getActualCourse().getEnrolledUsers();
 			////////////////////////////////////////////////////////
 			// Añadimos todos los participantes a la lista de visualización
-			
-			enrList = FXCollections.observableArrayList(users);
 
+			enrList = FXCollections.observableArrayList(users);
+			FXCollections.sort(enrList,
+					Comparator.comparing(EnrolledUser::getLastname).thenComparing(EnrolledUser::getFirstname));
 			//////////////////////////////////////////////////////////////////////////
 			// Manejo de actividades (TreeView<GradeItem>):
 			// Manejador de eventos para las actividades.
@@ -251,8 +250,8 @@ public class MainController implements Initializable {
 			// Añadimos el manejador de eventos al primer MenuItem
 			mi.setOnAction(actionActivity);
 			nameActivityItemsList.add(mi);
-			for (ModuleType moduleType:modulesTypes) {
-			
+			for (ModuleType moduleType : modulesTypes) {
+
 				mi = new MenuItem(moduleType.toString());
 				// Añadimos el manejador de eventos a cada MenuItem
 				mi.setOnAction(actionActivity);
@@ -348,7 +347,7 @@ public class MainController implements Initializable {
 			// Cargamos la lista de los roles
 			List<EnrolledUser> nameUsers = new ArrayList<>();
 			// Obtenemos los participantes que tienen el rol elegido
-			for (EnrolledUser user:users) {
+			for (EnrolledUser user : users) {
 				// Filtrado por rol:
 				roleYes = false;
 				Set<Role> roles = user.getRoles();
@@ -356,7 +355,7 @@ public class MainController implements Initializable {
 				if (roles.isEmpty() && filterRole.equals(TODOS)) {
 					roleYes = true;
 				} else {
-					for (Role role:roles) {
+					for (Role role : roles) {
 						// Comprobamos si el usuario pasa el filtro de "rol"
 						if (role.getName().equals(filterRole) || filterRole.equals(TODOS)) {
 							roleYes = true;
@@ -369,7 +368,7 @@ public class MainController implements Initializable {
 				if (groups.isEmpty() && filterGroup.equals(TODOS)) {
 					groupYes = true;
 				} else {
-					for (Group group:groups) {
+					for (Group group : groups) {
 						// Comprobamos si el usuario pasa el filtro de "grupo"
 						if (group.getName().equals(filterGroup) || filterGroup.equals(TODOS)) {
 							groupYes = true;
@@ -401,9 +400,9 @@ public class MainController implements Initializable {
 	}
 
 	/**
-	 * Rellena el árbol de actividades (GradeItems). Obtiene los hijos de la
-	 * línea pasada por parámetro, los transforma en treeitems y los establece como
-	 * hijos del elemento treeItem equivalente de line
+	 * Rellena el árbol de actividades (GradeItems). Obtiene los hijos de la línea
+	 * pasada por parámetro, los transforma en treeitems y los establece como hijos
+	 * del elemento treeItem equivalente de line
 	 * 
 	 * @param parent
 	 *            El padre al que añadir los elementos.
@@ -427,12 +426,12 @@ public class MainController implements Initializable {
 	 *            El item al que añadir el icono.
 	 */
 	public static void setIcon(TreeItem<GradeItem> item) {
-		String path="/img/" + item.getValue().getItemModule().getModName()+ ".png";
+		String path = "/img/" + item.getValue().getItemModule().getModName() + ".png";
 		try {
-			
+
 			item.setGraphic((Node) new ImageView(new Image(path)));
 		} catch (Exception e) {
-			logger.error("No se ha podido cargar la imagen del elemento " + item +  "en la ruta "+path+") : {}", e);
+			logger.error("No se ha podido cargar la imagen del elemento " + item + "en la ruta " + path + ") : {}", e);
 		}
 	}
 
@@ -442,8 +441,8 @@ public class MainController implements Initializable {
 	 */
 	public void filterCalifications() {
 		try {
-			GradeItem root=controller.getActualCourse().getRootGradeItem();
-			Set<GradeItem> gradeItems=controller.getActualCourse().getGradeItems();
+			GradeItem root = controller.getActualCourse().getRootGradeItem();
+			Set<GradeItem> gradeItems = controller.getActualCourse().getGradeItems();
 			// Establecemos la raiz del Treeview
 			TreeItem<GradeItem> treeItemRoot = new TreeItem<>(root);
 			MainController.setIcon(treeItemRoot);
@@ -458,7 +457,7 @@ public class MainController implements Initializable {
 					setTreeview(item, root.getChildren().get(k));
 				}
 			} else { // Con filtro
-				for (GradeItem gradeItem:gradeItems) {
+				for (GradeItem gradeItem : gradeItems) {
 					TreeItem<GradeItem> item = new TreeItem<>(gradeItem);
 					boolean activityYes = false;
 					if (filterType.equals(gradeItem.getItemModule().toString()) || filterType.equals(TODOS)) {
@@ -543,7 +542,8 @@ public class MainController implements Initializable {
 				// Completamos el nuevo archivo con los dataSets de los gráficos
 				out = new PrintWriter(new BufferedWriter(fw));
 				String generalDataSet = generateDataSet();
-				out.println("\r\nvar userLang = \"" + controller.getResourceBundle().getLocale().toString() + "\";\r\n");
+				out.println(
+						"\r\nvar userLang = \"" + controller.getResourceBundle().getLocale().toString() + "\";\r\n");
 				out.println("\r\nvar LineDataSet = " + generalDataSet + ";\r\n");
 				out.println("var RadarDataSet = " + generalDataSet + ";\r\n");
 				out.println("var BoxPlotGeneralDataSet = " + generateBoxPlotDataSet(TODOS) + ";\r\n");
@@ -676,7 +676,7 @@ public class MainController implements Initializable {
 			}
 			// Por cada ítem seleccionado
 			for (TreeItem<GradeItem> structTree : selectedGRL) {
-				GradeItem actualLine =structTree.getValue();
+				GradeItem actualLine = structTree.getValue();
 				double grade = actualLine.getEnrolledUserGrade(actualUser);
 				// Si es numérico lo graficamos y lo mostramos en la tabla
 				if (!Double.isNaN(grade)) {
@@ -778,7 +778,7 @@ public class MainController implements Initializable {
 				for (TreeItem<GradeItem> structTree : selectedGRL) {
 					countA++;
 					try {
-						GradeItem actualLine =structTree.getValue();
+						GradeItem actualLine = structTree.getValue();
 						String calculatedGrade;
 						if (countA == countB) {
 							countB++;
@@ -789,9 +789,9 @@ public class MainController implements Initializable {
 								labels.append(",'" + escapeJavaScriptText(structTree.getValue().toString()) + "'");
 							}
 						}
-						
+
 						calculatedGrade = String.valueOf(actualLine.getGradeAdjustedTo10(actualUser));
-					
+
 						if (firstGrade) {
 							dataSet.append(calculatedGrade);
 							firstGrade = false;
@@ -916,7 +916,8 @@ public class MainController implements Initializable {
 					dataset.append(",");
 				}
 				dataset.append(
-						"{label:'" + controller.getResourceBundle().getString("chartlabel.atypicalValue") + "',data: [");
+						"{label:'" + controller.getResourceBundle().getString("chartlabel.atypicalValue")
+								+ "',data: [");
 				for (int x = 0; x < selectedGRL.size(); x++) {
 					if (x != 0) {
 						dataset.append(",");

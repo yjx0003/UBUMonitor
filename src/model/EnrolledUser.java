@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class EnrolledUser implements Serializable,Comparable<EnrolledUser>{
+public class EnrolledUser implements Serializable {
 
 	/**
 	 * 
@@ -450,16 +450,6 @@ public class EnrolledUser implements Serializable,Comparable<EnrolledUser>{
 	public double getGrade(GradeItem gradeItem) {
 		return grades.get(gradeItem);
 	}
-	
-	@Override
-	public int compareTo(EnrolledUser o) {
-		int compareFirsName=firstname.compareTo(o.firstname);
-		if(compareFirsName==0) {
-			return lastname.compareTo(o.lastname);
-		}
-		return compareFirsName;
-	}
-
 
 	@Override
 	public int hashCode() {
@@ -484,6 +474,5 @@ public class EnrolledUser implements Serializable,Comparable<EnrolledUser>{
 	public String toString() {
 		return lastname + ", " + firstname;
 	}
-
 
 }

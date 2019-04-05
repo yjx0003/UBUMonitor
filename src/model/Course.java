@@ -46,7 +46,7 @@ public class Course implements Serializable {
 	static final Logger logger = LoggerFactory.getLogger(Course.class);
 
 	public Course() {
-		this.enrolledUsers = new HashSet<>();
+		this.enrolledUsers = new TreeSet<>();
 		this.roles = new HashSet<>();
 		this.groups = new HashSet<>();
 		this.gradeItems = new HashSet<>();

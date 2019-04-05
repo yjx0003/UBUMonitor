@@ -5,6 +5,7 @@ import java.util.Map;
 
 public enum Component {
 	
+	ACTIVITY_REPORT("Activity report"),
 	ASSIGNMENT("Assignment"),
 	CHOICE("Choice"),
 	EXCEL_SPREADSHEET("Excel spreadsheet"),
@@ -13,10 +14,11 @@ public enum Component {
 	FILE_SUBMISSIONS("File submissions"),
 	FOLDER("Folder"),
 	FORUM("Forum"),
-	GRADE_REPORT("Grade report"),
+	GRADER_REPORT("Grader report"),
 	LIVE_LOGS("Live logs"),
 	LOGS("Logs"),
 	OPENDOCUMENT_SPREADSHEET("OpenDocument spreadsheet"),
+	OUTCOMES_REPORT("Outcomes report"),
 	OVERVIEW_REPORT("Overview report"),
 	PAGE("Page"),
 	PLAIN_TEXT_FILE("Plain text file"),
@@ -27,6 +29,7 @@ public enum Component {
 	SYSTEM("System"),
 	USER_REPORT("User report"),
 	USER_TOURS("User tours"),
+	WORKSHOP("Workshop"),
 	XML_FILE("XML file");
 	
 	private String name;

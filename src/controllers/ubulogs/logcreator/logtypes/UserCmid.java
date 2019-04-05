@@ -7,23 +7,23 @@ import model.LogLine;
 
 /**
  * 
- * The user with id '' has downloaded all the submissions for the assignment with course module id ''.
- * The user with id '' viewed the grading table for the assignment with course module id ''.
- * The user with id '' viewed the submission confirmation form for the assignment with course module id ''.
- * The user with id '' viewed their submission for the assignment with course module id ''.
- * The user with id '' has viewed the submission status page for the assignment with course module id ''.
- * The user with id '' has viewed the report for the choice activity with course module id ''.
- * The user with id '' viewed the '' activity with course module id ''.
- * The user with id '' updated the folder activity with course module id ''.
+ * The user with id '' created the '' activity with course module id ''.
+ * The user with id '' deleted the '' activity with course module id ''.
  * The user with id '' downloaded a zip archive containing all the files from the folder activity with course module id ''.
+ * The user with id '' has downloaded all the submissions for the assignment with course module id ''.
+ * The user with id '' has viewed the report for the choice activity with course module id ''.
+ * The user with id '' has viewed the submission status page for the assignment with course module id ''.
+ * The user with id '' updated the '' activity with course module id ''.
  * The user with id '' viewed the 'forum' activity with course module id ''.
  * The user with id '' viewed the 'page' activity with course module id ''.
  * The user with id '' viewed the 'quiz' activity with course module id ''.
+ * The user with id '' viewed the 'resource' activity with course module id ''.
+ * The user with id '' viewed the 'workshop' activity with course module id ''.
  * The user with id '' viewed the edit page for the quiz with course module id ''.
+ * The user with id '' viewed the grading table for the assignment with course module id ''.
  * The user with id '' viewed the report 'overview' for the quiz with course module id ''.
- * The user with id '' created the '' activity with course module id ''.
- * The user with id '' deleted the '' activity with course module id ''.
- * The user with id '' updated the '' activity with course module id ''.
+ * The user with id '' viewed the submission confirmation form for the assignment with course module id ''.
+ * The user with id '' viewed their submission for the assignment with course module id ''.
  * 
  * @author Yi Peng Ji
  *

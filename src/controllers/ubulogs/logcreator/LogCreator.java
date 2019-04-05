@@ -32,6 +32,15 @@ public class LogCreator {
 		for (Map<String, String> log : allLogs) {
 			logs.add(createLog(log));
 		}
+		if (!ReferencesLog.getNotAvaibleComponents().isEmpty()) {
+			logger.warn("No disponible el componenente en controllers.ubulogs.logcreator.Component: "
+					+ ReferencesLog.getNotAvaibleComponents());
+		}
+		if (!ReferencesLog.getNotAvaibleEvents().isEmpty()) {
+			logger.warn("No disponible los siguientes eventos en controllers.ubulogs.logcreator.Event: "
+					+ ReferencesLog.getNotAvaibleEvents());
+		}
+
 		return logs;
 	}
 
@@ -43,11 +52,11 @@ public class LogCreator {
 		List<Integer> ids = getIdsInDescription(description);
 
 		LogLine log = ReferencesLog.createLogWithBasicAttributes(mapLog);
-	
+
 		ReferencesLog referencesLog = ReferencesLog.getReferenceLog(log.getComponent(), log.getEventName());
-		
+
 		referencesLog.setLogReferencesAttributes(log, ids);
-		
+
 		return log;
 	}
 

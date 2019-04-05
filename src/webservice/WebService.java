@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Set;
 
 import org.json.JSONObject;
+import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,8 +70,6 @@ public abstract class WebService {
 
 		String url = urlWithToken + getWSFunction() + parameters;
 
-		logger.info("Usando la url de moodle web service: " + "&wsfunction=" + getWSFunction() + parameters);
-
 		return getContentWithJsoup(url);
 
 	}
@@ -131,8 +130,12 @@ public abstract class WebService {
 		parameters += "&options[" + index + "][name]=" + name + "&options[" + index + "][value]=" + value;
 	}
 
-	private static String getContentWithJsoup(String url) throws IOException {
-		return Jsoup.connect(url).ignoreContentType(true).maxBodySize(0).timeout(0).execute().body();
+	private String getContentWithJsoup(String url) throws IOException {
+		Response response = Jsoup.connect(url).ignoreContentType(true).maxBodySize(0).timeout(0).execute();
+		String responseString = response.body();
+		logger.info("Respuesta de la funcion web service: " + "&wsfunction=" + getWSFunction() + parameters);
+		logger.info(responseString);
+		return responseString;
 	}
 
 }

@@ -84,7 +84,7 @@ public class WelcomeController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		try {
-			directoryObject = "./cache/" + controller.getUser().getFullName() + "/";
+			directoryObject = "cache/" + controller.getUser().getFullName() + "/";
 			lblUser.setText(controller.getUser().getFullName());
 			logger.info("Cargando cursos...");
 

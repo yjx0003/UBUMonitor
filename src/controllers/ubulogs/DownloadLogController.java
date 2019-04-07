@@ -57,8 +57,9 @@ public class DownloadLogController {
 	 *            contraseña de la cuenta
 	 * @param idCourse
 	 *            id del curso que se quiere descargar el log
+	 * @throws Exception si no ha podido loguearse
 	 */
-	private DownloadLogController(String host, String username, String password, int idCourse) {
+	private DownloadLogController(String host, String username, String password, int idCourse) throws Exception {
 		this.host = host;
 		this.idCourse = idCourse;
 		this.cookies = login(username, password);
@@ -77,8 +78,9 @@ public class DownloadLogController {
 	 *            id del curso que se quiere descargar el log
 	 * @param timezone
 	 *            zona horaria usada como referencia al descargar el log
+	 * @throws Exception 
 	 */
-	public DownloadLogController(String host, String username, String password, int idCourse, ZoneId timezone) {
+	public DownloadLogController(String host, String username, String password, int idCourse, ZoneId timezone) throws Exception {
 		this(host, username, password, idCourse);
 		this.timezone = timezone;
 	}
@@ -98,8 +100,9 @@ public class DownloadLogController {
 	 *            zona horaria usada como referencia al descargar el log, un valor
 	 *            de 99 si es la hora del servidor o la nomenclatura IANA de tiempo.
 	 *            Por ejemplo Europe/Madrid.
+	 * @throws Exception si no ha encontrado la zona horaria del servidor de moodle
 	 */
-	public DownloadLogController(String host, String username, String password, int idCourse, String timezone) {
+	public DownloadLogController(String host, String username, String password, int idCourse, String timezone) throws Exception {
 		this(host, username, password, idCourse);
 
 		// 99 significa que el usuario esta usando la zona horaria del servidor
@@ -119,8 +122,9 @@ public class DownloadLogController {
 	 *            password contraseña
 	 * @return las cookies que se usan para navegar dentro del servidor despues de
 	 *         loguearse
+	 * @throws Exception si no ha podido loguearse
 	 */
-	private Map<String, String> login(String username, String password) {
+	private Map<String, String> login(String username, String password) throws Exception {
 
 		try {
 			logger.info("Logeandose para web scraping");
@@ -138,12 +142,13 @@ public class DownloadLogController {
 			return login.cookies();
 		} catch (Exception e) {
 			logger.error("Error al intentar loguearse", e);
+			throw e;
 		}
-		return null;
+	
 
 	}
 
-	private ZoneId findServerTimezone() {
+	private ZoneId findServerTimezone() throws Exception {
 		try {
 			logger.info("Buscando el tiempo del servidor desde el perfil del usuario.");
 			// vamos a la edicion del perfil de usuario para ver la zona horaria del
@@ -159,8 +164,9 @@ public class DownloadLogController {
 			return ZoneId.of(timezoneParsed);
 		} catch (Exception e) {
 			logger.error("Error al buscar el timezone del usuario desde el html ", e);
+			throw e;
 		}
-		return null;
+	
 	}
 
 	/**

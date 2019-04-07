@@ -118,7 +118,7 @@ public class Stats implements Serializable {
 					DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
 					mapGradeItems.put(gradeItem, descriptiveStatistics);
 					for (EnrolledUser user : group.getEnrolledUsers()) {
-						double grade = gradeItem.getGradeAdjustedTo10(user);
+						double grade = gradeItem.adjustTo10(user);
 						if (!Double.isNaN(grade)) {
 							descriptiveStatistics.addValue(grade);
 						}

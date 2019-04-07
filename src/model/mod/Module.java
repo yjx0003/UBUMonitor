@@ -88,8 +88,12 @@ public class Module implements Serializable {
 	public Module() {
 		logs = new ArrayList<LogLine>();
 	}
-
 	
+	public Module(int id) {
+		this();
+		this.id=id;
+	}
+
 	public Course getCourse() {
 		return course;
 	}

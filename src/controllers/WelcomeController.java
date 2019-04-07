@@ -9,12 +9,14 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Comparator;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.ubugrades.CreatorGradeItems;
 import controllers.ubugrades.CreatorUBUGradesController;
 import controllers.ubulogs.UBULogController;
 import javafx.collections.FXCollections;
@@ -74,8 +76,6 @@ public class WelcomeController implements Initializable {
 	private Label lblDateUpdate;
 	@FXML
 	private CheckBox chkUpdateData;
-	
-	
 
 	/**
 	 * Función initialize. Muestra la lista de cursos del usuario introducido.
@@ -110,12 +110,12 @@ public class WelcomeController implements Initializable {
 					LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastModified),
 							ZoneId.systemDefault());
 					lblDateUpdate.setText(localDateTime.format(dtf));
-					isFileCacheExists=false;
+					isFileCacheExists = false;
 				} else {
 					chkUpdateData.setSelected(true);
 					chkUpdateData.setDisable(true);
 					lblDateUpdate.setText(controller.getResourceBundle().getString("label.never"));
-					isFileCacheExists=true;
+					isFileCacheExists = true;
 				}
 			});
 
@@ -143,10 +143,10 @@ public class WelcomeController implements Initializable {
 		logger.info(" Curso seleccionado: " + controller.getActualCourse().getFullName());
 
 		if (chkUpdateData.isSelected()) {
-			if(!isFileCacheExists) {
+			if (!isFileCacheExists) {
 				loadData();
 			}
-			
+
 			downloadData();
 
 		} else {
@@ -187,6 +187,7 @@ public class WelcomeController implements Initializable {
 		Task<Void> task = getUserDataWorker();
 		lblProgress.textProperty().bind(task.messageProperty());
 		task.setOnSucceeded(v -> loadNextWindow());
+		task.setOnFailed(e -> errorWindow(task.getMessage()));
 
 		Thread thread = new Thread(task, "datos");
 		thread.start();
@@ -212,7 +213,9 @@ public class WelcomeController implements Initializable {
 			controller.getStage().show();
 			lblNoSelect.setText("");
 		} catch (IOException e) {
+
 			logger.info("No se ha podido cargar la ventana Main.fxml: {}", e);
+			errorWindow("No se ha podido cargar la ventana Main.fxml");
 		}
 	}
 
@@ -225,7 +228,7 @@ public class WelcomeController implements Initializable {
 	private Task<Void> getUserDataWorker() {
 		return new Task<Void>() {
 			@Override
-			protected Void call() {
+			protected Void call() throws Exception {
 				try {
 					controller.getActualCourse().clear();
 					logger.info("Cargando datos del curso: " + controller.getActualCourse().getFullName());
@@ -235,29 +238,32 @@ public class WelcomeController implements Initializable {
 					CreatorUBUGradesController.createModules(controller.getActualCourse().getId());
 					updateMessage(controller.getResourceBundle().getString("label.loadingqualifier"));
 					// Establecemos calificador del curso
-					CreatorUBUGradesController.createGradeItems(controller.getActualCourse().getId());
-
+					// CreatorUBUGradesController.createGradeItems(controller.getActualCourse().getId());
+					CreatorGradeItems creatorGradeItems = new CreatorGradeItems(
+							new Locale(controller.getUser().getLang()));
+					creatorGradeItems.createGradeItems(controller.getActualCourse().getId());
 					updateMessage(controller.getResourceBundle().getString("label.loadingstats"));
 					// Establecemos las estadisticas
 					controller.createStats();
-					
+
 					updateMessage("Actualizando el log");
-					if(isFileCacheExists) {
-						Logs logs=UBULogController.getInstance().createCourseLog();
+					if (isFileCacheExists) {
+						Logs logs = UBULogController.getInstance().createCourseLog();
 						controller.getActualCourse().setLogs(logs);
-					}else {
-						Logs logs=controller.getActualCourse().getLogs();
+					} else {
+						Logs logs = controller.getActualCourse().getLogs();
 						UBULogController.getInstance().updateCourseLog(logs);
-						
+
 					}
 					updateMessage("Guardando en local");
 					saveData();
 					logger.debug(controller.getActualCourse().getLogs().toString());
 					logger.debug(controller.getBBDD().toString());
-					
+
 				} catch (Exception e) {
 					logger.error("Error al cargar los datos de los alumnos: {}", e);
 					updateMessage("Se produjo un error inesperado al cargar los datos.\n" + e.getLocalizedMessage());
+					throw e;
 				} finally {
 					controller.getStage().getScene().setCursor(Cursor.DEFAULT);
 				}

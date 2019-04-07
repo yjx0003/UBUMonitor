@@ -40,7 +40,7 @@ public class UBULogController {
 		return instance;
 	}
 
-	public void updateCourseLog(Logs logs) {
+	public void updateCourseLog(Logs logs) throws Exception {
 	 
 
 		DownloadLogController download = new DownloadLogController(CONTROLLER.getHost(), CONTROLLER.getUsername(),
@@ -60,7 +60,7 @@ public class UBULogController {
 
 	}
 
-	public Logs createCourseLog() {
+	public Logs createCourseLog() throws Exception {
 		DownloadLogController download = new DownloadLogController(CONTROLLER.getHost(), CONTROLLER.getUsername(),
 				CONTROLLER.getPassword(), CONTROLLER.getActualCourse().getId(), CONTROLLER.getUser().getTimezone());
 		

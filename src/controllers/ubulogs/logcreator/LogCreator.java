@@ -33,11 +33,11 @@ public class LogCreator {
 			logs.add(createLog(log));
 		}
 		if (!ReferencesLog.getNotAvaibleComponents().isEmpty()) {
-			logger.warn("No disponible el componenente en controllers.ubulogs.logcreator.Component: "
+			logger.warn("No disponible el componenente en "+Component.class.getName()+": "
 					+ ReferencesLog.getNotAvaibleComponents());
 		}
 		if (!ReferencesLog.getNotAvaibleEvents().isEmpty()) {
-			logger.warn("No disponible los siguientes eventos en controllers.ubulogs.logcreator.Event: "
+			logger.warn("No disponible los siguientes eventos en "+Event.class.getName()+": "
 					+ ReferencesLog.getNotAvaibleEvents());
 		}
 

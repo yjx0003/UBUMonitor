@@ -48,12 +48,14 @@ public class Course implements Serializable {
 	static final Logger logger = LoggerFactory.getLogger(Course.class);
 
 	public Course() {
+		// Comparamos por apellidos y en caso de empate por primer nombre, se ignora
+		// case sensitive
 		this.enrolledUsers = new TreeSet<>(
 				Comparator.comparing((Function<EnrolledUser, String> & Serializable) EnrolledUser::getLastname,
-							String.CASE_INSENSITIVE_ORDER)
-					.thenComparing(
-							(Function<EnrolledUser, String> & Serializable) EnrolledUser::getFirstname,
-							String.CASE_INSENSITIVE_ORDER));
+						String.CASE_INSENSITIVE_ORDER)
+						.thenComparing(
+								(Function<EnrolledUser, String> & Serializable) EnrolledUser::getFirstname,
+								String.CASE_INSENSITIVE_ORDER));
 		this.roles = new HashSet<>();
 		this.groups = new HashSet<>();
 		this.gradeItems = new HashSet<>();
@@ -298,6 +300,7 @@ public class Course implements Serializable {
 		this.roles.clear();
 		this.groups.clear();
 		this.modules.clear();
+		this.gradeItems.clear();
 	}
 
 	public Set<ModuleType> getUniqueModuleTypes() {

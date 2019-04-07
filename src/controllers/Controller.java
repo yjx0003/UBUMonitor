@@ -9,8 +9,6 @@ import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.ubugrades.CreatorUBUGradesController;
-import controllers.ubulogs.logcreator.logtypes.ReferencesLog;
 import javafx.stage.Stage;
 import model.BBDD;
 import model.Course;
@@ -98,8 +96,6 @@ public class Controller {
 	}
 
 	public void setBBDD(BBDD BBDD) {
-		CreatorUBUGradesController.setBBDD(BBDD);
-		ReferencesLog.setBBDD(BBDD);
 		this.BBDD = BBDD;
 
 	}

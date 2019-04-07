@@ -23,6 +23,7 @@ public class MoodleUser {
 	private Instant lastAccess;
 	private String city;
 	private String country;
+	private String lang;
 	private Image userPhoto;
 	private List<Course> courses;
 	private String timezone;
@@ -261,5 +262,15 @@ public class MoodleUser {
 	public String getTimezone() {
 		return this.timezone;
 	}
+
+	public String getLang() {
+		return lang;
+	}
+
+	public void setLang(String lang) {
+		this.lang = lang;
+	}
+
+	
 
 }

@@ -161,11 +161,14 @@ public class EnrolledUser implements Serializable {
 		enrolledcourses = new HashSet<>();
 		grades = new HashMap<>();
 		groups = new HashSet<>();
+		
 	}
 
 	public EnrolledUser(int id) {
 		this();
 		this.id = id;
+		lastname="LastName_"+id;
+		firstname="FirstName_"+id;
 	}
 
 	public int getId() {

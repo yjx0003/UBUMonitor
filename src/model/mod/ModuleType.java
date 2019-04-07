@@ -11,7 +11,7 @@ public enum ModuleType {
 			return new Assignment();
 		}
 	},
-	BOOK("book"){
+	BOOK("book") {
 		@Override
 		protected Module create() {
 			return new Book();
@@ -174,7 +174,17 @@ public enum ModuleType {
 		return modname;
 	}
 
+	public Module createInstance() {
+		return this.create();
+	}
+
 	public static Module createInstance(String modname) {
 		return modTypes.getOrDefault(modname, MODULE).create();
+	}
+
+	public Module createInstance(int id) {
+		Module module = this.create();
+		module.setId(id);
+		return module;
 	}
 }

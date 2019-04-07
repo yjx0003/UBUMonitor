@@ -1,12 +1,14 @@
-package webservice;
+package webserviceTest;
 
 import java.io.Console;
 import java.io.IOException;
 
+import webservice.WebService;
 import webservice.ParametersCourseidUseridGroupid.OptionalParameter;
 import webservice.gradereport.GradereportUserGetGradeItems;
 
-public class Test {
+public class GradeItemsTest {
+	//Se pued asignar el host y username en la declaracion. Si no se asigna hay que introducirlos en la consola.
 	private static String host;
 	private static String username;
 	private static String password;

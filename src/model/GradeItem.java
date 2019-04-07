@@ -45,6 +45,16 @@ public class GradeItem implements Serializable{
 		graderaw = new HashMap<EnrolledUser, Double>();
 	}
 
+	public GradeItem(int id) {
+		this();
+		this.id=id;
+	}
+
+	public GradeItem(String name) {
+		this();
+		this.itemname=name;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -129,6 +139,10 @@ public class GradeItem implements Serializable{
 	public void addChildren(GradeItem children) {
 		this.children.add(children);
 	}
+	
+	public void clearChildren() {
+		this.children.clear();
+	}
 
 	public int getLevel() {
 		return level;
@@ -165,9 +179,16 @@ public class GradeItem implements Serializable{
 	return this.itemname;
 	}
 
+
+	
+	
+	
 	@Override
 	public int hashCode() {
-		return id;
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((itemname == null) ? 0 : itemname.hashCode());
+		return result;
 	}
 
 	@Override
@@ -179,12 +200,15 @@ public class GradeItem implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		GradeItem other = (GradeItem) obj;
-		if (id != other.id)
+		if (itemname == null) {
+			if (other.itemname != null)
+				return false;
+		} else if (!itemname.equals(other.itemname))
 			return false;
 		return true;
 	}
 
-	public double getGradeAdjustedTo10(EnrolledUser  user) {
+	public double adjustTo10(EnrolledUser  user) {
 		double grade=getEnrolledUserGrade(user);
 		
 		return adjustTo10(grade);
@@ -193,7 +217,7 @@ public class GradeItem implements Serializable{
 	public double adjustTo10(double grade) {
 		if (!Double.isNaN(grade)) {
 			//Normalizacion de la nota del alumno en rango [0,10]
-			grade=((grade-grademin)/(grademax-grademin))*10;
+			return ((grade-grademin)/(grademax-grademin))*10;
 			
 		}
 		

@@ -15,14 +15,13 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.Controller;
 import javafx.scene.image.Image;
-import model.BBDD;
 import model.Course;
 import model.DescriptionFormat;
 import model.EnrolledUser;
 import model.GradeItem;
 import model.Group;
-
 import model.MoodleUser;
 import model.Role;
 import model.mod.Module;
@@ -40,14 +39,10 @@ public class CreatorUBUGradesController {
 
 	static final Logger logger = LoggerFactory.getLogger(CreatorUBUGradesController.class);
 
-	private static BBDD BBDD;
+	private static final Controller CONTROLLER = Controller.getInstance();
 
 	private static final String FOLDER_ICON = "icon fa fa-folder fa-fw icon itemicon";
 	private static final Pattern NIVEL = Pattern.compile("level(\\d+)");
-
-	public static void setBBDD(BBDD BBDD) {
-		CreatorUBUGradesController.BBDD = BBDD;
-	}
 
 	public static List<EnrolledUser> createEnrolledUsers(int courseid) throws IOException {
 
@@ -87,21 +82,15 @@ public class CreatorUBUGradesController {
 
 		int roleid = jsonObject.getInt("roleid");
 
-		Role role;
-		if (BBDD.containsRole(roleid)) {
-			role = BBDD.getRoleById(roleid);
-		} else {
-			role = new Role(roleid);
+		Role role = CONTROLLER.getBBDD().getRoleById(roleid);
 
-			BBDD.putRole(role);
-		}
 		String name = jsonObject.getString("name");
 		String shortName = jsonObject.getString("shortname");
 
 		role.setName(name);
 		role.setShortName(shortName);
 
-		BBDD.getActualCourse().addRole(role);
+		CONTROLLER.getBBDD().getActualCourse().addRole(role);
 
 		return role;
 
@@ -126,14 +115,7 @@ public class CreatorUBUGradesController {
 			return null;
 
 		int groupid = jsonObject.getInt("id");
-		Group group;
-		if (BBDD.containsGroup(groupid)) {
-			group = BBDD.getGroupById(groupid);
-
-		} else {
-			group = new Group(groupid);
-			BBDD.putGroup(group);
-		}
+		Group group = CONTROLLER.getBBDD().getGroupById(groupid);
 
 		String name = jsonObject.getString("name");
 		String description = jsonObject.getString("description");
@@ -143,7 +125,7 @@ public class CreatorUBUGradesController {
 		group.setDescription(description);
 		group.setDescriptionFormat(descriptionFormat);
 
-		BBDD.getActualCourse().addGroup(group);
+		CONTROLLER.getBBDD().getActualCourse().addGroup(group);
 
 		return group;
 
@@ -153,14 +135,7 @@ public class CreatorUBUGradesController {
 
 		int id = user.getInt("id");
 
-		EnrolledUser enrolledUser;
-		if (BBDD.containsEnrolledUser(id)) {
-			enrolledUser = BBDD.getEnrolledUserById(id);
-
-		} else {
-			enrolledUser = new EnrolledUser(id);
-			BBDD.putEnrolledUser(enrolledUser);
-		}
+		EnrolledUser enrolledUser = CONTROLLER.getBBDD().getEnrolledUserById(id);
 
 		enrolledUser.setFirstname(user.optString("firstname"));
 		enrolledUser.setLastname(user.optString("lastname"));
@@ -205,13 +180,7 @@ public class CreatorUBUGradesController {
 			return null;
 
 		int id = jsonObject.getInt("id");
-		Course course;
-		if (BBDD.containsCourse(id)) {
-			course = BBDD.getCourseById(id);
-		} else {
-			course = new Course(id);
-			BBDD.putCourse(course);
-		}
+		Course course = CONTROLLER.getBBDD().getCourseById(id);
 
 		String shortName = jsonObject.getString("shortname");
 		String fullName = jsonObject.getString("fullname");
@@ -230,7 +199,7 @@ public class CreatorUBUGradesController {
 		course.setStartDate(startDate);
 		course.setEndDate(endDate);
 
-		BBDD.putCourse(course);
+		CONTROLLER.getBBDD().putCourse(course);
 
 		return course;
 
@@ -242,17 +211,10 @@ public class CreatorUBUGradesController {
 			return null;
 
 		int cmid = jsonObject.getInt("id");
-		Module module;
-		if (BBDD.containsModule(cmid)) {
 
-			module = BBDD.getCourseModuleById(cmid);
-		} else {
-			String modname = jsonObject.getString("modname");
-			module = ModuleType.createInstance(modname);
-			module.setId(cmid);
-			
-			BBDD.putModule(module);
-		}
+		ModuleType moduleType = ModuleType.get(jsonObject.getString("modname"));
+
+		Module module = CONTROLLER.getBBDD().getCourseModuleByIdOrCreate(cmid, moduleType);
 
 		module.setId(jsonObject.getInt("id"));
 		module.setUrl(jsonObject.optString("url"));
@@ -266,7 +228,7 @@ public class CreatorUBUGradesController {
 		module.setModuleType(ModuleType.get(jsonObject.getString("modname")));
 		module.setIndent(jsonObject.optInt("indent"));
 
-		BBDD.getActualCourse().addModule(module);
+		CONTROLLER.getBBDD().getActualCourse().addModule(module);
 
 		return module;
 
@@ -292,6 +254,8 @@ public class CreatorUBUGradesController {
 		moodleUser.setLastAccess(Instant.ofEpochSecond(jsonObject.optLong("lastaccess")));
 
 		moodleUser.setUserPhoto(new Image(jsonObject.optString("profileimageurlsmall")));
+
+		moodleUser.setLang(jsonObject.optString("lang"));
 
 		moodleUser.setTimezone(jsonObject.optString("timezone"));
 
@@ -357,18 +321,18 @@ public class CreatorUBUGradesController {
 
 	private static void updateToOriginalGradeItem(List<GradeItem> gradeItems) {
 		for (GradeItem gradeItem : gradeItems) {
-			GradeItem original = BBDD.getGradeItemById(gradeItem.getId());
-			BBDD.getActualCourse().addGradeItem(original);
+			GradeItem original = CONTROLLER.getBBDD().getGradeItemById(gradeItem.getId());
+			CONTROLLER.getBBDD().getActualCourse().addGradeItem(original);
 
 			// comparamos si son diferente instancia. OJO no confundirse con != de Python
 			if (gradeItem != original) {
 				if (gradeItem.getFather() != null) {
-					GradeItem originalFather = BBDD.getGradeItemById(gradeItem.getFather().getId());
+					GradeItem originalFather = CONTROLLER.getBBDD().getGradeItemById(gradeItem.getFather().getId());
 					original.setFather(originalFather);
 				}
 				List<GradeItem> originalChildren = new ArrayList<>();
 				for (GradeItem child : gradeItem.getChildren()) {
-					originalChildren.add(BBDD.getGradeItemById(child.getId()));
+					originalChildren.add(CONTROLLER.getBBDD().getGradeItemById(child.getId()));
 				}
 				original.setChildren(originalChildren);
 
@@ -437,7 +401,7 @@ public class CreatorUBUGradesController {
 
 		JSONObject usergrade = jsonObject.getJSONArray("usergrades").getJSONObject(0);
 
-		Course course = BBDD.getCourseById(usergrade.getInt("courseid"));
+		Course course = CONTROLLER.getBBDD().getCourseById(usergrade.getInt("courseid"));
 
 		JSONArray gradeitems = usergrade.getJSONArray("gradeitems");
 
@@ -458,14 +422,14 @@ public class CreatorUBUGradesController {
 
 			gradeItem.setId(gradeitem.getInt("id"));
 
-			BBDD.putGradeItem(gradeItem);
+			CONTROLLER.getBBDD().putGradeItem(gradeItem);
 
 			gradeItem.setCourse(course);
 			String itemtype = gradeitem.getString("itemtype");
 			ModuleType moduleType;
 
 			if (itemtype.equals("mod")) {
-				Module module = BBDD.getCourseModuleById(gradeitem.getInt("cmid"));
+				Module module = CONTROLLER.getBBDD().getCourseModuleById(gradeitem.getInt("cmid"));
 				gradeItem.setModule(module);
 				moduleType = ModuleType.get(gradeitem.getString("itemmodule"));
 
@@ -492,7 +456,7 @@ public class CreatorUBUGradesController {
 
 			JSONObject usergrade = usergrades.getJSONObject(i);
 
-			EnrolledUser enrolledUser = BBDD.getEnrolledUserById(usergrade.getInt("userid"));
+			EnrolledUser enrolledUser = CONTROLLER.getBBDD().getEnrolledUserById(usergrade.getInt("userid"));
 
 			JSONArray gradeitems = usergrade.getJSONArray("gradeitems");
 			for (int j = 0; j < gradeitems.length(); j++) {
@@ -506,7 +470,7 @@ public class CreatorUBUGradesController {
 
 	}
 
-	private static void setFatherAndChildren(GradeItem[] categories, int nivel, GradeItem gradeItem) {
+	protected static void setFatherAndChildren(GradeItem[] categories, int nivel, GradeItem gradeItem) {
 		if (nivel > 1) {
 			GradeItem padre = categories[nivel - 1];
 			gradeItem.setFather(padre);
@@ -522,7 +486,7 @@ public class CreatorUBUGradesController {
 	 *            el string del key "class" de "itemname"
 	 * @return el nivel
 	 */
-	private static int getNivel(String stringClass) {
+	protected static int getNivel(String stringClass) {
 		Matcher matcher = NIVEL.matcher(stringClass);
 		if (matcher.find()) {
 			return Integer.valueOf(matcher.group(1));

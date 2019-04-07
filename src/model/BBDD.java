@@ -5,8 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import model.mod.Module;
+import model.mod.ModuleType;
 
-public class BBDD implements Serializable{
+public class BBDD implements Serializable {
 
 	/**
 	 * 
@@ -18,6 +19,7 @@ public class BBDD implements Serializable{
 	private Map<Integer, Module> modules;
 	private Map<Integer, Course> courses;
 	private Map<Integer, GradeItem> gradeItems;
+	private Map<String, GradeItem> gradeItemsString;
 
 	public BBDD() {
 		roles = new HashMap<Integer, Role>();
@@ -25,11 +27,21 @@ public class BBDD implements Serializable{
 		users = new HashMap<Integer, EnrolledUser>();
 		modules = new HashMap<Integer, Module>();
 		courses = new HashMap<Integer, Course>();
-		gradeItems=new HashMap<Integer, GradeItem>();
+		gradeItems = new HashMap<Integer, GradeItem>();
+
+		gradeItemsString = new HashMap<>();
 	}
 
+	/**
+	 * Curso actual del usuario
+	 */
 	private Course actualCourse;
 
+	/**
+	 * Devuelve el curso actual.
+	 * 
+	 * @return curso actual.
+	 */
 	public Course getActualCourse() {
 		return actualCourse;
 	}
@@ -42,8 +54,8 @@ public class BBDD implements Serializable{
 		return roles;
 	}
 
-	public Role getRoleById(int roleid) {
-		return roles.get(roleid);
+	public Role getRoleById(int id) {
+		return roles.computeIfAbsent(id, key -> new Role(id));
 	}
 
 	public boolean containsRole(int id) {
@@ -60,7 +72,7 @@ public class BBDD implements Serializable{
 	}
 
 	public Group getGroupById(int id) {
-		return groups.get(id);
+		return groups.computeIfAbsent(id, key -> new Group(id));
 	}
 
 	public boolean containsGroup(int id) {
@@ -78,7 +90,7 @@ public class BBDD implements Serializable{
 	}
 
 	public EnrolledUser getEnrolledUserById(int id) {
-		return users.get(id);
+		return users.computeIfAbsent(id, key -> new EnrolledUser(id));
 	}
 
 	public boolean containsEnrolledUser(int id) {
@@ -95,7 +107,11 @@ public class BBDD implements Serializable{
 	}
 
 	public Module getCourseModuleById(int id) {
-		return modules.get(id);
+		return modules.computeIfAbsent(id, key -> new Module(id));
+	}
+
+	public Module getCourseModuleByIdOrCreate(int id, ModuleType moduleType) {
+		return modules.computeIfAbsent(id, key -> moduleType.createInstance(id));
 	}
 
 	public boolean containsModule(int id) {
@@ -116,12 +132,13 @@ public class BBDD implements Serializable{
 	}
 
 	public Course getCourseById(int id) {
-		return courses.get(id);
+		return courses.computeIfAbsent(id, key -> new Course(id));
 	}
 
 	public Course putCourse(Course course) {
 		return courses.putIfAbsent(course.getId(), course);
 	}
+
 	// #################################################################################
 	public Map<Integer, GradeItem> getGradeItems() {
 		return gradeItems;
@@ -132,8 +149,9 @@ public class BBDD implements Serializable{
 	}
 
 	public GradeItem getGradeItemById(int id) {
-		return gradeItems.get(id);
+		return gradeItems.computeIfAbsent(id, key -> new GradeItem(id));
 	}
+
 	/**
 	 * Añade el grade item a la base de datos si no existia anteriormente.
 	 * 
@@ -144,9 +162,33 @@ public class BBDD implements Serializable{
 		return gradeItems.putIfAbsent(gradeItem.getId(), gradeItem);
 	}
 
+	// #################################################################################
+
+	public Map<String, GradeItem> getGradeItemsString() {
+		return gradeItemsString;
+	}
+
+	public boolean containsGradeItem(String name) {
+		return gradeItemsString.containsKey(name);
+	}
+
+	public GradeItem getGradeItemByString(String name) {
+		return gradeItemsString.computeIfAbsent(name, key -> new GradeItem(name));
+	}
+
+	/**
+	 * Añade el grade item a la base de datos si no existia anteriormente.
+	 * 
+	 * @param gradeItem
+	 * @return el valor anterior asociado al id del grade item, null si no contenia.
+	 */
+	public GradeItem putGradeItemString(GradeItem gradeItem) {
+		return gradeItems.putIfAbsent(gradeItem.getId(), gradeItem);
+	}
+
 	@Override
 	public String toString() {
-		return "BBDD [roles=" + roles + ",\n groups=" + groups + ",\n users=" + users + ",\n modules=" + modules
-				+ ",\n courses=" + courses + ",\n gradeItems=" + gradeItems + ",\n actualCourse=" + actualCourse + "]";
+		return "BBDD [\nroles=" + roles + ",\n groups=" + groups + ",\n users=" + users + ",\n modules=" + modules
+				+ ",\n courses=" + courses + ",\n gradeItems=" + gradeItems +",\n gradeItemsString=" + gradeItemsString + ",\n actualCourse=" + actualCourse + "]";
 	}
 }

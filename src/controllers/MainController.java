@@ -790,7 +790,7 @@ public class MainController implements Initializable {
 							}
 						}
 						
-						calculatedGrade = String.valueOf(actualLine.getGradeAdjustedTo10(actualUser));
+						calculatedGrade = String.valueOf(actualLine.adjustTo10(actualUser));
 					
 						if (firstGrade) {
 							dataSet.append(calculatedGrade);

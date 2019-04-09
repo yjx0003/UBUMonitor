@@ -3,8 +3,8 @@ package webserviceTest;
 import java.io.Console;
 import java.io.IOException;
 
-import webservice.WebService;
 import webservice.ParametersCourseidUseridGroupid.OptionalParameter;
+import webservice.WebService;
 import webservice.gradereport.GradereportUserGetGradeItems;
 
 public class GradeItemsTest {
@@ -29,9 +29,7 @@ public class GradeItemsTest {
 		int courseid = Integer.parseInt(consola.readLine("Id de curso: "));
 		int idAlumno = Integer.parseInt(consola.readLine("Id de alumno: "));
 		System.out.println("Descargamos las calificaciones de todos los usuarios del curso");
-		WebService ws = new GradereportUserGetGradeItems(courseid);
-		System.out.println(ws.getResponse());
-		ws = new GradereportUserGetGradeItems(courseid, OptionalParameter.USERID, idAlumno);
+		WebService ws = new GradereportUserGetGradeItems(courseid, OptionalParameter.USERID, idAlumno);
 		System.out.println("Descargamos las calificaciones de un usuario del curso");
 		System.out.println(ws.getResponse());
 	}

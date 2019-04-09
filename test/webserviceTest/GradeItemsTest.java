@@ -6,6 +6,7 @@ import java.io.IOException;
 import webservice.ParametersCourseidUseridGroupid.OptionalParameter;
 import webservice.WebService;
 import webservice.gradereport.GradereportUserGetGradeItems;
+import webservice.gradereport.GradereportUserGetGradesTable;
 
 public class GradeItemsTest {
 	//Se pued asignar el host y username en la declaracion. Si no se asigna hay que introducirlos en la consola.
@@ -29,7 +30,7 @@ public class GradeItemsTest {
 		int courseid = Integer.parseInt(consola.readLine("Id de curso: "));
 		int idAlumno = Integer.parseInt(consola.readLine("Id de alumno: "));
 		System.out.println("Descargamos las calificaciones de todos los usuarios del curso");
-		WebService ws = new GradereportUserGetGradeItems(courseid, OptionalParameter.USERID, idAlumno);
+		WebService ws = new GradereportUserGetGradesTable(courseid, OptionalParameter.USERID, idAlumno);
 		System.out.println("Descargamos las calificaciones de un usuario del curso");
 		System.out.println(ws.getResponse());
 	}

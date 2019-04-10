@@ -22,7 +22,7 @@ public class DownloadLogTest {
 	static final String PATH = "./resultadosTest/";
 
 	@BeforeClass
-	public static void login() {
+	public static void login() throws NumberFormatException, Exception {
 
 		Console consola = System.console();
 		String host;

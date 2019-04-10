@@ -19,7 +19,6 @@ public class BBDD implements Serializable {
 	private Map<Integer, Module> modules;
 	private Map<Integer, Course> courses;
 	private Map<Integer, GradeItem> gradeItems;
-	private Map<String, GradeItem> gradeItemsString;
 
 	public BBDD() {
 		roles = new HashMap<Integer, Role>();
@@ -28,8 +27,6 @@ public class BBDD implements Serializable {
 		modules = new HashMap<Integer, Module>();
 		courses = new HashMap<Integer, Course>();
 		gradeItems = new HashMap<Integer, GradeItem>();
-
-		gradeItemsString = new HashMap<>();
 	}
 
 	/**
@@ -162,33 +159,14 @@ public class BBDD implements Serializable {
 		return gradeItems.putIfAbsent(gradeItem.getId(), gradeItem);
 	}
 
-	// #################################################################################
-
-	public Map<String, GradeItem> getGradeItemsString() {
-		return gradeItemsString;
-	}
-
-	public boolean containsGradeItem(String name) {
-		return gradeItemsString.containsKey(name);
-	}
-
-	public GradeItem getGradeItemByString(String name) {
-		return gradeItemsString.computeIfAbsent(name, key -> new GradeItem(name));
-	}
-
-	/**
-	 * Añade el grade item a la base de datos si no existia anteriormente.
-	 * 
-	 * @param gradeItem
-	 * @return el valor anterior asociado al id del grade item, null si no contenia.
-	 */
-	public GradeItem putGradeItemString(GradeItem gradeItem) {
-		return gradeItems.putIfAbsent(gradeItem.getId(), gradeItem);
+	public void clearGradeItems() {
+		gradeItems.clear();
 	}
 
 	@Override
 	public String toString() {
 		return "BBDD [\nroles=" + roles + ",\n groups=" + groups + ",\n users=" + users + ",\n modules=" + modules
-				+ ",\n courses=" + courses + ",\n gradeItems=" + gradeItems +",\n gradeItemsString=" + gradeItemsString + ",\n actualCourse=" + actualCourse + "]";
+				+ ",\n courses=" + courses + ",\n gradeItems=" + gradeItems + ",\n " + "actualCourse=" + actualCourse
+				+ "]";
 	}
 }

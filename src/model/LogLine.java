@@ -1,6 +1,7 @@
 package model;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZonedDateTime;
 import java.time.temporal.IsoFields;
@@ -115,6 +116,10 @@ public class LogLine implements Serializable {
 		return time.getDayOfYear();
 	}
 
+	public LocalDate getLocalDate() {
+		return time.toLocalDate();
+	}
+
 	public Month getMonth() {
 		return time.getMonth();
 	}
@@ -134,7 +139,5 @@ public class LogLine implements Serializable {
 				+ eventName + ", description=" + description + ", origin=" + origin + ", IPAdress=" + IPAdress
 				+ ", user=" + user + ", affectedUser=" + affectedUser + ", courseModule=" + courseModule + "]\n";
 	}
-
-
 
 }

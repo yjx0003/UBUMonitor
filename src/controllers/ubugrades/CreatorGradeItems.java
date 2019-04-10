@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -36,7 +37,7 @@ public class CreatorGradeItems {
 
 	private static final Pattern MODULE_ID_PATTERN = Pattern.compile("id=(\\d+)");
 
-	private static final Controller CONTROLLLER = Controller.getInstance();
+	private static final Controller CONTROLLER = Controller.getInstance();
 	private final DecimalFormat decimalFormat;
 
 	public CreatorGradeItems(Locale locale) {
@@ -45,17 +46,21 @@ public class CreatorGradeItems {
 
 	public List<GradeItem> createGradeItems(int courseid) throws JSONException, IOException {
 		WebService ws = new GradereportUserGetGradesTable(courseid);
-		String response = ws.getResponse();
+		 String response = ws.getResponse();
+
+		//String response = new String(Files.readAllBytes(Paths.get("./entrada.txt")), StandardCharsets.UTF_8);
 		JSONObject jsonObject = new JSONObject(response);
+
 		List<GradeItem> gradeItems = createHierarchyGradeItems(jsonObject);
-
+		
 		setEnrolledUserGrades(jsonObject, gradeItems);
-
+		CONTROLLER.getActualCourse().setGradeItems(new HashSet<>(gradeItems));
 		return gradeItems;
 	}
 
 	private List<GradeItem> createHierarchyGradeItems(JSONObject jsonObject) {
 
+		
 		JSONObject table = jsonObject.getJSONArray("tables").getJSONObject(0);
 
 		int maxDepth = table.getInt("maxdepth") + 1;
@@ -63,7 +68,7 @@ public class CreatorGradeItems {
 		GradeItem[] categories = new GradeItem[maxDepth];
 
 		JSONArray tabledata = table.getJSONArray("tabledata");
-
+		
 		List<GradeItem> gradeItems = new ArrayList<GradeItem>();
 		for (int i = 0; i < tabledata.length(); i++) {
 
@@ -77,9 +82,10 @@ public class CreatorGradeItems {
 			String contentString = itemname.getString("content");
 			Document content = Jsoup.parseBodyFragment(contentString);
 
-			GradeItem gradeItem = CONTROLLLER.getBBDD().getGradeItemByString(content.text());
+			GradeItem gradeItem = CONTROLLER.getBBDD().getGradeItemById(i);
+			gradeItem.setItemname(content.text());
 			gradeItem.clearChildren();
-			CONTROLLLER.getActualCourse().addGradeItem(gradeItem);
+			
 			gradeItem.setLevel(nivel);
 
 			// Buscamos la etiqueta HTML "i" dentro del JSONObject de content.
@@ -121,12 +127,12 @@ public class CreatorGradeItems {
 	}
 
 	private void setCourseModule(GradeItem gradeItem, String contentString) {
-	
+
 		Matcher matcher = MODULE_ID_PATTERN.matcher(contentString);
 		if (matcher.find()) {
-			
+
 			int cmid = Integer.parseInt(matcher.group(1));
-			Module module=CONTROLLLER.getBBDD().getCourseModuleById(cmid);
+			Module module = CONTROLLER.getBBDD().getCourseModuleById(cmid);
 			gradeItem.setModule(module);
 			gradeItem.setItemModule(module.getModuleType());
 		}
@@ -200,12 +206,12 @@ public class CreatorGradeItems {
 				continue;
 			}
 			int userid = table.getInt("userid");
-			EnrolledUser enrolledUser = CONTROLLLER.getBBDD().getEnrolledUserById(userid);
+			EnrolledUser enrolledUser = CONTROLLER.getBBDD().getEnrolledUserById(userid);
 			JSONArray tabledata = table.getJSONArray("tabledata");
 
 			for (int j = 0, gradeItemCount = 0; j < tabledata.length(); j++) {
 				JSONObject tabledataObject = tabledata.optJSONObject(j);
-				if(tabledataObject==null) {
+				if (tabledataObject == null) {
 					continue;
 				}
 				if (tabledataObject.has("grade")) {
@@ -224,9 +230,9 @@ public class CreatorGradeItems {
 		if (!content.equals("-")) {
 
 			try {
-				grade = decimalFormat.parse("content").doubleValue();
+				grade = decimalFormat.parse(content).doubleValue();
 			} catch (ParseException e) {
-				logger.info("No se puede parsear: "+content+", lo intentamos buscando el porcentaje");
+				logger.info("No se puede parsear: " + content + ", lo intentamos buscando el porcentaje");
 				content = tabledataObject.getJSONObject("percentage").getString("content");
 				try {
 					grade = decimalFormat.parse(content).doubleValue();

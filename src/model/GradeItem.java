@@ -181,33 +181,6 @@ public class GradeItem implements Serializable{
 
 
 	
-	
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((itemname == null) ? 0 : itemname.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		GradeItem other = (GradeItem) obj;
-		if (itemname == null) {
-			if (other.itemname != null)
-				return false;
-		} else if (!itemname.equals(other.itemname))
-			return false;
-		return true;
-	}
-
 	public double adjustTo10(EnrolledUser  user) {
 		double grade=getEnrolledUserGrade(user);
 		
@@ -223,5 +196,27 @@ public class GradeItem implements Serializable{
 		
 		return grade;
 	}
+	
+
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		GradeItem other = (GradeItem) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+
+
 
 }

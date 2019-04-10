@@ -14,6 +14,7 @@ public class GradeItemsTest {
 	private static String username;
 	private static String password;
 
+	
 	public static void main(String[] args) throws IOException {
 		Console consola = System.console();
 		// En eclipse no funciona la Clase consola, hay que usar el scanner.

@@ -153,11 +153,14 @@ public class EnrolledUser implements Serializable {
 
 	private List<LogLine> logs;
 
+	private List<LogLine> affectedLogs;
+	
 	private Map<GradeItem, Double> grades;
 
 	public EnrolledUser() {
 		roles = new HashSet<>();
 		logs = new ArrayList<>();
+		affectedLogs=new ArrayList<>();
 		enrolledcourses = new HashSet<>();
 		grades = new HashMap<>();
 		groups = new HashSet<>();
@@ -395,6 +398,14 @@ public class EnrolledUser implements Serializable {
 		this.logs = logs;
 	}
 
+	public List<LogLine> getAffectedLogs() {
+		return affectedLogs;
+	}
+
+	public void setAffectedLogs(List<LogLine> affectedLogs) {
+		this.affectedLogs = affectedLogs;
+	}
+
 	public Map<GradeItem, Double> getGrades() {
 		return grades;
 	}
@@ -429,6 +440,10 @@ public class EnrolledUser implements Serializable {
 
 	public void addLog(LogLine log) {
 		this.logs.add(log);
+	}
+	
+	public void addAffectedLog(LogLine log) {
+		this.affectedLogs.add(log);
 	}
 
 	public void addCourse(Course couse) {

@@ -31,7 +31,8 @@ public class Stats implements Serializable {
 
 	private final DecimalFormat decimalFormat;
 	private static final int MAX_DECIMAL_DIGITS = 2;
-	private static final int MIN_DECIMAL_DIGITS = 0;
+	private static final int MIN_DECIMAL_DIGITS = 2;
+	
 
 	/**
 	 * Map que almacena como clave el id del GradeReporLine(GRL) y como valor el

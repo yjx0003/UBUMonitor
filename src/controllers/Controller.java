@@ -62,8 +62,7 @@ public class Controller {
 	}
 
 	public void initialize() {
-		setBBDD(new BBDD());
-
+	
 		// Si no existe el recurso de idioma especificado cargamos el Español
 		try {
 			Languages lang = Languages.getLanguageByLocale(Locale.getDefault());

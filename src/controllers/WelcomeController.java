@@ -139,12 +139,15 @@ public class WelcomeController implements Initializable {
 			lblNoSelect.setText(controller.getResourceBundle().getString("error.nocourse"));
 			return;
 		}
-		controller.setActualCourse(selectedCourse);
-		logger.info(" Curso seleccionado: " + controller.getActualCourse().getFullName());
+		
+		logger.info(" Curso seleccionado: " + selectedCourse.getFullName());
 
 		if (chkUpdateData.isSelected()) {
 			if (!isFileCacheExists) {
 				loadData();
+			}else  {
+				controller.setBBDD(new BBDD());
+				controller.setActualCourse(selectedCourse);
 			}
 
 			downloadData();

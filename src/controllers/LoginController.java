@@ -31,6 +31,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import model.BBDD;
 import model.MoodleUser;
 
 /**
@@ -74,6 +75,8 @@ public class LoginController implements Initializable {
 		ObservableList<Languages> languages = FXCollections.observableArrayList(Languages.values());
 		languageSelector.setItems(languages);
 		languageSelector.setValue(controller.getSelectedLanguage());
+		
+		controller.setBBDD(new BBDD());
 
 		// Carga la interfaz con el idioma seleccionado
 		languageSelector.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
@@ -211,8 +214,8 @@ public class LoginController implements Initializable {
 				} catch (IOException e) {
 					logger.error("Error al obtener los datos del usuario.", e);
 					updateMessage("Error al obtener los datos del usuario.");
+					throw e;
 				}
-
 				return null;
 			}
 		};

@@ -31,7 +31,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import model.BBDD;
 import model.MoodleUser;
 
 /**
@@ -76,7 +75,7 @@ public class LoginController implements Initializable {
 		languageSelector.setItems(languages);
 		languageSelector.setValue(controller.getSelectedLanguage());
 		
-		controller.setBBDD(new BBDD());
+		
 
 		// Carga la interfaz con el idioma seleccionado
 		languageSelector.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {

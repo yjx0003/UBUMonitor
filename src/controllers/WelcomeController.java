@@ -59,6 +59,7 @@ public class WelcomeController implements Initializable {
 	private String directoryObject;
 	private Controller controller = Controller.getInstance();
 	private boolean isFileCacheExists;
+	
 
 	@FXML
 	private Label lblUser;
@@ -139,15 +140,15 @@ public class WelcomeController implements Initializable {
 			lblNoSelect.setText(controller.getResourceBundle().getString("error.nocourse"));
 			return;
 		}
-		
-		logger.info(" Curso seleccionado: " + selectedCourse.getFullName());
+		controller.setActualCourse(selectedCourse);
+		logger.info(" Curso seleccionado: " + controller.getActualCourse().getFullName());
 
 		if (chkUpdateData.isSelected()) {
 			if (!isFileCacheExists) {
 				loadData();
-			}else  {
-				controller.setBBDD(new BBDD());
-				controller.setActualCourse(selectedCourse);
+			}else {
+				BBDD copia=new BBDD(controller.getDefaultBBDD());
+				controller.setBBDD(copia);
 			}
 
 			downloadData();
@@ -262,7 +263,6 @@ public class WelcomeController implements Initializable {
 					saveData();
 					logger.debug(controller.getActualCourse().getLogs().toString());
 					logger.debug(controller.getBBDD().toString());
-
 				} catch (Exception e) {
 					logger.error("Error al cargar los datos de los alumnos: {}", e);
 					updateMessage("Se produjo un error inesperado al cargar los datos.\n" + e.getLocalizedMessage());

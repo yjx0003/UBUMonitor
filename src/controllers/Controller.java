@@ -21,8 +21,11 @@ public class Controller {
 
 	public static final String RESOURCE_FILE_NAME = "messages/Messages";
 
+
 	private Languages selectedLanguage;
 
+	private BBDD DEFAULT_BBDD;
+	
 	private BBDD BBDD;
 
 	private String host;
@@ -62,7 +65,10 @@ public class Controller {
 	}
 
 	public void initialize() {
-	
+		BBDD BBDD=new BBDD();
+		setBBDD(BBDD);
+		setDefaultBBDD(BBDD);
+
 		// Si no existe el recurso de idioma especificado cargamos el Español
 		try {
 			Languages lang = Languages.getLanguageByLocale(Locale.getDefault());
@@ -196,6 +202,14 @@ public class Controller {
 
 	public void setActualCourse(Course selectedCourse) {
 		BBDD.setActualCourse(selectedCourse);
+	}
+
+	public BBDD getDefaultBBDD() {
+		return DEFAULT_BBDD;
+	}
+
+	public void setDefaultBBDD(BBDD BBDD) {
+		DEFAULT_BBDD = BBDD;
 	}
 
 }

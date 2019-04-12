@@ -20,6 +20,11 @@ public class BBDD implements Serializable {
 	private Map<Integer, Course> courses;
 	private Map<Integer, GradeItem> gradeItems;
 
+	/**
+	 * Curso actual del usuario
+	 */
+	private Course actualCourse;
+
 	public BBDD() {
 		roles = new HashMap<Integer, Role>();
 		groups = new HashMap<Integer, Group>();
@@ -29,10 +34,16 @@ public class BBDD implements Serializable {
 		gradeItems = new HashMap<Integer, GradeItem>();
 	}
 
-	/**
-	 * Curso actual del usuario
-	 */
-	private Course actualCourse;
+	public BBDD(BBDD BBDD) {
+		roles = BBDD.roles;
+		groups = BBDD.groups;
+		users = BBDD.users;
+		modules = BBDD.modules;
+		courses = BBDD.courses;
+		gradeItems = BBDD.gradeItems;
+
+		actualCourse = BBDD.actualCourse;
+	}
 
 	/**
 	 * Devuelve el curso actual.

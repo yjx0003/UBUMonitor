@@ -83,7 +83,7 @@
                                  <children>
                                     <Label fx:id="lblCountParticipants" layoutX="6.0" layoutY="6.0" text="%label.participants" />
                                     <TextField fx:id="tfdParticipants" layoutX="6.0" layoutY="31.0" prefHeight="25.0" prefWidth="108.0" promptText="%label.filter" />
-                                    <Label layoutX="122.0" layoutY="6.0" text="%label.group" />
+                                    <Label layoutX="108.0" layoutY="6.0" text="%label.group" />
                                     <Label layoutX="130.0" layoutY="35.0" text="%label.rol" />
                                     <MenuButton fx:id="slcGroup" layoutX="160.0" layoutY="2.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.group" />
                                     <MenuButton fx:id="slcRole" layoutX="160.0" layoutY="31.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.rol" />
@@ -94,26 +94,80 @@
                               <ListView fx:id="listParticipants" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
                            </center>
                         </BorderPane>
-                        <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
-                           <top>
-                              <Pane minHeight="63.0" prefHeight="63.0" prefWidth="250.0" BorderPane.alignment="CENTER">
-                                 <children>
-                                    <Label layoutX="8.0" layoutY="6.0" text="%label.categoryitem" />
-                                    <TextField fx:id="tfdItems" layoutX="8.0" layoutY="30.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
-                                    <Label layoutX="123.0" layoutY="36.0" text="%label.type" />
-                                    <MenuButton fx:id="slcType" layoutX="160.0" layoutY="32.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.type" />
-                                 </children>
-                              </Pane>
-                           </top>
-                           <center>
-                              <TreeView fx:id="tvwGradeReport" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-                           </center>
-                        </BorderPane>
+                        <TabPane tabMinWidth="100.0" GridPane.rowIndex="1">
+                           <tabs>
+                              <Tab fx:id="tabUbuGrades" closable="false" text="UBUGrades">
+                                 <content>
+                                    <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+                                       <top>
+                                          <Pane minHeight="63.0" prefHeight="63.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+                                             <children>
+                                                <Label layoutX="8.0" layoutY="6.0" text="%label.categoryitem" />
+                                                <TextField fx:id="tfdItems" layoutX="8.0" layoutY="30.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+                                                <Label layoutX="123.0" layoutY="36.0" text="%label.type" />
+                                                <MenuButton fx:id="slcType" layoutX="160.0" layoutY="32.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.type" />
+                                             </children>
+                                          </Pane>
+                                       </top>
+                                       <center>
+                                          <TreeView fx:id="tvwGradeReport" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                                       </center>
+                                    </BorderPane>
+                                 </content>
+                              </Tab>
+                              <Tab fx:id="tabUbuLogs" closable="false" text="UBULogs">
+                                 <content>
+                                    <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+                                       <center>
+                                          <TreeView fx:id="tvwGradeReport1" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                                       </center>
+                                       <top>
+                                          <Pane minHeight="63.0" prefHeight="63.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+                                             <children>
+                                                <Label layoutX="8.0" layoutY="6.0" text="%label.categoryitem" />
+                                                <TextField fx:id="tfdItems1" layoutX="8.0" layoutY="30.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+                                                <Label layoutX="123.0" layoutY="36.0" text="%label.type" />
+                                                <MenuButton fx:id="slcType1" layoutX="160.0" layoutY="32.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.type" />
+                                             </children>
+                                          </Pane>
+                                       </top>
+                                    </BorderPane>
+                                 </content>
+                              </Tab>
+                           </tabs>
+                        </TabPane>
                      </children>
                   </GridPane>
                </center>
             </BorderPane>
             <BorderPane prefHeight="200.0" prefWidth="200.0">
+               <bottom>
+                  <GridPane fx:id="optionsUbuLogs" prefHeight="98.0" prefWidth="490.0" BorderPane.alignment="CENTER">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="227.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="227.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="227.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="227.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="308.0" minWidth="10.0" prefWidth="263.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <ChoiceBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" />
+                        <DatePicker editable="false" showWeekNumbers="true" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                        <Label text="%label.startdate" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+                        <Label text="%label.enddate" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
+                        <DatePicker layoutX="10.0" layoutY="4.0" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                        <Button mnemonicParsing="false" text="%btn.filter" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                        <Label text="%label.groupbydate" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
+                     </children>
+                  </GridPane>
+               </bottom>
                <center>
                   <WebView fx:id="webViewCharts" minHeight="200.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
                </center>

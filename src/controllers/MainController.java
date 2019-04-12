@@ -48,11 +48,13 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
@@ -129,6 +131,16 @@ public class MainController implements Initializable {
 
 	@FXML
 	private SplitPane splitPane;
+	
+	@FXML
+	private Tab tabUbuGrades;
+	
+	@FXML
+	private Tab tabUbuLogs;
+	
+	@FXML
+	private GridPane optionsUbuLogs;
+	
 
 	private Stats stats;
 
@@ -141,7 +153,9 @@ public class MainController implements Initializable {
 		try {
 			logger.info(
 					"Completada la carga del curso '" + controller.getActualCourse().getFullName() + ".");
-
+			optionsUbuLogs.visibleProperty().bind(tabUbuLogs.selectedProperty());
+			optionsUbuLogs.managedProperty().bind(tabUbuLogs.selectedProperty());
+			
 			// Cargamos el html de los graficos y calificaciones
 			webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
 			webViewChartsEngine = webViewCharts.getEngine();

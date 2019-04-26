@@ -140,8 +140,8 @@ public class WelcomeController implements Initializable {
 			lblNoSelect.setText(controller.getResourceBundle().getString("error.nocourse"));
 			return;
 		}
-		controller.setActualCourse(selectedCourse);
-		logger.info(" Curso seleccionado: " + controller.getActualCourse().getFullName());
+		
+		logger.info(" Curso seleccionado: " + selectedCourse.getFullName());
 
 		if (chkUpdateData.isSelected()) {
 			if (!isFileCacheExists) {
@@ -149,6 +149,7 @@ public class WelcomeController implements Initializable {
 			}else {
 				BBDD copia=new BBDD(controller.getDefaultBBDD());
 				controller.setBBDD(copia);
+				controller.setActualCourse(selectedCourse);
 			}
 
 			downloadData();
@@ -158,7 +159,7 @@ public class WelcomeController implements Initializable {
 			loadData();
 			loadNextWindow();
 		}
-
+		
 	}
 
 	private void saveData() {

@@ -1,6 +1,8 @@
 
 package controllers;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,8 +76,6 @@ public class LoginController implements Initializable {
 		ObservableList<Languages> languages = FXCollections.observableArrayList(Languages.values());
 		languageSelector.setItems(languages);
 		languageSelector.setValue(controller.getSelectedLanguage());
-		
-		
 
 		// Carga la interfaz con el idioma seleccionado
 		languageSelector.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
@@ -90,37 +90,49 @@ public class LoginController implements Initializable {
 	private void initializeProperties() {
 
 		properties = new Properties();
-		try (InputStream in=getClass().getClassLoader().getResourceAsStream(PROPERTIES_PATH)){
-			
-			properties.load(in);
-			txtHost.setText(properties.getProperty("host"));
-			txtUsername.setText(properties.getProperty("username"));
-			chkSaveUsername.setSelected(Boolean.parseBoolean(properties.getProperty("saveUsername")));
-			chkSaveHost.setSelected(Boolean.parseBoolean(properties.getProperty("saveHost")));
-		} catch (IOException e) {
-			logger.error("No se ha podido cargar " + PROPERTIES_PATH);
+		createPropertiesIfNotExist();
+		File file = new File(PROPERTIES_PATH);
+		if (!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				logger.error("No se ha podido crear el fichero properties: " + PROPERTIES_PATH);
+			}
+		} else { // si existe el fichero properties inicializamos los valores
+			try (InputStream in = new FileInputStream(file)) {
+
+				properties.load(in);
+				txtHost.setText(properties.getProperty("host"));
+				txtUsername.setText(properties.getProperty("username"));
+				chkSaveUsername.setSelected(Boolean.parseBoolean(properties.getProperty("saveUsername")));
+				chkSaveHost.setSelected(Boolean.parseBoolean(properties.getProperty("saveHost")));
+			} catch (IOException e) {
+				logger.error("No se ha podido cargar " + PROPERTIES_PATH);
+			}
 		}
 
 	}
 
+	private void createPropertiesIfNotExist() {
+
+	}
+
 	private void saveProperties() {
-		
-		
+
 		String username = chkSaveUsername.isSelected() ? txtUsername.getText() : "";
 		properties.setProperty("username", username);
 		properties.setProperty("saveUsername", Boolean.toString(chkSaveUsername.isSelected()));
-		
-		String host=chkSaveHost.isSelected()?txtHost.getText():"";
+
+		String host = chkSaveHost.isSelected() ? txtHost.getText() : "";
 		properties.setProperty("host", host);
 		properties.setProperty("saveHost", Boolean.toString(chkSaveHost.isSelected()));
 
-		
-		String path=getClass().getClassLoader().getResource(PROPERTIES_PATH).getFile();
-		try(FileOutputStream out=new FileOutputStream(path)){
+		File file=new File(PROPERTIES_PATH);
+		try (FileOutputStream out = new FileOutputStream(file)) {
 			properties.store(out, null);
-	
+
 		} catch (IOException e) {
-			logger.error("No se ha podido guardar el fichero"+ path);
+			logger.error("No se ha podido guardar el fichero" + file.getAbsolutePath());
 		}
 	}
 

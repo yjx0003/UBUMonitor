@@ -112,7 +112,7 @@ public class CreatorGradeItems {
 				gradeItems.add(gradeItem);
 				setAtrributes(gradeItem, tabledataJsonObject);
 				CreatorUBUGradesController.setFatherAndChildren(categories, nivel, gradeItem);
-			} else {
+			} else { // todos los demas modulos calificables
 				gradeItems.add(gradeItem);
 				setAtrributes(gradeItem, tabledataJsonObject);
 				CreatorUBUGradesController.setFatherAndChildren(categories, nivel, gradeItem);

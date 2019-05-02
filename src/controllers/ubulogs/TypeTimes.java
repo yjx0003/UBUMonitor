@@ -7,7 +7,7 @@ import model.LogLine;
 public enum TypeTimes {
 
 	DAY(LogLine::getLocalDate),
-	MONTH(LogLine::getMonth),
+	YEAR_MONTH(LogLine::getYearMonth),
 	WEEK_OF_THE_YEAR(LogLine::getWeekOfYear);
 
 	private Function<LogLine, ?> function;

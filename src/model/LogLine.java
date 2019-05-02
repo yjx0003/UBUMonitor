@@ -3,6 +3,7 @@ package model;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.YearMonth;
 import java.time.ZonedDateTime;
 import java.time.temporal.IsoFields;
 
@@ -122,6 +123,10 @@ public class LogLine implements Serializable {
 
 	public Month getMonth() {
 		return time.getMonth();
+	}
+	
+	public YearMonth getYearMonth() {
+		return YearMonth.from(time);
 	}
 
 	/**

@@ -11,6 +11,9 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,28 +30,35 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.ubulogs.TypeTimes;
+import controllers.ubulogs.logcreator.Component;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -60,6 +70,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import model.EnrolledUser;
 import model.GradeItem;
 import model.Group;
@@ -80,8 +91,13 @@ public class MainController implements Initializable {
 	static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
 	private static final String TODOS = "Todos";
+	
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
 
+	private final static Image ERROR_ICON = new Image("/img/error.png");
+	
 	private Controller controller = Controller.getInstance();
+	private LogTabController logTabController = LogTabController.getInstance();
 
 	@FXML // Curso actual
 	public Label lblActualCourse;
@@ -131,18 +147,48 @@ public class MainController implements Initializable {
 
 	@FXML
 	private SplitPane splitPane;
-	
+
+	@FXML
+	private TabPane tabPane;
+
 	@FXML
 	private Tab tabUbuGrades;
-	
+
 	@FXML
 	private Tab tabUbuLogs;
-	
+
+	@FXML
+	private TextField componentTextField;
+
 	@FXML
 	private GridPane optionsUbuLogs;
-	
+
+	@FXML
+	private Label actualGroupByLabel;
+
+	@FXML
+	private Label actualStartLabel;
+
+	@FXML
+	private Label actualEndLabel;
+
+	@FXML
+	private ChoiceBox<TypeTimes> choiceBoxDate;
+	private TypeTimes selectedChoiceBoxDate;
+
+	@FXML
+	private DatePicker datePickerStart;
+	private LocalDate dateStart;
+	@FXML
+	private DatePicker datePickerEnd;
+	private LocalDate dateEnd;
+
+	@FXML
+	private ListView<Component> listViewComponents;
+	private FilteredList<Component> filterComponents;
 
 	private Stats stats;
+	
 
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades de
@@ -153,19 +199,18 @@ public class MainController implements Initializable {
 		try {
 			logger.info(
 					"Completada la carga del curso '" + controller.getActualCourse().getFullName() + ".");
-			optionsUbuLogs.visibleProperty().bind(tabUbuLogs.selectedProperty());
-			optionsUbuLogs.managedProperty().bind(tabUbuLogs.selectedProperty());
-			
+
+			stats = controller.getStats();
+
 			// Cargamos el html de los graficos y calificaciones
 			webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
 			webViewChartsEngine = webViewCharts.getEngine();
-			webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html").toExternalForm());
-			// Comprobamos cuando se carga la pagina para traducirla
-			webViewChartsEngine.getLoadWorker().stateProperty()
-					.addListener((ov, oldState, newState) -> webViewChartsEngine.executeScript(
-							"setLanguage('" + controller.getResourceBundle().getLocale() + "')"));
 
-			stats = controller.getStats();
+			initLogOptionsFilter();
+
+			initTabGrades();
+			initTabLogs();
+			initListViewComponents();
 
 			//////////////////////////////////////////////////////////////////////////
 			// Manejo de roles (MenuButton Rol):
@@ -300,8 +345,9 @@ public class MainController implements Initializable {
 			// Asignamos el manejador de eventos de la lista
 			// Al clickar en la lista, se recalcula el nº de elementos seleccionados
 			// Generamos el gráfico con los elementos selecionados
-			listParticipants.refresh(); // FIX RMS
-			listParticipants.setOnMouseClicked((EventHandler<Event>) event -> updateChart());
+
+			listParticipants.getSelectionModel().getSelectedItems()
+					.addListener((Change<? extends EnrolledUser> usersSelected) -> updateGradesChart());
 
 			/// Mostramos la lista de participantes
 			listParticipants.setItems(enrList);
@@ -325,7 +371,8 @@ public class MainController implements Initializable {
 			// Asignamos el manejador de eventos de la lista
 			// Al clickar en la lista, se recalcula el nº de elementos seleccionados
 			// Generamos el gráfico con los elementos selecionados
-			tvwGradeReport.setOnMouseClicked((EventHandler<Event>) event -> updateChart());
+			tvwGradeReport.getSelectionModel().getSelectedItems()
+					.addListener((Change<? extends TreeItem<GradeItem>> g)  -> updateGradesChart());
 
 			// Mostramos nº participantes
 			lblCountParticipants.setText(controller.getResourceBundle().getString("label.participants") + " "
@@ -345,6 +392,151 @@ public class MainController implements Initializable {
 		} catch (Exception e) {
 			logger.error("Error en la inicialización.", e);
 		}
+	}
+
+	public void initLogOptionsFilter() {
+
+		// añadimos los elementos de la enumeracion en el choicebox
+		ObservableList<TypeTimes> typeTimes = FXCollections.observableArrayList(TypeTimes.values());
+		choiceBoxDate.setItems(typeTimes);
+		choiceBoxDate.getSelectionModel().selectFirst();
+
+		// traduccion de los elementos del choicebox
+		choiceBoxDate.setConverter(new StringConverter<TypeTimes>() {
+			@Override
+			public TypeTimes fromString(String typeTimes) {
+				return null;// no se va a usar en un choiceBox.
+			}
+
+			@Override
+			public String toString(TypeTimes typeTimes) {
+				return controller.getResourceBundle().getString("choiceBox." + typeTimes);
+			}
+		});
+
+		datePickerStart.setValue(LocalDate.now());
+		datePickerEnd.setValue(LocalDate.now());
+
+		setLabelLogsOptionFilter();
+
+	}
+
+	public void setLabelLogsOptionFilter() {
+		actualGroupByLabel.setText(controller.getResourceBundle().getString("choiceBox." + choiceBoxDate.getValue()));
+
+		
+		actualStartLabel.setText(datePickerStart.getValue().format(DATE_TIME_FORMATTER));
+		actualEndLabel.setText(datePickerEnd.getValue().format(DATE_TIME_FORMATTER));
+	}
+
+	public void initListViewComponents() {
+		ObservableList<Component> observableListComponents = FXCollections.observableArrayList(Component.values());
+		filterComponents = new FilteredList<>(observableListComponents);
+		listViewComponents.setItems(filterComponents);
+		listViewComponents.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+		listViewComponents.getSelectionModel().getSelectedItems()
+				.addListener((Change<? extends Component> c) -> changeComponentList());
+	}
+
+	private void changeComponentList() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	/**
+	 * Inicializa la lista de componentes de la pestaña Registros
+	 */
+	public void initTabLogs() {
+
+		tabUbuLogs.setOnSelectionChanged(event -> setTablogs(event));
+
+		// ponemos un listener al cuadro de texto para que se filtre el list view en
+		// tiempo real
+		componentTextField.textProperty().addListener(((observable, oldValue, newValue) -> {
+			filterComponents.setPredicate(component -> {
+				if (newValue == null || newValue.isEmpty()) {
+					return true;
+				}
+				String textField = newValue.toLowerCase();
+				return component.toString().toLowerCase().contains(textField);
+			});
+		}));
+
+		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
+		// ponemos un icono
+		listViewComponents.setCellFactory(callback -> new ListCell<Component>() {
+
+			@Override
+			public void updateItem(Component component, boolean empty) {
+				super.updateItem(component, empty);
+
+				if (empty) {
+					setText(null);
+					setGraphic(null);
+				} else {
+					// TODO internacionalizacion quitar el comentario
+					// setText(controller.getResourceBundle().getString("component."+component));
+					setText(component.toString());
+					try {
+						Image image = new Image("/img/" + component + ".png");
+						setGraphic(new ImageView(image));
+					} catch (Exception e) {
+						logger.warn("No se ha podido cargar la imagen del componente " + component
+								+ ", se cargara un icono de error.");
+						setGraphic(new ImageView(ERROR_ICON));
+					}
+				}
+			}
+		});
+	}
+
+	public void setTablogs(Event event) {
+		if (!tabUbuLogs.isSelected()) {
+			return;
+		}
+
+		webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html").toExternalForm());
+		// Comprobamos cuando se carga la pagina para traducirla
+		webViewChartsEngine.getLoadWorker().stateProperty()
+				.addListener((ov, oldState, newState) -> webViewChartsEngine.executeScript(
+						"setLanguage('" + controller.getResourceBundle().getLocale() + "')"));
+	}
+
+	public void initTabGrades() {
+
+		setTabGrades(null);
+		tabPane.getSelectionModel().select(tabUbuGrades);
+		tabUbuGrades.setOnSelectionChanged(event -> setTabGrades(event));
+	}
+
+	public void setTabGrades(Event event) {
+		if (!tabUbuGrades.isSelected()) {
+			return;
+		}
+
+		webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html").toExternalForm());
+		// Comprobamos cuando se carga la pagina para traducirla
+		webViewChartsEngine.getLoadWorker().stateProperty()
+				.addListener((ov, oldState, newState) -> webViewChartsEngine.executeScript(
+						"setLanguage('" + controller.getResourceBundle().getLocale() + "')"));
+	}
+
+	@FXML
+	public void saveFilterLogs(ActionEvent event) {
+		LocalDate start = datePickerStart.getValue();
+		LocalDate end = datePickerEnd.getValue();
+
+		if (start == null || end == null || end.isBefore(start)) {
+			errorWindow("La fecha de fin es anterior a la fecha de inicio.", false);
+			return;
+		}
+
+		selectedChoiceBoxDate = choiceBoxDate.getSelectionModel().getSelectedItem();
+		dateStart = start;
+		dateEnd = end;
+		setLabelLogsOptionFilter();
 	}
 
 	/**
@@ -408,7 +600,7 @@ public class MainController implements Initializable {
 		}
 		listParticipants.setItems(enrList);
 		// Actualizamos los gráficos al cambiar el grupo
-		updateChart();
+		updateGradesChart();
 	}
 
 	/**
@@ -441,9 +633,9 @@ public class MainController implements Initializable {
 		String path = null;
 		try {
 			path = "/img/" + item.getValue().getItemModule().getModName() + ".png";
-			item.setGraphic((Node) new ImageView(new Image(path)));
+			item.setGraphic(new ImageView(new Image(path)));
 		} catch (Exception e) {
-			item.setGraphic((Node) new ImageView(new Image("/img/module.png")));
+			item.setGraphic(new ImageView(ERROR_ICON));
 			logger.error("No se ha podido cargar la imagen del elemento " + item + "en la ruta " + path + ") : {}", e);
 		}
 	}
@@ -554,7 +746,7 @@ public class MainController implements Initializable {
 
 				// Completamos el nuevo archivo con los dataSets de los gráficos
 				out = new PrintWriter(new BufferedWriter(fw));
-				String generalDataSet = generateDataSet();
+				String generalDataSet = generateGradesDataSet();
 				out.println(
 						"\r\nvar userLang = \"" + controller.getResourceBundle().getLocale().toString() + "\";\r\n");
 				out.println("\r\nvar LineDataSet = " + generalDataSet + ";\r\n");
@@ -662,9 +854,6 @@ public class MainController implements Initializable {
 	 */
 	private String generateTableData() {
 		// Lista de alumnos y calificaciones seleccionadas
-		listParticipants.refresh(); // FIX RMS
-		tvwGradeReport.refresh(); // FIX RMS
-
 		ObservableList<EnrolledUser> selectedParticipants = listParticipants.getSelectionModel().getSelectedItems();
 		ObservableList<TreeItem<GradeItem>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
 
@@ -758,10 +947,9 @@ public class MainController implements Initializable {
 	 * 
 	 * @return El data set.
 	 */
-	private String generateDataSet() {
+	private String generateGradesDataSet() {
 		// Lista de alumnos y calificaciones seleccionadas
-		listParticipants.refresh(); // FIX RMS
-		tvwGradeReport.refresh(); // FIX RMS
+
 
 		ObservableList<EnrolledUser> selectedParticipants = listParticipants.getSelectionModel().getSelectedItems();
 		ObservableList<TreeItem<GradeItem>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
@@ -1013,9 +1201,9 @@ public class MainController implements Initializable {
 	/**
 	 * Actualiza los gráficos.
 	 */
-	private void updateChart() {
+	private void updateGradesChart() {
 		try {
-			String data = generateDataSet();
+			String data = generateGradesDataSet();
 			logger.debug("Data: {}", data);
 			updateGroupData(filterGroup);
 			String tableData = generateTableData();
@@ -1043,10 +1231,10 @@ public class MainController implements Initializable {
 	 * @param exit
 	 *            Indica si se quiere mostar el boton de salir o no.
 	 */
-	private void errorWindow(String mensaje, Boolean exit) {
+	private void errorWindow(String mensaje, boolean exit) {
 		Alert alert = new Alert(AlertType.ERROR);
 
-		alert.setTitle("UbuGrades");
+		alert.setTitle("UBUMonitor");
 		alert.setHeaderText("Error");
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.initOwner(controller.getStage());
@@ -1059,7 +1247,10 @@ public class MainController implements Initializable {
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.isPresent() && result.get() == buttonSalir)
 				controller.getStage().close();
+		} else {
+			alert.showAndWait();
 		}
+
 	}
 
 }

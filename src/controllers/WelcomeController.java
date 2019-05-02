@@ -262,7 +262,6 @@ public class WelcomeController implements Initializable {
 					}
 					updateMessage("Guardando en local");
 					saveData();
-					logger.debug(controller.getActualCourse().getLogs().toString());
 					logger.debug(controller.getBBDD().toString());
 				} catch (Exception e) {
 					logger.error("Error al cargar los datos de los alumnos: {}", e);

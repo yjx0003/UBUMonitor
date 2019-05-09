@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import controllers.ubugrades.CreatorGradeItems;
 import controllers.ubugrades.CreatorUBUGradesController;
-import controllers.ubulogs.UBULogController;
+import controllers.ubulogs.logcreator.LogCreator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -243,23 +243,26 @@ public class WelcomeController implements Initializable {
 					CreatorUBUGradesController.createModules(controller.getActualCourse().getId());
 					updateMessage(controller.getResourceBundle().getString("label.loadingqualifier"));
 					// Establecemos calificador del curso
-					// CreatorUBUGradesController.createGradeItems(controller.getActualCourse().getId());
 					CreatorGradeItems creatorGradeItems = new CreatorGradeItems(
 							new Locale(controller.getUser().getLang()));
 					creatorGradeItems.createGradeItems(controller.getActualCourse().getId());
+
+					updateMessage("Actualizando el log"); //TODO internacionalizar el mensaje
+					if (isFileCacheExists) {
+						Logs logs = LogCreator.createCourseLog();
+						controller.getActualCourse().setLogs(logs);
+						
+					} else {
+						Logs logs = controller.getActualCourse().getLogs();
+						LogCreator.updateCourseLog(logs);
+						
+						
+
+					}
 					updateMessage(controller.getResourceBundle().getString("label.loadingstats"));
 					// Establecemos las estadisticas
 					controller.createStats();
-
-					updateMessage("Actualizando el log");
-					if (isFileCacheExists) {
-						Logs logs = UBULogController.getInstance().createCourseLog();
-						controller.getActualCourse().setLogs(logs);
-					} else {
-						Logs logs = controller.getActualCourse().getLogs();
-						UBULogController.getInstance().updateCourseLog(logs);
-
-					}
+					
 					updateMessage("Guardando en local");
 					saveData();
 					logger.debug(controller.getBBDD().toString());

@@ -12,8 +12,8 @@ import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +30,8 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.ubulogs.TypeTimes;
+import controllers.ubulogs.GroupByAbstract;
+import controllers.ubulogs.StackedBarDataset;
 import controllers.ubulogs.logcreator.Component;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -47,6 +48,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
@@ -91,11 +93,11 @@ public class MainController implements Initializable {
 	static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
 	private static final String TODOS = "Todos";
-	
-	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
 
 	private final static Image ERROR_ICON = new Image("/img/error.png");
-	
+
+	private StackedBarDataset stackedBarDataset = StackedBarDataset.getInstance();
+
 	private Controller controller = Controller.getInstance();
 	private LogTabController logTabController = LogTabController.getInstance();
 
@@ -164,17 +166,8 @@ public class MainController implements Initializable {
 	private GridPane optionsUbuLogs;
 
 	@FXML
-	private Label actualGroupByLabel;
-
-	@FXML
-	private Label actualStartLabel;
-
-	@FXML
-	private Label actualEndLabel;
-
-	@FXML
-	private ChoiceBox<TypeTimes> choiceBoxDate;
-	private TypeTimes selectedChoiceBoxDate;
+	private ChoiceBox<GroupByAbstract<?>> choiceBoxDate;
+	private GroupByAbstract<?> selectedChoiceBoxDate;
 
 	@FXML
 	private DatePicker datePickerStart;
@@ -184,11 +177,13 @@ public class MainController implements Initializable {
 	private LocalDate dateEnd;
 
 	@FXML
+	private Button filterLogButton;
+
+	@FXML
 	private ListView<Component> listViewComponents;
 	private FilteredList<Component> filterComponents;
 
 	private Stats stats;
-	
 
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades de
@@ -372,7 +367,7 @@ public class MainController implements Initializable {
 			// Al clickar en la lista, se recalcula el nº de elementos seleccionados
 			// Generamos el gráfico con los elementos selecionados
 			tvwGradeReport.getSelectionModel().getSelectedItems()
-					.addListener((Change<? extends TreeItem<GradeItem>> g)  -> updateGradesChart());
+					.addListener((Change<? extends TreeItem<GradeItem>> g) -> updateGradesChart());
 
 			// Mostramos nº participantes
 			lblCountParticipants.setText(controller.getResourceBundle().getString("label.participants") + " "
@@ -397,36 +392,47 @@ public class MainController implements Initializable {
 	public void initLogOptionsFilter() {
 
 		// añadimos los elementos de la enumeracion en el choicebox
-		ObservableList<TypeTimes> typeTimes = FXCollections.observableArrayList(TypeTimes.values());
+		ObservableList<GroupByAbstract<?>> typeTimes = FXCollections
+				.observableArrayList(controller.getActualCourse().getLogStats().getList());
 		choiceBoxDate.setItems(typeTimes);
 		choiceBoxDate.getSelectionModel().selectFirst();
+		selectedChoiceBoxDate = choiceBoxDate.getValue();
+
+		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> enableFilterLogButton());
 
 		// traduccion de los elementos del choicebox
-		choiceBoxDate.setConverter(new StringConverter<TypeTimes>() {
+		choiceBoxDate.setConverter(new StringConverter<GroupByAbstract<?>>() {
 			@Override
-			public TypeTimes fromString(String typeTimes) {
+			public GroupByAbstract<?> fromString(String typeTimes) {
 				return null;// no se va a usar en un choiceBox.
 			}
 
 			@Override
-			public String toString(TypeTimes typeTimes) {
+			public String toString(GroupByAbstract<?> typeTimes) {
 				return controller.getResourceBundle().getString("choiceBox." + typeTimes);
 			}
 		});
 
-		datePickerStart.setValue(LocalDate.now());
+		datePickerStart.setValue(LocalDate.now().minusWeeks(1));
 		datePickerEnd.setValue(LocalDate.now());
 
-		setLabelLogsOptionFilter();
+		dateStart = datePickerStart.getValue();
+		dateEnd = datePickerEnd.getValue();
+
+		datePickerStart.valueProperty().addListener((ov, oldValue, newValue) -> enableFilterLogButton());
+		datePickerEnd.valueProperty().addListener((ov, oldValue, newValue) -> enableFilterLogButton());
+
+		filterLogButton.setDisable(true);
 
 	}
 
-	public void setLabelLogsOptionFilter() {
-		actualGroupByLabel.setText(controller.getResourceBundle().getString("choiceBox." + choiceBoxDate.getValue()));
-
-		
-		actualStartLabel.setText(datePickerStart.getValue().format(DATE_TIME_FORMATTER));
-		actualEndLabel.setText(datePickerEnd.getValue().format(DATE_TIME_FORMATTER));
+	private void enableFilterLogButton() {
+		if (choiceBoxDate.getValue().equals(selectedChoiceBoxDate) && datePickerStart.getValue().equals(dateStart)
+				&& datePickerEnd.getValue().equals(dateEnd)) {
+			filterLogButton.setDisable(true);
+		} else {
+			filterLogButton.setDisable(false);
+		}
 	}
 
 	public void initListViewComponents() {
@@ -441,9 +447,8 @@ public class MainController implements Initializable {
 
 	private void changeComponentList() {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	/**
 	 * Inicializa la lista de componentes de la pestaña Registros
@@ -471,14 +476,11 @@ public class MainController implements Initializable {
 			@Override
 			public void updateItem(Component component, boolean empty) {
 				super.updateItem(component, empty);
-
 				if (empty) {
 					setText(null);
 					setGraphic(null);
 				} else {
-					// TODO internacionalizacion quitar el comentario
-					// setText(controller.getResourceBundle().getString("component."+component));
-					setText(component.toString());
+					setText(controller.getResourceBundle().getString("component." + component));
 					try {
 						Image image = new Image("/img/" + component + ".png");
 						setGraphic(new ImageView(image));
@@ -497,11 +499,7 @@ public class MainController implements Initializable {
 			return;
 		}
 
-		webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html").toExternalForm());
-		// Comprobamos cuando se carga la pagina para traducirla
-		webViewChartsEngine.getLoadWorker().stateProperty()
-				.addListener((ov, oldState, newState) -> webViewChartsEngine.executeScript(
-						"setLanguage('" + controller.getResourceBundle().getLocale() + "')"));
+		// TODO
 	}
 
 	public void initTabGrades() {
@@ -524,7 +522,8 @@ public class MainController implements Initializable {
 	}
 
 	@FXML
-	public void saveFilterLogs(ActionEvent event) {
+	public void applyFilterLogs(ActionEvent event) {
+		filterLogButton.setDisable(true);
 		LocalDate start = datePickerStart.getValue();
 		LocalDate end = datePickerEnd.getValue();
 
@@ -536,7 +535,14 @@ public class MainController implements Initializable {
 		selectedChoiceBoxDate = choiceBoxDate.getSelectionModel().getSelectedItem();
 		dateStart = start;
 		dateEnd = end;
-		setLabelLogsOptionFilter();
+
+		ZonedDateTime zonedStart = dateStart.atStartOfDay(ZoneId.systemDefault());
+		ZonedDateTime zonedEnd = dateEnd.atStartOfDay(ZoneId.systemDefault());
+
+		List<EnrolledUser> users = listParticipants.getSelectionModel().getSelectedItems();
+		List<Component> components = listViewComponents.getSelectionModel().getSelectedItems();
+			
+		logger.info("creando dataset nuevo: "+stackedBarDataset.createDataset(users, components, choiceBoxDate.getValue(), zonedStart, zonedEnd));
 	}
 
 	/**
@@ -950,7 +956,6 @@ public class MainController implements Initializable {
 	private String generateGradesDataSet() {
 		// Lista de alumnos y calificaciones seleccionadas
 
-
 		ObservableList<EnrolledUser> selectedParticipants = listParticipants.getSelectionModel().getSelectedItems();
 		ObservableList<TreeItem<GradeItem>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
 		int countA = 0;
@@ -979,25 +984,27 @@ public class MainController implements Initializable {
 				for (TreeItem<GradeItem> structTree : selectedGRL) {
 					countA++;
 					try {
-						GradeItem actualLine = structTree.getValue();
-						String calculatedGrade;
-						if (countA == countB) {
-							countB++;
-							// Añadidimos el nombre del elemento como label
-							if (firstGrade) {
-								labels.append("'" + escapeJavaScriptText(structTree.getValue().toString()) + "'");
-							} else {
-								labels.append(",'" + escapeJavaScriptText(structTree.getValue().toString()) + "'");
+						if (structTree != null) {
+							GradeItem actualLine = structTree.getValue();
+							String calculatedGrade;
+							if (countA == countB) {
+								countB++;
+								// Añadidimos el nombre del elemento como label
+								if (firstGrade) {
+									labels.append("'" + escapeJavaScriptText(structTree.getValue().toString()) + "'");
+								} else {
+									labels.append(",'" + escapeJavaScriptText(structTree.getValue().toString()) + "'");
+								}
 							}
-						}
 
-						calculatedGrade = String.valueOf(actualLine.adjustTo10(actualUser));
+							calculatedGrade = String.valueOf(actualLine.adjustTo10(actualUser));
 
-						if (firstGrade) {
-							dataSet.append(calculatedGrade);
-							firstGrade = false;
-						} else {
-							dataSet.append("," + calculatedGrade);
+							if (firstGrade) {
+								dataSet.append(calculatedGrade);
+								firstGrade = false;
+							} else {
+								dataSet.append("," + calculatedGrade);
+							}
 						}
 					} catch (Exception e) {
 						logger.error("Error en la construcción del dataset.", e);

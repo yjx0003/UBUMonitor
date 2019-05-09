@@ -7,6 +7,8 @@ import java.time.YearMonth;
 import java.time.ZonedDateTime;
 import java.time.temporal.IsoFields;
 
+import org.threeten.extra.YearWeek;
+
 import controllers.ubulogs.logcreator.Component;
 import controllers.ubulogs.logcreator.Event;
 import model.mod.Module;
@@ -127,6 +129,10 @@ public class LogLine implements Serializable {
 	
 	public YearMonth getYearMonth() {
 		return YearMonth.from(time);
+	}
+	
+	public YearWeek getYearWeek() {
+		return YearWeek.from(time);
 	}
 
 	/**

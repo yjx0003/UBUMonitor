@@ -212,6 +212,42 @@ var optionsRadarChart = {
     	backgroundColor: 'rgba(255,255,255,1)'
     } //chartArea
 } //options
+
+
+var optionsStackedBar= {
+		title: {
+			display: true,
+			text: ""
+		},
+		tooltips: {
+			mode: "x",
+			callbacks: {
+				label: function(tooltipItem, data) {
+	     					return data.datasets[tooltipItem.datasetIndex].label[0] + " : "+tooltipItem.yLabel;
+						},
+				afterTitle: function(tooltipItem,data){
+	 							return data.datasets[tooltipItem[0].datasetIndex].stack;
+							}
+			}
+		},
+		scales: {
+			xAxes: [{
+				stacked: true,
+			}],
+			yAxes: [{
+				stacked: true
+			}]
+		},
+		legend: {
+			labels: {
+		     	filter: function(legendItem, chartData) {
+				     		//mostramos en la leyenda los que son lineas
+				       		return chartData.datasets[legendItem.datasetIndex].type == "line"; 
+		      			}
+		   	}
+		}
+}
+
 //------------------------------------------Variables globales-------------------------------------------------------------
 // DataSets
 var GeneralMeanDataSet = '';

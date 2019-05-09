@@ -44,6 +44,7 @@ public class Course implements Serializable {
 	private Set<GradeItem> gradeItems;
 	private Logs logs;
 	private Stats stats;
+	private LogStats logStats;
 
 	static final Logger logger = LoggerFactory.getLogger(Course.class);
 
@@ -311,6 +312,15 @@ public class Course implements Serializable {
 		return uniqueModulesTypes;
 	}
 
+	
+	public LogStats getLogStats() {
+		return logStats;
+	}
+
+	public void setLogStats(LogStats logStats) {
+		this.logStats = logStats;
+	}
+	
 	@Override
 	public String toString() {
 		return this.fullName;
@@ -340,5 +350,7 @@ public class Course implements Serializable {
 		module.setCourse(this);
 
 	}
+
+	
 
 }

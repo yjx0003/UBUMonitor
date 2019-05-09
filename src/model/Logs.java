@@ -72,4 +72,8 @@ public class Logs implements Serializable{
 		return "Logs [logLines=" + logLines + "]";
 	}
 
+	public List<LogLine> getList() {
+		return logLines;
+	}
+
 }

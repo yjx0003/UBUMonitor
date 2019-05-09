@@ -51,9 +51,4 @@ public enum Component {
 	}
 	
 	
-	@Override
-	public String toString() {
-		return name;
-	}
-	
 }

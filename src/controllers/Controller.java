@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import javafx.stage.Stage;
 import model.BBDD;
 import model.Course;
+import model.LogStats;
 import model.MoodleUser;
 import model.Stats;
 import webservice.WebService;
@@ -198,6 +199,9 @@ public class Controller {
 	public void createStats() throws Exception {
 		Stats stats = new Stats(getActualCourse());
 		getActualCourse().setStats(stats);
+		
+		LogStats logStats=new LogStats(getActualCourse().getLogs().getList(),getActualCourse().getEnrolledUsers());
+		getActualCourse().setLogStats(logStats);
 	}
 
 	public void setActualCourse(Course selectedCourse) {

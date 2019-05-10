@@ -70,7 +70,6 @@ public class StackedBarDataset {
 		setDatasets();
 		stringBuilder.append("}");
 		
-		logger.debug(stringBuilder.toString());
 		return stringBuilder.toString();
 	}
 

@@ -1,5 +1,6 @@
 package controllers.ubulogs;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -11,7 +12,7 @@ import java.util.function.Function;
 import model.EnrolledUser;
 import model.LogLine;
 
-public class GroupByDay extends GroupByAbstract<ZonedDateTime> {
+public class GroupByDay extends GroupByAbstract<LocalDate> {
 
 
 
@@ -27,11 +28,13 @@ public class GroupByDay extends GroupByAbstract<ZonedDateTime> {
 		super(logLines, enrolledUsers);
 		
 	}
-
 	@Override
-	public List<ZonedDateTime> getRange(ZonedDateTime start, ZonedDateTime end) {
-		List<ZonedDateTime> list = new ArrayList<>();
-		for (ZonedDateTime l = start; l.isBefore(end); l = l.plusDays(1)) {
+	public List<LocalDate> getRange(ZonedDateTime start, ZonedDateTime end) {
+		List<LocalDate> list = new ArrayList<>();
+		
+		LocalDate l = start.toLocalDate();
+		list.add(l);
+		for (; l.isBefore(end.toLocalDate()); l = l.plusDays(1)) {
 			list.add(l);
 		}
 		return list;
@@ -39,12 +42,12 @@ public class GroupByDay extends GroupByAbstract<ZonedDateTime> {
 	
 
 	@Override
-	public Function<LogLine, ZonedDateTime> getGroupByFunction() {
-		return LogLine::getTime;
+	public Function<LogLine, LocalDate> getGroupByFunction() {
+		return LogLine::getLocalDate;
 	}
 
 	@Override
-	public Function<ZonedDateTime, String> getStringFormatFunction() {
+	public Function<LocalDate, String> getStringFormatFunction() {
 		return l->l.format(DATE_TIME_FORMATTER);
 	}
 

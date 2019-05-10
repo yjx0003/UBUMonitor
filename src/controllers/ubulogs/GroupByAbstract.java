@@ -89,6 +89,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 				Map<T, DescriptiveStatistics> componentStatistics = statistics.computeIfAbsent(component,
 						k -> new HashMap<>());
 				for (T groupBy : groupByRange) {
+					
 					long count = userComponentsCounts.computeIfAbsent(groupBy, k -> 0L);
 					DescriptiveStatistics descriptiveStatistics = componentStatistics.computeIfAbsent(groupBy,
 							k -> new DescriptiveStatistics());
@@ -105,8 +106,11 @@ public abstract class GroupByAbstract<T> implements Serializable {
 			ZonedDateTime end) {
 
 		List<T> range = this.getRange(start, end);
-		logger.debug(range.toString());
+		System.out.println(range);
+
 		generateStatistics(components, range);
+		
+		
 		
 
 		Map<Component, List<Long>> results = new LinkedHashMap<>(); // importa el orden de insercion

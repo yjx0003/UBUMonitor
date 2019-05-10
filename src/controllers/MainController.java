@@ -541,8 +541,9 @@ public class MainController implements Initializable {
 
 		List<EnrolledUser> users = listParticipants.getSelectionModel().getSelectedItems();
 		List<Component> components = listViewComponents.getSelectionModel().getSelectedItems();
-			
-		logger.info("creando dataset nuevo: "+stackedBarDataset.createDataset(users, components, choiceBoxDate.getValue(), zonedStart, zonedEnd));
+
+		logger.info("Dataset para el stacked bar de logs en JS: "
+				+ stackedBarDataset.createDataset(users, components, choiceBoxDate.getValue(), zonedStart, zonedEnd));
 	}
 
 	/**

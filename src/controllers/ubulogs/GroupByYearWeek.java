@@ -13,25 +13,21 @@ import model.LogLine;
 
 public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 
-
-
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	
 	public GroupByYearWeek(List<LogLine> logLines, Set<EnrolledUser> enrolledUsers) {
 		super(logLines, enrolledUsers);
 	}
-	
+
 	@Override
 	public List<YearWeek> getRange(ZonedDateTime start, ZonedDateTime end) {
 		List<YearWeek> list = new ArrayList<>();
-		for (YearWeek yearWeek = YearWeek.from(start); 
-				yearWeek.isBefore(YearWeek.from(end)); 
-				yearWeek = yearWeek.plusWeeks(1)) {
-			
+		YearWeek yearWeek = YearWeek.from(start);
+		list.add(yearWeek);
+		for (; yearWeek.isBefore(YearWeek.from(end)); yearWeek = yearWeek.plusWeeks(1)) {
 			list.add(yearWeek);
 		}
 		return list;
@@ -52,6 +48,4 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 		return TypeTimes.WEEK_OF_THE_YEAR;
 	}
 
-
-	
 }

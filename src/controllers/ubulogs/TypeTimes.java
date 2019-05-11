@@ -3,7 +3,9 @@ package controllers.ubulogs;
 public enum TypeTimes {
 
 	DAY,
+	YEAR,
 	YEAR_MONTH,
-	WEEK_OF_THE_YEAR;
+	YEAR_QUARTER,
+	YEAR_WEEK;
 
 }

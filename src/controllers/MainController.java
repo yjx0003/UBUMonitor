@@ -456,6 +456,8 @@ public class MainController implements Initializable {
 	public void initTabLogs() {
 
 		tabUbuLogs.setOnSelectionChanged(event -> setTablogs(event));
+		optionsUbuLogs.setVisible(false);
+		optionsUbuLogs.setManaged(false);
 
 		// ponemos un listener al cuadro de texto para que se filtre el list view en
 		// tiempo real
@@ -496,9 +498,12 @@ public class MainController implements Initializable {
 
 	public void setTablogs(Event event) {
 		if (!tabUbuLogs.isSelected()) {
+			optionsUbuLogs.setVisible(false);
+			optionsUbuLogs.setManaged(false);
 			return;
 		}
-
+		optionsUbuLogs.setVisible(true);
+		optionsUbuLogs.setManaged(true);
 		// TODO
 	}
 

@@ -3,10 +3,12 @@ package model;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZonedDateTime;
 import java.time.temporal.IsoFields;
 
+import org.threeten.extra.YearQuarter;
 import org.threeten.extra.YearWeek;
 
 import controllers.ubulogs.logcreator.Component;
@@ -133,6 +135,14 @@ public class LogLine implements Serializable {
 	
 	public YearWeek getYearWeek() {
 		return YearWeek.from(time);
+	}
+	
+	public Year getYear() {
+		return Year.from(time);
+	}
+	
+	public YearQuarter getYearQuarter() {
+		return YearQuarter.from(time);
 	}
 
 	/**

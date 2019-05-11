@@ -7,7 +7,9 @@ import java.util.Set;
 
 import controllers.ubulogs.GroupByAbstract;
 import controllers.ubulogs.GroupByDay;
+import controllers.ubulogs.GroupByYear;
 import controllers.ubulogs.GroupByYearMonth;
+import controllers.ubulogs.GroupByYearQuarter;
 import controllers.ubulogs.GroupByYearWeek;
 
 public class LogStats implements Serializable{
@@ -22,13 +24,12 @@ public class LogStats implements Serializable{
 	public LogStats(List<LogLine> logLines,Set<EnrolledUser> users ) {
 		stastistics=new ArrayList<>();
 		
-		GroupByDay groupByDay=new GroupByDay(logLines,users);
-		GroupByYearWeek groupByYearWeek=new GroupByYearWeek(logLines,users);
-		GroupByYearMonth groupByYearMonth=new GroupByYearMonth(logLines,users);
-		
-		stastistics.add(groupByDay);
-		stastistics.add(groupByYearWeek);
-		stastistics.add(groupByYearMonth);
+		stastistics.add(new GroupByDay(logLines,users));
+		stastistics.add(new GroupByYearWeek(logLines,users));
+		stastistics.add(new GroupByYearMonth(logLines,users));
+		stastistics.add(new GroupByYearQuarter(logLines,users));
+		stastistics.add(new GroupByYear(logLines, users));
+
 		
 	}
 

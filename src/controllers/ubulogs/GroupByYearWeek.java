@@ -25,10 +25,13 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 	@Override
 	public List<YearWeek> getRange(ZonedDateTime start, ZonedDateTime end) {
 		List<YearWeek> list = new ArrayList<>();
-		YearWeek yearWeek = YearWeek.from(start);
-		list.add(yearWeek);
-		for (; yearWeek.isBefore(YearWeek.from(end)); yearWeek = yearWeek.plusWeeks(1)) {
-			list.add(yearWeek);
+
+		for (YearWeek yearWeekStart = YearWeek.from(start), yearWeekEnd = YearWeek.from(end);
+				yearWeekStart.isBefore(yearWeekEnd) || yearWeekStart.equals(yearWeekEnd);
+				yearWeekStart = yearWeekStart.plusWeeks(1)) {
+			
+			list.add(yearWeekStart);
+			
 		}
 		return list;
 	}
@@ -45,7 +48,7 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 
 	@Override
 	public TypeTimes getTypeTime() {
-		return TypeTimes.WEEK_OF_THE_YEAR;
+		return TypeTimes.YEAR_WEEK;
 	}
 
 }

@@ -56,7 +56,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 						Collectors.groupingBy(LogLine::getComponent,
 								Collectors.groupingBy(getGroupByFunction(), Collectors.counting()))));
 		
-		logger.info("Contador de logs para" + getTypeTime() + ": " + counts);
+		logger.info("Contador de logs para " + getTypeTime() + ": " + counts);
 		
 	}
 
@@ -97,7 +97,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 				}
 			}
 		}
-		logger.info("Estadisticas de todos los usuarios del curso para " + components + " y " + groupByRange + ":\n"
+		logger.info("Estadisticas de todos los usuarios del curso para components" + components + " y " + groupByRange + ":\n"
 				+ statistics);
 
 	}
@@ -106,7 +106,6 @@ public abstract class GroupByAbstract<T> implements Serializable {
 			ZonedDateTime end) {
 
 		List<T> range = this.getRange(start, end);
-		System.out.println(range);
 
 		generateStatistics(components, range);
 		

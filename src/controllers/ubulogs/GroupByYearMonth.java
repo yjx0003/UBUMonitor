@@ -24,11 +24,13 @@ public class GroupByYearMonth extends GroupByAbstract<YearMonth> {
 	@Override
 	public List<YearMonth> getRange(ZonedDateTime start, ZonedDateTime end) {
 		List<YearMonth> list = new ArrayList<>();
-		YearMonth yearMonth = YearMonth.from(start);
-		list.add(yearMonth);
-		for (; yearMonth.isBefore(YearMonth.from(end)); yearMonth = yearMonth.plusMonths(1)) {
-
-			list.add(yearMonth);
+		
+		for (YearMonth yearMonthStart = YearMonth.from(start),yearMonthEnd=YearMonth.from(end);
+				yearMonthStart.isBefore(yearMonthEnd) || yearMonthStart.equals(yearMonthEnd);
+				yearMonthStart = yearMonthStart.plusMonths(1)) {
+			
+			list.add(yearMonthStart);
+			
 		}
 		return list;
 	}

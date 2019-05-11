@@ -1,5 +1,6 @@
 package controllers.ubulogs;
 
+import java.awt.Color;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,13 +80,11 @@ public class StackedBarDataset {
 
 	private void setRandomColors() {
 		componentColors = new HashMap<>();
-		Random rand = new Random();
-		for (Component component : selectedComponents) {
-			int r = rand.nextInt(256);
-			int g = rand.nextInt(256);
-			int b = rand.nextInt(256);
-			int[] array = { r, g, b };
-			componentColors.put(component, array);
+
+		for ( float i=0,n=selectedComponents.size();i<n;i++) {
+			Color c = new Color(Color.HSBtoRGB(i/n, 1.0f, 1.0f));
+			int[] array = { c.getRed(), c.getGreen(), c.getBlue() };
+			componentColors.put(selectedComponents.get((int)i), array);
 		}
 
 	}

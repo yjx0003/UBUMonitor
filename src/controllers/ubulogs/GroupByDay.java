@@ -32,10 +32,14 @@ public class GroupByDay extends GroupByAbstract<LocalDate> {
 	public List<LocalDate> getRange(ZonedDateTime start, ZonedDateTime end) {
 		List<LocalDate> list = new ArrayList<>();
 		
-		LocalDate l = start.toLocalDate();
-		list.add(l);
-		for (; l.isBefore(end.toLocalDate()); l = l.plusDays(1)) {
-			list.add(l);
+		
+	
+		for (LocalDate lStart = start.toLocalDate(),lEnd=end.toLocalDate();
+				lStart.isBefore(lEnd) || lStart.equals(lEnd);
+				lStart = lStart.plusDays(1)) {
+			
+			list.add(lStart);
+			
 		}
 		return list;
 	}

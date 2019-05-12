@@ -102,7 +102,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 	}
 
-	public Map<Component, List<Long>> getComponentsMeans(List<Component> components, ZonedDateTime start,
+	public Map<Component, List<Double>> getComponentsMeans(List<Component> components, ZonedDateTime start,
 			ZonedDateTime end) {
 
 		List<T> range = this.getRange(start, end);
@@ -112,13 +112,13 @@ public abstract class GroupByAbstract<T> implements Serializable {
 		
 		
 
-		Map<Component, List<Long>> results = new LinkedHashMap<>(); // importa el orden de insercion
+		Map<Component, List<Double>> results = new LinkedHashMap<>(); // importa el orden de insercion
 		for (Component component : components) {
-			List<Long> means = new ArrayList<>();
+			List<Double> means = new ArrayList<>();
 			Map<T, DescriptiveStatistics> componentStatistics = statistics.get(component);
 			for (T typeTime : range) {
 				DescriptiveStatistics descriptiveStatistics = componentStatistics.get(typeTime);
-				means.add((long) descriptiveStatistics.getMean());
+				means.add(descriptiveStatistics.getMean());
 			}
 			results.put(component, means);
 
@@ -159,4 +159,11 @@ public abstract class GroupByAbstract<T> implements Serializable {
 	public String toString() {
 		return getTypeTime().toString();
 	}
+	
+	
+	@Override
+	public boolean equals(Object obj) {
+		return getTypeTime().equals(obj);
+	}
+	
 }

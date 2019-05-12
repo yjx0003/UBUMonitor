@@ -247,7 +247,7 @@ public class WelcomeController implements Initializable {
 							new Locale(controller.getUser().getLang()));
 					creatorGradeItems.createGradeItems(controller.getActualCourse().getId());
 
-					updateMessage("Actualizando el log"); //TODO internacionalizar el mensaje
+					updateMessage(controller.getResourceBundle().getString("label.updatinglog"));
 					if (isFileCacheExists) {
 						Logs logs = LogCreator.createCourseLog();
 						controller.getActualCourse().setLogs(logs);

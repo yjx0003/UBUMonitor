@@ -4,9 +4,12 @@ import java.io.Serializable;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import controllers.ubulogs.logcreator.Component;
 
 public class Logs implements Serializable{
 
@@ -65,6 +68,14 @@ public class Logs implements Serializable{
 
 	public boolean isEmpty(List<LogLine> logLines) {
 		return logLines == null || logLines.isEmpty();
+	}
+	
+	public List<Component> getUniqueComponents(){
+		return logLines.stream()
+				.map(LogLine::getComponent)
+				.distinct()
+				.sorted()
+				.collect(Collectors.toList());
 	}
 
 	@Override

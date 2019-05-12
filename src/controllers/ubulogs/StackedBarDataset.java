@@ -1,13 +1,14 @@
 package controllers.ubulogs;
 
 import java.awt.Color;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -21,6 +22,10 @@ public class StackedBarDataset {
 
 	static final Logger logger = LoggerFactory.getLogger(StackedBarDataset.class);
 	private Controller controller = Controller.getInstance();
+	/**
+	 * Nivel de opacidad para el color de fondo de las barras
+	 */
+	private static final float OPACITY_BAR = 0.3f;
 
 	private List<EnrolledUser> selectedUsers = new ArrayList<>();
 	private List<Component> selectedComponents = new ArrayList<>();
@@ -29,6 +34,15 @@ public class StackedBarDataset {
 	private ZonedDateTime start;
 	private ZonedDateTime end;
 	private StringBuilder stringBuilder;
+
+	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat();
+	{
+		DecimalFormatSymbols decimalFormatSymbols = DECIMAL_FORMAT.getDecimalFormatSymbols();
+		decimalFormatSymbols.setDecimalSeparator('.');
+		DECIMAL_FORMAT.setDecimalFormatSymbols(decimalFormatSymbols);
+		DECIMAL_FORMAT.setMaximumFractionDigits(2);
+		DECIMAL_FORMAT.setMinimumFractionDigits(2);
+	}
 	/**
 	 * static Singleton instance.
 	 */
@@ -57,6 +71,10 @@ public class StackedBarDataset {
 	public String createDataset(List<EnrolledUser> selectedUsers,
 			List<Component> selectedComponents, GroupByAbstract<?> groupBy, ZonedDateTime start, ZonedDateTime end) {
 
+		if(isSameUsersAndComponents(selectedUsers, selectedComponents,groupBy,start,end)) {
+			return stringBuilder.toString();
+		}
+		
 		this.selectedUsers = selectedUsers;
 		this.selectedComponents = selectedComponents;
 		this.groupBy = groupBy;
@@ -70,7 +88,7 @@ public class StackedBarDataset {
 		setLabels();
 		setDatasets();
 		stringBuilder.append("}");
-		
+
 		return stringBuilder.toString();
 	}
 
@@ -81,10 +99,10 @@ public class StackedBarDataset {
 	private void setRandomColors() {
 		componentColors = new HashMap<>();
 
-		for ( float i=0,n=selectedComponents.size();i<n;i++) {
-			Color c = new Color(Color.HSBtoRGB(i/n, 1.0f, 1.0f));
+		for (int i = 0, n = selectedComponents.size(); i < n; i++) {
+			Color c = new Color(Color.HSBtoRGB(i / (float) n, 0.8f, 1.0f));
 			int[] array = { c.getRed(), c.getGreen(), c.getBlue() };
-			componentColors.put(selectedComponents.get((int)i), array);
+			componentColors.put(selectedComponents.get(i), array);
 		}
 
 	}
@@ -106,22 +124,27 @@ public class StackedBarDataset {
 	 */
 	private void setMeanComponents() {
 
-		Map<Component, List<Long>> meanComponents = groupBy.getComponentsMeans(selectedComponents, start, end);
+		Map<Component, List<Double>> meanComponents = groupBy.getComponentsMeans(selectedComponents, start, end);
 
-		for (Entry<Component, List<Long>> entry : meanComponents.entrySet()) {
+		for (Entry<Component, List<Double>> entry : meanComponents.entrySet()) {
 			Component component = entry.getKey();
-			List<Long> data = entry.getValue();
+			List<Double> data = entry.getValue();
+			// convertimos el valor double en string limitado a dos decimales
+			List<String> dataString = data.stream()
+					.map(d -> DECIMAL_FORMAT.format(d))
+					.collect(Collectors.toList());
+
 			int[] color = componentColors.get(component);
 
 			stringBuilder.append("{");
 			stringBuilder.append(
-					"label:['" + escapeJavaScriptText(controller.getResourceBundle().getString("chart.mean") + " "
-							+ translateComponent(component)) + "'],");
-			stringBuilder.append("type:'line',");
+					"label:'" + escapeJavaScriptText(controller.getResourceBundle().getString("chart.mean") + " "
+							+ translateComponent(component)) + "',");
+			stringBuilder.append("type: 'line',");
 			stringBuilder.append("borderWidth: 2,");
-			stringBuilder.append("fill:false,");
+			stringBuilder.append("fill: false,");
 			stringBuilder.append("borderColor: 'rgb(" + color[0] + ", " + color[1] + "," + color[2] + ")',");
-			stringBuilder.append("data: [" + join(data) + "]");
+			stringBuilder.append("data: [" + join(dataString) + "]");
 			stringBuilder.append("},");
 		}
 
@@ -140,10 +163,10 @@ public class StackedBarDataset {
 				List<Long> data = componentDataset.get(component);
 
 				bar.append("{");
-				bar.append("label:['" + escapeJavaScriptText(translateComponent(component)) + "', '"
-						+ escapeJavaScriptText(user.toString()) + "'],");
+				bar.append("label:'" + escapeJavaScriptText(translateComponent(component)) + "',");
 				bar.append("stack: '" + escapeJavaScriptText(user.toString()) + "',");
-				bar.append("backgroundColor:'rgba(" + color[0] + ", " + color[1] + "," + color[2] + ",0.6)',");
+				bar.append("backgroundColor: 'rgba(" + color[0] + ", " + color[1] + "," + color[2] + "," + OPACITY_BAR
+						+ ")',");
 				bar.append("data: [" + join(data) + "]");
 				bar.append("}");
 
@@ -153,7 +176,7 @@ public class StackedBarDataset {
 		stringBuilder.append(join(datasets));
 	}
 
-	private String joinWithQuotes(List<String > list) {
+	private String joinWithQuotes(List<String> list) {
 		// https://stackoverflow.com/a/18229122
 		return list.stream()
 				.map(s -> "'" + s + "'")
@@ -174,7 +197,11 @@ public class StackedBarDataset {
 		stringBuilder.append("labels:[" + stringLabels + "],");
 	}
 
-	public boolean isSameUsersAndComponents(List<EnrolledUser> selectedUsers, List<Component> selectedComponents) {
-		return this.selectedUsers.equals(selectedUsers) && this.selectedComponents.equals(selectedComponents);
+	public boolean isSameUsersAndComponents(List<EnrolledUser> selectedUsers, List<Component> selectedComponents, GroupByAbstract<?> groupBy, ZonedDateTime start, ZonedDateTime end) {
+		return this.selectedUsers.equals(selectedUsers) 
+				&& this.selectedComponents.equals(selectedComponents) 
+				&& (this.groupBy!=null && this.groupBy.equals(groupBy)
+				&& (this.start !=null && this.start.equals(start)
+				&& (this.end!=null && this.end.equals(end))));
 	}
 }

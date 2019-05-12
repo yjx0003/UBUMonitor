@@ -215,38 +215,52 @@ var optionsRadarChart = {
 
 
 var optionsStackedBar= {
-		title: {
-			display: true,
-			text: ""
-		},
-		tooltips: {
-			position:'nearest',
-			mode: "x",
-			callbacks: {
-				label: function(tooltipItem, data) {
-	     					return data.datasets[tooltipItem.datasetIndex].label[0] + " : "+tooltipItem.yLabel;
-						},
-				afterTitle: function(tooltipItem,data){
-	 							return data.datasets[tooltipItem[0].datasetIndex].stack;
-							}
+	maintainAspectRatio: false,
+	responsive: true,
+	animation: {
+        duration: 0, // general animation time
+    },
+	tooltips: {
+		mode: 'x',
+		callbacks: {
+			label: function(tooltipItem, data) {
+				return data.datasets[tooltipItem.datasetIndex].label + " : " + tooltipItem.yLabel;
+			},
+			afterTitle: function(tooltipItem, data) {
+				return data.datasets[tooltipItem[0].datasetIndex].stack;
 			}
-		},
-		scales: {
-			xAxes: [{
-				stacked: true,
-			}],
-			yAxes: [{
-				stacked: true
-			}]
-		},
-		legend: {
-			labels: {
-		     	filter: function(legendItem, chartData) {
-				     		//mostramos en la leyenda los que son lineas
-				       		return chartData.datasets[legendItem.datasetIndex].type == "line"; 
-		      			}
-		   	}
 		}
+	},
+	scales: {
+		xAxes: [{
+			stacked: true,
+		}],
+		yAxes: [{
+			gridLines: {
+				display: false,
+			},
+			ticks: {
+                beginAtZero:true,
+            },//ticks
+			stacked: true
+		}]
+	},
+	legend: {
+		display: true,
+		position: 'bottom',
+		labels: {
+			padding: 20,
+			usePointStyle: true,
+			fontSize: 12,
+			fontColor: 'rgba(0, 0, 0, 1)',
+			fontFamily: 'sans-serif',
+			filter: function(legendItem, chartData) {
+				//mostramos en la leyenda los que son lineas
+				return chartData.datasets[legendItem.datasetIndex].type == "line";
+			}//filter
+		}//labels
+	} //legend
+
 }
 
 //------------------------------------------Variables globales-------------------------------------------------------------
@@ -597,6 +611,17 @@ function exportCurrentElemet() {
 		return myChart.toBase64Image();
 	}
 }
+
+function updateStackedChart(dataset){
+	myChart.destroy();
+	myChart = new Chart(ctx,{
+		type: 'bar',
+		data: dataset,
+		options: optionsStackedBar
+	});
+}
+
+
 // Plugin que nos permite establecer el color de fondo del gráfico
 // el color se define en opciones->chartArea->backgroundColor
 Chart.pluginService.register({

@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,6 +23,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
@@ -35,6 +37,7 @@ import controllers.ubulogs.StackedBarDataset;
 import controllers.ubulogs.logcreator.Component;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -201,11 +204,16 @@ public class MainController implements Initializable {
 			webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
 			webViewChartsEngine = webViewCharts.getEngine();
 
+			webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html").toExternalForm());
+			// Comprobamos cuando se carga la pagina para traducirla
+			webViewChartsEngine.getLoadWorker().stateProperty()
+					.addListener((ov, oldState, newState) -> webViewChartsEngine.executeScript(
+							"setLanguage('" + controller.getResourceBundle().getLocale() + "')"));
+
 			initLogOptionsFilter();
 
 			initTabGrades();
 			initTabLogs();
-			initListViewComponents();
 
 			//////////////////////////////////////////////////////////////////////////
 			// Manejo de roles (MenuButton Rol):
@@ -342,7 +350,8 @@ public class MainController implements Initializable {
 			// Generamos el gráfico con los elementos selecionados
 
 			listParticipants.getSelectionModel().getSelectedItems()
-					.addListener((Change<? extends EnrolledUser> usersSelected) -> updateGradesChart());
+					.addListener(
+							(ListChangeListener.Change<? extends EnrolledUser> usersSelected) -> updateGradesChart());
 
 			/// Mostramos la lista de participantes
 			listParticipants.setItems(enrList);
@@ -397,8 +406,9 @@ public class MainController implements Initializable {
 		choiceBoxDate.setItems(typeTimes);
 		choiceBoxDate.getSelectionModel().selectFirst();
 		selectedChoiceBoxDate = choiceBoxDate.getValue();
-
-		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> enableFilterLogButton());
+		
+		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> {enableFilterLogButton(selectedChoiceBoxDate,
+				newValue,dateStart, datePickerStart.getValue(), dateEnd, datePickerEnd.getValue());System.out.println(ov);});
 
 		// traduccion de los elementos del choicebox
 		choiceBoxDate.setConverter(new StringConverter<GroupByAbstract<?>>() {
@@ -419,35 +429,32 @@ public class MainController implements Initializable {
 		dateStart = datePickerStart.getValue();
 		dateEnd = datePickerEnd.getValue();
 
-		datePickerStart.valueProperty().addListener((ov, oldValue, newValue) -> enableFilterLogButton());
-		datePickerEnd.valueProperty().addListener((ov, oldValue, newValue) -> enableFilterLogButton());
+
+		datePickerStart.valueProperty()
+				.addListener((ov, oldValue, newValue) -> enableFilterLogButton(selectedChoiceBoxDate,
+						choiceBoxDate.getValue(), dateStart, newValue, dateEnd, datePickerEnd.getValue()));
+
+		datePickerEnd.valueProperty()
+				.addListener((ov, oldValue, newValue) -> enableFilterLogButton(selectedChoiceBoxDate,
+						choiceBoxDate.getValue(),dateStart, datePickerStart.getValue(), dateEnd, newValue));
 
 		filterLogButton.setDisable(true);
 
+		optionsUbuLogs.setVisible(false);
+		optionsUbuLogs.setManaged(false);
+
 	}
 
-	private void enableFilterLogButton() {
-		if (choiceBoxDate.getValue().equals(selectedChoiceBoxDate) && datePickerStart.getValue().equals(dateStart)
-				&& datePickerEnd.getValue().equals(dateEnd)) {
+	private void enableFilterLogButton(GroupByAbstract<?> groupByOld, GroupByAbstract<?> groupByNew,
+			LocalDate dateStartOld, LocalDate dateStartNew, LocalDate dateEndOld, LocalDate dateEndNew) {
+		if (groupByOld.equals(groupByNew)
+				&& dateStartOld.equals(dateStartNew)
+				&& dateEndOld.equals(dateEndNew)) {
+
 			filterLogButton.setDisable(true);
 		} else {
 			filterLogButton.setDisable(false);
 		}
-	}
-
-	public void initListViewComponents() {
-		ObservableList<Component> observableListComponents = FXCollections.observableArrayList(Component.values());
-		filterComponents = new FilteredList<>(observableListComponents);
-		listViewComponents.setItems(filterComponents);
-		listViewComponents.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
-		listViewComponents.getSelectionModel().getSelectedItems()
-				.addListener((Change<? extends Component> c) -> changeComponentList());
-	}
-
-	private void changeComponentList() {
-		// TODO Auto-generated method stub
-
 	}
 
 	/**
@@ -456,8 +463,6 @@ public class MainController implements Initializable {
 	public void initTabLogs() {
 
 		tabUbuLogs.setOnSelectionChanged(event -> setTablogs(event));
-		optionsUbuLogs.setVisible(false);
-		optionsUbuLogs.setManaged(false);
 
 		// ponemos un listener al cuadro de texto para que se filtre el list view en
 		// tiempo real
@@ -471,6 +476,26 @@ public class MainController implements Initializable {
 			});
 		}));
 
+		initListViewComponents();
+	}
+
+	public void initListViewComponents() {
+		ResourceBundle rb = controller.getResourceBundle();
+
+		List<Component> uniqueComponents = controller.getActualCourse().getLogs().getUniqueComponents();
+
+		// Ordenamos los componentes segun los nombres internacionalizados
+		Collections.sort(uniqueComponents,
+				(c1, c2) -> rb.getString("component." + c1).compareTo(rb.getString("component." + c2)));
+
+		ObservableList<Component> observableListComponents = FXCollections.observableArrayList(uniqueComponents);
+		filterComponents = new FilteredList<>(observableListComponents);
+		listViewComponents.setItems(filterComponents);
+		listViewComponents.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+		listViewComponents.getSelectionModel().getSelectedItems()
+				.addListener((Change<? extends Component> c) -> changeComponentList(c.getList()));
+
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
 		listViewComponents.setCellFactory(callback -> new ListCell<Component>() {
@@ -482,7 +507,7 @@ public class MainController implements Initializable {
 					setText(null);
 					setGraphic(null);
 				} else {
-					setText(controller.getResourceBundle().getString("component." + component));
+					setText(rb.getString("component." + component));
 					try {
 						Image image = new Image("/img/" + component + ".png");
 						setGraphic(new ImageView(image));
@@ -494,6 +519,11 @@ public class MainController implements Initializable {
 				}
 			}
 		});
+
+	}
+
+	private void changeComponentList(ObservableList<? extends Component> changedComponentList) {
+
 	}
 
 	public void setTablogs(Event event) {
@@ -508,10 +538,9 @@ public class MainController implements Initializable {
 	}
 
 	public void initTabGrades() {
-
-		setTabGrades(null);
 		tabPane.getSelectionModel().select(tabUbuGrades);
 		tabUbuGrades.setOnSelectionChanged(event -> setTabGrades(event));
+
 	}
 
 	public void setTabGrades(Event event) {
@@ -519,11 +548,8 @@ public class MainController implements Initializable {
 			return;
 		}
 
-		webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html").toExternalForm());
-		// Comprobamos cuando se carga la pagina para traducirla
-		webViewChartsEngine.getLoadWorker().stateProperty()
-				.addListener((ov, oldState, newState) -> webViewChartsEngine.executeScript(
-						"setLanguage('" + controller.getResourceBundle().getLocale() + "')"));
+		// TODO
+
 	}
 
 	@FXML
@@ -546,9 +572,13 @@ public class MainController implements Initializable {
 
 		List<EnrolledUser> users = listParticipants.getSelectionModel().getSelectedItems();
 		List<Component> components = listViewComponents.getSelectionModel().getSelectedItems();
+		String dataset = stackedBarDataset.createDataset(users, components, selectedChoiceBoxDate, zonedStart,
+				zonedEnd);
 
-		logger.info("Dataset para el stacked bar de logs en JS: "
-				+ stackedBarDataset.createDataset(users, components, choiceBoxDate.getValue(), zonedStart, zonedEnd));
+		logger.info("Dataset para el stacked bar de logs en JS: " + dataset);
+
+		webViewChartsEngine.executeScript("updateStackedChart(" + dataset + ")");
+
 	}
 
 	/**

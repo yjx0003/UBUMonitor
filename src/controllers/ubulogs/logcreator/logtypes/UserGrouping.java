@@ -4,36 +4,39 @@ import java.util.List;
 
 import model.LogLine;
 /**
- * The reset of the course with id '' has ended.
+ * The user with id '' created the grouping with id ''.
  * 
  * @author Yi Peng Ji
  *
  */
-public class Course extends ReferencesLog {
+public class UserGrouping extends ReferencesLog {
 
+	
 	/**
 	 * static Singleton instance.
 	 */
-	private static Course instance;
+	private static UserGrouping instance;
 
 	/**
 	 * Private constructor for singleton.
 	 */
-	private Course() {
+	private UserGrouping() {
 	}
 
 	/**
-	 * Return a singleton instance of Course.
+	 * Return a singleton instance of UserGrouping.
 	 */
-	public static Course getInstance() {
+	public static UserGrouping getInstance() {
 		if (instance == null) {
-			instance = new Course();
+			instance = new UserGrouping();
 		}
 		return instance;
 	}
+	
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
-		// La id del curso se ignora de momento
+		setUserById(log, ids.get(0));
+		//TODO grouping id
 
 	}
 

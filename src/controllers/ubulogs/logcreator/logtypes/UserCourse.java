@@ -50,7 +50,7 @@ public class UserCourse extends ReferencesLog {
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
-		// El curso ya se enlaza al crear el log en createLogWithBasicAttributes de la clase ReferencesLog
+		// La id del curso se ignora de momento
 
 	}
 

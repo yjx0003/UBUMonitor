@@ -39,7 +39,7 @@ public class UserSectionCourse extends ReferencesLog{
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
 		//section id
-		// El curso ya se enlaza al crear el log en createLogWithBasicAttributes de la clase ReferencesLog
+		// La id del curso se ignora de momento
 
 	}
 

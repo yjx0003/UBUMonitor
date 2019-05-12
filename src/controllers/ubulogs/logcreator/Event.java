@@ -70,6 +70,7 @@ public enum Event {
 	RECENT_ACTIVITY_VIEWED("Recent activity viewed"),
 	ROLE_ASSIGNED("Role assigned"),
 	ROLE_UNASSIGNED("Role unassigned"),
+	SCALE_CREATED("Scale created"),
 	SOME_CONTENT_HAS_BEEN_POSTED("Some content has been posted."),
 	STEP_SHOWN("Step shown"),
 	SUBMISSION_CONFIRMATION_FORM_VIEWED("Submission confirmation form viewed."),

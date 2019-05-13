@@ -161,9 +161,5 @@ public abstract class GroupByAbstract<T> implements Serializable {
 	}
 	
 	
-	@Override
-	public boolean equals(Object obj) {
-		return getTypeTime().equals(obj);
-	}
 	
 }

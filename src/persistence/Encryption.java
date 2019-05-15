@@ -17,6 +17,8 @@ import javax.crypto.spec.SecretKeySpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import model.BBDD;
+
 
 
 
@@ -75,5 +77,5 @@ public class Encryption {
 		}
 
 	}
-
+	
 }

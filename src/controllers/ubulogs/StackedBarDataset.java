@@ -25,7 +25,7 @@ public class StackedBarDataset {
 	/**
 	 * Nivel de opacidad para el color de fondo de las barras
 	 */
-	private static final float OPACITY_BAR = 0.3f;
+	private static final float OPACITY_BAR = 0.4f;
 
 	private List<EnrolledUser> selectedUsers = new ArrayList<>();
 	private List<Component> selectedComponents = new ArrayList<>();
@@ -70,11 +70,11 @@ public class StackedBarDataset {
 
 	public String createDataset(List<EnrolledUser> selectedUsers,
 			List<Component> selectedComponents, GroupByAbstract<?> groupBy, ZonedDateTime start, ZonedDateTime end) {
-
-		if(isSameUsersAndComponents(selectedUsers, selectedComponents,groupBy,start,end)) {
+		//si son los mismos parametros devolvemos el creado anteriormente
+		if (isSamesPreviousValue(selectedUsers, selectedComponents, groupBy, start, end)) {
 			return stringBuilder.toString();
 		}
-		
+
 		this.selectedUsers = selectedUsers;
 		this.selectedComponents = selectedComponents;
 		this.groupBy = groupBy;
@@ -100,6 +100,8 @@ public class StackedBarDataset {
 		componentColors = new HashMap<>();
 
 		for (int i = 0, n = selectedComponents.size(); i < n; i++) {
+			
+			//generamos un color a partir de HSB, el hue(H) es el color, saturacion (S), y brillo(B)
 			Color c = new Color(Color.HSBtoRGB(i / (float) n, 0.8f, 1.0f));
 			int[] array = { c.getRed(), c.getGreen(), c.getBlue() };
 			componentColors.put(selectedComponents.get(i), array);
@@ -129,6 +131,7 @@ public class StackedBarDataset {
 		for (Entry<Component, List<Double>> entry : meanComponents.entrySet()) {
 			Component component = entry.getKey();
 			List<Double> data = entry.getValue();
+			
 			// convertimos el valor double en string limitado a dos decimales
 			List<String> dataString = data.stream()
 					.map(d -> DECIMAL_FORMAT.format(d))
@@ -158,15 +161,14 @@ public class StackedBarDataset {
 		for (EnrolledUser user : selectedUsers) {
 			Map<Component, List<Long>> componentDataset = userComponentDataset.get(user);
 			for (Component component : selectedComponents) {
-				int[] color = componentColors.get(component);
+				int[] c = componentColors.get(component);
 				StringBuilder bar = new StringBuilder();
 				List<Long> data = componentDataset.get(component);
 
 				bar.append("{");
 				bar.append("label:'" + escapeJavaScriptText(translateComponent(component)) + "',");
 				bar.append("stack: '" + escapeJavaScriptText(user.toString()) + "',");
-				bar.append("backgroundColor: 'rgba(" + color[0] + ", " + color[1] + "," + color[2] + "," + OPACITY_BAR
-						+ ")',");
+				bar.append("backgroundColor: 'rgba(" + c[0] + ", " + c[1] + "," + c[2] + "," + OPACITY_BAR + ")',");
 				bar.append("data: [" + join(data) + "]");
 				bar.append("}");
 
@@ -197,11 +199,12 @@ public class StackedBarDataset {
 		stringBuilder.append("labels:[" + stringLabels + "],");
 	}
 
-	public boolean isSameUsersAndComponents(List<EnrolledUser> selectedUsers, List<Component> selectedComponents, GroupByAbstract<?> groupBy, ZonedDateTime start, ZonedDateTime end) {
-		return this.selectedUsers.equals(selectedUsers) 
-				&& this.selectedComponents.equals(selectedComponents) 
-				&& (this.groupBy!=null && this.groupBy.equals(groupBy)
-				&& (this.start !=null && this.start.equals(start)
-				&& (this.end!=null && this.end.equals(end))));
+	public boolean isSamesPreviousValue(List<EnrolledUser> selectedUsers, List<Component> selectedComponents,
+			GroupByAbstract<?> groupBy, ZonedDateTime start, ZonedDateTime end) {
+		return this.selectedUsers.equals(selectedUsers)
+				&& this.selectedComponents.equals(selectedComponents)
+				&& (this.groupBy != null && this.groupBy.equals(groupBy)
+						&& (this.start != null && this.start.equals(start)
+								&& (this.end != null && this.end.equals(end))));
 	}
 }

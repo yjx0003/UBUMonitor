@@ -21,6 +21,10 @@ var messages = {
 		es: "Calificaciones",
 		en: "Grades"
 	},
+	btnStackedBar:{
+		es:"Barras Apiladas",
+		en:"Stacked Bar"
+	},
 	btnLegend: {
 		es: "Leyenda",
 		en: "Legend"

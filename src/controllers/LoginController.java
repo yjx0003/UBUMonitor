@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controllers.ubugrades.CreatorUBUGradesController;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -73,6 +74,16 @@ public class LoginController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		initializeProperties();
+
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				if (txtUsername != null && !txtUsername.getText().equals("")) {
+					txtPassword.requestFocus(); // si hay texto cargado del usuario cambiamos el focus al texto de password
+				}
+			}
+		});
+
 		ObservableList<Languages> languages = FXCollections.observableArrayList(Languages.values());
 		languageSelector.setItems(languages);
 		languageSelector.setValue(controller.getSelectedLanguage());
@@ -93,11 +104,13 @@ public class LoginController implements Initializable {
 		createPropertiesIfNotExist();
 		File file = new File(PROPERTIES_PATH);
 		if (!file.exists()) {
+
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
 				logger.error("No se ha podido crear el fichero properties: " + PROPERTIES_PATH);
 			}
+
 		} else { // si existe el fichero properties inicializamos los valores
 			try (InputStream in = new FileInputStream(file)) {
 
@@ -106,6 +119,7 @@ public class LoginController implements Initializable {
 				txtUsername.setText(properties.getProperty("username"));
 				chkSaveUsername.setSelected(Boolean.parseBoolean(properties.getProperty("saveUsername")));
 				chkSaveHost.setSelected(Boolean.parseBoolean(properties.getProperty("saveHost")));
+
 			} catch (IOException e) {
 				logger.error("No se ha podido cargar " + PROPERTIES_PATH);
 			}
@@ -127,7 +141,7 @@ public class LoginController implements Initializable {
 		properties.setProperty("host", host);
 		properties.setProperty("saveHost", Boolean.toString(chkSaveHost.isSelected()));
 
-		File file=new File(PROPERTIES_PATH);
+		File file = new File(PROPERTIES_PATH);
 		try (FileOutputStream out = new FileOutputStream(file)) {
 			properties.store(out, null);
 

@@ -71,20 +71,20 @@ public class Controller {
 		setDefaultBBDD(BBDD);
 
 		// Si no existe el recurso de idioma especificado cargamos el Español
+		Languages lang = Languages.getLanguageByLocale(Locale.getDefault());
 		try {
-			Languages lang = Languages.getLanguageByLocale(Locale.getDefault());
+			
 			if (lang == null) {
-				logger.info("No existe fichero de idioma para: " + Locale.getDefault());
+				logger.info("No existe fichero de idioma para: " + Locale.getDefault().getLanguage());
 				logger.info("Cargando idioma: " + Languages.SPANISH);
 				setSelectedLanguage(Languages.SPANISH);
 			} else {
 				setSelectedLanguage(lang);
 			}
-			resourceBundle = ResourceBundle.getBundle(RESOURCE_FILE_NAME);
 
 		} catch (NullPointerException | MissingResourceException e) {
 			logger.error(
-					"No se ha podido encontrar el recurso de idioma, cargando idioma " + Languages.SPANISH + ": {}", e);
+					"No se ha podido encontrar el recurso de idioma, cargando idioma " + lang + ": {}", e);
 			setSelectedLanguage(Languages.SPANISH);
 		}
 	}

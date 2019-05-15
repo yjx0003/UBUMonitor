@@ -32,6 +32,8 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.javafx.webkit.WebConsoleListener;
+
 import controllers.ubulogs.GroupByAbstract;
 import controllers.ubulogs.StackedBarDataset;
 import controllers.ubulogs.logcreator.Component;
@@ -210,6 +212,14 @@ public class MainController implements Initializable {
 					.addListener((ov, oldState, newState) -> webViewChartsEngine.executeScript(
 							"setLanguage('" + controller.getResourceBundle().getLocale() + "')"));
 
+			//
+			WebConsoleListener.setDefaultListener(new WebConsoleListener(){
+			    @Override
+			    public void messageAdded(WebView webView, String message, int lineNumber, String sourceId) {
+			       logger.error("Consola error JS: [" + sourceId + ":" + lineNumber + "] " + message);
+			    }
+			});
+			
 			initLogOptionsFilter();
 
 			initTabGrades();

@@ -34,16 +34,17 @@ public enum Languages {
 
 	Languages(String lang, String code) {
 		this.lang = lang;
-		this.code = code;
 		this.locale = new Locale(code);
+		this.code = locale.getLanguage();
 	}
 
 	public static Languages getLanguageByCode(String code) {
-		return codeMap.get(code);
+		return codeMap.get(new Locale(code).getLanguage());
 	}
 	
 	public static Languages getLanguageByLocale(Locale locale) {
-		return localeMap.get(locale);
+		//si no existe el locale con el lenguaje y pais, se devuelve el un locale solo con el lenguaje
+		return localeMap.getOrDefault(locale,getLanguageByCode(locale.getLanguage()));
 	}
 
 	public String getLanguage() {

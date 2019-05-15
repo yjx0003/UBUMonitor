@@ -20,7 +20,9 @@
 	<input type="button" value="Radar" class="btn" id="btnRadar" onclick="generateChart('radar')"/>
 	<input type="button" value="BoxPlot General" class="btn" id="btnBoxPlot" onclick="generateChart('boxplot')"/>
 	<input type="button" value="BoxPlot Del Grupo" class="btn" id="btnBoxPlotGroup" onclick="generateChart('boxplotgroup')"/>
+	<input type="button" value="Barras Apiladas" class="btn" id="btnStackedBar" onclick="generateChart('stackedBar')"/>
 	<input type="button" value="Calificaciones" class="btn" id="btnCalificaciones" onclick="drawTable()"/>
+
 </div>
 
 <div class="opciones">
@@ -220,6 +222,11 @@ var optionsStackedBar= {
 	animation: {
         duration: 0, // general animation time
     },
+	elements: {
+		line: {
+			tension: 0 //at 0 disable bezier curves, better performance
+		}
+	}, //elements
 	tooltips: {
 		mode: 'x',
 		callbacks: {
@@ -231,20 +238,20 @@ var optionsStackedBar= {
 			}
 		}
 	},
-	scales: {
-		xAxes: [{
-			stacked: true,
-		}],
-		yAxes: [{
-			gridLines: {
-				display: false,
-			},
-			ticks: {
+	scales:{
+        xAxes: [{
+            stacked: true,
+        }],
+        yAxes: [{
+            stacked: true,
+            gridLines: {
+                display:false
+            },
+            ticks: {
                 beginAtZero:true,
-            },//ticks
-			stacked: true
-		}]
-	},
+            }
+        }]
+    },
 	legend: {
 		display: true,
 		position: 'bottom',
@@ -272,6 +279,7 @@ var RadarDataSet = '';
 var BoxPlotGeneralDataSet = '';
 var BoxPlotGroupDataSet = '';
 var TableDataSet = '';
+var StackedBarDataSet= '';
 //
 var GeneralMeanActive = false;
 var GroupMeanActive = false;
@@ -354,14 +362,19 @@ function generateChart(type){
 	document.getElementById('noGroup').style.display = 'none';
 	document.getElementById('btnLegend').style.display = 'inline';
 	
+	document.getElementById('btnLineas').disabled = false;
+	document.getElementById('btnRadar').disabled = false;
+	document.getElementById('btnBoxPlot').disabled = false;
+	document.getElementById('btnBoxPlotGroup').disabled = false;
+	document.getElementById('btnCalificaciones').disabled = false;
+	
+	document.getElementById('btnStackedBar').disabled = false;
+	
+	currentType = type;
 	switch (type) {
 		case 'line':
-			currentType = 'line';
 			document.getElementById('btnLineas').disabled = true;
-			document.getElementById('btnRadar').disabled = false;
-			document.getElementById('btnBoxPlot').disabled = false;
-			document.getElementById('btnBoxPlotGroup').disabled = false;
-			document.getElementById('btnCalificaciones').disabled = false;
+
 			document.getElementById('btnMean').style.display = 'inline';
 			document.getElementById('btnGroupMean').style.display = 'inline';
 			if(GeneralMeanActive){showGeneralMean();}
@@ -382,12 +395,9 @@ function generateChart(type){
 			});
 			break;
 		case 'boxplot':
-			currentType = 'boxplot';
-			document.getElementById('btnLineas').disabled = false;
-			document.getElementById('btnRadar').disabled = false;
+		
 			document.getElementById('btnBoxPlot').disabled = true;
-			document.getElementById('btnBoxPlotGroup').disabled = false;
-			document.getElementById('btnCalificaciones').disabled = false;
+
 			document.getElementById('btnMean').style.display = 'none';
 			document.getElementById('btnGroupMean').style.display = 'none';
 			if(GeneralMeanActive){showGeneralMean();}
@@ -400,12 +410,7 @@ function generateChart(type){
 			});
 			break;
 		case 'boxplotgroup':
-			currentType = 'boxplotgroup';
-			document.getElementById('btnLineas').disabled = false;
-			document.getElementById('btnRadar').disabled = false;
-			document.getElementById('btnBoxPlot').disabled = false;
 			document.getElementById('btnBoxPlotGroup').disabled = true;
-			document.getElementById('btnCalificaciones').disabled = false;
 			document.getElementById('btnMean').style.display = 'none';
 			document.getElementById('btnGroupMean').style.display = 'none';
 			if(GeneralMeanActive){showGeneralMean();}
@@ -422,12 +427,7 @@ function generateChart(type){
 			}
 			break;
 		case 'radar':
-			currentType = 'radar';
-			document.getElementById('btnLineas').disabled = false;
 			document.getElementById('btnRadar').disabled = true;
-			document.getElementById('btnBoxPlot').disabled = false;
-			document.getElementById('btnBoxPlotGroup').disabled = false;
-			document.getElementById('btnCalificaciones').disabled = false;
 			document.getElementById('btnMean').style.display = 'inline';
 			document.getElementById('btnGroupMean').style.display = 'inline';
 			if(GeneralMeanActive){showGeneralMean();}
@@ -451,6 +451,18 @@ function generateChart(type){
 				document.getElementById('noradar').style.display = 'block';
 			}
 			break;
+		case 'stackedBar':
+			document.getElementById('btnStackedBar').disabled = true;
+			myChart.destroy();
+			myChart = new Chart(ctx,{
+				type: 'bar',
+				data: StackedBarDataSet,
+				options: optionsStackedBar
+			});
+			break;
+			
+			
+				
 	}
 	myChart.update();
 }
@@ -516,6 +528,12 @@ function updateChart(type, dataSet){
 					}
 				}
 				break;
+			case 'stackedBar':
+				StackedBarDataSet=dataset;
+				if(currentType == 'stackedBar'){
+					myChart.data=StackedDataSet;
+				}
+
 		}
 		myChart.update();
 	}

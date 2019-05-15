@@ -26,7 +26,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -34,10 +36,13 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.BBDD;
@@ -59,7 +64,6 @@ public class WelcomeController implements Initializable {
 	private String directoryObject;
 	private Controller controller = Controller.getInstance();
 	private boolean isFileCacheExists;
-	
 
 	@FXML
 	private Label lblUser;
@@ -77,6 +81,8 @@ public class WelcomeController implements Initializable {
 	private Label lblDateUpdate;
 	@FXML
 	private CheckBox chkUpdateData;
+	
+	private boolean isBBDDLoaded=false;
 
 	/**
 	 * Función initialize. Muestra la lista de cursos del usuario introducido.
@@ -140,52 +146,108 @@ public class WelcomeController implements Initializable {
 			lblNoSelect.setText(controller.getResourceBundle().getString("error.nocourse"));
 			return;
 		}
-		
+
 		logger.info(" Curso seleccionado: " + selectedCourse.getFullName());
 
 		if (chkUpdateData.isSelected()) {
 			if (!isFileCacheExists) {
-				loadData();
-			}else {
-				BBDD copia=new BBDD(controller.getDefaultBBDD());
+				loadData(controller.getPassword());
+			} else {
+				BBDD copia = new BBDD(controller.getDefaultBBDD());
 				controller.setBBDD(copia);
 				controller.setActualCourse(selectedCourse);
+				isBBDDLoaded=true;
 			}
-
 			downloadData();
-
 		} else {
-
-			loadData();
+			loadData(controller.getPassword());
 			loadNextWindow();
 		}
-		
+
 	}
 
 	private void saveData() {
+		
+		if(!isBBDDLoaded) {
+			return;
+		}
+		
 		File f = new File(directoryObject);
 		if (!f.isDirectory()) {
 			logger.info("No existe el directorio, se va a crear: {}", directoryObject);
 			f.mkdirs();
 		}
-
 		logger.info("Guardando los datos encriptados en: {}", f.getAbsolutePath());
 		Encryption.encrypt(controller.getPassword(),
 				directoryObject + listCourses.selectionModelProperty().getValue().getSelectedItem(),
 				controller.getBBDD());
 
 	}
-
-	private void loadData() {
-		BBDD BBDD = (BBDD) Encryption.decrypt(controller.getPassword(),
+	private void loadData(String password) {
+		
+		BBDD BBDD = (BBDD) Encryption.decrypt(password,
 				directoryObject + listCourses.selectionModelProperty().getValue().getSelectedItem());
 		if (BBDD != null) {
+			
 			controller.setBBDD(BBDD);
+			isBBDDLoaded=true;
+		} else {
+			
+			previusPasswordWindow();
+
+		}
+
+	}
+
+	private void previusPasswordWindow() {
+		Dialog<String> dialog = new Dialog<>();
+		dialog.setTitle("Modificado contraseña");
+		dialog.setHeaderText(
+				"Se ha detectado un cambio de contraseña\nFecha de contraseña anterior: " + lblDateUpdate.getText());
+
+		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
+
+		PasswordField pwd = new PasswordField();
+		HBox content = new HBox();
+		content.setAlignment(Pos.CENTER);
+		content.setSpacing(10);
+		content.getChildren().addAll(new Label("Antigua contraseña: "), pwd);
+		dialog.getDialogPane().setContent(content);
+
+		// desabilitamos el boton hasta que no escriba texto
+		Node accept = dialog.getDialogPane().lookupButton(ButtonType.OK);
+		accept.setDisable(true);
+
+		pwd.textProperty().addListener((observable, oldValue, newValue) -> {
+			accept.setDisable(newValue.trim().isEmpty());
+		});
+		dialog.setResultConverter(dialogButton -> {
+			if (dialogButton == ButtonType.OK) {
+				return pwd.getText();
+			}
+			return null;
+		});
+
+		// Traditional way to get the response value.
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()) {
+			loadData(result.get());
+			if (!chkUpdateData.isSelected()) {
+				saveData(); // si no esta seleccionado el checkbox actualizar, volvemos a guardar en cache
+							// con la nueva contraseña, en caso contrario ya se guarda si o si en el metodo
+							// download data.
+			}
 		}
 
 	}
 
 	private void downloadData() {
+		
+		if(!isBBDDLoaded) {
+			System.out.println("No se ha cargado BBDD");
+			return;
+		}
+		
 		btnEntrar.setVisible(false);
 		lblProgress.setVisible(true);
 		progressBar.setVisible(true);
@@ -200,6 +262,11 @@ public class WelcomeController implements Initializable {
 	}
 
 	private void loadNextWindow() {
+		if(!isBBDDLoaded) {
+			return;
+		}
+		
+		
 		try {
 			// Accedemos a la siguiente ventana
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"),
@@ -251,18 +318,16 @@ public class WelcomeController implements Initializable {
 					if (isFileCacheExists) {
 						Logs logs = LogCreator.createCourseLog();
 						controller.getActualCourse().setLogs(logs);
-						
+
 					} else {
 						Logs logs = controller.getActualCourse().getLogs();
 						LogCreator.updateCourseLog(logs);
-						
-						
 
 					}
 					updateMessage(controller.getResourceBundle().getString("label.loadingstats"));
 					// Establecemos las estadisticas
 					controller.createStats();
-					
+
 					updateMessage("Guardando en local");
 					saveData();
 					logger.debug(controller.getBBDD().toString());

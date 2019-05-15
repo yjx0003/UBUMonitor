@@ -1,0 +1,352 @@
+{
+    "Activity report": {
+        "Activity report viewed": [
+            "The user with id '' viewed the outline activity report for the course with id ''."
+        ]
+    },
+    "Assignment": {
+        "A submission has been submitted.": [
+            "The user with id '' has submitted the submission with id '' for the assignment with course module id ''."
+        ],
+        "All the submissions are being downloaded.": [
+            "The user with id '' has downloaded all the submissions for the assignment with course module id ''."
+        ],
+        "Assignment override created": [
+            "The user with id '' created the override with id '' for the assign with course module id '' for the user with id ''."
+        ],
+        "Assignment override deleted": [
+            "The user with id '' deleted the override with id '' for the assign with course module id '' for the user with id ''."
+        ],
+        "Course module instance list viewed": [
+            "The user with id '' viewed the instance list for the module '' in the course with id ''."
+        ],
+        "Grading form viewed": [
+            "The user with id '' viewed the grading form for the user with id '' for the assignment with course module id ''."
+        ],
+        "Grading table viewed": [
+            "The user with id '' viewed the grading table for the assignment with course module id ''."
+        ],
+        "Submission confirmation form viewed.": [
+            "The user with id '' viewed the submission confirmation form for the assignment with course module id ''."
+        ],
+        "Submission form viewed.": [
+            "The user with id '' viewed their submission for the assignment with course module id ''."
+        ],
+        "The status of the submission has been updated.": [
+            "The user with id '' has updated the status of the submission with id '' for the assignment with course module id '' to the status ''."
+        ],
+        "The status of the submission has been viewed.": [
+            "The user with id '' has viewed the submission status page for the assignment with course module id ''."
+        ],
+        "The submission has been graded.": [
+            "The user with id '' has graded the submission '' for the user with id '' for the assignment with course module id ''."
+        ],
+        "The user has accepted the statement of the submission.": [
+            "The user with id '' has accepted the statement of the submission with id '' for the assignment with course module id ''."
+        ]
+    },
+    "Choice": {
+        "Choice answer added": [
+            "The user with id '' has added the option with id '' for the\n            user with id '' from the choice activity with course module id ''."
+        ],
+        "Choice report viewed": [
+            "The user with id '' has viewed the report for the choice activity with course module id\n            ''"
+        ],
+        "Course module instance list viewed": [
+            "The user with id '' viewed the instance list for the module '' in the course with id ''."
+        ],
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ]
+    },
+    "Excel spreadsheet": {
+        "XLS grade exported": [
+            "The user with id '' exported grades using the xls export in the gradebook."
+        ]
+    },
+    "Feedback": {
+        "Course module instance list viewed": [
+            "The user with id '' viewed the instance list for the module '' in the course with id ''."
+        ]
+    },
+    "File": {
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ]
+    },
+    "File submissions": {
+        "A file has been uploaded.": [
+            "The user with id '' has uploaded a file to the submission with id '' in the assignment activity with course module id ''."
+        ],
+        "Submission created.": [
+            "The user with id '' created a file submission and uploaded '' file/s in the assignment with course module id ''."
+        ],
+        "Submission updated.": [
+            "The user with id '' updated a file submission and uploaded '' file/s in the assignment with course module id ''."
+        ]
+    },
+    "Folder": {
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ],
+        "Folder updated": [
+            "The user with id '' updated the folder activity with course module id ''."
+        ],
+        "Zip archive of folder downloaded": [
+            "The user with id '' downloaded a zip archive containing all the files from the folder activity with course module id ''."
+        ]
+    },
+    "Forum": {
+        "Course module instance list viewed": [
+            "The user with id '' viewed the instance list for the module '' in the course with id ''."
+        ],
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ],
+        "Discussion created": [
+            "The user with id '' has created the discussion with id '' in the forum with course module id ''."
+        ],
+        "Discussion subscription created": [
+            "The user with id '' subscribed the user with id '' to the discussion  with id '' in the forum with the course module id ''."
+        ],
+        "Discussion viewed": [
+            "The user with id '' has viewed the discussion with id '' in the forum with course module id ''."
+        ],
+        "Post created": [
+            "The user with id '' has created the post with id '' in the discussion with id '' in the forum with course module id ''."
+        ],
+        "Post updated": [
+            "The user with id '' has updated the post with id '' in the discussion with id '' in the forum with course module id ''."
+        ],
+        "Some content has been posted.": [
+            "The user with id '' has posted content in the forum post with id '' in the discussion '' located in the forum with course module id ''."
+        ]
+    },
+    "Grader report": {
+        "Grader report viewed": [
+            "The user with id '' viewed the grader report in the gradebook."
+        ]
+    },
+    "Live logs": {
+        "Live log report viewed": [
+            "The user with id '' viewed the live log report for the course with id ''."
+        ]
+    },
+    "Logs": {
+        "Log report viewed": [
+            "The user with id '' viewed the log report for the course with id ''."
+        ],
+        "User log report viewed": [
+            "The user with id '' viewed the user log report for the user with id ''."
+        ]
+    },
+    "OpenDocument spreadsheet": {
+        "OpenDocument grade exported": [
+            "The user with id '' exported grades using the ods export in the gradebook."
+        ]
+    },
+    "Outcomes report": {
+        "Grade outcomes report viewed": [
+            "The user with id '' viewed the outcomes report in the gradebook."
+        ]
+    },
+    "Overview report": {
+        "Grade overview report viewed": [
+            "The user with id '' viewed the overview report in the gradebook."
+        ]
+    },
+    "Page": {
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ]
+    },
+    "Plain text file": {
+        "TXT grade exported": [
+            "The user with id '' exported grades using the txt export in the gradebook."
+        ]
+    },
+    "Quiz": {
+        "Course module instance list viewed": [
+            "The user with id '' viewed the instance list for the module '' in the course with id ''."
+        ],
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ],
+        "Quiz attempt abandoned": [
+            "The user with id '' has had their attempt with id '' marked as abandoned for the quiz with course module id ''."
+        ],
+        "Quiz attempt reviewed": [
+            "The user with id '' has had their attempt with id '' reviewed by the user with id '' for the quiz with course module id ''."
+        ],
+        "Quiz attempt started": [
+            "The user with id '' has started the attempt with id '' for the quiz with course module id ''."
+        ],
+        "Quiz attempt submitted": [
+            "The user with id '' has submitted the attempt with id '' for the quiz with course module id ''."
+        ],
+        "Quiz attempt summary viewed": [
+            "The user with id '' has viewed the summary for the attempt with id '' belonging to the user with id '' for the quiz with course module id ''."
+        ],
+        "Quiz attempt viewed": [
+            "The user with id '' has viewed the attempt with id '' belonging to the user with id '' for the quiz with course module id ''."
+        ],
+        "Quiz edit page viewed": [
+            "The user with id '' viewed the edit page for the quiz with course module id ''."
+        ],
+        "Quiz report viewed": [
+            "The user with id '' viewed the report '' for the quiz with course module id ''."
+        ]
+    },
+    "Recycle bin": {
+        "Item created": [
+            "Item created with ID ."
+        ],
+        "Item deleted": [
+            "Item with ID  deleted."
+        ]
+    },
+    "Single view": {
+        "Grade single view report viewed.": [
+            "The user with id '' viewed the singleview report in the gradebook."
+        ]
+    },
+    "Submission comments": {
+        "Comment created": [
+            "The user with id '' added the comment with id '' to the submission with id '' for the assignment with course module id ''."
+        ],
+        "Comment deleted": [
+            "The user with id '' deleted the comment with id '' from the submission with id '' for the assignment with course module id ''."
+        ]
+    },
+    "System": {
+        "Badge listing viewed": [
+            "The user with id '' has viewed the list of available badges for the course with the id ''."
+        ],
+        "Calendar event created": [
+            "The user with id '' created the event '' with id ''."
+        ],
+        "Calendar event deleted": [
+            "The user with id '' deleted the event '' with id ''."
+        ],
+        "Calendar event updated": [
+            "The user with id '' updated the event '' with id ''."
+        ],
+        "Course activity completion updated": [
+            "The user with id '' updated the completion state for the course module with id '' for the user with id ''."
+        ],
+        "Course created": [
+            "The user with id '' created the course with id ''."
+        ],
+        "Course module created": [
+            "The user with id '' created the '' activity with course module id ''."
+        ],
+        "Course module deleted": [
+            "The user with id '' deleted the '' activity with course module id ''."
+        ],
+        "Course module instance list viewed": [
+            "The user with id '' viewed the list of resources in the course with id ''."
+        ],
+        "Course module updated": [
+            "The user with id '' updated the '' activity with course module id ''."
+        ],
+        "Course reset ended": [
+            "The reset of the course with id '' has ended."
+        ],
+        "Course reset started": [
+            "The user with id '' started the reset of the course with id ''."
+        ],
+        "Course section created": [
+            "The user with id '' created section number '' for the course with id ''"
+        ],
+        "Course section updated": [
+            "The user with id '' updated section number '' for the course with id ''"
+        ],
+        "Course summary viewed": [
+            "The user with id '' viewed the course information for the course with id ''."
+        ],
+        "Course updated": [
+            "The user with id '' updated the course with id ''."
+        ],
+        "Course user report viewed": [
+            "The user with id '' viewed the user report for the course with id '' for user with id ''."
+        ],
+        "Course viewed": [
+            "The user with id '' viewed the course with id ''.",
+            "The user with id '' viewed the section number '' of the course with id ''."
+        ],
+        "Enrolment instance created": [
+            "The user with id '' created the instance of enrolment method '' with id ''."
+        ],
+        "Grade deleted": [
+            "The user with id '' deleted the grade with id '' for the user with id '' for the grade item with id ''."
+        ],
+        "Group created": [
+            "The user with id '' created the group with id ''."
+        ],
+        "Group deleted": [
+            "The user with id '' deleted the group with id ''."
+        ],
+        "Group member added": [
+            "The user with id '' added the user with id '' to the group with id ''."
+        ],
+        "Group member removed": [
+            "The user with id '' removed the user with id '' to the group with id ''."
+        ],
+        "Grouping created": [
+            "The user with id '' created the grouping with id ''."
+        ],
+        "Recent activity viewed": [
+            "The user with id '' viewed the recent activity report in the course with id ''."
+        ],
+        "Role assigned": [
+            "The user with id '' assigned the role with id '' to the user with id ''."
+        ],
+        "Role unassigned": [
+            "The user with id '' unassigned the role with id '' from the user with id ''."
+        ],
+        "Scale created": [
+            "The user with id '' created the custom scale with id '' from the course with the id ''."
+        ],
+        "User enrolled in course": [
+            "The user with id '' enrolled the user with id '' using the enrolment method '' in the course with id ''."
+        ],
+        "User graded": [
+            "The user with id '' updated the grade with id '' for the user with id '' for the grade item with id ''."
+        ],
+        "User list viewed": [
+            "The user with id '' viewed the list of users in the course with id ''."
+        ],
+        "User profile viewed": [
+            "The user with id '' viewed the profile for the user with id '' in the course with id ''."
+        ],
+        "User unenrolled from course": [
+            "The user with id '' unenrolled the user with id '' using the enrolment method '' from the course with id ''."
+        ]
+    },
+    "User report": {
+        "Grade user report viewed": [
+            "The user with id '' viewed the user report in the gradebook."
+        ]
+    },
+    "User tours": {
+        "Step shown": [
+            "The user with id '' has viewed the tour with id '' at step index '' (id '') on the page with URL ''."
+        ],
+        "Tour ended": [
+            "The user with id '' has ended the tour with id '' at step index '' (id '') on the page with URL ''."
+        ],
+        "Tour started": [
+            "The user with id '' has started the tour with id '' on the page with URL ''."
+        ]
+    },
+    "Workshop": {
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ]
+    },
+    "XML file": {
+        "XML grade exported": [
+            "The user with id '' exported grades using the xml export in the gradebook."
+        ]
+    }
+}

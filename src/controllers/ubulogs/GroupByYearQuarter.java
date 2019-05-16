@@ -1,12 +1,11 @@
 package controllers.ubulogs;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-import org.threeten.extra.YearQuarter;
 import org.threeten.extra.YearQuarter;
 
 import model.EnrolledUser;
@@ -20,7 +19,7 @@ public class GroupByYearQuarter extends GroupByAbstract<YearQuarter> {
 	}
 
 	@Override
-	public List<YearQuarter> getRange(ZonedDateTime start, ZonedDateTime end) {
+	public List<YearQuarter> getRange(LocalDate start, LocalDate end) {
 		List<YearQuarter> list = new ArrayList<>();
 
 		for (YearQuarter YearQuarterStart = YearQuarter.from(start), YearQuarterEnd = YearQuarter.from(end);

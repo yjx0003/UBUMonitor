@@ -1,7 +1,7 @@
 package controllers.ubulogs;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -22,7 +22,7 @@ public class GroupByYearMonth extends GroupByAbstract<YearMonth> {
 	}
 
 	@Override
-	public List<YearMonth> getRange(ZonedDateTime start, ZonedDateTime end) {
+	public List<YearMonth> getRange(LocalDate start, LocalDate end) {
 		List<YearMonth> list = new ArrayList<>();
 		
 		for (YearMonth yearMonthStart = YearMonth.from(start),yearMonthEnd=YearMonth.from(end);

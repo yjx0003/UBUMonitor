@@ -213,13 +213,13 @@ public class MainController implements Initializable {
 							"setLanguage('" + controller.getResourceBundle().getLocale() + "')"));
 
 			//
-			WebConsoleListener.setDefaultListener(new WebConsoleListener(){
-			    @Override
-			    public void messageAdded(WebView webView, String message, int lineNumber, String sourceId) {
-			       logger.error("Consola error JS: [" + sourceId + ":" + lineNumber + "] " + message);
-			    }
+			WebConsoleListener.setDefaultListener(new WebConsoleListener() {
+				@Override
+				public void messageAdded(WebView webView, String message, int lineNumber, String sourceId) {
+					logger.error("Consola error JS: [" + sourceId + ":" + lineNumber + "] " + message);
+				}
 			});
-			
+
 			initLogOptionsFilter();
 
 			initTabGrades();
@@ -248,7 +248,7 @@ public class MainController implements Initializable {
 			rolesItemsList.add(mi);
 
 			for (Role role : rolesList) {
-				mi = (new MenuItem(role.toString()));
+				mi = new MenuItem(role.toString());
 				mi.setOnAction(actionRole);
 				// Añadimos el manejador de eventos a cada MenuItem
 				rolesItemsList.add(mi);
@@ -275,7 +275,7 @@ public class MainController implements Initializable {
 			// Convertimos la lista a una lista de MenuItems para el MenuButton
 			ArrayList<MenuItem> groupsItemsList = new ArrayList<>();
 			// En principio mostrarán todos los usuarios en cualquier grupo
-			mi = (new MenuItem(TODOS));
+			mi = new MenuItem(TODOS);
 			// Añadimos el manejador de eventos al primer MenuItem
 			mi.setOnAction(actionGroup);
 			groupsItemsList.add(mi);
@@ -361,7 +361,13 @@ public class MainController implements Initializable {
 
 			listParticipants.getSelectionModel().getSelectedItems()
 					.addListener(
-							(ListChangeListener.Change<? extends EnrolledUser> usersSelected) -> updateGradesChart());
+							(Change<? extends EnrolledUser> usersSelected) -> {
+								if(tabUbuGrades.isSelected()) {
+									updateGradesChart();
+								}else {
+									updateStackedChart();
+								}
+							});
 
 			/// Mostramos la lista de participantes
 			listParticipants.setItems(enrList);
@@ -416,9 +422,12 @@ public class MainController implements Initializable {
 		choiceBoxDate.setItems(typeTimes);
 		choiceBoxDate.getSelectionModel().selectFirst();
 		selectedChoiceBoxDate = choiceBoxDate.getValue();
-		
-		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> {enableFilterLogButton(selectedChoiceBoxDate,
-				newValue,dateStart, datePickerStart.getValue(), dateEnd, datePickerEnd.getValue());System.out.println(ov);});
+
+		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> {
+			enableFilterLogButton(selectedChoiceBoxDate,
+					newValue, dateStart, datePickerStart.getValue(), dateEnd, datePickerEnd.getValue());
+			System.out.println(ov);
+		});
 
 		// traduccion de los elementos del choicebox
 		choiceBoxDate.setConverter(new StringConverter<GroupByAbstract<?>>() {
@@ -439,14 +448,13 @@ public class MainController implements Initializable {
 		dateStart = datePickerStart.getValue();
 		dateEnd = datePickerEnd.getValue();
 
-
 		datePickerStart.valueProperty()
 				.addListener((ov, oldValue, newValue) -> enableFilterLogButton(selectedChoiceBoxDate,
 						choiceBoxDate.getValue(), dateStart, newValue, dateEnd, datePickerEnd.getValue()));
 
 		datePickerEnd.valueProperty()
 				.addListener((ov, oldValue, newValue) -> enableFilterLogButton(selectedChoiceBoxDate,
-						choiceBoxDate.getValue(),dateStart, datePickerStart.getValue(), dateEnd, newValue));
+						choiceBoxDate.getValue(), dateStart, datePickerStart.getValue(), dateEnd, newValue));
 
 		filterLogButton.setDisable(true);
 
@@ -504,7 +512,7 @@ public class MainController implements Initializable {
 		listViewComponents.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		listViewComponents.getSelectionModel().getSelectedItems()
-				.addListener((Change<? extends Component> c) -> changeComponentList(c.getList()));
+				.addListener((Change<? extends Component> c) -> updateStackedChart());
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
@@ -522,8 +530,6 @@ public class MainController implements Initializable {
 						Image image = new Image("/img/" + component + ".png");
 						setGraphic(new ImageView(image));
 					} catch (Exception e) {
-						logger.warn("No se ha podido cargar la imagen del componente " + component
-								+ ", se cargara un icono de error.");
 						setGraphic(new ImageView(ERROR_ICON));
 					}
 				}
@@ -532,7 +538,13 @@ public class MainController implements Initializable {
 
 	}
 
-	private void changeComponentList(ObservableList<? extends Component> changedComponentList) {
+	private void updateStackedChart() {
+		
+		String stackedbardataset = stackedBarDataset.createData(
+				listParticipants.getSelectionModel().getSelectedItems(),
+				listViewComponents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
+		logger.info("Dataset para el stacked bar de logs en JS: " + stackedbardataset);
+		webViewChartsEngine.executeScript("updateChart('stackedBar',"+stackedbardataset+")");
 
 	}
 
@@ -544,7 +556,8 @@ public class MainController implements Initializable {
 		}
 		optionsUbuLogs.setVisible(true);
 		optionsUbuLogs.setManaged(true);
-		// TODO
+
+		updateStackedChart();
 	}
 
 	public void initTabGrades() {
@@ -558,7 +571,7 @@ public class MainController implements Initializable {
 			return;
 		}
 
-		// TODO
+		updateGradesChart();
 
 	}
 
@@ -577,17 +590,9 @@ public class MainController implements Initializable {
 		dateStart = start;
 		dateEnd = end;
 
-		ZonedDateTime zonedStart = dateStart.atStartOfDay(ZoneId.systemDefault());
-		ZonedDateTime zonedEnd = dateEnd.atStartOfDay(ZoneId.systemDefault());
+	
 
-		List<EnrolledUser> users = listParticipants.getSelectionModel().getSelectedItems();
-		List<Component> components = listViewComponents.getSelectionModel().getSelectedItems();
-		String dataset = stackedBarDataset.createDataset(users, components, selectedChoiceBoxDate, zonedStart,
-				zonedEnd);
-
-		logger.info("Dataset para el stacked bar de logs en JS: " + dataset);
-
-		webViewChartsEngine.executeScript("updateStackedChart(" + dataset + ")");
+		updateStackedChart();
 
 	}
 

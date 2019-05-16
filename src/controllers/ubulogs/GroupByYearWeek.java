@@ -1,6 +1,6 @@
 package controllers.ubulogs;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +23,7 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 	}
 
 	@Override
-	public List<YearWeek> getRange(ZonedDateTime start, ZonedDateTime end) {
+	public List<YearWeek> getRange(LocalDate start, LocalDate end) {
 		List<YearWeek> list = new ArrayList<>();
 
 		for (YearWeek yearWeekStart = YearWeek.from(start), yearWeekEnd = YearWeek.from(end);

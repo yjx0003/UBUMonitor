@@ -81,8 +81,8 @@ public class WelcomeController implements Initializable {
 	private Label lblDateUpdate;
 	@FXML
 	private CheckBox chkUpdateData;
-	
-	private boolean isBBDDLoaded=false;
+
+	private boolean isBBDDLoaded = false;
 
 	/**
 	 * Función initialize. Muestra la lista de cursos del usuario introducido.
@@ -156,7 +156,7 @@ public class WelcomeController implements Initializable {
 				BBDD copia = new BBDD(controller.getDefaultBBDD());
 				controller.setBBDD(copia);
 				controller.setActualCourse(selectedCourse);
-				isBBDDLoaded=true;
+				isBBDDLoaded = true;
 			}
 			downloadData();
 		} else {
@@ -167,11 +167,11 @@ public class WelcomeController implements Initializable {
 	}
 
 	private void saveData() {
-		
-		if(!isBBDDLoaded) {
+
+		if (!isBBDDLoaded) {
 			return;
 		}
-		
+
 		File f = new File(directoryObject);
 		if (!f.isDirectory()) {
 			logger.info("No existe el directorio, se va a crear: {}", directoryObject);
@@ -183,16 +183,17 @@ public class WelcomeController implements Initializable {
 				controller.getBBDD());
 
 	}
+
 	private void loadData(String password) {
-		
+
 		BBDD BBDD = (BBDD) Encryption.decrypt(password,
 				directoryObject + listCourses.selectionModelProperty().getValue().getSelectedItem());
 		if (BBDD != null) {
-			
+
 			controller.setBBDD(BBDD);
-			isBBDDLoaded=true;
+			isBBDDLoaded = true;
 		} else {
-			
+
 			previusPasswordWindow();
 
 		}
@@ -201,9 +202,11 @@ public class WelcomeController implements Initializable {
 
 	private void previusPasswordWindow() {
 		Dialog<String> dialog = new Dialog<>();
-		dialog.setTitle("Modificado contraseña");
+		dialog.setTitle(controller.getResourceBundle().getString("title.passwordChanged"));
 		dialog.setHeaderText(
-				"Se ha detectado un cambio de contraseña\nFecha de contraseña anterior: " + lblDateUpdate.getText());
+				controller.getResourceBundle().getString("header.passwordChangedMessage") + "\n"
+						+ controller.getResourceBundle().getString("header.passwordDateTime")
+						+ lblDateUpdate.getText());
 
 		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
 
@@ -211,7 +214,7 @@ public class WelcomeController implements Initializable {
 		HBox content = new HBox();
 		content.setAlignment(Pos.CENTER);
 		content.setSpacing(10);
-		content.getChildren().addAll(new Label("Antigua contraseña: "), pwd);
+		content.getChildren().addAll(new Label(controller.getResourceBundle().getString("label.oldPassword")), pwd);
 		dialog.getDialogPane().setContent(content);
 
 		// desabilitamos el boton hasta que no escriba texto
@@ -242,12 +245,12 @@ public class WelcomeController implements Initializable {
 	}
 
 	private void downloadData() {
-		
-		if(!isBBDDLoaded) {
+
+		if (!isBBDDLoaded) {
 			System.out.println("No se ha cargado BBDD");
 			return;
 		}
-		
+
 		btnEntrar.setVisible(false);
 		lblProgress.setVisible(true);
 		progressBar.setVisible(true);
@@ -262,11 +265,10 @@ public class WelcomeController implements Initializable {
 	}
 
 	private void loadNextWindow() {
-		if(!isBBDDLoaded) {
+		if (!isBBDDLoaded) {
 			return;
 		}
-		
-		
+
 		try {
 			// Accedemos a la siguiente ventana
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"),

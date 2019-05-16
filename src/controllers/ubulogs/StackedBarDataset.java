@@ -3,6 +3,7 @@ package controllers.ubulogs;
 import java.awt.Color;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,8 +32,8 @@ public class StackedBarDataset {
 	private List<Component> selectedComponents = new ArrayList<>();
 	private Map<Component, int[]> componentColors;
 	private GroupByAbstract<?> groupBy;
-	private ZonedDateTime start;
-	private ZonedDateTime end;
+	private LocalDate start;
+	private LocalDate end;
 	private StringBuilder stringBuilder;
 
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat();
@@ -68,18 +69,14 @@ public class StackedBarDataset {
 		return input.replaceAll("'", "\\\\'");
 	}
 
-	public String createDataset(List<EnrolledUser> selectedUsers,
-			List<Component> selectedComponents, GroupByAbstract<?> groupBy, ZonedDateTime start, ZonedDateTime end) {
-		//si son los mismos parametros devolvemos el creado anteriormente
-		if (isSamesPreviousValue(selectedUsers, selectedComponents, groupBy, start, end)) {
-			return stringBuilder.toString();
-		}
-
+	public String createData(List<EnrolledUser> selectedUsers,
+			List<Component> selectedComponents, GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd) {
+	
 		this.selectedUsers = selectedUsers;
 		this.selectedComponents = selectedComponents;
 		this.groupBy = groupBy;
-		this.start = start;
-		this.end = end;
+		this.start = dateStart;
+		this.end = dateEnd;
 
 		setRandomColors();
 
@@ -92,25 +89,17 @@ public class StackedBarDataset {
 		return stringBuilder.toString();
 	}
 
-	public String getDataset() {
+	public String getData() {
 		return stringBuilder.toString();
 	}
 
-	private void setRandomColors() {
-		componentColors = new HashMap<>();
+	
+	private void setLabels() {
+		List<String> rangeDates = groupBy.getRangeString(start, end);
 
-		for (int i = 0, n = selectedComponents.size(); i < n; i++) {
-			
-			//generamos un color a partir de HSB, el hue(H) es el color, saturacion (S), y brillo(B)
-			Color c = new Color(Color.HSBtoRGB(i / (float) n, 0.8f, 1.0f));
-			int[] array = { c.getRed(), c.getGreen(), c.getBlue() };
-			componentColors.put(selectedComponents.get(i), array);
-		}
+		String stringLabels = joinWithQuotes(rangeDates);
 
-	}
-
-	private String translateComponent(Component component) {
-		return controller.getResourceBundle().getString("component." + component);
+		stringBuilder.append("labels:[" + stringLabels + "],");
 	}
 
 	private void setDatasets() {
@@ -119,7 +108,8 @@ public class StackedBarDataset {
 		setUsersDatasets();
 		stringBuilder.append("]");
 	}
-
+	
+	
 	/**
 	 * 
 	 * 
@@ -191,20 +181,22 @@ public class StackedBarDataset {
 				.collect(Collectors.joining(", "));
 	}
 
-	private void setLabels() {
-		List<String> rangeDates = groupBy.getRangeString(start, end);
-
-		String stringLabels = joinWithQuotes(rangeDates);
-
-		stringBuilder.append("labels:[" + stringLabels + "],");
+	
+	private String translateComponent(Component component) {
+		return controller.getResourceBundle().getString("component." + component);
 	}
 
-	public boolean isSamesPreviousValue(List<EnrolledUser> selectedUsers, List<Component> selectedComponents,
-			GroupByAbstract<?> groupBy, ZonedDateTime start, ZonedDateTime end) {
-		return this.selectedUsers.equals(selectedUsers)
-				&& this.selectedComponents.equals(selectedComponents)
-				&& (this.groupBy != null && this.groupBy.equals(groupBy)
-						&& (this.start != null && this.start.equals(start)
-								&& (this.end != null && this.end.equals(end))));
+	private void setRandomColors() {
+		componentColors = new HashMap<>();
+
+		for (int i = 0, n = selectedComponents.size(); i < n; i++) {
+			
+			//generamos un color a partir de HSB, el hue(H) es el color, saturacion (S), y brillo(B)
+			Color c = new Color(Color.HSBtoRGB(i / (float) n, 0.8f, 1.0f));
+			int[] array = { c.getRed(), c.getGreen(), c.getBlue() };
+			componentColors.put(selectedComponents.get(i), array);
+		}
+
 	}
+	
 }

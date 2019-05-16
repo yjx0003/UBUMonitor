@@ -29,13 +29,13 @@ public class GroupByDay extends GroupByAbstract<LocalDate> {
 		
 	}
 	@Override
-	public List<LocalDate> getRange(ZonedDateTime start, ZonedDateTime end) {
+	public List<LocalDate> getRange(LocalDate start, LocalDate end) {
 		List<LocalDate> list = new ArrayList<>();
 		
 		
 	
-		for (LocalDate lStart = start.toLocalDate(),lEnd=end.toLocalDate();
-				lStart.isBefore(lEnd) || lStart.equals(lEnd);
+		for (LocalDate lStart = start;
+				lStart.isBefore(end) || lStart.equals(end);
 				lStart = lStart.plusDays(1)) {
 			
 			list.add(lStart);

@@ -1,6 +1,7 @@
 package controllers.ubulogs;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +16,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import controllers.ubulogs.logcreator.Component;
 import model.EnrolledUser;
@@ -51,18 +55,19 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 		counts = logLines.stream()
 				.filter(l -> l.getUser() != null) // quitamos los nulos, sino salta excepcion en el
-													// Collectors.groupingBy
+													// Collectors.groupingBy LogLine::getUser
 				.collect(Collectors.groupingBy(LogLine::getUser,
 						Collectors.groupingBy(LogLine::getComponent,
 								Collectors.groupingBy(getGroupByFunction(), Collectors.counting()))));
 		
 		logger.info("Contador de logs para " + getTypeTime() + ": " + counts);
-		
+		Gson gsonBuilder = new GsonBuilder().create();
+		logger.info("JSON del contador de logs para "+getTypeTime()+" "+gsonBuilder.toJson(counts));
 	}
 
-	public abstract List<T> getRange(ZonedDateTime start, ZonedDateTime end);
+	public abstract List<T> getRange(LocalDate start, LocalDate end);
 
-	public List<String> getRangeString(ZonedDateTime start, ZonedDateTime end) {
+	public List<String> getRangeString(LocalDate start, LocalDate end) {
 		return getRangeString(getRange(start, end));
 	}
 
@@ -102,8 +107,8 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 	}
 
-	public Map<Component, List<Double>> getComponentsMeans(List<Component> components, ZonedDateTime start,
-			ZonedDateTime end) {
+	public Map<Component, List<Double>> getComponentsMeans(List<Component> components, LocalDate start,
+			LocalDate end) {
 
 		List<T> range = this.getRange(start, end);
 
@@ -128,7 +133,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 	}
 
 	public Map<EnrolledUser, Map<Component, List<Long>>> getUsersCounts(List<EnrolledUser> users,
-			List<Component> components, ZonedDateTime start, ZonedDateTime end) {
+			List<Component> components, LocalDate start, LocalDate end) {
 		List<T> groupByRange=getRange(start, end);
 		
 		Map<EnrolledUser, Map<Component, List<Long>>> result = new HashMap<>();
@@ -144,7 +149,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 				}
 			}
 		}
-		logger.info("Estadisticas de todos los usuarios" + users + " para " + components + " y " + groupByRange + ":\n"
+		logger.info("Estadisticas de los usuarios: " + users + " para " + components + " y " + groupByRange + ":\n"
 				+ result);
 		return result;
 	}

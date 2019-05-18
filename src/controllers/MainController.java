@@ -12,8 +12,6 @@ import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +21,6 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
@@ -39,7 +36,6 @@ import controllers.ubulogs.StackedBarDataset;
 import controllers.ubulogs.logcreator.Component;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -212,11 +208,11 @@ public class MainController implements Initializable {
 					.addListener((ov, oldState, newState) -> webViewChartsEngine.executeScript(
 							"setLanguage('" + controller.getResourceBundle().getLocale() + "')"));
 
-			//
+			//Guardamos en el logger los errores de consola que se generan en el JS
 			WebConsoleListener.setDefaultListener(new WebConsoleListener() {
 				@Override
 				public void messageAdded(WebView webView, String message, int lineNumber, String sourceId) {
-					logger.error("Consola error JS: [" + sourceId + ":" + lineNumber + "] " + message);
+					logger.error("Error en la consola de JS: " + message+" [" + sourceId + ":" + lineNumber + "] ");
 				}
 			});
 
@@ -364,8 +360,8 @@ public class MainController implements Initializable {
 							(Change<? extends EnrolledUser> usersSelected) -> {
 								if(tabUbuGrades.isSelected()) {
 									updateGradesChart();
-								}else {
-									updateStackedChart();
+								}else if(tabUbuLogs.isSelected()) {
+									updateLogsChart();
 								}
 							});
 
@@ -426,7 +422,6 @@ public class MainController implements Initializable {
 		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> {
 			enableFilterLogButton(selectedChoiceBoxDate,
 					newValue, dateStart, datePickerStart.getValue(), dateEnd, datePickerEnd.getValue());
-			System.out.println(ov);
 		});
 
 		// traduccion de los elementos del choicebox
@@ -512,7 +507,7 @@ public class MainController implements Initializable {
 		listViewComponents.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		listViewComponents.getSelectionModel().getSelectedItems()
-				.addListener((Change<? extends Component> c) -> updateStackedChart());
+				.addListener((Change<? extends Component> c) -> updateLogsChart());
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
@@ -538,7 +533,7 @@ public class MainController implements Initializable {
 
 	}
 
-	private void updateStackedChart() {
+	private void updateLogsChart() {
 		
 		String stackedbardataset = stackedBarDataset.createData(
 				listParticipants.getSelectionModel().getSelectedItems(),
@@ -556,8 +551,10 @@ public class MainController implements Initializable {
 		}
 		optionsUbuLogs.setVisible(true);
 		optionsUbuLogs.setManaged(true);
+		
+		updateLogsChart();
+		webViewChartsEngine.executeScript("manageLogsButtons()");
 
-		updateStackedChart();
 	}
 
 	public void initTabGrades() {
@@ -572,6 +569,7 @@ public class MainController implements Initializable {
 		}
 
 		updateGradesChart();
+		webViewChartsEngine.executeScript("manageGradesButtons()");
 
 	}
 
@@ -592,7 +590,7 @@ public class MainController implements Initializable {
 
 	
 
-		updateStackedChart();
+		updateLogsChart();
 
 	}
 

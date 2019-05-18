@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,9 +70,9 @@ public class StackedBarDataset {
 
 	public String createData(List<EnrolledUser> selectedUsers,
 			List<Component> selectedComponents, GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd) {
-	
-		this.selectedUsers = selectedUsers;
-		this.selectedComponents = selectedComponents;
+		//lo metemos en un nuevo arraylist para evitar que se actualice en tiempo real los elementos
+		this.selectedUsers = new ArrayList<>(selectedUsers);
+		this.selectedComponents = new ArrayList<>(selectedComponents);
 		this.groupBy = groupBy;
 		this.start = dateStart;
 		this.end = dateEnd;

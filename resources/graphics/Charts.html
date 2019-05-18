@@ -282,11 +282,11 @@ var GeneralMeanActive = false;
 var GroupMeanActive = false;
 var legendActive = true;
 var currentType = 'line';
+var currentGradeType='line';
+var currentLogType='stackedBar';
+
+
 var language = 'es';
-
-//Dataset logs
-var mixedDataSet='';
-
 
 
 //
@@ -302,10 +302,17 @@ google.charts.load('current', {'packages':['table']});
 var table;
 // Al iniciar el boton del gráfico de lineas esta deshabilitado
 document.getElementById('btnLineas').disabled = true;
+document.getElementById('btnStackedBar').disabled = true;
+
 //Al iniciar el div de la tabla de calificaciones esta oculto
 document.getElementById('table_div').style.display = 'none';
-//
+//ocultamos los de logs
+document.getElementById('btnStackedBar').style.display = "none";
+
+
 document.getElementById('btnLegend').style.backgroundImage = 'url(./../img/visibility.png)';
+
+
 //------------------------------------------Funciones------------------------------------------------------------------
 // Funcion que crea la tabla de calificaciones
 function drawTable() {
@@ -364,10 +371,10 @@ function generateChart(type){
 	document.getElementById('btnBoxPlot').disabled = false;
 	document.getElementById('btnBoxPlotGroup').disabled = false;
 	document.getElementById('btnCalificaciones').disabled = false;
-	
-	document.getElementById('btnStackedBar').disabled = false;
+
 	
 	currentType = type;
+
 	switch (type) {
 		case 'line':
 			document.getElementById('btnLineas').disabled = true;
@@ -450,6 +457,8 @@ function generateChart(type){
 			break;
 		case 'stackedBar':
 			document.getElementById('btnStackedBar').disabled = true;
+			document.getElementById('btnMean').style.display = 'none';
+			document.getElementById('btnGroupMean').style.display = 'none';
 			myChart.destroy();
 			myChart = new Chart(ctx,{
 				type: 'bar',
@@ -528,6 +537,7 @@ function updateChart(type, dataSet){
 			case 'stackedBar':
 				StackedBarDataSet=dataSet;
 				if(currentType == 'stackedBar'){
+		
 					myChart.data=StackedBarDataSet;
 				}
 
@@ -535,6 +545,48 @@ function updateChart(type, dataSet){
 		myChart.update();
 	}
 }
+
+
+
+function manageGradesButtons(){
+	
+	
+	//ocultamos los botones de las graficas 
+	document.getElementById('btnLineas').style.display = "inline";
+	document.getElementById('btnRadar').style.display = "inline";
+	document.getElementById('btnBoxPlot').style.display = "inline";
+	document.getElementById('btnBoxPlotGroup').style.display = "inline";
+	document.getElementById('btnCalificaciones').style.display = "inline";
+	
+	//ocultamos los de logs
+	document.getElementById('btnStackedBar').style.display = "none";
+	
+	currentLogType=currentType;
+	
+	generateChart(currentGradeType);
+}
+
+
+function manageLogsButtons(){
+	
+	
+	//ocultamos los botones de las graficas que no sean de log
+	document.getElementById('btnLineas').style.display = "none";
+	document.getElementById('btnRadar').style.display = "none";
+	document.getElementById('btnBoxPlot').style.display = "none";
+	document.getElementById('btnBoxPlotGroup').style.display = "none";
+	document.getElementById('btnCalificaciones').style.display = "none";
+	
+	//mostramos los de logs
+	document.getElementById('btnStackedBar').style.display = "inline";
+	
+	currentGradeType=currentType;
+	
+	generateChart(currentLogType);
+	
+
+}
+
 //Funcion que almacena la media general.
 function saveMean(mean) {
 	GeneralMeanDataSet = mean;
@@ -627,14 +679,6 @@ function exportCurrentElemet() {
 	}
 }
 
-function updateStackedChart(dataset){
-	myChart.destroy();
-	myChart = new Chart(ctx,{
-		type: 'bar',
-		data: dataset,
-		options: optionsStackedBar
-	});
-}
 
 
 // Plugin que nos permite establecer el color de fondo del gráfico

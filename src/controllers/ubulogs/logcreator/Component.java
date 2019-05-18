@@ -5,23 +5,28 @@ import java.util.Map;
 
 public enum Component {
 	
+	
+	COMPONENT_NOT_AVAILABLE("Component not avaible"),
+	
+	
 	ACTIVITY_REPORT("Activity report"),
 	ASSIGNMENT("Assignment"),
-	BOOK("Book"), 
+	CHAT("Chat"),
 	CHOICE("Choice"),
-	DATABASE("Database"),
+	COURSE_PARTICIPATION("Course participation"),
 	EXCEL_SPREADSHEET("Excel spreadsheet"),
 	FEEDBACK("Feedback"),
 	FILE("File"),
 	FILE_SUBMISSIONS("File submissions"),
 	FOLDER("Folder"),
 	FORUM("Forum"),
-	GLOSSARY("Glossary"), 
+	GLOSSARY("Glossary"),
 	GRADER_REPORT("Grader report"),
-	LESSON("Lesson"),
+	GUIA_DOCENTE("Guía Docente"),
+	HOTPOT_MODULE("HotPot module"),
 	LIVE_LOGS("Live logs"),
 	LOGS("Logs"),
-	ONLINE_TEXT_SUBMISSIONS("Online text submissions"), 
+	ONLINE_TEXT_SUBMISSIONS("Online text submissions"),
 	OPENDOCUMENT_SPREADSHEET("OpenDocument spreadsheet"),
 	OUTCOMES_REPORT("Outcomes report"),
 	OVERVIEW_REPORT("Overview report"),
@@ -29,17 +34,18 @@ public enum Component {
 	PLAIN_TEXT_FILE("Plain text file"),
 	QUIZ("Quiz"),
 	RECYCLE_BIN("Recycle bin"),
-	SCORM_PACKAGE("SCORM package"), 
 	SINGLE_VIEW("Single view"),
 	SUBMISSION_COMMENTS("Submission comments"),
-	SURVEY("Survey"),
 	SYSTEM("System"),
-	URL("URL"), 
+	TURNITIN_ASSIGNMENT_2("Turnitin Assignment 2"),
+	URL("URL"),
 	USER_REPORT("User report"),
 	USER_TOURS("User tours"),
 	WIKI("Wiki"),
 	WORKSHOP("Workshop"),
 	XML_FILE("XML file");
+
+
 	
 	private String name;
 	private static Map<String,Component> map;
@@ -56,7 +62,7 @@ public enum Component {
 		}
 	}
 	public static Component get(String name) {
-		return map.get(name);
+		return map.getOrDefault(name,Component.COMPONENT_NOT_AVAILABLE);
 	}
 	
 	

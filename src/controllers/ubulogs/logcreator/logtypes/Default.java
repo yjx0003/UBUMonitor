@@ -6,7 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import model.LogLine;
-
+/**
+ * 
+ * Clase por defecto para los pares componente y evento que no tenga asignado una clase para manejar.
+ * @author Yi Peng Ji
+ *
+ */
 public class Default extends ReferencesLog {
 
 	static final Logger logger = LoggerFactory.getLogger(Default.class);

@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.Optional;
@@ -96,7 +97,7 @@ public class WelcomeController implements Initializable {
 			logger.info("Cargando cursos...");
 
 			ObservableList<Course> list = FXCollections.observableArrayList(controller.getUser().getCourses());
-			list.sort(Comparator.comparing(Course::getFullName));
+			Collections.sort(list,Comparator.comparing(Course::getFullName));
 			progressBar.setVisible(false);
 			listCourses.setItems(list);
 			chkUpdateData.setDisable(true);
@@ -339,6 +340,9 @@ public class WelcomeController implements Initializable {
 					throw e;
 				} finally {
 					controller.getStage().getScene().setCursor(Cursor.DEFAULT);
+					progressBar.setVisible(false);
+					lblProgress.setVisible(false);
+					btnEntrar.setVisible(true);
 				}
 				return null;
 			}
@@ -363,9 +367,7 @@ public class WelcomeController implements Initializable {
 		ButtonType buttonSalir = new ButtonType(controller.getResourceBundle().getString("label.close"));
 		alert.getButtonTypes().setAll(buttonSalir);
 
-		Optional<ButtonType> result = alert.showAndWait();
-		if (result.isPresent() && result.get() == buttonSalir)
-			controller.getStage().close();
+		alert.showAndWait();
 	}
 
 }

@@ -52,10 +52,9 @@ public abstract class GroupByAbstract<T> implements Serializable {
 	}
 
 	public void setCounts(List<LogLine> logLines) {
-
+		// quitamos los nulos, sino salta excepcion en el Collectors.groupingBy LogLine::getUser
 		counts = logLines.stream()
-				.filter(l -> l.getUser() != null) // quitamos los nulos, sino salta excepcion en el
-													// Collectors.groupingBy LogLine::getUser
+				.filter(l -> l.getUser() != null)
 				.collect(Collectors.groupingBy(LogLine::getUser,
 						Collectors.groupingBy(LogLine::getComponent,
 								Collectors.groupingBy(getGroupByFunction(), Collectors.counting()))));
@@ -88,11 +87,14 @@ public abstract class GroupByAbstract<T> implements Serializable {
 		// el metodo computeIfAbsent devuelve el valor de la key y si no existe la key
 		// se crea y devuelve el valor nuevo.
 		for (EnrolledUser user : enrolledUsers) {
+			
 			Map<Component, Map<T, Long>> userCounts = counts.computeIfAbsent(user, k -> new HashMap<>());
 			for (Component component : components) {
+				
 				Map<T, Long> userComponentsCounts = userCounts.computeIfAbsent(component, k -> new HashMap<>());
 				Map<T, DescriptiveStatistics> componentStatistics = statistics.computeIfAbsent(component,
 						k -> new HashMap<>());
+				
 				for (T groupBy : groupByRange) {
 					
 					long count = userComponentsCounts.computeIfAbsent(groupBy, k -> 0L);
@@ -137,12 +139,15 @@ public abstract class GroupByAbstract<T> implements Serializable {
 		List<T> groupByRange=getRange(start, end);
 		
 		Map<EnrolledUser, Map<Component, List<Long>>> result = new HashMap<>();
+		
 		for (EnrolledUser user : users) {
 			Map<Component, List<Long>> componentsCount = result.computeIfAbsent(user, k -> new HashMap<>());
 			Map<Component, Map<T, Long>> userCounts = counts.computeIfAbsent(user, k -> new HashMap<>());
+			
 			for (Component component : components) {
 				List<Long> userComponentCounts = componentsCount.computeIfAbsent(component, k -> new ArrayList<>());
 				Map<T, Long> userComponentsCounts = userCounts.computeIfAbsent(component, k -> new HashMap<>());
+				
 				for (T groupBy : groupByRange) {
 					long count = userComponentsCounts.computeIfAbsent(groupBy, k -> 0L);
 					userComponentCounts.add(count);

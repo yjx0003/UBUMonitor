@@ -74,7 +74,6 @@ public class Logs implements Serializable{
 		return logLines.stream()
 				.map(LogLine::getComponent)
 				.distinct()
-				.sorted()
 				.collect(Collectors.toList());
 	}
 

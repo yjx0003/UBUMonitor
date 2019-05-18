@@ -1,19 +1,30 @@
 package controllers.ubulogs.logcreator;
 
-public class CompEventKey {
+import java.util.HashMap;
+import java.util.Map;
+
+public class ComponentEvent {
 	
 
 
 	private Component component;
 	private Event eventName;
 	
-	public CompEventKey(Component component,Event eventName) {
+	private static Map<Component,Map<Event,ComponentEvent>> componentEventInstances=new HashMap<>();
+	
+	
+	private ComponentEvent(Component component,Event eventName) {
 		this.component=component;
 		this.eventName=eventName;
 	}
 	
-	public CompEventKey(String component,String eventName) {
-		this(Component.get(component),Event.get(eventName));
+	public static ComponentEvent getInstance(String component,String eventName) {
+		return getInstance(Component.get(component), Event.get(eventName));
+	}
+	
+	public static ComponentEvent getInstance(Component component,Event eventName) {
+		Map<Event,ComponentEvent> events= componentEventInstances.computeIfAbsent(component, c->new HashMap<Event,ComponentEvent>());
+		return events.computeIfAbsent(eventName, m-> new ComponentEvent(component,eventName));
 	}
 
 	public Component getComponent() {
@@ -41,7 +52,7 @@ public class CompEventKey {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CompEventKey other = (CompEventKey) obj;
+		ComponentEvent other = (ComponentEvent) obj;
 		if (component != other.component)
 			return false;
 		if (eventName != other.eventName)

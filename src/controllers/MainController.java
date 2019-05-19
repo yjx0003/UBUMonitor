@@ -13,7 +13,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,8 +32,10 @@ import org.slf4j.LoggerFactory;
 import com.sun.javafx.webkit.WebConsoleListener;
 
 import controllers.ubulogs.GroupByAbstract;
-import controllers.ubulogs.StackedBarDataset;
+import controllers.ubulogs.StackedBarDataSetComponent;
+import controllers.ubulogs.StackedBarDataSetComponentEvent;
 import controllers.ubulogs.logcreator.Component;
+import controllers.ubulogs.logcreator.ComponentEvent;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
@@ -68,6 +70,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
@@ -97,10 +100,12 @@ public class MainController implements Initializable {
 
 	private final static Image ERROR_ICON = new Image("/img/error.png");
 
-	private StackedBarDataset stackedBarDataset = StackedBarDataset.getInstance();
+	private StackedBarDataSetComponent stackedBarDatasetComponent = StackedBarDataSetComponent.getInstance();
+
+	private StackedBarDataSetComponentEvent stackedBarDatasetComponentEvent = StackedBarDataSetComponentEvent
+			.getInstance();
 
 	private Controller controller = Controller.getInstance();
-	private LogTabController logTabController = LogTabController.getInstance();
 
 	@FXML // Curso actual
 	public Label lblActualCourse;
@@ -161,7 +166,16 @@ public class MainController implements Initializable {
 	private Tab tabUbuLogs;
 
 	@FXML
+	private Tab tabUbuLogsComponent;
+
+	@FXML
+	private Tab tabUbuLogsEvent;
+
+	@FXML
 	private TextField componentTextField;
+
+	@FXML
+	private TextField componentEventTextField;
 
 	@FXML
 	private GridPane optionsUbuLogs;
@@ -182,7 +196,9 @@ public class MainController implements Initializable {
 
 	@FXML
 	private ListView<Component> listViewComponents;
-	private FilteredList<Component> filterComponents;
+
+	@FXML
+	private ListView<ComponentEvent> listViewEvents;
 
 	private Stats stats;
 
@@ -208,11 +224,11 @@ public class MainController implements Initializable {
 					.addListener((ov, oldState, newState) -> webViewChartsEngine.executeScript(
 							"setLanguage('" + controller.getResourceBundle().getLocale() + "')"));
 
-			//Guardamos en el logger los errores de consola que se generan en el JS
+			// Guardamos en el logger los errores de consola que se generan en el JS
 			WebConsoleListener.setDefaultListener(new WebConsoleListener() {
 				@Override
 				public void messageAdded(WebView webView, String message, int lineNumber, String sourceId) {
-					logger.error("Error en la consola de JS: " + message+" [" + sourceId + ":" + lineNumber + "] ");
+					logger.error("Error en la consola de JS: " + message + " [" + sourceId + ":" + lineNumber + "] ");
 				}
 			});
 
@@ -220,7 +236,6 @@ public class MainController implements Initializable {
 
 			initTabGrades();
 			initTabLogs();
-
 			//////////////////////////////////////////////////////////////////////////
 			// Manejo de roles (MenuButton Rol):
 			// Manejador de eventos para el botón de filtro por roles.
@@ -358,15 +373,41 @@ public class MainController implements Initializable {
 			listParticipants.getSelectionModel().getSelectedItems()
 					.addListener(
 							(Change<? extends EnrolledUser> usersSelected) -> {
-								if(tabUbuGrades.isSelected()) {
+								if (tabUbuGrades.isSelected()) {
 									updateGradesChart();
-								}else if(tabUbuLogs.isSelected()) {
-									updateLogsChart();
+								} else if (tabUbuLogs.isSelected()) {
+									if (tabUbuLogsComponent.isSelected()) {
+										updateComponentsChart();
+									} else if (tabUbuLogsEvent.isSelected()) {
+										updateComponentsEventsChart();
+									}
+
 								}
 							});
 
 			/// Mostramos la lista de participantes
 			listParticipants.setItems(enrList);
+
+			listParticipants.setCellFactory(callback -> new ListCell<EnrolledUser>() {
+				@Override
+				public void updateItem(EnrolledUser user, boolean empty) {
+					super.updateItem(user, empty);
+					if (empty) {
+						setText(null);
+						setGraphic(null);
+						setPrefHeight(45);
+					} else {
+						setText(user.toString());
+						try {
+							Image image = new Image(new ByteArrayInputStream(user.getImageBytes()));
+							setGraphic(new ImageView(image));
+							setPrefHeight(45);
+						} catch (Exception e) {
+							setGraphic(new ImageView(ERROR_ICON));
+						}
+					}
+				}
+			});
 
 			// Establecemos la estructura en árbol del calificador
 			GradeItem grcl = controller.getActualCourse().getRootGradeItem();
@@ -477,37 +518,29 @@ public class MainController implements Initializable {
 
 		tabUbuLogs.setOnSelectionChanged(event -> setTablogs(event));
 
-		// ponemos un listener al cuadro de texto para que se filtre el list view en
-		// tiempo real
-		componentTextField.textProperty().addListener(((observable, oldValue, newValue) -> {
-			filterComponents.setPredicate(component -> {
-				if (newValue == null || newValue.isEmpty()) {
-					return true;
-				}
-				String textField = newValue.toLowerCase();
-				return component.toString().toLowerCase().contains(textField);
-			});
-		}));
+		tabUbuLogsComponent.setOnSelectionChanged(event -> {
+			if (tabUbuLogsComponent.isSelected()) {
+				updateComponentsChart();
+			}
+
+		});
+		
+		tabUbuLogsEvent.setOnSelectionChanged(event -> {
+			if (tabUbuLogsEvent.isSelected()) {
+				updateComponentsEventsChart();
+			}
+
+		});
 
 		initListViewComponents();
+		initListViewComponentsEvents();
 	}
 
 	public void initListViewComponents() {
 		ResourceBundle rb = controller.getResourceBundle();
 
-		List<Component> uniqueComponents = controller.getActualCourse().getLogs().getUniqueComponents();
-
-		// Ordenamos los componentes segun los nombres internacionalizados
-		Collections.sort(uniqueComponents,
-				(c1, c2) -> rb.getString("component." + c1).compareTo(rb.getString("component." + c2)));
-
-		ObservableList<Component> observableListComponents = FXCollections.observableArrayList(uniqueComponents);
-		filterComponents = new FilteredList<>(observableListComponents);
-		listViewComponents.setItems(filterComponents);
-		listViewComponents.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
 		listViewComponents.getSelectionModel().getSelectedItems()
-				.addListener((Change<? extends Component> c) -> updateLogsChart());
+				.addListener((Change<? extends Component> c) -> updateComponentsChart());
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
@@ -531,15 +564,102 @@ public class MainController implements Initializable {
 			}
 		});
 
+		List<Component> uniqueComponents = controller.getActualCourse().getLogs().getUniqueComponents();
+
+		// Ordenamos los componentes segun los nombres internacionalizados
+		uniqueComponents.sort(Comparator.comparing((Component c) -> rb.getString("component." + c)));
+
+		ObservableList<Component> observableListComponents = FXCollections.observableArrayList(uniqueComponents);
+		FilteredList<Component> filterComponents = new FilteredList<>(observableListComponents);
+		listViewComponents.setItems(filterComponents);
+		listViewComponents.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+		// ponemos un listener al cuadro de texto para que se filtre el list view en
+		// tiempo real
+		componentTextField.textProperty().addListener(((observable, oldValue, newValue) -> {
+			filterComponents.setPredicate(component -> {
+				if (newValue == null || newValue.isEmpty()) {
+					return true;
+				}
+				String textField = newValue.toLowerCase();
+				return rb.getString("component." + component).toLowerCase().contains(textField);
+			});
+		}));
+
 	}
 
-	private void updateLogsChart() {
-		
-		String stackedbardataset = stackedBarDataset.createData(
+	public void initListViewComponentsEvents() {
+		ResourceBundle rb = controller.getResourceBundle();
+		listViewEvents.getSelectionModel().getSelectedItems()
+				.addListener((Change<? extends ComponentEvent> c) -> updateComponentsEventsChart());
+
+		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
+		// ponemos un icono
+		listViewEvents.setCellFactory(callback -> new ListCell<ComponentEvent>() {
+
+			@Override
+			public void updateItem(ComponentEvent componentEvent, boolean empty) {
+				super.updateItem(componentEvent, empty);
+				if (empty) {
+					setText(null);
+					setGraphic(null);
+				} else {
+					setText(rb.getString("component." + componentEvent.getComponent()) + " - "
+							+ rb.getString("eventname." + componentEvent.getEventName()));
+					try {
+						Image image = new Image("/img/" + componentEvent.getComponent() + ".png");
+						setGraphic(new ImageView(image));
+					} catch (Exception e) {
+						setGraphic(new ImageView(ERROR_ICON));
+					}
+				}
+			}
+		});
+
+		List<ComponentEvent> uniqueComponentsEvents = controller.getActualCourse().getLogs()
+				.getUniqueComponentsEvents();
+
+		// Ordenamos los componentes segun los nombres internacionalizados
+		uniqueComponentsEvents
+				.sort(Comparator.comparing((ComponentEvent c) -> rb.getString("component." + c.getComponent()))
+						.thenComparing((ComponentEvent c) -> rb.getString("eventname." + c.getEventName())));
+
+		ObservableList<ComponentEvent> observableListComponents = FXCollections
+				.observableArrayList(uniqueComponentsEvents);
+		FilteredList<ComponentEvent> filterComponentsEvents = new FilteredList<>(observableListComponents);
+		listViewEvents.setItems(filterComponentsEvents);
+		listViewEvents.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+		componentEventTextField.textProperty().addListener(((observable, oldValue, newValue) -> {
+			filterComponentsEvents.setPredicate(componentEvent -> {
+				if (newValue == null || newValue.isEmpty()) {
+					return true;
+				}
+				String textField = newValue.toLowerCase();
+				return rb.getString("component." + componentEvent.getComponent()).toLowerCase().contains(textField)
+						|| rb.getString("eventname." + componentEvent.getEventName()).toLowerCase().contains(textField);
+			});
+		}));
+
+	}
+
+	private void updateComponentsChart() {
+
+		String stackedbardataset = stackedBarDatasetComponent.createData(
 				listParticipants.getSelectionModel().getSelectedItems(),
 				listViewComponents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
-		logger.info("Dataset para el stacked bar de logs en JS: " + stackedbardataset);
-		webViewChartsEngine.executeScript("updateChart('stackedBar',"+stackedbardataset+")");
+		logger.info("Dataset para el stacked bar de componentes solo en JS: " + stackedbardataset);
+		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
+
+	}
+
+	private void updateComponentsEventsChart() {
+		String stackedbardataset = stackedBarDatasetComponentEvent.createData(
+				listParticipants.getSelectionModel().getSelectedItems(),
+				listViewEvents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
+
+		logger.info("Dataset para el stacked bar de componentes solo en JS: " + stackedbardataset);
+		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
 
 	}
 
@@ -551,8 +671,8 @@ public class MainController implements Initializable {
 		}
 		optionsUbuLogs.setVisible(true);
 		optionsUbuLogs.setManaged(true);
-		
-		updateLogsChart();
+
+		updateComponentsChart();
 		webViewChartsEngine.executeScript("manageLogsButtons()");
 
 	}
@@ -575,7 +695,7 @@ public class MainController implements Initializable {
 
 	@FXML
 	public void applyFilterLogs(ActionEvent event) {
-		filterLogButton.setDisable(true);
+
 		LocalDate start = datePickerStart.getValue();
 		LocalDate end = datePickerEnd.getValue();
 
@@ -584,13 +704,12 @@ public class MainController implements Initializable {
 			return;
 		}
 
+		filterLogButton.setDisable(true);
 		selectedChoiceBoxDate = choiceBoxDate.getSelectionModel().getSelectedItem();
 		dateStart = start;
 		dateEnd = end;
 
-	
-
-		updateLogsChart();
+		updateComponentsChart();
 
 	}
 
@@ -885,7 +1004,7 @@ public class MainController implements Initializable {
 	 */
 	public void aboutUBUGrades(ActionEvent actionEvent) {
 		try {
-			Desktop.getDesktop().browse(new URL("https://github.com/huco95/UBUGrades").toURI());
+			Desktop.getDesktop().browse(new URL("https://github.com/yjx0003/UBUMonitor").toURI());
 		} catch (IOException | URISyntaxException e) {
 			logger.error("Error al abir la pagina aboutUBUGrades: {}", e);
 		}

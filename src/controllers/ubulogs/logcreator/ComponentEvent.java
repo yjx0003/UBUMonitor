@@ -59,6 +59,11 @@ public class ComponentEvent {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		return component.toString()+" - "+ eventName.toString();
+	}
 
 	
 	

@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controllers.ubulogs.logcreator.Component;
+import controllers.ubulogs.logcreator.ComponentEvent;
 
 public class Logs implements Serializable{
 
@@ -73,6 +74,13 @@ public class Logs implements Serializable{
 	public List<Component> getUniqueComponents(){
 		return logLines.stream()
 				.map(LogLine::getComponent)
+				.distinct()
+				.collect(Collectors.toList());
+	}
+	
+	public List<ComponentEvent> getUniqueComponentsEvents(){
+		return logLines.stream()
+				.map(l->ComponentEvent.getInstance(l.getComponent(),l.getEventName()))
 				.distinct()
 				.collect(Collectors.toList());
 	}

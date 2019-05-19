@@ -1,11 +1,15 @@
 package controllers.ubugrades;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.imageio.ImageIO;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,7 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controllers.Controller;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelFormat;
 import model.Course;
 import model.DescriptionFormat;
 import model.EnrolledUser;
@@ -149,6 +155,10 @@ public class CreatorUBUGradesController {
 		enrolledUser.setProfileimageurlsmall(user.optString("profileimageurlsmall"));
 		enrolledUser.setProfileimageurl(user.optString("profileimageurl"));
 
+		byte[] imageBytes=convertImageToBytes(new Image(user.optString("profileimageurlsmall")));
+	
+		enrolledUser.setImageBytes(imageBytes);
+		
 		List<Course> courses = createCourses(user.optJSONArray("enrolledcourses"));
 		courses.forEach(course -> course.addEnrolledUser(enrolledUser));
 
@@ -160,6 +170,20 @@ public class CreatorUBUGradesController {
 
 		return enrolledUser;
 
+	}
+	private static byte[] convertImageToBytes(Image img) {
+		//https://stackoverflow.com/a/24038735
+		BufferedImage bImage = SwingFXUtils.fromFXImage(img, null);
+		
+		try (ByteArrayOutputStream s = new ByteArrayOutputStream();){
+			ImageIO.write(bImage, "png", s);
+			byte[] res  = s.toByteArray();
+			return res;
+		} catch (IOException e) {
+			logger.error("No se ha podido transformar la imagen a bytes array");
+		}
+		return new byte[0];
+		
 	}
 
 	public static List<Course> createCourses(JSONArray jsonArray) {

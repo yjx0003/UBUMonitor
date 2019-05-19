@@ -117,19 +117,44 @@
                               </Tab>
                               <Tab fx:id="tabUbuLogs" closable="false" text="%tab.logs">
                                  <content>
-                                    <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
-                                       <top>
-                                          <Pane minHeight="63.0" prefHeight="63.0" prefWidth="250.0" BorderPane.alignment="CENTER">
-                                             <children>
-                                                <Label layoutY="21.0" text="%label.component" />
-                                                <TextField fx:id="componentTextField" layoutX="128.0" layoutY="16.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
-                                             </children>
-                                          </Pane>
-                                       </top>
-                                       <center>
-                                          <ListView fx:id="listViewComponents" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-                                       </center>
-                                    </BorderPane>
+                                    <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+                                      <tabs>
+                                          <Tab fx:id="tabUbuLogsComponent" closable="false" text="%tab.component">
+                                             <content>
+                                                <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+                                                   <center>
+                                                      <ListView fx:id="listViewComponents" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                                                   </center>
+                                                   <top>
+                                                      <Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+                                                         <children>
+                                                            <Label layoutX="14.0" layoutY="21.0" text="%label.component" />
+                                                            <TextField fx:id="componentTextField" layoutX="128.0" layoutY="16.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+                                                         </children>
+                                                      </Pane>
+                                                   </top>
+                                                </BorderPane>
+                                             </content>
+                                          </Tab>
+                                          <Tab fx:id="tabUbuLogsEvent" closable="false" text="%tab.event">
+                                             <content>
+                                                <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+                                                   <center>
+                                                      <ListView fx:id="listViewEvents" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                                                   </center>
+                                                   <top>
+                                                      <Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+                                                         <children>
+                                                            <Label alignment="TOP_LEFT" layoutX="22.0" layoutY="9.0" text="%label.componentorevent" textAlignment="RIGHT" />
+                                                            <TextField fx:id="componentEventTextField" layoutX="125.0" layoutY="15.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+                                                         </children>
+                                                      </Pane>
+                                                   </top>
+                                                </BorderPane>
+                                             </content>
+                                          </Tab>
+                                      </tabs>
+                                    </TabPane>
                                  </content>
                               </Tab>
                            </tabs>
@@ -157,12 +182,12 @@
                     </rowConstraints>
                      <children>
                         <ChoiceBox fx:id="choiceBoxDate" prefWidth="150.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" />
-                        <DatePicker fx:id="datePickerStart" editable="false" showWeekNumbers="true" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                        <Label text="%label.startdate" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
-                        <Label text="%label.enddate" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
-                        <Button fx:id="filterLogButton" mnemonicParsing="false" onAction="#applyFilterLogs" text="%btn.filter" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                        <DatePicker fx:id="datePickerStart" editable="false" showWeekNumbers="true" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                        <Label text="%label.startdate" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+                        <Label text="%label.enddate" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
+                        <Button fx:id="filterLogButton" mnemonicParsing="false" onAction="#applyFilterLogs" text="%btn.filter" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
                         <Label text="%label.groupbydate" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
-                        <DatePicker fx:id="datePickerEnd" editable="false" showWeekNumbers="true" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                        <DatePicker fx:id="datePickerEnd" editable="false" showWeekNumbers="true" GridPane.columnIndex="4" GridPane.rowIndex="3" />
                      </children>
                      <BorderPane.margin>
                         <Insets />

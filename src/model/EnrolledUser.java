@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javafx.scene.image.Image;
+
 public class EnrolledUser implements Serializable {
 
 	/**
@@ -156,6 +158,9 @@ public class EnrolledUser implements Serializable {
 	private List<LogLine> affectedLogs;
 	
 	private Map<GradeItem, Double> grades;
+	
+	private byte[] imageBytes;
+	
 
 	public EnrolledUser() {
 		roles = new HashSet<>();
@@ -467,6 +472,15 @@ public class EnrolledUser implements Serializable {
 
 	public double getGrade(GradeItem gradeItem) {
 		return grades.get(gradeItem);
+	}
+
+
+	public byte[] getImageBytes() {
+		return imageBytes;
+	}
+
+	public void setImageBytes(byte[] imageBytes) {
+		this.imageBytes = imageBytes;
 	}
 
 	@Override

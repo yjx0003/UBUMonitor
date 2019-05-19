@@ -13,6 +13,11 @@ import model.LogLine;
 
 public class GroupByYearQuarter extends GroupByAbstract<YearQuarter> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public GroupByYearQuarter(List<LogLine> logLines, Set<EnrolledUser> enrolledUsers) {
 		super(logLines, enrolledUsers);
 	

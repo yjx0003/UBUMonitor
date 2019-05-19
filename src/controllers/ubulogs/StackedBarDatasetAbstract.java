@@ -15,25 +15,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controllers.Controller;
-import controllers.ubulogs.logcreator.Component;
 import model.EnrolledUser;
 
-public class StackedBarDataset {
+public abstract class StackedBarDatasetAbstract<T> {
 
-	static final Logger logger = LoggerFactory.getLogger(StackedBarDataset.class);
-	private Controller controller = Controller.getInstance();
+	static final Logger logger = LoggerFactory.getLogger(StackedBarDatasetAbstract.class);
+	protected Controller controller = Controller.getInstance();
 	/**
 	 * Nivel de opacidad para el color de fondo de las barras
 	 */
 	private static final float OPACITY_BAR = 0.4f;
 
-	private List<EnrolledUser> selectedUsers = new ArrayList<>();
-	private List<Component> selectedComponents = new ArrayList<>();
-	private Map<Component, int[]> componentColors;
-	private GroupByAbstract<?> groupBy;
-	private LocalDate start;
-	private LocalDate end;
-	private StringBuilder stringBuilder;
+	protected List<EnrolledUser> selectedUsers = new ArrayList<>();
+	protected List<T> selecteds = new ArrayList<>();
+	protected Map<T, int[]> colors;
+	protected GroupByAbstract<?> groupBy;
+	protected LocalDate start;
+	protected LocalDate end;
+	protected StringBuilder stringBuilder;
 
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat();
 	{
@@ -43,36 +42,24 @@ public class StackedBarDataset {
 		DECIMAL_FORMAT.setMaximumFractionDigits(2);
 		DECIMAL_FORMAT.setMinimumFractionDigits(2);
 	}
-	/**
-	 * static Singleton instance.
-	 */
-	private static StackedBarDataset instance;
-
-	/**
-	 * Private constructor for singleton.
-	 */
-	private StackedBarDataset() {
-	}
-
-	/**
-	 * Return a singleton instance of CreateStackedBarDataset.
-	 */
-	public static StackedBarDataset getInstance() {
-		if (instance == null) {
-			instance = new StackedBarDataset();
-		}
-		return instance;
-	}
 
 	private static String escapeJavaScriptText(String input) {
 		return input.replaceAll("'", "\\\\'");
 	}
+	
+	protected abstract String translate(T element);
+	
+	protected abstract Map<T, List<Double>> getMeans();
+	
+
+	protected abstract Map<EnrolledUser, Map<T, List<Long>>> getUserCounts();
 
 	public String createData(List<EnrolledUser> selectedUsers,
-			List<Component> selectedComponents, GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd) {
+			List<T> selecteds, GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd) {
+		
 		//lo metemos en un nuevo arraylist para evitar que se actualice en tiempo real los elementos
 		this.selectedUsers = new ArrayList<>(selectedUsers);
-		this.selectedComponents = new ArrayList<>(selectedComponents);
+		this.selecteds = new ArrayList<>(selecteds);
 		this.groupBy = groupBy;
 		this.start = dateStart;
 		this.end = dateEnd;
@@ -103,7 +90,7 @@ public class StackedBarDataset {
 
 	private void setDatasets() {
 		stringBuilder.append("datasets: [");
-		setMeanComponents();
+		setMeans();
 		setUsersDatasets();
 		stringBuilder.append("]");
 	}
@@ -113,12 +100,12 @@ public class StackedBarDataset {
 	 * 
 	 * 
 	 */
-	private void setMeanComponents() {
+	private void setMeans() {
 
-		Map<Component, List<Double>> meanComponents = groupBy.getComponentsMeans(selectedComponents, start, end);
+		Map<T, List<Double>> meanTs = getMeans();
 
-		for (Entry<Component, List<Double>> entry : meanComponents.entrySet()) {
-			Component component = entry.getKey();
+		for (Entry<T, List<Double>> entry : meanTs.entrySet()) {
+			T element = entry.getKey();
 			List<Double> data = entry.getValue();
 			
 			// convertimos el valor double en string limitado a dos decimales
@@ -126,12 +113,12 @@ public class StackedBarDataset {
 					.map(d -> DECIMAL_FORMAT.format(d))
 					.collect(Collectors.toList());
 
-			int[] color = componentColors.get(component);
+			int[] color = colors.get(element);
 
 			stringBuilder.append("{");
 			stringBuilder.append(
 					"label:'" + escapeJavaScriptText(controller.getResourceBundle().getString("chart.mean") + " "
-							+ translateComponent(component)) + "',");
+							+ translate(element)) + "',");
 			stringBuilder.append("type: 'line',");
 			stringBuilder.append("borderWidth: 2,");
 			stringBuilder.append("fill: false,");
@@ -142,20 +129,22 @@ public class StackedBarDataset {
 
 	}
 
+
+
+	
 	private void setUsersDatasets() {
-		Map<EnrolledUser, Map<Component, List<Long>>> userComponentDataset = groupBy.getUsersCounts(selectedUsers,
-				selectedComponents, start, end);
+		Map<EnrolledUser, Map<T, List<Long>>> userTDataset = getUserCounts();
 		List<String> datasets = new ArrayList<>();
 
 		for (EnrolledUser user : selectedUsers) {
-			Map<Component, List<Long>> componentDataset = userComponentDataset.get(user);
-			for (Component component : selectedComponents) {
-				int[] c = componentColors.get(component);
+			Map<T, List<Long>> elementDataset = userTDataset.get(user);
+			for (T element : selecteds) {
+				int[] c = colors.get(element);
 				StringBuilder bar = new StringBuilder();
-				List<Long> data = componentDataset.get(component);
+				List<Long> data = elementDataset.get(element);
 
 				bar.append("{");
-				bar.append("label:'" + escapeJavaScriptText(translateComponent(component)) + "',");
+				bar.append("label:'" + escapeJavaScriptText(translate(element)) + "',");
 				bar.append("stack: '" + escapeJavaScriptText(user.toString()) + "',");
 				bar.append("backgroundColor: 'rgba(" + c[0] + ", " + c[1] + "," + c[2] + "," + OPACITY_BAR + ")',");
 				bar.append("data: [" + join(data) + "]");
@@ -174,26 +163,25 @@ public class StackedBarDataset {
 				.collect(Collectors.joining(", "));
 	}
 
-	private <T> String join(List<T> list) {
-		return list.stream()
-				.map(T::toString)
+	private <E> String join(List<E> datasets) {
+		return datasets.stream()
+				.map(E::toString)
 				.collect(Collectors.joining(", "));
 	}
 
 	
-	private String translateComponent(Component component) {
-		return controller.getResourceBundle().getString("component." + component);
-	}
+
+	
 
 	private void setRandomColors() {
-		componentColors = new HashMap<>();
+		colors = new HashMap<>();
 
-		for (int i = 0, n = selectedComponents.size(); i < n; i++) {
+		for (int i = 0, n = selecteds.size(); i < n; i++) {
 			
 			//generamos un color a partir de HSB, el hue(H) es el color, saturacion (S), y brillo(B)
 			Color c = new Color(Color.HSBtoRGB(i / (float) n, 0.8f, 1.0f));
 			int[] array = { c.getRed(), c.getGreen(), c.getBlue() };
-			componentColors.put(selectedComponents.get(i), array);
+			colors.put(selecteds.get(i), array);
 		}
 
 	}

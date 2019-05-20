@@ -64,6 +64,9 @@ public enum Component {
 	public static Component get(String name) {
 		return map.getOrDefault(name,Component.COMPONENT_NOT_AVAILABLE);
 	}
-	
+	@Override
+	public String toString() {
+		return super.toString().toLowerCase();
+	}
 	
 }

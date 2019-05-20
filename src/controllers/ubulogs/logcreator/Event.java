@@ -148,5 +148,8 @@ public enum Event {
 	public static Event get(String name) {
 		return map.getOrDefault(name,EVENT_NOT_AVAILABLE);
 	}
-	
+	@Override
+	public String toString() {
+		return super.toString().toLowerCase();
+	}
 }

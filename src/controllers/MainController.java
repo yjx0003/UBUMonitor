@@ -650,7 +650,8 @@ public class MainController implements Initializable {
 				listViewComponents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
 		logger.info("Dataset para el stacked bar de componentes solo en JS: " + stackedbardataset);
 		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
-
+		long maxYAxis=selectedChoiceBoxDate.getMaxComponent(listViewComponents.getSelectionModel().getSelectedItems(), dateStart, dateEnd);
+		webViewChartsEngine.executeScript("changeYMaxStackedBar("+maxYAxis+")");
 	}
 
 	private void updateComponentsEventsChart() {
@@ -660,6 +661,9 @@ public class MainController implements Initializable {
 
 		logger.info("Dataset para el stacked bar de componentes y eventos en JS: " + stackedbardataset);
 		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
+		
+		long maxYAxis=selectedChoiceBoxDate.getMaxComponentEvent(listViewEvents.getSelectionModel().getSelectedItems(), dateStart, dateEnd);
+		webViewChartsEngine.executeScript("changeYMaxStackedBar("+maxYAxis+")");
 
 	}
 

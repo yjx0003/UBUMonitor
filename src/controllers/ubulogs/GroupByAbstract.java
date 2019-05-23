@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,8 @@ public abstract class GroupByAbstract<T> implements Serializable {
 	}
 
 	public void setCounts(List<LogLine> logLines) {
-		// quitamos los nulos, sino salta excepcion en el Collectors.groupingBy LogLine::getUser
+		// quitamos los nulos, sino salta excepcion en el Collectors.groupingBy
+		// LogLine::getUser
 		countsEvents = logLines.stream()
 				.filter(l -> l.getUser() != null)
 				.collect(Collectors.groupingBy(LogLine::getUser,
@@ -259,7 +261,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 				List<Long> countsResult = componentEventResult.computeIfAbsent(componentEvent, k -> new ArrayList<>());
 				Map<Event, Map<T, Long>> eventCounts = componentCounts.computeIfAbsent(component, k -> new HashMap<>());
 				Map<T, Long> counts = eventCounts.computeIfAbsent(event, k -> new HashMap<>());
-				
+
 				for (T groupBy : groupByRange) {
 					long count = counts.computeIfAbsent(groupBy, k -> 0L);
 					countsResult.add(count);
@@ -268,6 +270,51 @@ public abstract class GroupByAbstract<T> implements Serializable {
 		}
 
 		return result;
+	}
+
+	public long getMaxComponent(List<Component> components, LocalDate start, LocalDate end) {
+		
+		if(components.isEmpty()) {
+			return 0L;
+		}
+		
+		Map<T, Long> sumComponents = new HashMap<>();
+		List<T> range = getRange(start, end);
+		for (EnrolledUser enrolledUser : enrolledUsers) {
+			Map<Component, Map<T, Long>> componentsMap = countsComponents.get(enrolledUser);
+			for (Component component : components) {
+				Map<T, Long> groupByMap = componentsMap.get(component);
+				for (T groupBy : range) {
+					sumComponents.merge(groupBy, groupByMap.getOrDefault(groupBy, 0L), Long::sum);
+				}
+
+			}
+		}
+		return Collections.max(sumComponents.values());
+	}
+
+	public long getMaxComponentEvent(List<ComponentEvent> componentsEvents, LocalDate start, LocalDate end) {
+		
+		if(componentsEvents.isEmpty()) {
+			return 0L;
+		}
+		
+		Map<T, Long> sumComponents = new HashMap<>();
+		List<T> range = getRange(start, end);
+
+		for (EnrolledUser enrolledUser : enrolledUsers) {
+			Map<Component, Map<Event, Map<T, Long>>> componentsMap = countsEvents.get(enrolledUser);
+			for (ComponentEvent componentEvent : componentsEvents) {
+				Map<Event, Map<T, Long>> eventMap = componentsMap.get(componentEvent.getComponent());
+				Map<T, Long> groupByMap = eventMap.get(componentEvent.getEventName());
+				for (T groupBy : range) {
+					sumComponents.merge(groupBy, groupByMap.getOrDefault(groupBy, 0L), Long::sum);
+				}
+			}
+
+		}
+
+		return Collections.max(sumComponents.values());
 	}
 
 	public abstract Function<LogLine, T> getGroupByFunction();

@@ -247,6 +247,7 @@ var optionsStackedBar= {
             },
             ticks: {
                 beginAtZero:true,
+                min:0,
             }
         }]
     },
@@ -586,6 +587,12 @@ function manageLogsButtons(){
 	generateChart(currentLogType);
 	
 
+}
+
+function changeYMaxStackedBar(max){
+	
+	myChart.options.scales.yAxes[0].ticks.suggestedMax=max;
+	myChart.update();
 }
 
 //Funcion que almacena la media general.

@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
@@ -22,8 +24,8 @@ import org.slf4j.LoggerFactory;
 import controllers.Controller;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelFormat;
 import model.Course;
+import model.CourseCategory;
 import model.DescriptionFormat;
 import model.EnrolledUser;
 import model.GradeItem;
@@ -33,6 +35,7 @@ import model.Role;
 import model.mod.Module;
 import model.mod.ModuleType;
 import webservice.WebService;
+import webservice.core.CoreCourseGetCategories;
 import webservice.core.CoreCourseGetContents;
 import webservice.core.CoreEnrolGetEnrolledUsers;
 import webservice.core.CoreEnrolGetUsersCourses;
@@ -155,35 +158,38 @@ public class CreatorUBUGradesController {
 		enrolledUser.setProfileimageurlsmall(user.optString("profileimageurlsmall"));
 		enrolledUser.setProfileimageurl(user.optString("profileimageurl"));
 
-		byte[] imageBytes=convertImageToBytes(new Image(user.optString("profileimageurlsmall")));
-	
+		logger.info("Descargando y convirtiendo imagen a bytes de usuario: "+enrolledUser);
+		byte[] imageBytes = convertImageToBytes(new Image(user.optString("profileimageurlsmall")));
+
 		enrolledUser.setImageBytes(imageBytes);
-		
+
 		List<Course> courses = createCourses(user.optJSONArray("enrolledcourses"));
 		courses.forEach(course -> course.addEnrolledUser(enrolledUser));
 
 		List<Role> roles = createRoles(user.optJSONArray("roles"));
 		roles.forEach(role -> enrolledUser.addRole(role));
 
-		List<Group> groups = createGroups(user.optJSONArray("groups"));
+		List<Group> groups = createGroups(user.getJSONArray("groups"));
+
 		groups.forEach(group -> enrolledUser.addGroup(group));
 
 		return enrolledUser;
 
 	}
+
 	private static byte[] convertImageToBytes(Image img) {
-		//https://stackoverflow.com/a/24038735
+		// https://stackoverflow.com/a/24038735
 		BufferedImage bImage = SwingFXUtils.fromFXImage(img, null);
-		
-		try (ByteArrayOutputStream s = new ByteArrayOutputStream();){
+
+		try (ByteArrayOutputStream s = new ByteArrayOutputStream();) {
 			ImageIO.write(bImage, "png", s);
-			byte[] res  = s.toByteArray();
+			byte[] res = s.toByteArray();
 			return res;
 		} catch (IOException e) {
 			logger.error("No se ha podido transformar la imagen a bytes array");
 		}
 		return new byte[0];
-		
+
 	}
 
 	public static List<Course> createCourses(JSONArray jsonArray) {
@@ -214,6 +220,12 @@ public class CreatorUBUGradesController {
 		DescriptionFormat summaryFormat = DescriptionFormat.get(jsonObject.optInt("summaryformat"));
 		Instant startDate = Instant.ofEpochSecond(jsonObject.optInt("startdate"));
 		Instant endDate = Instant.ofEpochSecond(jsonObject.optInt("enddate"));
+
+		int categoryId = jsonObject.optInt("category");
+		if (categoryId != 0) {
+			CourseCategory courseCategory = CONTROLLER.getBBDD().getCourseCategoryById(categoryId);
+			course.setCourseCategory(courseCategory);
+		}
 
 		course.setShortName(shortName);
 		course.setFullName(fullName);
@@ -286,7 +298,35 @@ public class CreatorUBUGradesController {
 		List<Course> courses = getUserCourses(moodleUser.getId());
 		moodleUser.setCourses(courses);
 
+		Set<Integer> ids = courses.stream()
+				.mapToInt(Course::getId) // cogemos los ids de cada curso
+				.boxed() // convertimos a Integer
+				.collect(Collectors.toSet());
+
+		createCourseCategories(ids);
+
 		return moodleUser;
+	}
+
+	public static void createCourseCategories(Set<Integer> ids) throws IOException {
+
+		WebService ws = new CoreCourseGetCategories(ids);
+		String response = ws.getResponse();
+		JSONArray jsonArray = new JSONArray(response);
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+			int id = jsonObject.getInt("id");
+			CourseCategory courseCategory = CONTROLLER.getBBDD().getCourseCategoryById(id);
+			courseCategory.setName(jsonObject.getString("name"));
+			courseCategory.setDescription(jsonObject.getString("description"));
+			courseCategory.setDescriptionFormat(DescriptionFormat.get(jsonObject.getInt("descriptionformat")));
+			courseCategory.setCoursecount(jsonObject.getInt("coursecount"));
+			courseCategory.setDepth(jsonObject.getInt("depth"));
+			courseCategory.setPath(jsonObject.getString("path"));
+
+		}
+
 	}
 
 	public static List<Course> getUserCourses(int userid) throws IOException {
@@ -300,7 +340,7 @@ public class CreatorUBUGradesController {
 	public static List<Module> createModules(int courseid) throws IOException {
 
 		WebService ws = CoreCourseGetContents.newBuilder(courseid)
-				.setExcludecontents(true)
+				.setExcludecontents(true) // ignoramos el contenido
 				.build();
 		String response = ws.getResponse();
 

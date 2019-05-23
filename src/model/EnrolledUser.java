@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javafx.scene.image.Image;
-
 public class EnrolledUser implements Serializable {
 
 	/**

@@ -69,13 +69,12 @@ public class Controller {
 		BBDD BBDD=new BBDD();
 		setBBDD(BBDD);
 		setDefaultBBDD(BBDD);
-
 		// Si no existe el recurso de idioma especificado cargamos el Español
 		Languages lang = Languages.getLanguageByLocale(Locale.getDefault());
 		try {
 			
 			if (lang == null) {
-				logger.info("No existe fichero de idioma para: " + Locale.getDefault().getLanguage());
+				logger.info("No existe fichero de idioma para: " + Locale.getDefault());
 				logger.info("Cargando idioma: " + Languages.SPANISH);
 				setSelectedLanguage(Languages.SPANISH);
 			} else {

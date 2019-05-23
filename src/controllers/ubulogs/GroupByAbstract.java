@@ -57,8 +57,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 	}
 
 	public void setCounts(List<LogLine> logLines) {
-		// quitamos los nulos, sino salta excepcion en el Collectors.groupingBy
-		// LogLine::getUser
+		// quitamos los nulos, sino salta excepcion en el Collectors.groupingBy LogLine::getUser
 		countsEvents = logLines.stream()
 				.filter(l -> l.getUser() != null)
 				.collect(Collectors.groupingBy(LogLine::getUser,

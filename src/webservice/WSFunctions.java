@@ -3,6 +3,12 @@ package webservice;
 public enum WSFunctions {
 	
 	/**
+	 * Devuelve las categorías de los cursos.
+	 * 
+	 */
+	CORE_COURSE_GET_CATEGORIES,
+	
+	/**
 	 * Devuelve los modulos de un curso como tareas, cuestionarios, lecciones, etc.
 	 */
 	CORE_COURSE_GET_CONTENTS,

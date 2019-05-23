@@ -2,6 +2,9 @@
     "Activity report": {
         "Activity report viewed": [
             "The user with id '' viewed the outline activity report for the course with id ''."
+        ],
+        "Outline report viewed": [
+            "The user with id '' viewed the outline report for the user with id '' for the course with id ''."
         ]
     },
     "Assignment": {
@@ -16,6 +19,9 @@
         ],
         "Assignment override deleted": [
             "The user with id '' deleted the override with id '' for the assign with course module id '' for the user with id ''."
+        ],
+        "Assignment override updated": [
+            "The user with id '' updated the override with id '' for the assign with course module id '' for the user with id ''."
         ],
         "Course module instance list viewed": [
             "The user with id '' viewed the instance list for the module '' in the course with id ''."
@@ -41,8 +47,28 @@
         "The submission has been graded.": [
             "The user with id '' has graded the submission '' for the user with id '' for the assignment with course module id ''."
         ],
+        "The submissions have been locked for a user.": [
+            "The user with id '' locked the submission for the user with id '' for the assignment with course module id ''."
+        ],
+        "The submissions have been unlocked for a user.": [
+            "The user with id '' locked the submission for the user with id '' for the assignment with course module id ''."
+        ],
         "The user has accepted the statement of the submission.": [
             "The user with id '' has accepted the statement of the submission with id '' for the assignment with course module id ''."
+        ]
+    },
+    "Chat": {
+        "Course module instance list viewed": [
+            "The user with id '' viewed the instance list for the module '' in the course with id ''."
+        ],
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ],
+        "Message sent": [
+            "The user with id '' has sent a message in the chat with course module id\n            ''."
+        ],
+        "Sessions viewed": [
+            "The user with id '' has viewed the sessions of the chat with course module id\n            ''."
         ]
     },
     "Choice": {
@@ -59,9 +85,9 @@
             "The user with id '' viewed the '' activity with course module id ''."
         ]
     },
-    "Component": {
-        "Event name": [
-            "Description"
+    "Course participation": {
+        "Participation report viewed": [
+            "The user with id '' viewed the course participation report for the course with id ''."
         ]
     },
     "Excel spreadsheet": {
@@ -72,6 +98,12 @@
     "Feedback": {
         "Course module instance list viewed": [
             "The user with id '' viewed the instance list for the module '' in the course with id ''."
+        ],
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ],
+        "Response submitted": [
+            "The user with id '' submitted response for '' activity with course module id ''."
         ]
     },
     "File": {
@@ -84,10 +116,12 @@
             "The user with id '' has uploaded a file to the submission with id '' in the assignment activity with course module id ''."
         ],
         "Submission created.": [
-            "The user with id '' created a file submission and uploaded '' file/s in the assignment with course module id ''."
+            "The user with id '' created a file submission and uploaded '' file/s in the assignment with course module id ''.",
+            "The user with id '' created a file submission and uploaded '' file/s in the assignment with course module id '' for the group with id ''."
         ],
         "Submission updated.": [
-            "The user with id '' updated a file submission and uploaded '' file/s in the assignment with course module id ''."
+            "The user with id '' updated a file submission and uploaded '' file/s in the assignment with course module id ''.",
+            "The user with id '' updated a file submission and uploaded '' file/s in the assignment with course module id '' for the group with id ''."
         ]
     },
     "Folder": {
@@ -108,8 +142,17 @@
         "Course module viewed": [
             "The user with id '' viewed the '' activity with course module id ''."
         ],
+        "Course searched": [
+            "The user with id '' has searched the course with id '' for forum posts containing \"\"."
+        ],
         "Discussion created": [
             "The user with id '' has created the discussion with id '' in the forum with course module id ''."
+        ],
+        "Discussion deleted": [
+            "The user with id '' has deleted the discussion with id '' in the forum with course module id ''."
+        ],
+        "Discussion moved": [
+            "The user with id '' has moved the discussion with id '' from the forum with id '' to the forum with id ''."
         ],
         "Discussion subscription created": [
             "The user with id '' subscribed the user with id '' to the discussion  with id '' in the forum with the course module id ''."
@@ -120,16 +163,67 @@
         "Post created": [
             "The user with id '' has created the post with id '' in the discussion with id '' in the forum with course module id ''."
         ],
+        "Post deleted": [
+            "The user with id '' has deleted the post with id '' in the discussion with id '' in the forum with course module id ''."
+        ],
         "Post updated": [
             "The user with id '' has updated the post with id '' in the discussion with id '' in the forum with course module id ''."
         ],
         "Some content has been posted.": [
             "The user with id '' has posted content in the forum post with id '' in the discussion '' located in the forum with course module id ''."
+        ],
+        "User report viewed": [
+            "The user with id '' has viewed the user report for the user with id '' in the course with id '' with viewing mode ''."
+        ]
+    },
+    "Glossary": {
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ],
+        "Entry has been created": [
+            "The user with id '' has created the glossary entry with id '' for the glossary activity with course module id ''."
+        ],
+        "Entry has been updated": [
+            "The user with id '' has updated the glossary entry with id '' in the glossary activity with course module id ''."
+        ],
+        "Entry has been viewed": [
+            "The user with id '' has viewed the glossary entry with id '' in the glossary activity with course module id ''."
         ]
     },
     "Grader report": {
         "Grader report viewed": [
             "The user with id '' viewed the grader report in the gradebook."
+        ]
+    },
+    "Guía Docente": {
+        "Evaluation system created": [
+            "Evaluation system created"
+        ],
+        "Evaluation system modified": [
+            "Evaluation system modified"
+        ],
+        "Outstanding ratings modified": [
+            "Outstanding ratings modified"
+        ],
+        "Subject modified": [
+            "Subject modified"
+        ],
+        "Unit modified": [
+            "Unit modified"
+        ]
+    },
+    "HotPot module": {
+        "Course module instance list viewed": [
+            "The user with id '' viewed the instance list for the module '' in the course with id ''."
+        ],
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ],
+        "HotPot attempt started": [
+            "The user with id \"\" started an attempt at the \"hotpot\" activity with course module id \"\""
+        ],
+        "HotPot attempt submitted": [
+            "The user with id \"\" submitted an attempt at the \"hotpot\" activity with course module id \"\""
         ]
     },
     "Live logs": {
@@ -143,6 +237,17 @@
         ],
         "User log report viewed": [
             "The user with id '' viewed the user log report for the user with id ''."
+        ]
+    },
+    "Online text submissions": {
+        "An online text has been uploaded.": [
+            "The user with id '' has saved an online text submission with id '' in the assignment activity with course module id ''."
+        ],
+        "Submission created.": [
+            "The user with id '' created an online text submission with '' words in the assignment with course module id ''."
+        ],
+        "Submission updated.": [
+            "The user with id '' updated an online text submission with '' words in the assignment with course module id ''."
         ]
     },
     "OpenDocument spreadsheet": {
@@ -177,8 +282,14 @@
         "Course module viewed": [
             "The user with id '' viewed the '' activity with course module id ''."
         ],
+        "Question manually graded": [
+            "The user with id '' manually graded the question with id '' for the attempt with id '' for the quiz with course module id ''."
+        ],
         "Quiz attempt abandoned": [
             "The user with id '' has had their attempt with id '' marked as abandoned for the quiz with course module id ''."
+        ],
+        "Quiz attempt preview started": [
+            "The user with id '' has had their attempt with id '' previewed by the user with id '' for the quiz with course module id ''."
         ],
         "Quiz attempt reviewed": [
             "The user with id '' has had their attempt with id '' reviewed by the user with id '' for the quiz with course module id ''."
@@ -192,11 +303,20 @@
         "Quiz attempt summary viewed": [
             "The user with id '' has viewed the summary for the attempt with id '' belonging to the user with id '' for the quiz with course module id ''."
         ],
+        "Quiz attempt time limit exceeded": [
+            "The quiz attempt with id '' belonging to the quiz with course module id '' for the user with id '' became overdue."
+        ],
         "Quiz attempt viewed": [
             "The user with id '' has viewed the attempt with id '' belonging to the user with id '' for the quiz with course module id ''."
         ],
         "Quiz edit page viewed": [
             "The user with id '' viewed the edit page for the quiz with course module id ''."
+        ],
+        "Quiz override created": [
+            "The user with id '' created the override with id '' for the quiz with course module id '' for the group with id ''."
+        ],
+        "Quiz override deleted": [
+            "The user with id '' deleted the override with id '' for the quiz with course module id '' for the group with id ''."
         ],
         "Quiz report viewed": [
             "The user with id '' viewed the report '' for the quiz with course module id ''."
@@ -238,6 +358,9 @@
         ],
         "Course activity completion updated": [
             "The user with id '' updated the completion state for the course module with id '' for the user with id ''."
+        ],
+        "Course backup created": [
+            "The user with id '' created a backup of the course with the id ''."
         ],
         "Course created": [
             "The user with id '' created the course with id ''."
@@ -300,6 +423,9 @@
         "Grouping created": [
             "The user with id '' created the grouping with id ''."
         ],
+        "Question category created": [
+            "The user with id '' created the question category with id ''."
+        ],
         "Recent activity viewed": [
             "The user with id '' viewed the recent activity report in the course with id ''."
         ],
@@ -328,6 +454,21 @@
             "The user with id '' unenrolled the user with id '' using the enrolment method '' from the course with id ''."
         ]
     },
+    "Turnitin Assignment 2": {
+        "Add Submission": [
+            "Entrega del usuario enviada a Turnitin ''",
+            "El usuario ha añadido una entrega ''"
+        ],
+        "List Submissions": [
+            "El usuario ha visto la lista de entregas al curso: ",
+            "El usuario vio la bandeja de entrada de su entrega en el curso: "
+        ]
+    },
+    "URL": {
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ]
+    },
     "User report": {
         "Grade user report viewed": [
             "The user with id '' viewed the user report in the gradebook."
@@ -342,6 +483,11 @@
         ],
         "Tour started": [
             "The user with id '' has started the tour with id '' on the page with URL ''."
+        ]
+    },
+    "Wiki": {
+        "Course module instance list viewed": [
+            "The user with id '' viewed the instance list for the module '' in the course with id ''."
         ]
     },
     "Workshop": {

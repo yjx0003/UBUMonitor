@@ -658,7 +658,7 @@ public class MainController implements Initializable {
 				listParticipants.getSelectionModel().getSelectedItems(),
 				listViewEvents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
 
-		logger.info("Dataset para el stacked bar de componentes solo en JS: " + stackedbardataset);
+		logger.info("Dataset para el stacked bar de componentes y eventos en JS: " + stackedbardataset);
 		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
 
 	}

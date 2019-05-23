@@ -19,6 +19,7 @@ public class BBDD implements Serializable {
 	private Map<Integer, Module> modules;
 	private Map<Integer, Course> courses;
 	private Map<Integer, GradeItem> gradeItems;
+	private Map<Integer, CourseCategory> courseCategories;
 
 	/**
 	 * Curso actual del usuario
@@ -32,6 +33,7 @@ public class BBDD implements Serializable {
 		modules = new HashMap<Integer, Module>();
 		courses = new HashMap<Integer, Course>();
 		gradeItems = new HashMap<Integer, GradeItem>();
+		courseCategories = new HashMap<Integer, CourseCategory>();
 	}
 
 	public BBDD(BBDD BBDD) {
@@ -172,6 +174,24 @@ public class BBDD implements Serializable {
 
 	public void clearGradeItems() {
 		gradeItems.clear();
+	}
+
+	// #################################################################################
+
+	public Map<Integer, CourseCategory> getCourseCategories() {
+		return courseCategories;
+	}
+
+	public boolean containsCourseCategory(int id) {
+		return courseCategories.containsKey(id);
+	}
+
+	public CourseCategory getCourseCategoryById(int id) {
+		return courseCategories.computeIfAbsent(id, key -> new CourseCategory(id));
+	}
+
+	public CourseCategory putCourseCategory(CourseCategory courseCategory) {
+		return courseCategories.putIfAbsent(courseCategory.getId(), courseCategory);
 	}
 
 	@Override

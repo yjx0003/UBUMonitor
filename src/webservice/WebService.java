@@ -53,7 +53,7 @@ public abstract class WebService {
 	private static void checkToken() {
 		if (token == null) {
 			throw new IllegalStateException(
-					"Token no configurado, llama al metodo setToken de la clase WebService para configurarlo.");
+					"Token no configurado, llama al metodo initizialize de la clase WebService para configurarlo.");
 		}
 	}
 
@@ -128,6 +128,10 @@ public abstract class WebService {
 
 	protected void appendToUrlOptions(int index, String name, boolean value) {
 		parameters += "&options[" + index + "][name]=" + name + "&options[" + index + "][value]=" + value;
+	}
+
+	protected void appendToUrlCriteria(String key, String value) {
+		parameters += "&criteria[0][key]=" + key + "criteria[0][value]=" + value;
 	}
 
 	private String getContentWithJsoup(String url) throws IOException {

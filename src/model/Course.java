@@ -37,6 +37,8 @@ public class Course implements Serializable {
 	private Instant startDate;
 	private Instant endDate;
 
+	private CourseCategory courseCategory;
+
 	private Set<EnrolledUser> enrolledUsers;
 	private Set<Role> roles; // roles que hay en el curso
 	private Set<Group> groups; // grupos que hay en el curso
@@ -312,7 +314,6 @@ public class Course implements Serializable {
 		return uniqueModulesTypes;
 	}
 
-	
 	public LogStats getLogStats() {
 		return logStats;
 	}
@@ -320,10 +321,18 @@ public class Course implements Serializable {
 	public void setLogStats(LogStats logStats) {
 		this.logStats = logStats;
 	}
-	
+
+	public CourseCategory getCourseCategory() {
+		return courseCategory;
+	}
+
+	public void setCourseCategory(CourseCategory courseCategory) {
+		this.courseCategory = courseCategory;
+	}
+
 	@Override
 	public String toString() {
-		return this.fullName;
+		return this.fullName +" ("+this.courseCategory+")";
 	}
 
 	@Override
@@ -350,7 +359,5 @@ public class Course implements Serializable {
 		module.setCourse(this);
 
 	}
-
-	
 
 }

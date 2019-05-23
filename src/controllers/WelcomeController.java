@@ -97,7 +97,10 @@ public class WelcomeController implements Initializable {
 			logger.info("Cargando cursos...");
 
 			ObservableList<Course> list = FXCollections.observableArrayList(controller.getUser().getCourses());
-			Collections.sort(list,Comparator.comparing(Course::getFullName));
+			Collections.sort(list, Comparator.comparing(Course::getFullName)
+					.thenComparing(c -> c.getCourseCategory().getName()));
+			
+			
 			progressBar.setVisible(false);
 			listCourses.setItems(list);
 			chkUpdateData.setDisable(true);
@@ -336,7 +339,7 @@ public class WelcomeController implements Initializable {
 					logger.debug(controller.getBBDD().toString());
 				} catch (Exception e) {
 					logger.error("Error al cargar los datos de los alumnos: {}", e);
-					updateMessage("Se produjo un error inesperado al cargar los datos.\n" + e.getLocalizedMessage());
+					updateMessage("Se produjo un error inesperado al cargar los datos.\n" + e.getMessage());
 					throw e;
 				} finally {
 					controller.getStage().getScene().setCursor(Cursor.DEFAULT);
@@ -358,7 +361,7 @@ public class WelcomeController implements Initializable {
 	private void errorWindow(String mensaje) {
 		Alert alert = new Alert(AlertType.ERROR);
 
-		alert.setTitle("UbuGrades");
+		alert.setTitle("UBUMonitor");
 		alert.setHeaderText("Error");
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.initOwner(controller.getStage());

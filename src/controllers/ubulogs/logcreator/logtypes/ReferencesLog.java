@@ -142,7 +142,7 @@ public abstract class ReferencesLog {
 			put(ComponentEvent.getInstance(Component.QUIZ, Event.COURSE_MODULE_VIEWED), UserCmid.getInstance());
 			put(ComponentEvent.getInstance(Component.QUIZ, Event.QUESTION_MANUALLY_GRADED), UserQuestionAttemptCmid.getInstance());
 			put(ComponentEvent.getInstance(Component.QUIZ, Event.QUIZ_ATTEMPT_ABANDONED), UserAttemptCmid.getInstance());
-			put(ComponentEvent.getInstance(Component.QUIZ, Event.QUIZ_ATTEMPT_PREVIEW_STARTED), Default.getInstance()); //TODO
+			put(ComponentEvent.getInstance(Component.QUIZ, Event.QUIZ_ATTEMPT_PREVIEW_STARTED), UserAttemptAffectedCmid.getInstance()); //TODO
 			put(ComponentEvent.getInstance(Component.QUIZ, Event.QUIZ_ATTEMPT_REVIEWED), UserAttemptAffectedCmid.getInstance());
 			put(ComponentEvent.getInstance(Component.QUIZ, Event.QUIZ_ATTEMPT_STARTED), UserAttemptCmid.getInstance());
 			put(ComponentEvent.getInstance(Component.QUIZ, Event.QUIZ_ATTEMPT_SUBMITTED), UserAttemptCmid.getInstance());
@@ -199,8 +199,8 @@ public abstract class ReferencesLog {
 			put(ComponentEvent.getInstance(Component.SYSTEM, Event.USER_PROFILE_VIEWED), UserAffectedCourse.getInstance());
 			put(ComponentEvent.getInstance(Component.SYSTEM, Event.USER_UNENROLLED_FROM_COURSE), UserAffectedCourse.getInstance());
 
-			put(ComponentEvent.getInstance(Component.TURNITIN_ASSIGNMENT_2, Event.ADD_SUBMISSION), Default.getInstance()); //TODO
-			put(ComponentEvent.getInstance(Component.TURNITIN_ASSIGNMENT_2, Event.LIST_SUBMISSIONS), Default.getInstance()); //TODO
+			put(ComponentEvent.getInstance(Component.TURNITIN_ASSIGNMENT_2, Event.ADD_SUBMISSION), Ignore.getInstance());
+			put(ComponentEvent.getInstance(Component.TURNITIN_ASSIGNMENT_2, Event.LIST_SUBMISSIONS), Course.getInstance());
 
 			put(ComponentEvent.getInstance(Component.URL, Event.COURSE_MODULE_VIEWED), UserCmid.getInstance());
 

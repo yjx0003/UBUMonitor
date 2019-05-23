@@ -78,8 +78,9 @@ public class LoginController implements Initializable {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				if (txtUsername != null && !txtUsername.getText().equals("")) {
-					txtPassword.requestFocus(); // si hay texto cargado del usuario cambiamos el focus al texto de password
+				if (txtUsername != null && !txtUsername.getText().isEmpty()) {
+					txtPassword.requestFocus(); // si hay texto cargado del usuario cambiamos el focus al texto de
+												// password
 				}
 			}
 		});
@@ -101,7 +102,7 @@ public class LoginController implements Initializable {
 	private void initializeProperties() {
 
 		properties = new Properties();
-		createPropertiesIfNotExist();
+
 		File file = new File(PROPERTIES_PATH);
 		if (!file.exists()) {
 
@@ -124,10 +125,6 @@ public class LoginController implements Initializable {
 				logger.error("No se ha podido cargar " + PROPERTIES_PATH);
 			}
 		}
-
-	}
-
-	private void createPropertiesIfNotExist() {
 
 	}
 

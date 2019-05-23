@@ -181,6 +181,9 @@ public class MainController implements Initializable {
 	private GridPane optionsUbuLogs;
 
 	@FXML
+	private TextField textFieldMax;
+
+	@FXML
 	private ChoiceBox<GroupByAbstract<?>> choiceBoxDate;
 	private GroupByAbstract<?> selectedChoiceBoxDate;
 
@@ -453,6 +456,16 @@ public class MainController implements Initializable {
 
 	public void initLogOptionsFilter() {
 
+		textFieldMax.textProperty().addListener((ov, oldValue, newValue) -> {
+			if (newValue.matches("\\d+")) {
+				updateMaxScale(Long.parseLong(newValue));
+			} else if (newValue.isEmpty()) {
+				updateMaxScale(1L);
+			} else {
+				textFieldMax.setText(oldValue);
+			}
+		});
+
 		// añadimos los elementos de la enumeracion en el choicebox
 		ObservableList<GroupByAbstract<?>> typeTimes = FXCollections
 				.observableArrayList(controller.getActualCourse().getLogStats().getList());
@@ -460,10 +473,7 @@ public class MainController implements Initializable {
 		choiceBoxDate.getSelectionModel().selectFirst();
 		selectedChoiceBoxDate = choiceBoxDate.getValue();
 
-		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> {
-			enableFilterLogButton(selectedChoiceBoxDate,
-					newValue, dateStart, datePickerStart.getValue(), dateEnd, datePickerEnd.getValue());
-		});
+		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> applyFilterLogs(null));
 
 		// traduccion de los elementos del choicebox
 		choiceBoxDate.setConverter(new StringConverter<GroupByAbstract<?>>() {
@@ -485,12 +495,12 @@ public class MainController implements Initializable {
 		dateEnd = datePickerEnd.getValue();
 
 		datePickerStart.valueProperty()
-				.addListener((ov, oldValue, newValue) -> enableFilterLogButton(selectedChoiceBoxDate,
-						choiceBoxDate.getValue(), dateStart, newValue, dateEnd, datePickerEnd.getValue()));
+				.addListener((ov, oldValue, newValue) -> enableFilterLogButton(dateStart, newValue, dateEnd,
+						datePickerEnd.getValue()));
 
 		datePickerEnd.valueProperty()
-				.addListener((ov, oldValue, newValue) -> enableFilterLogButton(selectedChoiceBoxDate,
-						choiceBoxDate.getValue(), dateStart, datePickerStart.getValue(), dateEnd, newValue));
+				.addListener((ov, oldValue, newValue) -> enableFilterLogButton(dateStart, datePickerStart.getValue(),
+						dateEnd, newValue));
 
 		filterLogButton.setDisable(true);
 
@@ -499,12 +509,16 @@ public class MainController implements Initializable {
 
 	}
 
-	private void enableFilterLogButton(GroupByAbstract<?> groupByOld, GroupByAbstract<?> groupByNew,
-			LocalDate dateStartOld, LocalDate dateStartNew, LocalDate dateEndOld, LocalDate dateEndNew) {
-		if (groupByOld.equals(groupByNew)
-				&& dateStartOld.equals(dateStartNew)
-				&& dateEndOld.equals(dateEndNew)) {
+	private void updateMaxScale(long value) {
 
+		webViewChartsEngine.executeScript("changeYMaxStackedBar(" + value + ")");
+
+	}
+
+	private void enableFilterLogButton(
+			LocalDate dateStartOld, LocalDate dateStartNew, LocalDate dateEndOld, LocalDate dateEndNew) {
+		if (dateStartOld.equals(dateStartNew)
+				&& dateEndOld.equals(dateEndNew)) {
 			filterLogButton.setDisable(true);
 		} else {
 			filterLogButton.setDisable(false);
@@ -524,7 +538,7 @@ public class MainController implements Initializable {
 			}
 
 		});
-		
+
 		tabUbuLogsEvent.setOnSelectionChanged(event -> {
 			if (tabUbuLogsEvent.isSelected()) {
 				updateComponentsEventsChart();
@@ -540,7 +554,10 @@ public class MainController implements Initializable {
 		ResourceBundle rb = controller.getResourceBundle();
 
 		listViewComponents.getSelectionModel().getSelectedItems()
-				.addListener((Change<? extends Component> c) -> updateComponentsChart());
+				.addListener((Change<? extends Component> c) -> {
+					updateComponentsChart();
+					findMax();
+				});
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
@@ -591,7 +608,10 @@ public class MainController implements Initializable {
 	public void initListViewComponentsEvents() {
 		ResourceBundle rb = controller.getResourceBundle();
 		listViewEvents.getSelectionModel().getSelectedItems()
-				.addListener((Change<? extends ComponentEvent> c) -> updateComponentsEventsChart());
+				.addListener((Change<? extends ComponentEvent> c) -> {
+					updateComponentsEventsChart();
+					findMax();
+				});
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
@@ -650,8 +670,6 @@ public class MainController implements Initializable {
 				listViewComponents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
 		logger.info("Dataset para el stacked bar de componentes solo en JS: " + stackedbardataset);
 		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
-		long maxYAxis=selectedChoiceBoxDate.getMaxComponent(listViewComponents.getSelectionModel().getSelectedItems(), dateStart, dateEnd);
-		webViewChartsEngine.executeScript("changeYMaxStackedBar("+maxYAxis+")");
 	}
 
 	private void updateComponentsEventsChart() {
@@ -661,9 +679,6 @@ public class MainController implements Initializable {
 
 		logger.info("Dataset para el stacked bar de componentes y eventos en JS: " + stackedbardataset);
 		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
-		
-		long maxYAxis=selectedChoiceBoxDate.getMaxComponentEvent(listViewEvents.getSelectionModel().getSelectedItems(), dateStart, dateEnd);
-		webViewChartsEngine.executeScript("changeYMaxStackedBar("+maxYAxis+")");
 
 	}
 
@@ -679,6 +694,18 @@ public class MainController implements Initializable {
 		updateComponentsChart();
 		webViewChartsEngine.executeScript("manageLogsButtons()");
 
+	}
+
+	private void findMax() {
+		long maxYAxis = 0L;
+		if (tabUbuLogsComponent.isSelected()) {
+			maxYAxis = selectedChoiceBoxDate.getMaxComponent(listViewComponents.getSelectionModel().getSelectedItems(),
+					dateStart, dateEnd);
+		} else if (tabUbuLogsEvent.isSelected()) {
+			maxYAxis = selectedChoiceBoxDate
+					.getMaxComponentEvent(listViewEvents.getSelectionModel().getSelectedItems(), dateStart, dateEnd);
+		}
+		textFieldMax.setText(Long.toString(maxYAxis));
 	}
 
 	public void initTabGrades() {
@@ -714,7 +741,7 @@ public class MainController implements Initializable {
 		dateEnd = end;
 
 		updateComponentsChart();
-
+		findMax();
 	}
 
 	/**

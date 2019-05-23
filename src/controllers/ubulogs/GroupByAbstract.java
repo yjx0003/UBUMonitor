@@ -273,15 +273,16 @@ public abstract class GroupByAbstract<T> implements Serializable {
 	}
 
 	public long getMaxComponent(List<Component> components, LocalDate start, LocalDate end) {
-		
-		if(components.isEmpty()) {
-			return 0L;
+
+		if (components.isEmpty()) {
+			return 1L;
 		}
-		
-		Map<T, Long> sumComponents = new HashMap<>();
+
+		Map<EnrolledUser, Map<T, Long>> sumComponentsMap = new HashMap<>();
 		List<T> range = getRange(start, end);
 		for (EnrolledUser enrolledUser : enrolledUsers) {
 			Map<Component, Map<T, Long>> componentsMap = countsComponents.get(enrolledUser);
+			Map<T, Long> sumComponents = sumComponentsMap.computeIfAbsent(enrolledUser, k -> new HashMap<>());
 			for (Component component : components) {
 				Map<T, Long> groupByMap = componentsMap.get(component);
 				for (T groupBy : range) {
@@ -290,20 +291,25 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 			}
 		}
-		return Collections.max(sumComponents.values());
+		logger.info("Maximos de solo componentes: " + components + sumComponentsMap);
+
+		long max = getMax(sumComponentsMap);
+
+		return max;
 	}
 
 	public long getMaxComponentEvent(List<ComponentEvent> componentsEvents, LocalDate start, LocalDate end) {
-		
-		if(componentsEvents.isEmpty()) {
-			return 0L;
+
+		if (componentsEvents.isEmpty()) {
+			return 1L;
 		}
-		
-		Map<T, Long> sumComponents = new HashMap<>();
+
+		Map<EnrolledUser, Map<T, Long>> sumComponentsMap = new HashMap<>();
 		List<T> range = getRange(start, end);
 
 		for (EnrolledUser enrolledUser : enrolledUsers) {
 			Map<Component, Map<Event, Map<T, Long>>> componentsMap = countsEvents.get(enrolledUser);
+			Map<T, Long> sumComponents = sumComponentsMap.computeIfAbsent(enrolledUser, k -> new HashMap<>());
 			for (ComponentEvent componentEvent : componentsEvents) {
 				Map<Event, Map<T, Long>> eventMap = componentsMap.get(componentEvent.getComponent());
 				Map<T, Long> groupByMap = eventMap.get(componentEvent.getEventName());
@@ -314,7 +320,23 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 		}
 
-		return Collections.max(sumComponents.values());
+		logger.info("Maximos de componentes y eventos: " + componentsEvents + sumComponentsMap);
+
+		long max = getMax(sumComponentsMap);
+		return max;
+	}
+
+	private long getMax(Map<EnrolledUser, Map<T, Long>> sumComponentsMap) {
+		long max = 1L;
+
+		for (Map<T, Long> sumComponents : sumComponentsMap.values()) {
+			for (long values : sumComponents.values()) {
+				if (values > max) {
+					max = values;
+				}
+			}
+		}
+		return max;
 	}
 
 	public abstract Function<LogLine, T> getGroupByFunction();

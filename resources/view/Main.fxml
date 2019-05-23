@@ -181,13 +181,15 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <ChoiceBox fx:id="choiceBoxDate" prefWidth="150.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" />
-                        <DatePicker fx:id="datePickerStart" editable="false" showWeekNumbers="true" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                        <Label text="%label.startdate" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
-                        <Label text="%label.enddate" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
-                        <Button fx:id="filterLogButton" mnemonicParsing="false" onAction="#applyFilterLogs" text="%btn.filter" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
-                        <Label text="%label.groupbydate" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
-                        <DatePicker fx:id="datePickerEnd" editable="false" showWeekNumbers="true" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+                        <ChoiceBox fx:id="choiceBoxDate" prefWidth="150.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" />
+                        <DatePicker fx:id="datePickerStart" editable="false" showWeekNumbers="true" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                        <Label text="%label.startdate" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+                        <Label text="%label.enddate" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
+                        <Button fx:id="filterLogButton" mnemonicParsing="false" onAction="#applyFilterLogs" text="%btn.filter" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                        <Label text="%label.groupbydate" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
+                        <DatePicker fx:id="datePickerEnd" editable="false" showWeekNumbers="true" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                        <Label text="%label.setMax" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+                        <TextField fx:id="textFieldMax" maxWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                      </children>
                      <BorderPane.margin>
                         <Insets />

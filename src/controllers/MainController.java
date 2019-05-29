@@ -581,7 +581,7 @@ public class MainController implements Initializable {
 			}
 		});
 
-		List<Component> uniqueComponents = controller.getActualCourse().getLogs().getUniqueComponents();
+		List<Component> uniqueComponents = controller.getActualCourse().getUniqueComponents();
 
 		// Ordenamos los componentes segun los nombres internacionalizados
 		uniqueComponents.sort(Comparator.comparing((Component c) -> rb.getString("component." + c)));
@@ -636,8 +636,7 @@ public class MainController implements Initializable {
 			}
 		});
 
-		List<ComponentEvent> uniqueComponentsEvents = controller.getActualCourse().getLogs()
-				.getUniqueComponentsEvents();
+		List<ComponentEvent> uniqueComponentsEvents = controller.getActualCourse().getUniqueComponentsEvents();
 
 		// Ordenamos los componentes segun los nombres internacionalizados
 		uniqueComponentsEvents

@@ -143,7 +143,7 @@ public class WelcomeController implements Initializable {
 	 *            El evento.
 	 */
 	public void enterCourse(ActionEvent event) {
-
+		
 		// Guardamos en una variable el curso seleccionado por el usuario
 		Course selectedCourse = listCourses.getSelectionModel().getSelectedItem();
 		if (selectedCourse == null) {

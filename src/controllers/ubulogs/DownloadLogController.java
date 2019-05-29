@@ -78,7 +78,7 @@ public class DownloadLogController {
 	 *            id del curso que se quiere descargar el log
 	 * @param timezone
 	 *            zona horaria usada como referencia al descargar el log
-	 * @throws Exception 
+	 * @throws Exception  excepción si no consigue loguearse al servidor de Moodle
 	 */
 	public DownloadLogController(String host, String username, String password, int idCourse, ZoneId timezone) throws Exception {
 		this(host, username, password, idCourse);
@@ -209,7 +209,7 @@ public class DownloadLogController {
 	/**
 	 * Descarga un dia del log a partir del zonedDateTime
 	 * 
-	 * @param zonedDateTime
+	 * @param zonedDateTime zona horaria
 	 * @return csv del log diario
 	 */
 	public String downloadLog(ZonedDateTime zonedDateTime) {

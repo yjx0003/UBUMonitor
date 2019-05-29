@@ -24,6 +24,7 @@ public class AttemptCmidUser extends ReferencesLog {
 
 	/**
 	 * Return a singleton instance of AttemptCmidUser.
+	 * @return instancia única
 	 */
 	public static AttemptCmidUser getInstance() {
 		if (instance == null) {

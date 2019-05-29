@@ -165,7 +165,7 @@ public class BBDD implements Serializable {
 	/**
 	 * Añade el grade item a la base de datos si no existia anteriormente.
 	 * 
-	 * @param gradeItem
+	 * @param gradeItem el gradeItem que se quiere añadir
 	 * @return el valor anterior asociado al id del grade item, null si no contenia.
 	 */
 	public GradeItem putGradeItem(GradeItem gradeItem) {

@@ -37,6 +37,8 @@ public class Group implements Serializable {
 	 *            Nombre del grupo.
 	 * @param description
 	 *            Descripción del grupo.
+	 *            
+	 * @param descriptionFormat el formato de la descripción
 	 * 
 	 */
 	public Group(int id, String name, String description, DescriptionFormat descriptionFormat) {

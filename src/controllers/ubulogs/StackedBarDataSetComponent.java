@@ -21,6 +21,7 @@ public class StackedBarDataSetComponent extends StackedBarDatasetAbstract<Compon
 
 	/**
 	 * Return a singleton instance of StackedBarDataSetComponent.
+	 * @return la instancia única
 	 */
 	public static StackedBarDataSetComponent getInstance() {
 		if (instance == null) {

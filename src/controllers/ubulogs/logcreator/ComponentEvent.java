@@ -10,7 +10,7 @@ public class ComponentEvent {
 	private Component component;
 	private Event eventName;
 	
-	private static Map<Component,Map<Event,ComponentEvent>> componentEventInstances=new HashMap<>();
+	private static Map<Component,Map<Event,ComponentEvent>> componentEventPool=new HashMap<>();
 	
 	
 	private ComponentEvent(Component component,Event eventName) {
@@ -23,7 +23,7 @@ public class ComponentEvent {
 	}
 	
 	public static ComponentEvent getInstance(Component component,Event eventName) {
-		Map<Event,ComponentEvent> events= componentEventInstances.computeIfAbsent(component, c->new HashMap<Event,ComponentEvent>());
+		Map<Event,ComponentEvent> events= componentEventPool.computeIfAbsent(component, c->new HashMap<Event,ComponentEvent>());
 		return events.computeIfAbsent(eventName, m-> new ComponentEvent(component,eventName));
 	}
 

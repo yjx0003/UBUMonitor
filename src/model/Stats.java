@@ -164,8 +164,8 @@ public class Stats implements Serializable {
 	 * 
 	 * @param statsHs
 	 *            EL mapa con las estadisticas.
-	 * @param gradeId
-	 *            El id del Grade Report Line
+	 * @param gradeItem
+	 *            El gradeItem que se quiere buscar la media.
 	 * @return La media del GRL.
 	 */
 	public String getElementMean(Map<GradeItem, DescriptiveStatistics> statsHs, GradeItem gradeItem) {
@@ -184,8 +184,8 @@ public class Stats implements Serializable {
 	 * 
 	 * @param statsHs
 	 *            EL mapa con las estadisticas.
-	 * @param gradeId
-	 *            El id del Grade Report Line
+	 * @param gradeItem
+	 *            El gradeItem que se quiere buscar la media.
 	 * @return La mediana del GRL.
 	 */
 	public String getMedian(Map<GradeItem, DescriptiveStatistics> statsHs, GradeItem gradeItem) {
@@ -198,8 +198,8 @@ public class Stats implements Serializable {
 	 * 
 	 * @param statsHs
 	 *            EL mapa con las estadisticas.
-	 * @param gradeId
-	 *            El id del Grade Report Line.
+	 * @param gradeItem
+	 *            El gradeItem que se quiere buscar la media.
 	 * @param percentil
 	 *            El percentil que queremos.
 	 * @return El percentil del GRL.
@@ -217,8 +217,8 @@ public class Stats implements Serializable {
 	 * 
 	 * @param statsHs
 	 *            EL mapa con las estadisticas.
-	 * @param gradeId
-	 *            El id del Grade Report Line.
+	 * @param gradeItem
+	 *            El gradeItem que se quiere buscar la media.
 	 * @return El maximo del GRL.
 	 */
 	public String getMaxmimum(Map<GradeItem, DescriptiveStatistics> statsHs, GradeItem gradeItem) {
@@ -233,8 +233,8 @@ public class Stats implements Serializable {
 	 * 
 	 * @param statsHs
 	 *            EL mapa con las estadisticas.
-	 * @param gradeId
-	 *            El id del Grade Report Line.
+	 * @param gradeItem
+	 *            El gradeItem que se quiere buscar la media.
 	 * @return El minimo del GRL.
 	 */
 	public String getMinimum(Map<GradeItem, DescriptiveStatistics> statsHs, GradeItem gradeItem) {
@@ -249,8 +249,8 @@ public class Stats implements Serializable {
 	 * 
 	 * @param statsHs
 	 *            EL mapa con las estadisticas.
-	 * @param gradeId
-	 *            El id del Grade Report Line.
+	 * @param gradeItem
+	 *            El gradeItem que se quiere buscar la media.
 	 * @return El limite superior.
 	 */
 	public String getUpperLimit(Map<GradeItem, DescriptiveStatistics> statsHs, GradeItem gradeItem) {
@@ -267,8 +267,8 @@ public class Stats implements Serializable {
 	 * 
 	 * @param statsHs
 	 *            EL mapa con las estadisticas.
-	 * @param gradeId
-	 *            El id del Grade Report Line.
+	 * @param gradeItem
+	 *            El gradeItem que se quiere buscar la media.
 	 * @return El limite inferior.
 	 */
 	public String getLowerLimit(Map<GradeItem, DescriptiveStatistics> statsHs, GradeItem gradeItem) {
@@ -286,8 +286,8 @@ public class Stats implements Serializable {
 	 * 
 	 * @param statsHs
 	 *            EL mapa con las estadisticas.
-	 * @param gradeId
-	 *            El id del Grade Report Line.
+	 * @param gradeItem
+	 *            El gradeItem que se quiere buscar la media.
 	 * @return Lista con los valores atipicos.
 	 */
 	public List<String> getAtypicalValues(Map<GradeItem, DescriptiveStatistics> statsHs, GradeItem gradeItem) {

@@ -55,9 +55,11 @@ public class MoodleUser {
 	 *            ciudad
 	 * @param country
 	 *            país
+	 * @param timezone
+	 *            zona horaria que está usando
 	 */
 	public MoodleUser(int id, String userName, String fullName, String eMail, Instant firstAccess, Instant lastAccess,
-			String city, String country,String timezone) {
+			String city, String country, String timezone) {
 		this.setId(id);
 		this.setUserName(userName);
 		this.setFullName(fullName);
@@ -83,7 +85,7 @@ public class MoodleUser {
 	 * Modifica el id del usuario.
 	 * 
 	 * @param id
-	 * 		El id.
+	 *            El id.
 	 */
 	public void setId(int id) {
 		this.id = id;
@@ -102,7 +104,7 @@ public class MoodleUser {
 	 * Modifica el nombre del usuario.
 	 * 
 	 * @param userName
-	 * 		El nombre de usuario.
+	 *            El nombre de usuario.
 	 */
 	public void setUserName(String userName) {
 		this.userName = userName;
@@ -121,7 +123,7 @@ public class MoodleUser {
 	 * Modifica el nombre completo del usuario.
 	 * 
 	 * @param fullName
-	 * 		El nombre completo.
+	 *            El nombre completo.
 	 */
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
@@ -140,7 +142,7 @@ public class MoodleUser {
 	 * Modifica el email del usuario.
 	 * 
 	 * @param email
-	 * 		EL email.
+	 *            EL email.
 	 */
 	public void setEmail(String email) {
 		this.email = email;
@@ -159,7 +161,7 @@ public class MoodleUser {
 	 * Modifica la fecha de primer acceso.
 	 * 
 	 * @param firstAccess
-	 * 		La fecha de primer acceso.
+	 *            La fecha de primer acceso.
 	 */
 	public void setFirstAccess(Instant firstAccess) {
 		this.firstAccess = firstAccess;
@@ -178,7 +180,7 @@ public class MoodleUser {
 	 * Modifica la fecha de último acceso.
 	 * 
 	 * @param lastAccess
-	 * 		La fecha de último acceso.
+	 *            La fecha de último acceso.
 	 */
 	public void setLastAccess(Instant lastAccess) {
 		this.lastAccess = lastAccess;
@@ -197,7 +199,7 @@ public class MoodleUser {
 	 * Modifica la ciudad del usuario.
 	 * 
 	 * @param city
-	 * 		La ciudad.
+	 *            La ciudad.
 	 */
 	public void setCity(String city) {
 		this.city = city;
@@ -216,7 +218,7 @@ public class MoodleUser {
 	 * Modifica el país del usuario.
 	 * 
 	 * @param country
-	 * 		El país.
+	 *            El país.
 	 */
 	public void setCountry(String country) {
 		this.country = country;
@@ -230,7 +232,8 @@ public class MoodleUser {
 	}
 
 	/**
-	 * @param userPhoto the userPhoto to set
+	 * @param userPhoto
+	 *            the userPhoto to set
 	 */
 	public void setUserPhoto(Image userPhoto) {
 		this.userPhoto = userPhoto;
@@ -249,16 +252,17 @@ public class MoodleUser {
 	 * Modifica la lista de cursos en los que está matriculado el usuario.
 	 * 
 	 * @param courses
-	 * 		La lista de cursos.
+	 *            La lista de cursos.
 	 */
 	public void setCourses(List<Course> courses) {
-		this.courses=courses;
+		this.courses = courses;
 	}
 
 	public void setTimezone(String timezone) {
-		this.timezone=timezone;
-		
+		this.timezone = timezone;
+
 	}
+
 	public String getTimezone() {
 		return this.timezone;
 	}
@@ -270,7 +274,5 @@ public class MoodleUser {
 	public void setLang(String lang) {
 		this.lang = lang;
 	}
-
-	
 
 }

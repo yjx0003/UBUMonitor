@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -13,6 +14,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.ubulogs.logcreator.Component;
+import controllers.ubulogs.logcreator.ComponentEvent;
 import model.mod.Module;
 import model.mod.ModuleType;
 
@@ -314,6 +317,26 @@ public class Course implements Serializable {
 		return uniqueModulesTypes;
 	}
 
+	public List<Component> getUniqueComponents() {
+		return logs.getList()
+				.stream()
+				 //cogemos las lineas de log de los usuarios que pertenecen al curso actual
+				.filter(logLine -> logLine.getUser() != null && enrolledUsers.contains(logLine.getUser()))
+				.map(LogLine::getComponent)
+				.distinct()
+				.collect(Collectors.toList());
+	}
+
+	public List<ComponentEvent> getUniqueComponentsEvents() {
+		return logs.getList()
+				.stream()
+				 //cogemos las lineas de log de los usuarios que pertenecen al curso actual
+				.filter(logLine -> logLine.getUser() != null && enrolledUsers.contains(logLine.getUser()))
+				.map(l -> ComponentEvent.getInstance(l.getComponent(), l.getEventName()))
+				.distinct()
+				.collect(Collectors.toList());
+	}
+
 	public LogStats getLogStats() {
 		return logStats;
 	}
@@ -332,7 +355,7 @@ public class Course implements Serializable {
 
 	@Override
 	public String toString() {
-		return this.fullName +" ("+this.courseCategory+")";
+		return this.fullName + " (" + this.courseCategory + ")";
 	}
 
 	@Override

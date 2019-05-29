@@ -71,19 +71,6 @@ public class Logs implements Serializable{
 		return logLines == null || logLines.isEmpty();
 	}
 	
-	public List<Component> getUniqueComponents(){
-		return logLines.stream()
-				.map(LogLine::getComponent)
-				.distinct()
-				.collect(Collectors.toList());
-	}
-	
-	public List<ComponentEvent> getUniqueComponentsEvents(){
-		return logLines.stream()
-				.map(l->ComponentEvent.getInstance(l.getComponent(),l.getEventName()))
-				.distinct()
-				.collect(Collectors.toList());
-	}
 
 	@Override
 	public String toString() {

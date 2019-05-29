@@ -16,7 +16,6 @@ public class GradereportUserGetGradeItems extends ParametersCourseidUseridGroupi
 
 	@Override
 	public WSFunctions getWSFunction() {
-		
 		return  WSFunctions.GRADEREPORT_USER_GET_GRADE_ITEMS;
 	}
 

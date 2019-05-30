@@ -683,6 +683,7 @@ function exportCurrentElemet() {
 	if(currentType == 'table') {
 		return document.querySelector('#table_img canvas').toDataURL();
 	} else {
+		myChart.update(); // por algun motivo si no se actualiza no cambia la grafica elegida
 		return myChart.toBase64Image();
 	}
 }

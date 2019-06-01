@@ -6,11 +6,17 @@ import java.util.Set;
 import webservice.ParametersCourseid;
 import webservice.WSFunctions;
 
+/**
+ * Devuelve los usuarios matriculados en un curso.
+ * @author Yi Peng Ji
+ *
+ */
 public class CoreEnrolGetEnrolledUsers extends ParametersCourseid {
 
 	/**
 	 * return only users with this capability. This option requires
 	 * 'moodle/role:review' on the course context.
+	 * https://docs.moodle.org/37/en/Category:Capabilities
 	 */
 	private String withcapability;
 
@@ -59,10 +65,20 @@ public class CoreEnrolGetEnrolledUsers extends ParametersCourseid {
 	 */
 	private int index;
 
+	
+	/**
+	 * Constructor con solo el id del curso son parametros adicionales de la función de Moodle.
+	 * @param courseid id del curso
+	 */
 	public CoreEnrolGetEnrolledUsers(int courseid) {
 		super(courseid);
 	}
 
+	/**
+	 * 
+	 * Constructor privado que recibe un builder con parametros adicionales de la función de Moodle.
+	 * @param builder builder
+	 */
 	private CoreEnrolGetEnrolledUsers(Builder builder) {
 		super(builder.courseid);
 		withcapability = builder.withcapability;
@@ -76,6 +92,9 @@ public class CoreEnrolGetEnrolledUsers extends ParametersCourseid {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void appendToUrlParameters() {
 		super.appendToUrlParameters();
@@ -90,94 +109,188 @@ public class CoreEnrolGetEnrolledUsers extends ParametersCourseid {
 
 	}
 
+	/**
+	 * Añadimos a la url si el String de valor se ha inicializado (not null).
+	 * @param name nombre de la opción de Moodle
+	 * @param value valor
+	 */
 	private void appendIfNotNull(String name, String value) {
 		if (value != null)
 			appendToUrlOptions(index++, name, value);
 	}
 
+	/**
+	 * Añadimos a la url si el valor no es 0.
+	 * @param name nombre de la opción de Moodle
+	 * @param value valor
+	 */
 	private void appendIfNotZero(String name, int value) {
 		if (value != 0)
 			appendToUrlOptions(index++, name, value);
 	}
 
+	/**
+	 * Añadimos a la url si el Set de valor se ha inicializado (not null).
+	 * @param name
+	 * @param value
+	 */
 	private void appendIfNotNull(String name, Set<String> value) {
 		if (value != null)
 			appendToUrlOptions(index++, name, String.join(",", value));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public WSFunctions getWSFunction() {
 		return WSFunctions.CORE_ENROL_GET_ENROLLED_USERS;
 	}
 
+	
+	/**
+	 * Devuelve el permiso
+	 * @return el permiso 
+	 */
 	public String getWithcapability() {
 		return withcapability;
 	}
 
+	/**
+	 * Modifica el permiso
+	 * @param withcapability permiso
+	 */
 	public void setWithcapability(String withcapability) {
 		this.withcapability = withcapability;
 	}
 
+	/**
+	 * Id del grupo
+	 * @return
+	 */
 	public int getGroupid() {
 		return groupid;
 	}
 
+	/**
+	 * Id del grupo
+	 * @param groupid
+	 */
 	public void setGroupid(int groupid) {
 		this.groupid = groupid;
 	}
 
+	/**
+	 * Tiempo que han estado activos.
+	 * @return el tiempo que han estado activos
+	 */
 	public int getOnlyactive() {
 		return onlyactive;
 	}
 
+	/**
+	 * Modifica el tiempo que han estado activos un usuario.
+	 * @param onlyactive tiempo
+	 */
 	public void setOnlyactive(int onlyactive) {
 		this.onlyactive = onlyactive;
 	}
 
+	/**
+	 * Conjunto de campos que se recupera.
+	 * @return conjunto de campos
+	 */
 	public Set<String> getUserfields() {
 		return userfields;
 	}
 
+	/**
+	 * Modifica los campos que se recupera en la llamada a Moodle.
+	 * @param userfields los campos
+	 */
 	public void setUserfields(Set<String> userfields) {
 		this.userfields = userfields;
 	}
 
+	/**
+	 * Devuelve el limite de sql asignado
+	 * @return limite de sql
+	 */
 	public int getLimitfrom() {
 		return limitfrom;
 	}
 
+	/**
+	 * Modifica el limite de sql.
+	 * @param limitfrom el limite
+	 */
 	public void setLimitfrom(int limitfrom) {
 		this.limitfrom = limitfrom;
 	}
 
+	/**
+	 * Devuelve el número maximo de usuarios que da como respuesta la función de Moodle.
+	 * @return limite maximo de usuarios.
+	 */
 	public int getLimitnumber() {
 		return limitnumber;
 	}
 
+	/**
+	 * Modifica el límite de usuarios.
+	 * @param limitnumber límite de usuarios
+	 */
 	public void setLimitnumber(int limitnumber) {
 		this.limitnumber = limitnumber;
 	}
 
+	/**
+	 * Tipo de ordenación: por id, nombre, apellido, etc.
+	 * @return tipo de ordenacion
+	 */
 	public String getSortby() {
 		return sortby;
 	}
 
+	/**
+	 * Modifica el tipo de ordenación.
+	 * @param tipo de ordenación: por id, nombre, apellido, etc
+	 */
 	public void setSortby(String sortby) {
 		this.sortby = sortby;
 	}
 
+	/**
+	 * Devuelve ASC o DESC. En que orden es la respuesta de moodle.
+	 * @return ASC o  DESC
+	 */
 	public String getSortdirection() {
 		return sortdirection;
 	}
 
+	/**
+	 * Modifica el orden de respuesta.
+	 * @param sortdirection ASC o DESC 
+	 */
 	public void setSortdirection(String sortdirection) {
 		this.sortdirection = sortdirection;
 	}
 
+	/**
+	 * Devuelve un Builder para añadir parámetros adicionales a la función de Moodle.
+	 * @param courseid
+	 * @return
+	 */
 	public static Builder newBuilder(int courseid) {
 		return new Builder(courseid);
 	}
 
+	/**
+	 * 
+	 * Constructor builder para añadir parámetros adicionales a la función de Moodle.
+	 * @author Yi Peng Ji
+	 *
+	 */
 	public static class Builder {
 
 		private int courseid;

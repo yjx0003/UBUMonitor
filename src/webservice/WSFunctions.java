@@ -1,5 +1,9 @@
 package webservice;
-
+/**
+ * Enumeración de las funciones de moodle en upper case.
+ * @author Yi Peng Ji
+ *
+ */
 public enum WSFunctions {
 	
 	/**
@@ -61,8 +65,6 @@ public enum WSFunctions {
 	
 
 
-	
-	
 	@Override
 	public String toString() {
 		return name().toLowerCase();

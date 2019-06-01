@@ -11,6 +11,12 @@ import org.slf4j.LoggerFactory;
 
 import webservice.core.CoreUserGetUsersByField.Field;
 
+/**
+ * Clase principal encargada de buscar el token del servicio rest API de moodle. 
+ * Tambien es el encargado de obtener las respuestas de las funciones de Moodle.
+ * @author Yi Peng Ji
+ *
+ */
 public abstract class WebService {
 
 	static final Logger logger = LoggerFactory.getLogger(WebService.class);
@@ -20,6 +26,9 @@ public abstract class WebService {
 	private final static String REST_FORMAT = "json";
 	private String parameters;
 
+	/**
+	 * Constructor que comprueba si ya hay token asignado al usuario e inicializa los parametros de la URL a vacio.
+	 */
 	public WebService() {
 
 		checkToken();
@@ -28,6 +37,11 @@ public abstract class WebService {
 
 	}
 
+	/**
+	 * Inicializa con el cuerpo de la url con el token.
+	 * @param host host
+	 * @param token token del usuario
+	 */
 	public static void initialize(String host, String token) {
 
 		WebService.token = token;
@@ -37,11 +51,21 @@ public abstract class WebService {
 
 	}
 
+	/**
+	 * Intenta conectarse al servicio de moodle para recuperar el token del usuario para la API.
+	 * @param host host de moodle
+	 * @param userName username de moodle
+	 * @param password contraseña de moodle
+	 * @throws IOException si no se ha podido conectar al host
+	 */
 	public static void initialize(String host, String userName, String password) throws IOException {
 		String url = host + "/login/token.php?username=" + userName + "&password=" + password + "&service="
 				+ WSFunctions.MOODLE_MOBILE_APP;
 
-		String JSON = Jsoup.connect(url).ignoreContentType(true).execute().body();
+		String JSON = Jsoup.connect(url)
+				.ignoreContentType(true)
+				.execute()
+				.body();
 
 		JSONObject jsonObject = new JSONObject(JSON);
 
@@ -50,6 +74,9 @@ public abstract class WebService {
 		initialize(host, token);
 	}
 
+	/**
+	 * Comprueba que hay token asignado.
+	 */
 	private static void checkToken() {
 		if (token == null) {
 			throw new IllegalStateException(
@@ -57,11 +84,20 @@ public abstract class WebService {
 		}
 	}
 
+	/**
+	 * Devuelve el token
+	 * @return token
+	 */
 	public static String getToken() {
 		checkToken();
 		return token;
 	}
 
+	/**
+	 * Devuelve la respuesta de una petición de una función de Moodle con sus parámetros.
+	 * @return la respuesta de petición
+	 * @throws IOException si ha habido un problema al conectarse con el servidor
+	 */
 	public String getResponse() throws IOException {
 
 		parameters = "";
@@ -74,24 +110,48 @@ public abstract class WebService {
 
 	}
 
+	/**
+	 * Devuelve la función de moodle.
+	 * @return la función de moodle
+	 */
 	public abstract WSFunctions getWSFunction();
 
+	/**
+	 * Devuelve la URL completa con token incluido (tener cuidado de no guardarlo en el logger, información sensible).
+	 * Dedicado a pruebas.
+	 * @return la url completa
+	 */
 	public String geCompletetUrl() {
 		return urlWithToken + getWSFunction() + parameters;
 	}
 
+	/**
+	 * Añade los parametros adicionales a la funcion de moodle.
+	 */
 	protected abstract void appendToUrlParameters();
 
+	/**
+	 * Añade el id de usuario como parametro adicional de la URL si no es 0.
+	 * @param userid id de usuario
+	 */
 	protected void appendToUrlUserid(int userid) {
 		if (userid != 0)
 			parameters += "&userid=" + userid;
 	}
 
+	/**
+	 * Añade el id curso.
+	 * @param courseid id de curso
+	 */
 	protected void appendToUrlCourseid(int courseid) {
 		if (courseid != 0)
 			parameters += "&courseid=" + courseid;
 	}
 
+	/**
+	 * Añade los ids de cursos.
+	 * @param coursesids conjunto de ids de curso
+	 */
 	protected void appendToUrlCoursesids(Set<Integer> coursesids) {
 		if (coursesids != null) {
 			for (Integer courseid : coursesids) {
@@ -100,11 +160,19 @@ public abstract class WebService {
 		}
 	}
 
+	/**
+	 * Añade el id del grupo
+	 * @param groupid id del grupo
+	 */
 	protected void appendToUrlGruopid(int groupid) {
 		if (groupid != 0)
 			parameters += "&groupid=" + groupid;
 	}
 
+	/**
+	 * Añade un conjunto de values.
+	 * @param values conjunto de values
+	 */
 	protected void appendToUrlValues(Set<String> values) {
 		if (values != null) {
 			for (String value : values) {
@@ -112,28 +180,61 @@ public abstract class WebService {
 			}
 		}
 	}
-
+	/**
+	 * Añade campos a la URL
+	 * @param field campos
+	 */
 	protected void appendToUrlField(Field field) {
 		if (field != null)
 			parameters += "&field=" + field;
 	}
 
+	/**
+	 * Añade opciones
+	 * @param index indice 
+	 * @param name nombre 
+	 * @param value valor
+	 */
 	protected void appendToUrlOptions(int index, String name, String value) {
 		parameters += "&options[" + index + "][name]=" + name + "&options[" + index + "][value]=" + value;
 	}
 
+	/**
+	 * Añade opciones
+	 * @param index indice 
+	 * @param name nombre 
+	 * @param value valor
+	 */
 	protected void appendToUrlOptions(int index, String name, int value) {
 		parameters += "&options[" + index + "][name]=" + name + "&options[" + index + "][value]=" + value;
 	}
 
+	/**
+	 * Añade opciones
+	 * @param index indice 
+	 * @param name nombre 
+	 * @param value valor
+	 */
 	protected void appendToUrlOptions(int index, String name, boolean value) {
 		parameters += "&options[" + index + "][name]=" + name + "&options[" + index + "][value]=" + value;
 	}
 
+	/**
+	 * Añade opciones
+	 * @param index indice 
+	 * @param name nombre 
+	 * @param value valor
+	 */
 	protected void appendToUrlCriteria(String key, String value) {
 		parameters += "&criteria[0][key]=" + key + "criteria[0][value]=" + value;
 	}
 
+	/**
+	 * Devueve el contenido de la funcion de moodle.
+	 * @param url url completa de la peticion
+	 * @return el contenido de la respues de la peticion
+	 * @throws IOException si ha habido un error al realizar la peticion
+	 */
 	private String getContentWithJsoup(String url) throws IOException {
 		Response response = Jsoup.connect(url).ignoreContentType(true).maxBodySize(0).timeout(0).execute();
 		String responseString = response.body();

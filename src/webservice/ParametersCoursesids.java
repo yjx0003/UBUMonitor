@@ -6,7 +6,7 @@ import java.util.Set;
 
 /**
  * Clase abstracta que añade parametros query de ids de cursos a la URL de Moodle. 
- * Ejemplo para añadir cursos con id 1 e id 2: "&courseids[]=1&courseids[]=2"
+ * Ejemplo para añadir cursos con id 1 e id 2: {@literal &courseids[]=1&courseids[]=2}
  * 
  * @author Yi Peng Ji
  *

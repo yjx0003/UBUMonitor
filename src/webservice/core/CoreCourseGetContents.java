@@ -3,6 +3,11 @@ package webservice.core;
 import webservice.ParametersCourseid;
 import webservice.WSFunctions;
 
+/**
+ * Función de moodle que devuelve los contenidos del curso.
+ * @author Yi Peng Ji
+ *
+ */
 public class CoreCourseGetContents extends ParametersCourseid {
 	/**
 	 * Do not return modules, return only the sections structure
@@ -46,6 +51,10 @@ public class CoreCourseGetContents extends ParametersCourseid {
 
 	private int index = 0;
 
+	/**
+	 * Constructor con el id del curso.
+	 * @param courseid id del curso
+	 */
 	public CoreCourseGetContents(int courseid) {
 		super(courseid);
 
@@ -65,6 +74,9 @@ public class CoreCourseGetContents extends ParametersCourseid {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void appendToUrlParameters() {
 
@@ -98,80 +110,156 @@ public class CoreCourseGetContents extends ParametersCourseid {
 			appendToUrlOptions(index++, name, value);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public WSFunctions getWSFunction() {
 
 		return WSFunctions.CORE_COURSE_GET_CONTENTS;
 	}
 
+	/**
+	 * Si se quiere excluir los modulos.
+	 * @return true si se quiere excluir los modulos, false en caso contrario
+	 */
 	public boolean isExcludemodules() {
 		return excludemodules;
 	}
 
+	/**
+	 * Modifica si se quiere excluir los modulos.
+	 * @param excludemodules true o false
+	 */
 	public void setExcludemodules(boolean excludemodules) {
 		this.excludemodules = excludemodules;
 	}
 
+	/**
+	 * Devuelve si se excluye los contenidos.
+	 * @return true si son excluidos, false en caso contrario.
+	 */
 	public boolean isExcludecontents() {
 		return excludecontents;
 	}
 
+	/**
+	 * Modifica si se quiere excluir el contenido.
+	 * @param excludecontents true o false.
+	 */
 	public void setExcludecontents(boolean excludecontents) {
 		this.excludecontents = excludecontents;
 	}
 
+	/**
+	 * Si se incluye modulos ocultos, con id de sección -1.
+	 * @return true si se incluye, falso en caso contrario
+	 */
 	public boolean isIncludestealthmodules() {
 		return includestealthmodules;
 	}
 
+	/**
+	 * Modifica si se quiere cambiar los módulos ocultos.
+	 * @param includestealthmodules true si se quiere incluir, falso en caso contrario
+	 */
 	public void setIncludestealthmodules(boolean includestealthmodules) {
 		this.includestealthmodules = includestealthmodules;
 	}
 
+	/**
+	 * Id de la sección del curso
+	 * @return id de la sección del curso
+	 */
 	public int getSectionid() {
 		return sectionid;
 	}
 
+	/**
+	 * Modifica la id de sección del curso.
+	 * @param sectionid id de la sección
+	 */
 	public void setSectionid(int sectionid) {
 		this.sectionid = sectionid;
 	}
 
+	/**
+	 * Devuelve el numero de seccion en el curso.
+	 * @return el numero de seccion en el curso.
+	 */
 	public int getSectionnumber() {
 		return sectionnumber;
 	}
 
+	/**
+	 * Modifica el numero de seccion en el curso.
+	 * @param sectionnumber el nuevo numero de seccion en el curso
+	 */
 	public void setSectionnumber(int sectionnumber) {
 		this.sectionnumber = sectionnumber;
 	}
 
+	/**
+	 * Devuelve la id del modulo del curso.
+	 * @return id del modulo 
+	 */
 	public int getCmid() {
 		return cmid;
 	}
 
+	/**
+	 * Modifica el id del modulo del curso.
+	 * @param cmid id del modulo del curso
+	 */
 	public void setCmid(int cmid) {
 		this.cmid = cmid;
 	}
 
+	/**
+	 * Devuelve el tipo de modulo (quiz, assignment etc.)
+	 * @return tipo de modulo
+	 */
 	public String getModname() {
 		return modname;
 	}
 
+	/**
+	 * Modifica el tipo de modulo.
+	 * @param modname tipo de modulo
+	 */
 	public void setModname(String modname) {
 		this.modname = modname;
 	}
 
+	/**
+	 * Devuelve el id de un modulo (no confundir con cmid que es un id general para todos los modulos).
+	 * @return el id de un tipo de modulo
+	 */
 	public int getModid() {
 		return modid;
 	}
 
+	/**
+	 * Modifica el modulo id.
+	 * @param modid id modulo
+	 */
 	public void setModid(int modid) {
 		this.modid = modid;
 	}
-	
+	/**
+	 * Devuelve una nueva instancia para añadir parametros adicioneales.
+	 * @param courseid
+	 * @return
+	 */
 	public static Builder newBuilder(int courseid) {
 		return new Builder(courseid);
 	}
 
+	/**
+	 * Añade parametros adicionales a las request de Moodle.
+	 * @author Yi Peng Ji
+	 *
+	 */
 	public static class Builder {
 
 		private int courseid;

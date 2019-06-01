@@ -7,85 +7,86 @@ import java.util.Set;
 import webservice.WSFunctions;
 import webservice.WebService;
 
+/**
+ * Devuelve los usuarios de Moodle en función del campo (id,username,email,etc).
+ * 
+ * @author Yi Peng Ji
+ *
+ */
 public class CoreUserGetUsersByField extends WebService {
-
 	private Field field;
 	private Set<String> values;
 
+	/**
+	 * Enumeración que indica la forma que se busca un usuario.
+	 * 
+	 * @author Yi Peng Ji
+	 *
+	 */
 	public enum Field {
 		ID("id"), IDNUMBER("idnumber"), USERNAME("username"), EMAIL("email");
-		
+
 		private String field;
-		Field(String field){
-			this.field=field;
+
+		Field(String field) {
+			this.field = field;
 		}
+
 		@Override
 		public String toString() {
 			return field;
 		}
 	}
 
-	private CoreUserGetUsersByField(Field field) {
-		this.field = field;
-		
-	}
-
+	/**
+	 * Constructor que indica el field por los que se buscan los usuarios y un
+	 * número indeterminado de valores.
+	 * 
+	 * @param field
+	 *            field
+	 * @param values
+	 *            valores del field
+	 */
 	public CoreUserGetUsersByField(Field field, String... values) {
-		this(field);
+		this.field = field;
 		this.values = new HashSet<String>(Arrays.asList(values));
 
 	}
 
+	/**
+	 * Constructor que indica el field por los que se buscan los usuarios y un
+	 * conjunto de valores.
+	 * 
+	 * @param field field
+	 * @param values values
+	 */
 	public CoreUserGetUsersByField(Field field, Set<String> values) {
-		this(field);
+		this.field = field;
 		this.values = values;
 
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public WSFunctions getWSFunction() {
-		
+
 		return WSFunctions.CORE_USER_GET_USERS_BY_FIELD;
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void appendToUrlParameters() {
-		if (field == null || values.size() == 0) {
+		if (field == null || values.isEmpty()) {
 			throw new IllegalStateException("Field no puede ser nulo y tiene que haber al menos un value");
 		}
 
 		appendToUrlField(field);
 		appendToUrlValues(values);
-		
+
 	}
-
-	public Field getField() {
-		return field;
-	}
-
-	public void setField(Field field) {
-		this.field = field;
-	}
-
-	public Set<String> getValues() {
-		return values;
-	}
-
-	public void setValues(Set<String> values) {
-		this.values = values;
-	}
-	
-	public void addValue(String value) {
-		this.values.add(value);
-	}
-	
-	public void removeValue(String value) {
-		this.values.remove(value);
-	}
-
-
-
-
-
-
 
 }

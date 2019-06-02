@@ -226,7 +226,7 @@ public abstract class WebService {
 	 * @param value valor
 	 */
 	protected void appendToUrlCriteria(String key, String value) {
-		parameters += "&criteria[0][key]=" + key + "criteria[0][value]=" + value;
+		parameters += "&criteria[0][key]=" + key + "&criteria[0][value]=" + value;
 	}
 
 	/**
@@ -238,8 +238,9 @@ public abstract class WebService {
 	private String getContentWithJsoup(String url) throws IOException {
 		Response response = Jsoup.connect(url).ignoreContentType(true).maxBodySize(0).timeout(0).execute();
 		String responseString = response.body();
-		logger.info("Respuesta de la funcion web service: " + "&wsfunction=" + getWSFunction() + parameters);
-		logger.info(responseString);
+		//logger.debug("Url completa de web service de moodle: "+url);
+		logger.info("Respuesta de la funcion web service: &wsfunction=" + getWSFunction() + parameters+"\n"+responseString);
+		
 		return responseString;
 	}
 

@@ -1,7 +1,5 @@
 package controllers.ubugrades;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -10,8 +8,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import javax.imageio.ImageIO;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controllers.Controller;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import model.Course;
 import model.CourseCategory;
@@ -140,7 +135,7 @@ public class CreatorUBUGradesController {
 
 	}
 
-	public static EnrolledUser createEnrolledUser(JSONObject user) {
+	public static EnrolledUser createEnrolledUser(JSONObject user) throws IOException {
 
 		int id = user.getInt("id");
 
@@ -155,13 +150,21 @@ public class CreatorUBUGradesController {
 		enrolledUser.setDescriptionformat(DescriptionFormat.get(user.optInt("descriptionformat")));
 		enrolledUser.setCity(user.optString("city"));
 		enrolledUser.setCountry(user.optString("country"));
-		enrolledUser.setProfileimageurlsmall(user.optString("profileimageurlsmall"));
 		enrolledUser.setProfileimageurl(user.optString("profileimageurl"));
 
-		logger.info("Descargando y convirtiendo imagen a bytes de usuario: "+enrolledUser);
-		byte[] imageBytes = convertImageToBytes(new Image(user.optString("profileimageurlsmall")));
+		String imageUrl = user.optString("profileimageurlsmall", null);
+		enrolledUser.setProfileimageurlsmall(imageUrl);
 
-		enrolledUser.setImageBytes(imageBytes);
+		if (imageUrl != null) {
+			logger.info("Descargando foto de usuario: " + enrolledUser + " con la URL: " + imageUrl);
+			byte[] imageBytes = Jsoup.connect(imageUrl)
+					.ignoreContentType(true)
+					.cookies(CONTROLLER.getCookies())
+					.execute()
+					.bodyAsBytes();
+
+			enrolledUser.setImageBytes(imageBytes);
+		}
 
 		List<Course> courses = createCourses(user.optJSONArray("enrolledcourses"));
 		courses.forEach(course -> course.addEnrolledUser(enrolledUser));
@@ -174,21 +177,6 @@ public class CreatorUBUGradesController {
 		groups.forEach(group -> enrolledUser.addGroup(group));
 
 		return enrolledUser;
-
-	}
-
-	private static byte[] convertImageToBytes(Image img) {
-		// https://stackoverflow.com/a/24038735
-		BufferedImage bImage = SwingFXUtils.fromFXImage(img, null);
-
-		try (ByteArrayOutputStream s = new ByteArrayOutputStream();) {
-			ImageIO.write(bImage, "png", s);
-			byte[] res = s.toByteArray();
-			return res;
-		} catch (IOException e) {
-			logger.error("No se ha podido transformar la imagen a bytes array");
-		}
-		return new byte[0];
 
 	}
 
@@ -234,8 +222,6 @@ public class CreatorUBUGradesController {
 		course.setSummaryformat(summaryFormat);
 		course.setStartDate(startDate);
 		course.setEndDate(endDate);
-
-		CONTROLLER.getBBDD().putCourse(course);
 
 		return course;
 
@@ -299,7 +285,7 @@ public class CreatorUBUGradesController {
 		moodleUser.setCourses(courses);
 
 		Set<Integer> ids = courses.stream()
-				.mapToInt(Course::getId) // cogemos los ids de cada curso
+				.mapToInt(c -> c.getCourseCategory().getId()) // cogemos los ids de cada curso
 				.boxed() // convertimos a Integer
 				.collect(Collectors.toSet());
 
@@ -465,8 +451,6 @@ public class CreatorUBUGradesController {
 
 		JSONObject usergrade = jsonObject.getJSONArray("usergrades").getJSONObject(0);
 
-		Course course = CONTROLLER.getBBDD().getCourseById(usergrade.getInt("courseid"));
-
 		JSONArray gradeitems = usergrade.getJSONArray("gradeitems");
 
 		if (gradeitems.length() != gradeItems.size()) {
@@ -488,7 +472,6 @@ public class CreatorUBUGradesController {
 
 			CONTROLLER.getBBDD().putGradeItem(gradeItem);
 
-			gradeItem.setCourse(course);
 			String itemtype = gradeitem.getString("itemtype");
 			ModuleType moduleType;
 

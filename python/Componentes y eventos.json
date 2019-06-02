@@ -26,6 +26,9 @@
         "Course module instance list viewed": [
             "The user with id '' viewed the instance list for the module '' in the course with id ''."
         ],
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ],
         "Grading form viewed": [
             "The user with id '' viewed the grading form for the user with id '' for the assignment with course module id ''."
         ],
@@ -57,6 +60,20 @@
             "The user with id '' has accepted the statement of the submission with id '' for the assignment with course module id ''."
         ]
     },
+    "Book": {
+        "Chapter created": [
+            "The user with id '' created the chapter with id '' for the book with course module id ''."
+        ],
+        "Chapter updated": [
+            "The user with id '' updated the chapter with id '' for the book with course module id ''."
+        ],
+        "Chapter viewed": [
+            "The user with id '' viewed the chapter with id '' for the book with course module id ''."
+        ],
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ]
+    },
     "Chat": {
         "Course module instance list viewed": [
             "The user with id '' viewed the instance list for the module '' in the course with id ''."
@@ -75,6 +92,9 @@
         "Choice answer added": [
             "The user with id '' has added the option with id '' for the\n            user with id '' from the choice activity with course module id ''."
         ],
+        "Choice made": [
+            "The user with id '' made the choice with id '' in the choice activity\n            with course module id ''."
+        ],
         "Choice report viewed": [
             "The user with id '' has viewed the report for the choice activity with course module id\n            ''"
         ],
@@ -85,9 +105,56 @@
             "The user with id '' viewed the '' activity with course module id ''."
         ]
     },
+    "Comments": {
+        "Comment created": [
+            "The user with id '' added the comment with id '' to the '' with course module id ''."
+        ],
+        "Comment deleted": [
+            "The user with id '' deleted the comment with id '' from the '' with course module id ''."
+        ]
+    },
+    "Course completion": {
+        "Completion report viewed": [
+            "The user with id '' viewed the completion report for the course with id ''."
+        ]
+    },
     "Course participation": {
         "Participation report viewed": [
             "The user with id '' viewed the course participation report for the course with id ''."
+        ]
+    },
+    "Database": {
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ],
+        "Field created": [
+            "The user with id '' created the field with id '' for the data activity with course module id ''."
+        ],
+        "Field updated": [
+            "The user with id '' updated the field with id '' in the data activity with course module id ''."
+        ],
+        "Record created": [
+            "The user with id '' created the data record with id '' for the data activity with course module id ''."
+        ],
+        "Record deleted": [
+            "The user with id '' deleted the data record with id '' in the data activity with course module id ''."
+        ],
+        "Record updated": [
+            "The user with id '' updated the data record with id '' in the data activity with course module id ''."
+        ],
+        "Template updated": [
+            "The user with id '' updated the template for the data activity with course module id ''."
+        ],
+        "Templates viewed": [
+            "The user with id '' viewed the template for the data activity with course module id ''."
+        ]
+    },
+    "Event monitor": {
+        "Rule created": [
+            "The user with id '' created the event monitor rule with id ''."
+        ],
+        "Subscription created": [
+            "The user with id '' created the event monitor subscription with id ''."
         ]
     },
     "Excel spreadsheet": {
@@ -172,11 +239,17 @@
         "Some content has been posted.": [
             "The user with id '' has posted content in the forum post with id '' in the discussion '' located in the forum with course module id ''."
         ],
+        "Subscription created": [
+            "The user with id '' subscribed the user with id '' to the forum with course module id ''."
+        ],
         "User report viewed": [
             "The user with id '' has viewed the user report for the user with id '' in the course with id '' with viewing mode ''."
         ]
     },
     "Glossary": {
+        "Category has been created": [
+            "The user with id '' created the category with id '' for the glossary activity with course module id ''."
+        ],
         "Course module viewed": [
             "The user with id '' viewed the '' activity with course module id ''."
         ],
@@ -224,6 +297,43 @@
         ],
         "HotPot attempt submitted": [
             "The user with id \"\" submitted an attempt at the \"hotpot\" activity with course module id \"\""
+        ]
+    },
+    "IMS content package": {
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ]
+    },
+    "Lesson": {
+        "Content page viewed": [
+            "The user with id '' has viewed the content page with id '' in the lesson activity with course module id ''."
+        ],
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ],
+        "Lesson ended": [
+            "The user with id '' ended the lesson with course module id ''."
+        ],
+        "Lesson started": [
+            "The user with id '' started the lesson with course module id ''."
+        ],
+        "Page created": [
+            "The user with id '' has created a Matching page with the id '' in the lesson activity with course module id ''.",
+            "The user with id '' has created a Content page with the id '' in the lesson activity with course module id ''."
+        ],
+        "Page moved": [
+            "The user with id '' has moved a Content page with the id '' to the slot after the page with the id '' and before the page with the id '' in the lesson activity with course module id ''."
+        ],
+        "Page updated": [
+            "The user with id '' has updated the Content page with the id '' in the lesson activity with course module id ''.",
+            "The user with id '' has updated the True/false page with the id '' in the lesson activity with course module id ''."
+        ],
+        "Question answered": [
+            "The user with id '' has answered the Matching question with id '' in the lesson activity with course module id ''."
+        ],
+        "Question viewed": [
+            "The user with id '' has viewed the Multichoice question with id '' in the lesson activity with course module id ''.",
+            "The user with id '' has viewed the Matching question with id '' in the lesson activity with course module id ''."
         ]
     },
     "Live logs": {
@@ -288,6 +398,9 @@
         "Quiz attempt abandoned": [
             "The user with id '' has had their attempt with id '' marked as abandoned for the quiz with course module id ''."
         ],
+        "Quiz attempt deleted": [
+            "The user with id '' deleted the attempt with id '' belonging to the quiz with course module id '' for the user with id ''."
+        ],
         "Quiz attempt preview started": [
             "The user with id '' has had their attempt with id '' previewed by the user with id '' for the quiz with course module id ''."
         ],
@@ -330,6 +443,20 @@
             "Item with ID  deleted."
         ]
     },
+    "SCORM package": {
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ],
+        "Sco launched": [
+            "The user with id '' launched the sco with id '' for the scorm with course module id ''."
+        ],
+        "Submitted SCORM raw score": [
+            "The user with the id '' submitted the element '' with the value of '' for the attempt with the id '' for a scorm activity with the course module id ''."
+        ],
+        "Submitted SCORM status": [
+            "The user with the id '' submitted the element '' with the value of '' for the attempt with the id '' for a scorm activity with the course module id ''."
+        ]
+    },
     "Single view": {
         "Grade single view report viewed.": [
             "The user with id '' viewed the singleview report in the gradebook."
@@ -341,6 +468,17 @@
         ],
         "Comment deleted": [
             "The user with id '' deleted the comment with id '' from the submission with id '' for the assignment with course module id ''."
+        ]
+    },
+    "Survey": {
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ],
+        "Survey report viewed": [
+            "The user with id '' viewed the report for the survey with course module id ''."
+        ],
+        "Survey response submitted": [
+            "The user with id '' submitted a response for the survey with course module id ''."
         ]
     },
     "System": {
@@ -362,6 +500,15 @@
         "Course backup created": [
             "The user with id '' created a backup of the course with the id ''."
         ],
+        "Course completed": [
+            "The user with id '' completed the course with id ''."
+        ],
+        "Course completion updated": [
+            "The user with id '' updated the requirements to complete the course with id ''."
+        ],
+        "Course content deleted": [
+            "The user with id '' deleted content from course with id ''."
+        ],
         "Course created": [
             "The user with id '' created the course with id ''."
         ],
@@ -382,6 +529,9 @@
         ],
         "Course reset started": [
             "The user with id '' started the reset of the course with id ''."
+        ],
+        "Course restored": [
+            "The user with id '' restored the course with id ''."
         ],
         "Course section created": [
             "The user with id '' created section number '' for the course with id ''"
@@ -405,6 +555,12 @@
         "Enrolment instance created": [
             "The user with id '' created the instance of enrolment method '' with id ''."
         ],
+        "Enrolment instance updated": [
+            "The user with id '' updated the instance of enrolment method '' with id ''."
+        ],
+        "Evidence created.": [
+            "The user with id '' created an evidence with id ''."
+        ],
         "Grade deleted": [
             "The user with id '' deleted the grade with id '' for the user with id '' for the grade item with id ''."
         ],
@@ -420,8 +576,17 @@
         "Group member removed": [
             "The user with id '' removed the user with id '' to the group with id ''."
         ],
+        "Group updated": [
+            "The user with id '' updated the group with id ''."
+        ],
         "Grouping created": [
             "The user with id '' created the grouping with id ''."
+        ],
+        "Note created": [
+            "The user with id '' created the note with id '' for the user with id ''."
+        ],
+        "Notes viewed": [
+            "The user with id '' viewed the notes for the course with id ''."
         ],
         "Question category created": [
             "The user with id '' created the question category with id ''."
@@ -437,6 +602,15 @@
         ],
         "Scale created": [
             "The user with id '' created the custom scale with id '' from the course with the id ''."
+        ],
+        "Tag added to an item": [
+            "The user with id '' added the tag with id '' to the item type '' with id ''."
+        ],
+        "User competency rated in course.": [
+            "The user with id '' rated the user competency with id '' with '' rating in course with id ''"
+        ],
+        "User competency viewed in a course.": [
+            "The user with id '' viewed the user course competency with id '' in course with id ''"
         ],
         "User enrolled in course": [
             "The user with id '' enrolled the user with id '' using the enrolment method '' in the course with id ''."
@@ -476,23 +650,55 @@
     },
     "User tours": {
         "Step shown": [
-            "The user with id '' has viewed the tour with id '' at step index '' (id '') on the page with URL ''."
+            "The user with id '' has viewed the tour with id '' at step index '' (id '') on the page with URL ''.",
+            "The user with id '' has viewed the tour with id ''''''''."
         ],
         "Tour ended": [
-            "The user with id '' has ended the tour with id '' at step index '' (id '') on the page with URL ''."
+            "The user with id '' has ended the tour with id '' at step index '' (id '') on the page with URL ''.",
+            "The user with id '' has ended the tour with id '' at step index ''''''."
         ],
         "Tour started": [
             "The user with id '' has started the tour with id '' on the page with URL ''."
         ]
     },
     "Wiki": {
+        "Comment created": [
+            "The user with id '' added a comment with id '' on the page with id '' for the wiki with course module id ''."
+        ],
+        "Comments viewed": [
+            "The user with id '' viewed the comments for the page with id '' for the wiki with course module id ''."
+        ],
         "Course module instance list viewed": [
             "The user with id '' viewed the instance list for the module '' in the course with id ''."
+        ],
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ],
+        "Wiki history viewed": [
+            "The user with id '' viewed the history for the page with id '' for the wiki with course module id ''."
+        ],
+        "Wiki page created": [
+            "The user with id '' created the page with id '' for the wiki with course module id ''."
+        ],
+        "Wiki page locks deleted": [
+            "The user with id '' deleted locks for the page with id '' for the wiki with course module id ''."
+        ],
+        "Wiki page map viewed": [
+            "The user with id '' viewed the wiki map for the page with id '' for the wiki with course module id ''."
+        ],
+        "Wiki page updated": [
+            "The user with id '' updated the page with id '' for the wiki with course module id ''."
+        ],
+        "Wiki page viewed": [
+            "The user with id '' viewed the page with id '' for the wiki with course module id ''."
         ]
     },
     "Workshop": {
         "Course module viewed": [
             "The user with id '' viewed the '' activity with course module id ''."
+        ],
+        "Phase switched": [
+            "The user with id '' has switched the phase of the workshop with course module id '' to ''."
         ]
     },
     "XML file": {

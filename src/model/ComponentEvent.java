@@ -1,36 +1,68 @@
-package controllers.ubulogs.logcreator;
+package model;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Clase para emparejar componente y evento.
+ * 
+ * @author Yi Peng Ji
+ *
+ */
 public class ComponentEvent {
-	
-
 
 	private Component component;
 	private Event eventName;
-	
-	private static Map<Component,Map<Event,ComponentEvent>> componentEventPool=new HashMap<>();
-	
-	
-	private ComponentEvent(Component component,Event eventName) {
-		this.component=component;
-		this.eventName=eventName;
-	}
-	
-	public static ComponentEvent getInstance(String component,String eventName) {
-		return getInstance(Component.get(component), Event.get(eventName));
-	}
-	
-	public static ComponentEvent getInstance(Component component,Event eventName) {
-		Map<Event,ComponentEvent> events= componentEventPool.computeIfAbsent(component, c->new HashMap<Event,ComponentEvent>());
-		return events.computeIfAbsent(eventName, m-> new ComponentEvent(component,eventName));
+
+	private static Map<Component, Map<Event, ComponentEvent>> componentEventFactory = new HashMap<>();
+
+	private ComponentEvent(Component component, Event eventName) {
+		this.component = component;
+		this.eventName = eventName;
 	}
 
+	/**
+	 * Devuelve un objecto ComponentEvent a partir del Component y Event. Si ya hay
+	 * almacenado el ComponentEvent, devuelve ese y si no crea uno nuevo y lo guarda.
+	 * 
+	 * @param component
+	 *            componente
+	 * @param eventName
+	 *            event
+	 * @return ComponentEvent asociado
+	 */
+	public static ComponentEvent get(String component, String eventName) {
+		return get(Component.get(component), Event.get(eventName));
+	}
+
+	/**
+	 * Devuelve un objecto ComponentEvent a partir del Component y Event. Si ya hay
+	 * almacenado el ComponentEvent, devuelve ese y si no crea uno nuevo y lo guarda.
+	 * 
+	 * @param component
+	 *            componente
+	 * @param eventName
+	 *            event
+	 * @return ComponentEvent asociado
+	 */
+	public static ComponentEvent get(Component component, Event eventName) {
+		Map<Event, ComponentEvent> events = componentEventFactory.computeIfAbsent(component,
+				c -> new HashMap<Event, ComponentEvent>());
+		return events.computeIfAbsent(eventName, m -> new ComponentEvent(component, eventName));
+	}
+
+	/**
+	 * Devuelve el componente.
+	 * @return componente
+	 */
 	public Component getComponent() {
 		return component;
 	}
 
+	/**
+	 * Devuelve el evento.
+	 * @return el evento
+	 */
 	public Event getEventName() {
 		return eventName;
 	}
@@ -59,12 +91,10 @@ public class ComponentEvent {
 			return false;
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
-		return component.toString()+" - "+ eventName.toString();
+		return component + " - " + eventName;
 	}
 
-	
-	
 }

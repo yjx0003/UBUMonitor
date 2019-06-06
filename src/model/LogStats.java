@@ -12,34 +12,35 @@ import controllers.ubulogs.GroupByYearMonth;
 import controllers.ubulogs.GroupByYearQuarter;
 import controllers.ubulogs.GroupByYearWeek;
 
-public class LogStats implements Serializable{
+/**
+ * Clase contenedora que crea las instancias de las distintas agrupaciónes por
+ * fechas.
+ * 
+ * @author Yi Peng Ji
+ *
+ */
+public class LogStats implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	List<GroupByAbstract<?>> stastistics;
-	
-	public LogStats(List<LogLine> logLines,Set<EnrolledUser> users ) {
-		stastistics=new ArrayList<>();
-		
-		stastistics.add(new GroupByDay(logLines,users));
-		stastistics.add(new GroupByYearWeek(logLines,users));
-		stastistics.add(new GroupByYearMonth(logLines,users));
-		stastistics.add(new GroupByYearQuarter(logLines,users));
+
+	public LogStats(List<LogLine> logLines, Set<EnrolledUser> users) {
+		stastistics = new ArrayList<>();
+
+		stastistics.add(new GroupByDay(logLines, users));
+		stastistics.add(new GroupByYearWeek(logLines, users));
+		stastistics.add(new GroupByYearMonth(logLines, users));
+		stastistics.add(new GroupByYearQuarter(logLines, users));
 		stastistics.add(new GroupByYear(logLines, users));
 
-		
 	}
 
 	public List<GroupByAbstract<?>> getList() {
 		return stastistics;
 	}
-	
-	
-	
-	
-
 
 }

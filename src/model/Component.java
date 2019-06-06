@@ -1,12 +1,14 @@
-package controllers.ubulogs.logcreator;
+package model;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Elementos de la columna de logs Componente.
+ * @author Yi Peng Ji
+ *
+ */
 public enum Component {
-	
-	
-	COMPONENT_NOT_AVAILABLE("Component not avaible"),
 	
 	
 	ACTIVITY_REPORT("Activity report"),
@@ -43,27 +45,34 @@ public enum Component {
 	USER_TOURS("User tours"),
 	WIKI("Wiki"),
 	WORKSHOP("Workshop"),
-	XML_FILE("XML file");
+	XML_FILE("XML file"),
+	COMPONENT_NOT_AVAILABLE("Component not avaible");
 
 
 	
 	private String name;
-	private static Map<String,Component> map;
-	
-	Component(String name){
-		this.name=name;
+	private static Map<String, Component> map;
+
+	private Component(String name) {
+		this.name = name;
 	}
-	
-	
+
 	static {
-		map=new HashMap<String,Component>();
-		for(Component component:Component.values()) {
+		map = new HashMap<String, Component>();
+		for (Component component : Component.values()) {
 			map.put(component.name, component);
 		}
 	}
+
+	/**
+	 * Devuelve el componente a partir del String, si no existe devuelve {@link Component#COMPONENT_NOT_AVAILABLE}
+	 * @param name string del componente
+	 * @return el componente a partir del String, si no existe {@link Component#COMPONENT_NOT_AVAILABLE}
+	 */
 	public static Component get(String name) {
-		return map.getOrDefault(name,Component.COMPONENT_NOT_AVAILABLE);
+		return map.getOrDefault(name, Component.COMPONENT_NOT_AVAILABLE);
 	}
+
 	@Override
 	public String toString() {
 		return super.toString().toLowerCase();

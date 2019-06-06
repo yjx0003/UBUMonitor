@@ -7,6 +7,11 @@ import java.util.List;
 import model.Course;
 import model.LogLine;
 
+/**
+ * Representa las actividades o recursos presentes en un curso.
+ * @author Yi Peng Ji
+ *
+ */
 public class Module implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -243,6 +248,27 @@ public class Module implements Serializable {
 	public String toString() {
 		return name;
 	}
+
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Module other = (Module) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+	
+	
 
 
 

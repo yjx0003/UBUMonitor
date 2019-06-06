@@ -11,136 +11,251 @@ import java.time.temporal.IsoFields;
 import org.threeten.extra.YearQuarter;
 import org.threeten.extra.YearWeek;
 
-import controllers.ubulogs.logcreator.Component;
-import controllers.ubulogs.logcreator.Event;
 import model.mod.Module;
 
+/**
+ * Las líneas de log que guardan los datos de varias columnas de los logs.
+ * 
+ * @author Yi Peng Ji
+ *
+ */
 public class LogLine implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
 	private ZonedDateTime time;
-	private String eventContext;
 	private Component component;
 	private Event eventName;
-	private String description;
-	private String origin;
+	private Origin origin;
 	private String IPAdress;
 
 	private EnrolledUser user;
 	private EnrolledUser affectedUser;
 	private Module courseModule;
 
+	/**
+	 * Devuelve el modulo del curso asociado al log, null si el log no tiene el
+	 * modulo del curso.
+	 * 
+	 * @return el modulo del curso o null si el log no tiene
+	 */
 	public Module getCourseModule() {
 		return courseModule;
 	}
 
+	/**
+	 * Asigna el modulo del curso a log y se añade el log al modulo del curso
+	 * (bidireccional).
+	 * 
+	 * @param courseModule
+	 *            modulo del curso
+	 */
 	public void setCourseModule(Module courseModule) {
 		this.courseModule = courseModule;
 		courseModule.addLog(this);
 	}
 
+	/**
+	 * Devuelve la fecha del log.
+	 * 
+	 * @return la fecha del log
+	 */
 	public ZonedDateTime getTime() {
 		return time;
 	}
 
+	/**
+	 * Modifica la fecha del log.
+	 * 
+	 * @param time
+	 *            nueva fecha
+	 */
 	public void setTime(ZonedDateTime time) {
 		this.time = time;
 	}
 
-	public String getEventContext() {
-		return eventContext;
-	}
-
-	public void setEventContext(String eventContext) {
-		this.eventContext = eventContext;
-	}
-
+	/**
+	 * Devuelve el componente.
+	 * 
+	 * @return el componente del log
+	 */
 	public Component getComponent() {
 		return component;
 	}
 
+	/**
+	 * Modifica el componente.
+	 * 
+	 * @param component
+	 *            componente
+	 */
 	public void setComponent(Component component) {
 		this.component = component;
 	}
 
+	/**
+	 * Devuelve el nombre del evento.
+	 * 
+	 * @return nombre del evento
+	 */
 	public Event getEventName() {
 		return eventName;
 	}
 
+	/**
+	 * Modifica el nombre del evento.
+	 * 
+	 * @param eventName
+	 *            nombre del evento
+	 */
 	public void setEventName(Event eventName) {
 		this.eventName = eventName;
 	}
 
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getOrigin() {
+	/**
+	 * Devuelve el origen del log.
+	 * 
+	 * @return origen del log
+	 */
+	public Origin getOrigin() {
 		return origin;
 	}
 
-	public void setOrigin(String origin) {
+	/**
+	 * Modifica el origen del log.
+	 * 
+	 * @param origin
+	 */
+	public void setOrigin(Origin origin) {
 		this.origin = origin;
 	}
 
+	/**
+	 * Devuelve la ip
+	 * 
+	 * @return la ip
+	 */
 	public String getIPAdress() {
 		return IPAdress;
 	}
 
+	/**
+	 * Modfica la ip del log.
+	 * 
+	 * @param iPAdress
+	 */
 	public void setIPAdress(String iPAdress) {
 		IPAdress = iPAdress;
 	}
 
+	/**
+	 * Devuelve el usuario que ha realizado la acción.
+	 * 
+	 * @return el usuario que ha realizado la acción
+	 */
 	public EnrolledUser getUser() {
 		return user;
 	}
 
+	/**
+	 * Modifica el usuario que ha realizado la acción.
+	 * 
+	 * @param user
+	 *            usuario
+	 */
 	public void setUser(EnrolledUser user) {
 		this.user = user;
 		user.addLog(this);
 	}
 
+	/**
+	 * Devuelve el usuario afecto.
+	 * 
+	 * @return devuelve el usuario afectado
+	 */
 	public EnrolledUser getAffectedUser() {
 		return affectedUser;
 	}
 
+	/**
+	 * Modifica el usuario afectado.
+	 * 
+	 * @param affectedUser
+	 *            el nuevo usuario afecado
+	 */
 	public void setAffectedUser(EnrolledUser affectedUser) {
 		this.affectedUser = affectedUser;
 		affectedUser.addLog(this);
 	}
 
+	/**
+	 * Devuelve el dia del mes del log.
+	 * 
+	 * @return dia del mes del log
+	 */
 	public int getDayOfMonth() {
 		return time.getDayOfMonth();
 	}
 
+	/**
+	 * Devuelve el dia del año.
+	 * 
+	 * @return el dia del año
+	 */
 	public int getDayOfYear() {
 		return time.getDayOfYear();
 	}
 
+	/**
+	 * Devuelve la fecha.
+	 * 
+	 * @return la fecha
+	 */
 	public LocalDate getLocalDate() {
 		return time.toLocalDate();
 	}
 
+	/**
+	 * Devuelve el mes.
+	 * 
+	 * @return el mes
+	 */
 	public Month getMonth() {
 		return time.getMonth();
 	}
-	
+
+	/**
+	 * Devuelve mes y año.
+	 * 
+	 * @return mes y año
+	 */
 	public YearMonth getYearMonth() {
 		return YearMonth.from(time);
 	}
-	
+
+	/**
+	 * Devuelve numero de semana del año y año.
+	 * 
+	 * @return numero de semana del año y año
+	 */
 	public YearWeek getYearWeek() {
 		return YearWeek.from(time);
 	}
-	
+
+	/**
+	 * Devuelve el año.
+	 * 
+	 * @return el año
+	 */
 	public Year getYear() {
 		return Year.from(time);
 	}
-	
+
+	/**
+	 * Devuelve el numero de trimestre del año y año.
+	 * 
+	 * @return el numero de trimestre del año y año
+	 */
 	public YearQuarter getYearQuarter() {
 		return YearQuarter.from(time);
 	}
@@ -156,9 +271,9 @@ public class LogLine implements Serializable {
 
 	@Override
 	public String toString() {
-		return "LogLine [time=" + time + ", eventContext=" + eventContext + ", component=" + component + ", eventName="
-				+ eventName + ", description=" + description + ", origin=" + origin + ", IPAdress=" + IPAdress
-				+ ", user=" + user + ", affectedUser=" + affectedUser + ", courseModule=" + courseModule + "]\n";
+		return "LogLine [time=" + time + ", component=" + component + ", eventName=" + eventName + ", origin=" + origin
+				+ ", IPAdress=" + IPAdress + ", user=" + user + ", affectedUser=" + affectedUser + ", courseModule="
+				+ courseModule + "]";
 	}
 
 }

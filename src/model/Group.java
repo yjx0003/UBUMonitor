@@ -11,7 +11,7 @@ import java.util.Set;
  * @author Claudia Martínez Herrero
  * @author Yi Peng Ji
  * @version 2.0.1
- * @since 2.0.1
+ * @since 1.0
  */
 public class Group implements Serializable {
 
@@ -22,12 +22,11 @@ public class Group implements Serializable {
 	private DescriptionFormat descriptionFormat;
 
 	private Set<EnrolledUser> enrolledUsers;
-	private Course course;
 
 	public Group() {
-		this.enrolledUsers=new HashSet<>();
+		this.enrolledUsers = new HashSet<>();
 	}
-	
+
 	/**
 	 * Constructor de la clase Group. Establece un grupo.
 	 * 
@@ -37,8 +36,9 @@ public class Group implements Serializable {
 	 *            Nombre del grupo.
 	 * @param description
 	 *            Descripción del grupo.
-	 *            
-	 * @param descriptionFormat el formato de la descripción
+	 * 
+	 * @param descriptionFormat
+	 *            el formato de la descripción
 	 * 
 	 */
 	public Group(int id, String name, String description, DescriptionFormat descriptionFormat) {
@@ -47,12 +47,12 @@ public class Group implements Serializable {
 		this.name = name;
 		this.description = description;
 		this.descriptionFormat = descriptionFormat;
-		
+
 	}
-	
+
 	public Group(int id) {
 		this();
-		this.id=id;
+		this.id = id;
 	}
 
 	/**
@@ -112,34 +112,52 @@ public class Group implements Serializable {
 		this.description = description;
 	}
 
+	/**
+	 * Devuelve el formato que tiene la descripcion.
+	 * 
+	 * @return formato de descripcion
+	 */
 	public DescriptionFormat getDescriptionFormat() {
 		return descriptionFormat;
 	}
 
+	/**
+	 * Modifica que formato de descripción usa.
+	 * 
+	 * @param descriptionFormat
+	 *            formato de descripcion
+	 */
 	public void setDescriptionFormat(DescriptionFormat descriptionFormat) {
 		this.descriptionFormat = descriptionFormat;
 	}
 
+	/**
+	 * Devuelve los usuarios del grupo.
+	 * 
+	 * @return los usuarios del grupo
+	 */
 	public Set<EnrolledUser> getEnrolledUsers() {
 		return enrolledUsers;
 	}
 
+	/**
+	 * Modifica los usuarios del grupo.
+	 * 
+	 * @param enrolledUsers
+	 *            modifica los usuarios del grupo
+	 */
 	public void setEnrolledUsers(Set<EnrolledUser> enrolledUsers) {
 		this.enrolledUsers = enrolledUsers;
 	}
-	
-	
-	public Course getCourse() {
-		return course;
-	}
 
+	/**
+	 * Añade un usuario al grupo.
+	 * 
+	 * @param user
+	 *            nuevo usuario
+	 */
 	public void addEnrolledUser(EnrolledUser user) {
 		enrolledUsers.add(user);
-	}
-	
-
-	public void setCourse(Course course) {
-		this.course = course;
 	}
 
 	@Override
@@ -152,8 +170,6 @@ public class Group implements Serializable {
 		return id;
 	}
 
-
-	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -167,6 +183,5 @@ public class Group implements Serializable {
 			return false;
 		return true;
 	}
-
 
 }

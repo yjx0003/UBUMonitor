@@ -18,7 +18,6 @@ public class Role implements Serializable {
 	private String name;
 	private String shortName;
 	private Set<EnrolledUser> enrolledUsers;
-	private Course course;
 
 	public Role() {
 		this.enrolledUsers=new HashSet<>();
@@ -105,25 +104,30 @@ public class Role implements Serializable {
 		this.shortName = shortName;
 	}
 
+	/**
+	 * Modifica los usuarios que tiene este rol.
+	 * @return
+	 */
 	public Set<EnrolledUser> getEnrolledUsers() {
 		return enrolledUsers;
 	}
 
+	/**
+	 * Modifica los usuarios que tiene este rol.
+	 * @param enrolledUsers los nuevos usarios de este rol
+	 */
 	public void setEnrolledUsers(Set<EnrolledUser> enrolledUsers) {
 		this.enrolledUsers = enrolledUsers;
 	}
 
+	/**
+	 * Añade un usuario a este rol.
+	 * @param user nuevo usuario a añadir
+	 */
 	public void addEnrolledUser(EnrolledUser user) {
 		enrolledUsers.add(user);
 	}
 
-	public Course getCourse() {
-		return course;
-	}
-
-	public void setCourse(Course course) {
-		this.course = course;
-	}
 
 	@Override
 	public String toString() {

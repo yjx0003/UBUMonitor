@@ -1,5 +1,11 @@
 package model;
 
+/**
+ * Secciones de contenido de un curso donde se guardan los modulos del curso.
+ * De momento no se usa está clase.
+ * @author Yi Peng Ji
+ *
+ */
 public class Section {
 	
 	/**
@@ -50,5 +56,77 @@ public class Section {
 	 * Availability information.
 	 */
 	private String availabilityinfo;
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+
+	public String getSummary() {
+		return summary;
+	}
+
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+
+	public int getSummaryformat() {
+		return summaryformat;
+	}
+
+	public void setSummaryformat(int summaryformat) {
+		this.summaryformat = summaryformat;
+	}
+
+	public int getSection() {
+		return section;
+	}
+
+	public void setSection(int section) {
+		this.section = section;
+	}
+
+	public int getHiddenbynumsections() {
+		return hiddenbynumsections;
+	}
+
+	public void setHiddenbynumsections(int hiddenbynumsections) {
+		this.hiddenbynumsections = hiddenbynumsections;
+	}
+
+	public boolean isUservisible() {
+		return uservisible;
+	}
+
+	public void setUservisible(boolean uservisible) {
+		this.uservisible = uservisible;
+	}
+
+	public String getAvailabilityinfo() {
+		return availabilityinfo;
+	}
+
+	public void setAvailabilityinfo(String availabilityinfo) {
+		this.availabilityinfo = availabilityinfo;
+	}
 	
 }

@@ -1,11 +1,17 @@
-package controllers.ubulogs.logcreator;
+package model;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Representa la columna de Nombre de evento en la tabla de logs.
+ * Se enumeran todos los eventos posibles.
+ * @author Yi Peng Ji
+ *
+ */
 public enum Event {
 	
-	EVENT_NOT_AVAILABLE("Event not avaible"),
+	
 	
 	
 	ACTIVITY_REPORT_VIEWED("Activity report viewed"),
@@ -128,26 +134,43 @@ public enum Event {
 	USER_UNENROLLED_FROM_COURSE("User unenrolled from course"),
 	XLS_GRADE_EXPORTED("XLS grade exported"),
 	XML_GRADE_EXPORTED("XML grade exported"),
-	ZIP_ARCHIVE_OF_FOLDER_DOWNLOADED("Zip archive of folder downloaded");
+	ZIP_ARCHIVE_OF_FOLDER_DOWNLOADED("Zip archive of folder downloaded"),
+	EVENT_NOT_AVAILABLE("Event not avaible");
 
 	
+	
+	
 	private String name;
-	private static Map<String,Event> map;
-	
-	Event(String name){
-		this.name=name;
+	private static Map<String, Event> map;
+
+	Event(String name) {
+		this.name = name;
 	}
-	
+
+	/**
+	 * Creamos una mapa inverso, la key es el texto en String y el value el elemento
+	 * de la enumeración
+	 */
 	static {
-		map=new HashMap<String,Event>();
-		for(Event eventName:Event.values()) {
+		map = new HashMap<String, Event>();
+		for (Event eventName : Event.values()) {
 			map.put(eventName.name, eventName);
 		}
 	}
-	
+
+	/**
+	 * Devuelve el elemento Event de enum o {@link Event#EVENT_NOT_AVAILABLE} si no
+	 * existe
+	 * 
+	 * @param name
+	 *            nombre del evento
+	 * @return elemento Event de enum o {@link Event#EVENT_NOT_AVAILABLE} si no
+	 *         existe
+	 */
 	public static Event get(String name) {
-		return map.getOrDefault(name,EVENT_NOT_AVAILABLE);
+		return map.getOrDefault(name, EVENT_NOT_AVAILABLE);
 	}
+
 	@Override
 	public String toString() {
 		return super.toString().toLowerCase();

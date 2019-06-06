@@ -9,6 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Clase usuario de moodle. Los atributos optional pueden aparecer o no aparecer
+ * en la respuesta de moodle.
+ * 
+ * @author Yi Peng Ji
+ *
+ */
 public class EnrolledUser implements Serializable {
 
 	/**
@@ -24,7 +31,7 @@ public class EnrolledUser implements Serializable {
 	 */
 	private String userName;
 	/**
-	 * Optional. The first name(s) of the user
+	 * Optional. The first name(s) of the userjm
 	 */
 	private String firstname;
 	/**
@@ -154,27 +161,26 @@ public class EnrolledUser implements Serializable {
 	private List<LogLine> logs;
 
 	private List<LogLine> affectedLogs;
-	
+
 	private Map<GradeItem, Double> grades;
-	
+
 	private byte[] imageBytes;
-	
 
 	public EnrolledUser() {
 		roles = new HashSet<>();
 		logs = new ArrayList<>();
-		affectedLogs=new ArrayList<>();
+		affectedLogs = new ArrayList<>();
 		enrolledcourses = new HashSet<>();
 		grades = new HashMap<>();
 		groups = new HashSet<>();
-		
+
 	}
 
 	public EnrolledUser(int id) {
 		this();
 		this.id = id;
-		lastname="LastName_"+id;
-		firstname="FirstName_"+id;
+		lastname = "LastName_" + id;
+		firstname = "FirstName_" + id;
 	}
 
 	public int getId() {
@@ -444,7 +450,7 @@ public class EnrolledUser implements Serializable {
 	public void addLog(LogLine log) {
 		this.logs.add(log);
 	}
-	
+
 	public void addAffectedLog(LogLine log) {
 		this.affectedLogs.add(log);
 	}
@@ -471,7 +477,6 @@ public class EnrolledUser implements Serializable {
 	public double getGrade(GradeItem gradeItem) {
 		return grades.get(gradeItem);
 	}
-
 
 	public byte[] getImageBytes() {
 		return imageBytes;

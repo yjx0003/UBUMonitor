@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * Clase Scale para almacenar las escalas.
- * 
+ * No se usa en esta versión.
  * @author Félix Nogal Santamaría
  * @version 1.0
  *

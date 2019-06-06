@@ -32,43 +32,6 @@ public class MoodleUser {
 	 * Constructor de MoodleUser sin parámetros
 	 */
 	public MoodleUser() {
-		this.setId(0);
-		this.courses = new ArrayList<>();
-	}
-
-	/**
-	 * Constructor de MoodleUser con parámetros
-	 * 
-	 * @param id
-	 *            id del usuario logueado
-	 * @param userName
-	 *            nombre de usuario
-	 * @param fullName
-	 *            nombre completo
-	 * @param eMail
-	 *            correo electrónico
-	 * @param firstAccess
-	 *            fecha de primer acceso
-	 * @param lastAccess
-	 *            fecha de último acceso
-	 * @param city
-	 *            ciudad
-	 * @param country
-	 *            país
-	 * @param timezone
-	 *            zona horaria que está usando
-	 */
-	public MoodleUser(int id, String userName, String fullName, String eMail, Instant firstAccess, Instant lastAccess,
-			String city, String country, String timezone) {
-		this.setId(id);
-		this.setUserName(userName);
-		this.setFullName(fullName);
-		this.setEmail(eMail);
-		this.setFirstAccess(firstAccess);
-		this.setLastAccess(lastAccess);
-		this.setCity(city);
-		this.setCountry(country);
-		this.setTimezone(timezone);
 		this.courses = new ArrayList<>();
 	}
 

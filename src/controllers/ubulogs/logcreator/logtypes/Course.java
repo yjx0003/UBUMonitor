@@ -12,18 +12,18 @@ import model.LogLine;
 public class Course extends ReferencesLog {
 	
 	/**
-	 * instacia única de la clase Course
+	 * Instacia única de la clase Course
 	 */
 	private static Course instance;
 
 	/**
-	 * Constructor privado de la clase singleton
+	 * Constructor privado de la clase singleton.
 	 */
 	private Course() {
 	}
 
 	/**
-	 * Devuelve la instancia singleton de Course.
+	 * Devuelve la instancia única de Course.
 	 * @return instancia singleton
 	 */
 	public static Course getInstance() {
@@ -32,7 +32,10 @@ public class Course extends ReferencesLog {
 		}
 		return instance;
 	}
- 
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		// La id del curso se ignora de momento

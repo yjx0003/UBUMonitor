@@ -12,19 +12,21 @@ import model.LogLine;
  *
  */
 public class UserAttemptCmid extends ReferencesLog {
+
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase UserAttemptCmid.
 	 */
 	private static UserAttemptCmid instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private UserAttemptCmid() {
 	}
 
 	/**
-	 * Return a singleton instance of UserAttemptCmid.
+	 * Devuelve la instancia única de UserAttemptCmid.
+	 * @return instancia singleton
 	 */
 	public static UserAttemptCmid getInstance() {
 		if (instance == null) {
@@ -32,11 +34,14 @@ public class UserAttemptCmid extends ReferencesLog {
 		}
 		return instance;
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
-		//TODO Habria que usar la funcion mod_quiz_get_user_attempts de moodle para recoger las ids de los intentos de quiz
+		//atttempt id mod_quiz_get_user_attempts 
 		setCourseModuleById(log, ids.get(2));
 
 	}

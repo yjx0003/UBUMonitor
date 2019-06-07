@@ -1,8 +1,6 @@
-package controllers.ubulogs;
+package controllers.datasets;
 
 import java.awt.Color;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,13 +12,13 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.Controller;
+import controllers.I18n;
+import controllers.ubulogs.GroupByAbstract;
 import model.EnrolledUser;
 
 public abstract class StackedBarDatasetAbstract<T> {
 
 	static final Logger logger = LoggerFactory.getLogger(StackedBarDatasetAbstract.class);
-	protected Controller controller = Controller.getInstance();
 	/**
 	 * Nivel de opacidad para el color de fondo de las barras
 	 */
@@ -34,30 +32,21 @@ public abstract class StackedBarDatasetAbstract<T> {
 	protected LocalDate end;
 	protected StringBuilder stringBuilder;
 
-	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat();
-	{
-		DecimalFormatSymbols decimalFormatSymbols = DECIMAL_FORMAT.getDecimalFormatSymbols();
-		decimalFormatSymbols.setDecimalSeparator('.');
-		DECIMAL_FORMAT.setDecimalFormatSymbols(decimalFormatSymbols);
-		DECIMAL_FORMAT.setMaximumFractionDigits(2);
-		DECIMAL_FORMAT.setMinimumFractionDigits(2);
-	}
-
 	private static String escapeJavaScriptText(String input) {
 		return input.replaceAll("'", "\\\\'");
 	}
-	
+
 	protected abstract String translate(T element);
-	
+
 	protected abstract Map<T, List<Double>> getMeans();
-	
 
 	protected abstract Map<EnrolledUser, Map<T, List<Long>>> getUserCounts();
 
 	public String createData(List<EnrolledUser> selectedUsers,
 			List<T> selecteds, GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd) {
-		
-		//lo metemos en un nuevo arraylist para evitar que se actualice en tiempo real los elementos
+
+		// lo metemos en un nuevo arraylist para evitar que se actualice en tiempo real
+		// los elementos
 		this.selectedUsers = new ArrayList<>(selectedUsers);
 		this.selecteds = new ArrayList<>(selecteds);
 		this.groupBy = groupBy;
@@ -79,7 +68,6 @@ public abstract class StackedBarDatasetAbstract<T> {
 		return stringBuilder.toString();
 	}
 
-	
 	private void setLabels() {
 		List<String> rangeDates = groupBy.getRangeString(start, end);
 
@@ -94,8 +82,7 @@ public abstract class StackedBarDatasetAbstract<T> {
 		setUsersDatasets();
 		stringBuilder.append("]");
 	}
-	
-	
+
 	/**
 	 * 
 	 * 
@@ -107,53 +94,43 @@ public abstract class StackedBarDatasetAbstract<T> {
 		for (Entry<T, List<Double>> entry : meanTs.entrySet()) {
 			T element = entry.getKey();
 			List<Double> data = entry.getValue();
-			
-			// convertimos el valor double en string limitado a dos decimales
-			List<String> dataString = data.stream()
-					.map(d -> DECIMAL_FORMAT.format(d))
-					.collect(Collectors.toList());
 
 			int[] color = colors.get(element);
 
 			stringBuilder.append("{");
 			stringBuilder.append(
-					"label:'" + escapeJavaScriptText(controller.getResourceBundle().getString("chart.mean") + " "
-							+ translate(element)) + "',");
+					"label:'" + escapeJavaScriptText(I18n.get("chart.mean") + " "
+							+ escapeJavaScriptText(translate(element))) + "',");
 			stringBuilder.append("type: 'line',");
 			stringBuilder.append("borderWidth: 2,");
 			stringBuilder.append("fill: false,");
 			stringBuilder.append("borderColor: 'rgb(" + color[0] + ", " + color[1] + "," + color[2] + ")',");
-			stringBuilder.append("data: [" + join(dataString) + "]");
+			stringBuilder.append("data: [" + join(data) + "]");
 			stringBuilder.append("},");
 		}
 
 	}
 
-
-
-	
 	private void setUsersDatasets() {
 		Map<EnrolledUser, Map<T, List<Long>>> userTDataset = getUserCounts();
-		List<String> datasets = new ArrayList<>();
 
+		
 		for (EnrolledUser user : selectedUsers) {
 			Map<T, List<Long>> elementDataset = userTDataset.get(user);
 			for (T element : selecteds) {
 				int[] c = colors.get(element);
-				StringBuilder bar = new StringBuilder();
 				List<Long> data = elementDataset.get(element);
 
-				bar.append("{");
-				bar.append("label:'" + escapeJavaScriptText(translate(element)) + "',");
-				bar.append("stack: '" + escapeJavaScriptText(user.toString()) + "',");
-				bar.append("backgroundColor: 'rgba(" + c[0] + ", " + c[1] + "," + c[2] + "," + OPACITY_BAR + ")',");
-				bar.append("data: [" + join(data) + "]");
-				bar.append("}");
-
-				datasets.add(bar.toString());
+				stringBuilder.append("{");
+				stringBuilder.append("label:'" + escapeJavaScriptText(translate(element)) + "',");
+				stringBuilder.append("stack: '" + escapeJavaScriptText(user.toString()) + "',");
+				stringBuilder.append("backgroundColor: 'rgba(" + c[0] + ", " + c[1] + "," + c[2] + "," + OPACITY_BAR + ")',");
+				stringBuilder.append("data: [" + join(data) + "]");
+				stringBuilder.append("},");
+				
 			}
 		}
-		stringBuilder.append(join(datasets));
+	
 	}
 
 	private String joinWithQuotes(List<String> list) {
@@ -169,21 +146,18 @@ public abstract class StackedBarDatasetAbstract<T> {
 				.collect(Collectors.joining(", "));
 	}
 
-	
-
-	
-
 	private void setRandomColors() {
 		colors = new HashMap<>();
 
-		for (int i = 0, n = selecteds.size(); i < n; i++) {
-			
-			//generamos un color a partir de HSB, el hue(H) es el color, saturacion (S), y brillo(B)
-			Color c = new Color(Color.HSBtoRGB(i / (float) n, 0.8f, 1.0f));
+		for (int i = 0; i < selecteds.size(); i++) {
+
+			// generamos un color a partir de HSB, el hue(H) es el color, saturacion (S), y
+			// brillo(B)
+			Color c = new Color(Color.HSBtoRGB(i / (float) selecteds.size(), 0.8f, 1.0f));
 			int[] array = { c.getRed(), c.getGreen(), c.getBlue() };
 			colors.put(selecteds.get(i), array);
 		}
 
 	}
-	
+
 }

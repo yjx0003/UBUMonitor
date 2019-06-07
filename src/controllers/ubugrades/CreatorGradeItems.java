@@ -46,13 +46,12 @@ public class CreatorGradeItems {
 
 	public List<GradeItem> createGradeItems(int courseid) throws JSONException, IOException {
 		WebService ws = new GradereportUserGetGradesTable(courseid);
-		 String response = ws.getResponse();
+		String response = ws.getResponse();
 
-		//String response = new String(Files.readAllBytes(Paths.get("./entrada.txt")), StandardCharsets.UTF_8);
 		JSONObject jsonObject = new JSONObject(response);
 
 		List<GradeItem> gradeItems = createHierarchyGradeItems(jsonObject);
-		
+
 		setEnrolledUserGrades(jsonObject, gradeItems);
 		CONTROLLER.getActualCourse().setGradeItems(new HashSet<>(gradeItems));
 		return gradeItems;
@@ -60,7 +59,6 @@ public class CreatorGradeItems {
 
 	private List<GradeItem> createHierarchyGradeItems(JSONObject jsonObject) {
 
-		
 		JSONObject table = jsonObject.getJSONArray("tables").getJSONObject(0);
 
 		int maxDepth = table.getInt("maxdepth") + 1;
@@ -68,7 +66,7 @@ public class CreatorGradeItems {
 		GradeItem[] categories = new GradeItem[maxDepth];
 
 		JSONArray tabledata = table.getJSONArray("tabledata");
-		
+
 		List<GradeItem> gradeItems = new ArrayList<GradeItem>();
 		for (int i = 0; i < tabledata.length(); i++) {
 
@@ -85,7 +83,7 @@ public class CreatorGradeItems {
 			GradeItem gradeItem = CONTROLLER.getBBDD().getGradeItemById(i);
 			gradeItem.setItemname(content.text());
 			gradeItem.clearChildren();
-			
+
 			gradeItem.setLevel(nivel);
 
 			// Buscamos la etiqueta HTML "i" dentro del JSONObject de content.
@@ -211,13 +209,13 @@ public class CreatorGradeItems {
 
 			for (int j = 0, gradeItemCount = 0; j < tabledata.length(); j++) {
 				JSONObject tabledataObject = tabledata.optJSONObject(j);
-				if (tabledataObject == null) {
-					continue;
-				}
-				if (tabledataObject.has("grade")) {
+				
+				if (tabledataObject != null && tabledataObject.has("grade")) {
+
 					setGrade(tabledataObject, gradeItems.get(gradeItemCount), enrolledUser);
 					gradeItemCount++;
 				}
+
 			}
 		}
 	}

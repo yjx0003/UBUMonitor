@@ -15,19 +15,21 @@ import model.LogLine;
 public class Default extends ReferencesLog {
 
 	static final Logger logger = LoggerFactory.getLogger(Default.class);
+		
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase Default.
 	 */
 	private static Default instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private Default() {
 	}
 
 	/**
-	 * Return a singleton instance of DoNothing.
+	 * Devuelve la instancia única de Default.
+	 * @return instancia singleton
 	 */
 	public static Default getInstance() {
 		if (instance == null) {
@@ -35,7 +37,10 @@ public class Default extends ReferencesLog {
 		}
 		return instance;
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		logger.warn("No se ha añadido un manejador para referenciar los atributos restantes de :" + log);

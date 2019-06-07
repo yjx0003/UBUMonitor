@@ -31,11 +31,9 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.javafx.webkit.WebConsoleListener;
 
+import controllers.datasets.StackedBarDataSetComponent;
+import controllers.datasets.StackedBarDataSetComponentEvent;
 import controllers.ubulogs.GroupByAbstract;
-import controllers.ubulogs.StackedBarDataSetComponent;
-import controllers.ubulogs.StackedBarDataSetComponentEvent;
-import controllers.ubulogs.logcreator.Component;
-import controllers.ubulogs.logcreator.ComponentEvent;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
@@ -70,13 +68,14 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Region;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import model.Component;
+import model.ComponentEvent;
 import model.EnrolledUser;
 import model.GradeItem;
 import model.Group;
@@ -225,7 +224,7 @@ public class MainController implements Initializable {
 			// Comprobamos cuando se carga la pagina para traducirla
 			webViewChartsEngine.getLoadWorker().stateProperty()
 					.addListener((ov, oldState, newState) -> webViewChartsEngine.executeScript(
-							"setLanguage('" + controller.getResourceBundle().getLocale() + "')"));
+							"setLanguage('" + I18n.getResourceBundle().getLocale() + "')"));
 
 			// Guardamos en el logger los errores de consola que se generan en el JS
 			WebConsoleListener.setDefaultListener(new WebConsoleListener() {
@@ -310,6 +309,8 @@ public class MainController implements Initializable {
 			// Añadimos todos los participantes a la lista de visualización
 
 			enrList = FXCollections.observableArrayList(users);
+			enrList.sort(Comparator.comparing(EnrolledUser::getLastname, String.CASE_INSENSITIVE_ORDER)
+					.thenComparing(EnrolledUser::getFirstname, String.CASE_INSENSITIVE_ORDER));
 
 			//////////////////////////////////////////////////////////////////////////
 			// Manejo de actividades (TreeView<GradeItem>):
@@ -379,12 +380,7 @@ public class MainController implements Initializable {
 								if (tabUbuGrades.isSelected()) {
 									updateGradesChart();
 								} else if (tabUbuLogs.isSelected()) {
-									if (tabUbuLogsComponent.isSelected()) {
-										updateComponentsChart();
-									} else if (tabUbuLogsEvent.isSelected()) {
-										updateComponentsEventsChart();
-									}
-
+									updateLogsChart();
 								}
 							});
 
@@ -398,15 +394,14 @@ public class MainController implements Initializable {
 					if (empty) {
 						setText(null);
 						setGraphic(null);
-						setPrefHeight(45);
 					} else {
 						setText(user.toString());
 						try {
 							Image image = new Image(new ByteArrayInputStream(user.getImageBytes()));
 							setGraphic(new ImageView(image));
-							setPrefHeight(45);
 						} catch (Exception e) {
-							setGraphic(new ImageView(ERROR_ICON));
+							logger.error("No se ha podido cargar la imagen de: " + user);
+							setGraphic(new ImageView(new Image("/img/default_user.png")));
 						}
 					}
 				}
@@ -435,20 +430,20 @@ public class MainController implements Initializable {
 					.addListener((Change<? extends TreeItem<GradeItem>> g) -> updateGradesChart());
 
 			// Mostramos nº participantes
-			lblCountParticipants.setText(controller.getResourceBundle().getString("label.participants") + " "
+			lblCountParticipants.setText(I18n.get("label.participants")
 					+ controller.getActualCourse().getEnrolledUsersCount());
 
 			// Mostramos Usuario logeado y su imagen
 			lblActualUser.setText(
-					controller.getResourceBundle().getString("label.user") + " " + controller.getUser().getFullName());
+					I18n.get("label.user") + " " + controller.getUser().getFullName());
 			userPhoto.setImage(controller.getUser().getUserPhoto());
 
 			// Mostramos Curso actual
-			lblActualCourse.setText(controller.getResourceBundle().getString("label.course") + " "
+			lblActualCourse.setText(I18n.get("label.course") + " "
 					+ controller.getActualCourse().getFullName());
 
 			// Mostramos Host actual
-			lblActualHost.setText(controller.getResourceBundle().getString("label.host") + " " + controller.getHost());
+			lblActualHost.setText(I18n.get("label.host") + " " + controller.getHost());
 		} catch (Exception e) {
 			logger.error("Error en la inicialización.", e);
 		}
@@ -484,12 +479,13 @@ public class MainController implements Initializable {
 
 			@Override
 			public String toString(GroupByAbstract<?> typeTimes) {
-				return controller.getResourceBundle().getString("choiceBox." + typeTimes);
+				return I18n.get("choiceBox." + typeTimes);
 			}
 		});
 
-		datePickerStart.setValue(LocalDate.now().minusWeeks(1));
-		datePickerEnd.setValue(LocalDate.now());
+		LocalDate lastLogDate = controller.getActualCourse().getLogs().getLastDatetime().toLocalDate();
+		datePickerStart.setValue(lastLogDate.minusWeeks(1));
+		datePickerEnd.setValue(lastLogDate);
 
 		dateStart = datePickerStart.getValue();
 		dateEnd = datePickerEnd.getValue();
@@ -533,17 +529,13 @@ public class MainController implements Initializable {
 		tabUbuLogs.setOnSelectionChanged(event -> setTablogs(event));
 
 		tabUbuLogsComponent.setOnSelectionChanged(event -> {
-			if (tabUbuLogsComponent.isSelected()) {
-				updateComponentsChart();
-			}
-
+			updateLogsChart();
+			findMax();
 		});
 
 		tabUbuLogsEvent.setOnSelectionChanged(event -> {
-			if (tabUbuLogsEvent.isSelected()) {
-				updateComponentsEventsChart();
-			}
-
+			updateLogsChart();
+			findMax();
 		});
 
 		initListViewComponents();
@@ -551,18 +543,16 @@ public class MainController implements Initializable {
 	}
 
 	public void initListViewComponents() {
-		ResourceBundle rb = controller.getResourceBundle();
 
 		listViewComponents.getSelectionModel().getSelectedItems()
 				.addListener((Change<? extends Component> c) -> {
-					updateComponentsChart();
+					updateLogsChart();
 					findMax();
 				});
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
 		listViewComponents.setCellFactory(callback -> new ListCell<Component>() {
-
 			@Override
 			public void updateItem(Component component, boolean empty) {
 				super.updateItem(component, empty);
@@ -570,12 +560,12 @@ public class MainController implements Initializable {
 					setText(null);
 					setGraphic(null);
 				} else {
-					setText(rb.getString("component." + component));
+					setText(I18n.get(component));
 					try {
 						Image image = new Image("/img/" + component + ".png");
 						setGraphic(new ImageView(image));
 					} catch (Exception e) {
-						setGraphic(new ImageView(ERROR_ICON));
+						setGraphic(null);
 					}
 				}
 			}
@@ -584,7 +574,7 @@ public class MainController implements Initializable {
 		List<Component> uniqueComponents = controller.getActualCourse().getUniqueComponents();
 
 		// Ordenamos los componentes segun los nombres internacionalizados
-		uniqueComponents.sort(Comparator.comparing((Component c) -> rb.getString("component." + c)));
+		uniqueComponents.sort(Comparator.comparing((Component c) -> I18n.get(c)));
 
 		ObservableList<Component> observableListComponents = FXCollections.observableArrayList(uniqueComponents);
 		FilteredList<Component> filterComponents = new FilteredList<>(observableListComponents);
@@ -599,17 +589,16 @@ public class MainController implements Initializable {
 					return true;
 				}
 				String textField = newValue.toLowerCase();
-				return rb.getString("component." + component).toLowerCase().contains(textField);
+				return I18n.get(component).toLowerCase().contains(textField);
 			});
 		}));
 
 	}
 
 	public void initListViewComponentsEvents() {
-		ResourceBundle rb = controller.getResourceBundle();
 		listViewEvents.getSelectionModel().getSelectedItems()
 				.addListener((Change<? extends ComponentEvent> c) -> {
-					updateComponentsEventsChart();
+					updateLogsChart();
 					findMax();
 				});
 
@@ -624,13 +613,13 @@ public class MainController implements Initializable {
 					setText(null);
 					setGraphic(null);
 				} else {
-					setText(rb.getString("component." + componentEvent.getComponent()) + " - "
-							+ rb.getString("eventname." + componentEvent.getEventName()));
+					setText(I18n.get(componentEvent.getComponent()) + " - "
+							+ I18n.get(componentEvent.getEventName()));
 					try {
 						Image image = new Image("/img/" + componentEvent.getComponent() + ".png");
 						setGraphic(new ImageView(image));
 					} catch (Exception e) {
-						setGraphic(new ImageView(ERROR_ICON));
+						setGraphic(null);
 					}
 				}
 			}
@@ -640,8 +629,8 @@ public class MainController implements Initializable {
 
 		// Ordenamos los componentes segun los nombres internacionalizados
 		uniqueComponentsEvents
-				.sort(Comparator.comparing((ComponentEvent c) -> rb.getString("component." + c.getComponent()))
-						.thenComparing((ComponentEvent c) -> rb.getString("eventname." + c.getEventName())));
+				.sort(Comparator.comparing((ComponentEvent c) -> I18n.get(c.getComponent()))
+						.thenComparing((ComponentEvent c) -> I18n.get(c.getEventName())));
 
 		ObservableList<ComponentEvent> observableListComponents = FXCollections
 				.observableArrayList(uniqueComponentsEvents);
@@ -655,10 +644,19 @@ public class MainController implements Initializable {
 					return true;
 				}
 				String textField = newValue.toLowerCase();
-				return rb.getString("component." + componentEvent.getComponent()).toLowerCase().contains(textField)
-						|| rb.getString("eventname." + componentEvent.getEventName()).toLowerCase().contains(textField);
+				return I18n.get(componentEvent.getComponent()).toLowerCase().contains(textField)
+						|| I18n.get(componentEvent.getEventName()).toLowerCase().contains(textField);
 			});
 		}));
+
+	}
+
+	private void updateLogsChart() {
+		if (tabUbuLogsComponent.isSelected()) {
+			updateComponentsChart();
+		} else if (tabUbuLogsEvent.isSelected()) {
+			updateComponentsEventsChart();
+		}
 
 	}
 
@@ -690,7 +688,8 @@ public class MainController implements Initializable {
 		optionsUbuLogs.setVisible(true);
 		optionsUbuLogs.setManaged(true);
 
-		updateComponentsChart();
+		updateLogsChart();
+		findMax();
 		webViewChartsEngine.executeScript("manageLogsButtons()");
 
 	}
@@ -739,7 +738,7 @@ public class MainController implements Initializable {
 		dateStart = start;
 		dateEnd = end;
 
-		updateComponentsChart();
+		updateLogsChart();
 		findMax();
 	}
 
@@ -899,6 +898,7 @@ public class MainController implements Initializable {
 	 * @param actionEvent
 	 *            El ActionEvent.
 	 * @throws Exception
+	 *             excepción
 	 */
 	public void saveChart(ActionEvent actionEvent) throws Exception {
 		File file = new File("chart.png");
@@ -919,7 +919,7 @@ public class MainController implements Initializable {
 			}
 		} catch (Exception e) {
 			logger.error("Error al guardar el gráfico: {}", e);
-			errorWindow(controller.getResourceBundle().getString("error.savechart"), false);
+			errorWindow(I18n.get("error.savechart"), false);
 		}
 	}
 
@@ -952,7 +952,7 @@ public class MainController implements Initializable {
 				out = new PrintWriter(new BufferedWriter(fw));
 				String generalDataSet = generateGradesDataSet();
 				out.println(
-						"\r\nvar userLang = \"" + controller.getResourceBundle().getLocale().toString() + "\";\r\n");
+						"\r\nvar userLang = \"" + I18n.getResourceBundle().getLocale().toString() + "\";\r\n");
 				out.println("\r\nvar LineDataSet = " + generalDataSet + ";\r\n");
 				out.println("var RadarDataSet = " + generalDataSet + ";\r\n");
 				out.println("var BoxPlotGeneralDataSet = " + generateBoxPlotDataSet(TODOS) + ";\r\n");
@@ -964,7 +964,7 @@ public class MainController implements Initializable {
 				out.close();
 			} catch (IOException e) {
 				logger.error("Error al exportar los gráficos.", e);
-				errorWindow(controller.getResourceBundle().getString("error.saveallcharts"), false);
+				errorWindow(I18n.get("error.saveallcharts"), false);
 			}
 		}
 	}
@@ -976,6 +976,7 @@ public class MainController implements Initializable {
 	 *            El ActionEvent.
 	 * 
 	 * @throws Exception
+	 *             exception
 	 */
 	public void changeCourse(ActionEvent actionEvent) throws Exception {
 		logger.info("Cambiando de asignatura...");
@@ -1001,14 +1002,14 @@ public class MainController implements Initializable {
 	 */
 	private void changeScene(URL sceneFXML) {
 		try {
-			FXMLLoader loader = new FXMLLoader(sceneFXML, controller.getResourceBundle());
+			FXMLLoader loader = new FXMLLoader(sceneFXML, I18n.getResourceBundle());
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
 			controller.getStage().close();
 			controller.setStage(new Stage());
 			controller.getStage().setScene(scene);
 			controller.getStage().getIcons().add(new Image("/img/logo_min.png"));
-			controller.getStage().setTitle("UBUGrades");
+			controller.getStage().setTitle(Controller.APP_NAME);
 			controller.getStage().show();
 		} catch (Exception e) {
 			logger.error("Error al modifcar la ventana de JavaFX: {}", e);
@@ -1062,7 +1063,7 @@ public class MainController implements Initializable {
 		ObservableList<TreeItem<GradeItem>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
 
 		StringBuilder tableData = new StringBuilder();
-		tableData.append("[['" + controller.getResourceBundle().getString("chartlabel.name") + "'");
+		tableData.append("[['" + I18n.get("chartlabel.name") + "'");
 		Boolean firstElement = true;
 
 		// Por cada ítem seleccionado lo añadimos como label
@@ -1113,7 +1114,7 @@ public class MainController implements Initializable {
 	private String generateTableMean() {
 		// Añadimos la media general
 		StringBuilder tableData = new StringBuilder();
-		tableData.append(",['" + controller.getResourceBundle().getString("chartlabel.tableMean") + "'");
+		tableData.append(",['" + I18n.get("chartlabel.tableMean") + "'");
 		for (TreeItem<GradeItem> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 			String grade = stats.getElementMean(stats.getGeneralStats(), structTree.getValue());
 			if (grade.equals("NaN")) {
@@ -1127,7 +1128,7 @@ public class MainController implements Initializable {
 		// Añadimos la media de los grupos
 		for (MenuItem grupo : slcGroup.getItems()) {
 			if (!grupo.getText().equals(TODOS)) {
-				tableData.append(",['" + controller.getResourceBundle().getString("chartlabel.tableGroupMean") + " "
+				tableData.append(",['" + I18n.get("chartlabel.tableGroupMean") + " "
 						+ grupo.getText() + "'");
 				for (TreeItem<GradeItem> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 					String grade = stats.getElementMean(stats.getGroupStats(grupo.getText()),
@@ -1154,8 +1155,9 @@ public class MainController implements Initializable {
 	private String generateGradesDataSet() {
 		// Lista de alumnos y calificaciones seleccionadas
 
-		ObservableList<EnrolledUser> selectedParticipants = listParticipants.getSelectionModel().getSelectedItems();
-		ObservableList<TreeItem<GradeItem>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
+		List<EnrolledUser> selectedParticipants = new ArrayList<>(
+				listParticipants.getSelectionModel().getSelectedItems());
+		List<TreeItem<GradeItem>> selectedGRL = new ArrayList<>(tvwGradeReport.getSelectionModel().getSelectedItems());
 		int countA = 0;
 		boolean firstUser = true;
 		boolean firstGrade = true;
@@ -1165,54 +1167,53 @@ public class MainController implements Initializable {
 		logger.debug("Selected participant: {}", selectedParticipants.size());
 		// Por cada usuario seleccionado
 		for (EnrolledUser actualUser : selectedParticipants) {
-			if (actualUser != null) { // BUG when we deselect the penultimate student, some student can have null
-										// value. TODO
-				// TODO logger.debug("Enroller user: {}", actualUser.getFirstName());
-				String actualUserFullName = actualUser.getFullName();
-				// Añadimos el nombre del alumno al dataset
-				if (firstUser) {
-					dataSet.append("{label:'" + actualUserFullName + "',data: [");
-					firstUser = false;
-				} else {
-					dataSet.append(",{label:'" + actualUserFullName + "',data: [");
-				}
-				int countB = 1;
-				firstGrade = true;
-				// Por cada ítem seleccionado
-				for (TreeItem<GradeItem> structTree : selectedGRL) {
-					countA++;
-					try {
-						if (structTree != null) {
-							GradeItem actualLine = structTree.getValue();
-							String calculatedGrade;
-							if (countA == countB) {
-								countB++;
-								// Añadidimos el nombre del elemento como label
-								if (firstGrade) {
-									labels.append("'" + escapeJavaScriptText(structTree.getValue().toString()) + "'");
-								} else {
-									labels.append(",'" + escapeJavaScriptText(structTree.getValue().toString()) + "'");
-								}
-							}
-
-							calculatedGrade = String.valueOf(actualLine.adjustTo10(actualUser));
-
+			// BUG when we deselect the penultimate student, some student can have null
+			// value. TODO
+			// TODO logger.debug("Enroller user: {}", actualUser.getFirstName());
+			String actualUserFullName = actualUser.getFullName();
+			// Añadimos el nombre del alumno al dataset
+			if (firstUser) {
+				dataSet.append("{label:'" + actualUserFullName + "',data: [");
+				firstUser = false;
+			} else {
+				dataSet.append(",{label:'" + actualUserFullName + "',data: [");
+			}
+			int countB = 1;
+			firstGrade = true;
+			// Por cada ítem seleccionado
+			for (TreeItem<GradeItem> structTree : selectedGRL) {
+				countA++;
+				try {
+					if (structTree != null) {
+						GradeItem actualLine = structTree.getValue();
+						double calculatedGrade;
+						if (countA == countB) {
+							countB++;
+							// Añadidimos el nombre del elemento como label
 							if (firstGrade) {
-								dataSet.append(calculatedGrade);
-								firstGrade = false;
+								labels.append("'" + escapeJavaScriptText(structTree.getValue().toString()) + "'");
 							} else {
-								dataSet.append("," + calculatedGrade);
+								labels.append(",'" + escapeJavaScriptText(structTree.getValue().toString()) + "'");
 							}
 						}
-					} catch (Exception e) {
-						logger.error("Error en la construcción del dataset.", e);
-						errorWindow(controller.getResourceBundle().getString("error.generatedataset"), false);
+						calculatedGrade = Math.round(actualLine.adjustTo10(actualUser) * 100) / (double) 100;
+
+						if (firstGrade) {
+							dataSet.append(calculatedGrade);
+							firstGrade = false;
+						} else {
+							dataSet.append("," + calculatedGrade);
+						}
 					}
+				} catch (Exception e) {
+					logger.error("Error en la construcción del dataset.", e);
+					errorWindow(I18n.get("error.generatedataset"), false);
 				}
-				dataSet.append("]," + "backgroundColor: 'red'," + "borderColor: 'red'," + "pointBorderColor: 'red',"
-						+ "pointBackgroundColor: 'red'," + "borderWidth: 3," + "fill: false}");
 			}
+			dataSet.append("]," + "backgroundColor: 'red'," + "borderColor: 'red'," + "pointBorderColor: 'red',"
+					+ "pointBackgroundColor: 'red'," + "borderWidth: 3," + "fill: false}");
 		}
+
 		return "{ labels:[" + labels + "],datasets: [" + dataSet + "]}";
 	}
 
@@ -1243,15 +1244,14 @@ public class MainController implements Initializable {
 			boxPlotStats = stats.getGroupStats(group);
 		}
 
-		ResourceBundle rs = controller.getResourceBundle();
 		StringBuilder labels = new StringBuilder();
-		StringBuilder upperLimit = new StringBuilder("{label:'" + rs.getString("chartlabel.upperlimit") + "',data: [");
-		StringBuilder median = new StringBuilder("{label:'" + rs.getString("chartlabel.median") + "',data: [");
-		StringBuilder lowerLimit = new StringBuilder("{label:'" + rs.getString("chartlabel.lowerlimit") + "',data: [");
+		StringBuilder upperLimit = new StringBuilder("{label:'" + I18n.get("chartlabel.upperlimit") + "',data: [");
+		StringBuilder median = new StringBuilder("{label:'" + I18n.get("chartlabel.median") + "',data: [");
+		StringBuilder lowerLimit = new StringBuilder("{label:'" + I18n.get("chartlabel.lowerlimit") + "',data: [");
 		StringBuilder firstQuartile = new StringBuilder(
-				"{label:'" + rs.getString("chartlabel.firstquartile") + "',data: [");
+				"{label:'" + I18n.get("chartlabel.firstquartile") + "',data: [");
 		StringBuilder thirdQuartile = new StringBuilder(
-				"{label:'" + rs.getString("chartlabel.thirdquartile") + "',data: [");
+				"{label:'" + I18n.get("chartlabel.thirdquartile") + "',data: [");
 		boolean firstLabel = true;
 		boolean firstGrade = true;
 		GradeItem gradeItem;
@@ -1322,7 +1322,7 @@ public class MainController implements Initializable {
 					dataset.append(",");
 				}
 				dataset.append(
-						"{label:'" + controller.getResourceBundle().getString("chartlabel.atypicalValue")
+						"{label:'" + I18n.get("chartlabel.atypicalValue")
 								+ "',data: [");
 				for (int x = 0; x < selectedGRL.size(); x++) {
 					if (x != 0) {
@@ -1359,12 +1359,12 @@ public class MainController implements Initializable {
 		if (group.equals(TODOS)) {
 			meanStats = stats.getGeneralStats();
 			meanDataset.append(
-					"{label:'" + controller.getResourceBundle().getString("chartlabel.generalMean") + "',data:[");
+					"{label:'" + I18n.get("chartlabel.generalMean") + "',data:[");
 			color = "rgba(255, 152, 0, ";
 		} else {
 			meanStats = stats.getGroupStats(group);
 			meanDataset
-					.append("{label:'" + controller.getResourceBundle().getString("chartlabel.groupMean") + "',data:[");
+					.append("{label:'" + I18n.get("chartlabel.groupMean") + "',data:[");
 			color = "rgba(0, 150, 136, ";
 		}
 
@@ -1399,7 +1399,7 @@ public class MainController implements Initializable {
 			}
 		} catch (JSException e) {
 			logger.error("Error al generar los gráficos.", e);
-			errorWindow(controller.getResourceBundle().getString("error.generateCharts"), true);
+			errorWindow(I18n.get("error.generateCharts"), true);
 		}
 	}
 
@@ -1420,11 +1420,11 @@ public class MainController implements Initializable {
 			webViewChartsEngine.executeScript("updateChart('radar'," + data + ")");
 		} catch (JSException e) {
 			logger.error("Error al generar los gráficos.", e);
-			errorWindow(controller.getResourceBundle().getString("error.generateCharts"), false); // FIX RMS Review true
-																									// or false
+			errorWindow(I18n.get("error.generateCharts"), false); // FIX RMS Review true
+																	// or false
 		} catch (Exception e) {
 			logger.error("Error general al generar los gráficos.", e);
-			errorWindow(controller.getResourceBundle().getString("error.generateCharts"), false);
+			errorWindow(I18n.get("error.generateCharts"), false);
 		}
 	}
 
@@ -1439,18 +1439,16 @@ public class MainController implements Initializable {
 	private void errorWindow(String mensaje, boolean exit) {
 		Alert alert = new Alert(AlertType.ERROR);
 
-		alert.setTitle("UBUMonitor");
+		alert.setTitle(Controller.APP_NAME);
 		alert.setHeaderText("Error");
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.initOwner(controller.getStage());
 		alert.getDialogPane().setContentText(mensaje);
 
 		if (exit) {
-			ButtonType buttonSalir = new ButtonType("Cerrar UBUGrades");
-			alert.getButtonTypes().setAll(buttonSalir);
-
+			alert.getButtonTypes().setAll(ButtonType.CLOSE);
 			Optional<ButtonType> result = alert.showAndWait();
-			if (result.isPresent() && result.get() == buttonSalir)
+			if (result.isPresent() && result.get() == ButtonType.CLOSE)
 				controller.getStage().close();
 		} else {
 			alert.showAndWait();

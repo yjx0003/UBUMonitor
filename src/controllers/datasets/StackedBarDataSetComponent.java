@@ -1,9 +1,10 @@
-package controllers.ubulogs;
+package controllers.datasets;
 
 import java.util.List;
 import java.util.Map;
 
-import controllers.ubulogs.logcreator.Component;
+import controllers.I18n;
+import model.Component;
 import model.EnrolledUser;
 
 public class StackedBarDataSetComponent extends StackedBarDatasetAbstract<Component>{
@@ -32,7 +33,7 @@ public class StackedBarDataSetComponent extends StackedBarDatasetAbstract<Compon
 	
 	@Override
 	protected String translate(Component element) {
-		return controller.getResourceBundle().getString("component."+element);
+		return I18n.get(element);
 	}
 
 	@Override

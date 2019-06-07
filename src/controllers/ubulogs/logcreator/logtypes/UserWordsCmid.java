@@ -15,18 +15,19 @@ public class UserWordsCmid extends ReferencesLog {
 
 	
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase UserWordsCmid.
 	 */
 	private static UserWordsCmid instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private UserWordsCmid() {
 	}
 
 	/**
-	 * Return a singleton instance of UserWordsCmid.
+	 * Devuelve la instancia única de UserWordsCmid.
+	 * @return instancia singleton
 	 */
 	public static UserWordsCmid getInstance() {
 		if (instance == null) {
@@ -35,6 +36,9 @@ public class UserWordsCmid extends ReferencesLog {
 		return instance;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));

@@ -22,6 +22,7 @@ public class CoreCourseGetCategories extends WebService{
 	 */
 	public CoreCourseGetCategories(Set<Integer> ids) {
 		key="ids";
+		this.ids=ids;
 	}
 	
 	/**

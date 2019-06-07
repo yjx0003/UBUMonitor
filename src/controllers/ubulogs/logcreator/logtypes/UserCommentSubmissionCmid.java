@@ -14,18 +14,19 @@ import model.LogLine;
 public class UserCommentSubmissionCmid extends ReferencesLog{
 	
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase UserCommentSubmissionCmid.
 	 */
 	private static UserCommentSubmissionCmid instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private UserCommentSubmissionCmid() {
 	}
 
 	/**
-	 * Return a singleton instance of UserCommentSubmissionCmid.
+	 * Devuelve la instancia única de UserCommentSubmissionCmid.
+	 * @return instancia singleton
 	 */
 	public static UserCommentSubmissionCmid getInstance() {
 		if (instance == null) {
@@ -33,12 +34,15 @@ public class UserCommentSubmissionCmid extends ReferencesLog{
 		}
 		return instance;
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
-		//TODO core_comment_get_comments
-		//TODO mod_assign_get_submissions
+		//comment id core_comment_get_comments
+		//submission id mod_assign_get_submissions
 		setCourseModuleById(log, ids.get(3));
 		
 	}

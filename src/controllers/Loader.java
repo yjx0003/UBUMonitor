@@ -27,13 +27,13 @@ public class Loader extends Application {
 		try {
 			controller.initialize();
 			logger.info("[Bienvenido a controller]");
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Login.fxml"), controller.getResourceBundle());
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Login.fxml"), I18n.getResourceBundle());
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
 			Stage stage = primaryStage;
 			stage.setScene(scene);
 			stage.getIcons().add(new Image("/img/logo_min.png"));
-			stage.setTitle("UBUGrades");
+			stage.setTitle(Controller.APP_NAME);
 			stage.setResizable(false);
 			stage.show();
 			controller.setStage(stage);

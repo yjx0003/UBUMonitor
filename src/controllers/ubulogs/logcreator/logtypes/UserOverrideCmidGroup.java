@@ -14,18 +14,19 @@ import model.LogLine;
 public class UserOverrideCmidGroup extends ReferencesLog {
 
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase UserOverrideCmidGroup.
 	 */
 	private static UserOverrideCmidGroup instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private UserOverrideCmidGroup() {
 	}
 
 	/**
-	 * Return a singleton instance of UserOverrideCmidGroup.
+	 * Devuelve la instancia única de UserOverrideCmidGroup.
+	 * @return instancia singleton
 	 */
 	public static UserOverrideCmidGroup getInstance() {
 		if (instance == null) {
@@ -34,6 +35,10 @@ public class UserOverrideCmidGroup extends ReferencesLog {
 		return instance;
 	}
 	
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));

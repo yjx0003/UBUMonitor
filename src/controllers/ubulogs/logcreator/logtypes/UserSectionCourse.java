@@ -15,18 +15,19 @@ public class UserSectionCourse extends ReferencesLog{
 
 	
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase UserSectionCourse.
 	 */
 	private static UserSectionCourse instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private UserSectionCourse() {
 	}
 
 	/**
-	 * Return a singleton instance of UserSectionCourse.
+	 * Devuelve la instancia única de UserSectionCourse.
+	 * @return instancia singleton
 	 */
 	public static UserSectionCourse getInstance() {
 		if (instance == null) {
@@ -35,6 +36,9 @@ public class UserSectionCourse extends ReferencesLog{
 		return instance;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,13 +19,14 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import controllers.ubulogs.logcreator.Component;
-import controllers.ubulogs.logcreator.ComponentEvent;
-import controllers.ubulogs.logcreator.Event;
+import model.Component;
+import model.ComponentEvent;
 import model.EnrolledUser;
+import model.Event;
 import model.LogLine;
 
 public abstract class GroupByAbstract<T> implements Serializable {
+	
 	/**
 	 * 
 	 */

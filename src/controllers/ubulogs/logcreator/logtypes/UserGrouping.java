@@ -13,18 +13,19 @@ public class UserGrouping extends ReferencesLog {
 
 	
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase UserGrouping.
 	 */
 	private static UserGrouping instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private UserGrouping() {
 	}
 
 	/**
-	 * Return a singleton instance of UserGrouping.
+	 * Devuelve la instancia única de UserGrouping.
+	 * @return instancia singleton
 	 */
 	public static UserGrouping getInstance() {
 		if (instance == null) {
@@ -33,10 +34,13 @@ public class UserGrouping extends ReferencesLog {
 		return instance;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
-		//TODO grouping id
+		//grouping id
 
 	}
 

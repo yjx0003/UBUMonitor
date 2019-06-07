@@ -11,18 +11,19 @@ import model.LogLine;
 public class UserGradeAffectedGradeitem extends ReferencesLog {
 
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase UserGradeAffectedGradeitem.
 	 */
 	private static UserGradeAffectedGradeitem instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private UserGradeAffectedGradeitem() {
 	}
 
 	/**
-	 * Return a singleton instance of UserGradeAffectedGradeitem.
+	 * Devuelve la instancia única de UserGradeAffectedGradeitem.
+	 * @return instancia singleton
 	 */
 	public static UserGradeAffectedGradeitem getInstance() {
 		if (instance == null) {
@@ -31,12 +32,15 @@ public class UserGradeAffectedGradeitem extends ReferencesLog {
 		return instance;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
-		//TODO grade id
+		//grade id
 		setAffectedUserById(log, ids.get(2));
-		//TODO grade item id
+		//grade item id
 		
 	}
 

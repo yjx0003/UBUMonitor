@@ -1,11 +1,15 @@
 package controllers;
 
-import java.io.IOException;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.json.JSONException;
+import org.jsoup.Connection.Method;
+import org.jsoup.Connection.Response;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,11 +26,10 @@ public class Controller {
 
 	public static final String RESOURCE_FILE_NAME = "messages/Messages";
 
+	public static final String APP_NAME = "UBUMonitor";
 
 	private Languages selectedLanguage;
 
-	private BBDD DEFAULT_BBDD;
-	
 	private BBDD BBDD;
 
 	private String host;
@@ -34,29 +37,28 @@ public class Controller {
 	private String password;
 	private String username;
 
+	private Map<String, String> cookies;
+
 	/**
 	 * Usuario actual.
 	 */
 	private MoodleUser user;
-	/**
-	 * ResourceBundle(idioma) actual.
-	 */
-
-	private ResourceBundle resourceBundle;
 
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase Controller.
 	 */
 	private static Controller instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private Controller() {
 	}
 
 	/**
-	 * Return a singleton instance of Controller.
+	 * Devuelve la instancia única de Controller.
+	 * 
+	 * @return instancia singleton
 	 */
 	public static Controller getInstance() {
 		if (instance == null) {
@@ -66,13 +68,12 @@ public class Controller {
 	}
 
 	public void initialize() {
-		BBDD BBDD=new BBDD();
+		BBDD BBDD = new BBDD();
 		setBBDD(BBDD);
-		setDefaultBBDD(BBDD);
 		// Si no existe el recurso de idioma especificado cargamos el Español
 		Languages lang = Languages.getLanguageByLocale(Locale.getDefault());
 		try {
-			
+
 			if (lang == null) {
 				logger.info("No existe fichero de idioma para: " + Locale.getDefault());
 				logger.info("Cargando idioma: " + Languages.SPANISH);
@@ -97,7 +98,7 @@ public class Controller {
 		this.selectedLanguage = selectedLanguage;
 		Locale a = selectedLanguage.getLocale();
 		Locale.setDefault(a);
-		this.resourceBundle = ResourceBundle.getBundle(RESOURCE_FILE_NAME);
+		I18n.setResourceBundle(ResourceBundle.getBundle(RESOURCE_FILE_NAME));
 	}
 
 	public void setBBDD(BBDD BBDD) {
@@ -174,20 +175,14 @@ public class Controller {
 		this.user = user;
 	}
 
-	/**
-	 * @return the resourceBundle
-	 */
-	public ResourceBundle getResourceBundle() {
-		return resourceBundle;
-	}
-
-	public void tryLogin(String host, String username, String password) throws JSONException, IOException {
+	public void tryLogin(String host, String username, String password) throws Exception {
 		WebService.initialize(host, username, password);
 
 		setHost(host);
 
 		setUsername(username);
 		setPassword(password);
+
 	}
 
 	public Stats getStats() {
@@ -198,8 +193,8 @@ public class Controller {
 	public void createStats() throws Exception {
 		Stats stats = new Stats(getActualCourse());
 		getActualCourse().setStats(stats);
-		
-		LogStats logStats=new LogStats(getActualCourse().getLogs().getList(),getActualCourse().getEnrolledUsers());
+
+		LogStats logStats = new LogStats(getActualCourse().getLogs().getList(), getActualCourse().getEnrolledUsers());
 		getActualCourse().setLogStats(logStats);
 	}
 
@@ -207,12 +202,53 @@ public class Controller {
 		BBDD.setActualCourse(selectedCourse);
 	}
 
-	public BBDD getDefaultBBDD() {
-		return DEFAULT_BBDD;
+	/**
+	 * Se loguea en el servidor de moodle mediante web scraping.
+	 * 
+	 * @param username
+	 *            nombre de usuario de la cuenta
+	 * @param password
+	 *            password contraseña
+	 * @return las cookies que se usan para navegar dentro del servidor despues de
+	 *         loguearse
+	 * @throws IllegalStateException
+	 *             si no ha podido loguearse
+	 */
+	private Map<String, String> login(String username, String password) {
+
+		try {
+			logger.info("Logeandose para web scraping");
+
+			Response loginForm = Jsoup.connect(host + "/login/index.php")
+					.method(Method.GET)
+					.execute();
+
+			Document loginDoc = loginForm.parse();
+			Element e = loginDoc.selectFirst("input[name=logintoken]");
+			String logintoken = (e == null) ? "" : e.attr("value");
+
+			Response login = Jsoup.connect(host + "/login/index.php")
+					.data("username", username, "password", password, "logintoken", logintoken)
+					.method(Method.POST)
+					.cookies(loginForm.cookies()).execute();
+
+			return login.cookies();
+		} catch (Exception e) {
+			logger.error("Error al intentar loguearse", e);
+			throw new IllegalStateException("No se ha podido loguear al servidor");
+		}
+
 	}
 
-	public void setDefaultBBDD(BBDD BBDD) {
-		DEFAULT_BBDD = BBDD;
+	public Map<String, String> getCookies() {
+		if (cookies == null) {
+			this.cookies = login(username, password);
+		}
+		return cookies;
+	}
+
+	public void setCookies(Map<String, String> cookies) {
+		this.cookies = cookies;
 	}
 
 }

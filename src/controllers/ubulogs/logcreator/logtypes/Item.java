@@ -10,19 +10,21 @@ import model.LogLine;
  *
  */
 public class Item extends ReferencesLog {
+
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase Item.
 	 */
 	private static Item instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private Item() {
 	}
 
 	/**
-	 * Return a singleton instance of Item.
+	 * Devuelve la instancia única de Item.
+	 * @return instancia singleton
 	 */
 	public static Item getInstance() {
 		if (instance == null) {
@@ -30,9 +32,13 @@ public class Item extends ReferencesLog {
 		}
 		return instance;
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
-		// TODO Auto-generated method stub
+		//item id
 
 	}
 

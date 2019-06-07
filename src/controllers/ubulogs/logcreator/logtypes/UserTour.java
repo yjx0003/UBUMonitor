@@ -14,19 +14,21 @@ import model.LogLine;
  */
 public class UserTour extends ReferencesLog {
 
+	
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase UserTour.
 	 */
 	private static UserTour instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private UserTour() {
 	}
 
 	/**
-	 * Return a singleton instance of UserTour.
+	 * Devuelve la instancia única de UserTour.
+	 * @return instancia singleton
 	 */
 	public static UserTour getInstance() {
 		if (instance == null) {
@@ -35,6 +37,9 @@ public class UserTour extends ReferencesLog {
 		return instance;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));

@@ -14,6 +14,7 @@ import java.util.Scanner;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import controllers.Controller;
 import controllers.ubulogs.DownloadLogController;
 
 public class DownloadLogTest {
@@ -53,9 +54,11 @@ public class DownloadLogTest {
 				idCourse = scanner.nextLine();
 			}
 		}
-		
+		Controller.getInstance().setHost(host);
+		Controller.getInstance().setPassword(password);
+		Controller.getInstance().setUsername(username);
 		String usertimezone = "99";
-		log = new DownloadLogController(host, username, password, Integer.parseInt(idCourse), usertimezone);
+		log = new DownloadLogController(host, username, password, Integer.parseInt(idCourse), usertimezone,Controller.getInstance().getCookies());
 
 	}
 

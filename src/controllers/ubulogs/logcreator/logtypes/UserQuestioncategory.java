@@ -14,18 +14,19 @@ public class UserQuestioncategory extends ReferencesLog {
 
 	
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase UserQuestioncategory.
 	 */
 	private static UserQuestioncategory instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private UserQuestioncategory() {
 	}
 
 	/**
-	 * Return a singleton instance of UserQuestioncategory.
+	 * Devuelve la instancia única de UserQuestioncategory.
+	 * @return instancia singleton
 	 */
 	public static UserQuestioncategory getInstance() {
 		if (instance == null) {
@@ -35,6 +36,9 @@ public class UserQuestioncategory extends ReferencesLog {
 	}
 	
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));

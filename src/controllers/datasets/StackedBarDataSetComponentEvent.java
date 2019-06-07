@@ -1,26 +1,28 @@
-package controllers.ubulogs;
+package controllers.datasets;
 
 import java.util.List;
 import java.util.Map;
 
-import controllers.ubulogs.logcreator.ComponentEvent;
+import controllers.I18n;
+import model.ComponentEvent;
 import model.EnrolledUser;
 
 public class StackedBarDataSetComponentEvent extends StackedBarDatasetAbstract<ComponentEvent> {
 
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase StackedBarDataSetComponentEvent
 	 */
 	private static StackedBarDataSetComponentEvent instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton
 	 */
 	private StackedBarDataSetComponentEvent() {
 	}
 
 	/**
-	 * Return a singleton instance of StackedBarDataSetComponentEvent.
+	 * Devuelve la instancia única de StackedBarDataSetComponentEvent.
+	 * @return instancia singleton
 	 */
 	public static StackedBarDataSetComponentEvent getInstance() {
 		if (instance == null) {
@@ -31,8 +33,8 @@ public class StackedBarDataSetComponentEvent extends StackedBarDatasetAbstract<C
 	
 	@Override
 	protected String translate(ComponentEvent element) {
-		return controller.getResourceBundle().getString("component." + element.getComponent()) + " - "
-				+ controller.getResourceBundle().getString("eventname." + element.getEventName());
+		return I18n.get(element.getComponent()) + " - "
+				+ I18n.get("eventname." + element.getEventName());
 	}
 
 	@Override

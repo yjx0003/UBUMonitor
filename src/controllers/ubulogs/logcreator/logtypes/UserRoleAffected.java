@@ -14,20 +14,20 @@ import model.LogLine;
  */
 public class UserRoleAffected extends ReferencesLog {
 
-	
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase UserRoleAffected.
 	 */
 	private static UserRoleAffected instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private UserRoleAffected() {
 	}
 
 	/**
-	 * Return a singleton instance of UserRoleAffected.
+	 * Devuelve la instancia única de UserRoleAffected.
+	 * @return instancia singleton
 	 */
 	public static UserRoleAffected getInstance() {
 		if (instance == null) {
@@ -36,10 +36,14 @@ public class UserRoleAffected extends ReferencesLog {
 		return instance;
 	}
 	
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
-		//TODO role id
+		//role id
 		setAffectedUserById(log, ids.get(2));
 	}
 

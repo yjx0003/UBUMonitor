@@ -12,18 +12,19 @@ import model.LogLine;
 public class UserAffected extends ReferencesLog {
 
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase UserAffected.
 	 */
 	private static UserAffected instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private UserAffected() {
 	}
 
 	/**
-	 * Return a singleton instance of UserAffected.
+	 * Devuelve la instancia única de UserAffected.
+	 * @return instancia singleton
 	 */
 	public static UserAffected getInstance() {
 		if (instance == null) {
@@ -32,6 +33,9 @@ public class UserAffected extends ReferencesLog {
 		return instance;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));

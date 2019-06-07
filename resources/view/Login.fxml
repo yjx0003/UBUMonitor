@@ -38,7 +38,7 @@
 			<children>
       				<TextField id="txtUname" fx:id="txtUsername" layoutY="27.0" prefWidth="173.0" styleClass="text-field-login" stylesheets="@/css/style.css" />
 				<PasswordField id="yxyPassword" fx:id="txtPassword" layoutY="63.0" prefWidth="173.00009999999747" styleClass="text-field-login" stylesheets="@/css/style.css" />
-				<TextField fx:id="txtHost" layoutY="100.0" prefWidth="173.0" styleClass="text-field-login" stylesheets="@/css/style.css" promptText="https://school.demo.moodle.net"/>
+				<TextField fx:id="txtHost" layoutY="100.0" prefWidth="173.0" styleClass="text-field-login" stylesheets="@/css/style.css" promptText="https://demo.moodle.net"/>
 			</children>
 		</Group>
 		<Button id="Entrar" fx:id="btnLogin" cancelButton="false" defaultButton="true" disable="false" focusTraversable="true" graphicTextGap="5.0" layoutX="100.0" layoutY="425.0" mnemonicParsing="false" onAction="#login" prefWidth="70.0" text="%btn.enter" textOverrun="ELLIPSIS" underline="false" visible="true">

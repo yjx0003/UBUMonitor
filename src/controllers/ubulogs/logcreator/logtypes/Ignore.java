@@ -5,25 +5,26 @@ import java.util.List;
 import model.LogLine;
 /**
  * 
- * Ignora los logs para añadir atributos adicionales
+ * Ignora los logs para añadir atributos adicionales, usado para las descripciones que no aparecen ningun integer.
  * @author Yi Peng Ji
  *
  */
 public class Ignore extends ReferencesLog{
 
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase Ignore.
 	 */
 	private static Ignore instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private Ignore() {
 	}
 
 	/**
-	 * Return a singleton instance of Ignore.
+	 * Devuelve la instancia única de Ignore.
+	 * @return instancia singleton
 	 */
 	public static Ignore getInstance() {
 		if (instance == null) {
@@ -32,6 +33,9 @@ public class Ignore extends ReferencesLog{
 		return instance;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		// No hace nada		

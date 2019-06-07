@@ -14,18 +14,19 @@ import model.LogLine;
 public class UserOptionAffectedCmid extends ReferencesLog {
 
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase UserOptionAffectedCmid.
 	 */
 	private static UserOptionAffectedCmid instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private UserOptionAffectedCmid() {
 	}
 
 	/**
-	 * Return a singleton instance of UserOptionAffectedCmid.
+	 * Devuelve la instancia única de UserOptionAffectedCmid.
+	 * @return instancia singleton
 	 */
 	public static UserOptionAffectedCmid getInstance() {
 		if (instance == null) {
@@ -34,10 +35,14 @@ public class UserOptionAffectedCmid extends ReferencesLog {
 		return instance;
 	}
 	
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
-		//TODO option id
+		//option id
 		setAffectedUserById(log, ids.get(2));
 		setCourseModuleById(log, ids.get(3));
 

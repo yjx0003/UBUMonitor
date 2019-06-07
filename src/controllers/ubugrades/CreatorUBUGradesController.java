@@ -247,7 +247,7 @@ public class CreatorUBUGradesController {
 		module.setUservisible(jsonObject.optBoolean("uservisible"));
 		module.setVisibleoncoursepage(jsonObject.optInt("visibleoncoursepage"));
 		module.setModicon(jsonObject.optString("modicon"));
-		module.setModuleType(ModuleType.get(jsonObject.getString("modname")));
+		module.setModuleType(moduleType);
 		module.setIndent(jsonObject.optInt("indent"));
 
 		CONTROLLER.getBBDD().getActualCourse().addModule(module);
@@ -470,7 +470,7 @@ public class CreatorUBUGradesController {
 
 			gradeItem.setId(gradeitem.getInt("id"));
 
-			CONTROLLER.getBBDD().putGradeItem(gradeItem);
+			CONTROLLER.getBBDD().putIfAbsentGradeItem(gradeItem);
 
 			String itemtype = gradeitem.getString("itemtype");
 			ModuleType moduleType;

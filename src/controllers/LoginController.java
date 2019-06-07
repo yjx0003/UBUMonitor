@@ -93,8 +93,8 @@ public class LoginController implements Initializable {
 		languageSelector.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
 
 			controller.setSelectedLanguage(newValue);
-			logger.info("Idioma cargado: {}", controller.getResourceBundle().getLocale().toString());
-			logger.info("[Bienvenido a UBUGrades]");
+			logger.info("Idioma cargado: {}", I18n.getResourceBundle().getLocale().toString());
+			logger.info("[Bienvenido a " + Controller.APP_NAME + "]");
 			changeScene(getClass().getResource("/view/Login.fxml"));
 		});
 	}
@@ -156,7 +156,7 @@ public class LoginController implements Initializable {
 	 */
 	public void login(ActionEvent event) {
 		if (txtHost.getText().isEmpty() || txtPassword.getText().isEmpty() || txtUsername.getText().isEmpty()) {
-			lblStatus.setText(controller.getResourceBundle().getString("error.fields"));
+			lblStatus.setText(I18n.get("error.fields"));
 		} else {
 			controller.getStage().getScene().setCursor(Cursor.WAIT);
 
@@ -191,14 +191,14 @@ public class LoginController implements Initializable {
 		try {
 
 			// Accedemos a la siguiente ventana
-			FXMLLoader loader = new FXMLLoader(sceneFXML, controller.getResourceBundle());
+			FXMLLoader loader = new FXMLLoader(sceneFXML, I18n.getResourceBundle());
 			controller.getStage().close();
 			Stage stage = new Stage();
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
 			stage.setScene(scene);
 			stage.getIcons().add(new Image("/img/logo_min.png"));
-			stage.setTitle("UBUGrades");
+			stage.setTitle(Controller.APP_NAME);
 			stage.setResizable(false);
 			stage.show();
 			controller.setStage(stage);
@@ -215,18 +215,18 @@ public class LoginController implements Initializable {
 	private Task<Void> getUserDataWorker() {
 		return new Task<Void>() {
 			@Override
-			protected Void call() throws IOException {
+			protected Void call() throws Exception {
 				try {
 
 					controller.tryLogin(txtHost.getText(), txtUsername.getText(), txtPassword.getText());
 
 				} catch (IOException e) {
 					logger.error("No se ha podido conectar con el host.", e);
-					updateMessage(controller.getResourceBundle().getString("error.host"));
+					updateMessage(I18n.get("error.host"));
 					throw e;
 				} catch (JSONException e) {
 					logger.error("Usuario y/o contraseña incorrectos", e);
-					updateMessage(controller.getResourceBundle().getString("error.login"));
+					updateMessage(I18n.get("error.login"));
 					throw e;
 
 				}

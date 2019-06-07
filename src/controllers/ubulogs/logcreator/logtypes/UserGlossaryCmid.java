@@ -12,18 +12,19 @@ public class UserGlossaryCmid extends ReferencesLog {
 
 	
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase UserGlossaryCmid.
 	 */
 	private static UserGlossaryCmid instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private UserGlossaryCmid() {
 	}
 
 	/**
-	 * Return a singleton instance of UserGlossaryCmid.
+	 * Devuelve la instancia única de UserGlossaryCmid.
+	 * @return instancia singleton
 	 */
 	public static UserGlossaryCmid getInstance() {
 		if (instance == null) {
@@ -32,7 +33,9 @@ public class UserGlossaryCmid extends ReferencesLog {
 		return instance;
 	}
 	
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));

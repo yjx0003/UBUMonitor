@@ -83,7 +83,7 @@ public class WelcomeController implements Initializable {
 	@FXML
 	private CheckBox chkUpdateData;
 
-	private boolean isBBDDLoaded = false;
+	private boolean isBBDDLoaded;
 
 	/**
 	 * Función initialize. Muestra la lista de cursos del usuario introducido.
@@ -125,7 +125,7 @@ public class WelcomeController implements Initializable {
 				} else {
 					chkUpdateData.setSelected(true);
 					chkUpdateData.setDisable(true);
-					lblDateUpdate.setText(controller.getResourceBundle().getString("label.never"));
+					lblDateUpdate.setText(I18n.get("label.never"));
 					isFileCacheExists = true;
 				}
 			});
@@ -147,7 +147,7 @@ public class WelcomeController implements Initializable {
 		// Guardamos en una variable el curso seleccionado por el usuario
 		Course selectedCourse = listCourses.getSelectionModel().getSelectedItem();
 		if (selectedCourse == null) {
-			lblNoSelect.setText(controller.getResourceBundle().getString("error.nocourse"));
+			lblNoSelect.setText(I18n.get("error.nocourse"));
 			return;
 		}
 
@@ -157,9 +157,9 @@ public class WelcomeController implements Initializable {
 			if (!isFileCacheExists) {
 				loadData(controller.getPassword());
 			} else {
-				BBDD copia = new BBDD(controller.getDefaultBBDD());
+				BBDD copia = new BBDD();
 				controller.setBBDD(copia);
-				controller.setActualCourse(selectedCourse);
+				controller.setActualCourse(copia.getCourseById(selectedCourse.getId()));
 				isBBDDLoaded = true;
 			}
 			downloadData();
@@ -206,10 +206,10 @@ public class WelcomeController implements Initializable {
 
 	private void previusPasswordWindow() {
 		Dialog<String> dialog = new Dialog<>();
-		dialog.setTitle(controller.getResourceBundle().getString("title.passwordChanged"));
+		dialog.setTitle(I18n.get("title.passwordChanged"));
 		dialog.setHeaderText(
-				controller.getResourceBundle().getString("header.passwordChangedMessage") + "\n"
-						+ controller.getResourceBundle().getString("header.passwordDateTime")
+				I18n.get("header.passwordChangedMessage") + "\n"
+						+ I18n.get("header.passwordDateTime")
 						+ lblDateUpdate.getText());
 
 		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
@@ -218,7 +218,7 @@ public class WelcomeController implements Initializable {
 		HBox content = new HBox();
 		content.setAlignment(Pos.CENTER);
 		content.setSpacing(10);
-		content.getChildren().addAll(new Label(controller.getResourceBundle().getString("label.oldPassword")), pwd);
+		content.getChildren().addAll(new Label(I18n.get("label.oldPassword")), pwd);
 		dialog.getDialogPane().setContent(content);
 
 		// desabilitamos el boton hasta que no escriba texto
@@ -251,7 +251,6 @@ public class WelcomeController implements Initializable {
 	private void downloadData() {
 
 		if (!isBBDDLoaded) {
-			System.out.println("No se ha cargado BBDD");
 			return;
 		}
 
@@ -276,14 +275,14 @@ public class WelcomeController implements Initializable {
 		try {
 			// Accedemos a la siguiente ventana
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"),
-					controller.getResourceBundle());
+					I18n.getResourceBundle());
 			controller.getStage().close();
 			controller.setStage(new Stage());
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
 			controller.getStage().setScene(scene);
 			controller.getStage().getIcons().add(new Image("/img/logo_min.png"));
-			controller.getStage().setTitle("UBUGrades");
+			controller.getStage().setTitle(Controller.APP_NAME);
 			controller.getStage().setResizable(true);
 			controller.getStage().setMinHeight(600);
 			controller.getStage().setMinWidth(800);
@@ -311,16 +310,16 @@ public class WelcomeController implements Initializable {
 					controller.getActualCourse().clear();
 					logger.info("Cargando datos del curso: " + controller.getActualCourse().getFullName());
 					// Establecemos los usuarios matriculados
-					updateMessage(controller.getResourceBundle().getString("label.loadingstudents"));
+					updateMessage(I18n.get("label.loadingstudents"));
 					CreatorUBUGradesController.createEnrolledUsers(controller.getActualCourse().getId());
 					CreatorUBUGradesController.createModules(controller.getActualCourse().getId());
-					updateMessage(controller.getResourceBundle().getString("label.loadingqualifier"));
+					updateMessage(I18n.get("label.loadingqualifier"));
 					// Establecemos calificador del curso
 					CreatorGradeItems creatorGradeItems = new CreatorGradeItems(
 							new Locale(controller.getUser().getLang()));
 					creatorGradeItems.createGradeItems(controller.getActualCourse().getId());
 
-					updateMessage(controller.getResourceBundle().getString("label.updatinglog"));
+					updateMessage(I18n.get("label.updatinglog"));
 					if (isFileCacheExists) {
 						Logs logs = LogCreator.createCourseLog();
 						controller.getActualCourse().setLogs(logs);
@@ -330,11 +329,11 @@ public class WelcomeController implements Initializable {
 						LogCreator.updateCourseLog(logs);
 
 					}
-					updateMessage(controller.getResourceBundle().getString("label.loadingstats"));
+					updateMessage(I18n.get("label.loadingstats"));
 					// Establecemos las estadisticas
 					controller.createStats();
 
-					updateMessage("Guardando en local");
+					updateMessage(I18n.get("label.savelocal"));
 					saveData();
 					logger.debug(controller.getBBDD().toString());
 				} catch (Exception e) {
@@ -367,7 +366,7 @@ public class WelcomeController implements Initializable {
 		alert.initOwner(controller.getStage());
 		alert.getDialogPane().setContentText(mensaje);
 
-		ButtonType buttonSalir = new ButtonType(controller.getResourceBundle().getString("label.close"));
+		ButtonType buttonSalir = new ButtonType(I18n.get("label.close"));
 		alert.getButtonTypes().setAll(buttonSalir);
 
 		alert.showAndWait();

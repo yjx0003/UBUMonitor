@@ -17,12 +17,14 @@ import javax.crypto.spec.SecretKeySpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import model.BBDD;
 
 
 
-
-
+/**
+ * Clase de utilidad encargada de encriptar y desencriptar los objetos de los ficheros.
+ * @author Yi Peng Ji
+ *
+ */
 public class Encryption {
 	static final Logger logger = LoggerFactory.getLogger(Encryption.class);
 
@@ -30,6 +32,12 @@ public class Encryption {
 
 	}
 
+	/**
+	 * Inicializacion de la clave del cifrado con la contraseña y el modo de cifrado
+	 * @param key clave
+	 * @param cipherMode modo encriptación o desencriptación
+	 * @return
+	 */
 	private static Cipher initCipher(String key, int cipherMode) {
 		Cipher cipher = null;
 		try {
@@ -46,6 +54,12 @@ public class Encryption {
 		return cipher;
 	}
 
+	/**
+	 * Desencripta el fichero con la clave.
+	 * @param key contraseña
+	 * @param ruta ruta del fichero
+	 * @return el objecto deserializado
+	 */
 	public static Object decrypt(String key, String ruta) {
 		Cipher cipher = initCipher(key, Cipher.DECRYPT_MODE);
 		logger.info("Intentando descifrar el fichero: {}",ruta);
@@ -61,8 +75,13 @@ public class Encryption {
 		return null;
 	}
 
+	/**
+	 * Encripta un objeto serializable en un fichero.
+	 * @param key contraseña
+	 * @param ruta ruta del fichero
+	 * @param object objeto
+	 */
 	public static <T extends Serializable> void encrypt(String key, String ruta, T object) {
-
 		logger.info("Intendado encriptar fichero: {}", ruta);
 
 		Cipher cipher = initCipher(key, Cipher.ENCRYPT_MODE);	

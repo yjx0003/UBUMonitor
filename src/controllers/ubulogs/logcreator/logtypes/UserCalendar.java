@@ -12,19 +12,21 @@ import model.LogLine;
  */
 public class UserCalendar extends ReferencesLog {
 
+	
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase UserCalendar.
 	 */
 	private static UserCalendar instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private UserCalendar() {
 	}
 
 	/**
-	 * Return a singleton instance of UserCalendar.
+	 * Devuelve la instancia única de UserCalendar.
+	 * @return instancia singleton
 	 */
 	public static UserCalendar getInstance() {
 		if (instance == null) {
@@ -32,10 +34,14 @@ public class UserCalendar extends ReferencesLog {
 		}
 		return instance;
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
-		//TODO core_calendar_get_calendar_events
+		//calendar event id core_calendar_get_calendar_events
 	}
 
 }

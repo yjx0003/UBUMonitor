@@ -1,7 +1,7 @@
 <html>
-<meta charset="UTF-8"> 
+<meta charset="UTF-8">
 <head>
-<link rel ="stylesheet" type = "text/css" href = "../css/chart.css" />
+<link rel="stylesheet" type="text/css" href="../css/chart.css" />
 
 
 <script type="text/javascript" src="./lib/Chart.js"></script>
@@ -14,46 +14,57 @@
 
 <body>
 
-<div class="controles">
-<div class="pestañas">
-	<input type="button" value="Lineas" class="btn" id="btnLineas" onclick="generateChart('line')"/>
-	<input type="button" value="Radar" class="btn" id="btnRadar" onclick="generateChart('radar')"/>
-	<input type="button" value="BoxPlot General" class="btn" id="btnBoxPlot" onclick="generateChart('boxplot')"/>
-	<input type="button" value="BoxPlot Del Grupo" class="btn" id="btnBoxPlotGroup" onclick="generateChart('boxplotgroup')"/>
-	<input type="button" value="Barras Apiladas" class="btn" id="btnStackedBar" onclick="generateChart('stackedBar')"/>
-	<input type="button" value="Calificaciones" class="btn" id="btnCalificaciones" onclick="drawTable()"/>
+	<div class="controles">
+		<div class="pestañas">
+			<input type="button" value="Lineas" class="btn" id="btnLineas"
+				onclick="generateChart('line')" /> <input type="button"
+				value="Radar" class="btn" id="btnRadar"
+				onclick="generateChart('radar')" /> <input type="button"
+				value="BoxPlot General" class="btn" id="btnBoxPlot"
+				onclick="generateChart('boxplot')" /> <input type="button"
+				value="BoxPlot Del Grupo" class="btn" id="btnBoxPlotGroup"
+				onclick="generateChart('boxplotgroup')" /> <input type="button"
+				value="Barras Apiladas" class="btn" id="btnStackedBar"
+				onclick="generateChart('stackedBar')" /> <input type="button"
+				value="Calificaciones" class="btn" id="btnCalificaciones"
+				onclick="drawTable()" />
 
-</div>
+		</div>
 
-<div class="opciones">
-	<input type="button" value="." class="btn" style="visibility: hidden;width: 0px;margin: 0px; padding: 0px;"/>
-	<input type="button" value="Leyenda" class="btn" id="btnLegend" onclick="hideLegend()"/>
-	<input type="button" value="Media General" class="btn" id="btnMean" onclick="showGeneralMean()"/>
-	<input type="button" value="Media Del Grupo" class="btn" id="btnGroupMean" onclick="showGroupMean()"/>
-</div>
-</div>
+		<div class="opciones">
+			<input type="button" value="." class="btn"
+				style="visibility: hidden; width: 0px; margin: 0px; padding: 0px;" />
+			<input type="button" value="Leyenda" class="btn" id="btnLegend"
+				onclick="hideLegend()" /> <input type="button" value="Media General"
+				class="btn" id="btnMean" onclick="showGeneralMean()" /> <input
+				type="button" value="Media Del Grupo" class="btn" id="btnGroupMean"
+				onclick="showGroupMean()" />
+		</div>
+	</div>
 
-<div id="inicio" class="inicio">
-	<img class="imginicio" src="../img/logo.png">
-</div>
+	<div id="inicio" class="inicio">
+		<img class="imginicio" src="../img/logo.png">
+	</div>
 
-<div id="noradar" class="card">
-	<div id="noradarText" class="cardText">Selecciona al menos 3 actividades para mostrar el gráfico</div>
-</div>
+	<div id="noradar" class="card">
+		<div id="noradarText" class="cardText">Selecciona al menos 3
+			actividades para mostrar el gráfico</div>
+	</div>
 
-<div id="noGroup" class="card">
-	<div id="noGroupText" class="cardText">Selecciona un grupo para mostrar el gráfico</div>
-</div>
+	<div id="noGroup" class="card">
+		<div id="noGroupText" class="cardText">Selecciona un grupo para
+			mostrar el gráfico</div>
+	</div>
 
-<div id="chart-container" class="chart-container">
-	<canvas id="myChart"></canvas>
-</div>
+	<div id="chart-container" class="chart-container">
+		<canvas id="myChart"></canvas>
+	</div>
 
-<div id="table_div" class="table_div"></div>
+	<div id="table_div" class="table_div"></div>
 
-<div id="table_img" style="display: none;"></div>
+	<div id="table_img" style="display: none;"></div>
 
-<script type="text/javascript">
+	<script type="text/javascript">
 //------------------------------------------Opciones para los graficos------------------------------------------------------------------
 // Opciones para el gráfico de lineas y el boxplot
 var optionsLineChart = {
@@ -114,7 +125,7 @@ var optionsLineChart = {
                 ticks: 
                 {
                     beginAtZero:true,
-                    max: 10,
+                    suggestedMax: 10,
                     stepSize: 1,
                     fontColor: 'rgba(0, 0, 0, 1)'
                 }//ticks
@@ -130,7 +141,7 @@ var optionsLineChart = {
                 ticks: 
                 {
                     beginAtZero:true,
-                    max: 10,
+                    suggestedMax: 10,
                     stepSize: 1,
                     fontColor: 'rgba(0, 0, 0, 1)'
                 }//ticks
@@ -205,7 +216,7 @@ var optionsRadarChart = {
         ticks: 
         {
             beginAtZero:true,
-            max: 10,
+            suggestedMax: 10,
             stepSize: 1,
             fontColor: 'rgba(0, 0, 0, 1)'
         }//ticks
@@ -232,9 +243,10 @@ var optionsStackedBar= {
 		mode: 'x',
 		callbacks: {
 			label: function(tooltipItem, data) {
-				return data.datasets[tooltipItem.datasetIndex].label + " : " + tooltipItem.yLabel;
+				return data.datasets[tooltipItem.datasetIndex].label + " : " + Math.round(tooltipItem.yLabel*100)/100;
 			},
 			afterTitle: function(tooltipItem, data) {
+				//Despues del titulo ponemos el nombre y apellidos del usuario
 				return data.datasets[tooltipItem[0].datasetIndex].stack;
 			}
 		}
@@ -590,8 +602,8 @@ function manageLogsButtons(){
 }
 
 function changeYMaxStackedBar(max){
-	
-	myChart.options.scales.yAxes[0].ticks.suggestedMax=max;
+	optionsStackedBar.scales.yAxes[0].ticks.suggestedMax=max;
+	myChart.options=optionsStackedBar;
 	myChart.update();
 }
 

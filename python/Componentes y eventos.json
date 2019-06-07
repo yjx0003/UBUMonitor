@@ -162,6 +162,11 @@
             "The user with id '' exported grades using the xls export in the gradebook."
         ]
     },
+    "External tool": {
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ]
+    },
     "Feedback": {
         "Course module instance list viewed": [
             "The user with id '' viewed the instance list for the module '' in the course with id ''."
@@ -239,8 +244,14 @@
         "Some content has been posted.": [
             "The user with id '' has posted content in the forum post with id '' in the discussion '' located in the forum with course module id ''."
         ],
+        "Subscribers viewed": [
+            "The user with id '' has viewed the subscribers list for the forum with course module id ''."
+        ],
         "Subscription created": [
             "The user with id '' subscribed the user with id '' to the forum with course module id ''."
+        ],
+        "Subscription deleted": [
+            "The user with id '' unsubscribed the user with id '' to the forum with course module id ''."
         ],
         "User report viewed": [
             "The user with id '' has viewed the user report for the user with id '' in the course with id '' with viewing mode ''."
@@ -513,7 +524,8 @@
             "The user with id '' created the course with id ''."
         ],
         "Course module created": [
-            "The user with id '' created the '' activity with course module id ''."
+            "The user with id '' created the '' activity with course module id ''.",
+            "The user with id '' created the ''''."
         ],
         "Course module deleted": [
             "The user with id '' deleted the '' activity with course module id ''."
@@ -535,6 +547,9 @@
         ],
         "Course section created": [
             "The user with id '' created section number '' for the course with id ''"
+        ],
+        "Course section deleted": [
+            "The user with id '' deleted section number '' (section name '') for the course with id ''"
         ],
         "Course section updated": [
             "The user with id '' updated section number '' for the course with id ''"

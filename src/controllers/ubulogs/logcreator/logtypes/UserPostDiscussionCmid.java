@@ -15,18 +15,19 @@ public class UserPostDiscussionCmid extends ReferencesLog {
 
 	
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase UserPostDiscussionCmid.
 	 */
 	private static UserPostDiscussionCmid instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private UserPostDiscussionCmid() {
 	}
 
 	/**
-	 * Return a singleton instance of UserPostDiscussionCmid.
+	 * Devuelve la instancia única de UserPostDiscussionCmid.
+	 * @return instancia singleton
 	 */
 	public static UserPostDiscussionCmid getInstance() {
 		if (instance == null) {
@@ -35,11 +36,14 @@ public class UserPostDiscussionCmid extends ReferencesLog {
 		return instance;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
-		//TODO post id
-		//TODO discussion id
+		//post id
+		//discussion id
 		setCourseModuleById(log, ids.get(3));
 
 	}

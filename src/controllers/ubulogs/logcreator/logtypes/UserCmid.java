@@ -31,18 +31,19 @@ import model.LogLine;
 public class UserCmid extends ReferencesLog {
 	
 	/**
-	 * static Singleton instance.
+	 * Instacia única de la clase UserCmid.
 	 */
 	private static UserCmid instance;
 
 	/**
-	 * Private constructor for singleton.
+	 * Constructor privado de la clase singleton.
 	 */
 	private UserCmid() {
 	}
 
 	/**
-	 * Return a singleton instance of UserCmid.
+	 * Devuelve la instancia única de UserCmid.
+	 * @return instancia singleton
 	 */
 	public static UserCmid getInstance() {
 		if (instance == null) {
@@ -50,7 +51,10 @@ public class UserCmid extends ReferencesLog {
 		}
 		return instance;
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));

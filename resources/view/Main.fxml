@@ -82,11 +82,11 @@
                               <Pane minHeight="64.0" prefHeight="64.0" prefWidth="250.0" BorderPane.alignment="CENTER">
                                  <children>
                                     <Label fx:id="lblCountParticipants" layoutX="6.0" layoutY="6.0" text="%label.participants" />
-                                    <TextField fx:id="tfdParticipants" layoutX="6.0" layoutY="31.0" prefHeight="25.0" prefWidth="108.0" promptText="%label.filter" />
-                                    <Label layoutX="108.0" layoutY="6.0" text="%label.group" />
-                                    <Label layoutX="130.0" layoutY="35.0" text="%label.rol" />
-                                    <MenuButton fx:id="slcGroup" layoutX="160.0" layoutY="2.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.group" />
-                                    <MenuButton fx:id="slcRole" layoutX="160.0" layoutY="31.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.rol" />
+                                    <TextField fx:id="tfdParticipants" layoutX="6.0" layoutY="31.0" prefHeight="25.0" prefWidth="100.0" promptText="%label.filter" />
+                                    <Label layoutX="115.0" layoutY="35.0" text="%label.group" />
+                                    <Label layoutX="137.0" layoutY="6.0" text="%label.rol" />
+                                    <MenuButton fx:id="slcGroup" layoutX="162.0" layoutY="33.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.group" />
+                                    <MenuButton fx:id="slcRole" layoutX="162.0" layoutY="4.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.rol" />
                                  </children>
                               </Pane>
                            </top>

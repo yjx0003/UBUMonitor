@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import controllers.ubugrades.CreatorGradeItems;
 import controllers.ubugrades.CreatorUBUGradesController;
-import controllers.ubulogs.logcreator.LogCreator;
+import controllers.ubulogs.LogCreator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;

@@ -158,7 +158,7 @@ public class LogLine implements Serializable {
 	}
 
 	/**
-	 * Modifica el usuario que ha realizado la acción.
+	 * Modifica el usuario que ha realizado la acción. Bidireccional.
 	 * 
 	 * @param user
 	 *            usuario
@@ -178,7 +178,7 @@ public class LogLine implements Serializable {
 	}
 
 	/**
-	 * Modifica el usuario afectado.
+	 * Modifica el usuario afectado. Bidireccional.
 	 * 
 	 * @param affectedUser
 	 *            el nuevo usuario afecado

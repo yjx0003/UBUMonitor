@@ -13,10 +13,17 @@ public enum Component {
 	
 	ACTIVITY_REPORT("Activity report"),
 	ASSIGNMENT("Assignment"),
+	BOOK("Book"),
+	BOOK_PRINTING("Book printing"),
 	CHAT("Chat"),
 	CHOICE("Choice"),
+	COMMENTS("Comments"),
+	COURSE_COMPLETION("Course completion"),
 	COURSE_PARTICIPATION("Course participation"),
+	DATABASE("Database"),
+	EVENT_MONITOR("Event monitor"),
 	EXCEL_SPREADSHEET("Excel spreadsheet"),
+	EXTERNAL_TOOL("External tool"),
 	FEEDBACK("Feedback"),
 	FILE("File"),
 	FILE_SUBMISSIONS("File submissions"),
@@ -26,6 +33,9 @@ public enum Component {
 	GRADER_REPORT("Grader report"),
 	GUIA_DOCENTE("Guía Docente"),
 	HOTPOT_MODULE("HotPot module"),
+	IMS_CONTENT_PACKAGE("IMS content package"),
+	JOURNAL("Journal"),
+	LESSON("Lesson"),
 	LIVE_LOGS("Live logs"),
 	LOGS("Logs"),
 	ONLINE_TEXT_SUBMISSIONS("Online text submissions"),
@@ -36,8 +46,11 @@ public enum Component {
 	PLAIN_TEXT_FILE("Plain text file"),
 	QUIZ("Quiz"),
 	RECYCLE_BIN("Recycle bin"),
+	SCORM_PACKAGE("SCORM package"),
 	SINGLE_VIEW("Single view"),
+	STATISTICS("Statistics"),
 	SUBMISSION_COMMENTS("Submission comments"),
+	SURVEY("Survey"),
 	SYSTEM("System"),
 	TURNITIN_ASSIGNMENT_2("Turnitin Assignment 2"),
 	URL("URL"),
@@ -47,6 +60,7 @@ public enum Component {
 	WORKSHOP("Workshop"),
 	XML_FILE("XML file"),
 	COMPONENT_NOT_AVAILABLE("Component not avaible");
+
 
 
 	
@@ -71,6 +85,14 @@ public enum Component {
 	 */
 	public static Component get(String name) {
 		return map.getOrDefault(name, Component.COMPONENT_NOT_AVAILABLE);
+	}
+	
+	/**
+	 * Devuelve el texto del componente tal y como esta en la tabla de logs.
+	 * @return el texto del componente tal y como esta en la tabla de logs
+	 */
+	public String getName() {
+		return name;
 	}
 
 	@Override

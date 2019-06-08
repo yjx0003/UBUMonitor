@@ -14,6 +14,9 @@
         "All the submissions are being downloaded.": [
             "The user with id '' has downloaded all the submissions for the assignment with course module id ''."
         ],
+        "An extension has been granted.": [
+            "The user with id '' has granted an extension for the user with id '' for the assignment with course module id ''."
+        ],
         "Assignment override created": [
             "The user with id '' created the override with id '' for the assign with course module id '' for the user with id ''."
         ],
@@ -39,7 +42,14 @@
             "The user with id '' viewed the submission confirmation form for the assignment with course module id ''."
         ],
         "Submission form viewed.": [
-            "The user with id '' viewed their submission for the assignment with course module id ''."
+            "The user with id '' viewed their submission for the assignment with course module id ''.",
+            "The user with id '' viewed the submission form for the user with id '' for the assignment with course module id ''."
+        ],
+        "Submission viewed.": [
+            "The user with id '' viewed the submission for the user with id '' for the assignment with course module id ''."
+        ],
+        "The state of the workflow has been updated.": [
+            "The user with id '' has set the workflow state of the user with id '' to the state '' for the assignment with course module id ''."
         ],
         "The status of the submission has been updated.": [
             "The user with id '' has updated the status of the submission with id '' for the assignment with course module id '' to the status ''."
@@ -72,6 +82,11 @@
         ],
         "Course module viewed": [
             "The user with id '' viewed the '' activity with course module id ''."
+        ]
+    },
+    "Book printing": {
+        "Book printed": [
+            "The user with id '' has printed the book with course module id ''."
         ]
     },
     "Chat": {
@@ -226,8 +241,14 @@
         "Discussion moved": [
             "The user with id '' has moved the discussion with id '' from the forum with id '' to the forum with id ''."
         ],
+        "Discussion pinned": [
+            "The user  has pinned the discussion  in the forum "
+        ],
         "Discussion subscription created": [
             "The user with id '' subscribed the user with id '' to the discussion  with id '' in the forum with the course module id ''."
+        ],
+        "Discussion subscription deleted": [
+            "The user with id '' unsubscribed the user with id '' from the discussion  with id '' in the forum with the course module id ''."
         ],
         "Discussion viewed": [
             "The user with id '' has viewed the discussion with id '' in the forum with course module id ''."
@@ -315,9 +336,26 @@
             "The user with id '' viewed the '' activity with course module id ''."
         ]
     },
+    "Journal": {
+        "Course module viewed": [
+            "The user with id '' viewed the '' activity with course module id ''."
+        ],
+        "Journal entries viewed": [
+            "The user with id '' has viewed the entries for the journal activity with the course module id\n            ''"
+        ],
+        "Journal entry created": [
+            "The user with id '' has created an entry for the journal activity with the course module id ''"
+        ],
+        "Journal entry updated": [
+            "The user with id '' has updated an entry for the journal activity with the course module id ''"
+        ]
+    },
     "Lesson": {
         "Content page viewed": [
             "The user with id '' has viewed the content page with id '' in the lesson activity with course module id ''."
+        ],
+        "Course module instance list viewed": [
+            "The user with id '' viewed the instance list for the module '' in the course with id ''."
         ],
         "Course module viewed": [
             "The user with id '' viewed the '' activity with course module id ''."
@@ -365,10 +403,12 @@
             "The user with id '' has saved an online text submission with id '' in the assignment activity with course module id ''."
         ],
         "Submission created.": [
-            "The user with id '' created an online text submission with '' words in the assignment with course module id ''."
+            "The user with id '' created an online text submission with '' words in the assignment with course module id ''.",
+            "The user with id '' created an online text submission with '' words in the assignment with course module id '' for the group with id ''."
         ],
         "Submission updated.": [
-            "The user with id '' updated an online text submission with '' words in the assignment with course module id ''."
+            "The user with id '' updated an online text submission with '' words in the assignment with course module id ''.",
+            "The user with id '' updated an online text submission with '' words in the assignment with course module id '' for the group with id ''."
         ]
     },
     "OpenDocument spreadsheet": {
@@ -452,6 +492,9 @@
         ],
         "Item deleted": [
             "Item with ID  deleted."
+        ],
+        "Item restored": [
+            "Item with ID  restored."
         ]
     },
     "SCORM package": {
@@ -471,6 +514,11 @@
     "Single view": {
         "Grade single view report viewed.": [
             "The user with id '' viewed the singleview report in the gradebook."
+        ]
+    },
+    "Statistics": {
+        "User statistics report viewed": [
+            "The user with id '' viewed the user statistics report for the user with id ''."
         ]
     },
     "Submission comments": {
@@ -504,6 +552,9 @@
         ],
         "Calendar event updated": [
             "The user with id '' updated the event '' with id ''."
+        ],
+        "Calendar subscription updated": [
+            "User  has updated a calendar\n        subscription with id  of event type course."
         ],
         "Course activity completion updated": [
             "The user with id '' updated the completion state for the course module with id '' for the user with id ''."
@@ -543,7 +594,8 @@
             "The user with id '' started the reset of the course with id ''."
         ],
         "Course restored": [
-            "The user with id '' restored the course with id ''."
+            "The user with id '' restored the course with id ''.",
+            "The user with id '' restored old course with id '' to a new course with id ''."
         ],
         "Course section created": [
             "The user with id '' created section number '' for the course with id ''"
@@ -579,6 +631,9 @@
         "Grade deleted": [
             "The user with id '' deleted the grade with id '' for the user with id '' for the grade item with id ''."
         ],
+        "Group assigned to grouping": [
+            "The user with id '' assigned the group with id '' to the grouping with id ''."
+        ],
         "Group created": [
             "The user with id '' created the group with id ''."
         ],
@@ -597,6 +652,9 @@
         "Grouping created": [
             "The user with id '' created the grouping with id ''."
         ],
+        "Grouping deleted": [
+            "The user with id '' deleted the grouping with id ''."
+        ],
         "Note created": [
             "The user with id '' created the note with id '' for the user with id ''."
         ],
@@ -611,6 +669,9 @@
         ],
         "Role assigned": [
             "The user with id '' assigned the role with id '' to the user with id ''."
+        ],
+        "Role capabilities updated": [
+            "The user with id '' updated the capabilities for the role with id ''."
         ],
         "Role unassigned": [
             "The user with id '' unassigned the role with id '' from the user with id ''."
@@ -709,11 +770,38 @@
         ]
     },
     "Workshop": {
+        "A submission has been uploaded.": [
+            "The user with id '' has uploaded the submission with id '' to the workshop activity with course module id ''."
+        ],
+        "Assessment evaluated": [
+            "The user with id '' has had their assessment attempt evaluated for the workshop with course module id ''."
+        ],
+        "Course module instance list viewed": [
+            "The user with id '' viewed the instance list for the module '' in the course with id ''."
+        ],
         "Course module viewed": [
             "The user with id '' viewed the '' activity with course module id ''."
         ],
         "Phase switched": [
             "The user with id '' has switched the phase of the workshop with course module id '' to ''."
+        ],
+        "Submission assessed": [
+            "The user with id '' assessed the submission with id '' for the user with id '' in the workshop with course module id ''."
+        ],
+        "Submission created": [
+            "The user with id '' created the submission with id of '' for the workshop with course module id ''."
+        ],
+        "Submission deleted": [
+            "The user with id '' deleted the submission with id '' for the workshop with course module id ''."
+        ],
+        "Submission re-assessed": [
+            "The user with id '' reassessed the submission with id '' for the user with id '' in the workshop with course module id ''."
+        ],
+        "Submission updated": [
+            "The user with id '' updated the submission with id '' for the workshop with course module id ''."
+        ],
+        "Submission viewed": [
+            "The user with id '' viewed the submission with id '' for the workshop with course module id ''."
         ]
     },
     "XML file": {

@@ -1167,8 +1167,6 @@ public class MainController implements Initializable {
 		logger.debug("Selected participant: {}", selectedParticipants.size());
 		// Por cada usuario seleccionado
 		for (EnrolledUser actualUser : selectedParticipants) {
-			// BUG when we deselect the penultimate student, some student can have null
-			// value. TODO
 			// TODO logger.debug("Enroller user: {}", actualUser.getFirstName());
 			String actualUserFullName = actualUser.getFullName();
 			// Añadimos el nombre del alumno al dataset

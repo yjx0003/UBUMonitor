@@ -28,11 +28,11 @@ public class I18n {
 
 	public static String get(Component component) {
 
-		return getOrDefault("component." + component, component.toString());
+		return getOrDefault("component." + component, component.getName());
 	}
 
 	public static String get(Event event) {
-		return getOrDefault("eventname." + event, event.toString());
+		return getOrDefault("eventname." + event, event.getName());
 	}
 
 	private static String getOrDefault(String key, String defaultValue) {

@@ -1,6 +1,7 @@
 package model;
 
 import java.io.Serializable;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
@@ -186,6 +187,22 @@ public class LogLine implements Serializable {
 	public void setAffectedUser(EnrolledUser affectedUser) {
 		this.affectedUser = affectedUser;
 		affectedUser.addLog(this);
+	}
+	
+	/**
+	 * Devuelve la hora del log.
+	 * @return hora del log
+	 */
+	public int getHour() {
+		return time.getHour();
+	}
+	
+	/**
+	 * Devuelve el dia de la semana del log.
+	 * @return dia de la semana
+	 */
+	public DayOfWeek getDayOfWeek() {
+		return time.getDayOfWeek();
 	}
 
 	/**

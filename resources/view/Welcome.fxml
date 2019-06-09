@@ -42,7 +42,7 @@
 				<Font size="25.0" />
 			</font>
 		</Label>
-		<ListView fx:id="listCourses" layoutX="139.0" layoutY="216.0" prefHeight="219.0" prefWidth="540.0" styleClass="list-view-intro" stylesheets="@/css/style.css">
+		<ListView fx:id="listCourses" layoutX="100.0" layoutY="215.0" prefHeight="220.0" prefWidth="600.0" styleClass="list-view-intro" stylesheets="@/css/style.css">
          <cursor>
             <Cursor fx:constant="DEFAULT" />
          </cursor></ListView>

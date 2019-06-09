@@ -24,8 +24,9 @@ public abstract class StackedBarDatasetAbstract<T> {
 	 */
 	private static final float OPACITY_BAR = 0.4f;
 
-	protected List<EnrolledUser> selectedUsers = new ArrayList<>();
-	protected List<T> selecteds = new ArrayList<>();
+	protected List<EnrolledUser> enrolledUsers;
+	protected List<EnrolledUser> selectedUsers;
+	protected List<T> selecteds;
 	protected Map<T, int[]> colors;
 	protected GroupByAbstract<?> groupBy;
 	protected LocalDate start;
@@ -42,11 +43,12 @@ public abstract class StackedBarDatasetAbstract<T> {
 
 	protected abstract Map<EnrolledUser, Map<T, List<Long>>> getUserCounts();
 
-	public String createData(List<EnrolledUser> selectedUsers,
+	public String createData(List<EnrolledUser> enrolledUsers, List<EnrolledUser> selectedUsers,
 			List<T> selecteds, GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd) {
 
 		// lo metemos en un nuevo arraylist para evitar que se actualice en tiempo real
 		// los elementos
+		this.enrolledUsers = new ArrayList<>(enrolledUsers);
 		this.selectedUsers = new ArrayList<>(selectedUsers);
 		this.selecteds = new ArrayList<>(selecteds);
 		this.groupBy = groupBy;
@@ -114,7 +116,6 @@ public abstract class StackedBarDatasetAbstract<T> {
 	private void setUsersDatasets() {
 		Map<EnrolledUser, Map<T, List<Long>>> userTDataset = getUserCounts();
 
-		
 		for (EnrolledUser user : selectedUsers) {
 			Map<T, List<Long>> elementDataset = userTDataset.get(user);
 			for (T element : selecteds) {
@@ -124,13 +125,14 @@ public abstract class StackedBarDatasetAbstract<T> {
 				stringBuilder.append("{");
 				stringBuilder.append("label:'" + escapeJavaScriptText(translate(element)) + "',");
 				stringBuilder.append("stack: '" + escapeJavaScriptText(user.toString()) + "',");
-				stringBuilder.append("backgroundColor: 'rgba(" + c[0] + ", " + c[1] + "," + c[2] + "," + OPACITY_BAR + ")',");
+				stringBuilder.append(
+						"backgroundColor: 'rgba(" + c[0] + ", " + c[1] + "," + c[2] + "," + OPACITY_BAR + ")',");
 				stringBuilder.append("data: [" + join(data) + "]");
 				stringBuilder.append("},");
-				
+
 			}
 		}
-	
+
 	}
 
 	private String joinWithQuotes(List<String> list) {

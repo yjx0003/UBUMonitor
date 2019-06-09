@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -26,7 +25,7 @@ import model.Event;
 import model.LogLine;
 
 public abstract class GroupByAbstract<T> implements Serializable {
-	
+
 	/**
 	 * 
 	 */
@@ -38,13 +37,17 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 	Map<EnrolledUser, Map<Component, Map<T, Long>>> countsComponents;
 
-	private Set<EnrolledUser> enrolledUsers;
-
 	private Map<Component, Map<T, DescriptiveStatistics>> componentStatistics;
 	private Map<Component, Map<Event, Map<T, DescriptiveStatistics>>> componentEventStatistics;
+	
 
-	public GroupByAbstract(List<LogLine> logLines, Set<EnrolledUser> enrolledUsers) {
-		this.enrolledUsers = enrolledUsers;
+	/**
+	 * Constructor para agrupar la lineas de log en funcion de los usuarios.
+	 * 
+	 * @param logLines
+	 *            las lineas de log
+	 */
+	public GroupByAbstract(List<LogLine> logLines) {
 		setCounts(logLines);
 
 	}
@@ -84,8 +87,6 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 	}
 
-	public abstract List<T> getRange(LocalDate start, LocalDate end);
-
 	public List<String> getRangeString(LocalDate start, LocalDate end) {
 		return getRangeString(getRange(start, end));
 	}
@@ -96,7 +97,8 @@ public abstract class GroupByAbstract<T> implements Serializable {
 				.collect(Collectors.toList());
 	}
 
-	public void generateComponentsStatistics(List<Component> components, List<T> groupByRange) {
+	public void generateComponentsStatistics(List<EnrolledUser> enrolledUsers, List<Component> components,
+			List<T> groupByRange) {
 
 		if (components.isEmpty() || groupByRange.isEmpty()) {
 			return;
@@ -129,7 +131,8 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 	}
 
-	public void generateComponentsEventsStastistics(List<ComponentEvent> componentsEvents, List<T> groupByRange) {
+	public void generateComponentsEventsStastistics(List<EnrolledUser> enrolledUsers,
+			List<ComponentEvent> componentsEvents, List<T> groupByRange) {
 
 		if (componentsEvents.isEmpty() || groupByRange.isEmpty()) {
 			return;
@@ -170,12 +173,13 @@ public abstract class GroupByAbstract<T> implements Serializable {
 				+ groupByRange + ":\n" + componentEventStatistics);
 	}
 
-	public Map<Component, List<Double>> getComponentsMeans(List<Component> components, LocalDate start,
+	public Map<Component, List<Double>> getComponentsMeans(List<EnrolledUser> enrolledUsers, List<Component> components,
+			LocalDate start,
 			LocalDate end) {
 
 		List<T> range = this.getRange(start, end);
 
-		generateComponentsStatistics(components, range);
+		generateComponentsStatistics(enrolledUsers, components, range);
 
 		Map<Component, List<Double>> results = new HashMap<>();
 		for (Component component : components) {
@@ -192,12 +196,13 @@ public abstract class GroupByAbstract<T> implements Serializable {
 		return results;
 	}
 
-	public Map<ComponentEvent, List<Double>> getComponentEventMeans(List<ComponentEvent> componentsEvents,
+	public Map<ComponentEvent, List<Double>> getComponentEventMeans(List<EnrolledUser> enrolledUsers,
+			List<ComponentEvent> componentsEvents,
 			LocalDate start, LocalDate end) {
 
 		List<T> range = this.getRange(start, end);
 
-		generateComponentsEventsStastistics(componentsEvents, range);
+		generateComponentsEventsStastistics(enrolledUsers, componentsEvents, range);
 
 		Map<ComponentEvent, List<Double>> results = new HashMap<>();
 		for (ComponentEvent componentEvent : componentsEvents) {
@@ -272,7 +277,21 @@ public abstract class GroupByAbstract<T> implements Serializable {
 		return result;
 	}
 
-	public long getMaxComponent(List<Component> components, LocalDate start, LocalDate end) {
+	/**
+	 * El maximo de los componentes de los usuarios
+	 * 
+	 * @param enrolledUsers
+	 *            usuarios que se quiere buscar el maximo
+	 * @param components
+	 *            componentes 
+	 * @param start
+	 *            fecha de inicio
+	 * @param end
+	 *            fecha de fin
+	 * @return maximo encontrado
+	 */
+	public long getMaxComponent(List<EnrolledUser> enrolledUsers, List<Component> components, LocalDate start,
+			LocalDate end) {
 
 		if (components.isEmpty()) {
 			return 1L;
@@ -298,7 +317,20 @@ public abstract class GroupByAbstract<T> implements Serializable {
 		return max;
 	}
 
-	public long getMaxComponentEvent(List<ComponentEvent> componentsEvents, LocalDate start, LocalDate end) {
+	/**
+	 * Devuelve el maximo de los componentes y eventos a partir de una fecha de
+	 * inicio y fin.
+	 * 
+	 * @param componentsEvents
+	 *            el listado de componentes y eventos que se quiere buscar el maximo
+	 * @param start
+	 *            fecha de inicio
+	 * @param end
+	 *            fecha de fin
+	 * @return el maximo encontrado
+	 */
+	public long getMaxComponentEvent(List<EnrolledUser> enrolledUsers, List<ComponentEvent> componentsEvents,
+			LocalDate start, LocalDate end) {
 
 		if (componentsEvents.isEmpty()) {
 			return 1L;
@@ -326,6 +358,13 @@ public abstract class GroupByAbstract<T> implements Serializable {
 		return max;
 	}
 
+	/**
+	 * Busca el máximo mapa de usuario por cada tipo de tiempo y el contador.
+	 * 
+	 * @param sumComponentsMap
+	 *            mapa de usuario por cada tipo de tiempo y el contador
+	 * @return el valor maximo encontrado
+	 */
 	private long getMax(Map<EnrolledUser, Map<T, Long>> sumComponentsMap) {
 		long max = 1L;
 
@@ -339,11 +378,43 @@ public abstract class GroupByAbstract<T> implements Serializable {
 		return max;
 	}
 
+	/**
+	 * Devuelve el rango entre dos local date
+	 * 
+	 * @param start
+	 *            fecha de inicio
+	 * @param end
+	 *            fecha de fin
+	 * @return rango del tipo de tiempo entre dos fechas
+	 */
+	public abstract List<T> getRange(LocalDate start, LocalDate end);
+
+	/**
+	 * La funcion usada para agrupar el tipo de tiempo
+	 * 
+	 * @return
+	 */
 	public abstract Function<LogLine, T> getGroupByFunction();
 
+	/**
+	 * Devuelve la funcion de cómo se formatea el tipo T
+	 * 
+	 * @return la función de formateo
+	 */
 	public abstract Function<T, String> getStringFormatFunction();
 
+	/**
+	 * Devuelve que forma de medir el tiempo es.
+	 * 
+	 * @return forma de medir
+	 */
 	public abstract TypeTimes getTypeTime();
+	
+	/**
+	 * Si el tipo de agrupación usa el date picker
+	 * @return true si lo usa, false en caso contrario
+	 */
+	public abstract boolean useDatePicker();
 
 	@Override
 	public String toString() {

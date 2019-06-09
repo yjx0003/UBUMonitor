@@ -7,6 +7,11 @@ import controllers.I18n;
 import model.ComponentEvent;
 import model.EnrolledUser;
 
+/**
+ * Clase que sobrescribe los metodos restantes para completar el equeleto de {@link StackedBarDatasetAbstract}
+ * @author Yi Peng Ji
+ *
+ */
 public class StackedBarDataSetComponentEvent extends StackedBarDatasetAbstract<ComponentEvent> {
 
 	/**
@@ -22,6 +27,7 @@ public class StackedBarDataSetComponentEvent extends StackedBarDatasetAbstract<C
 
 	/**
 	 * Devuelve la instancia única de StackedBarDataSetComponentEvent.
+	 * 
 	 * @return instancia singleton
 	 */
 	public static StackedBarDataSetComponentEvent getInstance() {
@@ -30,18 +36,27 @@ public class StackedBarDataSetComponentEvent extends StackedBarDatasetAbstract<C
 		}
 		return instance;
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected String translate(ComponentEvent element) {
 		return I18n.get(element.getComponent()) + " - "
 				+ I18n.get("eventname." + element.getEventName());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected Map<ComponentEvent, List<Double>> getMeans() {
-		return groupBy.getComponentEventMeans(selecteds, start, end);
+		return groupBy.getComponentEventMeans(enrolledUsers, selecteds, start, end);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected Map<EnrolledUser, Map<ComponentEvent, List<Long>>> getUserCounts() {
 		return groupBy.getUserComponentEventCounts(selectedUsers, selecteds, start, end);

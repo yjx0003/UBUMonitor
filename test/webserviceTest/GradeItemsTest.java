@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import webservice.ParametersCourseidUseridGroupid.OptionalParameter;
 import webservice.WebService;
-import webservice.gradereport.GradereportUserGetGradeItems;
 import webservice.gradereport.GradereportUserGetGradesTable;
 
 public class GradeItemsTest {

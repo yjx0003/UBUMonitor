@@ -3,16 +3,15 @@ package controllers.ubulogs;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 
 import org.threeten.extra.YearWeek;
 
-import model.EnrolledUser;
 import model.LogLine;
 
 /**
  * Agrupación de los logs por semana y año.
+ * 
  * @author Yi Peng Ji
  *
  */
@@ -25,11 +24,12 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 
 	/**
 	 * Constructor para agrupar la lineas de log en funcion de los usuarios.
-	 * @param logLines las lineas de log
-	 * @param enrolledUsers los usuarios que se quiere sacar los datos
+	 * 
+	 * @param logLines
+	 *            las lineas de log
 	 */
-	public GroupByYearWeek(List<LogLine> logLines, Set<EnrolledUser> enrolledUsers) {
-		super(logLines, enrolledUsers);
+	public GroupByYearWeek(List<LogLine> logLines) {
+		super(logLines);
 	}
 
 	/**
@@ -39,12 +39,11 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 	public List<YearWeek> getRange(LocalDate start, LocalDate end) {
 		List<YearWeek> list = new ArrayList<>();
 
-		for (YearWeek yearWeekStart = YearWeek.from(start), yearWeekEnd = YearWeek.from(end);
-				yearWeekStart.isBefore(yearWeekEnd) || yearWeekStart.equals(yearWeekEnd);
-				yearWeekStart = yearWeekStart.plusWeeks(1)) {
-			
+		for (YearWeek yearWeekStart = YearWeek.from(start), yearWeekEnd = YearWeek.from(end); !yearWeekStart
+				.isAfter(yearWeekEnd); yearWeekStart = yearWeekStart.plusWeeks(1)) {
+
 			list.add(yearWeekStart);
-			
+
 		}
 		return list;
 	}
@@ -71,6 +70,14 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 	@Override
 	public TypeTimes getTypeTime() {
 		return TypeTimes.YEAR_WEEK;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean useDatePicker() {
+		return true;
 	}
 
 }

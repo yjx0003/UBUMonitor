@@ -7,7 +7,13 @@ import controllers.I18n;
 import model.Component;
 import model.EnrolledUser;
 
-public class StackedBarDataSetComponent extends StackedBarDatasetAbstract<Component>{
+
+/**
+ * Clase que sobrescribe los metodos restantes para completar el equeleto de {@link StackedBarDatasetAbstract}
+ * @author Yi Peng Ji
+ *
+ */
+public class StackedBarDataSetComponent extends StackedBarDatasetAbstract<Component> {
 
 	/**
 	 * static Singleton instance.
@@ -22,6 +28,7 @@ public class StackedBarDataSetComponent extends StackedBarDatasetAbstract<Compon
 
 	/**
 	 * Return a singleton instance of StackedBarDataSetComponent.
+	 * 
 	 * @return la instancia única
 	 */
 	public static StackedBarDataSetComponent getInstance() {
@@ -30,15 +37,22 @@ public class StackedBarDataSetComponent extends StackedBarDatasetAbstract<Compon
 		}
 		return instance;
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected String translate(Component element) {
 		return I18n.get(element);
 	}
 
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected Map<Component, List<Double>> getMeans() {
-		return groupBy.getComponentsMeans(selecteds, start, end);
+		return groupBy.getComponentsMeans(enrolledUsers, selecteds, start, end);
 	}
 
 	@Override

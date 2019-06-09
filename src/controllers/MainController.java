@@ -391,11 +391,11 @@ public class MainController implements Initializable {
 				@Override
 				public void updateItem(EnrolledUser user, boolean empty) {
 					super.updateItem(user, empty);
-					if (empty) {
+					if (empty || user == null) {
 						setText(null);
 						setGraphic(null);
 					} else {
-						setText(user.toString());
+						setText(user.getLastname() + ", " + user.getFirstname());
 						try {
 							Image image = new Image(new ByteArrayInputStream(user.getImageBytes()));
 							setGraphic(new ImageView(image));
@@ -468,7 +468,13 @@ public class MainController implements Initializable {
 		choiceBoxDate.getSelectionModel().selectFirst();
 		selectedChoiceBoxDate = choiceBoxDate.getValue();
 
-		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> applyFilterLogs(null));
+		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> {
+			applyFilterLogs(null);
+			boolean useDatePicker=newValue.useDatePicker();
+			datePickerStart.setDisable(!useDatePicker);
+			datePickerEnd.setDisable(!useDatePicker);
+			
+		});
 
 		// traduccion de los elementos del choicebox
 		choiceBoxDate.setConverter(new StringConverter<GroupByAbstract<?>>() {
@@ -652,6 +658,10 @@ public class MainController implements Initializable {
 	}
 
 	private void updateLogsChart() {
+		if(!tabUbuLogs.isSelected()) {
+			return;
+		}
+		
 		if (tabUbuLogsComponent.isSelected()) {
 			updateComponentsChart();
 		} else if (tabUbuLogsEvent.isSelected()) {
@@ -662,7 +672,7 @@ public class MainController implements Initializable {
 
 	private void updateComponentsChart() {
 
-		String stackedbardataset = stackedBarDatasetComponent.createData(
+		String stackedbardataset = stackedBarDatasetComponent.createData(listParticipants.getItems(),
 				listParticipants.getSelectionModel().getSelectedItems(),
 				listViewComponents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
 		logger.info("Dataset para el stacked bar de componentes solo en JS: " + stackedbardataset);
@@ -670,7 +680,7 @@ public class MainController implements Initializable {
 	}
 
 	private void updateComponentsEventsChart() {
-		String stackedbardataset = stackedBarDatasetComponentEvent.createData(
+		String stackedbardataset = stackedBarDatasetComponentEvent.createData(listParticipants.getItems(),
 				listParticipants.getSelectionModel().getSelectedItems(),
 				listViewEvents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
 
@@ -695,13 +705,19 @@ public class MainController implements Initializable {
 	}
 
 	private void findMax() {
+		if(!tabUbuLogs.isSelected()) {
+			return;
+		}
+		
 		long maxYAxis = 0L;
 		if (tabUbuLogsComponent.isSelected()) {
-			maxYAxis = selectedChoiceBoxDate.getMaxComponent(listViewComponents.getSelectionModel().getSelectedItems(),
+			maxYAxis = selectedChoiceBoxDate.getMaxComponent(listParticipants.getItems(),
+					listViewComponents.getSelectionModel().getSelectedItems(),
 					dateStart, dateEnd);
 		} else if (tabUbuLogsEvent.isSelected()) {
 			maxYAxis = selectedChoiceBoxDate
-					.getMaxComponentEvent(listViewEvents.getSelectionModel().getSelectedItems(), dateStart, dateEnd);
+					.getMaxComponentEvent(listParticipants.getItems(),
+							listViewEvents.getSelectionModel().getSelectedItems(), dateStart, dateEnd);
 		}
 		textFieldMax.setText(Long.toString(maxYAxis));
 	}
@@ -804,6 +820,8 @@ public class MainController implements Initializable {
 		listParticipants.setItems(enrList);
 		// Actualizamos los gráficos al cambiar el grupo
 		updateGradesChart();
+		updateLogsChart();
+		findMax();
 	}
 
 	/**
@@ -1405,6 +1423,10 @@ public class MainController implements Initializable {
 	 * Actualiza los gráficos.
 	 */
 	private void updateGradesChart() {
+		if(!tabUbuGrades.isSelected()) {
+			return;
+		}
+		
 		try {
 			String data = generateGradesDataSet();
 			logger.debug("Data: {}", data);

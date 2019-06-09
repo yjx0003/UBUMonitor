@@ -603,7 +603,7 @@ function manageLogsButtons(){
 
 function changeYMaxStackedBar(max){
 	optionsStackedBar.scales.yAxes[0].ticks.suggestedMax=max;
-	myChart.options=optionsStackedBar;
+	myChart.options.scales.yAxes[0].ticks.suggestedMax=max;
 	myChart.update();
 }
 

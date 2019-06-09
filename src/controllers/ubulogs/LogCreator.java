@@ -29,6 +29,11 @@ import model.LogLine;
 import model.Logs;
 import model.Origin;
 
+/**
+ * Clase encargada de los logs, con metodos encargados de descargar los logs y parsearlo.
+ * @author Yi Peng Ji
+ *
+ */
 public class LogCreator {
 	static final Logger logger = LoggerFactory.getLogger(LogCreator.class);
 

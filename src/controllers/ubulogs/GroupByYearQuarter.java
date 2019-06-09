@@ -3,14 +3,17 @@ package controllers.ubulogs;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 
 import org.threeten.extra.YearQuarter;
 
-import model.EnrolledUser;
 import model.LogLine;
 
+/**
+ * Agrupa los logs por trimestre y año.
+ * @author Yi Peng Ji
+ *
+ */
 public class GroupByYearQuarter extends GroupByAbstract<YearQuarter> {
 
 	/**
@@ -18,17 +21,25 @@ public class GroupByYearQuarter extends GroupByAbstract<YearQuarter> {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public GroupByYearQuarter(List<LogLine> logLines, Set<EnrolledUser> enrolledUsers) {
-		super(logLines, enrolledUsers);
+	/**
+	 * Constructor para agrupar la lineas de log en funcion de los usuarios.
+	 * @param logLines las lineas de log
+	 * @param enrolledUsers los usuarios que se quiere sacar los datos
+	 */
+	public GroupByYearQuarter(List<LogLine> logLines) {
+		super(logLines);
 	
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<YearQuarter> getRange(LocalDate start, LocalDate end) {
 		List<YearQuarter> list = new ArrayList<>();
 
 		for (YearQuarter YearQuarterStart = YearQuarter.from(start), YearQuarterEnd = YearQuarter.from(end);
-				YearQuarterStart.isBefore(YearQuarterEnd) || YearQuarterStart.equals(YearQuarterEnd);
+				!YearQuarterStart.isAfter(YearQuarterEnd);
 				YearQuarterStart = YearQuarterStart.plusQuarters(1)) {
 			
 			list.add(YearQuarterStart);
@@ -37,19 +48,35 @@ public class GroupByYearQuarter extends GroupByAbstract<YearQuarter> {
 		return list;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Function<LogLine, YearQuarter> getGroupByFunction() {
 		return LogLine::getYearQuarter;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Function<YearQuarter, String> getStringFormatFunction() {
 		return YearQuarter::toString;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public TypeTimes getTypeTime() {
 		return TypeTimes.YEAR_QUARTER;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean useDatePicker() {
+		return true;
+	}
 }

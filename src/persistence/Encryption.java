@@ -80,6 +80,8 @@ public class Encryption {
 	 * @param key contraseña
 	 * @param ruta ruta del fichero
 	 * @param object objeto
+	 * @param <T> objeto que extiende serializable
+	 * 
 	 */
 	public static <T extends Serializable> void encrypt(String key, String ruta, T object) {
 		logger.info("Intendado encriptar fichero: {}", ruta);

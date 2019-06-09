@@ -1,5 +1,7 @@
 package controllers;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -25,6 +27,8 @@ public class Controller {
 	static final Logger logger = LoggerFactory.getLogger(Controller.class);
 
 	public static final String RESOURCE_FILE_NAME = "messages/Messages";
+	
+	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
 
 	public static final String APP_NAME = "UBUMonitor";
 
@@ -175,6 +179,13 @@ public class Controller {
 		this.user = user;
 	}
 
+	/**
+	 * Intenta buscar el token de acceso a la REST API de moodle
+	 * @param host servidor moodle
+	 * @param username nombre de usuario
+	 * @param password contraseña
+	 * @throws Exception si no ha podido conectarse o la contraseña es erronea
+	 */
 	public void tryLogin(String host, String username, String password) throws Exception {
 		WebService.initialize(host, username, password);
 
@@ -185,11 +196,19 @@ public class Controller {
 
 	}
 
+	/**
+	 * Devuelve las estadisticas de calificaciones del curso.
+	 * @return estadistica de calificaciones del curso
+	 */
 	public Stats getStats() {
 
 		return getActualCourse().getStats();
 	}
 
+	/**
+	 * Crea las estadisticas del curso tanto de calificaciones como de logs.
+	 * @throws Exception si falla la creacion de las estadisticas
+	 */
 	public void createStats() throws Exception {
 		Stats stats = new Stats(getActualCourse());
 		getActualCourse().setStats(stats);
@@ -198,6 +217,10 @@ public class Controller {
 		getActualCourse().setLogStats(logStats);
 	}
 
+	/**
+	 * Selecciona el curso en la base de datos.
+ 	 * @param selectedCourse curso seleccionado
+	 */
 	public void setActualCourse(Course selectedCourse) {
 		BBDD.setActualCourse(selectedCourse);
 	}
@@ -240,6 +263,10 @@ public class Controller {
 
 	}
 
+	/**
+	 * Devuelve los cookies de sesion de moodle, si no hay cookies intenta loguearse de forma manual al moodle
+	 * @return los cookies de sesion
+	 */
 	public Map<String, String> getCookies() {
 		if (cookies == null) {
 			this.cookies = login(username, password);
@@ -247,6 +274,10 @@ public class Controller {
 		return cookies;
 	}
 
+	/**
+	 * Modifica los cookies de sesion
+	 * @param cookies cookies
+	 */
 	public void setCookies(Map<String, String> cookies) {
 		this.cookies = cookies;
 	}

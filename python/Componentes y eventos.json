@@ -325,10 +325,10 @@
             "The user with id '' viewed the '' activity with course module id ''."
         ],
         "HotPot attempt started": [
-            "The user with id \"\" started an attempt at the \"hotpot\" activity with course module id \"\""
+            "The user with id \"\" started an attempt at the \"\" activity with course module id \"\""
         ],
         "HotPot attempt submitted": [
-            "The user with id \"\" submitted an attempt at the \"hotpot\" activity with course module id \"\""
+            "The user with id \"\" submitted an attempt at the \"\" activity with course module id \"\""
         ]
     },
     "IMS content package": {

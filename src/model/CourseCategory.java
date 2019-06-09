@@ -59,7 +59,7 @@ public class CourseCategory implements Serializable {
 	/**
 	 * Constructor inicializando con el id
 	 * 
-	 * @param id
+	 * @param id de la categoria del curso
 	 */
 	public CourseCategory(int id) {
 		this.id = id;
@@ -172,7 +172,7 @@ public class CourseCategory implements Serializable {
 	/**
 	 * Cambiar el orden de la categoría
 	 * 
-	 * @param sortorder
+	 * @param sortorder tipo de ordenacion
 	 */
 	public void setSortorder(int sortorder) {
 		this.sortorder = sortorder;

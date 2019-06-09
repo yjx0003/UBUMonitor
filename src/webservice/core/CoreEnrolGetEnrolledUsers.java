@@ -166,7 +166,7 @@ public class CoreEnrolGetEnrolledUsers extends ParametersCourseid {
 
 	/**
 	 * Id del grupo
-	 * @return
+	 * @return id del grupo
 	 */
 	public int getGroupid() {
 		return groupid;
@@ -174,7 +174,7 @@ public class CoreEnrolGetEnrolledUsers extends ParametersCourseid {
 
 	/**
 	 * Id del grupo
-	 * @param groupid
+	 * @param groupid id del grupo
 	 */
 	public void setGroupid(int groupid) {
 		this.groupid = groupid;
@@ -254,7 +254,7 @@ public class CoreEnrolGetEnrolledUsers extends ParametersCourseid {
 
 	/**
 	 * Modifica el tipo de ordenación.
-	 * @param tipo de ordenación: por id, nombre, apellido, etc
+	 * @param sortby tipo de ordenación: por id, nombre, apellido, etc
 	 */
 	public void setSortby(String sortby) {
 		this.sortby = sortby;
@@ -278,8 +278,8 @@ public class CoreEnrolGetEnrolledUsers extends ParametersCourseid {
 
 	/**
 	 * Devuelve un Builder para añadir parámetros adicionales a la función de Moodle.
-	 * @param courseid
-	 * @return
+	 * @param courseid id del curso
+	 * @return Builder
 	 */
 	public static Builder newBuilder(int courseid) {
 		return new Builder(courseid);

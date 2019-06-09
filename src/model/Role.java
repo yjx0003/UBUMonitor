@@ -105,8 +105,8 @@ public class Role implements Serializable {
 	}
 
 	/**
-	 * Modifica los usuarios que tiene este rol.
-	 * @return
+	 * Devuelve los usuarios matriculados.
+	 * @return los usuarios matriculados
 	 */
 	public Set<EnrolledUser> getEnrolledUsers() {
 		return enrolledUsers;

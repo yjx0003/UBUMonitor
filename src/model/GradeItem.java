@@ -66,7 +66,7 @@ public class GradeItem implements Serializable {
 	/**
 	 * Contructor inicializado con el nombre del grade item.
 	 * 
-	 * @param name
+	 * @param name el nombre del grade item
 	 */
 	public GradeItem(String name) {
 		this();

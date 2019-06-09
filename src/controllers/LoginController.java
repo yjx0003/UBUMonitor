@@ -99,6 +99,9 @@ public class LoginController implements Initializable {
 		});
 	}
 
+	/**
+	 * Inicializa el fichero properties con el nombre de usuario y host
+	 */
 	private void initializeProperties() {
 
 		properties = new Properties();
@@ -128,6 +131,9 @@ public class LoginController implements Initializable {
 
 	}
 
+	/**
+	 * Guarda las opciones del usuario en el fichero properties
+	 */
 	private void saveProperties() {
 
 		String username = chkSaveUsername.isSelected() ? txtUsername.getText() : "";

@@ -125,7 +125,7 @@ public class LogLine implements Serializable {
 	/**
 	 * Modifica el origen del log.
 	 * 
-	 * @param origin
+	 * @param origin origin
 	 */
 	public void setOrigin(Origin origin) {
 		this.origin = origin;
@@ -143,7 +143,7 @@ public class LogLine implements Serializable {
 	/**
 	 * Modfica la ip del log.
 	 * 
-	 * @param iPAdress
+	 * @param iPAdress direccion ip
 	 */
 	public void setIPAdress(String iPAdress) {
 		IPAdress = iPAdress;

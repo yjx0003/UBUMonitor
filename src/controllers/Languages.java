@@ -39,25 +39,50 @@ public enum Languages {
 		this.code = locale.getLanguage();
 	}
 
+	/**
+	 * Devuelve un lenguaje a partor del codigo de lengua, por ejemplo el Español
+	 * seria "es".
+	 * 
+	 * @param code
+	 *            codigo de la lengua
+	 * @return elemento de la enumeracion asociada o el ingles si no existe.
+	 */
 	public static Languages getLanguageByCode(String code) {
-		return codeMap.getOrDefault(new Locale(code).getLanguage(),Languages.ENGLISH);
+		return codeMap.getOrDefault(new Locale(code).getLanguage(), Languages.ENGLISH);
 	}
 
+	/**
+	 * Devuelve el elemento de la enumeracion a partir del Locale.
+	 * @param locale locale
+	 * @return elmento de la enum, si no existe busca a partir del lenguage de locale
+	 */
 	public static Languages getLanguageByLocale(Locale locale) {
 		// si no existe el locale con el lenguaje y pais, se devuelve el un locale solo
 		// con el lenguaje
 		return localeMap.getOrDefault(locale, getLanguageByCode(locale.getLanguage()));
 	}
 
+	/**
+	 * Devuelve la lengua
+	 * @return lengua
+	 */
 	public String getLanguage() {
 		return lang;
 	}
 
+	/**
+	 * Devuelve el locale
+	 * @return locale
+	 */
 	public Locale getLocale() {
 		return locale;
 
 	}
 
+	/**
+	 * Devuelve el codigo de lengua
+	 * @return code
+	 */
 	public String getCode() {
 		return code;
 	}

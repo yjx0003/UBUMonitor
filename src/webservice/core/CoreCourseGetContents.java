@@ -248,8 +248,8 @@ public class CoreCourseGetContents extends ParametersCourseid {
 	}
 	/**
 	 * Devuelve una nueva instancia para añadir parametros adicioneales.
-	 * @param courseid
-	 * @return
+	 * @param courseid id del curso
+	 * @return builder
 	 */
 	public static Builder newBuilder(int courseid) {
 		return new Builder(courseid);

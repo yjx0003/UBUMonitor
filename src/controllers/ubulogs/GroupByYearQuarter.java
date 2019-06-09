@@ -24,7 +24,6 @@ public class GroupByYearQuarter extends GroupByAbstract<YearQuarter> {
 	/**
 	 * Constructor para agrupar la lineas de log en funcion de los usuarios.
 	 * @param logLines las lineas de log
-	 * @param enrolledUsers los usuarios que se quiere sacar los datos
 	 */
 	public GroupByYearQuarter(List<LogLine> logLines) {
 		super(logLines);

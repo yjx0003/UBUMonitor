@@ -39,7 +39,6 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 	private Map<Component, Map<T, DescriptiveStatistics>> componentStatistics;
 	private Map<Component, Map<Event, Map<T, DescriptiveStatistics>>> componentEventStatistics;
-	
 
 	/**
 	 * Constructor para agrupar la lineas de log en funcion de los usuarios.
@@ -283,7 +282,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 	 * @param enrolledUsers
 	 *            usuarios que se quiere buscar el maximo
 	 * @param components
-	 *            componentes 
+	 *            componentes
 	 * @param start
 	 *            fecha de inicio
 	 * @param end
@@ -321,12 +320,16 @@ public abstract class GroupByAbstract<T> implements Serializable {
 	 * Devuelve el maximo de los componentes y eventos a partir de una fecha de
 	 * inicio y fin.
 	 * 
+	 * @param enrolledUsers
+	 *            usuarios que se quiere sacar el maximo
+	 * 
 	 * @param componentsEvents
 	 *            el listado de componentes y eventos que se quiere buscar el maximo
 	 * @param start
 	 *            fecha de inicio
 	 * @param end
 	 *            fecha de fin
+	 * 
 	 * @return el maximo encontrado
 	 */
 	public long getMaxComponentEvent(List<EnrolledUser> enrolledUsers, List<ComponentEvent> componentsEvents,
@@ -392,7 +395,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 	/**
 	 * La funcion usada para agrupar el tipo de tiempo
 	 * 
-	 * @return
+	 * @return devuelve la funcion que se usa para agrupar
 	 */
 	public abstract Function<LogLine, T> getGroupByFunction();
 
@@ -409,9 +412,10 @@ public abstract class GroupByAbstract<T> implements Serializable {
 	 * @return forma de medir
 	 */
 	public abstract TypeTimes getTypeTime();
-	
+
 	/**
 	 * Si el tipo de agrupación usa el date picker
+	 * 
 	 * @return true si lo usa, false en caso contrario
 	 */
 	public abstract boolean useDatePicker();

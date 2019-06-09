@@ -11,7 +11,9 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -377,11 +379,8 @@ public class MainController implements Initializable {
 			listParticipants.getSelectionModel().getSelectedItems()
 					.addListener(
 							(Change<? extends EnrolledUser> usersSelected) -> {
-								if (tabUbuGrades.isSelected()) {
-									updateGradesChart();
-								} else if (tabUbuLogs.isSelected()) {
-									updateLogsChart();
-								}
+								updateGradesChart();
+								updateLogsChart();
 							});
 
 			/// Mostramos la lista de participantes
@@ -395,9 +394,15 @@ public class MainController implements Initializable {
 						setText(null);
 						setGraphic(null);
 					} else {
-						setText(user.getLastname() + ", " + user.getFirstname());
+						 Instant lastCourseAccess = user.getLastcourseaccess(); // cuando moodle ya
+						// devuelva la fecha de ultimo acceso al curso.
+						//Instant lastCourseAccess = user.getLastaccess();
+						Instant lastLogInstant = controller.getActualCourse().getLogs().getLastDatetime().toInstant();
+						setText(user + "\n" + I18n.get("text.lastaccess")
+								+ formatDates(lastCourseAccess, lastLogInstant));
 						try {
-							Image image = new Image(new ByteArrayInputStream(user.getImageBytes()));
+							Image image = new Image(new ByteArrayInputStream(user.getImageBytes()), 50, 50, false,
+									false);
 							setGraphic(new ImageView(image));
 						} catch (Exception e) {
 							logger.error("No se ha podido cargar la imagen de: " + user);
@@ -405,6 +410,7 @@ public class MainController implements Initializable {
 						}
 					}
 				}
+
 			});
 
 			// Establecemos la estructura en árbol del calificador
@@ -449,6 +455,49 @@ public class MainController implements Initializable {
 		}
 	}
 
+	/**
+	 * Devuelve la diferencia entre dos instantes, por dias, hora, minutos o segundos siempre y cuando no sean 0.
+	 * Si la diferencias de dias es 0 se busca por horas, y asi consecutivamente.
+	 * @param lastCourseAccess fecha inicio
+	 * @param lastLogInstant fecha fin
+	 * @return texto con el numero y el tipo de tiempo
+	 */
+	private String formatDates(Instant lastCourseAccess, Instant lastLogInstant) {
+
+		if (lastCourseAccess == null || lastCourseAccess.getEpochSecond() == 0L) {
+			return " " + I18n.get("text.never");
+		}
+
+		long time;
+		
+		if ((time = betweenDates(ChronoUnit.DAYS, lastCourseAccess, lastLogInstant)) != 0L) {
+			return time + " " + I18n.get("text.days");
+		}
+		if ((time = betweenDates(ChronoUnit.HOURS, lastCourseAccess, lastLogInstant)) != 0L) {
+			return time + " " + I18n.get("text.hours");
+		}
+		if ((time = betweenDates(ChronoUnit.MINUTES, lastCourseAccess, lastLogInstant)) != 0L) {
+			return time + " " + I18n.get("text.minutes");
+		}
+
+		return betweenDates(ChronoUnit.SECONDS, lastCourseAccess, lastLogInstant) + " " + I18n.get("text.seconds");
+	}
+
+	/**
+	 * Devuelve la difernecia absoluta entre dos instantes dependiendo de que sea el tipo
+	 * @param type dias, horas, minutos
+	 * @param lastCourseAccess instante inicio
+	 * @param lastLogInstant instante fin
+	 * @return numero de diferencia absoluta
+	 */
+	private long betweenDates(ChronoUnit type, Instant lastCourseAccess, Instant lastLogInstant) {
+		return Math.abs(type.between(lastCourseAccess, lastLogInstant));
+	}
+
+
+	/**
+	 * Inicializa los elementos de las opciones de logs.
+	 */
 	public void initLogOptionsFilter() {
 
 		textFieldMax.textProperty().addListener((ov, oldValue, newValue) -> {
@@ -456,7 +505,7 @@ public class MainController implements Initializable {
 				updateMaxScale(Long.parseLong(newValue));
 			} else if (newValue.isEmpty()) {
 				updateMaxScale(1L);
-			} else {
+			} else { // si no es un numero volvemos al valor anterior
 				textFieldMax.setText(oldValue);
 			}
 		});
@@ -470,10 +519,10 @@ public class MainController implements Initializable {
 
 		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> {
 			applyFilterLogs(null);
-			boolean useDatePicker=newValue.useDatePicker();
+			boolean useDatePicker = newValue.useDatePicker();
 			datePickerStart.setDisable(!useDatePicker);
 			datePickerEnd.setDisable(!useDatePicker);
-			
+
 		});
 
 		// traduccion de los elementos del choicebox
@@ -511,12 +560,23 @@ public class MainController implements Initializable {
 
 	}
 
+	/**
+	 * Actualiza la escala maxima del eje y de los graficos de logs.
+	 * @param value valor de escala maxima
+	 */
 	private void updateMaxScale(long value) {
 
 		webViewChartsEngine.executeScript("changeYMaxStackedBar(" + value + ")");
 
 	}
 
+	/**
+	 * Habilita o deshabilita el boton de filtrar por fechas en funcion de si es igual que la fecha anterior.
+	 * @param dateStartOld fecha inicio antiguo
+	 * @param dateStartNew fecha inico nuevo
+	 * @param dateEndOld fecha de fin antiguo
+	 * @param dateEndNew fecha de fin nuevo
+	 */
 	private void enableFilterLogButton(
 			LocalDate dateStartOld, LocalDate dateStartNew, LocalDate dateEndOld, LocalDate dateEndNew) {
 		if (dateStartOld.equals(dateStartNew)
@@ -548,8 +608,11 @@ public class MainController implements Initializable {
 		initListViewComponentsEvents();
 	}
 
+	/**
+	 * Inicializa el listado de componentes de la pestaña Componentes en  
+	 */
 	public void initListViewComponents() {
-
+		//cada vez que se seleccione nuevos elementos del list view actualizamos la grafica y la escala
 		listViewComponents.getSelectionModel().getSelectedItems()
 				.addListener((Change<? extends Component> c) -> {
 					updateLogsChart();
@@ -601,6 +664,9 @@ public class MainController implements Initializable {
 
 	}
 
+	/**
+	 * Inicializa los elementos de la pestaña eventos.
+	 */
 	public void initListViewComponentsEvents() {
 		listViewEvents.getSelectionModel().getSelectedItems()
 				.addListener((Change<? extends ComponentEvent> c) -> {
@@ -657,11 +723,14 @@ public class MainController implements Initializable {
 
 	}
 
+	/**
+	 * Actualiza los graficos de log en funcion de que subpestaña esta seleccionada
+	 */
 	private void updateLogsChart() {
-		if(!tabUbuLogs.isSelected()) {
+		if (!tabUbuLogs.isSelected()) {
 			return;
 		}
-		
+
 		if (tabUbuLogsComponent.isSelected()) {
 			updateComponentsChart();
 		} else if (tabUbuLogsEvent.isSelected()) {
@@ -670,6 +739,9 @@ public class MainController implements Initializable {
 
 	}
 
+	/**
+	 * Actualiza los graficos de componentes
+	 */
 	private void updateComponentsChart() {
 
 		String stackedbardataset = stackedBarDatasetComponent.createData(listParticipants.getItems(),
@@ -679,6 +751,9 @@ public class MainController implements Initializable {
 		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
 	}
 
+	/**
+	 * Actualiza las graficas de los eventos.
+	 */
 	private void updateComponentsEventsChart() {
 		String stackedbardataset = stackedBarDatasetComponentEvent.createData(listParticipants.getItems(),
 				listParticipants.getSelectionModel().getSelectedItems(),
@@ -689,6 +764,10 @@ public class MainController implements Initializable {
 
 	}
 
+	/**
+	 * Metodo que se activa cuando se modifica la pestaña de logs o calificaciones
+	 * @param event evento
+	 */
 	public void setTablogs(Event event) {
 		if (!tabUbuLogs.isSelected()) {
 			optionsUbuLogs.setVisible(false);
@@ -704,11 +783,14 @@ public class MainController implements Initializable {
 
 	}
 
+	/**
+	 * Busca el maximo de la escala Y y lo modifica.
+	 */
 	private void findMax() {
-		if(!tabUbuLogs.isSelected()) {
+		if (!tabUbuLogs.isSelected()) {
 			return;
 		}
-		
+
 		long maxYAxis = 0L;
 		if (tabUbuLogsComponent.isSelected()) {
 			maxYAxis = selectedChoiceBoxDate.getMaxComponent(listParticipants.getItems(),
@@ -722,12 +804,19 @@ public class MainController implements Initializable {
 		textFieldMax.setText(Long.toString(maxYAxis));
 	}
 
+	/**
+	 * Inicializa los elementos de las graficas de calificacion.
+	 */
 	public void initTabGrades() {
 		tabPane.getSelectionModel().select(tabUbuGrades);
 		tabUbuGrades.setOnSelectionChanged(event -> setTabGrades(event));
 
 	}
 
+	/**
+	 * Se activa cuando se cambia de pestaña de registros o calificaciones
+	 * @param event evento
+	 */
 	public void setTabGrades(Event event) {
 		if (!tabUbuGrades.isSelected()) {
 			return;
@@ -738,6 +827,10 @@ public class MainController implements Initializable {
 
 	}
 
+	/**
+	 * Aplica los filtros de fecha a las graficas de log.
+	 * @param event evento
+	 */
 	@FXML
 	public void applyFilterLogs(ActionEvent event) {
 
@@ -818,7 +911,8 @@ public class MainController implements Initializable {
 			logger.error("Error al filtrar los participantes: {}", e);
 		}
 		listParticipants.setItems(enrList);
-		// Actualizamos los gráficos al cambiar el grupo
+		
+		//Actualizamos los graficos
 		updateGradesChart();
 		updateLogsChart();
 		findMax();
@@ -1423,10 +1517,10 @@ public class MainController implements Initializable {
 	 * Actualiza los gráficos.
 	 */
 	private void updateGradesChart() {
-		if(!tabUbuGrades.isSelected()) {
+		if (!tabUbuGrades.isSelected()) {
 			return;
 		}
-		
+
 		try {
 			String data = generateGradesDataSet();
 			logger.debug("Data: {}", data);

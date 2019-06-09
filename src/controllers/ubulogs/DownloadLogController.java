@@ -79,6 +79,9 @@ public class DownloadLogController {
 	 *            id del curso que se quiere descargar el log
 	 * @param timezone
 	 *            zona horaria usada como referencia al descargar el log
+	 * @param cookies
+	 *            cookies
+	 * 
 	 */
 	public DownloadLogController(String host, String username, String password, int idCourse, ZoneId timezone,
 			Map<String, String> cookies) {
@@ -101,6 +104,8 @@ public class DownloadLogController {
 	 *            zona horaria usada como referencia al descargar el log, un valor
 	 *            de 99 si es la hora del servidor o la nomenclatura IANA de tiempo.
 	 *            Por ejemplo Europe/Madrid.
+	 * @param cookies
+	 *            cookies
 	 * @throws Exception
 	 *             si no ha encontrado la zona horaria del servidor de moodle
 	 */
@@ -291,6 +296,5 @@ public class DownloadLogController {
 	public void setIdCourse(int idCourse) {
 		this.idCourse = idCourse;
 	}
-
 
 }

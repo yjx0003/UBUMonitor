@@ -23,7 +23,6 @@ public class GroupByYearMonth extends GroupByAbstract<YearMonth> {
 	/**
 	 * Constructor para agrupar la lineas de log en funcion de los usuarios.
 	 * @param logLines las lineas de log
-	 * @param enrolledUsers los usuarios que se quiere sacar los datos
 	 */
 	public GroupByYearMonth(List<LogLine> logLines) {
 		super(logLines);

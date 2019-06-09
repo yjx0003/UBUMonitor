@@ -23,8 +23,6 @@ public class GroupByDay extends GroupByAbstract<LocalDate> {
 	 * 
 	 * @param logLines
 	 *            las lineas de log
-	 * @param enrolledUsers
-	 *            los usuarios que se quiere sacar los datos
 	 */
 	public GroupByDay(List<LogLine> logLines) {
 		super(logLines);

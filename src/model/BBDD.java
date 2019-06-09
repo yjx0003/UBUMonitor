@@ -108,7 +108,7 @@ public class BBDD implements Serializable {
 	 * 
 	 * @param role
 	 *            nuevo rol
-	 * @return
+	 * @return el rol
 	 */
 	public Role putIfAbsentRole(Role role) {
 		return roles.putIfAbsent(role.getId(), role);
@@ -130,7 +130,7 @@ public class BBDD implements Serializable {
 	 * 
 	 * @param id
 	 *            del gurpo
-	 * @return
+	 * @return el grupo
 	 */
 	public Group getGroupById(int id) {
 		return groups.computeIfAbsent(id, key -> new Group(id));
@@ -255,7 +255,7 @@ public class BBDD implements Serializable {
 	/**
 	 * Añade el modulo del curso si no existe
 	 * 
-	 * @param module
+	 * @param module modulo a añadir
 	 * @return null si no existia o el anterior instancia.
 	 */
 	public Module putIfAbsentModule(Module module) {
@@ -266,7 +266,7 @@ public class BBDD implements Serializable {
 	/**
 	 * Devuelve todos los cursos.
 	 * 
-	 * @return
+	 * @return todos los cursos
 	 */
 	public Map<Integer, Course> getCourses() {
 		return courses;
@@ -384,8 +384,11 @@ public class BBDD implements Serializable {
 
 	/**
 	 * Añade una categoria del curso si no existe.
-	 * @param courseCategory categoria del curso
-	 * @return la anterior categoria del curso si existe, si no existe devuelve la nueva.
+	 * 
+	 * @param courseCategory
+	 *            categoria del curso
+	 * @return la anterior categoria del curso si existe, si no existe devuelve la
+	 *         nueva.
 	 */
 	public CourseCategory putCourseCategory(CourseCategory courseCategory) {
 		return courseCategories.putIfAbsent(courseCategory.getId(), courseCategory);

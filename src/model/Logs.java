@@ -71,7 +71,7 @@ public class Logs implements Serializable {
 	/**
 	 * Añade los nuevas lineas de log, deben estar en orden ascendente por tiempo.
 	 * 
-	 * @param logLines
+	 * @param logLines los loglines nuevos
 	 */
 	public void addAll(List<LogLine> logLines) {
 

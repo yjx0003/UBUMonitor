@@ -30,6 +30,7 @@ public enum DescriptionFormat {
 	/**
 	 * Devuelve el valor de la enumeración a partir del número que devuelve la funcion de moodle.
 	 * @param number el número
+	 * @return el formato de descripcion
 	 */
 	public static DescriptionFormat get(int number) {
 		return map.get(number);

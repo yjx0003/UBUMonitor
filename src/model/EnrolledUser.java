@@ -110,6 +110,11 @@ public class EnrolledUser implements Serializable {
 	 * Optional. last access to the site (0 if never)
 	 */
 	private Instant lastaccess;
+	
+	/**
+	 * Optional. last access to the course (0 if never)
+	 */
+	private Instant lastcourseaccess;
 
 	/**
 	 * Optional. User profile description
@@ -341,6 +346,14 @@ public class EnrolledUser implements Serializable {
 
 	public void setLastaccess(Instant lastaccess) {
 		this.lastaccess = lastaccess;
+	}
+
+	public Instant getLastcourseaccess() {
+		return lastcourseaccess;
+	}
+
+	public void setLastcourseaccess(Instant lastcourseaccess) {
+		this.lastcourseaccess = lastcourseaccess;
 	}
 
 	public String getDescription() {

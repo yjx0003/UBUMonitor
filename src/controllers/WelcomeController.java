@@ -6,8 +6,6 @@ import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
@@ -56,8 +54,9 @@ import persistence.Encryption;
  * cursos del usuario logueado.
  * 
  * @author Claudia Martínez Herrero
- * @version 1.0
- *
+ * @author Yi Peng Ji
+ * @version 2.0
+ * @since 1.0
  */
 public class WelcomeController implements Initializable {
 
@@ -117,10 +116,10 @@ public class WelcomeController implements Initializable {
 					chkUpdateData.setSelected(false);
 					chkUpdateData.setDisable(false);
 					long lastModified = f.lastModified();
-					DateTimeFormatter dtf = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
+					
 					LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastModified),
 							ZoneId.systemDefault());
-					lblDateUpdate.setText(localDateTime.format(dtf));
+					lblDateUpdate.setText(localDateTime.format(Controller.DATE_TIME_FORMATTER));
 					isFileCacheExists = false;
 				} else {
 					chkUpdateData.setSelected(true);

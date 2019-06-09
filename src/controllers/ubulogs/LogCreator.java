@@ -44,7 +44,7 @@ public class LogCreator {
 	private static final Set<String> NOT_AVAIBLE_COMPONENTS = new TreeSet<>();
 	private static final Set<String> NOT_AVAIBLE_EVENTS = new TreeSet<>();
 
-	private static final Pattern INTEGER_PATTERN = Pattern.compile("\\d+");
+	private static final Pattern INTEGER_PATTERN = Pattern.compile("'(\\d+)'");
 
 	public static final String TIME = "﻿Time";
 	public static final String USER_FULL_NAME = "User full name";
@@ -148,7 +148,7 @@ public class LogCreator {
 	/**
 	 * Crea todos los logs  la lista
 	 * @param allLogs los logs listados en mapas con clave la columna del logline
-	 * @return
+	 * @return los logs creados
 	 */
 	public static List<LogLine> createLogs(List<Map<String, String>> allLogs) {
 		List<LogLine> logs = new ArrayList<LogLine>();
@@ -237,7 +237,7 @@ public class LogCreator {
 		Matcher m = INTEGER_PATTERN.matcher(description);
 		List<Integer> list = new ArrayList<Integer>();
 		while (m.find()) {
-			list.add(Integer.parseInt(m.group(0)));
+			list.add(Integer.parseInt(m.group(1)));
 		}
 		return list;
 	}

@@ -192,7 +192,7 @@ public class Course implements Serializable {
 	/**
 	 * Busca el gradeItem que tenga
 	 * 
-	 * @return
+	 * @return el grade item raiz
 	 */
 	public GradeItem getRootGradeItem() {
 		for (GradeItem gradeItem : gradeItems) {
@@ -206,7 +206,7 @@ public class Course implements Serializable {
 	/**
 	 * Devuelve los grade item del curso.
 	 * 
-	 * @return
+	 * @return los grade item del curso
 	 */
 	public Set<GradeItem> getGradeItems() {
 		return gradeItems;
@@ -215,7 +215,7 @@ public class Course implements Serializable {
 	/**
 	 * Modifica los grade item
 	 * 
-	 * @param gradeItems
+	 * @param gradeItems grade items
 	 */
 	public void setGradeItems(Set<GradeItem> gradeItems) {
 		this.gradeItems = gradeItems;
@@ -233,7 +233,7 @@ public class Course implements Serializable {
 	/**
 	 * Modifica el tiempo
 	 * 
-	 * @param startDate
+	 * @param startDate fecha de inicio
 	 */
 	public void setStartDate(Instant startDate) {
 		this.startDate = startDate;

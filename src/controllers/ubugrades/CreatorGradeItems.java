@@ -38,7 +38,7 @@ import webservice.gradereport.GradereportUserGetGradesTable;
  */
 public class CreatorGradeItems {
 
-	static final Logger logger = LoggerFactory.getLogger(CreatorGradeItems.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CreatorGradeItems.class);
 
 	/**
 	 * Icono de tipo categoria
@@ -248,7 +248,7 @@ public class CreatorGradeItems {
 				double weightraw = decimalFormat.parse(content).doubleValue() / 100;
 				gradeItem.setWeightraw(weightraw);
 			} catch (ParseException e) {
-				logger.error("Error al parsear la nota: " + content, e);
+				LOGGER.error("Error al parsear la nota: " + content, e);
 				gradeItem.setWeightraw(Double.NaN);
 			}
 		}
@@ -300,12 +300,12 @@ public class CreatorGradeItems {
 			try {
 				grade = decimalFormat.parse(content).doubleValue();
 			} catch (ParseException e) {
-				logger.info("No se puede parsear: " + content + ", lo intentamos buscando el porcentaje");
+				LOGGER.info("No se puede parsear: " + content + ", lo intentamos buscando el porcentaje");
 				content = tabledataObject.getJSONObject("percentage").getString("content");
 				try {
 					grade = decimalFormat.parse(content).doubleValue();
 				} catch (ParseException e1) {
-					logger.error("No se puede parsear la nota de: " + tabledataObject.toString(2), e1);
+					LOGGER.error("No se puede parsear la nota de: " + tabledataObject.toString(2), e1);
 				}
 			}
 		}

@@ -60,7 +60,7 @@ import persistence.Encryption;
  */
 public class WelcomeController implements Initializable {
 
-	static final Logger logger = LoggerFactory.getLogger(WelcomeController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WelcomeController.class);
 	private String directoryObject;
 	private Controller controller = Controller.getInstance();
 	private boolean isFileCacheExists;
@@ -93,7 +93,7 @@ public class WelcomeController implements Initializable {
 		try {
 			directoryObject = "cache/" + controller.getUser().getFullName() + "/";
 			lblUser.setText(controller.getUser().getFullName());
-			logger.info("Cargando cursos...");
+			LOGGER.info("Cargando cursos...");
 
 			ObservableList<Course> list = FXCollections.observableArrayList(controller.getUser().getCourses());
 			Collections.sort(list, Comparator.comparing(Course::getFullName)
@@ -108,7 +108,7 @@ public class WelcomeController implements Initializable {
 
 			listCourses.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
 
-				logger.debug("Buscando si existe " + directoryObject + newValue);
+				LOGGER.debug("Buscando si existe " + directoryObject + newValue);
 
 				File f = new File(directoryObject + newValue);
 
@@ -130,7 +130,7 @@ public class WelcomeController implements Initializable {
 			});
 
 		} catch (Exception e) {
-			logger.error("Error al cargar los cursos", e);
+			LOGGER.error("Error al cargar los cursos", e);
 		}
 
 	}
@@ -150,7 +150,7 @@ public class WelcomeController implements Initializable {
 			return;
 		}
 
-		logger.info(" Curso seleccionado: " + selectedCourse.getFullName());
+		LOGGER.info(" Curso seleccionado: " + selectedCourse.getFullName());
 
 		if (chkUpdateData.isSelected()) {
 			if (!isFileCacheExists) {
@@ -177,10 +177,10 @@ public class WelcomeController implements Initializable {
 
 		File f = new File(directoryObject);
 		if (!f.isDirectory()) {
-			logger.info("No existe el directorio, se va a crear: {}", directoryObject);
+			LOGGER.info("No existe el directorio, se va a crear: {}", directoryObject);
 			f.mkdirs();
 		}
-		logger.info("Guardando los datos encriptados en: {}", f.getAbsolutePath());
+		LOGGER.info("Guardando los datos encriptados en: {}", f.getAbsolutePath());
 		Encryption.encrypt(controller.getPassword(),
 				directoryObject + listCourses.selectionModelProperty().getValue().getSelectedItem(),
 				controller.getBBDD());
@@ -290,7 +290,7 @@ public class WelcomeController implements Initializable {
 			lblNoSelect.setText("");
 		} catch (IOException e) {
 
-			logger.info("No se ha podido cargar la ventana Main.fxml: {}", e);
+			LOGGER.info("No se ha podido cargar la ventana Main.fxml: {}", e);
 			errorWindow("No se ha podido cargar la ventana Main.fxml");
 		}
 	}
@@ -307,7 +307,7 @@ public class WelcomeController implements Initializable {
 			protected Void call() throws Exception {
 				try {
 					controller.getActualCourse().clear();
-					logger.info("Cargando datos del curso: " + controller.getActualCourse().getFullName());
+					LOGGER.info("Cargando datos del curso: " + controller.getActualCourse().getFullName());
 					// Establecemos los usuarios matriculados
 					updateMessage(I18n.get("label.loadingstudents"));
 					CreatorUBUGradesController.createEnrolledUsers(controller.getActualCourse().getId());
@@ -334,9 +334,9 @@ public class WelcomeController implements Initializable {
 
 					updateMessage(I18n.get("label.savelocal"));
 					saveData();
-					logger.debug(controller.getBBDD().toString());
+					LOGGER.debug(controller.getBBDD().toString());
 				} catch (Exception e) {
-					logger.error("Error al cargar los datos de los alumnos: {}", e);
+					LOGGER.error("Error al cargar los datos de los alumnos: {}", e);
 					updateMessage("Se produjo un error inesperado al cargar los datos.\n" + e.getMessage());
 					throw e;
 				} finally {

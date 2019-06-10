@@ -9,16 +9,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import controllers.I18n;
 import controllers.ubulogs.GroupByAbstract;
 import model.EnrolledUser;
 
 public abstract class StackedBarDatasetAbstract<T> {
 
-	static final Logger logger = LoggerFactory.getLogger(StackedBarDatasetAbstract.class);
 	/**
 	 * Nivel de opacidad para el color de fondo de las barras
 	 */

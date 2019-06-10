@@ -4,9 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import controllers.Controller;
 import model.Component;
 import model.ComponentEvent;
@@ -17,7 +14,6 @@ import model.mod.Module;
 
 public abstract class ReferencesLog {
 
-	static final Logger logger = LoggerFactory.getLogger(ReferencesLog.class);
 
 	private static final Controller CONTROLLER = Controller.getInstance();
 

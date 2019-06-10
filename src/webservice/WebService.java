@@ -19,7 +19,7 @@ import webservice.core.CoreUserGetUsersByField.Field;
  */
 public abstract class WebService {
 
-	static final Logger logger = LoggerFactory.getLogger(WebService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebService.class);
 
 	private static String token;
 	private static String urlWithToken;
@@ -238,8 +238,8 @@ public abstract class WebService {
 	private String getContentWithJsoup(String url) throws IOException {
 		Response response = Jsoup.connect(url).ignoreContentType(true).maxBodySize(0).timeout(0).execute();
 		String responseString = response.body();
-		//logger.debug("Url completa de web service de moodle: "+url);
-		logger.info("Respuesta de la funcion web service: &wsfunction=" + getWSFunction() + parameters+"\n"+responseString);
+		//LOGGER.debug("Url completa de web service de moodle: "+url);
+		LOGGER.info("Respuesta de la funcion web service: &wsfunction=" + getWSFunction() + parameters+"\n"+responseString);
 		
 		return responseString;
 	}

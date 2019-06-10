@@ -49,7 +49,7 @@ import webservice.gradereport.GradereportUserGetGradesTable;
  */
 public class CreatorUBUGradesController {
 
-	static final Logger logger = LoggerFactory.getLogger(CreatorUBUGradesController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CreatorUBUGradesController.class);
 
 	private static final Controller CONTROLLER = Controller.getInstance();
 
@@ -242,7 +242,7 @@ public class CreatorUBUGradesController {
 		enrolledUser.setProfileimageurlsmall(imageUrl);
 
 		if (imageUrl != null) {
-			logger.info("Descargando foto de usuario: " + enrolledUser + " con la URL: " + imageUrl);
+			LOGGER.info("Descargando foto de usuario: " + enrolledUser + " con la URL: " + imageUrl);
 			byte[] imageBytes = downloadImage(imageUrl);
 
 			enrolledUser.setImageBytes(imageBytes);
@@ -641,7 +641,7 @@ public class CreatorUBUGradesController {
 		JSONArray gradeitems = usergrade.getJSONArray("gradeitems");
 
 		if (gradeitems.length() != gradeItems.size()) {
-			logger.error(
+			LOGGER.error(
 					"El tamaño de las lineas del calificador no son iguales: de la funcion gradereport_user_get_grade_items es de tamaño"
 							+ gradeitems.length() + "y de la funcion gradereport_user_get_grades_table se obtiene: "
 							+ gradeItems.size());

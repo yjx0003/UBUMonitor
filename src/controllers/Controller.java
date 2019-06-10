@@ -24,7 +24,7 @@ import model.Stats;
 import webservice.WebService;
 
 public class Controller {
-	static final Logger logger = LoggerFactory.getLogger(Controller.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Controller.class);
 
 	
 	
@@ -78,15 +78,15 @@ public class Controller {
 		try {
 
 			if (lang == null) {
-				logger.info("No existe fichero de idioma para: " + Locale.getDefault());
-				logger.info("Cargando idioma: " + Languages.SPANISH);
+				LOGGER.info("No existe fichero de idioma para: " + Locale.getDefault());
+				LOGGER.info("Cargando idioma: " + Languages.SPANISH);
 				setSelectedLanguage(Languages.SPANISH);
 			} else {
 				setSelectedLanguage(lang);
 			}
 
 		} catch (NullPointerException | MissingResourceException e) {
-			logger.error(
+			LOGGER.error(
 					"No se ha podido encontrar el recurso de idioma, cargando idioma " + lang + ": {}", e);
 			setSelectedLanguage(Languages.SPANISH);
 		}
@@ -239,7 +239,7 @@ public class Controller {
 	private Map<String, String> login(String username, String password) {
 
 		try {
-			logger.info("Logeandose para web scraping");
+			LOGGER.info("Logeandose para web scraping");
 
 			Response loginForm = Jsoup.connect(host + "/login/index.php")
 					.method(Method.GET)
@@ -256,7 +256,7 @@ public class Controller {
 
 			return login.cookies();
 		} catch (Exception e) {
-			logger.error("Error al intentar loguearse", e);
+			LOGGER.error("Error al intentar loguearse", e);
 			throw new IllegalStateException("No se ha podido loguear al servidor");
 		}
 

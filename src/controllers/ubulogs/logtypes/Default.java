@@ -14,7 +14,7 @@ import model.LogLine;
  */
 public class Default extends ReferencesLog {
 
-	static final Logger logger = LoggerFactory.getLogger(Default.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Default.class);
 		
 	/**
 	 * Instacia única de la clase Default.
@@ -43,7 +43,7 @@ public class Default extends ReferencesLog {
 	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
-		logger.warn("No se ha añadido un manejador para referenciar los atributos restantes de :" + log);
+		LOGGER.warn("No se ha añadido un manejador para referenciar los atributos restantes de :" + log);
 		// do nothing
 
 	}

@@ -31,7 +31,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	static final Logger logger = LoggerFactory.getLogger(GroupByAbstract.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GroupByAbstract.class);
 
 	Map<EnrolledUser, Map<Component, Map<Event, Map<T, Long>>>> countsEvents;
 
@@ -71,7 +71,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 	
 		Gson gsonBuilder = new GsonBuilder().create();
-		logger.info("JSON del contador de logs de componentes y eventos  para " + getTypeTime() + " "
+		LOGGER.info("JSON del contador de logs de componentes y eventos  para " + getTypeTime() + " "
 				+ gsonBuilder.toJson(countsEvents));
 
 		countsComponents = logLines.stream()
@@ -80,7 +80,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 						Collectors.groupingBy(LogLine::getComponent,
 								Collectors.groupingBy(getGroupByFunction(), Collectors.counting()))));
 
-		logger.info("JSON del contador de logs de componentes  para " + getTypeTime() + " "
+		LOGGER.info("JSON del contador de logs de componentes  para " + getTypeTime() + " "
 				+ gsonBuilder.toJson(countsComponents));
 
 	}
@@ -123,7 +123,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 				}
 			}
 		}
-		logger.info("Estadisticas de todos los usuarios del curso para components" + components + " y " + groupByRange
+		LOGGER.info("Estadisticas de todos los usuarios del curso para components" + components + " y " + groupByRange
 				+ ":\n"
 				+ componentStatistics);
 
@@ -167,7 +167,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 		}
 
-		logger.info("Estadisticas de todos los usuarios del curso para components" + componentsEvents + " y "
+		LOGGER.info("Estadisticas de todos los usuarios del curso para components" + componentsEvents + " y "
 				+ groupByRange + ":\n" + componentEventStatistics);
 	}
 
@@ -240,7 +240,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 				}
 			}
 		}
-		logger.info("Estadisticas de los usuarios: " + users + " para " + components + " y " + groupByRange + ":\n"
+		LOGGER.info("Estadisticas de los usuarios: " + users + " para " + components + " y " + groupByRange + ":\n"
 				+ result);
 		return result;
 	}
@@ -308,7 +308,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 			}
 		}
-		logger.info("Maximos de solo componentes: " + components + sumComponentsMap);
+		LOGGER.info("Maximos de solo componentes: " + components + sumComponentsMap);
 
 		long max = getMax(sumComponentsMap);
 
@@ -354,7 +354,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 		}
 
-		logger.info("Maximos de componentes y eventos: " + componentsEvents + sumComponentsMap);
+		LOGGER.info("Maximos de componentes y eventos: " + componentsEvents + sumComponentsMap);
 
 		long max = getMax(sumComponentsMap);
 		return max;

@@ -69,7 +69,8 @@ public class CreatorUBUGradesController {
 	 * @param userid
 	 *            id del usuario
 	 * @return lista de cursos matriculados por el usuario
-	 * @throws IOException error de conexion moodle
+	 * @throws IOException
+	 *             error de conexion moodle
 	 */
 	public static List<Course> getUserCourses(int userid) throws IOException {
 		WebService ws = new CoreEnrolGetUsersCourses(userid);
@@ -228,9 +229,9 @@ public class CreatorUBUGradesController {
 		enrolledUser.setFirstname(user.optString("firstname"));
 		enrolledUser.setLastname(user.optString("lastname"));
 		enrolledUser.setFullName(user.optString("fullname"));
-		enrolledUser.setFirstaccess(Instant.ofEpochSecond(user.optLong("firstaccess")));
-		enrolledUser.setLastaccess(Instant.ofEpochSecond(user.optLong("lastaccess")));
-		enrolledUser.setLastcourseaccess(Instant.ofEpochSecond(user.optLong("lastcourseaccess")));
+		enrolledUser.setFirstaccess(Instant.ofEpochSecond(user.optLong("firstaccess", -1)));
+		enrolledUser.setLastaccess(Instant.ofEpochSecond(user.optLong("lastaccess", -1)));
+		enrolledUser.setLastcourseaccess(Instant.ofEpochSecond(user.optLong("lastcourseaccess",-1)));
 		enrolledUser.setDescription(user.optString("description"));
 		enrolledUser.setDescriptionformat(DescriptionFormat.get(user.optInt("descriptionformat")));
 		enrolledUser.setCity(user.optString("city"));
@@ -435,7 +436,8 @@ public class CreatorUBUGradesController {
 	 * @param courseid
 	 *            id del curso
 	 * @return lista de modulos del curso
-	 * @throws IOException error de conexion con moodle
+	 * @throws IOException
+	 *             error de conexion con moodle
 	 */
 	public static List<Module> createModules(int courseid) throws IOException {
 
@@ -506,9 +508,11 @@ public class CreatorUBUGradesController {
 	 * {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADES_TABLE} y
 	 * {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADE_ITEMS}
 	 * 
-	 * @param courseid id del curso
+	 * @param courseid
+	 *            id del curso
 	 * @return lista de grade item
-	 * @throws IOException si no se ha conectado con moodle
+	 * @throws IOException
+	 *             si no se ha conectado con moodle
 	 */
 	public static List<GradeItem> createGradeItems(int courseid) throws IOException {
 
@@ -531,7 +535,9 @@ public class CreatorUBUGradesController {
 
 	/**
 	 * Actualiza los grade item
-	 * @param gradeItems las de grade item
+	 * 
+	 * @param gradeItems
+	 *            las de grade item
 	 */
 	private static void updateToOriginalGradeItem(List<GradeItem> gradeItems) {
 		for (GradeItem gradeItem : gradeItems) {
@@ -563,7 +569,9 @@ public class CreatorUBUGradesController {
 
 	/**
 	 * Crea la jearquia de padres e hijos de los grade item
-	 * @param jsonObject {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADES_TABLE}
+	 * 
+	 * @param jsonObject
+	 *            {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADES_TABLE}
 	 * @return lista de grade item
 	 * @throws IOException
 	 */
@@ -618,8 +626,11 @@ public class CreatorUBUGradesController {
 
 	/**
 	 * Inicializa los atributos basicos del grade item
-	 * @param gradeItems lista de grade item
-	 * @param jsonObject {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADE_ITEMS}
+	 * 
+	 * @param gradeItems
+	 *            lista de grade item
+	 * @param jsonObject
+	 *            {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADE_ITEMS}
 	 * @throws IOException
 	 */
 	private static void setBasicAttributes(List<GradeItem> gradeItems, JSONObject jsonObject)
@@ -674,8 +685,11 @@ public class CreatorUBUGradesController {
 
 	/**
 	 * Añade las calificaciones a los usuarios.
-	 * @param gradeItems gradeitems
-	 * @param jsonObject {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADE_ITEMS}
+	 * 
+	 * @param gradeItems
+	 *            gradeitems
+	 * @param jsonObject
+	 *            {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADE_ITEMS}
 	 */
 	private static void setEnrolledUserGrades(List<GradeItem> gradeItems, JSONObject jsonObject) {
 		JSONArray usergrades = jsonObject.getJSONArray("usergrades");
@@ -700,9 +714,13 @@ public class CreatorUBUGradesController {
 
 	/**
 	 * Crea la jerarquia de padre e hijo
-	 * @param categories grade item de tipo categoria
-	 * @param nivel nivel de jerarquia
-	 * @param gradeItem grade item 
+	 * 
+	 * @param categories
+	 *            grade item de tipo categoria
+	 * @param nivel
+	 *            nivel de jerarquia
+	 * @param gradeItem
+	 *            grade item
 	 */
 	protected static void setFatherAndChildren(GradeItem[] categories, int nivel, GradeItem gradeItem) {
 		if (nivel > 1) {

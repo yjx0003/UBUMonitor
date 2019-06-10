@@ -3,6 +3,7 @@ package model;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +23,10 @@ public class EnrolledUser implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private static final Comparator<EnrolledUser> NAME_COMPARATOR=Comparator.comparing(EnrolledUser::getLastname, String.CASE_INSENSITIVE_ORDER)
+			.thenComparing(EnrolledUser::getFirstname, String.CASE_INSENSITIVE_ORDER);
+	
 	/**
 	 * ID of the user
 	 */
@@ -497,6 +502,10 @@ public class EnrolledUser implements Serializable {
 
 	public void setImageBytes(byte[] imageBytes) {
 		this.imageBytes = imageBytes;
+	}
+	
+	public static Comparator<EnrolledUser> getComparator() {
+		return NAME_COMPARATOR;
 	}
 
 	@Override

@@ -311,8 +311,7 @@ public class MainController implements Initializable {
 			// Añadimos todos los participantes a la lista de visualización
 
 			enrList = FXCollections.observableArrayList(users);
-			enrList.sort(Comparator.comparing(EnrolledUser::getLastname, String.CASE_INSENSITIVE_ORDER)
-					.thenComparing(EnrolledUser::getFirstname, String.CASE_INSENSITIVE_ORDER));
+			enrList.sort(EnrolledUser.getComparator());
 
 			//////////////////////////////////////////////////////////////////////////
 			// Manejo de actividades (TreeView<GradeItem>):
@@ -935,7 +934,7 @@ public class MainController implements Initializable {
 					nameUsers.add(user);
 			}
 			enrList = FXCollections.observableArrayList(nameUsers);
-			enrList.sort(Comparator.comparing(EnrolledUser::getLastname).thenComparing(EnrolledUser::getFirstname));
+			enrList.sort(EnrolledUser.getComparator());
 		} catch (Exception e) {
 			logger.error("Error al filtrar los participantes: {}", e);
 		}

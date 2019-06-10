@@ -30,7 +30,9 @@ import model.Logs;
 import model.Origin;
 
 /**
- * Clase encargada de los logs, con metodos encargados de descargar los logs y parsearlo.
+ * Clase encargada de los logs, con metodos encargados de descargar los logs y
+ * parsearlo.
+ * 
  * @author Yi Peng Ji
  *
  */
@@ -58,7 +60,9 @@ public class LogCreator {
 
 	/**
 	 * Cambia la zona horia del formateador de tiempo
-	 * @param zoneId zona horaria
+	 * 
+	 * @param zoneId
+	 *            zona horaria
 	 */
 	public static void setDateTimeFormatter(ZoneId zoneId) {
 		dateTimeFormatter = dateTimeFormatter.withZone(zoneId);
@@ -66,8 +70,11 @@ public class LogCreator {
 
 	/**
 	 * Actualiza el log del curso descargando diariamente.
-	 * @param logs los logs que se van a actualizar
-	 * @throws Exception si no ha podido actualizar
+	 * 
+	 * @param logs
+	 *            los logs que se van a actualizar
+	 * @throws Exception
+	 *             si no ha podido actualizar
 	 */
 	public static void updateCourseLog(Logs logs) throws Exception {
 
@@ -94,8 +101,10 @@ public class LogCreator {
 
 	/**
 	 * Crea el log del curso con zona horaria del servidor
+	 * 
 	 * @return el log del server
-	 * @throws Exception si ha habido un problema al crearlo
+	 * @throws Exception
+	 *             si ha habido un problema al crearlo
 	 */
 	public static Logs createCourseLog() throws Exception {
 		DownloadLogController download = new DownloadLogController(CONTROLLER.getHost(), CONTROLLER.getUsername(),
@@ -114,9 +123,12 @@ public class LogCreator {
 
 	/**
 	 * Parsea el contenido del CSV y convirtiendolo en una lista de mapas
-	 * @param reader reader con el csv 
+	 * 
+	 * @param reader
+	 *            reader con el csv
 	 * @return lista de mapas con clave de mapa los nombres de las columnas
-	 * @throws Exception si ha habido un problema al parsear el csv
+	 * @throws Exception
+	 *             si ha habido un problema al parsear el csv
 	 */
 	public static List<Map<String, String>> parse(Reader reader) throws Exception {
 
@@ -146,8 +158,10 @@ public class LogCreator {
 	}
 
 	/**
-	 * Crea todos los logs  la lista
-	 * @param allLogs los logs listados en mapas con clave la columna del logline
+	 * Crea todos los logs la lista
+	 * 
+	 * @param allLogs
+	 *            los logs listados en mapas con clave la columna del logline
 	 * @return los logs creados
 	 */
 	public static List<LogLine> createLogs(List<Map<String, String>> allLogs) {
@@ -168,8 +182,11 @@ public class LogCreator {
 	}
 
 	/**
-	 * Crea un log y añade los atributos de las columnas y a que van asociado (usuario, course module etc)
-	 * @param mapLog mapa con clave las columnas de la linea de log
+	 * Crea un log y añade los atributos de las columnas y a que van asociado
+	 * (usuario, course module etc)
+	 * 
+	 * @param mapLog
+	 *            mapa con clave las columnas de la linea de log
 	 * @return logline con atributos
 	 */
 	public static LogLine createLog(Map<String, String> mapLog) {
@@ -201,7 +218,11 @@ public class LogCreator {
 
 		ReferencesLog referencesLog = ReferencesLog.getReferenceLog(component, event);
 
-		referencesLog.setLogReferencesAttributes(log, ids);
+		try {
+			referencesLog.setLogReferencesAttributes(log, ids);
+		} catch (Exception e) {
+			logger.error("Problema en linea de log: " + mapLog + " usando el gestor: " + referencesLog +" con los ids:"+ids, e);
+		}
 
 		return log;
 	}

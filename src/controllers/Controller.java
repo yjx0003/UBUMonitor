@@ -26,11 +26,10 @@ import webservice.WebService;
 public class Controller {
 	static final Logger logger = LoggerFactory.getLogger(Controller.class);
 
-	public static final String RESOURCE_FILE_NAME = "messages/Messages";
+	
 	
 	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
 
-	public static final String APP_NAME = "UBUMonitor";
 
 	private Languages selectedLanguage;
 
@@ -102,7 +101,7 @@ public class Controller {
 		this.selectedLanguage = selectedLanguage;
 		Locale a = selectedLanguage.getLocale();
 		Locale.setDefault(a);
-		I18n.setResourceBundle(ResourceBundle.getBundle(RESOURCE_FILE_NAME));
+		I18n.setResourceBundle(ResourceBundle.getBundle(AppInfo.RESOURCE_BUNDLE_FILE_NAME));
 	}
 
 	public void setBBDD(BBDD BBDD) {

@@ -69,7 +69,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 								Collectors.groupingBy(LogLine::getEventName,
 										Collectors.groupingBy(getGroupByFunction(), Collectors.counting())))));
 
-		logger.info("Contador de logs de componentes y eventos para " + getTypeTime() + ": " + countsEvents);
+	
 		Gson gsonBuilder = new GsonBuilder().create();
 		logger.info("JSON del contador de logs de componentes y eventos  para " + getTypeTime() + " "
 				+ gsonBuilder.toJson(countsEvents));
@@ -80,7 +80,6 @@ public abstract class GroupByAbstract<T> implements Serializable {
 						Collectors.groupingBy(LogLine::getComponent,
 								Collectors.groupingBy(getGroupByFunction(), Collectors.counting()))));
 
-		logger.info("Contador de logs de componentes para " + getTypeTime() + ": " + countsComponents);
 		logger.info("JSON del contador de logs de componentes  para " + getTypeTime() + " "
 				+ gsonBuilder.toJson(countsComponents));
 

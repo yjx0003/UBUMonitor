@@ -18,7 +18,7 @@ import javafx.stage.Stage;
  *
  */
 public class Loader extends Application {
-	static final Logger logger = LoggerFactory.getLogger(Loader.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Loader.class);
 	private Controller controller=Controller.getInstance();
 	@Override
 	public void start(Stage primaryStage) {
@@ -26,7 +26,7 @@ public class Loader extends Application {
 		
 		try {
 			controller.initialize();
-			logger.info("[Bienvenido a controller]");
+			LOGGER.info("[Bienvenido a controller]");
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Login.fxml"), I18n.getResourceBundle());
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
@@ -38,7 +38,7 @@ public class Loader extends Application {
 			stage.show();
 			controller.setStage(stage);
 		} catch (Exception e) {
-			logger.error("Error al iniciar controller: {}", e);
+			LOGGER.error("Error al iniciar controller: {}", e);
 		}
 	}
 

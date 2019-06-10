@@ -9,9 +9,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import model.mod.Module;
 import model.mod.ModuleType;
 
@@ -26,7 +23,9 @@ import model.mod.ModuleType;
  */
 public class Course implements Serializable {
 
+	
 	private static final long serialVersionUID = 1L;
+	
 	private int id;
 	private String shortName;
 	private String fullName;
@@ -47,7 +46,7 @@ public class Course implements Serializable {
 	private Stats stats;
 	private LogStats logStats;
 
-	static final Logger logger = LoggerFactory.getLogger(Course.class);
+	
 
 	public Course() {
 		// Comparamos por apellidos y en caso de empate por primer nombre, se ignora

@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DownloadLogController {
 
-	static final Logger logger = LoggerFactory.getLogger(DownloadLogController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DownloadLogController.class);
 	/**
 	 * Nombre del host del servidor moodle
 	 */
@@ -123,7 +123,7 @@ public class DownloadLogController {
 
 	public ZoneId findServerTimezone() throws Exception {
 		try {
-			logger.info("Buscando el tiempo del servidor desde el perfil del usuario.");
+			LOGGER.info("Buscando el tiempo del servidor desde el perfil del usuario.");
 			// vamos a la edicion del perfil de usuario para ver la zona horaria del
 			// servidor
 			Document d = Jsoup.connect(host + "/user/edit.php?lang=en").cookies(cookies).get();
@@ -132,12 +132,12 @@ public class DownloadLogController {
 			// lo unico que nos interesa es lo que hay dentro de los parentesis:
 			// Europe/Madrid
 			String timezone = d.selectFirst("select#id_timezone option[value=99]").text();
-			logger.info("Timezone del servidor: " + timezone);
+			LOGGER.info("Timezone del servidor: " + timezone);
 			String timezoneParsed = timezone.substring(17, timezone.length() - 1);
 			serverTimeZone = ZoneId.of(timezoneParsed);
 			return serverTimeZone;
 		} catch (Exception e) {
-			logger.error("Error al buscar el timezone del usuario desde el html ", e);
+			LOGGER.error("Error al buscar el timezone del usuario desde el html ", e);
 			throw e;
 		}
 
@@ -224,7 +224,7 @@ public class DownloadLogController {
 		try {
 			String URL = host + "/report/log/index.php?lang=en&download=csv&id=" + idCourse + "&date=" + dateSeconds
 					+ "&modid=&chooselog=1&logreader=logstore_standard";
-			logger.info("Descargando log con la URL: " + URL);
+			LOGGER.info("Descargando log con la URL: " + URL);
 			Response response = Jsoup
 					.connect(URL)
 					.cookies(cookies)
@@ -236,7 +236,7 @@ public class DownloadLogController {
 			return response.body();
 
 		} catch (Exception e) {
-			logger.error("Error al descargar el log a partir de los segundos: " + dateSeconds, e);
+			LOGGER.error("Error al descargar el log a partir de los segundos: " + dateSeconds, e);
 		}
 		return null;
 	}

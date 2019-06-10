@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class Encryption {
-	static final Logger logger = LoggerFactory.getLogger(Encryption.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Encryption.class);
 
 	private Encryption() {
 
@@ -46,10 +46,10 @@ public class Encryption {
 			cipher = Cipher.getInstance("Blowfish");
 			cipher.init(cipherMode, key64);
 		} catch (InvalidKeyException e) {
-			logger.error("Problemas con la clave de encriptacion {}", e);
+			LOGGER.error("Problemas con la clave de encriptacion {}", e);
 
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-			logger.error("Problemas con el algoritmo de encriptación usado {}", e);
+			LOGGER.error("Problemas con el algoritmo de encriptación usado {}", e);
 		}
 		return cipher;
 	}
@@ -62,14 +62,14 @@ public class Encryption {
 	 */
 	public static Object decrypt(String key, String ruta) {
 		Cipher cipher = initCipher(key, Cipher.DECRYPT_MODE);
-		logger.info("Intentando descifrar el fichero: {}",ruta);
+		LOGGER.info("Intentando descifrar el fichero: {}",ruta);
 		try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(ruta))) {
 
 			SealedObject sealedObject = (SealedObject) inputStream.readObject();
 			return sealedObject.getObject(cipher);
 
 		} catch (Exception e) {
-			logger.error("No se ha podido abrir el fichero al intentar descifrar {}", e);
+			LOGGER.error("No se ha podido abrir el fichero al intentar descifrar {}", e);
 	
 		}
 		return null;
@@ -84,17 +84,17 @@ public class Encryption {
 	 * 
 	 */
 	public static <T extends Serializable> void encrypt(String key, String ruta, T object) {
-		logger.info("Intendado encriptar fichero: {}", ruta);
+		LOGGER.info("Intendado encriptar fichero: {}", ruta);
 
 		Cipher cipher = initCipher(key, Cipher.ENCRYPT_MODE);	
 
 		try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(ruta))) {
 			SealedObject sealedObject = new SealedObject(object, cipher);
 			outputStream.writeObject(sealedObject);
-			logger.info("Encriptación correcta en {}", ruta);
+			LOGGER.info("Encriptación correcta en {}", ruta);
 
 		} catch (Exception e) {
-			logger.error("Problemas al guardar con los outputStream el objeto {}", e);
+			LOGGER.error("Problemas al guardar con los outputStream el objeto {}", e);
 		}
 
 	}

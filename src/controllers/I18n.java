@@ -15,7 +15,7 @@ import model.Event;
  */
 public class I18n {
 
-	static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
 	private static ResourceBundle rb;
 
 	/**
@@ -73,7 +73,7 @@ public class I18n {
 		if (rb.containsKey(key)) {
 			return rb.getString(key);
 		}
-		logger.error("No existe entrada en el resource bundle la key: " + key);
+		LOGGER.error("No existe entrada en el resource bundle la key: " + key);
 		return defaultValue;
 	}
 }

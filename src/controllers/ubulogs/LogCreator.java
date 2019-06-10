@@ -37,7 +37,7 @@ import model.Origin;
  *
  */
 public class LogCreator {
-	static final Logger logger = LoggerFactory.getLogger(LogCreator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(LogCreator.class);
 
 	private final static Controller CONTROLLER = Controller.getInstance();
 
@@ -137,7 +137,7 @@ public class LogCreator {
 			List<Map<String, String>> logs = new ArrayList<Map<String, String>>();
 			Set<String> headers = csvParser.getHeaderMap().keySet();
 
-			logger.info("Los nombres de las columnas del csv son: " + headers);
+			LOGGER.info("Los nombres de las columnas del csv son: " + headers);
 
 			for (CSVRecord csvRecord : csvParser) {
 
@@ -152,7 +152,7 @@ public class LogCreator {
 
 			return logs;
 		} catch (Exception e) {
-			logger.error("No se ha podido parsear el contenido", e);
+			LOGGER.error("No se ha podido parsear el contenido", e);
 			throw e;
 		}
 	}
@@ -170,11 +170,11 @@ public class LogCreator {
 			logs.add(createLog(log));
 		}
 		if (!NOT_AVAIBLE_COMPONENTS.isEmpty()) {
-			logger.warn("No disponible el componenente en " + Component.class.getName() + ": "
+			LOGGER.warn("No disponible el componenente en " + Component.class.getName() + ": "
 					+ NOT_AVAIBLE_COMPONENTS);
 		}
 		if (!NOT_AVAIBLE_EVENTS.isEmpty()) {
-			logger.warn("No disponible los siguientes eventos en " + Event.class.getName() + ": "
+			LOGGER.warn("No disponible los siguientes eventos en " + Event.class.getName() + ": "
 					+ NOT_AVAIBLE_EVENTS);
 		}
 
@@ -221,7 +221,7 @@ public class LogCreator {
 		try {
 			referencesLog.setLogReferencesAttributes(log, ids);
 		} catch (Exception e) {
-			logger.error("Problema en linea de log: " + mapLog + " usando el gestor: " + referencesLog +" con los ids:"+ids, e);
+			LOGGER.error("Problema en linea de log: " + mapLog + " usando el gestor: " + referencesLog +" con los ids:"+ids, e);
 		}
 
 		return log;

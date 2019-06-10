@@ -95,7 +95,7 @@ import netscape.javascript.JSException;
  */
 public class MainController implements Initializable {
 
-	static final Logger logger = LoggerFactory.getLogger(MainController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
 
 	private static final String TODOS = "Todos";
 
@@ -213,7 +213,7 @@ public class MainController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
-			logger.info(
+			LOGGER.info(
 					"Completada la carga del curso '" + controller.getActualCourse().getFullName() + ".");
 
 			stats = controller.getStats();
@@ -232,7 +232,7 @@ public class MainController implements Initializable {
 			WebConsoleListener.setDefaultListener(new WebConsoleListener() {
 				@Override
 				public void messageAdded(WebView webView, String message, int lineNumber, String sourceId) {
-					logger.error("Error en la consola de JS: " + message + " [" + sourceId + ":" + lineNumber + "] ");
+					LOGGER.error("Error en la consola de JS: " + message + " [" + sourceId + ":" + lineNumber + "] ");
 				}
 			});
 
@@ -248,7 +248,7 @@ public class MainController implements Initializable {
 				MenuItem mItem = (MenuItem) event.getSource();
 				// Obtenemos el rol por el que se quiere filtrar
 				filterRole = mItem.getText();
-				logger.info("-> Filtrando participantes por rol: {}", filterRole);
+				LOGGER.info("-> Filtrando participantes por rol: {}", filterRole);
 				filterParticipants();
 				slcRole.setText(filterRole);
 			});
@@ -281,7 +281,7 @@ public class MainController implements Initializable {
 				MenuItem mItem = (MenuItem) event.getSource();
 				// Obtenemos el grupo por el que se quire filtrar
 				filterGroup = mItem.getText();
-				logger.info("-> Filtrando participantes por grupo: {}", filterGroup);
+				LOGGER.info("-> Filtrando participantes por grupo: {}", filterGroup);
 				filterParticipants();
 				slcGroup.setText(filterGroup);
 			});
@@ -322,7 +322,7 @@ public class MainController implements Initializable {
 				// Obtenemos el valor (rol) para filtrar la lista de
 				// participantes
 				filterType = mItem.getText();
-				logger.info("-> Filtrando calificador por tipo: {}", filterType);
+				LOGGER.info("-> Filtrando calificador por tipo: {}", filterType);
 				filterCalifications();
 				slcType.setText(filterType);
 			});
@@ -352,14 +352,14 @@ public class MainController implements Initializable {
 			// Manejador de eventos para el textField de filtro de participantes.
 			tfdParticipants.setOnAction((ActionEvent event) -> {
 				patternParticipants = tfdParticipants.getText();
-				logger.info("-> Filtrando participantes por nombre: {}", patternParticipants);
+				LOGGER.info("-> Filtrando participantes por nombre: {}", patternParticipants);
 				filterParticipants();
 			});
 
 			// Inicializamos el listener del textField del calificador
 			tfdItems.setOnAction((ActionEvent event) -> {
 				patternCalifications = tfdItems.getText();
-				logger.info("-> Filtrando calificador por nombre: {}", patternCalifications);
+				LOGGER.info("-> Filtrando calificador por nombre: {}", patternCalifications);
 				filterCalifications();
 			});
 
@@ -404,7 +404,7 @@ public class MainController implements Initializable {
 									false);
 							setGraphic(new ImageView(image));
 						} catch (Exception e) {
-							logger.error("No se ha podido cargar la imagen de: " + user);
+							LOGGER.error("No se ha podido cargar la imagen de: " + user);
 							setGraphic(new ImageView(new Image("/img/default_user.png")));
 						}
 					}
@@ -450,7 +450,7 @@ public class MainController implements Initializable {
 			// Mostramos Host actual
 			lblActualHost.setText(I18n.get("label.host") + " " + controller.getHost());
 		} catch (Exception e) {
-			logger.error("Error en la inicialización.", e);
+			LOGGER.error("Error en la inicialización.", e);
 		}
 	}
 
@@ -768,7 +768,7 @@ public class MainController implements Initializable {
 		String stackedbardataset = stackedBarDatasetComponent.createData(listParticipants.getItems(),
 				listParticipants.getSelectionModel().getSelectedItems(),
 				listViewComponents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
-		logger.info("Dataset para el stacked bar de componentes solo en JS: " + stackedbardataset);
+		LOGGER.info("Dataset para el stacked bar de componentes solo en JS: " + stackedbardataset);
 		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
 	}
 
@@ -780,7 +780,7 @@ public class MainController implements Initializable {
 				listParticipants.getSelectionModel().getSelectedItems(),
 				listViewEvents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
 
-		logger.info("Dataset para el stacked bar de componentes y eventos en JS: " + stackedbardataset);
+		LOGGER.info("Dataset para el stacked bar de componentes y eventos en JS: " + stackedbardataset);
 		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
 
 	}
@@ -936,7 +936,7 @@ public class MainController implements Initializable {
 			enrList = FXCollections.observableArrayList(nameUsers);
 			enrList.sort(EnrolledUser.getComparator());
 		} catch (Exception e) {
-			logger.error("Error al filtrar los participantes: {}", e);
+			LOGGER.error("Error al filtrar los participantes: {}", e);
 		}
 		listParticipants.setItems(enrList);
 
@@ -979,7 +979,7 @@ public class MainController implements Initializable {
 			item.setGraphic(new ImageView(new Image(path)));
 		} catch (Exception e) {
 			item.setGraphic(new ImageView(ERROR_ICON));
-			logger.error("No se ha podido cargar la imagen del elemento " + item + "en la ruta " + path + ") : {}", e);
+			LOGGER.error("No se ha podido cargar la imagen del elemento " + item + "en la ruta " + path + ") : {}", e);
 		}
 	}
 
@@ -1027,7 +1027,7 @@ public class MainController implements Initializable {
 			// Establecemos la raiz del treeview
 			tvwGradeReport.setRoot(treeItemRoot);
 		} catch (Exception e) {
-			logger.error("Error al filtrar los elementos del calificador: {}", e);
+			LOGGER.error("Error al filtrar los elementos del calificador: {}", e);
 		}
 		listParticipants.setItems(enrList);
 	}
@@ -1058,7 +1058,7 @@ public class MainController implements Initializable {
 				ImageIO.write(bufferedImage, "png", file);
 			}
 		} catch (Exception e) {
-			logger.error("Error al guardar el gráfico: {}", e);
+			LOGGER.error("Error al guardar el gráfico: {}", e);
 			errorWindow(I18n.get("error.savechart"), false);
 		}
 	}
@@ -1070,7 +1070,7 @@ public class MainController implements Initializable {
 	 *            El ActionEvent.
 	 */
 	public void saveAll(ActionEvent actionEvent) {
-		logger.info("Exportando los gráficos");
+		LOGGER.info("Exportando los gráficos");
 		PrintWriter out = null;
 
 		FileChooser fileChooser = new FileChooser();
@@ -1103,7 +1103,7 @@ public class MainController implements Initializable {
 				fr.close();
 				out.close();
 			} catch (IOException e) {
-				logger.error("Error al exportar los gráficos.", e);
+				LOGGER.error("Error al exportar los gráficos.", e);
 				errorWindow(I18n.get("error.saveallcharts"), false);
 			}
 		}
@@ -1119,7 +1119,7 @@ public class MainController implements Initializable {
 	 *             exception
 	 */
 	public void changeCourse(ActionEvent actionEvent) throws Exception {
-		logger.info("Cambiando de asignatura...");
+		LOGGER.info("Cambiando de asignatura...");
 		changeScene(getClass().getResource("/view/Welcome.fxml"));
 	}
 
@@ -1130,7 +1130,7 @@ public class MainController implements Initializable {
 	 *            El ActionEvent.
 	 */
 	public void logOut(ActionEvent actionEvent) {
-		logger.info("Cerrando sesión de usuario");
+		LOGGER.info("Cerrando sesión de usuario");
 		changeScene(getClass().getResource("/view/Login.fxml"));
 	}
 
@@ -1152,7 +1152,7 @@ public class MainController implements Initializable {
 			controller.getStage().setTitle(AppInfo.APPLICATION_NAME);
 			controller.getStage().show();
 		} catch (Exception e) {
-			logger.error("Error al modifcar la ventana de JavaFX: {}", e);
+			LOGGER.error("Error al modifcar la ventana de JavaFX: {}", e);
 		}
 	}
 
@@ -1177,7 +1177,7 @@ public class MainController implements Initializable {
 		try {
 			Desktop.getDesktop().browse(new URL(AppInfo.GITHUB).toURI());
 		} catch (IOException | URISyntaxException e) {
-			logger.error("Error al abir la pagina aboutApp: {}", e);
+			LOGGER.error("Error al abir la pagina aboutApp: {}", e);
 		}
 	}
 
@@ -1188,7 +1188,7 @@ public class MainController implements Initializable {
 	 *            El ActionEvent.
 	 */
 	public void closeApplication(ActionEvent actionEvent) {
-		logger.info("Cerrando aplicación");
+		LOGGER.info("Cerrando aplicación");
 		controller.getStage().close();
 	}
 
@@ -1304,10 +1304,10 @@ public class MainController implements Initializable {
 		StringBuilder dataSet = new StringBuilder();
 		StringBuilder labels = new StringBuilder();
 
-		logger.debug("Selected participant: {}", selectedParticipants.size());
+		LOGGER.debug("Selected participant: {}", selectedParticipants.size());
 		// Por cada usuario seleccionado
 		for (EnrolledUser actualUser : selectedParticipants) {
-			// TODO logger.debug("Enroller user: {}", actualUser.getFirstName());
+			// TODO LOGGER.debug("Enroller user: {}", actualUser.getFirstName());
 			String actualUserFullName = actualUser.getFullName();
 			// Añadimos el nombre del alumno al dataset
 			if (firstUser) {
@@ -1344,7 +1344,7 @@ public class MainController implements Initializable {
 						}
 					}
 				} catch (Exception e) {
-					logger.error("Error en la construcción del dataset.", e);
+					LOGGER.error("Error en la construcción del dataset.", e);
 					errorWindow(I18n.get("error.generatedataset"), false);
 				}
 			}
@@ -1536,7 +1536,7 @@ public class MainController implements Initializable {
 				webViewChartsEngine.executeScript("updateChart('boxplotgroup'," + generateBoxPlotDataSet(group) + ")");
 			}
 		} catch (JSException e) {
-			logger.error("Error al generar los gráficos.", e);
+			LOGGER.error("Error al generar los gráficos.", e);
 			errorWindow(I18n.get("error.generateCharts"), true);
 		}
 	}
@@ -1551,21 +1551,21 @@ public class MainController implements Initializable {
 
 		try {
 			String data = generateGradesDataSet();
-			logger.debug("Data: {}", data);
+			LOGGER.debug("Data: {}", data);
 			updateGroupData(filterGroup);
 			String tableData = generateTableData();
-			logger.debug("Table data for chart: {}", tableData);
+			LOGGER.debug("Table data for chart: {}", tableData);
 			webViewChartsEngine.executeScript("saveTableData(" + tableData + ")");
 			webViewChartsEngine.executeScript("saveMean(" + generateMeanDataSet(TODOS) + ")");
 			webViewChartsEngine.executeScript("updateChart('boxplot'," + generateBoxPlotDataSet(TODOS) + ")");
 			webViewChartsEngine.executeScript("updateChart('line'," + data + ")");
 			webViewChartsEngine.executeScript("updateChart('radar'," + data + ")");
 		} catch (JSException e) {
-			logger.error("Error al generar los gráficos.", e);
+			LOGGER.error("Error al generar los gráficos.", e);
 			errorWindow(I18n.get("error.generateCharts"), false); // FIX RMS Review true
 																	// or false
 		} catch (Exception e) {
-			logger.error("Error general al generar los gráficos.", e);
+			LOGGER.error("Error general al generar los gráficos.", e);
 			errorWindow(I18n.get("error.generateCharts"), false);
 		}
 	}

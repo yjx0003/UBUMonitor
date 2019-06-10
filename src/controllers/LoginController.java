@@ -45,7 +45,7 @@ import model.MoodleUser;
  */
 public class LoginController implements Initializable {
 
-	static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
 	private static final String PROPERTIES_PATH = "config.properties";
 	private Controller controller = Controller.getInstance();
 	Properties properties;
@@ -93,8 +93,8 @@ public class LoginController implements Initializable {
 		languageSelector.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
 
 			controller.setSelectedLanguage(newValue);
-			logger.info("Idioma cargado: {}", I18n.getResourceBundle().getLocale().toString());
-			logger.info("[Bienvenido a " + AppInfo.APPLICATION_NAME + "]");
+			LOGGER.info("Idioma cargado: {}", I18n.getResourceBundle().getLocale().toString());
+			LOGGER.info("[Bienvenido a " + AppInfo.APPLICATION_NAME + "]");
 			changeScene(getClass().getResource("/view/Login.fxml"));
 		});
 	}
@@ -112,7 +112,7 @@ public class LoginController implements Initializable {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
-				logger.error("No se ha podido crear el fichero properties: " + PROPERTIES_PATH);
+				LOGGER.error("No se ha podido crear el fichero properties: " + PROPERTIES_PATH);
 			}
 
 		} else { // si existe el fichero properties inicializamos los valores
@@ -125,7 +125,7 @@ public class LoginController implements Initializable {
 				chkSaveHost.setSelected(Boolean.parseBoolean(properties.getProperty("saveHost")));
 
 			} catch (IOException e) {
-				logger.error("No se ha podido cargar " + PROPERTIES_PATH);
+				LOGGER.error("No se ha podido cargar " + PROPERTIES_PATH);
 			}
 		}
 
@@ -149,7 +149,7 @@ public class LoginController implements Initializable {
 			properties.store(out, null);
 
 		} catch (IOException e) {
-			logger.error("No se ha podido guardar el fichero" + file.getAbsolutePath());
+			LOGGER.error("No se ha podido guardar el fichero" + file.getAbsolutePath());
 		}
 	}
 
@@ -209,7 +209,7 @@ public class LoginController implements Initializable {
 			stage.show();
 			controller.setStage(stage);
 		} catch (IOException e) {
-			logger.info("No se ha podido cargar la ventana de bienvenida: {}", e);
+			LOGGER.info("No se ha podido cargar la ventana de bienvenida: {}", e);
 		}
 	}
 
@@ -227,11 +227,11 @@ public class LoginController implements Initializable {
 					controller.tryLogin(txtHost.getText(), txtUsername.getText(), txtPassword.getText());
 
 				} catch (IOException e) {
-					logger.error("No se ha podido conectar con el host.", e);
+					LOGGER.error("No se ha podido conectar con el host.", e);
 					updateMessage(I18n.get("error.host"));
 					throw e;
 				} catch (JSONException e) {
-					logger.error("Usuario y/o contraseña incorrectos", e);
+					LOGGER.error("Usuario y/o contraseña incorrectos", e);
 					updateMessage(I18n.get("error.login"));
 					throw e;
 
@@ -240,7 +240,7 @@ public class LoginController implements Initializable {
 					MoodleUser moodleUser = CreatorUBUGradesController.createMoodleUser(controller.getUsername());
 					controller.setUser(moodleUser);
 				} catch (IOException e) {
-					logger.error("Error al obtener los datos del usuario.", e);
+					LOGGER.error("Error al obtener los datos del usuario.", e);
 					updateMessage("Error al obtener los datos del usuario.");
 					throw e;
 				}

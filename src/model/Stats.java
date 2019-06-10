@@ -27,7 +27,7 @@ public class Stats implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	static final Logger logger = LoggerFactory.getLogger(Stats.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Stats.class);
 
 	private final DecimalFormat decimalFormat;
 	private static final int MAX_DECIMAL_DIGITS = 2;
@@ -58,7 +58,7 @@ public class Stats implements Serializable {
 
 		generateGeneralStats(course);
 		generateGroupStats(course);
-		logger.info("Estadisticas generadas con exito.");
+		LOGGER.info("Estadisticas generadas con exito.");
 	}
 
 	/**
@@ -71,7 +71,7 @@ public class Stats implements Serializable {
 	 */
 	private void generateGeneralStats(Course course) throws Exception {
 		try {
-			logger.info("Generando las estadisticas generales para el curso cargado.");
+			LOGGER.info("Generando las estadisticas generales para el curso cargado.");
 			// Estadisticas Generales
 			generalGradesStats = new HashMap<>();
 
@@ -93,7 +93,7 @@ public class Stats implements Serializable {
 			}
 
 		} catch (Exception e) {
-			logger.error("Error al generar las estadisticas generales.", e);
+			LOGGER.error("Error al generar las estadisticas generales.", e);
 			throw new Exception("Error al generar las estadisticas generales.");
 		}
 	}
@@ -107,7 +107,7 @@ public class Stats implements Serializable {
 	 */
 	private void generateGroupStats(Course course) throws Exception {
 		try {
-			logger.info("Generando las estadisticas de los gruopos para el curso cargado.");
+			LOGGER.info("Generando las estadisticas de los gruopos para el curso cargado.");
 			// Estadisticas de los grupos
 			groupsStats = new HashMap<>();
 
@@ -130,7 +130,7 @@ public class Stats implements Serializable {
 			}
 
 		} catch (Exception e) {
-			logger.error("Error al generar las estadisticas de los grupos.", e);
+			LOGGER.error("Error al generar las estadisticas de los grupos.", e);
 			throw new Exception("Error al generar las estadisticas de los grupos.");
 		}
 	}

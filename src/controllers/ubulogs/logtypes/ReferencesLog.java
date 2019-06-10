@@ -208,8 +208,8 @@ public abstract class ReferencesLog {
 
 			put(ComponentEvent.get(Component.SCORM_PACKAGE, Event.COURSE_MODULE_VIEWED), UserCmid.getInstance());
 			put(ComponentEvent.get(Component.SCORM_PACKAGE, Event.SCO_LAUNCHED), UserScoCmid.getInstance());
-			put(ComponentEvent.get(Component.SCORM_PACKAGE, Event.SUBMITTED_SCORM_RAW_SCORE), Default.getInstance()); //TODO
-			put(ComponentEvent.get(Component.SCORM_PACKAGE, Event.SUBMITTED_SCORM_STATUS), Default.getInstance()); //TODO
+			put(ComponentEvent.get(Component.SCORM_PACKAGE, Event.SUBMITTED_SCORM_RAW_SCORE), UserAttemptCmid.getInstance());
+			put(ComponentEvent.get(Component.SCORM_PACKAGE, Event.SUBMITTED_SCORM_STATUS), UserAttemptCmid.getInstance());
 
 			put(ComponentEvent.get(Component.SINGLE_VIEW, Event.GRADE_SINGLE_VIEW_REPORT_VIEWED), User.getInstance());
 
@@ -373,4 +373,9 @@ public abstract class ReferencesLog {
 	 * @param ids diferentes ids
 	 */
 	public abstract void setLogReferencesAttributes(LogLine log, List<Integer> ids);
+	
+	@Override
+	public String toString() {
+		return getClass().getName();
+	}
 }

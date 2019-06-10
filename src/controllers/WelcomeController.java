@@ -281,7 +281,7 @@ public class WelcomeController implements Initializable {
 			Scene scene = new Scene(root);
 			controller.getStage().setScene(scene);
 			controller.getStage().getIcons().add(new Image("/img/logo_min.png"));
-			controller.getStage().setTitle(Controller.APP_NAME);
+			controller.getStage().setTitle(AppInfo.APPLICATION_NAME);
 			controller.getStage().setResizable(true);
 			controller.getStage().setMinHeight(600);
 			controller.getStage().setMinWidth(800);

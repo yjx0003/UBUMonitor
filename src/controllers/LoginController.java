@@ -94,7 +94,7 @@ public class LoginController implements Initializable {
 
 			controller.setSelectedLanguage(newValue);
 			logger.info("Idioma cargado: {}", I18n.getResourceBundle().getLocale().toString());
-			logger.info("[Bienvenido a " + Controller.APP_NAME + "]");
+			logger.info("[Bienvenido a " + AppInfo.APPLICATION_NAME + "]");
 			changeScene(getClass().getResource("/view/Login.fxml"));
 		});
 	}
@@ -204,7 +204,7 @@ public class LoginController implements Initializable {
 			Scene scene = new Scene(root);
 			stage.setScene(scene);
 			stage.getIcons().add(new Image("/img/logo_min.png"));
-			stage.setTitle(Controller.APP_NAME);
+			stage.setTitle(AppInfo.APPLICATION_NAME);
 			stage.setResizable(false);
 			stage.show();
 			controller.setStage(stage);

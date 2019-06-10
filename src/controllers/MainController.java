@@ -1149,7 +1149,7 @@ public class MainController implements Initializable {
 			controller.setStage(new Stage());
 			controller.getStage().setScene(scene);
 			controller.getStage().getIcons().add(new Image("/img/logo_min.png"));
-			controller.getStage().setTitle(Controller.APP_NAME);
+			controller.getStage().setTitle(AppInfo.APPLICATION_NAME);
 			controller.getStage().show();
 		} catch (Exception e) {
 			logger.error("Error al modifcar la ventana de JavaFX: {}", e);
@@ -1173,11 +1173,11 @@ public class MainController implements Initializable {
 	 * @param actionEvent
 	 *            El ActionEvent.
 	 */
-	public void aboutUBUGrades(ActionEvent actionEvent) {
+	public void aboutApp(ActionEvent actionEvent) {
 		try {
-			Desktop.getDesktop().browse(new URL("https://github.com/yjx0003/UBUMonitor").toURI());
+			Desktop.getDesktop().browse(new URL(AppInfo.GITHUB).toURI());
 		} catch (IOException | URISyntaxException e) {
-			logger.error("Error al abir la pagina aboutUBUGrades: {}", e);
+			logger.error("Error al abir la pagina aboutApp: {}", e);
 		}
 	}
 
@@ -1581,7 +1581,7 @@ public class MainController implements Initializable {
 	private void errorWindow(String mensaje, boolean exit) {
 		Alert alert = new Alert(AlertType.ERROR);
 
-		alert.setTitle(Controller.APP_NAME);
+		alert.setTitle(AppInfo.APPLICATION_NAME);
 		alert.setHeaderText("Error");
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.initOwner(controller.getStage());

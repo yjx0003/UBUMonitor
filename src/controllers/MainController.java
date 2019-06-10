@@ -394,9 +394,9 @@ public class MainController implements Initializable {
 						setText(null);
 						setGraphic(null);
 					} else {
-						 Instant lastCourseAccess = user.getLastcourseaccess(); // cuando moodle ya
+						// Instant lastCourseAccess = user.getLastcourseaccess(); // cuando moodle ya
 						// devuelva la fecha de ultimo acceso al curso.
-						//Instant lastCourseAccess = user.getLastaccess();
+						Instant lastCourseAccess = user.getLastaccess();
 						Instant lastLogInstant = controller.getActualCourse().getLogs().getLastDatetime().toInstant();
 						setText(user + "\n" + I18n.get("text.lastaccess")
 								+ formatDates(lastCourseAccess, lastLogInstant));
@@ -456,20 +456,29 @@ public class MainController implements Initializable {
 	}
 
 	/**
-	 * Devuelve la diferencia entre dos instantes, por dias, hora, minutos o segundos siempre y cuando no sean 0.
-	 * Si la diferencias de dias es 0 se busca por horas, y asi consecutivamente.
-	 * @param lastCourseAccess fecha inicio
-	 * @param lastLogInstant fecha fin
+	 * Devuelve la diferencia entre dos instantes, por dias, hora, minutos o
+	 * segundos siempre y cuando no sean 0. Si la diferencias de dias es 0 se busca
+	 * por horas, y asi consecutivamente.
+	 * 
+	 * @param lastCourseAccess
+	 *            fecha inicio
+	 * @param lastLogInstant
+	 *            fecha fin
 	 * @return texto con el numero y el tipo de tiempo
 	 */
 	private String formatDates(Instant lastCourseAccess, Instant lastLogInstant) {
 
-		if (lastCourseAccess == null || lastCourseAccess.getEpochSecond() == 0L) {
+		if(lastCourseAccess == null || lastCourseAccess.getEpochSecond() == -1L) {
+			return " " + I18n.get("label.never");
+		}
+		
+		if (lastCourseAccess.getEpochSecond() == 0L) {
 			return " " + I18n.get("text.never");
 		}
+	
 
 		long time;
-		
+
 		if ((time = betweenDates(ChronoUnit.DAYS, lastCourseAccess, lastLogInstant)) != 0L) {
 			return time + " " + I18n.get("text.days");
 		}
@@ -484,16 +493,20 @@ public class MainController implements Initializable {
 	}
 
 	/**
-	 * Devuelve la difernecia absoluta entre dos instantes dependiendo de que sea el tipo
-	 * @param type dias, horas, minutos
-	 * @param lastCourseAccess instante inicio
-	 * @param lastLogInstant instante fin
+	 * Devuelve la difernecia absoluta entre dos instantes dependiendo de que sea el
+	 * tipo
+	 * 
+	 * @param type
+	 *            dias, horas, minutos
+	 * @param lastCourseAccess
+	 *            instante inicio
+	 * @param lastLogInstant
+	 *            instante fin
 	 * @return numero de diferencia absoluta
 	 */
 	private long betweenDates(ChronoUnit type, Instant lastCourseAccess, Instant lastLogInstant) {
 		return Math.abs(type.between(lastCourseAccess, lastLogInstant));
 	}
-
 
 	/**
 	 * Inicializa los elementos de las opciones de logs.
@@ -562,7 +575,9 @@ public class MainController implements Initializable {
 
 	/**
 	 * Actualiza la escala maxima del eje y de los graficos de logs.
-	 * @param value valor de escala maxima
+	 * 
+	 * @param value
+	 *            valor de escala maxima
 	 */
 	private void updateMaxScale(long value) {
 
@@ -571,11 +586,17 @@ public class MainController implements Initializable {
 	}
 
 	/**
-	 * Habilita o deshabilita el boton de filtrar por fechas en funcion de si es igual que la fecha anterior.
-	 * @param dateStartOld fecha inicio antiguo
-	 * @param dateStartNew fecha inico nuevo
-	 * @param dateEndOld fecha de fin antiguo
-	 * @param dateEndNew fecha de fin nuevo
+	 * Habilita o deshabilita el boton de filtrar por fechas en funcion de si es
+	 * igual que la fecha anterior.
+	 * 
+	 * @param dateStartOld
+	 *            fecha inicio antiguo
+	 * @param dateStartNew
+	 *            fecha inico nuevo
+	 * @param dateEndOld
+	 *            fecha de fin antiguo
+	 * @param dateEndNew
+	 *            fecha de fin nuevo
 	 */
 	private void enableFilterLogButton(
 			LocalDate dateStartOld, LocalDate dateStartNew, LocalDate dateEndOld, LocalDate dateEndNew) {
@@ -609,10 +630,11 @@ public class MainController implements Initializable {
 	}
 
 	/**
-	 * Inicializa el listado de componentes de la pestaña Componentes en  
+	 * Inicializa el listado de componentes de la pestaña Componentes en
 	 */
 	public void initListViewComponents() {
-		//cada vez que se seleccione nuevos elementos del list view actualizamos la grafica y la escala
+		// cada vez que se seleccione nuevos elementos del list view actualizamos la
+		// grafica y la escala
 		listViewComponents.getSelectionModel().getSelectedItems()
 				.addListener((Change<? extends Component> c) -> {
 					updateLogsChart();
@@ -766,7 +788,9 @@ public class MainController implements Initializable {
 
 	/**
 	 * Metodo que se activa cuando se modifica la pestaña de logs o calificaciones
-	 * @param event evento
+	 * 
+	 * @param event
+	 *            evento
 	 */
 	public void setTablogs(Event event) {
 		if (!tabUbuLogs.isSelected()) {
@@ -815,7 +839,9 @@ public class MainController implements Initializable {
 
 	/**
 	 * Se activa cuando se cambia de pestaña de registros o calificaciones
-	 * @param event evento
+	 * 
+	 * @param event
+	 *            evento
 	 */
 	public void setTabGrades(Event event) {
 		if (!tabUbuGrades.isSelected()) {
@@ -829,7 +855,9 @@ public class MainController implements Initializable {
 
 	/**
 	 * Aplica los filtros de fecha a las graficas de log.
-	 * @param event evento
+	 * 
+	 * @param event
+	 *            evento
 	 */
 	@FXML
 	public void applyFilterLogs(ActionEvent event) {
@@ -907,12 +935,13 @@ public class MainController implements Initializable {
 					nameUsers.add(user);
 			}
 			enrList = FXCollections.observableArrayList(nameUsers);
+			enrList.sort(Comparator.comparing(EnrolledUser::getLastname).thenComparing(EnrolledUser::getFirstname));
 		} catch (Exception e) {
 			logger.error("Error al filtrar los participantes: {}", e);
 		}
 		listParticipants.setItems(enrList);
-		
-		//Actualizamos los graficos
+
+		// Actualizamos los graficos
 		updateGradesChart();
 		updateLogsChart();
 		findMax();

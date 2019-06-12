@@ -14,16 +14,19 @@ import javafx.stage.Stage;
  * Clase Loader. Inicializa la ventana de login
  * 
  * @author Félix Nogal Santamaría
+ * @author Yi Peng
  * @version 1.0
  *
  */
 public class Loader extends Application {
+	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(Loader.class);
-	private Controller controller=Controller.getInstance();
+	private Controller controller = Controller.getInstance();
+
 	@Override
 	public void start(Stage primaryStage) {
 
-		
 		try {
 			controller.initialize();
 			LOGGER.info("[Bienvenido a controller]");
@@ -42,9 +45,7 @@ public class Loader extends Application {
 		}
 	}
 
-	// Main comando
-	public static void main(String[] args) {
-		
+	public static void init(String[] args) {	
 		launch(args);
 	}
 }

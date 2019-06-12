@@ -1,6 +1,7 @@
 package controllers.ubulogs.logtypes;
 
 import java.util.List;
+
 import model.LogLine;
 
 

@@ -13,9 +13,12 @@ import java.util.Map;
  */
 public enum Languages {
 
-	SPANISH("Español", "es",""),
+	SPANISH("Español", "es"),
 	SPANISH_SPAIN("Español-España","es","ES"),
-	ENGLISH("English", "en","");
+	ENGLISH("English", "en");
+	
+	
+	
 
 	private String lang;
 	private String code;
@@ -33,7 +36,12 @@ public enum Languages {
 		}
 	}
 
-	Languages(String lang, String codeLanguage, String codeCountry) {
+	
+	private Languages(String lang, String codeLanguage) {
+		this.lang = lang;
+		this.locale = new Locale(codeLanguage);
+	}
+	private Languages(String lang, String codeLanguage, String codeCountry) {
 		this.lang = lang;
 		this.locale = new Locale(codeLanguage, codeCountry);
 		this.code = locale.getLanguage();

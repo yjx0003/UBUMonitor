@@ -1,0 +1,120 @@
+\capitulo{4}{Técnicas y herramientas}
+
+En este apartado se explicará las técnicas y herramientas usadas para el desarrollo del proyecto.
+
+\section{Metodología SCRUM}
+
+Se ha seguido una de las metodologías ágiles conocido como SCRUM adaptado a para una sola persona con reuniones semanales en vez diarias. Con una estrategia iterativa (incremental) con entregas parciales en los \textit{sprints}.
+
+\section{Moodle}
+Moodle es una herramienta de gestión del aprendizaje, distribución libre y escrita en PHP. Ayuda a los docentes en la educación a distancia y en la gestión de los diferentes modos de calificación.
+
+Al no tener acceso con privilegios de profesor al servicio Moodle de la universidad, se ha tenido que instalar un servidor de pruebas en localhost. Las comprobaciones en un entorno real lo han realizado varios profesores docentes de la universidad, entre ellos el tutor, en UBUVirtual.
+
+Se ha usado la versión \textbf{3.5.4+} de Moodle al no estar disponible para descargar la \textbf{3.5.1} instalada en UBUVirtual.
+
+También se ha empleado una versión de prueba oficial del propio equipo de desarrollo \href{https://school.demo.moodle.net}{\textit{Mount Orange School}} en la versión \textbf{3.7}, que probablemente se use en la aula virtual de la Universidad de Burgos en el futuro.
+
+\section{Java}
+Java es un lenguaje de programación orientado a objetos, diseñado para escribir el código una vez y ejecutar en cualquier otro dispositivo sin tener que recompilar siempre y cuando se tenga instalado\textit{Java Runtime Enviroment (JRE)}. Actualmente es uno de los lenguajes programación con mayor popularidad de uso, tanto en el ámbito de desarrollo como en el de usuarios.
+
+El desarrollo, al igual que el anterior proyecto UBUGrades y UBULogs, se ha seguido con Java 8 al ser una edición con \href{https://www.oracle.com/technetwork/java/java-se-support-roadmap.html
+}{soporte extendido}.
+
+\section{JavaFX}
+Es un paquete gráfico que permite crear aplicación interactivas. Viene incluido en Java 8 dentro de la \textit{Java Development Kit (JDK)} y en \textit{Java Runtime Enviroment (JRE)} por lo que se puede ejecutar en otro dispositivo sin tener que instalar librerías adicionales.
+
+\subsection{Scene Builder}
+Es una herramienta que permite diseñar de una forma sencilla ventanas gráficas sin programar código. Los elementos de la ventana se añaden arrastrando y soltando (\textit{Drag and drop}) dentro de la herramienta.
+
+\imagen{SceneBuilder}{Herramienta de Scene Builder}
+
+Con Scene Builder generará un archivo FXML, muy parecido al formato XML, donde se guarda las posiciones de los elementos de la ventana gráfica. Desde Java solo tiene que cargar el fichero FXML.
+
+\section{JavaScript}
+Lenguaje de programación orientado a páginas web, usado principalmente en el lado del cliente. Al ser compatible con todos los navegadores web del mercado, se ha vuelto un estándar de facto.
+
+En el proyecto se sigue usando Charts.js para la visualización las nuevas gráficas.
+
+\section{JSON}
+
+\textit{JavaScript Object Notation (JSON)}, formato de texto sencillo para el intercambio de datos. En principio se usaba como subconjunto de notación en JavaScript pero debido a su masiva popularidad en otros ámbitos, se considera hoy en día como lenguaje independiente.
+
+Los datos de Moodle que se recibe mediante REST API está en formato de texto JSON.
+
+\section{Eclipse}
+
+Eclipse es uno de los entornos de desarrollo (IDE) más famosos, junto con
+\href{https://www.jetbrains.com}{\textit{IntelliJ IDEA}} y \href{https://netbeans.org/}{\textit{NetBeans}}, para Java. De código abierto con la capacidad de añadir nuevas características mediante plugins.
+
+Se ha decidido emplear Eclipse frente a las otras alternativas por comodidad y es la herramienta que se maneja durante la carrera.
+
+
+\section{GitHub}
+Es una plataforma de desarrollo colaborativo para alojar proyectos usando el sistema de control de versiones Git. UBUGrades está alojado en GitHub.
+
+Adicionalmente se ha usado la extensión del navegador ZenHub que se integra en GitHub y permite el uso de \textit{canvas} para la organización de los \textit{issues}.
+
+
+\section{LaTex}
+
+Sistema de composición de textos dirigido a la creación de documentos con una buena calidad tipográfica. Actualmente muy popular en el ámbito de la investigación con artículos y libros científicos.
+
+El presente proyecto está realizado en \LaTeX usando las versiones portables de MiKTex y TeXstudio. 
+
+\subsection{MiKTex}
+
+MiKTex es una distribución de \LaTeX diferentes plataformas de sistemas operativos, es de código libre y viene incluido con múltiples paquetes de tipografías y macros.
+
+\subsection{TeXstudio}
+
+TeXstudio es un entorno de desarrollo integrado (IDE) de edición de texto, código abierto con resaltado de sintaxis orientado a la creación de documentos \LaTeX.
+
+
+\section{Dependencias externas de Java}
+En este apartado se explicará las librerías externas de Java usadas durante el desarrollo del proyecto. 
+
+\subsection{Apache Commons CSV}
+\href{https://commons.apache.org/proper/commons-csv/
+}{Apache Commons CSV 1.6} permite la lectura y/o escritura de textos en \textit{comma-separated values} comúnmente conocido como formato \textbf{CSV}. 
+El proyecto lo emplea para separar cada uno de las columnas y sus elementos de los registros del curso.
+
+\subsection{Apache Commons Math}
+\href{https://commons.apache.org/proper/commons-math/}{Apache Commons Math
+3.6.1} es una librería orientado a las matemáticas y estadísticas.
+Nos posibilita sacar datos estadísticos como las medias, desviaciones, máximos y mínimos solo enviando los valores.
+
+Utilizado en el proyecto para las medias del curso tanto en las calificaciones como los registros.
+
+\subsection{Gson}
+\href{https://github.com/google/gson}{Gson 2.8.5} posibilita la importación y exportación de textos JSON a partir de los métodos \textit{toJson()} y \textit{fromJson()}.
+
+Ignorado de momento para el proyecto. A implementar en el futuro para guardar los datos de los registros de todos los usuarios.
+
+\subsection{SLF4J y Log4j}
+Ambas librerías está dedicado a registrar en fichero y/o consola las acciones realizadas durante la ejecución del programa. De gran utilidad para encontrar errores del programa. 
+Hay que tener en cuenta que \href{https://www.slf4j.org/}{SLF4J} es la capa de abstracción y \href{https://logging.apache.org/log4j}{Log4j} la implementación.
+
+\subsection{jsoup}
+\href{https://jsoup.org/}{jsoup 1.11.3} es una librería que trabaja con textos HTML, desde la descarga en páginas web hasta su tratamiento y extracción de datos de forma sencilla y cómoda.
+
+Ha resultado ser realmente útil, muy polivalente en las funcionalidades. Empleado para la descarga de los registros, las imágenes de los usuarios y analizar el contenido en una de las funciones de Moodle que devuelve como HTML.
+
+\subsection{ThreeTen Extra}
+\href{https://www.threeten.org/threeten-extra/}{ThreeTen Extra 1.5.0} proporciona varias formas de medir el tiempo no disponibles en el paquete de Java Time. Las clases de ThreeTen Extra se complementa con Java Time
+
+Ejemplos aplicados en el proyecto han sido la combinación de numero de semana y año, o trimestre y año.
+
+\section{Librerías de JavaScript}
+
+Al manejar una ventana de navegador web para mostrar las gráficas, se han apoyado por varias librerías de JavaScript.
+
+\subsection{Chart.js}
+\href{https://www.chartjs.org/}{Chart.js} es una librería de de visualización de datos convertidos en múltiples tipos de gráficas.
+
+Se ha mantenido está librería por su facilidad de crear las gráficas y sus múltiples opciones. Sin embargo por un error de la librería en el anterior proyecto, se ha actualizado Chart.js a la última versión disponible \href{https://www.chartjs.org/dist/2.8.0/Chart.min.js}{v2.8.0}
+
+
+
+
+

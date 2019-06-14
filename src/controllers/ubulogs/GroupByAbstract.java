@@ -69,7 +69,6 @@ public abstract class GroupByAbstract<T> implements Serializable {
 								Collectors.groupingBy(LogLine::getEventName,
 										Collectors.groupingBy(getGroupByFunction(), Collectors.counting())))));
 
-	
 		Gson gsonBuilder = new GsonBuilder().create();
 		LOGGER.info("JSON del contador de logs de componentes y eventos  para " + getTypeTime() + " "
 				+ gsonBuilder.toJson(countsEvents));
@@ -182,9 +181,11 @@ public abstract class GroupByAbstract<T> implements Serializable {
 		Map<Component, List<Double>> results = new HashMap<>();
 		for (Component component : components) {
 			List<Double> means = new ArrayList<>();
-			Map<T, DescriptiveStatistics> statistics = componentStatistics.get(component);
+			Map<T, DescriptiveStatistics> statistics = componentStatistics.computeIfAbsent(component,
+					k -> new HashMap<>());
 			for (T typeTime : range) {
-				DescriptiveStatistics descriptiveStatistics = statistics.get(typeTime);
+				DescriptiveStatistics descriptiveStatistics = statistics.computeIfAbsent(typeTime,
+						k -> new DescriptiveStatistics());
 				means.add(descriptiveStatistics.getMean());
 			}
 			results.put(component, means);
@@ -207,11 +208,13 @@ public abstract class GroupByAbstract<T> implements Serializable {
 			Component component = componentEvent.getComponent();
 			Event event = componentEvent.getEventName();
 
-			Map<Event, Map<T, DescriptiveStatistics>> eventStatistics = componentEventStatistics.get(component);
-			Map<T, DescriptiveStatistics> statistics = eventStatistics.get(event);
+			Map<Event, Map<T, DescriptiveStatistics>> eventStatistics = componentEventStatistics
+					.computeIfAbsent(component, k -> new HashMap<>());
+			Map<T, DescriptiveStatistics> statistics = eventStatistics.computeIfAbsent(event, k -> new HashMap<>());
 			List<Double> means = new ArrayList<>();
 			for (T typeTime : range) {
-				DescriptiveStatistics descriptiveStatistics = statistics.get(typeTime);
+				DescriptiveStatistics descriptiveStatistics = statistics.computeIfAbsent(typeTime,
+						k -> new DescriptiveStatistics());
 				means.add(descriptiveStatistics.getMean());
 			}
 			results.put(componentEvent, means);

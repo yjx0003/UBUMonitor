@@ -15,7 +15,7 @@ import model.Event;
  */
 public class I18n {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(I18n.class);
 	private static ResourceBundle rb;
 
 	/**

@@ -1,812 +1,528 @@
 {
-    "Activity report": {
-        "Activity report viewed": [
-            "The user with id '' viewed the outline activity report for the course with id ''."
-        ],
-        "Outline report viewed": [
-            "The user with id '' viewed the outline report for the user with id '' for the course with id ''."
-        ]
-    },
     "Assignment": {
         "A submission has been submitted.": [
-            "The user with id '' has submitted the submission with id '' for the assignment with course module id ''."
-        ],
-        "All the submissions are being downloaded.": [
-            "The user with id '' has downloaded all the submissions for the assignment with course module id ''."
-        ],
-        "An extension has been granted.": [
-            "The user with id '' has granted an extension for the user with id '' for the assignment with course module id ''."
-        ],
-        "Assignment override created": [
-            "The user with id '' created the override with id '' for the assign with course module id '' for the user with id ''."
-        ],
-        "Assignment override deleted": [
-            "The user with id '' deleted the override with id '' for the assign with course module id '' for the user with id ''."
-        ],
-        "Assignment override updated": [
-            "The user with id '' updated the override with id '' for the assign with course module id '' for the user with id ''."
-        ],
-        "Course module instance list viewed": [
-            "The user with id '' viewed the instance list for the module '' in the course with id ''."
+            "The user with id 'INTEGER' has submitted the submission with id 'INTEGER' for the assignment with course module id 'INTEGER'."
         ],
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ],
         "Grading form viewed": [
-            "The user with id '' viewed the grading form for the user with id '' for the assignment with course module id ''."
+            "The user with id 'INTEGER' viewed the grading form for the user with id 'INTEGER' for the assignment with course module id 'INTEGER'."
         ],
         "Grading table viewed": [
-            "The user with id '' viewed the grading table for the assignment with course module id ''."
+            "The user with id 'INTEGER' viewed the grading table for the assignment with course module id 'INTEGER'."
         ],
         "Submission confirmation form viewed.": [
-            "The user with id '' viewed the submission confirmation form for the assignment with course module id ''."
+            "The user with id 'INTEGER' viewed the submission confirmation form for the assignment with course module id 'INTEGER'."
         ],
         "Submission form viewed.": [
-            "The user with id '' viewed their submission for the assignment with course module id ''.",
-            "The user with id '' viewed the submission form for the user with id '' for the assignment with course module id ''."
-        ],
-        "Submission viewed.": [
-            "The user with id '' viewed the submission for the user with id '' for the assignment with course module id ''."
-        ],
-        "The state of the workflow has been updated.": [
-            "The user with id '' has set the workflow state of the user with id '' to the state '' for the assignment with course module id ''."
-        ],
-        "The status of the submission has been updated.": [
-            "The user with id '' has updated the status of the submission with id '' for the assignment with course module id '' to the status ''."
+            "The user with id 'INTEGER' viewed their submission for the assignment with course module id 'INTEGER'."
         ],
         "The status of the submission has been viewed.": [
-            "The user with id '' has viewed the submission status page for the assignment with course module id ''."
+            "The user with id 'INTEGER' has viewed the submission status page for the assignment with course module id 'INTEGER'."
         ],
         "The submission has been graded.": [
-            "The user with id '' has graded the submission '' for the user with id '' for the assignment with course module id ''."
-        ],
-        "The submissions have been locked for a user.": [
-            "The user with id '' locked the submission for the user with id '' for the assignment with course module id ''."
-        ],
-        "The submissions have been unlocked for a user.": [
-            "The user with id '' locked the submission for the user with id '' for the assignment with course module id ''."
+            "The user with id 'INTEGER' has graded the submission 'INTEGER' for the user with id 'INTEGER' for the assignment with course module id 'INTEGER'."
         ],
         "The user has accepted the statement of the submission.": [
-            "The user with id '' has accepted the statement of the submission with id '' for the assignment with course module id ''."
+            "The user with id 'INTEGER' has accepted the statement of the submission with id 'INTEGER' for the assignment with course module id 'INTEGER'."
         ]
     },
     "Book": {
         "Chapter created": [
-            "The user with id '' created the chapter with id '' for the book with course module id ''."
+            "The user with id 'INTEGER' created the chapter with id 'INTEGER' for the book with course module id 'INTEGER'."
         ],
         "Chapter updated": [
-            "The user with id '' updated the chapter with id '' for the book with course module id ''."
+            "The user with id 'INTEGER' updated the chapter with id 'INTEGER' for the book with course module id 'INTEGER'."
         ],
         "Chapter viewed": [
-            "The user with id '' viewed the chapter with id '' for the book with course module id ''."
+            "The user with id 'INTEGER' viewed the chapter with id 'INTEGER' for the book with course module id 'INTEGER'."
         ],
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
-        ]
-    },
-    "Book printing": {
-        "Book printed": [
-            "The user with id '' has printed the book with course module id ''."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ]
     },
     "Chat": {
-        "Course module instance list viewed": [
-            "The user with id '' viewed the instance list for the module '' in the course with id ''."
-        ],
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ],
         "Message sent": [
-            "The user with id '' has sent a message in the chat with course module id\n            ''."
+            "The user with id 'INTEGER' has sent a message in the chat with course module id\n            'INTEGER'."
         ],
         "Sessions viewed": [
-            "The user with id '' has viewed the sessions of the chat with course module id\n            ''."
+            "The user with id 'INTEGER' has viewed the sessions of the chat with course module id\n            'INTEGER'."
         ]
     },
     "Choice": {
         "Choice answer added": [
-            "The user with id '' has added the option with id '' for the\n            user with id '' from the choice activity with course module id ''."
+            "The user with id 'INTEGER' has added the option with id 'INTEGER' for the\n            user with id 'INTEGER' from the choice activity with course module id 'INTEGER'."
         ],
         "Choice made": [
-            "The user with id '' made the choice with id '' in the choice activity\n            with course module id ''."
+            "The user with id 'INTEGER' made the choice with id 'INTEGER' in the choice activity\n            with course module id 'INTEGER'."
         ],
         "Choice report viewed": [
-            "The user with id '' has viewed the report for the choice activity with course module id\n            ''"
-        ],
-        "Course module instance list viewed": [
-            "The user with id '' viewed the instance list for the module '' in the course with id ''."
+            "The user with id 'INTEGER' has viewed the report for the choice activity with course module id\n            'INTEGER'"
         ],
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ]
     },
     "Comments": {
         "Comment created": [
-            "The user with id '' added the comment with id '' to the '' with course module id ''."
+            "The user with id 'INTEGER' added the comment with id 'INTEGER' to the 'STRING' with course module id 'INTEGER'."
         ],
         "Comment deleted": [
-            "The user with id '' deleted the comment with id '' from the '' with course module id ''."
+            "The user with id 'INTEGER' deleted the comment with id 'INTEGER' from the 'STRING' with course module id 'INTEGER'."
         ]
     },
     "Course completion": {
         "Completion report viewed": [
-            "The user with id '' viewed the completion report for the course with id ''."
+            "The user with id 'INTEGER' viewed the completion report for the course with id 'INTEGER'."
         ]
     },
     "Course participation": {
         "Participation report viewed": [
-            "The user with id '' viewed the course participation report for the course with id ''."
+            "The user with id 'INTEGER' viewed the course participation report for the course with id 'INTEGER'."
         ]
     },
     "Database": {
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ],
         "Field created": [
-            "The user with id '' created the field with id '' for the data activity with course module id ''."
+            "The user with id 'INTEGER' created the field with id 'INTEGER' for the data activity with course module id 'INTEGER'."
         ],
         "Field updated": [
-            "The user with id '' updated the field with id '' in the data activity with course module id ''."
+            "The user with id 'INTEGER' updated the field with id 'INTEGER' in the data activity with course module id 'INTEGER'."
         ],
         "Record created": [
-            "The user with id '' created the data record with id '' for the data activity with course module id ''."
+            "The user with id 'INTEGER' created the data record with id 'INTEGER' for the data activity with course module id 'INTEGER'."
         ],
         "Record deleted": [
-            "The user with id '' deleted the data record with id '' in the data activity with course module id ''."
+            "The user with id 'INTEGER' deleted the data record with id 'INTEGER' in the data activity with course module id 'INTEGER'."
         ],
         "Record updated": [
-            "The user with id '' updated the data record with id '' in the data activity with course module id ''."
+            "The user with id 'INTEGER' updated the data record with id 'INTEGER' in the data activity with course module id 'INTEGER'."
         ],
         "Template updated": [
-            "The user with id '' updated the template for the data activity with course module id ''."
+            "The user with id 'INTEGER' updated the template for the data activity with course module id 'INTEGER'."
         ],
         "Templates viewed": [
-            "The user with id '' viewed the template for the data activity with course module id ''."
+            "The user with id 'INTEGER' viewed the template for the data activity with course module id 'INTEGER'."
         ]
     },
     "Event monitor": {
         "Rule created": [
-            "The user with id '' created the event monitor rule with id ''."
+            "The user with id 'INTEGER' created the event monitor rule with id 'INTEGER'."
         ],
         "Subscription created": [
-            "The user with id '' created the event monitor subscription with id ''."
-        ]
-    },
-    "Excel spreadsheet": {
-        "XLS grade exported": [
-            "The user with id '' exported grades using the xls export in the gradebook."
+            "The user with id 'INTEGER' created the event monitor subscription with id 'INTEGER'."
         ]
     },
     "External tool": {
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ]
     },
     "Feedback": {
-        "Course module instance list viewed": [
-            "The user with id '' viewed the instance list for the module '' in the course with id ''."
-        ],
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
-        ],
-        "Response submitted": [
-            "The user with id '' submitted response for '' activity with course module id ''."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ]
     },
     "File": {
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ]
     },
     "File submissions": {
         "A file has been uploaded.": [
-            "The user with id '' has uploaded a file to the submission with id '' in the assignment activity with course module id ''."
+            "The user with id 'INTEGER' has uploaded a file to the submission with id 'INTEGER' in the assignment activity with course module id 'INTEGER'."
         ],
         "Submission created.": [
-            "The user with id '' created a file submission and uploaded '' file/s in the assignment with course module id ''.",
-            "The user with id '' created a file submission and uploaded '' file/s in the assignment with course module id '' for the group with id ''."
+            "The user with id 'INTEGER' created a file submission and uploaded 'INTEGER' file/s in the assignment with course module id 'INTEGER'.",
+            "The user with id 'INTEGER' created a file submission and uploaded 'INTEGER' file/s in the assignment with course module id 'INTEGER' for the group with id 'INTEGER'."
         ],
         "Submission updated.": [
-            "The user with id '' updated a file submission and uploaded '' file/s in the assignment with course module id ''.",
-            "The user with id '' updated a file submission and uploaded '' file/s in the assignment with course module id '' for the group with id ''."
+            "The user with id 'INTEGER' updated a file submission and uploaded 'INTEGER' file/s in the assignment with course module id 'INTEGER'."
         ]
     },
     "Folder": {
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ],
         "Folder updated": [
-            "The user with id '' updated the folder activity with course module id ''."
-        ],
-        "Zip archive of folder downloaded": [
-            "The user with id '' downloaded a zip archive containing all the files from the folder activity with course module id ''."
+            "The user with id 'INTEGER' updated the folder activity with course module id 'INTEGER'."
         ]
     },
     "Forum": {
-        "Course module instance list viewed": [
-            "The user with id '' viewed the instance list for the module '' in the course with id ''."
-        ],
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
-        ],
-        "Course searched": [
-            "The user with id '' has searched the course with id '' for forum posts containing \"\"."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ],
         "Discussion created": [
-            "The user with id '' has created the discussion with id '' in the forum with course module id ''."
+            "The user with id 'INTEGER' has created the discussion with id 'INTEGER' in the forum with course module id 'INTEGER'."
         ],
         "Discussion deleted": [
-            "The user with id '' has deleted the discussion with id '' in the forum with course module id ''."
-        ],
-        "Discussion moved": [
-            "The user with id '' has moved the discussion with id '' from the forum with id '' to the forum with id ''."
-        ],
-        "Discussion pinned": [
-            "The user  has pinned the discussion  in the forum "
+            "The user with id 'INTEGER' has deleted the discussion with id 'INTEGER' in the forum with course module id 'INTEGER'."
         ],
         "Discussion subscription created": [
-            "The user with id '' subscribed the user with id '' to the discussion  with id '' in the forum with the course module id ''."
-        ],
-        "Discussion subscription deleted": [
-            "The user with id '' unsubscribed the user with id '' from the discussion  with id '' in the forum with the course module id ''."
+            "The user with id 'INTEGER' subscribed the user with id 'INTEGER' to the discussion  with id 'INTEGER' in the forum with the course module id 'INTEGER'."
         ],
         "Discussion viewed": [
-            "The user with id '' has viewed the discussion with id '' in the forum with course module id ''."
+            "The user with id 'INTEGER' has viewed the discussion with id 'INTEGER' in the forum with course module id 'INTEGER'."
         ],
         "Post created": [
-            "The user with id '' has created the post with id '' in the discussion with id '' in the forum with course module id ''."
+            "The user with id 'INTEGER' has created the post with id 'INTEGER' in the discussion with id 'INTEGER' in the forum with course module id 'INTEGER'."
         ],
         "Post deleted": [
-            "The user with id '' has deleted the post with id '' in the discussion with id '' in the forum with course module id ''."
+            "The user with id 'INTEGER' has deleted the post with id 'INTEGER' in the discussion with id 'INTEGER' in the forum with course module id 'INTEGER'."
         ],
         "Post updated": [
-            "The user with id '' has updated the post with id '' in the discussion with id '' in the forum with course module id ''."
+            "The user with id 'INTEGER' has updated the post with id 'INTEGER' in the discussion with id 'INTEGER' in the forum with course module id 'INTEGER'."
         ],
         "Some content has been posted.": [
-            "The user with id '' has posted content in the forum post with id '' in the discussion '' located in the forum with course module id ''."
+            "The user with id 'INTEGER' has posted content in the forum post with id 'INTEGER' in the discussion 'INTEGER' located in the forum with course module id 'INTEGER'."
         ],
         "Subscribers viewed": [
-            "The user with id '' has viewed the subscribers list for the forum with course module id ''."
+            "The user with id 'INTEGER' has viewed the subscribers list for the forum with course module id 'INTEGER'."
         ],
         "Subscription created": [
-            "The user with id '' subscribed the user with id '' to the forum with course module id ''."
+            "The user with id 'INTEGER' subscribed the user with id 'INTEGER' to the forum with course module id 'INTEGER'."
         ],
         "Subscription deleted": [
-            "The user with id '' unsubscribed the user with id '' to the forum with course module id ''."
-        ],
-        "User report viewed": [
-            "The user with id '' has viewed the user report for the user with id '' in the course with id '' with viewing mode ''."
+            "The user with id 'INTEGER' unsubscribed the user with id 'INTEGER' to the forum with course module id 'INTEGER'."
         ]
     },
     "Glossary": {
         "Category has been created": [
-            "The user with id '' created the category with id '' for the glossary activity with course module id ''."
+            "The user with id 'INTEGER' created the category with id 'INTEGER' for the glossary activity with course module id 'INTEGER'."
         ],
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ],
         "Entry has been created": [
-            "The user with id '' has created the glossary entry with id '' for the glossary activity with course module id ''."
+            "The user with id 'INTEGER' has created the glossary entry with id 'INTEGER' for the glossary activity with course module id 'INTEGER'."
         ],
         "Entry has been updated": [
-            "The user with id '' has updated the glossary entry with id '' in the glossary activity with course module id ''."
-        ],
-        "Entry has been viewed": [
-            "The user with id '' has viewed the glossary entry with id '' in the glossary activity with course module id ''."
+            "The user with id 'INTEGER' has updated the glossary entry with id 'INTEGER' in the glossary activity with course module id 'INTEGER'."
         ]
     },
     "Grader report": {
         "Grader report viewed": [
-            "The user with id '' viewed the grader report in the gradebook."
-        ]
-    },
-    "Guía Docente": {
-        "Evaluation system created": [
-            "Evaluation system created"
-        ],
-        "Evaluation system modified": [
-            "Evaluation system modified"
-        ],
-        "Outstanding ratings modified": [
-            "Outstanding ratings modified"
-        ],
-        "Subject modified": [
-            "Subject modified"
-        ],
-        "Unit modified": [
-            "Unit modified"
-        ]
-    },
-    "HotPot module": {
-        "Course module instance list viewed": [
-            "The user with id '' viewed the instance list for the module '' in the course with id ''."
-        ],
-        "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
-        ],
-        "HotPot attempt started": [
-            "The user with id \"\" started an attempt at the \"\" activity with course module id \"\""
-        ],
-        "HotPot attempt submitted": [
-            "The user with id \"\" submitted an attempt at the \"\" activity with course module id \"\""
+            "The user with id 'INTEGER' viewed the grader report in the gradebook."
         ]
     },
     "IMS content package": {
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
-        ]
-    },
-    "Journal": {
-        "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
-        ],
-        "Journal entries viewed": [
-            "The user with id '' has viewed the entries for the journal activity with the course module id\n            ''"
-        ],
-        "Journal entry created": [
-            "The user with id '' has created an entry for the journal activity with the course module id ''"
-        ],
-        "Journal entry updated": [
-            "The user with id '' has updated an entry for the journal activity with the course module id ''"
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ]
     },
     "Lesson": {
         "Content page viewed": [
-            "The user with id '' has viewed the content page with id '' in the lesson activity with course module id ''."
-        ],
-        "Course module instance list viewed": [
-            "The user with id '' viewed the instance list for the module '' in the course with id ''."
+            "The user with id 'INTEGER' has viewed the content page with id 'INTEGER' in the lesson activity with course module id 'INTEGER'."
         ],
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ],
         "Lesson ended": [
-            "The user with id '' ended the lesson with course module id ''."
+            "The user with id 'INTEGER' ended the lesson with course module id 'INTEGER'."
         ],
         "Lesson started": [
-            "The user with id '' started the lesson with course module id ''."
+            "The user with id 'INTEGER' started the lesson with course module id 'INTEGER'."
         ],
         "Page created": [
-            "The user with id '' has created a Matching page with the id '' in the lesson activity with course module id ''.",
-            "The user with id '' has created a Content page with the id '' in the lesson activity with course module id ''."
+            "The user with id 'INTEGER' has created a Matching page with the id 'INTEGER' in the lesson activity with course module id 'INTEGER'.",
+            "The user with id 'INTEGER' has created a Content page with the id 'INTEGER' in the lesson activity with course module id 'INTEGER'."
         ],
         "Page moved": [
-            "The user with id '' has moved a Content page with the id '' to the slot after the page with the id '' and before the page with the id '' in the lesson activity with course module id ''."
+            "The user with id 'INTEGER' has moved a Content page with the id 'INTEGER' to the slot after the page with the id 'INTEGER' and before the page with the id 'INTEGER' in the lesson activity with course module id 'INTEGER'."
         ],
         "Page updated": [
-            "The user with id '' has updated the Content page with the id '' in the lesson activity with course module id ''.",
-            "The user with id '' has updated the True/false page with the id '' in the lesson activity with course module id ''."
+            "The user with id 'INTEGER' has updated the Content page with the id 'INTEGER' in the lesson activity with course module id 'INTEGER'.",
+            "The user with id 'INTEGER' has updated the True/false page with the id 'INTEGER' in the lesson activity with course module id 'INTEGER'."
         ],
         "Question answered": [
-            "The user with id '' has answered the Matching question with id '' in the lesson activity with course module id ''."
+            "The user with id 'INTEGER' has answered the Matching question with id 'INTEGER' in the lesson activity with course module id 'INTEGER'."
         ],
         "Question viewed": [
-            "The user with id '' has viewed the Multichoice question with id '' in the lesson activity with course module id ''.",
-            "The user with id '' has viewed the Matching question with id '' in the lesson activity with course module id ''."
+            "The user with id 'INTEGER' has viewed the Multichoice question with id 'INTEGER' in the lesson activity with course module id 'INTEGER'.",
+            "The user with id 'INTEGER' has viewed the Matching question with id 'INTEGER' in the lesson activity with course module id 'INTEGER'."
         ]
     },
     "Live logs": {
         "Live log report viewed": [
-            "The user with id '' viewed the live log report for the course with id ''."
+            "The user with id 'INTEGER' viewed the live log report for the course with id 'INTEGER'."
         ]
     },
     "Logs": {
         "Log report viewed": [
-            "The user with id '' viewed the log report for the course with id ''."
+            "The user with id 'INTEGER' viewed the log report for the course with id 'INTEGER'."
         ],
         "User log report viewed": [
-            "The user with id '' viewed the user log report for the user with id ''."
+            "The user with id 'INTEGER' viewed the user log report for the user with id 'INTEGER'."
         ]
     },
     "Online text submissions": {
         "An online text has been uploaded.": [
-            "The user with id '' has saved an online text submission with id '' in the assignment activity with course module id ''."
+            "The user with id 'INTEGER' has saved an online text submission with id 'INTEGER' in the assignment activity with course module id 'INTEGER'."
         ],
         "Submission created.": [
-            "The user with id '' created an online text submission with '' words in the assignment with course module id ''.",
-            "The user with id '' created an online text submission with '' words in the assignment with course module id '' for the group with id ''."
-        ],
-        "Submission updated.": [
-            "The user with id '' updated an online text submission with '' words in the assignment with course module id ''.",
-            "The user with id '' updated an online text submission with '' words in the assignment with course module id '' for the group with id ''."
-        ]
-    },
-    "OpenDocument spreadsheet": {
-        "OpenDocument grade exported": [
-            "The user with id '' exported grades using the ods export in the gradebook."
-        ]
-    },
-    "Outcomes report": {
-        "Grade outcomes report viewed": [
-            "The user with id '' viewed the outcomes report in the gradebook."
-        ]
-    },
-    "Overview report": {
-        "Grade overview report viewed": [
-            "The user with id '' viewed the overview report in the gradebook."
+            "The user with id 'INTEGER' created an online text submission with 'INTEGER' words in the assignment with course module id 'INTEGER'."
         ]
     },
     "Page": {
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
-        ]
-    },
-    "Plain text file": {
-        "TXT grade exported": [
-            "The user with id '' exported grades using the txt export in the gradebook."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ]
     },
     "Quiz": {
-        "Course module instance list viewed": [
-            "The user with id '' viewed the instance list for the module '' in the course with id ''."
-        ],
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
-        ],
-        "Question manually graded": [
-            "The user with id '' manually graded the question with id '' for the attempt with id '' for the quiz with course module id ''."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ],
         "Quiz attempt abandoned": [
-            "The user with id '' has had their attempt with id '' marked as abandoned for the quiz with course module id ''."
+            "The user with id 'INTEGER' has had their attempt with id 'INTEGER' marked as abandoned for the quiz with course module id 'INTEGER'."
         ],
         "Quiz attempt deleted": [
-            "The user with id '' deleted the attempt with id '' belonging to the quiz with course module id '' for the user with id ''."
+            "The user with id 'INTEGER' deleted the attempt with id 'INTEGER' belonging to the quiz with course module id 'INTEGER' for the user with id 'INTEGER'."
         ],
         "Quiz attempt preview started": [
-            "The user with id '' has had their attempt with id '' previewed by the user with id '' for the quiz with course module id ''."
+            "The user with id 'INTEGER' has had their attempt with id 'INTEGER' previewed by the user with id 'INTEGER' for the quiz with course module id 'INTEGER'."
         ],
         "Quiz attempt reviewed": [
-            "The user with id '' has had their attempt with id '' reviewed by the user with id '' for the quiz with course module id ''."
+            "The user with id 'INTEGER' has had their attempt with id 'INTEGER' reviewed by the user with id 'INTEGER' for the quiz with course module id 'INTEGER'."
         ],
         "Quiz attempt started": [
-            "The user with id '' has started the attempt with id '' for the quiz with course module id ''."
+            "The user with id 'INTEGER' has started the attempt with id 'INTEGER' for the quiz with course module id 'INTEGER'."
         ],
         "Quiz attempt submitted": [
-            "The user with id '' has submitted the attempt with id '' for the quiz with course module id ''."
+            "The user with id 'INTEGER' has submitted the attempt with id 'INTEGER' for the quiz with course module id 'INTEGER'."
         ],
         "Quiz attempt summary viewed": [
-            "The user with id '' has viewed the summary for the attempt with id '' belonging to the user with id '' for the quiz with course module id ''."
-        ],
-        "Quiz attempt time limit exceeded": [
-            "The quiz attempt with id '' belonging to the quiz with course module id '' for the user with id '' became overdue."
+            "The user with id 'INTEGER' has viewed the summary for the attempt with id 'INTEGER' belonging to the user with id 'INTEGER' for the quiz with course module id 'INTEGER'."
         ],
         "Quiz attempt viewed": [
-            "The user with id '' has viewed the attempt with id '' belonging to the user with id '' for the quiz with course module id ''."
+            "The user with id 'INTEGER' has viewed the attempt with id 'INTEGER' belonging to the user with id 'INTEGER' for the quiz with course module id 'INTEGER'."
         ],
         "Quiz edit page viewed": [
-            "The user with id '' viewed the edit page for the quiz with course module id ''."
-        ],
-        "Quiz override created": [
-            "The user with id '' created the override with id '' for the quiz with course module id '' for the group with id ''."
-        ],
-        "Quiz override deleted": [
-            "The user with id '' deleted the override with id '' for the quiz with course module id '' for the group with id ''."
+            "The user with id 'INTEGER' viewed the edit page for the quiz with course module id 'INTEGER'."
         ],
         "Quiz report viewed": [
-            "The user with id '' viewed the report '' for the quiz with course module id ''."
+            "The user with id 'INTEGER' viewed the report 'STRING' for the quiz with course module id 'INTEGER'."
         ]
     },
     "Recycle bin": {
         "Item created": [
-            "Item created with ID ."
+            "Item created with ID INTEGER."
         ],
         "Item deleted": [
-            "Item with ID  deleted."
-        ],
-        "Item restored": [
-            "Item with ID  restored."
+            "Item with ID INTEGER deleted."
         ]
     },
     "SCORM package": {
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ],
         "Sco launched": [
-            "The user with id '' launched the sco with id '' for the scorm with course module id ''."
+            "The user with id 'INTEGER' launched the sco with id 'INTEGER' for the scorm with course module id 'INTEGER'."
         ],
         "Submitted SCORM raw score": [
-            "The user with the id '' submitted the element '' with the value of '' for the attempt with the id '' for a scorm activity with the course module id ''."
+            "The user with the id 'INTEGER' submitted the element 'STRING' with the value of 'INTEGER' for the attempt with the id 'INTEGER' for a scorm activity with the course module id 'INTEGER'."
         ],
         "Submitted SCORM status": [
-            "The user with the id '' submitted the element '' with the value of '' for the attempt with the id '' for a scorm activity with the course module id ''."
-        ]
-    },
-    "Single view": {
-        "Grade single view report viewed.": [
-            "The user with id '' viewed the singleview report in the gradebook."
-        ]
-    },
-    "Statistics": {
-        "User statistics report viewed": [
-            "The user with id '' viewed the user statistics report for the user with id ''."
+            "The user with the id 'INTEGER' submitted the element 'STRING' with the value of 'STRING' for the attempt with the id 'INTEGER' for a scorm activity with the course module id 'INTEGER'."
         ]
     },
     "Submission comments": {
         "Comment created": [
-            "The user with id '' added the comment with id '' to the submission with id '' for the assignment with course module id ''."
-        ],
-        "Comment deleted": [
-            "The user with id '' deleted the comment with id '' from the submission with id '' for the assignment with course module id ''."
+            "The user with id 'INTEGER' added the comment with id 'INTEGER' to the submission with id 'INTEGER' for the assignment with course module id 'INTEGER'."
         ]
     },
     "Survey": {
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ],
         "Survey report viewed": [
-            "The user with id '' viewed the report for the survey with course module id ''."
+            "The user with id 'INTEGER' viewed the report for the survey with course module id 'INTEGER'."
         ],
         "Survey response submitted": [
-            "The user with id '' submitted a response for the survey with course module id ''."
+            "The user with id 'INTEGER' submitted a response for the survey with course module id 'INTEGER'."
         ]
     },
     "System": {
-        "Badge listing viewed": [
-            "The user with id '' has viewed the list of available badges for the course with the id ''."
-        ],
         "Calendar event created": [
-            "The user with id '' created the event '' with id ''."
+            "The user with id 'INTEGER' created the event 'STRING' with id 'INTEGER'."
         ],
         "Calendar event deleted": [
-            "The user with id '' deleted the event '' with id ''."
+            "The user with id 'INTEGER' deleted the event 'STRING' with id 'INTEGER'."
         ],
         "Calendar event updated": [
-            "The user with id '' updated the event '' with id ''."
-        ],
-        "Calendar subscription updated": [
-            "User  has updated a calendar\n        subscription with id  of event type course."
+            "The user with id 'INTEGER' updated the event 'STRING' with id 'INTEGER'."
         ],
         "Course activity completion updated": [
-            "The user with id '' updated the completion state for the course module with id '' for the user with id ''."
-        ],
-        "Course backup created": [
-            "The user with id '' created a backup of the course with the id ''."
+            "The user with id 'INTEGER' updated the completion state for the course module with id 'INTEGER' for the user with id 'INTEGER'."
         ],
         "Course completed": [
-            "The user with id '' completed the course with id ''."
+            "The user with id 'INTEGER' completed the course with id 'INTEGER'."
         ],
         "Course completion updated": [
-            "The user with id '' updated the requirements to complete the course with id ''."
+            "The user with id 'INTEGER' updated the requirements to complete the course with id 'INTEGER'."
         ],
         "Course content deleted": [
-            "The user with id '' deleted content from course with id ''."
+            "The user with id 'INTEGER' deleted content from course with id 'INTEGER'."
         ],
         "Course created": [
-            "The user with id '' created the course with id ''."
+            "The user with id 'INTEGER' created the course with id 'INTEGER'."
         ],
         "Course module created": [
-            "The user with id '' created the '' activity with course module id ''.",
-            "The user with id '' created the ''''."
+            "The user with id 'INTEGER' created the 'STRING' activity with course module id 'INTEGER'."
         ],
         "Course module deleted": [
-            "The user with id '' deleted the '' activity with course module id ''."
-        ],
-        "Course module instance list viewed": [
-            "The user with id '' viewed the list of resources in the course with id ''."
+            "The user with id 'INTEGER' deleted the 'STRING' activity with course module id 'INTEGER'."
         ],
         "Course module updated": [
-            "The user with id '' updated the '' activity with course module id ''."
-        ],
-        "Course reset ended": [
-            "The reset of the course with id '' has ended."
-        ],
-        "Course reset started": [
-            "The user with id '' started the reset of the course with id ''."
+            "The user with id 'INTEGER' updated the 'STRING' activity with course module id 'INTEGER'."
         ],
         "Course restored": [
-            "The user with id '' restored the course with id ''.",
-            "The user with id '' restored old course with id '' to a new course with id ''."
+            "The user with id 'INTEGER' restored the course with id 'INTEGER'."
         ],
         "Course section created": [
-            "The user with id '' created section number '' for the course with id ''"
+            "The user with id 'INTEGER' created section number 'INTEGER' for the course with id 'INTEGER'"
         ],
         "Course section deleted": [
-            "The user with id '' deleted section number '' (section name '') for the course with id ''"
+            "The user with id 'INTEGER' deleted section number 'INTEGER' (section name 'STRING') for the course with id 'INTEGER'"
         ],
         "Course section updated": [
-            "The user with id '' updated section number '' for the course with id ''"
+            "The user with id 'INTEGER' updated section number 'INTEGER' for the course with id 'INTEGER'"
         ],
         "Course summary viewed": [
-            "The user with id '' viewed the course information for the course with id ''."
+            "The user with id 'INTEGER' viewed the course information for the course with id 'INTEGER'."
         ],
         "Course updated": [
-            "The user with id '' updated the course with id ''."
+            "The user with id 'INTEGER' updated the course with id 'INTEGER'."
         ],
         "Course user report viewed": [
-            "The user with id '' viewed the user report for the course with id '' for user with id ''."
+            "The user with id 'INTEGER' viewed the user report for the course with id 'INTEGER' for user with id 'INTEGER'."
         ],
         "Course viewed": [
-            "The user with id '' viewed the course with id ''.",
-            "The user with id '' viewed the section number '' of the course with id ''."
+            "The user with id 'INTEGER' viewed the course with id 'INTEGER'.",
+            "The user with id 'INTEGER' viewed the section number 'INTEGER' of the course with id 'INTEGER'."
         ],
         "Enrolment instance created": [
-            "The user with id '' created the instance of enrolment method '' with id ''."
+            "The user with id 'INTEGER' created the instance of enrolment method 'STRING' with id 'INTEGER'."
         ],
         "Enrolment instance updated": [
-            "The user with id '' updated the instance of enrolment method '' with id ''."
+            "The user with id 'INTEGER' updated the instance of enrolment method 'STRING' with id 'INTEGER'."
         ],
         "Evidence created.": [
-            "The user with id '' created an evidence with id ''."
+            "The user with id 'INTEGER' created an evidence with id 'INTEGER'."
         ],
         "Grade deleted": [
-            "The user with id '' deleted the grade with id '' for the user with id '' for the grade item with id ''."
-        ],
-        "Group assigned to grouping": [
-            "The user with id '' assigned the group with id '' to the grouping with id ''."
+            "The user with id 'INTEGER' deleted the grade with id 'INTEGER' for the user with id 'INTEGER' for the grade item with id 'INTEGER'."
         ],
         "Group created": [
-            "The user with id '' created the group with id ''."
-        ],
-        "Group deleted": [
-            "The user with id '' deleted the group with id ''."
+            "The user with id 'INTEGER' created the group with id 'INTEGER'."
         ],
         "Group member added": [
-            "The user with id '' added the user with id '' to the group with id ''."
+            "The user with id 'INTEGER' added the user with id 'INTEGER' to the group with id 'INTEGER'."
         ],
         "Group member removed": [
-            "The user with id '' removed the user with id '' to the group with id ''."
+            "The user with id 'INTEGER' removed the user with id 'INTEGER' to the group with id 'INTEGER'."
         ],
         "Group updated": [
-            "The user with id '' updated the group with id ''."
-        ],
-        "Grouping created": [
-            "The user with id '' created the grouping with id ''."
-        ],
-        "Grouping deleted": [
-            "The user with id '' deleted the grouping with id ''."
+            "The user with id 'INTEGER' updated the group with id 'INTEGER'."
         ],
         "Note created": [
-            "The user with id '' created the note with id '' for the user with id ''."
+            "The user with id 'INTEGER' created the note with id 'INTEGER' for the user with id 'INTEGER'."
         ],
         "Notes viewed": [
-            "The user with id '' viewed the notes for the course with id ''."
-        ],
-        "Question category created": [
-            "The user with id '' created the question category with id ''."
-        ],
-        "Recent activity viewed": [
-            "The user with id '' viewed the recent activity report in the course with id ''."
+            "The user with id 'INTEGER' viewed the notes for the course with id 'INTEGER'."
         ],
         "Role assigned": [
-            "The user with id '' assigned the role with id '' to the user with id ''."
-        ],
-        "Role capabilities updated": [
-            "The user with id '' updated the capabilities for the role with id ''."
+            "The user with id 'INTEGER' assigned the role with id 'INTEGER' to the user with id 'INTEGER'."
         ],
         "Role unassigned": [
-            "The user with id '' unassigned the role with id '' from the user with id ''."
-        ],
-        "Scale created": [
-            "The user with id '' created the custom scale with id '' from the course with the id ''."
+            "The user with id 'INTEGER' unassigned the role with id 'INTEGER' from the user with id 'INTEGER'."
         ],
         "Tag added to an item": [
-            "The user with id '' added the tag with id '' to the item type '' with id ''."
+            "The user with id 'INTEGER' added the tag with id 'INTEGER' to the item type 'STRING' with id 'INTEGER'."
         ],
         "User competency rated in course.": [
-            "The user with id '' rated the user competency with id '' with '' rating in course with id ''"
+            "The user with id 'INTEGER' rated the user competency with id 'INTEGER' with 'INTEGER' rating in course with id 'INTEGER'"
         ],
         "User competency viewed in a course.": [
-            "The user with id '' viewed the user course competency with id '' in course with id ''"
+            "The user with id 'INTEGER' viewed the user course competency with id 'INTEGER' in course with id 'INTEGER'"
         ],
         "User enrolled in course": [
-            "The user with id '' enrolled the user with id '' using the enrolment method '' in the course with id ''."
+            "The user with id 'INTEGER' enrolled the user with id 'INTEGER' using the enrolment method 'STRING' in the course with id 'INTEGER'."
         ],
         "User graded": [
-            "The user with id '' updated the grade with id '' for the user with id '' for the grade item with id ''."
+            "The user with id 'INTEGER' updated the grade with id 'INTEGER' for the user with id 'INTEGER' for the grade item with id 'INTEGER'."
         ],
         "User list viewed": [
-            "The user with id '' viewed the list of users in the course with id ''."
+            "The user with id 'INTEGER' viewed the list of users in the course with id 'INTEGER'."
         ],
         "User profile viewed": [
-            "The user with id '' viewed the profile for the user with id '' in the course with id ''."
+            "The user with id 'INTEGER' viewed the profile for the user with id 'INTEGER' in the course with id 'INTEGER'."
         ],
         "User unenrolled from course": [
-            "The user with id '' unenrolled the user with id '' using the enrolment method '' from the course with id ''."
-        ]
-    },
-    "Turnitin Assignment 2": {
-        "Add Submission": [
-            "Entrega del usuario enviada a Turnitin ''",
-            "El usuario ha añadido una entrega ''"
-        ],
-        "List Submissions": [
-            "El usuario ha visto la lista de entregas al curso: ",
-            "El usuario vio la bandeja de entrada de su entrega en el curso: "
+            "The user with id 'INTEGER' unenrolled the user with id 'INTEGER' using the enrolment method 'STRING' from the course with id 'INTEGER'."
         ]
     },
     "URL": {
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ]
     },
     "User report": {
         "Grade user report viewed": [
-            "The user with id '' viewed the user report in the gradebook."
+            "The user with id 'INTEGER' viewed the user report in the gradebook."
         ]
     },
     "User tours": {
         "Step shown": [
-            "The user with id '' has viewed the tour with id '' at step index '' (id '') on the page with URL ''.",
-            "The user with id '' has viewed the tour with id ''''''''."
+            "The user with id 'INTEGER' has viewed the tour with id 'STRING' at step index 'STRING' (id 'INTEGER') on the page with URL 'STRING'."
         ],
         "Tour ended": [
-            "The user with id '' has ended the tour with id '' at step index '' (id '') on the page with URL ''.",
-            "The user with id '' has ended the tour with id '' at step index ''''''."
+            "The user with id 'INTEGER' has ended the tour with id 'INTEGER' at step index 'STRING' (id 'STRING') on the page with URL 'STRING'."
         ],
         "Tour started": [
-            "The user with id '' has started the tour with id '' on the page with URL ''."
+            "The user with id 'INTEGER' has started the tour with id 'INTEGER' on the page with URL 'STRING'."
         ]
     },
     "Wiki": {
         "Comment created": [
-            "The user with id '' added a comment with id '' on the page with id '' for the wiki with course module id ''."
+            "The user with id 'INTEGER' added a comment with id 'INTEGER' on the page with id 'INTEGER' for the wiki with course module id 'INTEGER'."
         ],
         "Comments viewed": [
-            "The user with id '' viewed the comments for the page with id '' for the wiki with course module id ''."
-        ],
-        "Course module instance list viewed": [
-            "The user with id '' viewed the instance list for the module '' in the course with id ''."
+            "The user with id 'INTEGER' viewed the comments for the page with id 'INTEGER' for the wiki with course module id 'INTEGER'."
         ],
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ],
         "Wiki history viewed": [
-            "The user with id '' viewed the history for the page with id '' for the wiki with course module id ''."
+            "The user with id 'INTEGER' viewed the history for the page with id 'INTEGER' for the wiki with course module id 'INTEGER'."
         ],
         "Wiki page created": [
-            "The user with id '' created the page with id '' for the wiki with course module id ''."
+            "The user with id 'INTEGER' created the page with id 'INTEGER' for the wiki with course module id 'INTEGER'."
         ],
         "Wiki page locks deleted": [
-            "The user with id '' deleted locks for the page with id '' for the wiki with course module id ''."
+            "The user with id 'INTEGER' deleted locks for the page with id 'INTEGER' for the wiki with course module id 'INTEGER'."
         ],
         "Wiki page map viewed": [
-            "The user with id '' viewed the wiki map for the page with id '' for the wiki with course module id ''."
+            "The user with id 'INTEGER' viewed the wiki map for the page with id 'INTEGER' for the wiki with course module id 'INTEGER'."
         ],
         "Wiki page updated": [
-            "The user with id '' updated the page with id '' for the wiki with course module id ''."
+            "The user with id 'INTEGER' updated the page with id 'INTEGER' for the wiki with course module id 'INTEGER'."
         ],
         "Wiki page viewed": [
-            "The user with id '' viewed the page with id '' for the wiki with course module id ''."
+            "The user with id 'INTEGER' viewed the page with id 'INTEGER' for the wiki with course module id 'INTEGER'."
         ]
     },
     "Workshop": {
-        "A submission has been uploaded.": [
-            "The user with id '' has uploaded the submission with id '' to the workshop activity with course module id ''."
-        ],
-        "Assessment evaluated": [
-            "The user with id '' has had their assessment attempt evaluated for the workshop with course module id ''."
-        ],
-        "Course module instance list viewed": [
-            "The user with id '' viewed the instance list for the module '' in the course with id ''."
-        ],
         "Course module viewed": [
-            "The user with id '' viewed the '' activity with course module id ''."
+            "The user with id 'INTEGER' viewed the 'STRING' activity with course module id 'INTEGER'."
         ],
         "Phase switched": [
-            "The user with id '' has switched the phase of the workshop with course module id '' to ''."
-        ],
-        "Submission assessed": [
-            "The user with id '' assessed the submission with id '' for the user with id '' in the workshop with course module id ''."
-        ],
-        "Submission created": [
-            "The user with id '' created the submission with id of '' for the workshop with course module id ''."
-        ],
-        "Submission deleted": [
-            "The user with id '' deleted the submission with id '' for the workshop with course module id ''."
-        ],
-        "Submission re-assessed": [
-            "The user with id '' reassessed the submission with id '' for the user with id '' in the workshop with course module id ''."
-        ],
-        "Submission updated": [
-            "The user with id '' updated the submission with id '' for the workshop with course module id ''."
-        ],
-        "Submission viewed": [
-            "The user with id '' viewed the submission with id '' for the workshop with course module id ''."
-        ]
-    },
-    "XML file": {
-        "XML grade exported": [
-            "The user with id '' exported grades using the xml export in the gradebook."
+            "The user with id 'INTEGER' has switched the phase of the workshop with course module id 'INTEGER' to 'INTEGER'."
         ]
     }
 }

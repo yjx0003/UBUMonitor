@@ -191,8 +191,8 @@ public class LogTypes {
 
 			put(ComponentEvent.get(Component.HOTPOT_MODULE, Event.COURSE_MODULE_INSTANCE_LIST_VIEWED), UserCourse.getInstance());
 			put(ComponentEvent.get(Component.HOTPOT_MODULE, Event.COURSE_MODULE_VIEWED), UserCmid.getInstance());
-			//put(ComponentEvent.get(Component.HOTPOT_MODULE, Event.HOTPOT_ATTEMPT_STARTED), UserCmid.getInstance());
-			//put(ComponentEvent.get(Component.HOTPOT_MODULE, Event.HOTPOT_ATTEMPT_SUBMITTED), UserCmid.getInstance());
+			put(ComponentEvent.get(Component.HOTPOT_MODULE, Event.HOTPOT_ATTEMPT_STARTED), UserCmid.getInstance());
+			put(ComponentEvent.get(Component.HOTPOT_MODULE, Event.HOTPOT_ATTEMPT_SUBMITTED), UserCmid.getInstance());
 
 			put(ComponentEvent.get(Component.IMS_CONTENT_PACKAGE, Event.COURSE_MODULE_VIEWED), UserCmid.getInstance());
 

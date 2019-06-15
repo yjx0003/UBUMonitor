@@ -59,6 +59,12 @@ public abstract class GroupByAbstract<T> implements Serializable {
 		return l -> components.contains(l.getComponent());
 	}
 
+	/**
+	 * Crea la estructura de contadores en un formato multi nivel.
+	 * 
+	 * @param logLines
+	 *            loneas de log
+	 */
 	public void setCounts(List<LogLine> logLines) {
 		// quitamos los nulos, sino salta excepcion en el Collectors.groupingBy
 		// LogLine::getUser
@@ -84,20 +90,43 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 	}
 
+	/**
+	 * Devuelve los rangos en formato string
+	 * 
+	 * @param start
+	 *            fecha de inico
+	 * @param end
+	 *            fecha de fin
+	 * @return rangos de un tipo de fecha en formato string
+	 */
 	public List<String> getRangeString(LocalDate start, LocalDate end) {
 		return getRangeString(getRange(start, end));
 	}
 
+	/**
+	 * Devuelve los rangos en formato string
+	 * 
+	 * @param rangeList
+	 *            lista de rangos
+	 * @return rangos de un tipo de fecha en formato string
+	 */
 	public List<String> getRangeString(List<T> rangeList) {
 		return rangeList.stream()
 				.map(getStringFormatFunction())
 				.collect(Collectors.toList());
 	}
 
+	/**
+	 * Genera las estadisticas para un usuario
+	 * 
+	 * @param enrolledUsers usuarios que se quiere generar las estadisticas
+	 * @param components componentes qeue se quiere generar
+	 * @param groupByRange rango de un tipo de agrupacion
+	 */
 	public void generateComponentsStatistics(List<EnrolledUser> enrolledUsers, List<Component> components,
 			List<T> groupByRange) {
 
-		if (components.isEmpty() || groupByRange.isEmpty()) {
+		if (enrolledUsers.isEmpty() || components.isEmpty() || groupByRange.isEmpty()) {
 			return;
 		}
 
@@ -128,10 +157,17 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 	}
 
+	/**
+	 * Genera las estadisticas para un usuario de componentes y eventos
+	 * 
+	 * @param enrolledUsers usuarios que se quiere generar las estadisticas
+	 * @param componentsEvents componentes y eventos qeue se quiere generar
+	 * @param groupByRange rango de un tipo de agrupacion
+	 */
 	public void generateComponentsEventsStastistics(List<EnrolledUser> enrolledUsers,
 			List<ComponentEvent> componentsEvents, List<T> groupByRange) {
 
-		if (componentsEvents.isEmpty() || groupByRange.isEmpty()) {
+		if (enrolledUsers.isEmpty() || componentsEvents.isEmpty() || groupByRange.isEmpty()) {
 			return;
 		}
 		componentEventStatistics = new HashMap<>();
@@ -170,6 +206,14 @@ public abstract class GroupByAbstract<T> implements Serializable {
 				+ groupByRange + ":\n" + componentEventStatistics);
 	}
 
+	/**
+	 * Devuelve las medias de los componentes de un listado de usuarios, componentes y fecha de inicio y de fin
+	 * @param enrolledUsers lista de usuarios
+	 * @param components lista de componentes
+	 * @param start fecha de inicio
+	 * @param end fecha de fin
+	 * @return medias de componentes
+	 */
 	public Map<Component, List<Double>> getComponentsMeans(List<EnrolledUser> enrolledUsers, List<Component> components,
 			LocalDate start,
 			LocalDate end) {
@@ -195,6 +239,17 @@ public abstract class GroupByAbstract<T> implements Serializable {
 		return results;
 	}
 
+	/**
+	 * Devuelve las medias para un listado de usuarios, componente y evento con una
+	 * fecha de inicio y fin.
+	 * 
+	 * @param enrolledUsers
+	 *            usuarios matriculados
+	 * @param componentsEvents
+	 * @param start
+	 * @param end
+	 * @return
+	 */
 	public Map<ComponentEvent, List<Double>> getComponentEventMeans(List<EnrolledUser> enrolledUsers,
 			List<ComponentEvent> componentsEvents,
 			LocalDate start, LocalDate end) {
@@ -223,6 +278,20 @@ public abstract class GroupByAbstract<T> implements Serializable {
 		return results;
 	}
 
+	/**
+	 * Devuelve los contadores de acceso a los registros de unos usuarios y
+	 * componentes
+	 * 
+	 * @param users
+	 *            usuarios
+	 * @param components
+	 *            componentes
+	 * @param start
+	 *            inicio
+	 * @param end
+	 *            fin
+	 * @return mapa multinivel
+	 */
 	public Map<EnrolledUser, Map<Component, List<Long>>> getUsersComponentCounts(List<EnrolledUser> users,
 			List<Component> components, LocalDate start, LocalDate end) {
 		List<T> groupByRange = getRange(start, end);
@@ -248,6 +317,20 @@ public abstract class GroupByAbstract<T> implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Devuelve los contadores de acceso para un listado de usuarios, componente y
+	 * evento en un rango de fechas
+	 * 
+	 * @param users
+	 *            usuarios
+	 * @param componentsEvents
+	 *            componente y evento
+	 * @param start
+	 *            inicio
+	 * @param end
+	 *            fin
+	 * @return contadores en multinivel
+	 */
 	public Map<EnrolledUser, Map<ComponentEvent, List<Long>>> getUserComponentEventCounts(List<EnrolledUser> users,
 			List<ComponentEvent> componentsEvents, LocalDate start, LocalDate end) {
 

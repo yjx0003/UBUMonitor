@@ -46,7 +46,9 @@ public class LogCreator {
 	private static final Set<String> NOT_AVAIBLE_COMPONENTS = new TreeSet<>();
 	private static final Set<String> NOT_AVAIBLE_EVENTS = new TreeSet<>();
 
-	private static final Pattern INTEGER_PATTERN = Pattern.compile("'(\\d+)'");
+	// Sin escapar: (['"])(?<idQuote>\d+)\1|[^'"](?<idNoQuote>\d+)[^'"]
+	private static final Pattern INTEGER_PATTERN = Pattern
+			.compile("(['\"])(?<idQuote>-?\\d+)\\1|[^'\"](?<idNoQuote>\\d+)[^'\"]");
 
 	public static final String TIME = "﻿Time";
 	public static final String USER_FULL_NAME = "User full name";
@@ -221,7 +223,8 @@ public class LogCreator {
 		try {
 			referencesLog.setLogReferencesAttributes(log, ids);
 		} catch (Exception e) {
-			LOGGER.error("Problema en linea de log: " + mapLog + " usando el gestor: " + referencesLog +" con los ids:"+ids, e);
+			LOGGER.error("Problema en linea de log: " + mapLog + " usando el gestor: " + referencesLog + " con los ids:"
+					+ ids, e);
 		}
 
 		return log;
@@ -258,8 +261,18 @@ public class LogCreator {
 		Matcher m = INTEGER_PATTERN.matcher(description);
 		List<Integer> list = new ArrayList<Integer>();
 		while (m.find()) {
-			list.add(Integer.parseInt(m.group(1)));
+			String integer = null;
+			if (m.group("idQuote") != null) {
+				integer = m.group("idQuote");
+			} else if (m.group("idNoQuote") != null) {
+				integer = m.group("idNoQuote");
+			}
+
+			if (integer != null) {
+				list.add(Integer.parseInt(integer));
+			}
 		}
+		LOGGER.debug(description + " : " + list);
 		return list;
 	}
 

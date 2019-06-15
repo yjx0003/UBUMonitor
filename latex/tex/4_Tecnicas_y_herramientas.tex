@@ -9,11 +9,12 @@ Se ha seguido una de las metodologías ágiles conocido como SCRUM adaptado a pa
 \section{Moodle}
 Moodle es una herramienta de gestión del aprendizaje, distribución libre y escrita en PHP. Ayuda a los docentes en la educación a distancia y en la gestión de los diferentes modos de calificación.
 
-Al no tener acceso con privilegios de profesor al servicio Moodle de la universidad, se ha tenido que instalar un servidor de pruebas en localhost. Las comprobaciones en un entorno real lo han realizado varios profesores docentes de la universidad, entre ellos el tutor, en UBUVirtual.
+En la página oficial de Moodle ofrece varias versiones de prueba que cualquiera puede acceder con unos usuarios y contraseña predefinidos.
+\section{REST API}
+REST\cite{noauthor_api_nodate} son todas las interfaces entre sistemas que usa HTTP para conseguir datos o realizar operaciones sobre esos datos en todos los formatos posibles, como puede ser XML y JSON.
 
-Se ha usado la versión \textbf{3.5.4+} de Moodle al no estar disponible para descargar la \textbf{3.5.1} instalada en UBUVirtual.
+En Moodle la funcionalidad de REST API se conoce como \textit{Web Services} que a partir de un \textit{token} generado previamente por la función \textbf{\textit{moodle\_mobile\_app}} se puede acceder a otras funciones del servicio. Puede ser desde ver las calificaciones de alumnos hasta crear actividades o tareas.
 
-También se ha empleado una versión de prueba oficial del propio equipo de desarrollo \href{https://school.demo.moodle.net}{\textit{Mount Orange School}} en la versión \textbf{3.7}, que probablemente se use en la aula virtual de la Universidad de Burgos en el futuro.
 
 \section{Java}
 Java es un lenguaje de programación orientado a objetos, diseñado para escribir el código una vez y ejecutar en cualquier otro dispositivo sin tener que recompilar siempre y cuando se tenga instalado\textit{Java Runtime Enviroment (JRE)}. Actualmente es uno de los lenguajes programación con mayor popularidad de uso, tanto en el ámbito de desarrollo como en el de usuarios.
@@ -44,7 +45,7 @@ Los datos de Moodle que se recibe mediante REST API está en formato de texto JS
 
 \section{Eclipse}
 
-Eclipse es uno de los entornos de desarrollo (IDE) más famosos, junto con
+\href{https://www.eclipse.org/}{Eclipse} es uno de los entornos de desarrollo (IDE) más famosos, junto con
 \href{https://www.jetbrains.com}{\textit{IntelliJ IDEA}} y \href{https://netbeans.org/}{\textit{NetBeans}}, para Java. De código abierto con la capacidad de añadir nuevas características mediante plugins.
 
 Se ha decidido emplear Eclipse frente a las otras alternativas por comodidad y es la herramienta que se maneja durante la carrera.
@@ -56,20 +57,24 @@ Es una plataforma de desarrollo colaborativo para alojar proyectos usando el sis
 Adicionalmente se ha usado la extensión del navegador ZenHub que se integra en GitHub y permite el uso de \textit{canvas} para la organización de los \textit{issues}.
 
 
-\section{LaTex}
+\section{LaTeX}
 
 Sistema de composición de textos dirigido a la creación de documentos con una buena calidad tipográfica. Actualmente muy popular en el ámbito de la investigación con artículos y libros científicos.
 
-El presente proyecto está realizado en \LaTeX usando las versiones portables de MiKTex y TeXstudio. 
+El presente proyecto está realizado en \LaTeX usando las versiones portables de MiKTeX y TeXstudio. 
 
-\subsection{MiKTex}
+\subsection{MiKTeX}
 
-MiKTex es una distribución de \LaTeX diferentes plataformas de sistemas operativos, es de código libre y viene incluido con múltiples paquetes de tipografías y macros.
+\href{https://miktex.org/}{MiKTeX} es una distribución de \LaTeX diferentes plataformas de sistemas operativos, es de código libre y viene incluido con múltiples paquetes de tipografías y macros.
 
 \subsection{TeXstudio}
 
-TeXstudio es un entorno de desarrollo integrado (IDE) de edición de texto, código abierto con resaltado de sintaxis orientado a la creación de documentos \LaTeX.
+\href{https://www.texstudio.org/}{TeXstudio} es un entorno de desarrollo integrado (IDE) de edición de texto, código abierto con resaltado de sintaxis orientado a la creación de documentos \LaTeX.
 
+\section{Python}
+\href{https://www.python.org/}{Python} es un lenguaje de programación interpretado, orientado a objetos, dinámicamente tipado y de alto nivel. Este lenguaje es muy atractivo para crear prototipos de forma sencilla y rápida. 
+
+Se ha empleado Python con el IDE \href{https://jupyter.org/}{Jupyter Notebook} programando varias funciones de utilidad para el programador, estas funcionalidades generan código Java automáticamente.
 
 \section{Dependencias externas de Java}
 En este apartado se explicará las librerías externas de Java usadas durante el desarrollo del proyecto. 
@@ -87,7 +92,7 @@ Nos posibilita sacar datos estadísticos como las medias, desviaciones, máximos
 Utilizado en el proyecto para las medias del curso tanto en las calificaciones como los registros.
 
 \subsection{Gson}
-\href{https://github.com/google/gson}{Gson 2.8.5} posibilita la importación y exportación de textos JSON a partir de los métodos \textit{toJson()} y \textit{fromJson()}.
+\href{https://github.com/google/gson}{Gson 2.8.5} ofrece la importación y exportación de textos JSON a partir de los métodos \textit{toJson()} y \textit{fromJson()}.
 
 Ignorado de momento para el proyecto. A implementar en el futuro para guardar los datos de los registros de todos los usuarios.
 
@@ -96,14 +101,14 @@ Ambas librerías está dedicado a registrar en fichero y/o consola las acciones 
 Hay que tener en cuenta que \href{https://www.slf4j.org/}{SLF4J} es la capa de abstracción y \href{https://logging.apache.org/log4j}{Log4j} la implementación.
 
 \subsection{jsoup}
-\href{https://jsoup.org/}{jsoup 1.11.3} es una librería que trabaja con textos HTML, desde la descarga en páginas web hasta su tratamiento y extracción de datos de forma sencilla y cómoda.
+\href{https://jsoup.org/}{jsoup 1.11.3} es una librería que trabaja con textos HTML, desde la descarga de páginas web hasta su tratamiento y extracción de datos de manera sencilla y cómoda.
 
 Ha resultado ser realmente útil, muy polivalente en las funcionalidades. Empleado para la descarga de los registros, las imágenes de los usuarios y analizar el contenido en una de las funciones de Moodle que devuelve como HTML.
 
 \subsection{ThreeTen Extra}
-\href{https://www.threeten.org/threeten-extra/}{ThreeTen Extra 1.5.0} proporciona varias formas de medir el tiempo no disponibles en el paquete de Java Time. Las clases de ThreeTen Extra se complementa con Java Time
+\href{https://www.threeten.org/threeten-extra/}{ThreeTen Extra 1.5.0} proporciona varias formas de medir el tiempo no disponibles en el paquete de Java Time. Las clases de ThreeTen Extra son complementarias y extienden de Java Time.
 
-Ejemplos aplicados en el proyecto han sido la combinación de numero de semana y año, o trimestre y año.
+Ejemplos aplicados en el proyecto han sido la combinación de número de semana y año, o trimestre y año.
 
 \section{Librerías de JavaScript}
 

@@ -1,0 +1,38 @@
+\capitulo{5}{Aspectos relevantes del desarrollo del proyecto}
+
+En este apartado se comenta los aspectos importantes que han surgido durante el desarrollo del proyecto. Las decisiones tomadas relativas a la funcionalidad de la aplicación y qué consecuencias ha tenido. También explicaremos sobre los problemas encontrados y las soluciones aplicadas.
+
+\section{Sin acceso a permisos de profesor en el Moodle de la Universidad (UBUVirtual)}
+
+Uno de los principales problemas para realizar las pruebas no se ha podido tener acceso a asignaturas con rol de profesor. Es decir, muchas funciones de Moodle no son accesibles con el rol de estudiante mientras que los profesores si lo tienen.
+
+Las comprobaciones en un entorno real lo han realizado varios profesores docentes de la universidad, entre ellos los tutores, en UBUVirtual.
+
+También se ha empleado una versión de prueba oficial del propio equipo de desarrollo \href{https://school.demo.moodle.net}{\textit{Mount Orange School}} en la versión \textbf{3.7}, probablemente se use esta versión en el aula virtual de la Universidad de Burgos en el futuro.
+
+\section{Instalación de la versión limpia de Moodle}
+Después de conocer la versión de Moodle que usa la Universidad (\textbf{3.5.1}) mediante  la función \textbf{\textit{core\_webservice\_get\_site\_info}}, se ha intentado instalar en mi equipo la misma versión pero ya no estaba disponible en la página de descargas \cite{noauthor_moodle_nodate}. Finalmente se ha usado la \textbf{3.5.4+}.
+
+A pesar de usar una versión con cambios menores respecto al de la Universidad. Si que se encontró una diferencia reseñable. 
+
+\subsection{Token para el ingreso}
+Añaden el Token para ingreso\cite{noauthor_token_nodate} (en inglés \textit{Login token}), una característica relacionada con la seguridad introducida en las versiones de Moodle 3.1.15, 3.3.9, 3.4.6, 3.5.3 y 3.6.0. Ayuda a proteger frente a vulnerabilidades como el robo de sesión de los usuarios. Este token de ingreso aparece como un \textit{input} HTML oculto\cite{noauthor_html_nodate-1} al iniciar sesión y se envía el formulario de ingreso junto con el usuario y contraseña.
+
+\imagen{logintoken}{Ejemplo de Login Token en el inicio de sesión de la página \href{https://school.demo.moodle.net/login/index.php}{Mount Orange School}}.
+
+Para solucionar este problema y que funcione en ambas versiones y futuras, cada vez que el usuario inicia sesión, se busca en la página el \textit{input logintoken} tal y como aparece en la figura \ref{fig:logintoken} con métodos de Web Scraping\cite{marti_que_2016}. Si lo encuentra manda el valor como parámetro adicional de la URL, en caso contrario no se manda este parámetro.
+
+Hay que destacar que el Token de ingreso solo afecta si se quiere iniciar sesión en la página del servicio de Moodle (necesario para poder descargar los registros del curso), en ningún caso es necesario para los servicios Web.
+
+
+
+\begin{itemize}
+	\item version de ubuvirutal no disponible, usado como pruebas una version parecida
+	\item debate sobre si trabajar con el codigo o empezar de 0 el back end, 2 semanas de reflexion. Apuesta arriesgada debido a quedarme a medio camino en la entrega o problemas de integración con el front end.
+	\item la importancia de las librerias externas que facilitan el trabajo. se intento trabajar con el paquete java net pero fallo estrepitosamente, jsoup salvacion en unas pocas lineas de codigo
+	\item usado mas tiempo en pensar como estructurar las clases de forma que sea facil de leer y facil de modificar, que programando
+	\item retraso de tiempos al haber un error de moodle en una funcion que saltaba error si el feedback del calificador esta oculto, se ha tenido que usar otra funcion mas engorrosa de trabajar (HTML)
+	\item dedicado varias semanas a elegir como mostrar la grafica de registros, probado con varios prototipos de graficas de barras diferentes, con y sin plugins para chartjs
+	\item ademas de los prototipos de las barras tambien se ha estado pensando y probando como estructurar el codigo para que sea lo mas sencillo posible añadir nuevos tipos de agrupaciones de fechas, crear los datasets de las barras, que sea sencillo añadir para componentes, eventos
+\end{itemize}
+

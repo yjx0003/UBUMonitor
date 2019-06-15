@@ -1,0 +1,62 @@
+\capitulo{3}{Conceptos teóricos}
+
+En este apartado comentaremos sobre conceptos que aparecen en Moodle.
+
+
+
+\section{Conceptos de Moodle}
+
+//TODO Introduccion a moodle
+
+\subsection{Módulo del curso}
+El módulo del curso\cite{noauthor_course_nodate} (en inglés \textit{course module}) también abreviado como `cm', representa las \textbf{actividades} y \textbf{recursos} del curso (ejemplos en la figura \ref{fig:course_modules}). Estos contienen información sobre qué curso y sección se muestra, además de la configuración de visibilidad y otros datos relevantes. Los identificadores únicos de los módulos del curso se definen como \textbf{`cmid'}. 
+
+\imagen{course_modules}{Ejemplos de módulos del curso que actividades y recursos.}
+
+\subsection{Ítem de calificación}
+El Ítem de calificación\cite{noauthor_grade_nodate} (en inglés \textit{Grade item}), es cada fila de la tabla de calificaciones.
+Las carpetas de la tabla, a parte de Ítem de calificación, se considera también como categoría (\textit{category}).
+
+Los Ítem de calificación se puede mostrar mediante una tabla para un solo alumno (ver figura \ref{fig:item_calificacion}) o una tabla de todos los alumnos y todos los Ítems de calificaciones (ver figura \ref{fig:alternativa_grade_item})
+	
+
+\imagen{item_calificacion}{Ejemplo de una tabla con varios Ítem de calificación.}
+
+\imagen{alternativa_grade_item}{Ejemplo de tabla parcial con los usuarios e Ítems de calificación}
+\subsection{Categorías de cursos}
+Las categorías de cursos\cite{noauthor_course_nodate-1} (en inglés \textit{course categories}) organizan los cursos de la página de Moodle de forma jerárquica.
+
+\imagen{course_categories}{Ejemplo de categorías del curso enmarcados en rojo.}
+
+\section{Registros}
+Los registros es un reporte de actividades realizadas por los usuarios, existe registros de sitio web y del curso. En este proyecto solo nos centraremos en el segundo caso, estos se acceden en desde el curso en la rueda de configuración \textit{Aún más... ->  Informes ->  Registros -> Conseguir estos registros}
+
+\imagen{registros}{Ejemplo de varias entradas de un registro.}
+
+\subsection{Columnas de los registros}
+Todas las entradas del registros se muestra en una tabla con varias columnas: 
+\begin{enumerate}
+	\item \textbf{Hora}: La fecha y hora.
+	\item \textbf{Nombre completo del usuario}: Nombre y apellidos del usuario que realiza el evento o acción.
+	\item \textbf{Usuario afectado}: Nombre y apellidos del usuario afectado por el evento o acción.
+	\item \textbf{Contexto del evento}: En qué lugar del curso se ha producido el registro.
+	\item \textbf{Componente}: puede indicar una actividad, un recurso o el sistema.
+	\item \textbf{Nombre del evento}: que evento o acción se ha realizado.
+	\item \textbf{Descripción}: contiene la información de las anteriores columnas pero mostrando su identificador único (\textit{id}) en vez de los nombres usuarios. Cada descripción es única en función del \textbf{Componente} y \textbf{Nombre de evento}.
+	\item \textbf{Origen}: indica el tipo de fuente donde se ha generado el registro. Pueden ser:
+	\begin{itemize}
+		\item Servicio web (ws): servicios web de Moodle.
+		\item Web: página web.
+		\item CLI: desde el servidor.
+	\end{itemize}
+	\item \textbf{Dirección IP}: la dirección IP del dispositivo.
+	
+\end{enumerate}
+
+\subsection{Problema de visualización}
+
+El problema de los registros que ofrece Moodle es la laxa forma de visualizar los datos a pesar de las opciones de filtrado. Sobre todo la información de las \textbf{Descripciones} es confusa al mostrar los id's de usuarios, módulos del curso, etc...
+
+
+
+

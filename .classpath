@@ -40,7 +40,7 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/UBUMonitor/libs/docs/gson-2.8.5-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="libs/jsoup-1.11.3.jar" sourcepath="libs/jsoup-1.11.3.jar">
+	<classpathentry kind="lib" path="libs/jsoup-1.11.3.jar" sourcepath="libs/src/jsoup-1.11.3-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:platform:/resource/UBUMonitor/libs/docs/jsoup-1.11.3-javadoc.jar!/"/>
 		</attributes>

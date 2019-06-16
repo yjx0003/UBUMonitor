@@ -119,9 +119,9 @@ public abstract class StackedBarDatasetAbstract<T> {
 
 		Map<T, List<Double>> meanTs = getMeans();
 
-		for (Entry<T, List<Double>> entry : meanTs.entrySet()) {
-			T element = entry.getKey();
-			List<Double> data = entry.getValue();
+		for (T element:selecteds) {
+		
+			List<Double> data = meanTs.get(element);
 
 			int[] color = colors.get(element);
 

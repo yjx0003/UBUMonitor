@@ -14,7 +14,7 @@ import java.util.Map;
 public enum Languages {
 
 	SPANISH("Español", "es"),
-	SPANISH_SPAIN("Español-España","es","ES"),
+	SPANISH_SPAIN("Español-España","es-ES"),
 	ENGLISH("English", "en");
 	
 	
@@ -36,16 +36,16 @@ public enum Languages {
 		}
 	}
 
-	
-	private Languages(String lang, String codeLanguage) {
+	/**
+	 * Contructor de la enumeración
+	 * @param lang nombre del lenguaje
+	 * @param codeLanguage codigo de lenguaje según IETF BCP 47
+	 */
+	private Languages(String lang, String languajeTag) {
 		this.lang = lang;
-		this.locale = new Locale(codeLanguage);
+		this.locale = Locale.forLanguageTag(languajeTag);
 	}
-	private Languages(String lang, String codeLanguage, String codeCountry) {
-		this.lang = lang;
-		this.locale = new Locale(codeLanguage, codeCountry);
-		this.code = locale.getLanguage();
-	}
+
 
 	/**
 	 * Devuelve un lenguaje a partor del codigo de lengua, por ejemplo el Español
@@ -55,8 +55,8 @@ public enum Languages {
 	 *            codigo de la lengua
 	 * @return elemento de la enumeracion asociada o el ingles si no existe.
 	 */
-	public static Languages getLanguageByCode(String code) {
-		return codeMap.getOrDefault(new Locale(code).getLanguage(), Languages.ENGLISH);
+	public static Languages getLanguageByTag(String code) {
+		return codeMap.getOrDefault(Locale.forLanguageTag(code).getLanguage(), Languages.ENGLISH);
 	}
 
 	/**
@@ -67,7 +67,7 @@ public enum Languages {
 	public static Languages getLanguageByLocale(Locale locale) {
 		// si no existe el locale con el lenguaje y pais, se devuelve el un locale solo
 		// con el lenguaje
-		return localeMap.getOrDefault(locale, getLanguageByCode(locale.getLanguage()));
+		return localeMap.getOrDefault(locale, getLanguageByTag(locale.getLanguage()));
 	}
 
 	/**

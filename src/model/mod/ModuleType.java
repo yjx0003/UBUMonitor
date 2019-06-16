@@ -182,9 +182,15 @@ public enum ModuleType {
 		return modTypes.getOrDefault(modname, MODULE).create();
 	}
 
+	/**
+	 * Crea una instancia del modulo segun el id
+	 * @param id id 
+	 * @return modulo con ese id
+	 */
 	public Module createInstance(int id) {
 		Module module = this.create();
 		module.setId(id);
 		return module;
 	}
+	
 }

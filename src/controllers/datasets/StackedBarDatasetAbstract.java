@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import controllers.I18n;
@@ -31,7 +30,9 @@ public abstract class StackedBarDatasetAbstract<T> {
 
 	/**
 	 * Escapa las comillas simples de un texto añadiendo un \
-	 * @param input texto
+	 * 
+	 * @param input
+	 *            texto
 	 * @return texto escapado
 	 */
 	private static String escapeJavaScriptText(String input) {
@@ -40,31 +41,42 @@ public abstract class StackedBarDatasetAbstract<T> {
 
 	/**
 	 * Traduce el elemento
-	 * @param element elemento
+	 * 
+	 * @param element
+	 *            elemento
 	 * @return traducido
 	 */
 	protected abstract String translate(T element);
 
 	/**
 	 * Devuelve un mapa con las medias.
+	 * 
 	 * @return las medias
 	 */
 	protected abstract Map<T, List<Double>> getMeans();
 
 	/**
 	 * Devuele los conteos de los usuarios
+	 * 
 	 * @return los conteos de los usuarios
 	 */
 	protected abstract Map<EnrolledUser, Map<T, List<Long>>> getUserCounts();
 
 	/**
 	 * Crea la cadena json para chart js
-	 * @param enrolledUsers usuarios matriculados usado para la media
-	 * @param selectedUsers usuarios seleccionados para mostrar en la grafica
-	 * @param selecteds el tipo T seleccionado
-	 * @param groupBy  tipo de agrupacion de tiempo
-	 * @param dateStart fecha de inicio
-	 * @param dateEnd fecha de fin
+	 * 
+	 * @param enrolledUsers
+	 *            usuarios matriculados usado para la media
+	 * @param selectedUsers
+	 *            usuarios seleccionados para mostrar en la grafica
+	 * @param selecteds
+	 *            el tipo T seleccionado
+	 * @param groupBy
+	 *            tipo de agrupacion de tiempo
+	 * @param dateStart
+	 *            fecha de inicio
+	 * @param dateEnd
+	 *            fecha de fin
 	 * @return cadena de texto en JS
 	 */
 	public String createData(List<EnrolledUser> enrolledUsers, List<EnrolledUser> selectedUsers,
@@ -89,7 +101,6 @@ public abstract class StackedBarDatasetAbstract<T> {
 
 		return stringBuilder.toString();
 	}
-
 
 	/**
 	 * Añade las etiquetas del eje x de la grafica.
@@ -119,8 +130,8 @@ public abstract class StackedBarDatasetAbstract<T> {
 
 		Map<T, List<Double>> meanTs = getMeans();
 
-		for (T element:selecteds) {
-		
+		for (T element : selecteds) {
+
 			List<Double> data = meanTs.get(element);
 
 			int[] color = colors.get(element);
@@ -165,7 +176,9 @@ public abstract class StackedBarDatasetAbstract<T> {
 	}
 
 	/**
-	 * Convierte una lista en string con los elementos entre comillas y separado por comas.
+	 * Convierte una lista en string con los elementos entre comillas y separado por
+	 * comas.
+	 * 
 	 * @param list
 	 * @return
 	 */
@@ -178,6 +191,7 @@ public abstract class StackedBarDatasetAbstract<T> {
 
 	/**
 	 * Convierte una lista de elementos en string separados por comas
+	 * 
 	 * @param datasets
 	 * @return
 	 */
@@ -188,7 +202,7 @@ public abstract class StackedBarDatasetAbstract<T> {
 	}
 
 	/**
-	 * Selecciona colores pseudo-aleatorios a partir del HSV 
+	 * Selecciona colores pseudo-aleatorios a partir del HSV
 	 */
 	private void setRandomColors() {
 		colors = new HashMap<>();

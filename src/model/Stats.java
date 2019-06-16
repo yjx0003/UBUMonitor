@@ -319,12 +319,5 @@ public class Stats implements Serializable {
 		return atypicalValues;
 	}
 
-	public Map<GradeItem, DescriptiveStatistics> getGroupStats(String group) {
-		Group grupo = groupsStats.keySet().stream()
-				.filter(g -> g.getName().equals(group))
-				.findFirst()
-				.get();
-		return getGroupStats(grupo);
-	}
 
 }

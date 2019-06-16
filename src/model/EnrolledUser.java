@@ -23,10 +23,11 @@ public class EnrolledUser implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	private static final Comparator<EnrolledUser> NAME_COMPARATOR=Comparator.comparing(EnrolledUser::getLastname, String.CASE_INSENSITIVE_ORDER)
+
+	public static final Comparator<EnrolledUser> NAME_COMPARATOR = Comparator
+			.comparing(EnrolledUser::getLastname, String.CASE_INSENSITIVE_ORDER)
 			.thenComparing(EnrolledUser::getFirstname, String.CASE_INSENSITIVE_ORDER);
-	
+
 	/**
 	 * ID of the user
 	 */
@@ -115,7 +116,7 @@ public class EnrolledUser implements Serializable {
 	 * Optional. last access to the site (0 if never)
 	 */
 	private Instant lastaccess;
-	
+
 	/**
 	 * Optional. last access to the course (0 if never)
 	 */
@@ -481,12 +482,30 @@ public class EnrolledUser implements Serializable {
 		this.groups.add(group);
 		group.addEnrolledUser(this);
 	}
+	
+	/**
+	 * Comprueba si el usuario pertece a un grupo
+	 * @param group el grupo que pertenece
+	 * @return true si el grupo es nulo o el usuario pertece al grupo
+	 */
+	public boolean inGroup(Group group) {
+		return group == null || groups.contains(group);
+	}
 
 	public void addRole(Role role) {
 		this.roles.add(role);
 		role.addEnrolledUser(this);
 	}
 
+	/**
+	 * Comprueba si el usuario pertece a rol
+	 * @param role el rol que pertenece
+	 * @return true si el rol es nulo o el usuario pertece al rol
+	 */
+	public boolean inRole(Role role) {
+		return role == null || roles.contains(role);
+	}
+	
 	public void addGrade(GradeItem gradeItem, double grade) {
 		grades.put(gradeItem, grade);
 		gradeItem.addUserGrade(this, grade);
@@ -503,10 +522,7 @@ public class EnrolledUser implements Serializable {
 	public void setImageBytes(byte[] imageBytes) {
 		this.imageBytes = imageBytes;
 	}
-	
-	public static Comparator<EnrolledUser> getComparator() {
-		return NAME_COMPARATOR;
-	}
+
 
 	@Override
 	public int hashCode() {

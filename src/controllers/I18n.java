@@ -7,9 +7,11 @@ import org.slf4j.LoggerFactory;
 
 import model.Component;
 import model.Event;
+import model.mod.ModuleType;
 
 /**
  * Clase encargada de traducir los elementos del resource bundle.
+ * 
  * @author Yi Peng Ji
  *
  */
@@ -20,7 +22,9 @@ public class I18n {
 
 	/**
 	 * Modifica el resource bundle
-	 * @param rb el nuevo resource bundle
+	 * 
+	 * @param rb
+	 *            el nuevo resource bundle
 	 */
 	public static void setResourceBundle(ResourceBundle rb) {
 		I18n.rb = rb;
@@ -28,6 +32,7 @@ public class I18n {
 
 	/**
 	 * Devuelve el resource bundle.
+	 * 
 	 * @return el resource bundle actual
 	 */
 	public static ResourceBundle getResourceBundle() {
@@ -36,7 +41,9 @@ public class I18n {
 
 	/**
 	 * Devuelve la traducir a partir de la key
-	 * @param key key
+	 * 
+	 * @param key
+	 *            key
 	 * @return el valor asociado a esa key, o la propia key si no existe el valor
 	 */
 	public static String get(String key) {
@@ -46,7 +53,9 @@ public class I18n {
 
 	/**
 	 * Devuelve la traduccion de un componente.
-	 * @param component componente a traducir
+	 * 
+	 * @param component
+	 *            componente a traducir
 	 * @return componente traducido
 	 */
 	public static String get(Component component) {
@@ -56,7 +65,9 @@ public class I18n {
 
 	/**
 	 * Traduce el evento del log
-	 * @param event evento a traducir
+	 * 
+	 * @param event
+	 *            evento a traducir
 	 * @return evento traducido
 	 */
 	public static String get(Event event) {
@@ -64,16 +75,33 @@ public class I18n {
 	}
 
 	/**
-	 * Devuelve el valor de la key o el de defecto si no existe en el resource bundle.
-	 * @param key key
-	 * @param defaultValue valor por defecto
+	 * Traduce el tipo de modulo
+	 * 
+	 * @param moduleType
+	 *            tipo de modulo
+	 * @return la traduccion si existe, o el {@link ModuleType#toString()} si no
+	 *         existe.
+	 */
+	public static String get(ModuleType moduleType) {
+		return getOrDefault("module." + moduleType.getModName(), moduleType.getModName());
+	}
+
+	/**
+	 * Devuelve el valor de la key o el de defecto si no existe en el resource
+	 * bundle.
+	 * 
+	 * @param key
+	 *            key
+	 * @param defaultValue
+	 *            valor por defecto
 	 * @return el valor de la key o el valor por defecto
 	 */
 	private static String getOrDefault(String key, String defaultValue) {
 		if (rb.containsKey(key)) {
 			return rb.getString(key);
 		}
-		LOGGER.error("No existe entrada en el resource bundle la key: " + key);
+		LOGGER.warn("No existe entrada en el resource bundle la key: " + key);
 		return defaultValue;
 	}
+
 }

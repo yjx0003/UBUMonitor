@@ -245,10 +245,10 @@ public abstract class GroupByAbstract<T> implements Serializable {
 	 * 
 	 * @param enrolledUsers
 	 *            usuarios matriculados
-	 * @param componentsEvents
-	 * @param start
-	 * @param end
-	 * @return
+	 * @param componentsEvents componente y evento
+	 * @param start fecha de inicio
+	 * @param end fecha de fin
+ 	 * @return las medias
 	 */
 	public Map<ComponentEvent, List<Double>> getComponentEventMeans(List<EnrolledUser> enrolledUsers,
 			List<ComponentEvent> componentsEvents,

@@ -84,9 +84,9 @@
                                     <Label fx:id="lblCountParticipants" layoutX="6.0" layoutY="6.0" text="%label.participants" />
                                     <TextField fx:id="tfdParticipants" layoutX="6.0" layoutY="31.0" prefHeight="25.0" prefWidth="100.0" promptText="%label.filter" />
                                     <Label layoutX="115.0" layoutY="35.0" text="%label.group" />
-                                    <Label layoutX="137.0" layoutY="6.0" text="%label.rol" />
-                                    <MenuButton fx:id="slcGroup" layoutX="162.0" layoutY="33.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.group" />
-                                    <MenuButton fx:id="slcRole" layoutX="162.0" layoutY="4.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.rol" />
+                                    <Label layoutX="135.0" layoutY="6.0" text="%label.rol" />
+                                    <ChoiceBox fx:id="slcRole" layoutX="162.0" layoutY="4.0" maxWidth="88.0" minHeight="25.0" prefHeight="25.0" />
+                                    <ChoiceBox fx:id="slcGroup" layoutX="162.0" layoutY="33.0" maxWidth="88.0" minHeight="25.0" prefHeight="25.0" />
                                  </children>
                               </Pane>
                            </top>
@@ -105,7 +105,7 @@
                                                 <Label layoutX="8.0" layoutY="6.0" text="%label.categoryitem" />
                                                 <TextField fx:id="tfdItems" layoutX="8.0" layoutY="30.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
                                                 <Label layoutX="123.0" layoutY="36.0" text="%label.type" />
-                                                <MenuButton fx:id="slcType" layoutX="160.0" layoutY="32.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="%btn.type" />
+                                                <ChoiceBox fx:id="slcType" layoutX="162.0" layoutY="34.0" maxWidth="88.0" minHeight="25.0" prefHeight="25.0" />
                                              </children>
                                           </Pane>
                                        </top>

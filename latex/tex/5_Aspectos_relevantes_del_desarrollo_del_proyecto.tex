@@ -6,17 +6,20 @@ En este apartado se comenta los aspectos importantes que han surgido durante el 
 
 Uno de los principales problemas para realizar las pruebas no se ha podido tener acceso a asignaturas con rol de profesor. Es decir, muchas funciones de Moodle no son accesibles con el rol de estudiante mientras que los profesores si lo tienen.
 
-Las comprobaciones en un entorno real lo han realizado varios profesores docentes de la universidad, entre ellos los tutores, en UBUVirtual.
 
-También se ha empleado una versión de prueba oficial del propio equipo de desarrollo \href{https://school.demo.moodle.net}{\textit{Mount Orange School}} en la versión \textbf{3.7}, probablemente se use esta versión en el aula virtual de la Universidad de Burgos en el futuro.
+Se ha instalado una versión en el equipo para realizar las pruebas, se comentara con más detalle en la sección \ref{sec:instalacionMoodle}. También se ha empleado una versión de prueba oficial del propio equipo de desarrollo \href{https://school.demo.moodle.net}{\textit{Mount Orange School}} en la versión \textbf{3.7}, probablemente se use esta versión en el aula virtual de la Universidad de Burgos en el futuro.
 
-\section{Instalación de la versión limpia de Moodle}
+Las comprobaciones en un entorno real lo han realizado varios profesores docentes de la universidad, entre ellos los tutores, en UBUVirtual. 
+
+Cabe destacar que los tutores probaron cada mejora implementada en un corto lapso de tiempo, es decir en menos de 24 horas laborales ya tenía el visto bueno o errores encontrados. Esto ha facilitado mucho los tiempos de desarrollo de nuevas funcionalidades.
+
+\section{Instalación de la versión limpia de Moodle} \label{sec:instalacionMoodle}
 Después de conocer la versión de Moodle que usa la Universidad (\textbf{3.5.1}) mediante  la función \textbf{\textit{core\_webservice\_get\_site\_info}}, se ha intentado instalar en mi equipo la misma versión pero ya no estaba disponible en la página de descargas \cite{noauthor_moodle_nodate}. Finalmente se ha usado la \textbf{3.5.4+}.
 
 A pesar de usar una versión con cambios menores respecto al de la Universidad. Si que se encontró una diferencia reseñable. 
 
-\subsection{Token para el ingreso}
-Añaden el Token para ingreso\cite{noauthor_token_nodate} (en inglés \textit{Login token}), una característica relacionada con la seguridad introducida en las versiones de Moodle 3.1.15, 3.3.9, 3.4.6, 3.5.3 y 3.6.0. Ayuda a proteger frente a vulnerabilidades como el robo de sesión de los usuarios. Este token de ingreso aparece como un \textit{input} HTML oculto\cite{noauthor_html_nodate-1} al iniciar sesión y se envía el formulario de ingreso junto con el usuario y contraseña.
+\subsection{Token para el ingreso} \label{sec:logintoken}
+Añaden el Token para ingreso\cite{noauthor_token_nodate} (en inglés \textit{login token}), una característica relacionada con la seguridad introducida en las versiones de Moodle 3.1.15, 3.3.9, 3.4.6, 3.5.3 y 3.6.0. Ayuda a proteger frente a vulnerabilidades como el robo de sesión de los usuarios. Este token de ingreso aparece como un \textit{input} HTML oculto\cite{noauthor_html_nodate-1} al iniciar sesión y se envía el formulario de ingreso junto con el usuario y contraseña.
 
 \imagen{logintoken}{Ejemplo de Login Token en el inicio de sesión de la página \href{https://school.demo.moodle.net/login/index.php}{Mount Orange School}}.
 
@@ -24,12 +27,27 @@ Para solucionar este problema y que funcione en ambas versiones y futuras, cada 
 
 Hay que destacar que el Token de ingreso solo afecta si se quiere iniciar sesión en la página del servicio de Moodle (necesario para poder descargar los registros del curso), en ningún caso es necesario para los servicios Web.
 
+\section{Empezar de cero la parte de los registros}
+
+Se decidió prescindir totalmente del trabajo de UBULogs y empezar de nuevo debido a las modificaciones de Moodle como el token de ingreso (ver sección \ref{sec:logintoken}). 
+
+Finalmente se ha seguido por una vía diferente al mencionado proyecto, descargar los CSV directamente en memoria sin guardarlo en un fichero temporal. También se ha aplicado una mejora para bajarse los registros de forma diaria cuando se actualiza los datos.
+
+Otra mejora reseñable, al estar las horas de los registros mostradas en función de la zona horaria usada por el usuario, se ha decidido tomar como referencia para la aplicación la zona horaria del servidor. No importa si el usuario esta usando otra que no sea la misma que el servidor.
+
+\section{Decisión sobre seguir el código fuente de UBUGrades o refactorizar}
+
+Cuando pasaron dos semanas desde el inicio del proyecto, acabé en la tesitura sobre seguir con el código fuente o refactorizar la parte lógica de la aplicación (back-end) aplicando patrones de diseño y tenga mejor mantenibiliad. 
+
+Dos de los temores de tomar la decisión de refactorizar fue quedarme a medio camino en la entrega del proyecto o problemas de integración con el vista e interacción con el usuario (front-end).
+
+Finalmente, después de otras dos semanas de reflexión, se decide refactorizar el código de la parte del back-end completamente. Al empezar de nuevo se debe dedicar un esfuerzo extra en el proyecto.
+
 
 
 \begin{itemize}
 	\item version de ubuvirutal no disponible, usado como pruebas una version parecida
 	\item debate sobre si trabajar con el codigo o empezar de 0 el back end, 2 semanas de reflexion. Apuesta arriesgada debido a quedarme a medio camino en la entrega o problemas de integración con el front end.
-	\item la importancia de las librerias externas que facilitan el trabajo. se intento trabajar con el paquete java net pero fallo estrepitosamente, jsoup salvacion en unas pocas lineas de codigo
 	\item usado mas tiempo en pensar como estructurar las clases de forma que sea facil de leer y facil de modificar, que programando
 	\item retraso de tiempos al haber un error de moodle en una funcion que saltaba error si el feedback del calificador esta oculto, se ha tenido que usar otra funcion mas engorrosa de trabajar (HTML)
 	\item dedicado varias semanas a elegir como mostrar la grafica de registros, probado con varios prototipos de graficas de barras diferentes, con y sin plugins para chartjs

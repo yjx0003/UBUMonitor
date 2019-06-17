@@ -212,7 +212,7 @@ public class Controller {
 		Stats stats = new Stats(getActualCourse());
 		getActualCourse().setStats(stats);
 
-		LogStats logStats = new LogStats(getActualCourse().getLogs().getList(), getActualCourse().getEnrolledUsers());
+		LogStats logStats = new LogStats(getActualCourse().getLogs().getList());
 		getActualCourse().setLogStats(logStats);
 	}
 

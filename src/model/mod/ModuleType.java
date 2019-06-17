@@ -154,7 +154,7 @@ public enum ModuleType {
 	private String modname;
 	private static Map<String, ModuleType> modTypes;
 	static {
-		modTypes = new HashMap<String, ModuleType>();
+		modTypes = new HashMap<>();
 		for (ModuleType mod : ModuleType.values()) {
 			modTypes.put(mod.modname, mod);
 		}

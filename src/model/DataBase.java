@@ -19,7 +19,7 @@ import model.mod.ModuleType;
  * @author Yi Peng Ji
  *
  */
-public class BBDD implements Serializable {
+public class DataBase implements Serializable {
 
 	/**
 	 * 
@@ -38,17 +38,14 @@ public class BBDD implements Serializable {
 	 */
 	private Course actualCourse;
 
-	/**
-	 * Inicializa todo los elementos de BBDD
-	 */
-	public BBDD() {
-		roles = new HashMap<Integer, Role>();
-		groups = new HashMap<Integer, Group>();
-		users = new HashMap<Integer, EnrolledUser>();
-		modules = new HashMap<Integer, Module>();
-		courses = new HashMap<Integer, Course>();
-		gradeItems = new HashMap<Integer, GradeItem>();
-		courseCategories = new HashMap<Integer, CourseCategory>();
+	public DataBase() {
+		roles = new HashMap<>();
+		groups = new HashMap<>();
+		users = new HashMap<>();
+		modules = new HashMap<>();
+		courses = new HashMap<>();
+		gradeItems = new HashMap<>();
+		courseCategories = new HashMap<>();
 	}
 
 	/**

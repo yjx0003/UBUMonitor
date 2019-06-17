@@ -38,13 +38,15 @@ import webservice.gradereport.GradereportUserGetGradesTable;
  */
 public class CreatorGradeItems {
 
+	private static final String CONTENT = "content";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(CreatorGradeItems.class);
 
 	/**
 	 * Icono de tipo categoria
 	 */
 	private static final String FOLDER_ICON = "icon fa fa-folder fa-fw icon itemicon";
-	
+
 	/**
 	 * Icono de items manuales
 	 */
@@ -59,21 +61,28 @@ public class CreatorGradeItems {
 	private final DecimalFormat decimalFormat;
 
 	/**
-	 * Constructor a partir del locale 
-	 * @param locale locale
+	 * Constructor a partir del locale
+	 * 
+	 * @param locale
+	 *            locale
 	 */
 	public CreatorGradeItems(Locale locale) {
 		decimalFormat = new DecimalFormat("0.0", new DecimalFormatSymbols(locale));
 	}
 
 	/**
-	 * Creamos los gradeItem a partir de la funcion {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADES_TABLE}
-	 * @param courseid id del curso
+	 * Creamos los gradeItem a partir de la funcion
+	 * {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADES_TABLE}
+	 * 
+	 * @param courseid
+	 *            id del curso
 	 * @return lista de grade item
-	 * @throws JSONException error en el json
-	 * @throws IOException error de conexion con moodle
+	 * @throws JSONException
+	 *             error en el json
+	 * @throws IOException
+	 *             error de conexion con moodle
 	 */
-	public List<GradeItem> createGradeItems(int courseid) throws JSONException, IOException {
+	public List<GradeItem> createGradeItems(int courseid) throws IOException {
 		WebService ws = new GradereportUserGetGradesTable(courseid);
 		String response = ws.getResponse();
 
@@ -88,7 +97,9 @@ public class CreatorGradeItems {
 
 	/**
 	 * Crea la jerarquia de padres e hijos en los grade item
-	 * @param jsonObject json 
+	 * 
+	 * @param jsonObject
+	 *            json
 	 * @return lista de grade item
 	 */
 	private List<GradeItem> createHierarchyGradeItems(JSONObject jsonObject) {
@@ -101,7 +112,7 @@ public class CreatorGradeItems {
 
 		JSONArray tabledata = table.getJSONArray("tabledata");
 
-		List<GradeItem> gradeItems = new ArrayList<GradeItem>();
+		List<GradeItem> gradeItems = new ArrayList<>();
 		for (int i = 0; i < tabledata.length(); i++) {
 
 			JSONObject tabledataJsonObject = tabledata.optJSONObject(i); // linea del gradereport
@@ -111,10 +122,10 @@ public class CreatorGradeItems {
 
 			JSONObject itemname = tabledataJsonObject.getJSONObject("itemname");
 			int nivel = CreatorUBUGradesController.getNivel(itemname.getString("class"));
-			String contentString = itemname.getString("content");
+			String contentString = itemname.getString(CONTENT);
 			Document content = Jsoup.parseBodyFragment(contentString);
 
-			GradeItem gradeItem = CONTROLLER.getBBDD().getGradeItemById(i);
+			GradeItem gradeItem = CONTROLLER.getDataBase().getGradeItemById(i);
 			gradeItem.setItemname(content.text());
 			gradeItem.clearChildren();
 
@@ -159,9 +170,12 @@ public class CreatorGradeItems {
 	}
 
 	/**
-	 * Asigna el grade item al modulo del curso si existe 
-	 * @param gradeItem grade item
-	 * @param contentString string con la posibilidad que contenga el id del modulo del curso
+	 * Asigna el grade item al modulo del curso si existe
+	 * 
+	 * @param gradeItem
+	 *            grade item
+	 * @param contentString
+	 *            string con la posibilidad que contenga el id del modulo del curso
 	 */
 	private void setCourseModule(GradeItem gradeItem, String contentString) {
 
@@ -169,7 +183,7 @@ public class CreatorGradeItems {
 		if (matcher.find()) {
 
 			int cmid = Integer.parseInt(matcher.group(1));
-			Module module = CONTROLLER.getBBDD().getCourseModuleById(cmid);
+			Module module = CONTROLLER.getDataBase().getCourseModuleById(cmid);
 			gradeItem.setModule(module);
 			gradeItem.setItemModule(module.getModuleType());
 		}
@@ -178,6 +192,7 @@ public class CreatorGradeItems {
 
 	/**
 	 * Asigna atributos de peso y calificaciones minimas y maximas posibles
+	 * 
 	 * @param gradeItem
 	 * @param tabledataJsonObject
 	 */
@@ -187,9 +202,11 @@ public class CreatorGradeItems {
 		setGradeMinMax(gradeItem, tabledataJsonObject);
 
 	}
-	
+
 	/**
-	 * Comprueba si el contenido de una celda de la tabla de calificacion esta vacia (-)
+	 * Comprueba si el contenido de una celda de la tabla de calificacion esta vacia
+	 * (-)
+	 * 
 	 * @param content
 	 * @return
 	 */
@@ -198,9 +215,13 @@ public class CreatorGradeItems {
 	}
 
 	/**
-	 * Convierte el rango de en calificacioens minimas y maximas posibles. Los que son escala, las notas minima es 0 y maxima 100
-	 * @param gradeItem grade item
-	 * @param tabledataJsonObject json 
+	 * Convierte el rango de en calificacioens minimas y maximas posibles. Los que
+	 * son escala, las notas minima es 0 y maxima 100
+	 * 
+	 * @param gradeItem
+	 *            grade item
+	 * @param tabledataJsonObject
+	 *            json
 	 */
 	private void setGradeMinMax(GradeItem gradeItem, JSONObject tabledataJsonObject) {
 		if (!tabledataJsonObject.has("range")) {
@@ -208,7 +229,7 @@ public class CreatorGradeItems {
 		}
 
 		JSONObject range = tabledataJsonObject.getJSONObject("range");
-		String content = range.getString("content");
+		String content = range.getString(CONTENT);
 
 		String[] minMax = content.split("&ndash;");
 		double minGrade;
@@ -229,8 +250,11 @@ public class CreatorGradeItems {
 
 	/**
 	 * Asigna el peso del grade item
-	 * @param gradeItem grade item
-	 * @param tabledataJsonObject json
+	 * 
+	 * @param gradeItem
+	 *            grade item
+	 * @param tabledataJsonObject
+	 *            json
 	 */
 	private void setWeight(GradeItem gradeItem, JSONObject tabledataJsonObject) {
 
@@ -239,7 +263,7 @@ public class CreatorGradeItems {
 		}
 
 		JSONObject weight = tabledataJsonObject.getJSONObject("weight");
-		String content = weight.getString("content");
+		String content = weight.getString(CONTENT);
 
 		if (isEmpty(content)) {
 			gradeItem.setWeightraw(Double.NaN);
@@ -257,8 +281,11 @@ public class CreatorGradeItems {
 
 	/**
 	 * Asigna las calificaciones a los usuarios.
-	 * @param jsonObject json 
-	 * @param gradeItems lista de grade items
+	 * 
+	 * @param jsonObject
+	 *            json
+	 * @param gradeItems
+	 *            lista de grade items
 	 */
 	private void setEnrolledUserGrades(JSONObject jsonObject, List<GradeItem> gradeItems) {
 		JSONArray jsonArray = jsonObject.getJSONArray("tables");
@@ -268,10 +295,10 @@ public class CreatorGradeItems {
 				continue;
 			}
 			int userid = table.getInt("userid");
-			EnrolledUser enrolledUser = CONTROLLER.getBBDD().getEnrolledUserById(userid);
+			EnrolledUser enrolledUser = CONTROLLER.getDataBase().getEnrolledUserById(userid);
 			JSONArray tabledata = table.getJSONArray("tabledata");
-
-			for (int j = 0, gradeItemCount = 0; j < tabledata.length(); j++) {
+			int gradeItemCount = 0;
+			for (int j = 0; j < tabledata.length(); j++) {
 				JSONObject tabledataObject = tabledata.optJSONObject(j);
 
 				if (tabledataObject != null && tabledataObject.has("grade")) {
@@ -286,13 +313,17 @@ public class CreatorGradeItems {
 
 	/**
 	 * Asigna la calificacion de un usario a un grade item
-	 * @param tabledataObject json
-	 * @param gradeItem grade item
-	 * @param enrolledUser usuario
+	 * 
+	 * @param tabledataObject
+	 *            json
+	 * @param gradeItem
+	 *            grade item
+	 * @param enrolledUser
+	 *            usuario
 	 */
 	private void setGrade(JSONObject tabledataObject, GradeItem gradeItem, EnrolledUser enrolledUser) {
 
-		String content = tabledataObject.getJSONObject("grade").getString("content");
+		String content = tabledataObject.getJSONObject("grade").getString(CONTENT);
 		double grade = Double.NaN;
 
 		if (!"-".equals(content)) {
@@ -300,8 +331,8 @@ public class CreatorGradeItems {
 			try {
 				grade = decimalFormat.parse(content).doubleValue();
 			} catch (ParseException e) {
-				LOGGER.info("No se puede parsear: " + content + ", lo intentamos buscando el porcentaje");
-				content = tabledataObject.getJSONObject("percentage").getString("content");
+				LOGGER.info("No se puede parsear: {}, lo intentamos buscando el porcentaje", content);
+				content = tabledataObject.getJSONObject("percentage").getString(CONTENT);
 				try {
 					grade = decimalFormat.parse(content).doubleValue();
 				} catch (ParseException e1) {

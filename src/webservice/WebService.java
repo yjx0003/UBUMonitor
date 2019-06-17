@@ -23,8 +23,8 @@ public abstract class WebService {
 
 	private static String token;
 	private static String urlWithToken;
-	private final static String REST_FORMAT = "json";
-	private String parameters;
+	private static final  String REST_FORMAT = "json";
+	private StringBuilder parameters;
 
 	/**
 	 * Constructor que comprueba si ya hay token asignado al usuario e inicializa los parametros de la URL a vacio.
@@ -33,7 +33,7 @@ public abstract class WebService {
 
 		checkToken();
 
-		this.parameters = "";
+		this.parameters = new StringBuilder();
 
 	}
 
@@ -62,12 +62,12 @@ public abstract class WebService {
 		String url = host + "/login/token.php?username=" + userName + "&password=" + password + "&service="
 				+ WSFunctions.MOODLE_MOBILE_APP;
 
-		String JSON = Jsoup.connect(url)
+		String json = Jsoup.connect(url)
 				.ignoreContentType(true)
 				.execute()
 				.body();
 
-		JSONObject jsonObject = new JSONObject(JSON);
+		JSONObject jsonObject = new JSONObject(json);
 
 		String token = jsonObject.getString("token");
 
@@ -100,7 +100,7 @@ public abstract class WebService {
 	 */
 	public String getResponse() throws IOException {
 
-		parameters = "";
+		parameters = new StringBuilder();
 
 		appendToUrlParameters();
 
@@ -136,7 +136,7 @@ public abstract class WebService {
 	 */
 	protected void appendToUrlUserid(int userid) {
 		if (userid != 0)
-			parameters += "&userid=" + userid;
+			parameters.append("&userid=" + userid);
 	}
 
 	/**
@@ -145,7 +145,7 @@ public abstract class WebService {
 	 */
 	protected void appendToUrlCourseid(int courseid) {
 		if (courseid != 0)
-			parameters += "&courseid=" + courseid;
+			parameters.append("&courseid=" + courseid);
 	}
 
 	/**
@@ -155,7 +155,7 @@ public abstract class WebService {
 	protected void appendToUrlCoursesids(Set<Integer> coursesids) {
 		if (coursesids != null) {
 			for (Integer courseid : coursesids) {
-				parameters += "&courseids[]=" + courseid;
+				parameters.append("&courseids[]=" + courseid);
 			}
 		}
 	}
@@ -166,7 +166,7 @@ public abstract class WebService {
 	 */
 	protected void appendToUrlGruopid(int groupid) {
 		if (groupid != 0)
-			parameters += "&groupid=" + groupid;
+			parameters.append("&groupid=" + groupid);
 	}
 
 	/**
@@ -176,7 +176,7 @@ public abstract class WebService {
 	protected void appendToUrlValues(Set<String> values) {
 		if (values != null) {
 			for (String value : values) {
-				parameters += "&values[]=" + value;
+				parameters.append("&values[]=" + value);
 			}
 		}
 	}
@@ -186,7 +186,7 @@ public abstract class WebService {
 	 */
 	protected void appendToUrlField(Field field) {
 		if (field != null)
-			parameters += "&field=" + field;
+			parameters.append("&field=" + field);
 	}
 
 	/**
@@ -196,7 +196,7 @@ public abstract class WebService {
 	 * @param value valor
 	 */
 	protected void appendToUrlOptions(int index, String name, String value) {
-		parameters += "&options[" + index + "][name]=" + name + "&options[" + index + "][value]=" + value;
+		parameters.append("&options[" + index + "][name]=" + name + "&options[" + index + "][value]=" + value);
 	}
 
 	/**
@@ -206,7 +206,7 @@ public abstract class WebService {
 	 * @param value valor
 	 */
 	protected void appendToUrlOptions(int index, String name, int value) {
-		parameters += "&options[" + index + "][name]=" + name + "&options[" + index + "][value]=" + value;
+		parameters.append("&options[" + index + "][name]=" + name + "&options[" + index + "][value]=" + value);
 	}
 
 	/**
@@ -216,7 +216,7 @@ public abstract class WebService {
 	 * @param value valor
 	 */
 	protected void appendToUrlOptions(int index, String name, boolean value) {
-		parameters += "&options[" + index + "][name]=" + name + "&options[" + index + "][value]=" + value;
+		parameters.append("&options[" + index + "][name]=" + name + "&options[" + index + "][value]=" + value);
 	}
 
 	/**
@@ -226,7 +226,7 @@ public abstract class WebService {
 	 * @param value valor
 	 */
 	protected void appendToUrlCriteria(String key, String value) {
-		parameters += "&criteria[0][key]=" + key + "&criteria[0][value]=" + value;
+		parameters.append("&criteria[0][key]=" + key + "&criteria[0][value]=" + value);
 	}
 
 	/**
@@ -238,8 +238,7 @@ public abstract class WebService {
 	private String getContentWithJsoup(String url) throws IOException {
 		Response response = Jsoup.connect(url).ignoreContentType(true).maxBodySize(0).timeout(0).execute();
 		String responseString = response.body();
-		//LOGGER.debug("Url completa de web service de moodle: "+url);
-		LOGGER.info("Respuesta de la funcion web service: &wsfunction=" + getWSFunction() + parameters+"\n"+responseString);
+		LOGGER.info("Respuesta de la funcion web service: &wsfunction={}{}\n{}",getWSFunction() , parameters,responseString);
 		
 		return responseString;
 	}

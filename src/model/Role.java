@@ -143,14 +143,11 @@ public class Role implements Serializable {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof Role))
 			return false;
 		Role other = (Role) obj;
-		if (id != other.id)
-			return false;
-		return true;
+		return id == other.id;
+		
 	}
 
 }

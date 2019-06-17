@@ -58,18 +58,6 @@ public class Course implements Serializable {
 		this.modules = new HashSet<>();
 	}
 
-	public Course(int id, String shortName, String fullName, String idNumber, String summary,
-			DescriptionFormat summaryformat, Instant startDate, Instant endDate) {
-		this();
-		this.id = id;
-		this.shortName = shortName;
-		this.fullName = fullName;
-		this.idNumber = idNumber;
-		this.summary = summary;
-		this.summaryformat = summaryformat;
-		this.startDate = startDate;
-		this.endDate = endDate;
-	}
 
 	public Course(int id) {
 		this();
@@ -458,11 +446,11 @@ public class Course implements Serializable {
 	 * @return los tipos de modulo sin repetición
 	 */
 	public Set<ModuleType> getUniqueModuleTypes() {
-		Set<ModuleType> uniqueModulesTypes = gradeItems.stream()
+		return gradeItems.stream()
 				.map(GradeItem::getItemModule)
 				.filter(Objects::nonNull)
 				.collect(Collectors.toCollection(TreeSet::new));
-		return uniqueModulesTypes;
+		
 	}
 
 	/**
@@ -503,21 +491,23 @@ public class Course implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return id;
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof Course))
 			return false;
 		Course other = (Course) obj;
-		if (id != other.id)
-			return false;
-		return true;
+		return id == other.id;
+		
 	}
+
+
 
 }

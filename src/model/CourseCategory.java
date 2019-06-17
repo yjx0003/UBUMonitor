@@ -235,6 +235,8 @@ public class CourseCategory implements Serializable {
 		this.path = path;
 	}
 
+	
+
 	@Override
 	public int hashCode() {
 		return id;
@@ -244,14 +246,11 @@ public class CourseCategory implements Serializable {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof CourseCategory))
 			return false;
 		CourseCategory other = (CourseCategory) obj;
-		if (id != other.id)
-			return false;
-		return true;
+		return id == other.id;
+			
 	}
 
 	@Override

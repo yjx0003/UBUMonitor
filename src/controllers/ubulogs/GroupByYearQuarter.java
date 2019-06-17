@@ -37,7 +37,8 @@ public class GroupByYearQuarter extends GroupByAbstract<YearQuarter> {
 	public List<YearQuarter> getRange(LocalDate start, LocalDate end) {
 		List<YearQuarter> list = new ArrayList<>();
 
-		for (YearQuarter YearQuarterStart = YearQuarter.from(start), YearQuarterEnd = YearQuarter.from(end);
+		for (YearQuarter YearQuarterStart = YearQuarter.from(start),
+				YearQuarterEnd = YearQuarter.from(end);
 				!YearQuarterStart.isAfter(YearQuarterEnd);
 				YearQuarterStart = YearQuarterStart.plusQuarters(1)) {
 			

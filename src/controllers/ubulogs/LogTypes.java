@@ -68,7 +68,7 @@ import model.Event;
 
 public class LogTypes {
 	// @formatter:off desabilitamos el auto indentación de eclipse en esta sección
-	public static final Map<ComponentEvent, ReferencesLog> LOG_TYPES = new HashMap<ComponentEvent, ReferencesLog>(){
+	private static final Map<ComponentEvent, ReferencesLog> LOG_TYPES = new HashMap<ComponentEvent, ReferencesLog>(){
 		/**
 		 * 
 		 */
@@ -361,6 +361,15 @@ public class LogTypes {
 
 		}
 	};
+
+	public static Map<ComponentEvent, ReferencesLog> getLogTypes() {
+		return LOG_TYPES;
+	}
 	
 	// @formatter:on volvemos a activar el auto indentación
+	
+	
+	private LogTypes() {
+		throw new UnsupportedOperationException();
+	}
 }

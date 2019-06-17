@@ -26,15 +26,15 @@ public class CoreUserGetUsersByField extends WebService {
 	public enum Field {
 		ID("id"), IDNUMBER("idnumber"), USERNAME("username"), EMAIL("email");
 
-		private String field;
+		private String fieldName;
 
 		Field(String field) {
-			this.field = field;
+			this.fieldName = field;
 		}
 
 		@Override
 		public String toString() {
-			return field;
+			return fieldName;
 		}
 	}
 
@@ -49,7 +49,7 @@ public class CoreUserGetUsersByField extends WebService {
 	 */
 	public CoreUserGetUsersByField(Field field, String... values) {
 		this.field = field;
-		this.values = new HashSet<String>(Arrays.asList(values));
+		this.values = new HashSet<>(Arrays.asList(values));
 
 	}
 

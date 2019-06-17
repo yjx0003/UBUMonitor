@@ -100,8 +100,13 @@ public class I18n {
 		if (rb.containsKey(key)) {
 			return rb.getString(key);
 		}
-		LOGGER.warn("No existe entrada en el resource bundle la key: " + key);
+		LOGGER.warn("No existe entrada en el resource bundle la key: {}", key);
 		return defaultValue;
+	
+	}
+	
+	private I18n() {
+		throw new UnsupportedOperationException();
 	}
 
 }

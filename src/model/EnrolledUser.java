@@ -529,18 +529,17 @@ public class EnrolledUser implements Serializable {
 		return id;
 	}
 
+
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof EnrolledUser))
 			return false;
 		EnrolledUser other = (EnrolledUser) obj;
-		if (id != other.id)
-			return false;
-		return true;
+		return id == other.id;
+		
 	}
 
 	@Override

@@ -32,7 +32,7 @@ public abstract class ParametersCoursesids extends WebService {
 	 * Constructor vacío sin pasar ids de cursos
 	 */
 	public ParametersCoursesids() {
-		coursesids = new HashSet<Integer>();
+		coursesids = new HashSet<>();
 
 	}
 	/**

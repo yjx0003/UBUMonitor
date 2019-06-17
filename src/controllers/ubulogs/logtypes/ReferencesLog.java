@@ -27,7 +27,7 @@ public abstract class ReferencesLog {
 	 * @return clase encargada de gestionar
 	 */
 	public static ReferencesLog getReferenceLog(Component component, Event eventName) {
-		return LogTypes.LOG_TYPES.getOrDefault(ComponentEvent.get(component, eventName), Default.getInstance());
+		return LogTypes.getLogTypes().getOrDefault(ComponentEvent.get(component, eventName), Default.getInstance());
 	}
 
 	/**
@@ -39,7 +39,7 @@ public abstract class ReferencesLog {
 	 *            id del usuario
 	 */
 	protected static void setUserById(LogLine log, int id) {
-		EnrolledUser user = CONTROLLER.getBBDD().getEnrolledUserById(id);
+		EnrolledUser user = CONTROLLER.getDataBase().getEnrolledUserById(id);
 
 		log.setUser(user);
 
@@ -54,7 +54,7 @@ public abstract class ReferencesLog {
 	 *            del usuario
 	 */
 	protected static void setAffectedUserById(LogLine log, int id) {
-		EnrolledUser affectedUser = CONTROLLER.getBBDD().getEnrolledUserById(id);
+		EnrolledUser affectedUser = CONTROLLER.getDataBase().getEnrolledUserById(id);
 
 		log.setAffectedUser(affectedUser);
 
@@ -70,7 +70,7 @@ public abstract class ReferencesLog {
 	 *            del modulo (cmid)
 	 */
 	protected static void setCourseModuleById(LogLine log, int id) {
-		Module courseModule = CONTROLLER.getBBDD().getCourseModuleById(id);
+		Module courseModule = CONTROLLER.getDataBase().getCourseModuleById(id);
 
 		log.setCourseModule(courseModule);
 

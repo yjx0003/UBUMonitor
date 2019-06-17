@@ -37,7 +37,8 @@ public class GroupByYear extends GroupByAbstract<Year> {
 	public List<Year> getRange(LocalDate start, LocalDate end) {
 		List<Year> list = new ArrayList<>();
 
-		for (Year yearStart = Year.from(start), yearEnd = Year.from(end);
+		for (Year yearStart = Year.from(start),
+				yearEnd = Year.from(end);
 				!yearStart.isAfter(yearEnd);
 				yearStart = yearStart.plusYears(1)) {
 			

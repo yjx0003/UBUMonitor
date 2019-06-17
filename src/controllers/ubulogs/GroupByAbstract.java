@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,7 @@ import model.EnrolledUser;
 import model.Event;
 import model.LogLine;
 
-public abstract class GroupByAbstract<T> implements Serializable {
+public abstract class GroupByAbstract<T extends Serializable> implements Serializable {
 
 	/**
 	 * 
@@ -76,8 +77,8 @@ public abstract class GroupByAbstract<T> implements Serializable {
 										Collectors.groupingBy(getGroupByFunction(), Collectors.counting())))));
 
 		Gson gsonBuilder = new GsonBuilder().create();
-		LOGGER.info("JSON del contador de logs de componentes y eventos  para " + getTypeTime() + " "
-				+ gsonBuilder.toJson(countsEvents));
+		LOGGER.info("JSON del contador de logs de componentes y eventos  para {} : {}", getTypeTime(),
+				gsonBuilder.toJson(countsEvents));
 
 		countsComponents = logLines.stream()
 				.filter(l -> l.getUser() != null)
@@ -85,8 +86,8 @@ public abstract class GroupByAbstract<T> implements Serializable {
 						Collectors.groupingBy(LogLine::getComponent,
 								Collectors.groupingBy(getGroupByFunction(), Collectors.counting()))));
 
-		LOGGER.info("JSON del contador de logs de componentes  para " + getTypeTime() + " "
-				+ gsonBuilder.toJson(countsComponents));
+		LOGGER.info("JSON del contador de logs de componentes  para {} : {}", getTypeTime(),
+				gsonBuilder.toJson(countsComponents));
 
 	}
 
@@ -119,9 +120,12 @@ public abstract class GroupByAbstract<T> implements Serializable {
 	/**
 	 * Genera las estadisticas para un usuario
 	 * 
-	 * @param enrolledUsers usuarios que se quiere generar las estadisticas
-	 * @param components componentes qeue se quiere generar
-	 * @param groupByRange rango de un tipo de agrupacion
+	 * @param enrolledUsers
+	 *            usuarios que se quiere generar las estadisticas
+	 * @param components
+	 *            componentes qeue se quiere generar
+	 * @param groupByRange
+	 *            rango de un tipo de agrupacion
 	 */
 	public void generateComponentsStatistics(List<EnrolledUser> enrolledUsers, List<Component> components,
 			List<T> groupByRange) {
@@ -130,7 +134,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 			return;
 		}
 
-		componentStatistics = new HashMap<>();
+		componentStatistics = new EnumMap<>(Component.class);
 		// el metodo computeIfAbsent devuelve el valor de la key y si no existe la key
 		// se crea y devuelve el valor nuevo.
 		for (EnrolledUser user : enrolledUsers) {
@@ -151,18 +155,20 @@ public abstract class GroupByAbstract<T> implements Serializable {
 				}
 			}
 		}
-		LOGGER.info("Estadisticas de todos los usuarios del curso para components" + components + " y " + groupByRange
-				+ ":\n"
-				+ componentStatistics);
+		LOGGER.info("Estadisticas de todos los usuarios del curso para components {} y {} :\n{}", components,
+				groupByRange, componentStatistics);
 
 	}
 
 	/**
 	 * Genera las estadisticas para un usuario de componentes y eventos
 	 * 
-	 * @param enrolledUsers usuarios que se quiere generar las estadisticas
-	 * @param componentsEvents componentes y eventos qeue se quiere generar
-	 * @param groupByRange rango de un tipo de agrupacion
+	 * @param enrolledUsers
+	 *            usuarios que se quiere generar las estadisticas
+	 * @param componentsEvents
+	 *            componentes y eventos qeue se quiere generar
+	 * @param groupByRange
+	 *            rango de un tipo de agrupacion
 	 */
 	public void generateComponentsEventsStastistics(List<EnrolledUser> enrolledUsers,
 			List<ComponentEvent> componentsEvents, List<T> groupByRange) {
@@ -170,7 +176,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 		if (enrolledUsers.isEmpty() || componentsEvents.isEmpty() || groupByRange.isEmpty()) {
 			return;
 		}
-		componentEventStatistics = new HashMap<>();
+		componentEventStatistics = new EnumMap<>(Component.class);
 		// el metodo computeIfAbsent devuelve el valor de la key y si no existe la key
 		// se crea y devuelve el valor nuevo.
 		for (EnrolledUser user : enrolledUsers) {
@@ -184,11 +190,11 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 				Map<Event, Map<T, Long>> componentsCounts = componentCounts.computeIfAbsent(component,
 						k -> new HashMap<>());
-				Map<Event, Map<T, DescriptiveStatistics>> componentStatistics = componentEventStatistics
+				Map<Event, Map<T, DescriptiveStatistics>> componentStatisticsMap = componentEventStatistics
 						.computeIfAbsent(component, k -> new HashMap<>());
 
 				Map<T, Long> eventsCounts = componentsCounts.computeIfAbsent(event, k -> new HashMap<>());
-				Map<T, DescriptiveStatistics> eventDescriptiveStatistics = componentStatistics
+				Map<T, DescriptiveStatistics> eventDescriptiveStatistics = componentStatisticsMap
 						.computeIfAbsent(event, k -> new HashMap<>());
 
 				for (T groupBy : groupByRange) {
@@ -202,16 +208,21 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 		}
 
-		LOGGER.info("Estadisticas de todos los usuarios del curso para components" + componentsEvents + " y "
-				+ groupByRange + ":\n" + componentEventStatistics);
+		LOGGER.info("Estadisticas de todos los usuarios del curso para components {} y {}:\n{}" ,componentsEvents, groupByRange, componentEventStatistics);
 	}
 
 	/**
-	 * Devuelve las medias de los componentes de un listado de usuarios, componentes y fecha de inicio y de fin
-	 * @param enrolledUsers lista de usuarios
-	 * @param components lista de componentes
-	 * @param start fecha de inicio
-	 * @param end fecha de fin
+	 * Devuelve las medias de los componentes de un listado de usuarios, componentes
+	 * y fecha de inicio y de fin
+	 * 
+	 * @param enrolledUsers
+	 *            lista de usuarios
+	 * @param components
+	 *            lista de componentes
+	 * @param start
+	 *            fecha de inicio
+	 * @param end
+	 *            fecha de fin
 	 * @return medias de componentes
 	 */
 	public Map<Component, List<Double>> getComponentsMeans(List<EnrolledUser> enrolledUsers, List<Component> components,
@@ -222,7 +233,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 		generateComponentsStatistics(enrolledUsers, components, range);
 
-		Map<Component, List<Double>> results = new HashMap<>();
+		Map<Component, List<Double>> results = new EnumMap<>(Component.class);
 		for (Component component : components) {
 			List<Double> means = new ArrayList<>();
 			Map<T, DescriptiveStatistics> statistics = componentStatistics.computeIfAbsent(component,
@@ -245,10 +256,13 @@ public abstract class GroupByAbstract<T> implements Serializable {
 	 * 
 	 * @param enrolledUsers
 	 *            usuarios matriculados
-	 * @param componentsEvents componente y evento
-	 * @param start fecha de inicio
-	 * @param end fecha de fin
- 	 * @return las medias
+	 * @param componentsEvents
+	 *            componente y evento
+	 * @param start
+	 *            fecha de inicio
+	 * @param end
+	 *            fecha de fin
+	 * @return las medias
 	 */
 	public Map<ComponentEvent, List<Double>> getComponentEventMeans(List<EnrolledUser> enrolledUsers,
 			List<ComponentEvent> componentsEvents,
@@ -312,8 +326,7 @@ public abstract class GroupByAbstract<T> implements Serializable {
 				}
 			}
 		}
-		LOGGER.info("Estadisticas de los usuarios: " + users + " para " + components + " y " + groupByRange + ":\n"
-				+ result);
+		LOGGER.info("Estadisticas de los usuarios: {} para {} y {}:\n{}", users, components, groupByRange, result);
 		return result;
 	}
 
@@ -394,11 +407,10 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 			}
 		}
-		LOGGER.info("Maximos de solo componentes: " + components + sumComponentsMap);
+		LOGGER.info("Maximos de solo componentes: {} {}", components, sumComponentsMap);
 
-		long max = getMax(sumComponentsMap);
+		return getMax(sumComponentsMap);
 
-		return max;
 	}
 
 	/**
@@ -440,10 +452,9 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 		}
 
-		LOGGER.info("Maximos de componentes y eventos: " + componentsEvents + sumComponentsMap);
+		LOGGER.info("Maximos de componentes y eventos: {}{}", componentsEvents, sumComponentsMap);
 
-		long max = getMax(sumComponentsMap);
-		return max;
+		return getMax(sumComponentsMap);
 	}
 
 	/**

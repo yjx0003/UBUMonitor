@@ -23,28 +23,10 @@ public class Role implements Serializable {
 		this.enrolledUsers=new HashSet<>();
 	}
 	
-	/**
-	 * Constructor de un rol.
-	 * 
-	 * @param id
-	 *            id del rol
-	 * @param name
-	 *            nombre del rol
-	 * @param shortName
-	 *            nombre corto
-	 */
-	public Role(int id, String name, String shortName) {
-		this();
-		this.id = id;
-		this.name = name;
-		this.shortName = shortName;
-		this.enrolledUsers = new HashSet<>();
-
-	}
 
 	public Role(int id) {
 		this();
-		this.id = id;
+		setId(id);
 	}
 
 	/**

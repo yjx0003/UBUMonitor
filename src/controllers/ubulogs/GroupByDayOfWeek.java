@@ -10,6 +10,11 @@ import java.util.function.Function;
 
 import model.LogLine;
 
+/**
+ * Agrupa los logs por dia de la semana.
+ * @author Yi Peng Ji
+ *
+ */
 public class GroupByDayOfWeek extends GroupByAbstract<DayOfWeek> {
 
 	/**
@@ -23,26 +28,41 @@ public class GroupByDayOfWeek extends GroupByAbstract<DayOfWeek> {
 		super(logLines);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<DayOfWeek> getRange(LocalDate start, LocalDate end) {
 		return DAYS_OF_WEEK;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Function<LogLine, DayOfWeek> getGroupByFunction() {
 		return LogLine::getDayOfWeek;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Function<DayOfWeek, String> getStringFormatFunction() {
 		return d -> d.getDisplayName(TextStyle.FULL, Locale.getDefault());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public TypeTimes getTypeTime() {
 		return TypeTimes.DAY_OF_WEEK;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean useDatePicker() {
 		return false;

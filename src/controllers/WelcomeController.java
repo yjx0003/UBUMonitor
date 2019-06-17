@@ -44,7 +44,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import model.BBDD;
+import model.DataBase;
 import model.Course;
 import model.Logs;
 import persistence.Encryption;
@@ -98,17 +98,13 @@ public class WelcomeController implements Initializable {
 			ObservableList<Course> list = FXCollections.observableArrayList(controller.getUser().getCourses());
 			Collections.sort(list, Comparator.comparing(Course::getFullName)
 					.thenComparing(c -> c.getCourseCategory().getName()));
-			
-			
+
 			progressBar.setVisible(false);
 			listCourses.setItems(list);
 			chkUpdateData.setDisable(true);
-			// Deshabilitar boton hasta que se seleccione un elemento de la lista
-			// btnEntrar.disableProperty().bind(Bindings.isEmpty(listCourses.getSelectionModel().getSelectedItems()));
-
 			listCourses.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
 
-				LOGGER.debug("Buscando si existe " + directoryObject + newValue);
+				LOGGER.debug("Buscando si existe {}" , directoryObject + newValue);
 
 				File f = new File(directoryObject + newValue);
 
@@ -116,7 +112,7 @@ public class WelcomeController implements Initializable {
 					chkUpdateData.setSelected(false);
 					chkUpdateData.setDisable(false);
 					long lastModified = f.lastModified();
-					
+
 					LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastModified),
 							ZoneId.systemDefault());
 					lblDateUpdate.setText(localDateTime.format(Controller.DATE_TIME_FORMATTER));
@@ -142,7 +138,7 @@ public class WelcomeController implements Initializable {
 	 *            El evento.
 	 */
 	public void enterCourse(ActionEvent event) {
-		
+
 		// Guardamos en una variable el curso seleccionado por el usuario
 		Course selectedCourse = listCourses.getSelectionModel().getSelectedItem();
 		if (selectedCourse == null) {
@@ -150,14 +146,14 @@ public class WelcomeController implements Initializable {
 			return;
 		}
 
-		LOGGER.info(" Curso seleccionado: " + selectedCourse.getFullName());
+		LOGGER.info(" Curso seleccionado: {}" ,selectedCourse.getFullName());
 
 		if (chkUpdateData.isSelected()) {
 			if (!isFileCacheExists) {
 				loadData(controller.getPassword());
 			} else {
-				BBDD copia = new BBDD();
-				controller.setBBDD(copia);
+				DataBase copia = new DataBase();
+				controller.setDataBase(copia);
 				controller.setActualCourse(copia.getCourseById(selectedCourse.getId()));
 				isBBDDLoaded = true;
 			}
@@ -183,17 +179,17 @@ public class WelcomeController implements Initializable {
 		LOGGER.info("Guardando los datos encriptados en: {}", f.getAbsolutePath());
 		Encryption.encrypt(controller.getPassword(),
 				directoryObject + listCourses.selectionModelProperty().getValue().getSelectedItem(),
-				controller.getBBDD());
+				controller.getDataBase());
 
 	}
 
 	private void loadData(String password) {
 
-		BBDD BBDD = (BBDD) Encryption.decrypt(password,
+		DataBase dataBase = (DataBase) Encryption.decrypt(password,
 				directoryObject + listCourses.selectionModelProperty().getValue().getSelectedItem());
-		if (BBDD != null) {
+		if (dataBase != null) {
 
-			controller.setBBDD(BBDD);
+			controller.setDataBase(dataBase);
 			isBBDDLoaded = true;
 		} else {
 
@@ -224,9 +220,8 @@ public class WelcomeController implements Initializable {
 		Node accept = dialog.getDialogPane().lookupButton(ButtonType.OK);
 		accept.setDisable(true);
 
-		pwd.textProperty().addListener((observable, oldValue, newValue) -> {
-			accept.setDisable(newValue.trim().isEmpty());
-		});
+		pwd.textProperty()
+				.addListener((observable, oldValue, newValue) -> accept.setDisable(newValue.trim().isEmpty()));
 		dialog.setResultConverter(dialogButton -> {
 			if (dialogButton == ButtonType.OK) {
 				return pwd.getText();
@@ -307,7 +302,7 @@ public class WelcomeController implements Initializable {
 			protected Void call() throws Exception {
 				try {
 					controller.getActualCourse().clear();
-					LOGGER.info("Cargando datos del curso: " + controller.getActualCourse().getFullName());
+					LOGGER.info("Cargando datos del curso: {}" , controller.getActualCourse().getFullName());
 					// Establecemos los usuarios matriculados
 					updateMessage(I18n.get("label.loadingstudents"));
 					CreatorUBUGradesController.createEnrolledUsers(controller.getActualCourse().getId());
@@ -334,11 +329,11 @@ public class WelcomeController implements Initializable {
 
 					updateMessage(I18n.get("label.savelocal"));
 					saveData();
-					LOGGER.debug(controller.getBBDD().toString());
-				} catch (Exception e) {
+					LOGGER.debug("Elementos de la base de datos: {}",controller.getDataBase());
+				} catch (IOException e) {
 					LOGGER.error("Error al cargar los datos de los alumnos: {}", e);
 					updateMessage("Se produjo un error inesperado al cargar los datos.\n" + e.getMessage());
-					throw e;
+					throw new IllegalStateException();
 				} finally {
 					controller.getStage().getScene().setCursor(Cursor.DEFAULT);
 					progressBar.setVisible(false);

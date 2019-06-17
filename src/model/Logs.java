@@ -24,7 +24,6 @@ public class Logs implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Logs.class);
-	
 
 	/**
 	 * Lineas de log, se deben añadir en orden ascendente por fecha.
@@ -72,7 +71,8 @@ public class Logs implements Serializable {
 	/**
 	 * Añade los nuevas lineas de log, deben estar en orden ascendente por tiempo.
 	 * 
-	 * @param logLines los loglines nuevos
+	 * @param logLines
+	 *            los loglines nuevos
 	 */
 	public void addAll(List<LogLine> logLines) {
 
@@ -93,8 +93,8 @@ public class Logs implements Serializable {
 	 */
 	private void changeZoneId(List<LogLine> logLines) {
 		if (!logLines.get(0).getTime().getZone().equals(this.zoneId)) {
-			LOGGER.info("Se ha detectado que el usuario ha cambiado de zona horaria: "
-					+ logLines.get(0).getTime().getZone() + ".Inicialmente se usaba: " + zoneId);
+			LOGGER.info("Se ha detectado que el usuario ha cambiado de zona horaria: {}.Inicialmente se usaba: {}",
+					logLines.get(0).getTime().getZone(), zoneId);
 			for (LogLine logLine : logLines) {
 				ZonedDateTime changeZone = logLine.getTime().withZoneSameInstant(zoneId);
 				logLine.setTime(changeZone);

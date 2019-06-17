@@ -45,7 +45,7 @@ public class Stats implements Serializable {
 	 */
 	private Map<Group, Map<GradeItem, DescriptiveStatistics>> groupsStats;
 
-	public Stats(Course course) throws Exception {
+	public Stats(Course course) {
 		decimalFormat = new DecimalFormat();
 
 		decimalFormat.setMaximumFractionDigits(MAX_DECIMAL_DIGITS);
@@ -66,35 +66,30 @@ public class Stats implements Serializable {
 	 * @param session
 	 *            La sesión de la cual obtener las notas.
 	 * 
-	 * @throws Exception
 	 */
-	private void generateGeneralStats(Course course) throws Exception {
-		try {
-			LOGGER.info("Generando las estadisticas generales para el curso cargado.");
-			// Estadisticas Generales
-			generalGradesStats = new HashMap<>();
+	private void generateGeneralStats(Course course) {
 
-			for (GradeItem gradeItem : course.getGradeItems()) {
-				// guardamos las calificaciones de los matriculados de un gradeItem ignorando
-				// los que no tienen notas (NaN)
-				DescriptiveStatistics descriptive = new DescriptiveStatistics();
-				generalGradesStats.put(gradeItem, descriptive);
+		LOGGER.info("Generando las estadisticas generales para el curso cargado.");
+		// Estadisticas Generales
+		generalGradesStats = new HashMap<>();
 
-				for (double grade : gradeItem.getEnrolledUserGrades()) {
+		for (GradeItem gradeItem : course.getGradeItems()) {
+			// guardamos las calificaciones de los matriculados de un gradeItem ignorando
+			// los que no tienen notas (NaN)
+			DescriptiveStatistics descriptive = new DescriptiveStatistics();
+			generalGradesStats.put(gradeItem, descriptive);
 
-					double gradeAdjustedTo10 = gradeItem.adjustTo10(grade);
+			for (double grade : gradeItem.getEnrolledUserGrades()) {
 
-					if (!Double.isNaN(gradeAdjustedTo10)) {
-						descriptive.addValue(gradeAdjustedTo10);
-					}
+				double gradeAdjustedTo10 = gradeItem.adjustTo10(grade);
+
+				if (!Double.isNaN(gradeAdjustedTo10)) {
+					descriptive.addValue(gradeAdjustedTo10);
 				}
-
 			}
 
-		} catch (Exception e) {
-			LOGGER.error("Error al generar las estadisticas generales.", e);
-			throw new IllegalStateException("Error al generar las estadisticas generales.", e);
 		}
+
 	}
 
 	/**
@@ -102,36 +97,31 @@ public class Stats implements Serializable {
 	 * 
 	 * @param session
 	 *            La sesión de la cual obtener las notas.
-	 * @throws Exception
 	 */
-	private void generateGroupStats(Course course) throws Exception {
-		try {
-			LOGGER.info("Generando las estadisticas de los gruopos para el curso cargado.");
-			// Estadisticas de los grupos
-			groupsStats = new HashMap<>();
+	private void generateGroupStats(Course course) {
 
-			for (Group group : course.getGroups()) {
-				Map<GradeItem, DescriptiveStatistics> mapGradeItems = new HashMap<>();
-				groupsStats.put(group, mapGradeItems);
+		LOGGER.info("Generando las estadisticas de los gruopos para el curso cargado.");
+		// Estadisticas de los grupos
+		groupsStats = new HashMap<>();
 
-				for (GradeItem gradeItem : course.getGradeItems()) {
-					DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
-					mapGradeItems.put(gradeItem, descriptiveStatistics);
-					for (EnrolledUser user : group.getEnrolledUsers()) {
-						double grade = gradeItem.adjustTo10(user);
-						if (!Double.isNaN(grade)) {
-							descriptiveStatistics.addValue(grade);
-						}
+		for (Group group : course.getGroups()) {
+			Map<GradeItem, DescriptiveStatistics> mapGradeItems = new HashMap<>();
+			groupsStats.put(group, mapGradeItems);
+
+			for (GradeItem gradeItem : course.getGradeItems()) {
+				DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
+				mapGradeItems.put(gradeItem, descriptiveStatistics);
+				for (EnrolledUser user : group.getEnrolledUsers()) {
+					double grade = gradeItem.adjustTo10(user);
+					if (!Double.isNaN(grade)) {
+						descriptiveStatistics.addValue(grade);
 					}
-
 				}
 
 			}
 
-		} catch (Exception e) {
-			LOGGER.error("Error al generar las estadisticas de los grupos.", e);
-			throw new IllegalStateException("Error al generar las estadisticas de los grupos.", e);
 		}
+
 	}
 
 	/**

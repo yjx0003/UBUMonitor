@@ -1,5 +1,6 @@
 package controllers.ubulogs;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.time.ZoneId;
@@ -39,9 +40,9 @@ import model.Origin;
 public class LogCreator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LogCreator.class);
 
-	private final static Controller CONTROLLER = Controller.getInstance();
+	private static final Controller CONTROLLER = Controller.getInstance();
 
-	public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/MM/yy, kk:mm");
+	private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/MM/yy, kk:mm");
 
 	private static final Set<String> NOT_AVAIBLE_COMPONENTS = new TreeSet<>();
 	private static final Set<String> NOT_AVAIBLE_EVENTS = new TreeSet<>();
@@ -75,13 +76,13 @@ public class LogCreator {
 	 * 
 	 * @param logs
 	 *            los logs que se van a actualizar
-	 * @throws Exception
+	 * @throws IOException
 	 *             si no ha podido actualizar
 	 */
-	public static void updateCourseLog(Logs logs) throws Exception {
+	public static void updateCourseLog(Logs logs) throws IOException {
 
-		DownloadLogController download = new DownloadLogController(CONTROLLER.getHost(), CONTROLLER.getUsername(),
-				CONTROLLER.getPassword(), CONTROLLER.getActualCourse().getId(), CONTROLLER.getUser().getTimezone(),
+		DownloadLogController download = new DownloadLogController(CONTROLLER.getHost(),
+				CONTROLLER.getActualCourse().getId(), CONTROLLER.getUser().getTimezone(),
 				CONTROLLER.getCookies());
 
 		setDateTimeFormatter(download.getUserTimeZone());
@@ -105,12 +106,12 @@ public class LogCreator {
 	 * Crea el log del curso con zona horaria del servidor
 	 * 
 	 * @return el log del server
-	 * @throws Exception
+	 * @throws IOException
 	 *             si ha habido un problema al crearlo
 	 */
-	public static Logs createCourseLog() throws Exception {
-		DownloadLogController download = new DownloadLogController(CONTROLLER.getHost(), CONTROLLER.getUsername(),
-				CONTROLLER.getPassword(), CONTROLLER.getActualCourse().getId(), CONTROLLER.getUser().getTimezone(),
+	public static Logs createCourseLog() throws IOException {
+		DownloadLogController download = new DownloadLogController(CONTROLLER.getHost(),
+				CONTROLLER.getActualCourse().getId(), CONTROLLER.getUser().getTimezone(),
 				CONTROLLER.getCookies());
 
 		setDateTimeFormatter(download.getUserTimeZone());
@@ -118,9 +119,8 @@ public class LogCreator {
 		List<Map<String, String>> parsedLog = LogCreator.parse(new StringReader(download.downloadLog()));
 		List<LogLine> logList = LogCreator.createLogs(parsedLog);
 		Collections.reverse(logList);
-		Logs logs = new Logs(download.getServerTimeZone(), logList); // lo guardamos con la zona horaria del servidor.
+		return new Logs(download.getServerTimeZone(), logList); // lo guardamos con la zona horaria del servidor.
 
-		return logs;
 	}
 
 	/**
@@ -132,18 +132,18 @@ public class LogCreator {
 	 * @throws Exception
 	 *             si ha habido un problema al parsear el csv
 	 */
-	public static List<Map<String, String>> parse(Reader reader) throws Exception {
+	public static List<Map<String, String>> parse(Reader reader) {
 
 		try (CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
 
-			List<Map<String, String>> logs = new ArrayList<Map<String, String>>();
+			List<Map<String, String>> logs = new ArrayList<>();
 			Set<String> headers = csvParser.getHeaderMap().keySet();
 
-			LOGGER.info("Los nombres de las columnas del csv son: " + headers);
+			LOGGER.info("Los nombres de las columnas del csv son: {}", headers);
 
 			for (CSVRecord csvRecord : csvParser) {
 
-				Map<String, String> log = new HashMap<String, String>();
+				Map<String, String> log = new HashMap<>();
 				logs.add(log);
 
 				for (String header : headers) {
@@ -153,9 +153,9 @@ public class LogCreator {
 			}
 
 			return logs;
-		} catch (Exception e) {
+		} catch (IOException e) {
 			LOGGER.error("No se ha podido parsear el contenido", e);
-			throw e;
+			throw new IllegalStateException();
 		}
 	}
 
@@ -167,7 +167,7 @@ public class LogCreator {
 	 * @return los logs creados
 	 */
 	public static List<LogLine> createLogs(List<Map<String, String>> allLogs) {
-		List<LogLine> logs = new ArrayList<LogLine>();
+		List<LogLine> logs = new ArrayList<>();
 		for (Map<String, String> log : allLogs) {
 			logs.add(createLog(log));
 		}
@@ -259,7 +259,7 @@ public class LogCreator {
 	 */
 	private static List<Integer> getIdsInDescription(String description) {
 		Matcher m = INTEGER_PATTERN.matcher(description);
-		List<Integer> list = new ArrayList<Integer>();
+		List<Integer> list = new ArrayList<>();
 		while (m.find()) {
 			String integer = null;
 			if (m.group("idQuote") != null) {
@@ -272,8 +272,12 @@ public class LogCreator {
 				list.add(Integer.parseInt(integer));
 			}
 		}
-		LOGGER.debug(description + " : " + list);
+		LOGGER.debug("{} : {}", description, list);
 		return list;
+	}
+
+	private LogCreator() {
+		throw new UnsupportedOperationException();
 	}
 
 }

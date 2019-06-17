@@ -92,9 +92,11 @@ import netscape.javascript.JSException;
  */
 public class MainController implements Initializable {
 
+	private static final String ALL = "text.all";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
 
-	private final static Image ERROR_ICON = new Image("/img/error.png");
+	private static final Image ERROR_ICON = new Image("/img/error.png");
 
 	private StackedBarDataSetComponent stackedBarDatasetComponent = StackedBarDataSetComponent.getInstance();
 
@@ -200,7 +202,7 @@ public class MainController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
 			LOGGER.info(
-					"Completada la carga del curso '" + controller.getActualCourse().getFullName() + ".");
+					"Completada la carga del curso {}", controller.getActualCourse().getFullName());
 
 			stats = controller.getStats();
 
@@ -215,12 +217,11 @@ public class MainController implements Initializable {
 							"setLanguage('" + I18n.getResourceBundle().getLocale() + "')"));
 
 			// Guardamos en el logger los errores de consola que se generan en el JS
-			WebConsoleListener.setDefaultListener(new WebConsoleListener() {
-				@Override
-				public void messageAdded(WebView webView, String message, int lineNumber, String sourceId) {
-					LOGGER.error("Error en la consola de JS: " + message + " [" + sourceId + ":" + lineNumber + "] ");
-				}
-			});
+			WebConsoleListener.setDefaultListener((webView, message, lineNumber, sourceId) ->
+
+			LOGGER.error("Error en la consola de JS: {} [{} : {}] ", message, sourceId, lineNumber)
+
+			);
 
 			// Coloca el divider a la izquierda al redimensionar la ventana
 			ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) -> splitPane
@@ -272,7 +273,7 @@ public class MainController implements Initializable {
 			@Override
 			public String toString(ModuleType moduleType) {
 				if (moduleType == null) {
-					return I18n.get("text.all");
+					return I18n.get(ALL);
 				}
 				return I18n.get(moduleType);
 			}
@@ -325,7 +326,7 @@ public class MainController implements Initializable {
 			@Override
 			public String toString(Group group) {
 				if (group == null) {
-					return I18n.get("text.all");
+					return I18n.get(ALL);
 				}
 				return group.getName();
 			}
@@ -348,7 +349,7 @@ public class MainController implements Initializable {
 			@Override
 			public String toString(Role role) {
 				if (role == null) {
-					return I18n.get("text.all");
+					return I18n.get(ALL);
 				}
 				return role.getName().isEmpty() ? role.getShortName() : role.getName();
 			}
@@ -405,7 +406,7 @@ public class MainController implements Initializable {
 								false);
 						setGraphic(new ImageView(image));
 					} catch (Exception e) {
-						LOGGER.error("No se ha podido cargar la imagen de: " + user);
+						LOGGER.error("No se ha podido cargar la imagen de: {}", user);
 						setGraphic(new ImageView(new Image("/img/default_user.png")));
 					}
 				}
@@ -558,12 +559,9 @@ public class MainController implements Initializable {
 	 */
 	private void enableFilterLogButton(
 			LocalDate dateStartOld, LocalDate dateStartNew, LocalDate dateEndOld, LocalDate dateEndNew) {
-		if (dateStartOld.equals(dateStartNew)
-				&& dateEndOld.equals(dateEndNew)) {
-			filterLogButton.setDisable(true);
-		} else {
-			filterLogButton.setDisable(false);
-		}
+
+		filterLogButton.setDisable(dateStartOld.equals(dateStartNew) && dateEndOld.equals(dateEndNew));
+
 	}
 
 	/**
@@ -571,7 +569,7 @@ public class MainController implements Initializable {
 	 */
 	public void initTabLogs() {
 
-		tabUbuLogs.setOnSelectionChanged(event -> setTablogs(event));
+		tabUbuLogs.setOnSelectionChanged(this::setTablogs);
 
 		tabUbuLogsComponent.setOnSelectionChanged(event -> {
 			updateLogsChart();
@@ -611,7 +609,7 @@ public class MainController implements Initializable {
 				} else {
 					setText(I18n.get(component));
 					try {
-						Image image = new Image("/img/" + component + ".png");
+						Image image = new Image(AppInfo.IMG_DIR + component + ".png");
 						setGraphic(new ImageView(image));
 					} catch (Exception e) {
 						setGraphic(null);
@@ -623,7 +621,7 @@ public class MainController implements Initializable {
 		List<Component> uniqueComponents = controller.getActualCourse().getUniqueComponents();
 
 		// Ordenamos los componentes segun los nombres internacionalizados
-		uniqueComponents.sort(Comparator.comparing((Component c) -> I18n.get(c)));
+		uniqueComponents.sort(Comparator.comparing(I18n::get));
 
 		ObservableList<Component> observableListComponents = FXCollections.observableArrayList(uniqueComponents);
 		FilteredList<Component> filterComponents = new FilteredList<>(observableListComponents);
@@ -632,15 +630,14 @@ public class MainController implements Initializable {
 
 		// ponemos un listener al cuadro de texto para que se filtre el list view en
 		// tiempo real
-		componentTextField.textProperty().addListener(((observable, oldValue, newValue) -> {
-			filterComponents.setPredicate(component -> {
-				if (newValue == null || newValue.isEmpty()) {
-					return true;
-				}
-				String textField = newValue.toLowerCase();
-				return I18n.get(component).toLowerCase().contains(textField);
-			});
-		}));
+		componentTextField.textProperty()
+				.addListener(((observable, oldValue, newValue) -> filterComponents.setPredicate(component -> {
+					if (newValue == null || newValue.isEmpty()) {
+						return true;
+					}
+					String textField = newValue.toLowerCase();
+					return I18n.get(component).toLowerCase().contains(textField);
+				})));
 
 	}
 
@@ -668,7 +665,7 @@ public class MainController implements Initializable {
 					setText(I18n.get(componentEvent.getComponent()) + " - "
 							+ I18n.get(componentEvent.getEventName()));
 					try {
-						Image image = new Image("/img/" + componentEvent.getComponent() + ".png");
+						Image image = new Image(AppInfo.IMG_DIR + componentEvent.getComponent() + ".png");
 						setGraphic(new ImageView(image));
 					} catch (Exception e) {
 						setGraphic(null);
@@ -690,16 +687,15 @@ public class MainController implements Initializable {
 		listViewEvents.setItems(filterComponentsEvents);
 		listViewEvents.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-		componentEventTextField.textProperty().addListener(((observable, oldValue, newValue) -> {
-			filterComponentsEvents.setPredicate(componentEvent -> {
-				if (newValue == null || newValue.isEmpty()) {
-					return true;
-				}
-				String textField = newValue.toLowerCase();
-				return I18n.get(componentEvent.getComponent()).toLowerCase().contains(textField)
-						|| I18n.get(componentEvent.getEventName()).toLowerCase().contains(textField);
-			});
-		}));
+		componentEventTextField.textProperty().addListener(
+				((observable, oldValue, newValue) -> filterComponentsEvents.setPredicate(componentEvent -> {
+					if (newValue == null || newValue.isEmpty()) {
+						return true;
+					}
+					String textField = newValue.toLowerCase();
+					return I18n.get(componentEvent.getComponent()).toLowerCase().contains(textField)
+							|| I18n.get(componentEvent.getEventName()).toLowerCase().contains(textField);
+				})));
 
 	}
 
@@ -727,7 +723,7 @@ public class MainController implements Initializable {
 		String stackedbardataset = stackedBarDatasetComponent.createData(listParticipants.getItems(),
 				listParticipants.getSelectionModel().getSelectedItems(),
 				listViewComponents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
-		LOGGER.info("Dataset para el stacked bar de componentes solo en JS: " + stackedbardataset);
+		LOGGER.info("Dataset para el stacked bar de componentes solo en JS: {}" , stackedbardataset);
 		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
 	}
 
@@ -739,7 +735,7 @@ public class MainController implements Initializable {
 				listParticipants.getSelectionModel().getSelectedItems(),
 				listViewEvents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
 
-		LOGGER.info("Dataset para el stacked bar de componentes y eventos en JS: " + stackedbardataset);
+		LOGGER.info("Dataset para el stacked bar de componentes y eventos en JS: {}", stackedbardataset);
 		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
 
 	}
@@ -791,7 +787,7 @@ public class MainController implements Initializable {
 	 */
 	public void initTabGrades() {
 		tabPane.getSelectionModel().select(tabUbuGrades);
-		tabUbuGrades.setOnSelectionChanged(event -> setTabGrades(event));
+		tabUbuGrades.setOnSelectionChanged(this::setTabGrades);
 
 	}
 
@@ -885,7 +881,7 @@ public class MainController implements Initializable {
 	public static void setIcon(TreeItem<GradeItem> item) {
 		String path = null;
 		try {
-			path = "/img/" + item.getValue().getItemModule().getModName() + ".png";
+			path = AppInfo.IMG_DIR + item.getValue().getItemModule().getModName() + ".png";
 			item.setGraphic(new ImageView(new Image(path)));
 		} catch (Exception e) {
 			item.setGraphic(new ImageView(ERROR_ICON));
@@ -908,7 +904,7 @@ public class MainController implements Initializable {
 			ModuleType filterType = slcType.getValue();
 			String patternCalifications = tfdItems.getText();
 
-			if (filterType==null && patternCalifications.isEmpty()) {
+			if (filterType == null && patternCalifications.isEmpty()) {
 				// Sin filtro y sin patrón
 				for (int k = 0; k < root.getChildren().size(); k++) {
 					TreeItem<GradeItem> item = new TreeItem<>(root.getChildren().get(k));
@@ -921,7 +917,7 @@ public class MainController implements Initializable {
 				for (GradeItem gradeItem : gradeItems) {
 					TreeItem<GradeItem> item = new TreeItem<>(gradeItem);
 					boolean activityYes = false;
-					if (filterType ==null || filterType.equals(gradeItem.getItemModule())) {
+					if (filterType == null || filterType.equals(gradeItem.getItemModule())) {
 						activityYes = true;
 					}
 					Pattern pattern = Pattern.compile(patternCalifications.toLowerCase());
@@ -949,10 +945,10 @@ public class MainController implements Initializable {
 	 * 
 	 * @param actionEvent
 	 *            El ActionEvent.
-	 * @throws Exception
+	 * @throws IOException
 	 *             excepción
 	 */
-	public void saveChart(ActionEvent actionEvent) throws Exception {
+	public void saveChart(ActionEvent actionEvent) throws IOException {
 		File file = new File("chart.png");
 
 		FileChooser fileChooser = new FileChooser();
@@ -969,7 +965,7 @@ public class MainController implements Initializable {
 				BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
 				ImageIO.write(bufferedImage, "png", file);
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			LOGGER.error("Error al guardar el gráfico: {}", e);
 			errorWindow(I18n.get("error.savechart"), false);
 		}
@@ -1028,10 +1024,8 @@ public class MainController implements Initializable {
 	 * @param actionEvent
 	 *            El ActionEvent.
 	 * 
-	 * @throws Exception
-	 *             exception
 	 */
-	public void changeCourse(ActionEvent actionEvent) throws Exception {
+	public void changeCourse(ActionEvent actionEvent) {
 		LOGGER.info("Cambiando de asignatura...");
 		changeScene(getClass().getResource("/view/Welcome.fxml"));
 	}
@@ -1170,7 +1164,7 @@ public class MainController implements Initializable {
 		tableData.append(",['" + I18n.get("chartlabel.tableMean") + "'");
 		for (TreeItem<GradeItem> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 			String grade = stats.getElementMean(stats.getGeneralStats(), structTree.getValue());
-			if (grade.equals("NaN")) {
+			if ("NaN".equals(grade)) {
 				tableData.append(",{v:0, f:'NaN'}");
 			} else {
 				tableData.append(",{v:" + grade + ", f:'" + grade + "/10'}");
@@ -1220,7 +1214,6 @@ public class MainController implements Initializable {
 		LOGGER.debug("Selected participant: {}", selectedParticipants.size());
 		// Por cada usuario seleccionado
 		for (EnrolledUser actualUser : selectedParticipants) {
-			// TODO LOGGER.debug("Enroller user: {}", actualUser.getFirstName());
 			if (actualUser == null) {
 				continue;
 			}

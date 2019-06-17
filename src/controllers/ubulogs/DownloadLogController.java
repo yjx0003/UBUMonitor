@@ -1,5 +1,6 @@
 package controllers.ubulogs;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -51,15 +52,11 @@ public class DownloadLogController {
 	 * 
 	 * @param host
 	 *            host moodle
-	 * @param username
-	 *            nombre de usuario cuenta
-	 * @param password
-	 *            contraseña de la cuenta
 	 * @param idCourse
 	 *            id del curso que se quiere descargar el log
 	 * 
 	 */
-	private DownloadLogController(String host, String username, String password, int idCourse,
+	private DownloadLogController(String host, int idCourse,
 			Map<String, String> cookies) {
 		this.host = host;
 		this.idCourse = idCourse;
@@ -71,10 +68,6 @@ public class DownloadLogController {
 	 * 
 	 * @param host
 	 *            host moodle
-	 * @param username
-	 *            nombre de usuario cuenta
-	 * @param password
-	 *            contraseña de la cuenta
 	 * @param idCourse
 	 *            id del curso que se quiere descargar el log
 	 * @param timezone
@@ -83,9 +76,9 @@ public class DownloadLogController {
 	 *            cookies
 	 * 
 	 */
-	public DownloadLogController(String host, String username, String password, int idCourse, ZoneId timezone,
+	public DownloadLogController(String host, int idCourse, ZoneId timezone,
 			Map<String, String> cookies) {
-		this(host, username, password, idCourse, cookies);
+		this(host, idCourse, cookies);
 		this.userTimeZone = timezone;
 	}
 
@@ -94,10 +87,6 @@ public class DownloadLogController {
 	 * 
 	 * @param host
 	 *            host moodle
-	 * @param username
-	 *            nombre de usuario cuenta
-	 * @param password
-	 *            contraseña de la cuenta
 	 * @param idCourse
 	 *            id del curso que se quiere descargar el log
 	 * @param timezone
@@ -106,13 +95,13 @@ public class DownloadLogController {
 	 *            Por ejemplo Europe/Madrid.
 	 * @param cookies
 	 *            cookies
-	 * @throws Exception
+	 * @throws IOException
 	 *             si no ha encontrado la zona horaria del servidor de moodle
 	 */
-	public DownloadLogController(String host, String username, String password, int idCourse, String timezone,
-			Map<String, String> cookies) throws Exception {
+	public DownloadLogController(String host, int idCourse, String timezone,
+			Map<String, String> cookies) throws IOException {
 
-		this(host, username, password, idCourse, cookies);
+		this(host, idCourse, cookies);
 		// 99 significa que el usuario esta usando la zona horaria del servidor
 		this.userTimeZone = ("99".equals(timezone)) ? findServerTimezone() : ZoneId.of(timezone);
 	}
@@ -121,29 +110,32 @@ public class DownloadLogController {
 		return userTimeZone;
 	}
 
-	public ZoneId findServerTimezone() throws Exception {
-		try {
-			LOGGER.info("Buscando el tiempo del servidor desde el perfil del usuario.");
-			// vamos a la edicion del perfil de usuario para ver la zona horaria del
-			// servidor
-			Document d = Jsoup.connect(host + "/user/edit.php?lang=en").cookies(cookies).get();
+	/**
+	 * Busca la zona horaria del servidor a partir del perfil del usuario.
+	 * 
+	 * @return zona horaria del servidor.
+	 * @throws IOException
+	 *             si no puede conectarse con el servidor
+	 */
+	public ZoneId findServerTimezone() throws IOException {
 
-			// timezone tendra una estructuctura parecida a: Server timezone (Europe/Madrid)
-			// lo unico que nos interesa es lo que hay dentro de los parentesis:
-			// Europe/Madrid
-			String timezone = d.selectFirst("select#id_timezone option[value=99]").text();
-			LOGGER.info("Timezone del servidor: " + timezone);
-			String timezoneParsed = timezone.substring(17, timezone.length() - 1);
-			serverTimeZone = ZoneId.of(timezoneParsed);
-			return serverTimeZone;
-		} catch (Exception e) {
-			LOGGER.error("Error al buscar el timezone del usuario desde el html ", e);
-			throw e;
-		}
+		LOGGER.info("Buscando el tiempo del servidor desde el perfil del usuario.");
+		// vamos a la edicion del perfil de usuario para ver la zona horaria del
+		// servidor
+		Document d = Jsoup.connect(host + "/user/edit.php?lang=en").cookies(cookies).get();
+
+		// timezone tendra una estructuctura parecida a: Server timezone (Europe/Madrid)
+		// lo unico que nos interesa es lo que hay dentro de los parentesis:
+		// Europe/Madrid
+		String timezone = d.selectFirst("select#id_timezone option[value=99]").text();
+		LOGGER.info("Timezone del servidor: {}", timezone);
+		String timezoneParsed = timezone.substring(17, timezone.length() - 1);
+		serverTimeZone = ZoneId.of(timezoneParsed);
+		return serverTimeZone;
 
 	}
 
-	public ZoneId getServerTimeZone() throws Exception {
+	public ZoneId getServerTimeZone() throws IOException {
 		if (serverTimeZone == null) {
 			return findServerTimezone();
 		}
@@ -168,8 +160,7 @@ public class DownloadLogController {
 	}
 
 	/**
-	 * Descarga todo el log del curso disponible
-	 * 
+	 * Descarga el log completo.
 	 * @return csv del log
 	 */
 	public String downloadLog() {
@@ -222,11 +213,11 @@ public class DownloadLogController {
 	 */
 	public String downloadLog(String dateSeconds) {
 		try {
-			String URL = host + "/report/log/index.php?lang=en&download=csv&id=" + idCourse + "&date=" + dateSeconds
+			String url = host + "/report/log/index.php?lang=en&download=csv&id=" + idCourse + "&date=" + dateSeconds
 					+ "&modid=&chooselog=1&logreader=logstore_standard";
-			LOGGER.info("Descargando log con la URL: " + URL);
+			LOGGER.info("Descargando log con la URL {}: ", url);
 			Response response = Jsoup
-					.connect(URL)
+					.connect(url)
 					.cookies(cookies)
 					.ignoreContentType(true)
 					.timeout(0)
@@ -255,7 +246,7 @@ public class DownloadLogController {
 		ZonedDateTime newzonedInicio = convertTimezone(zonedInicio, userTimeZone);
 		ZonedDateTime newzonedFin = convertTimezone(zonedFin, userTimeZone);
 
-		List<String> logs = new ArrayList<String>();
+		List<String> logs = new ArrayList<>();
 		// mientras la fecha de inicio sea menor que la fecha de fin
 		while (newzonedInicio.isBefore(newzonedFin)) {
 			logs.add(downloadLog(zonedInicio));

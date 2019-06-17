@@ -15,4 +15,11 @@ public class AppInfo {
 
 	public static final String CACHE_DIR = "./cache/";
 
+	public static final String IMG_DIR= "/img/";
+	
+	
+	private AppInfo() {
+		throw new UnsupportedOperationException();
+	}
+	
 }

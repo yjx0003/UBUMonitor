@@ -35,7 +35,8 @@ public class GroupByYearMonth extends GroupByAbstract<YearMonth> {
 	public List<YearMonth> getRange(LocalDate start, LocalDate end) {
 		List<YearMonth> list = new ArrayList<>();
 		
-		for (YearMonth yearMonthStart = YearMonth.from(start),yearMonthEnd=YearMonth.from(end);
+		for (YearMonth yearMonthStart = YearMonth.from(start),
+				yearMonthEnd=YearMonth.from(end);
 				!yearMonthStart.isAfter(yearMonthEnd);
 				yearMonthStart = yearMonthStart.plusMonths(1)) {
 			

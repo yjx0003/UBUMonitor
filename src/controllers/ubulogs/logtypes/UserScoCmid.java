@@ -37,7 +37,9 @@ public class UserScoCmid extends ReferencesLog {
 	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
-		// TODO Auto-generated method stub
+		setUserById(log, ids.get(0));
+		//sco id
+		setCourseModuleById(log, ids.get(2));
 		
 	}
 

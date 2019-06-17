@@ -1,6 +1,7 @@
 
 package controllers;
 
+import java.awt.IllegalComponentStateException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -71,15 +72,16 @@ public class LoginController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		initializeProperties();
+		try {
+			initializeProperties();
+		} catch (IOException e) {
+			LOGGER.error("No se ha podido inicializar el fichero properties");
+		}
 
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				if (txtUsername != null && !txtUsername.getText().isEmpty()) {
-					txtPassword.requestFocus(); // si hay texto cargado del usuario cambiamos el focus al texto de
-												// password
-				}
+		Platform.runLater(() -> {
+			if (txtUsername != null && !txtUsername.getText().isEmpty()) {
+				txtPassword.requestFocus(); // si hay texto cargado del usuario cambiamos el focus al texto de
+											// password
 			}
 		});
 
@@ -91,7 +93,7 @@ public class LoginController implements Initializable {
 		languageSelector.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
 
 			controller.setSelectedLanguage(newValue);
-			LOGGER.info("Idioma cargado: {}", I18n.getResourceBundle().getLocale().toString());
+			LOGGER.info("Idioma cargado: {}", I18n.getResourceBundle().getLocale());
 			LOGGER.info("[Bienvenido a " + AppInfo.APPLICATION_NAME + "]");
 			changeScene(getClass().getResource("/view/Login.fxml"));
 		});
@@ -99,20 +101,16 @@ public class LoginController implements Initializable {
 
 	/**
 	 * Inicializa el fichero properties con el nombre de usuario y host
+	 * 
+	 * @throws IOException
 	 */
-	private void initializeProperties() {
+	private void initializeProperties() throws IOException {
 
 		properties = new Properties();
 
 		File file = new File(PROPERTIES_PATH);
-		if (!file.exists()) {
-
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-				LOGGER.error("No se ha podido crear el fichero properties: " + PROPERTIES_PATH);
-			}
-
+		if (!file.isFile() && !file.createNewFile()) {
+			LOGGER.error("No se ha podido crear el fichero properties: " + PROPERTIES_PATH);
 		} else { // si existe el fichero properties inicializamos los valores
 			try (InputStream in = new FileInputStream(file)) {
 
@@ -147,7 +145,7 @@ public class LoginController implements Initializable {
 			properties.store(out, null);
 
 		} catch (IOException e) {
-			LOGGER.error("No se ha podido guardar el fichero" + file.getAbsolutePath());
+			LOGGER.error("No se ha podido guardar el fichero {}", file.getAbsolutePath());
 		}
 	}
 
@@ -227,11 +225,11 @@ public class LoginController implements Initializable {
 				} catch (IOException e) {
 					LOGGER.error("No se ha podido conectar con el host.", e);
 					updateMessage(I18n.get("error.host"));
-					throw e;
+					throw new IllegalComponentStateException();
 				} catch (JSONException e) {
 					LOGGER.error("Usuario y/o contraseña incorrectos", e);
 					updateMessage(I18n.get("error.login"));
-					throw e;
+					throw new IllegalArgumentException();
 
 				}
 				try {
@@ -240,7 +238,7 @@ public class LoginController implements Initializable {
 				} catch (IOException e) {
 					LOGGER.error("Error al obtener los datos del usuario.", e);
 					updateMessage("Error al obtener los datos del usuario.");
-					throw e;
+					throw new IllegalStateException();
 				}
 				return null;
 			}

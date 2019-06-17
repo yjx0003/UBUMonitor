@@ -15,7 +15,7 @@ public enum DescriptionFormat {
 	MARKDOWN(4);
 
 	private int number;
-	private static Map<Integer, DescriptionFormat> map = new HashMap<Integer, DescriptionFormat>();
+	private static Map<Integer, DescriptionFormat> map = new HashMap<>();
 	static {
 		for (DescriptionFormat df : DescriptionFormat.values()) {
 			map.put(df.number, df);

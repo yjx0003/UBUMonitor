@@ -38,7 +38,7 @@ public class Section {
 	 * Optional.
 	 * Section number inside the course
 	 */
-	private int section;
+	private int sectionName;
 	
 	/**
 	 * Optional.
@@ -97,12 +97,12 @@ public class Section {
 		this.summaryformat = summaryformat;
 	}
 
-	public int getSection() {
-		return section;
+	public int getSectionName() {
+		return sectionName;
 	}
 
-	public void setSection(int section) {
-		this.section = section;
+	public void setSectionName(int section) {
+		this.sectionName = section;
 	}
 
 	public int getHiddenbynumsections() {

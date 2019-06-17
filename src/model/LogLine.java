@@ -28,7 +28,7 @@ public class LogLine implements Serializable {
 	private Component component;
 	private Event eventName;
 	private Origin origin;
-	private String IPAdress;
+	private String ipAdress;
 
 	private EnrolledUser user;
 	private EnrolledUser affectedUser;
@@ -137,7 +137,7 @@ public class LogLine implements Serializable {
 	 * @return la ip
 	 */
 	public String getIPAdress() {
-		return IPAdress;
+		return ipAdress;
 	}
 
 	/**
@@ -146,7 +146,7 @@ public class LogLine implements Serializable {
 	 * @param iPAdress direccion ip
 	 */
 	public void setIPAdress(String iPAdress) {
-		IPAdress = iPAdress;
+		ipAdress = iPAdress;
 	}
 
 	/**
@@ -289,7 +289,7 @@ public class LogLine implements Serializable {
 	@Override
 	public String toString() {
 		return "LogLine [time=" + time + ", component=" + component + ", eventName=" + eventName + ", origin=" + origin
-				+ ", IPAdress=" + IPAdress + ", user=" + user + ", affectedUser=" + affectedUser + ", courseModule="
+				+ ", IPAdress=" + ipAdress + ", user=" + user + ", affectedUser=" + affectedUser + ", courseModule="
 				+ courseModule + "]";
 	}
 

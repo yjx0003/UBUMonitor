@@ -17,7 +17,7 @@ public enum Origin {
 	WS("ws");
 	
 	private String name;
-	private static Map<String, Origin> originByString = new HashMap<String, Origin>();
+	private static Map<String, Origin> originByString = new HashMap<>();
 	static {
 		for (Origin value : Origin.values()) {
 			originByString.put(value.name, value);

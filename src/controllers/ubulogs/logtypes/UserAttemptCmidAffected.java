@@ -37,8 +37,10 @@ public class UserAttemptCmidAffected extends ReferencesLog {
 	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
-		// TODO Auto-generated method stub
-
+		setUserById(log, ids.get(0));
+		//attempt id
+		setCourseModuleById(log, ids.get(2));
+		setAffectedUserById(log, ids.get(3));
 	}
 
 }

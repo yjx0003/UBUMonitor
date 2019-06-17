@@ -1,7 +1,9 @@
 package webservice;
 
 /**
- * Clase abstracta que añade el id del curso y adicionalmente id del grupo o usuario.
+ * Clase abstracta que añade el id del curso y adicionalmente id del grupo o
+ * usuario.
+ * 
  * @author Yi Peng Ji
  *
  */
@@ -17,17 +19,24 @@ public abstract class ParametersCourseidUseridGroupid extends WebService {
 
 	/**
 	 * Constructor con el id del curso
-	 * @param courseid id del curso
+	 * 
+	 * @param courseid
+	 *            id del curso
 	 */
 	public ParametersCourseidUseridGroupid(int courseid) {
 		this.courseid = courseid;
 	}
 
 	/**
-	 * Constructor con el id del curso y parametros adicional de id usuario o de grupo.
-	 * @param courseid id del curso
-	 * @param optionalParameter parametro opcional
-	 * @param userOrGroupid id de usuario o de grupo
+	 * Constructor con el id del curso y parametros adicional de id usuario o de
+	 * grupo.
+	 * 
+	 * @param courseid
+	 *            id del curso
+	 * @param optionalParameter
+	 *            parametro opcional
+	 * @param userOrGroupid
+	 *            id de usuario o de grupo
 	 */
 	public ParametersCourseidUseridGroupid(int courseid, OptionalParameter optionalParameter, int userOrGroupid) {
 
@@ -40,6 +49,8 @@ public abstract class ParametersCourseidUseridGroupid extends WebService {
 		case GROUPID:
 			this.groupid = userOrGroupid;
 			break;
+		default:
+			throw new IllegalArgumentException("No puede ser nulo");
 		}
 
 	}
@@ -57,6 +68,5 @@ public abstract class ParametersCourseidUseridGroupid extends WebService {
 			appendToUrlGruopid(groupid);
 
 	}
-
 
 }

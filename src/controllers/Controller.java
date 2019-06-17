@@ -1,5 +1,6 @@
 package controllers;
 
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
@@ -16,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javafx.stage.Stage;
-import model.BBDD;
+import model.DataBase;
 import model.Course;
 import model.LogStats;
 import model.MoodleUser;
@@ -33,7 +34,7 @@ public class Controller {
 
 	private Languages selectedLanguage;
 
-	private BBDD BBDD;
+	private DataBase dataBase;
 
 	private String host;
 	private Stage stage;
@@ -71,15 +72,15 @@ public class Controller {
 	}
 
 	public void initialize() {
-		BBDD BBDD = new BBDD();
-		setBBDD(BBDD);
+	
+		setDataBase(new DataBase());
 		// Si no existe el recurso de idioma especificado cargamos el Español
 		Languages lang = Languages.getLanguageByLocale(Locale.getDefault());
 		try {
 
 			if (lang == null) {
-				LOGGER.info("No existe fichero de idioma para: " + Locale.getDefault());
-				LOGGER.info("Cargando idioma: " + Languages.SPANISH);
+				LOGGER.info("No existe fichero de idioma para :{}" , Locale.getDefault());
+				LOGGER.info("Cargando idioma:{} ", Languages.SPANISH);
 				setSelectedLanguage(Languages.SPANISH);
 			} else {
 				setSelectedLanguage(lang);
@@ -104,13 +105,13 @@ public class Controller {
 		I18n.setResourceBundle(ResourceBundle.getBundle(AppInfo.RESOURCE_BUNDLE_FILE_NAME));
 	}
 
-	public void setBBDD(BBDD BBDD) {
-		this.BBDD = BBDD;
+	public void setDataBase(DataBase dataBase) {
+		this.dataBase = dataBase;
 
 	}
 
-	public BBDD getBBDD() {
-		return BBDD;
+	public DataBase getDataBase() {
+		return dataBase;
 	}
 
 	/**
@@ -160,7 +161,7 @@ public class Controller {
 	}
 
 	public Course getActualCourse() {
-		return BBDD.getActualCourse();
+		return dataBase.getActualCourse();
 	}
 
 	/**
@@ -183,9 +184,9 @@ public class Controller {
 	 * @param host servidor moodle
 	 * @param username nombre de usuario
 	 * @param password contraseña
-	 * @throws Exception si no ha podido conectarse o la contraseña es erronea
+	 * @throws IOException si no ha podido conectarse o la contraseña es erronea
 	 */
-	public void tryLogin(String host, String username, String password) throws Exception {
+	public void tryLogin(String host, String username, String password) throws IOException {
 		WebService.initialize(host, username, password);
 
 		setHost(host);
@@ -206,9 +207,8 @@ public class Controller {
 
 	/**
 	 * Crea las estadisticas del curso tanto de calificaciones como de logs.
-	 * @throws Exception si falla la creacion de las estadisticas
 	 */
-	public void createStats() throws Exception {
+	public void createStats(){
 		Stats stats = new Stats(getActualCourse());
 		getActualCourse().setStats(stats);
 
@@ -221,7 +221,7 @@ public class Controller {
  	 * @param selectedCourse curso seleccionado
 	 */
 	public void setActualCourse(Course selectedCourse) {
-		BBDD.setActualCourse(selectedCourse);
+		dataBase.setActualCourse(selectedCourse);
 	}
 
 	/**

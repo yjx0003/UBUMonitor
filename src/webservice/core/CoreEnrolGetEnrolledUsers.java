@@ -330,7 +330,7 @@ public class CoreEnrolGetEnrolledUsers extends ParametersCourseid {
 
 		public Builder addUserfield(String userfield) {
 			if (userfield == null)
-				userfields = new HashSet<String>();
+				userfields = new HashSet<>();
 			userfields.add(userfield);
 			return this;
 		}

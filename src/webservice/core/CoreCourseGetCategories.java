@@ -42,7 +42,7 @@ public class CoreCourseGetCategories extends WebService{
 		if(ids!=null && !ids.isEmpty()) {
 			
 			String commaSeparated=ids.stream()
-					.map(i->i.toString())
+					.map(String::valueOf)
 					.collect(Collectors.joining(","));
 			
 			appendToUrlCriteria(key, commaSeparated);

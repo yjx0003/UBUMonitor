@@ -1,7 +1,8 @@
 package model;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Clase para emparejar componente y evento.
@@ -14,7 +15,7 @@ public class ComponentEvent {
 	private Component component;
 	private Event eventName;
 
-	private static Map<Component, Map<Event, ComponentEvent>> componentEventFactory = new HashMap<>();
+	private static Map<Component, Map<Event, ComponentEvent>> componentEventFactory = new EnumMap<>(Component.class);
 
 	private ComponentEvent(Component component, Event eventName) {
 		this.component = component;
@@ -23,7 +24,8 @@ public class ComponentEvent {
 
 	/**
 	 * Devuelve un objecto ComponentEvent a partir del Component y Event. Si ya hay
-	 * almacenado el ComponentEvent, devuelve ese y si no crea uno nuevo y lo guarda.
+	 * almacenado el ComponentEvent, devuelve ese y si no crea uno nuevo y lo
+	 * guarda.
 	 * 
 	 * @param component
 	 *            componente
@@ -37,7 +39,8 @@ public class ComponentEvent {
 
 	/**
 	 * Devuelve un objecto ComponentEvent a partir del Component y Event. Si ya hay
-	 * almacenado el ComponentEvent, devuelve ese y si no crea uno nuevo y lo guarda.
+	 * almacenado el ComponentEvent, devuelve ese y si no crea uno nuevo y lo
+	 * guarda.
 	 * 
 	 * @param component
 	 *            componente
@@ -47,12 +50,13 @@ public class ComponentEvent {
 	 */
 	public static ComponentEvent get(Component component, Event eventName) {
 		Map<Event, ComponentEvent> events = componentEventFactory.computeIfAbsent(component,
-				c -> new HashMap<Event, ComponentEvent>());
+				c -> new EnumMap<>(Event.class));
 		return events.computeIfAbsent(eventName, m -> new ComponentEvent(component, eventName));
 	}
 
 	/**
 	 * Devuelve el componente.
+	 * 
 	 * @return componente
 	 */
 	public Component getComponent() {
@@ -61,6 +65,7 @@ public class ComponentEvent {
 
 	/**
 	 * Devuelve el evento.
+	 * 
 	 * @return el evento
 	 */
 	public Event getEventName() {
@@ -69,27 +74,20 @@ public class ComponentEvent {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((component == null) ? 0 : component.hashCode());
-		result = prime * result + ((eventName == null) ? 0 : eventName.hashCode());
-		return result;
+		return Objects.hash(component, eventName);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+
+		if (!(obj instanceof ComponentEvent))
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
+
 		ComponentEvent other = (ComponentEvent) obj;
-		if (component != other.component)
-			return false;
-		if (eventName != other.eventName)
-			return false;
-		return true;
+		return component == other.component && eventName == other.eventName;
+
 	}
 
 	@Override

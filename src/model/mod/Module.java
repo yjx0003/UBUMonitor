@@ -91,7 +91,7 @@ public class Module implements Serializable {
 
 
 	public Module() {
-		logs = new ArrayList<LogLine>();
+		logs = new ArrayList<>();
 	}
 	
 	public Module(int id) {
@@ -258,14 +258,12 @@ public class Module implements Serializable {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
+
+		if (!(obj instanceof Module))
 			return false;
 		Module other = (Module) obj;
-		if (id != other.id)
-			return false;
-		return true;
+		return id == other.id;
+			
 	}
 	
 	

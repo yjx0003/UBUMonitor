@@ -48,8 +48,8 @@ public class GradeItem implements Serializable {
 	 * Constructor sin parametros.
 	 */
 	public GradeItem() {
-		children = new ArrayList<GradeItem>();
-		graderaw = new HashMap<EnrolledUser, Double>();
+		children = new ArrayList<>();
+		graderaw = new HashMap<>();
 	}
 
 	/**
@@ -354,14 +354,11 @@ public class GradeItem implements Serializable {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof GradeItem))
 			return false;
 		GradeItem other = (GradeItem) obj;
-		if (id != other.id)
-			return false;
-		return true;
+		return id == other.id;
+			
 	}
 
 	@Override

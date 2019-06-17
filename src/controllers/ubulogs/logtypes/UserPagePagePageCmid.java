@@ -37,7 +37,11 @@ public class UserPagePagePageCmid extends ReferencesLog {
 	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
-		// TODO Auto-generated method stub
+		setUserById(log, ids.get(0));
+		//page id
+		//page id
+		//page id
+		setCourseModuleById(log, ids.get(3));
 
 	}
 

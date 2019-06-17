@@ -41,7 +41,7 @@ public class UserFilesCmid extends ReferencesLog {
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
-		//number of files ids.get(1);
+		//number of files
 		setCourseModuleById(log, ids.get(2));
 
 	}

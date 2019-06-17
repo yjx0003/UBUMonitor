@@ -225,7 +225,7 @@ public enum Event {
 	 * de la enumeración
 	 */
 	static {
-		map = new HashMap<String, Event>();
+		map = new HashMap<>();
 		for (Event eventName : Event.values()) {
 			map.put(eventName.name, eventName);
 		}

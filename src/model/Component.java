@@ -72,7 +72,7 @@ public enum Component {
 	}
 
 	static {
-		map = new HashMap<String, Component>();
+		map = new HashMap<>();
 		for (Component component : Component.values()) {
 			map.put(component.name, component);
 		}

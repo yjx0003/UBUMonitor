@@ -194,7 +194,7 @@ public class CreatorGradeItems {
 	 * @return
 	 */
 	private boolean isEmpty(String content) {
-		return content.equals("-");
+		return "-".equals(content);
 	}
 
 	/**
@@ -295,7 +295,7 @@ public class CreatorGradeItems {
 		String content = tabledataObject.getJSONObject("grade").getString("content");
 		double grade = Double.NaN;
 
-		if (!content.equals("-")) {
+		if (!"-".equals(content)) {
 
 			try {
 				grade = decimalFormat.parse(content).doubleValue();

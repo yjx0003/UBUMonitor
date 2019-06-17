@@ -3,7 +3,6 @@ package model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import controllers.ubulogs.GroupByAbstract;
 import controllers.ubulogs.GroupByDay;
@@ -28,9 +27,9 @@ public class LogStats implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	List<GroupByAbstract<?>> stastistics;
+	private List<GroupByAbstract<?>> stastistics;
 
-	public LogStats(List<LogLine> logLines, Set<EnrolledUser> users) {
+	public LogStats(List<LogLine> logLines) {
 		stastistics = new ArrayList<>();
 
 		stastistics.add(new GroupByDay(logLines));

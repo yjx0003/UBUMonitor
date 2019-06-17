@@ -26,7 +26,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -48,7 +47,7 @@ public class LoginController implements Initializable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
 	private static final String PROPERTIES_PATH = "config.properties";
 	private Controller controller = Controller.getInstance();
-	Properties properties;
+	private Properties properties;
 	@FXML
 	private Label lblStatus;
 	@FXML
@@ -57,8 +56,7 @@ public class LoginController implements Initializable {
 	private PasswordField txtPassword;
 	@FXML
 	private TextField txtHost;
-	@FXML
-	private Button btnLogin;
+
 	@FXML
 	private ChoiceBox<Languages> languageSelector;
 

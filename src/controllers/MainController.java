@@ -104,38 +104,37 @@ public class MainController implements Initializable {
 	private Controller controller = Controller.getInstance();
 
 	@FXML // Curso actual
-	public Label lblActualCourse;
+	private Label lblActualCourse;
 	@FXML // Usuario actual
-	public Label lblActualUser;
+	private Label lblActualUser;
 	@FXML // Host actual
-	public Label lblActualHost;
+	private Label lblActualHost;
 	@FXML // Imagen del usuario
-	public ImageView userPhoto;
+	private ImageView userPhoto;
 
 	@FXML // Nº participantes
-	public Label lblCountParticipants;
+	private Label lblCountParticipants;
 	@FXML // lista de participantes
-	public ListView<EnrolledUser> listParticipants;
-	FilteredList<EnrolledUser> filteredEnrolledList;
+	private ListView<EnrolledUser> listParticipants;
+	private FilteredList<EnrolledUser> filteredEnrolledList;
 
 	@FXML // Botón filtro por rol
-	public ChoiceBox<Role> slcRole;
+	private ChoiceBox<Role> slcRole;
 
 	@FXML // Botón filtro por grupo
-	public ChoiceBox<Group> slcGroup;
+	private ChoiceBox<Group> slcGroup;
 
 	@FXML // Entrada de filtro de usuarios por patrón
-	public TextField tfdParticipants;
+	private TextField tfdParticipants;
 
 	@FXML // Vista en árbol de actividades
-	public TreeView<GradeItem> tvwGradeReport;
-	List<GradeItem> gradeReportList;
+	private TreeView<GradeItem> tvwGradeReport;
 
 	@FXML // Entrada de filtro de actividades por patrón
-	public TextField tfdItems;
+	private TextField tfdItems;
 
 	@FXML // Botón filtro por tipo de modulo
-	public ChoiceBox<ModuleType> slcType;
+	private ChoiceBox<ModuleType> slcType;
 
 	@FXML // Gráfico de lineas
 	private WebView webViewCharts;
@@ -928,7 +927,7 @@ public class MainController implements Initializable {
 					Pattern pattern = Pattern.compile(patternCalifications.toLowerCase());
 					Matcher match = pattern.matcher(gradeItem.getItemname().toLowerCase());
 					boolean patternYes = false;
-					if (patternCalifications.equals("") || match.find()) {
+					if (patternCalifications.isEmpty() || match.find()) {
 						patternYes = true;
 					}
 					if (activityYes && patternYes) {
@@ -1187,7 +1186,7 @@ public class MainController implements Initializable {
 				for (TreeItem<GradeItem> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 					String grade = stats.getElementMean(stats.getGroupStats(grupo),
 							structTree.getValue());
-					if (grade.equals("NaN")) {
+					if ("NaN".equals(grade)) {
 						tableData.append(",{v:0, f:'NaN'}");
 					} else {
 						tableData.append(",{v:" + grade + ", f:'" + grade + "/10'}");

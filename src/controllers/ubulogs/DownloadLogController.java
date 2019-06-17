@@ -114,7 +114,7 @@ public class DownloadLogController {
 
 		this(host, username, password, idCourse, cookies);
 		// 99 significa que el usuario esta usando la zona horaria del servidor
-		this.userTimeZone = (timezone.equals("99")) ? findServerTimezone() : ZoneId.of(timezone);
+		this.userTimeZone = ("99".equals(timezone)) ? findServerTimezone() : ZoneId.of(timezone);
 	}
 
 	public ZoneId getUserTimeZone() {
@@ -252,14 +252,14 @@ public class DownloadLogController {
 	 */
 	public List<String> downloadLog(ZonedDateTime zonedInicio, ZonedDateTime zonedFin) {
 
-		zonedInicio = convertTimezone(zonedInicio, userTimeZone);
-		zonedFin = convertTimezone(zonedFin, userTimeZone);
+		ZonedDateTime newzonedInicio = convertTimezone(zonedInicio, userTimeZone);
+		ZonedDateTime newzonedFin = convertTimezone(zonedFin, userTimeZone);
 
 		List<String> logs = new ArrayList<String>();
 		// mientras la fecha de inicio sea menor que la fecha de fin
-		while (zonedInicio.isBefore(zonedFin)) {
+		while (newzonedInicio.isBefore(newzonedFin)) {
 			logs.add(downloadLog(zonedInicio));
-			zonedInicio = zonedInicio.plusDays(1);
+			newzonedInicio = newzonedInicio.plusDays(1);
 		}
 
 		return logs;

@@ -33,9 +33,9 @@ public abstract class GroupByAbstract<T> implements Serializable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GroupByAbstract.class);
 
-	Map<EnrolledUser, Map<Component, Map<Event, Map<T, Long>>>> countsEvents;
+	private Map<EnrolledUser, Map<Component, Map<Event, Map<T, Long>>>> countsEvents;
 
-	Map<EnrolledUser, Map<Component, Map<T, Long>>> countsComponents;
+	private Map<EnrolledUser, Map<Component, Map<T, Long>>> countsComponents;
 
 	private Map<Component, Map<T, DescriptiveStatistics>> componentStatistics;
 	private Map<Component, Map<Event, Map<T, DescriptiveStatistics>>> componentEventStatistics;

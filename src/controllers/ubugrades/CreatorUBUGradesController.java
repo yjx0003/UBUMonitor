@@ -662,7 +662,7 @@ public class CreatorUBUGradesController {
 			String itemtype = gradeitem.getString("itemtype");
 			ModuleType moduleType;
 
-			if (itemtype.equals("mod")) {
+			if ("mod".equals(itemtype)) {
 				Module module = CONTROLLER.getBBDD().getCourseModuleById(gradeitem.getInt("cmid"));
 				gradeItem.setModule(module);
 				moduleType = ModuleType.get(gradeitem.getString("itemmodule"));

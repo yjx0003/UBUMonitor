@@ -32,7 +32,6 @@ public class Stats implements Serializable {
 	private final DecimalFormat decimalFormat;
 	private static final int MAX_DECIMAL_DIGITS = 2;
 	private static final int MIN_DECIMAL_DIGITS = 2;
-	
 
 	/**
 	 * Map que almacena como clave el id del GradeReporLine(GRL) y como valor el
@@ -80,11 +79,11 @@ public class Stats implements Serializable {
 				// los que no tienen notas (NaN)
 				DescriptiveStatistics descriptive = new DescriptiveStatistics();
 				generalGradesStats.put(gradeItem, descriptive);
-				
+
 				for (double grade : gradeItem.getEnrolledUserGrades()) {
-					
+
 					double gradeAdjustedTo10 = gradeItem.adjustTo10(grade);
-					
+
 					if (!Double.isNaN(gradeAdjustedTo10)) {
 						descriptive.addValue(gradeAdjustedTo10);
 					}
@@ -94,7 +93,7 @@ public class Stats implements Serializable {
 
 		} catch (Exception e) {
 			LOGGER.error("Error al generar las estadisticas generales.", e);
-			throw new Exception("Error al generar las estadisticas generales.");
+			throw new IllegalStateException("Error al generar las estadisticas generales.", e);
 		}
 	}
 
@@ -131,7 +130,7 @@ public class Stats implements Serializable {
 
 		} catch (Exception e) {
 			LOGGER.error("Error al generar las estadisticas de los grupos.", e);
-			throw new Exception("Error al generar las estadisticas de los grupos.");
+			throw new IllegalStateException("Error al generar las estadisticas de los grupos.", e);
 		}
 	}
 
@@ -318,6 +317,5 @@ public class Stats implements Serializable {
 
 		return atypicalValues;
 	}
-
 
 }

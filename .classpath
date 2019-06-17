@@ -10,7 +10,7 @@
 			<attribute name="javadoc_location" value="https://commons.apache.org/proper/commons-csv/apidocs/index.html"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="libs/commons-math3-3.6.1.jar" sourcepath="libs/commons-math3-3.6.1.jar">
+	<classpathentry kind="lib" path="libs/commons-math3-3.6.1.jar" sourcepath="libs/src/commons-math3-3.6.1-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="https://commons.apache.org/proper/commons-math/javadocs/api-3.6.1/"/>
 		</attributes>

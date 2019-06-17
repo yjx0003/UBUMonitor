@@ -96,7 +96,7 @@ public class Module implements Serializable {
 	
 	public Module(int id) {
 		this();
-		this.id=id;
+		setId(id);
 	}
 
 	public Course getCourse() {

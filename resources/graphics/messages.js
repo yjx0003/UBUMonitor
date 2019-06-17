@@ -46,9 +46,14 @@ var messages = {
 		en: "Select a group to show the chart"
 	}
 }
+
+//Modifica el valor de los inputs segun el idioma pasado
+function get_i18n(item, lang) {
+	document.getElementById(item).value = messages[item][lang];
+}
+
 // Establece el idioma
 function setLanguage(lang) {
-	language = lang;
 	get_i18n('btnLineas', lang);
 	get_i18n('btnRadar', lang);
 	get_i18n('btnBoxPlot', lang);
@@ -60,8 +65,4 @@ function setLanguage(lang) {
 	document.getElementById('noradarText').innerHTML = messages['noradarText'][lang];
 	document.getElementById('noGroupText').innerHTML = messages['noGroupText'][lang];
 	
-}
-// Modifica el valor de los inputs segun el idioma pasado
-function get_i18n(item, lang) {
-	document.getElementById(item).value = messages[item][lang];
 }

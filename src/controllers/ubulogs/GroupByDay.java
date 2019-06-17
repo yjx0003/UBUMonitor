@@ -9,6 +9,11 @@ import java.util.function.Function;
 
 import model.LogLine;
 
+/**
+ * Agrupa los logs por dia.
+ * @author Yi Peng Ji
+ *
+ */
 public class GroupByDay extends GroupByAbstract<LocalDate> {
 
 	/**

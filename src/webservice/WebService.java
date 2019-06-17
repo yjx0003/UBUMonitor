@@ -206,7 +206,7 @@ public abstract class WebService {
 	 * @param value valor
 	 */
 	protected void appendToUrlOptions(int index, String name, int value) {
-		parameters.append("&options[" + index + "][name]=" + name + "&options[" + index + "][value]=" + value);
+		appendToUrlOptions(index, name, Integer.toString(value));
 	}
 
 	/**
@@ -216,7 +216,7 @@ public abstract class WebService {
 	 * @param value valor
 	 */
 	protected void appendToUrlOptions(int index, String name, boolean value) {
-		parameters.append("&options[" + index + "][name]=" + name + "&options[" + index + "][value]=" + value);
+		appendToUrlOptions(index, name, Boolean.toString(value));
 	}
 
 	/**

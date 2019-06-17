@@ -78,7 +78,7 @@ public class LoginController implements Initializable {
 			LOGGER.error("No se ha podido inicializar el fichero properties");
 		}
 
-		Platform.runLater(() -> {
+		Platform.runLater(() -> { 
 			if (txtUsername != null && !txtUsername.getText().isEmpty()) {
 				txtPassword.requestFocus(); // si hay texto cargado del usuario cambiamos el focus al texto de
 											// password
@@ -115,8 +115,8 @@ public class LoginController implements Initializable {
 			try (InputStream in = new FileInputStream(file)) {
 
 				properties.load(in);
-				txtHost.setText(properties.getProperty("host"));
-				txtUsername.setText(properties.getProperty("username"));
+				txtHost.setText(properties.getProperty("host",""));
+				txtUsername.setText(properties.getProperty("username",""));
 				chkSaveUsername.setSelected(Boolean.parseBoolean(properties.getProperty("saveUsername")));
 				chkSaveHost.setSelected(Boolean.parseBoolean(properties.getProperty("saveHost")));
 

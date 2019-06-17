@@ -8,6 +8,11 @@ import java.util.stream.IntStream;
 
 import model.LogLine;
 
+/**
+ * Agrupa los logs por horas-
+ * @author Yi Peng Ji
+ *
+ */
 public class GroupByHour extends GroupByAbstract<Integer> {
 
 	/**
@@ -30,21 +35,33 @@ public class GroupByHour extends GroupByAbstract<Integer> {
 		return HOURS;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Function<LogLine, Integer> getGroupByFunction() {
 		return LogLine::getHour;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Function<Integer, String> getStringFormatFunction() {
 		return String::valueOf;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public TypeTimes getTypeTime() {
 		return TypeTimes.HOUR;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean useDatePicker() {
 		return false;

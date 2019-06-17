@@ -27,32 +27,10 @@ public class Group implements Serializable {
 		this.enrolledUsers = new HashSet<>();
 	}
 
-	/**
-	 * Constructor de la clase Group. Establece un grupo.
-	 * 
-	 * @param id
-	 *            Id del grupo.
-	 * @param name
-	 *            Nombre del grupo.
-	 * @param description
-	 *            Descripción del grupo.
-	 * 
-	 * @param descriptionFormat
-	 *            el formato de la descripción
-	 * 
-	 */
-	public Group(int id, String name, String description, DescriptionFormat descriptionFormat) {
-		this();
-		this.id = id;
-		this.name = name;
-		this.description = description;
-		this.descriptionFormat = descriptionFormat;
-
-	}
 
 	public Group(int id) {
 		this();
-		this.id = id;
+		setId(id);
 	}
 
 	/**

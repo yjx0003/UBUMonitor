@@ -1,5 +1,10 @@
 package controllers;
 
+/**
+ * Clase de utilidad que devuelve la información de la aplicación.
+ * @author Yi Peng Ji
+ *
+ */
 public class AppInfo {
 
 	public static final String APPLICATION_NAME = "UBUMonitor";

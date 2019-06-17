@@ -25,6 +25,12 @@ import model.EnrolledUser;
 import model.Event;
 import model.LogLine;
 
+/**
+ * Clase abstracta con metodos de creacion de agrupamiento de los logs.
+ * @author Yi Peng Ji
+ *
+ * @param <T> tipo de agrupamiento
+ */
 public abstract class GroupByAbstract<T extends Serializable> implements Serializable {
 
 	/**
@@ -139,7 +145,7 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 		// se crea y devuelve el valor nuevo.
 		for (EnrolledUser user : enrolledUsers) {
 
-			Map<Component, Map<T, Long>> userCounts = countsComponents.computeIfAbsent(user, k -> new HashMap<>());
+			Map<Component, Map<T, Long>> userCounts = countsComponents.computeIfAbsent(user, k -> new EnumMap<>(Component.class));
 			for (Component component : components) {
 
 				Map<T, Long> userComponentsCounts = userCounts.computeIfAbsent(component, k -> new HashMap<>());
@@ -182,16 +188,16 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 		for (EnrolledUser user : enrolledUsers) {
 
 			Map<Component, Map<Event, Map<T, Long>>> componentCounts = countsEvents.computeIfAbsent(user,
-					k -> new HashMap<>());
+					k -> new EnumMap<>(Component.class));
 			for (ComponentEvent componentEvent : componentsEvents) {
 
 				Component component = componentEvent.getComponent();
 				Event event = componentEvent.getEventName();
 
 				Map<Event, Map<T, Long>> componentsCounts = componentCounts.computeIfAbsent(component,
-						k -> new HashMap<>());
+						k -> new EnumMap<>(Event.class));
 				Map<Event, Map<T, DescriptiveStatistics>> componentStatisticsMap = componentEventStatistics
-						.computeIfAbsent(component, k -> new HashMap<>());
+						.computeIfAbsent(component, k -> new EnumMap<>(Event.class));
 
 				Map<T, Long> eventsCounts = componentsCounts.computeIfAbsent(event, k -> new HashMap<>());
 				Map<T, DescriptiveStatistics> eventDescriptiveStatistics = componentStatisticsMap
@@ -278,7 +284,7 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 			Event event = componentEvent.getEventName();
 
 			Map<Event, Map<T, DescriptiveStatistics>> eventStatistics = componentEventStatistics
-					.computeIfAbsent(component, k -> new HashMap<>());
+					.computeIfAbsent(component, k -> new EnumMap<>(Event.class));
 			Map<T, DescriptiveStatistics> statistics = eventStatistics.computeIfAbsent(event, k -> new HashMap<>());
 			List<Double> means = new ArrayList<>();
 			for (T typeTime : range) {
@@ -313,8 +319,8 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 		Map<EnrolledUser, Map<Component, List<Long>>> result = new HashMap<>();
 
 		for (EnrolledUser user : users) {
-			Map<Component, List<Long>> componentsCount = result.computeIfAbsent(user, k -> new HashMap<>());
-			Map<Component, Map<T, Long>> userCounts = countsComponents.computeIfAbsent(user, k -> new HashMap<>());
+			Map<Component, List<Long>> componentsCount = result.computeIfAbsent(user, k -> new EnumMap<>(Component.class));
+			Map<Component, Map<T, Long>> userCounts = countsComponents.computeIfAbsent(user, k -> new EnumMap<>(Component.class));
 
 			for (Component component : components) {
 				List<Long> userComponentCounts = componentsCount.computeIfAbsent(component, k -> new ArrayList<>());
@@ -354,14 +360,14 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 			Map<ComponentEvent, List<Long>> componentEventResult = result.computeIfAbsent(user, k -> new HashMap<>());
 
 			Map<Component, Map<Event, Map<T, Long>>> componentCounts = countsEvents.computeIfAbsent(user,
-					k -> new HashMap<>());
+					k -> new EnumMap<>(Component.class));
 
 			for (ComponentEvent componentEvent : componentsEvents) {
 				Component component = componentEvent.getComponent();
 				Event event = componentEvent.getEventName();
 
 				List<Long> countsResult = componentEventResult.computeIfAbsent(componentEvent, k -> new ArrayList<>());
-				Map<Event, Map<T, Long>> eventCounts = componentCounts.computeIfAbsent(component, k -> new HashMap<>());
+				Map<Event, Map<T, Long>> eventCounts = componentCounts.computeIfAbsent(component, k -> new EnumMap<>(Event.class));
 				Map<T, Long> counts = eventCounts.computeIfAbsent(event, k -> new HashMap<>());
 
 				for (T groupBy : groupByRange) {

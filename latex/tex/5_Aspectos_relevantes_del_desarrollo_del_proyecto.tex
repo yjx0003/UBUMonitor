@@ -11,7 +11,7 @@ Se ha instalado una versión en el equipo para realizar las pruebas, se comentar
 
 Las comprobaciones en un entorno real lo han realizado varios profesores docentes de la universidad, entre ellos los tutores, en UBUVirtual. 
 
-Cabe destacar que los tutores probaron cada mejora implementada en un corto lapso de tiempo, es decir en menos de 24 horas laborales ya tenía el visto bueno o errores encontrados. Esto ha facilitado mucho los tiempos de desarrollo de nuevas funcionalidades.
+Cabe destacar que los tutores probaron cada mejora implementada en un corto lapso de tiempo, en menos de 24 horas laborales ya tenía el visto bueno o errores encontrados. Esto ha facilitado mucho los tiempos de desarrollo de nuevas funcionalidades.
 
 \section{Instalación de la versión limpia de Moodle} \label{sec:instalacionMoodle}
 Después de conocer la versión de Moodle que usa la Universidad (\textbf{3.5.1}) mediante  la función \textbf{\textit{core\_webservice\_get\_site\_info}}, se ha intentado instalar en mi equipo la misma versión pero ya no estaba disponible en la página de descargas \cite{noauthor_moodle_nodate}. Finalmente se ha usado la \textbf{3.5.4+}.
@@ -31,7 +31,7 @@ Hay que destacar que el Token de ingreso solo afecta si se quiere iniciar sesió
 
 Se decidió prescindir totalmente del trabajo de UBULogs y empezar de nuevo debido a las modificaciones de Moodle como el token de ingreso (ver sección \ref{sec:logintoken}). 
 
-Finalmente se ha seguido por una vía diferente al mencionado proyecto, descargar los CSV directamente en memoria sin guardarlo en un fichero temporal. También se ha aplicado una mejora para bajarse los registros de forma diaria cuando se actualiza los datos.
+Se ha seguido por una vía diferente al mencionado proyecto, descargar los CSV directamente en memoria sin guardarlo en un fichero temporal. También se ha aplicado una mejora para bajarse los registros de forma diaria cuando se actualiza los datos.
 
 Otra mejora reseñable, al estar las horas de los registros mostradas en función de la zona horaria usada por el usuario, se ha decidido tomar como referencia para la aplicación la zona horaria del servidor. No importa si el usuario esta usando otra que no sea la misma que el servidor.
 
@@ -41,18 +41,44 @@ Cuando pasaron dos semanas desde el inicio del proyecto, acabé en la tesitura s
 
 Dos de los temores de tomar la decisión de refactorizar fue quedarme a medio camino en la entrega del proyecto o problemas de integración con el vista e interacción con el usuario (front-end).
 
-Finalmente, después de otras dos semanas de reflexión, se decide refactorizar el código de la parte del back-end completamente. Al empezar de nuevo el código se debe dedicar un esfuerzo extra al proyecto.
+Finalmente, después de otras dos semanas de reflexión, se decide refactorizar el código de la parte del back-end completamente. Al empezar de nuevo el código,  se dedica un esfuerzo extra en el proyecto para cumplir los tiempos.
 
 \section{Error en la función gradereport\_user\_get\_grade\_items}
 
+Al igual que el anterior proyecto de UBUGrades, se volvió a implementar función del servicio web \textbf{\textit{gradereport\_user\_get\_grade\_items}} ya facilitaba en gran medida recoger las calificaciones de los alumnos. Aunque no devuelve bien la jerarquía.
+
+\imagen{ejemplo_grade_items}{Extracto de la respuesta \textbf{\textit{gradereport\_user\_get\_grade\_items}}}
+
+Después de implementar esta funcionalidad, cuando lo probó uno de tutores daba error en la respuesta del servicio web. Finalmente se descubrió que era un error de Moodle cuando se oculta la columna de \textbf{Retroalimentación o Feedback} del calificador\cite{zadok_[mdl-64298]_nodate}. Este error aun no se ha solucionado en la versión 3.7 de Moodle.
+
+\imagen{excepctiongradeitems}{Mensaje de error cuando la retroalimentación del calificador está oculto}
+
+Debido a este inconveniente, se decidió trabajar con otra función del servicio web, \textbf{\textit{gradereport\_user\_get\_grades\_table}}, mucho más incómoda para extraer datos debido a que las respuestas contienen HTML. 
+
+\imagen{grades_table}{Extracto de la función \textbf{\textit{gradereport\_user\_get\_grades\_table}}}
+
+Este imprevisto ha supuesto un retraso de una semana en el proyecto.
+
+\section{Gráfica para mostrar los registros}
+
+Ha sido una tarea titánica buscar una forma de mostrar gráficamente los registros con un determinado número de usuarios, otros tantos de componentes/eventos y en diferentes forma de tiempo (días, meses, años, etc...).
+
+Se probado diferentes maneras de crear gráficas, experimentando varios plugins de Chart.js\cite{noauthor_plugins_nodate} como \textit{chartjs-plugin-datalabels}\cite{noauthor_chartjs-plugin-datalabels_nodate} o Chart.BarFunnel.js\cite{y-takey_this_2019}. Se han creado varios prototipos con estas librerías pero finalmente se desecharon porque no daban muy buenos resultados y para no tener una excesiva dependencia a librerías externas.
+
+Todos los prototipos se realizaron con CodePen como este:
+
+\href{https://codepen.io/yipengji/pen/yrPzLr}{https://codepen.io/yipengji/pen/yrPzLr}
 
 
-\begin{itemize}
-	\item version de ubuvirutal no disponible, usado como pruebas una version parecida
-	\item debate sobre si trabajar con el codigo o empezar de 0 el back end, 2 semanas de reflexion. Apuesta arriesgada debido a quedarme a medio camino en la entrega o problemas de integración con el front end.
-	\item usado mas tiempo en pensar como estructurar las clases de forma que sea facil de leer y facil de modificar, que programando
-	\item retraso de tiempos al haber un error de moodle en una funcion que saltaba error si el feedback del calificador esta oculto, se ha tenido que usar otra funcion mas engorrosa de trabajar (HTML)
-	\item dedicado varias semanas a elegir como mostrar la grafica de registros, probado con varios prototipos de graficas de barras diferentes, con y sin plugins para chartjs
-	\item ademas de los prototipos de las barras tambien se ha estado pensando y probando como estructurar el codigo para que sea lo mas sencillo posible añadir nuevos tipos de agrupaciones de fechas, crear los datasets de las barras, que sea sencillo añadir para componentes, eventos
-\end{itemize}
+Finalmente se decidió usar barras apiladas por componente/evento, agrupadas en el eje X con el formato temporal y una barra por cada usuario.
 
+\imagen{ejemplo_barras_apiladas}{Ejemplo de barras apiladas con dos usuarios, cuatro componentes y de lunes a domingo}
+
+
+\section{Más tiempo pensando que programando}
+
+Se ha dedicado más tiempo en pensar cómo estructurar el código que programando en sí. 
+
+Se ha hecho un gran esfuerzo para que el código sea mantenible en la mayoría de los paquetes excepto el de \textit{controllers} por falta de tiempo.
+
+Por ejemplo, es muy fácil añadir una nueva forma de agrupar los tiempos.

@@ -1,4 +1,7 @@
 # UBUGrades
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8a78f353aa8044dca200766d131b3d56)](https://app.codacy.com/app/yjx0003/UBUMonitor?utm_source=github.com&utm_medium=referral&utm_content=yjx0003/UBUMonitor&utm_campaign=Badge_Grade_Settings)
+
 <p align="center"><img height="300" src="https://github.com/huco95/UBUGrades/blob/master/resources/img/logo.png" />
 </p>
 <h1>Herramienta de extracción y visualización de calificaciones para Moodle</h1>

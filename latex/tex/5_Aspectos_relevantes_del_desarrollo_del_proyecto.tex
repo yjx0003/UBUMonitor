@@ -21,7 +21,7 @@ A pesar de usar una versión con cambios menores respecto al de la Universidad. 
 \subsection{Token para el ingreso} \label{sec:logintoken}
 Añaden el Token para ingreso\cite{noauthor_token_nodate} (en inglés \textit{login token}), una característica relacionada con la seguridad introducida en las versiones de Moodle 3.1.15, 3.3.9, 3.4.6, 3.5.3 y 3.6.0. Ayuda a proteger frente a vulnerabilidades como el robo de sesión de los usuarios. Este token de ingreso aparece como un \textit{input} HTML oculto\cite{noauthor_html_nodate-1} al iniciar sesión y se envía el formulario de ingreso junto con el usuario y contraseña.
 
-\imagen{logintoken}{Ejemplo de Login Token en el inicio de sesión de la página \href{https://school.demo.moodle.net/login/index.php}{Mount Orange School}}.
+\imagen{logintoken}{Ejemplo de Login Token en el inicio de sesión de la página \href{https://school.demo.moodle.net/login/index.php}{Mount Orange School}}
 
 Para solucionar este problema y que funcione en ambas versiones y futuras, cada vez que el usuario inicia sesión, se busca en la página el \textit{input logintoken} tal y como aparece en la figura \ref{fig:logintoken} con métodos de Web Scraping\cite{marti_que_2016}. Si lo encuentra manda el valor como parámetro adicional de la URL, en caso contrario no se manda este parámetro.
 
@@ -42,6 +42,13 @@ Cuando pasaron dos semanas desde el inicio del proyecto, acabé en la tesitura s
 Dos de los temores de tomar la decisión de refactorizar fue quedarme a medio camino en la entrega del proyecto o problemas de integración con el vista e interacción con el usuario (front-end).
 
 Finalmente, después de otras dos semanas de reflexión, se decide refactorizar el código de la parte del back-end completamente. Al empezar de nuevo el código,  se dedica un esfuerzo extra en el proyecto para cumplir los tiempos.
+
+\section{Guardar los datos de los usuarios en ficheros locales}
+
+Uno de los problemas que tenía el anterior proyecto te obligaba descargar los datos del servidor de Moodle cada vez que accedías a la aplicación aunque no haya cambios importantes del curso.
+
+Una mejora que se ha implementado da la opción al usuario de guardar los datos en un fichero local y cargarlo de forma instantánea. Cabe destacar que el fichero local está cifrado, al contener datos sensibles, usando el algoritmo Blowfish\cite{noauthor_schneier_nodate} que está destinado para uso doméstico y además es seguro.
+
 
 \section{Error en la función gradereport\_user\_get\_grade\_items}
 
@@ -77,8 +84,18 @@ Finalmente se decidió usar barras apiladas por componente/evento, agrupadas en 
 
 \section{Más tiempo pensando que programando}
 
-Se ha dedicado más tiempo en pensar cómo estructurar el código que programando en sí. 
+En general, se ha dedicado más tiempo en pensar cómo estructurar el código que programando en sí. 
 
 Se ha hecho un gran esfuerzo para que el código sea mantenible en la mayoría de los paquetes excepto el de \textit{controllers} por falta de tiempo.
 
-Por ejemplo, es muy fácil añadir una nueva forma de agrupar los tiempos.
+Por ejemplo, es muy fácil añadir una nueva forma de agrupar los tiempos,
+se puede agregar nuevas combinaciones de Componentes y Eventos de los registros del curso.
+
+\section{Herramienta para buscar los Componentes y Eventos únicos}\label{sec:componeteyevento}
+
+Se ha creado una herramienta en \textbf{\textit{Jupyter Notebook}} usando Python. Busca todas las combinaciones de \textbf{Componente}, \textbf{Nombre de evento} y \textbf{Descripción} diferentes. Todo esto se guardan en fichero JSON para facilitar la legibilidad y por si es necesario emplearlo en proyectos futuros.
+
+
+\section{Herramientas de generación de código Java}
+
+También creado otra herramienta que usa el fichero JSON comentado anteriormente en \ref{sec:componeteyevento} para genera código en Java de las enumeraciones de Componentes y Eventos, además de las traducciones en inglés o español.

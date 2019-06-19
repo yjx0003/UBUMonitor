@@ -8,9 +8,9 @@
 \usepackage{lmodern} % Scalable font
 \usepackage{microtype}
 \usepackage{placeins}
-\usepackage{float}
 % Bibliography management
-\usepackage[numbers,sort]{natbib}
+\usepackage[backend=bibtex]{biblatex}
+\addbibresource{bibliografia.bib}
 
 \RequirePackage{booktabs}
 \RequirePackage[table]{xcolor}
@@ -99,7 +99,7 @@
 %
 % Nuevo comando para tablas pequeñas (menos de una página).
 \newcommand{\tablaSmall}[5]{%
- \begin{table}[H]
+ \begin{table}
   \begin{center}
    \rowcolors {2}{gray!35}{}
    \begin{tabular}{#2}
@@ -363,7 +363,7 @@
 % Datos de portada
 \title{{\Huge UBUMonitor}\\[0.5cm]Monitorización de alumnos en la plataforma Moodle.}
 \author{\nombre}
-\tutor{Dr. Raúl Marticorena Sánchez\\y Dr. Carlos Pardo Aguilar}
+\tutor{Dr.D. Raúl Marticorena Sánchez\\y Dr.D. Carlos Pardo Aguilar}
 \date{\today}
 
 \begin{document}
@@ -380,7 +380,7 @@
 
 \noindent\includegraphics[width=\textwidth]{cabecera}\vspace{1cm}
 
-\noindent Dr. Raúl Marticorena Sánchez y Dr. Carlos Pardo Aguilar, profesores del departamento de Ingeniería Civil, área de Lenguajes y Sistemas Informáticos.
+\noindent Dr.D. Raúl Marticorena Sánchez y Dr.D. Carlos Pardo Aguilar, profesores del departamento de Ingeniería Civil, área de Lenguajes y Sistemas Informáticos.
 
 \noindent Expone:
 
@@ -450,7 +450,13 @@ Moodle, Educational data mining, Visualización, JavaFX, Servicios web, JSON, Ch
 % Abstract en inglés
 \renewcommand*\abstractname{Abstract}
 \begin{abstract}
-A \textbf{brief} presentation of the topic addressed in the project.
+The technology boom has reached the educational field with online learning classrooms and virtual teaching with Moodle as one of the most important protagonists.
+
+This fact has also transformed the method of monitoring the evolution of students during the course.
+
+In Moodle, it allows students to monitor their grades and access records. However, the way in which grades and access records are displayed in Moodle is quite lax and impractical. This inconvenience has led to the creation of this project as a solution.
+
+UBUMonitor is a Java desktop application for teachers using Moodle services. It allows teachers, after identification, to access different statistical data on student grades and records and display them in different types of graphs, a much more practical and visual way. 
 \end{abstract}
 
 \renewcommand*\abstractname{Keywords}
@@ -481,9 +487,6 @@ Moodle, Educational data mining, Visualization, JavaFX, Web services, JSON, Char
 \include{./tex/6_Trabajos_relacionados}
 \include{./tex/7_Conclusiones_Lineas_de_trabajo_futuras}
 
-\bibliography{bibliografia}
-
-\bibliographystyle{plainnat}
-
+\printbibliography
 
 \end{document}

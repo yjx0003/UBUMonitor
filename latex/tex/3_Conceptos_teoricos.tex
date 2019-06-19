@@ -9,9 +9,9 @@ En este apartado comentaremos sobre conceptos que aparecen en Moodle.
 //TODO Introduccion a moodle
 
 \subsection{Módulo del curso}
-El módulo del curso\cite{noauthor_course_nodate} (en inglés \textit{course module}) también abreviado como `cm', representa las \textbf{actividades} y \textbf{recursos} del curso (ejemplos en la figura \ref{fig:course_modules}). Estos contienen información sobre qué curso y sección se muestra, además de la configuración de visibilidad y otros datos relevantes. 
+El módulo del curso \cite{noauthor_course_nodate} (en inglés \textit{course module}) también abreviado como `cm', representa las \textbf{actividades} y \textbf{recursos} del curso (ejemplos en la figura \ref{fig:course_modules}). Estos contienen información sobre qué curso y sección se muestra, además de la configuración de visibilidad y otros datos relevantes. 
 
-\imagen{course_modules}{Ejemplos de módulos del curso que actividades y recursos.}
+\imagenflotante{course_modules}{Ejemplos de módulos del curso que actividades y recursos.}
 
 Los identificadores únicos de los módulos del curso se definen como \textbf{`cmid'} y cada tipo de módulo del curso posee un código nemotécnico.
 
@@ -20,11 +20,11 @@ Los identificadores únicos de los módulos del curso se definen como \textbf{`c
 
 Existen dos formas de buscar el código nemotécnico de un módulo del curso:
 \begin{itemize}
-	\item A través de la función de servicio web \textbf{\textit{core\_course\_get\_contents}} que devuelve los módulos que hay en la página principal del curso y contiene un campo de tipo de módulo.
+	\item A través de la función de servicio web \textbf{\textit{core\_course\_get\_contents}} que devuelve los módulos que hay en la página principal del curso y contiene un campo de tipo de módulo tal y como se puede ver en la figura \ref{fig:modname}.
 	
-	\imagen{modname}{Extracto de la función del servicio web}
-	\item Mediante el enlace al crear un módulo del curso.
-	\imagen{modnamelink}{Enlace que se genera mientras se crea el módulo}
+	\imagenflotante{modname}{Extracto de la función del servicio web}
+	\item Mediante el enlace al crear un módulo del curso. Figura \ref{fig:modnamelink}
+	\imagenflotante{modnamelink}{Enlace que se genera mientras se crea el módulo}
 	
 \end{itemize}
 
@@ -40,17 +40,19 @@ book               & Libro                    & Book                \\
 chat               & Chat                     & Chat                \\
 choice             & Consulta                 & Choice              \\
 data               & Base de datos            & Database            \\
+lti                & Herramienta externa      & External tool       \\
 feedback           & Encuesta                 & Feedback            \\
+resource           & Archivo                  & File                \\
 folder             & Carpeta                  & Folder              \\
 forum              & Foro                     & Forum               \\
 glossary           & Glosario                 & Glossary            \\
+hotpot             & HotPot                   & HotPot              \\
 imscp              & Paquete de contenido IMS & IMS content package \\
+journal            & Diario                   & Journal             \\
 label              & Etiqueta                 & Label               \\
 lesson             & Lección                  & Lesson              \\
-lti                & Herramienta externa      & External tool       \\
 page               & Página                   & Page                \\
 quiz               & Cuestionario             & Quiz                \\
-resource           & Archivo                  & File                \\
 scorm              & Paquete SCORM            & SCORM package       \\
 survey             & Encuestas predefinidas   & Survey              \\
 url                & URL                      & URL                 \\
@@ -68,13 +70,12 @@ Las carpetas de la tabla, a parte de Ítem de calificación, se considera tambi�
 Los Ítem de calificación se puede mostrar mediante una tabla para un solo alumno (ver figura \ref{fig:item_calificacion}) o una tabla de todos los alumnos y todos los Ítems de calificaciones (ver figura \ref{fig:alternativa_grade_item})
 	
 
-\imagen{item_calificacion}{Ejemplo de una tabla con varios Ítem de calificación.}
+\imagenflotante{item_calificacion}{Ejemplo de una tabla con varios Ítem de calificación.}
 
-\imagen{alternativa_grade_item}{Ejemplo de tabla parcial con los usuarios e Ítems de calificación}
+\imagenflotante{alternativa_grade_item}{Ejemplo de tabla parcial con los usuarios e Ítems de calificación}
 \subsection{Categorías de cursos}
-Las categorías de cursos\cite{noauthor_course_nodate-1} (en inglés \textit{course categories}) organizan los cursos de la página de Moodle de forma jerárquica.
-
-\imagen{course_categories}{Ejemplo de categorías del curso enmarcados en rojo.}
+Las categorías de cursos\cite{noauthor_course_nodate-1} (en inglés \textit{course categories}) organizan los cursos de la página de Moodle de forma jerárquica (ejemplo en la figura \ref{fig:course_categories})
+\imagenflotante{course_categories}{Ejemplo de categorías del curso enmarcados en rojo.}
 
 \subsection{Registros}
 Los registros es un reporte de actividades realizadas por los usuarios, existe registros de sitio web y del curso. En este proyecto solo nos centraremos en el segundo caso, estos se acceden en desde el curso en la rueda de configuración \textit{Aún más... ->  Informes ->  Registros -> Conseguir estos registros}
@@ -102,7 +103,7 @@ Todas las entradas del registros se muestra en una tabla con varias columnas:
 \end{enumerate}
 
 \subsubsection{Opciones y descarga}
-También ofrece la posibilidad de filtrar mediante diferente filtros y su descarga en varios formatos de texto (CSV, Excel, HTML, JSON, etc).
+También ofrece la posibilidad de filtrar mediante diferente opciones y su descarga en varios formatos de texto (CSV, Excel, HTML, JSON, etc).
 
 \subsubsection{Problema de visualización}
 

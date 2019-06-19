@@ -19,7 +19,7 @@ Después de conocer la versión de Moodle que usa la Universidad (\textbf{3.5.1}
 A pesar de usar una versión con cambios menores respecto al de la Universidad. Si que se encontró una diferencia reseñable. 
 
 \subsection{Token para el ingreso} \label{sec:logintoken}
-Añaden el Token para ingreso\cite{noauthor_token_nodate} (en inglés \textit{login token}), una característica relacionada con la seguridad introducida en las versiones de Moodle 3.1.15, 3.3.9, 3.4.6, 3.5.3 y 3.6.0. Ayuda a proteger frente a vulnerabilidades como el robo de sesión de los usuarios. Este token de ingreso aparece como un \textit{input} HTML oculto\cite{noauthor_html_nodate-1} al iniciar sesión y se envía el formulario de ingreso junto con el usuario y contraseña.
+Añaden el Token para ingreso \cite{noauthor_token_nodate} (en inglés \textit{login token}), una característica relacionada con la seguridad introducida en las versiones de Moodle 3.1.15, 3.3.9, 3.4.6, 3.5.3 y 3.6.0. Ayuda a proteger frente a vulnerabilidades como el robo de sesión de los usuarios. Este token de ingreso aparece como un \textit{input} HTML oculto\cite{noauthor_html_nodate-1} al iniciar sesión y se envía el formulario de ingreso junto con el usuario y contraseña.
 
 \imagen{logintoken}{Ejemplo de Login Token en el inicio de sesión de la página \href{https://school.demo.moodle.net/login/index.php}{Mount Orange School}}
 
@@ -47,39 +47,41 @@ Finalmente, después de otras dos semanas de reflexión, se decide refactorizar 
 
 Uno de los problemas que tenía el anterior proyecto te obligaba descargar los datos del servidor de Moodle cada vez que accedías a la aplicación aunque no haya cambios importantes del curso.
 
-Una mejora que se ha implementado da la opción al usuario de guardar los datos en un fichero local y cargarlo de forma instantánea. Cabe destacar que el fichero local está cifrado, al contener datos sensibles, usando el algoritmo Blowfish\cite{noauthor_schneier_nodate} que está destinado para uso doméstico y además es seguro.
+Una mejora que se ha implementado da la opción al usuario de guardar los datos en un fichero local y cargarlo de forma instantánea. Cabe destacar que el fichero local está cifrado, al contener datos sensibles, usando el algoritmo Blowfish \cite{noauthor_schneier_nodate} que está destinado para uso doméstico y además es seguro.
 
 
 \section{Error en la función gradereport\_user\_get\_grade\_items}
 
-Al igual que el anterior proyecto de UBUGrades, se volvió a implementar función del servicio web \textbf{\textit{gradereport\_user\_get\_grade\_items}} ya facilitaba en gran medida recoger las calificaciones de los alumnos. Aunque no devuelve bien la jerarquía.
+Al igual que el anterior proyecto de UBUGrades, se volvió a implementar función del servicio web \textbf{\textit{gradereport\_user\_get\_grade\_items}} ya facilitaba en gran medida recoger las calificaciones de los alumnos(ver ejemplo en la figura \ref{fig:ejemplo_grade_items}). Aunque no devuelve bien la jerarquía.
 
-\imagen{ejemplo_grade_items}{Extracto de la respuesta \textbf{\textit{gradereport\_user\_get\_grade\_items}}}
+\imagenflotante{ejemplo_grade_items}{Extracto de la respuesta \textbf{\textit{gradereport\_user\_get\_grade\_items}}}
 
-Después de implementar esta funcionalidad, cuando lo probó uno de tutores daba error en la respuesta del servicio web. Finalmente se descubrió que era un error de Moodle cuando se oculta la columna de \textbf{Retroalimentación o Feedback} del calificador\cite{zadok_[mdl-64298]_nodate}. Este error aun no se ha solucionado en la versión 3.7 de Moodle.  
+Después de implementar esta funcionalidad, cuando lo probó uno de tutores daba error en la respuesta del servicio web (imagen en la figura \ref{fig:excepctiongradeitems}). Finalmente se descubrió que era un error de Moodle cuando se oculta la columna de \textbf{Retroalimentación o Feedback} del calificador\cite{zadok_[mdl-64298]_nodate}. Este error aun no se ha solucionado en la versión 3.7 de Moodle.  
 
 \imagenflotante{excepctiongradeitems}{Mensaje de error cuando la retroalimentación del calificador está oculto}
 
-Debido a este inconveniente, se decidió trabajar con otra función del servicio web, \textbf{\textit{gradereport\_user\_get\_grades\_table}}, mucho más incómoda para extraer datos debido a que las respuestas contienen HTML. 
-
-\imagen{grades_table}{Extracto de la función \textbf{\textit{gradereport\_user\_get\_grades\_table}}}
+Debido a este inconveniente, se decidió trabajar con otra función del servicio web, \textbf{\textit{gradereport\_user\_get\_grades\_table}}, mucho más incómoda para extraer datos debido a que las respuestas contienen HTML como se puede ver en la figura \ref{fig:grades_table}. 
 
 Este imprevisto ha supuesto un retraso de una semana en el proyecto.
+
+\imagenflotante{grades_table}{Extracto de la función \textbf{\textit{gradereport\_user\_get\_grades\_table}}}
+
+
 
 \section{Gráfica para mostrar los registros}
 
 Ha sido una tarea titánica buscar una forma de mostrar gráficamente los registros con un determinado número de usuarios, otros tantos de componentes/eventos y en diferentes forma de tiempo (días, meses, años, etc...).
 
-Se probado diferentes maneras de crear gráficas, experimentando varios plugins de Chart.js\cite{noauthor_plugins_nodate} como \textit{chartjs-plugin-datalabels}\cite{noauthor_chartjs-plugin-datalabels_nodate} o Chart.BarFunnel.js\cite{y-takey_this_2019}. Se han creado varios prototipos con estas librerías pero finalmente se desecharon porque no daban muy buenos resultados y para no tener una excesiva dependencia a librerías externas.
+Se probado diferentes maneras de crear gráficas, experimentando varios plugins de Chart.js \cite{noauthor_plugins_nodate} como \textit{chartjs-plugin-datalabels} \cite{noauthor_chartjs-plugin-datalabels_nodate} o Chart.BarFunnel.js\cite{noauthor_bar_2019}. Se han creado varios prototipos con estas librerías pero finalmente se desecharon porque no daban muy buenos resultados y para no tener una excesiva dependencia a librerías externas.
 
 Todos los prototipos se realizaron con CodePen como este:
 
 \href{https://codepen.io/yipengji/pen/yrPzLr}{https://codepen.io/yipengji/pen/yrPzLr}
 
 
-Finalmente se decidió usar barras apiladas por componente/evento, agrupadas en el eje X con el formato temporal y una barra por cada usuario.
+Finalmente se decidió usar barras apiladas por componente/evento, agrupadas en el eje X con el formato temporal y una barra por cada usuario tal y como se puede ver en el ejemplo de la figura \ref{fig:ejemplo_barras_apiladas}.
 
-\imagen{ejemplo_barras_apiladas}{Ejemplo de barras apiladas con dos usuarios, cuatro componentes y de lunes a domingo}
+\imagenflotante{ejemplo_barras_apiladas}{Ejemplo de barras apiladas con dos usuarios, cuatro componentes y de lunes a domingo}
 
 
 \section{Más tiempo pensando que programando}
@@ -98,4 +100,4 @@ Se ha creado una herramienta en \textbf{\textit{Jupyter Notebook}} usando Python
 
 \section{Herramientas de generación de código Java}
 
-También creado otra herramienta que usa el fichero JSON comentado anteriormente en \ref{sec:componeteyevento} para genera código en Java de las enumeraciones de Componentes y Eventos, además de las traducciones en inglés o español.
+También se ha creado otra herramienta que usa el fichero JSON comentado anteriormente en la sección \ref{sec:componeteyevento} para generar código en Java de las enumeraciones de Componentes y Eventos, además de las traducciones en inglés o español.

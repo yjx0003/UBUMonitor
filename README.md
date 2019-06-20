@@ -2,6 +2,7 @@
 <p align="center"><img height="300" src="/resources/img/logo.png" />
 
 ## Monitorización de alumnos en la plataforma Moodle
+[Click aquí si quieres acceder directamente a la última versión de la aplicación](https://github.com/yjx0003/UBUMonitor/releases/latest)
 ### Descripción:
 
 Herramienta de visualización de calificaciones y registros (logs) del curso en diferentes tipos de gráficas.

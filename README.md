@@ -1,4 +1,6 @@
 # UBUMonitor
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=yjx0003_UBUMonitor&metric=alert_status)](https://sonarcloud.io/dashboard?id=yjx0003_UBUMonitor)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f79d51e496b3495690aa6480269536b8)](https://www.codacy.com/app/yjx0003/UBUMonitor?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yjx0003/UBUMonitor&amp;utm_campaign=Badge_Grade)
 <p align="center"><img height="300" src="/resources/img/logo.png" />
 
 ## Monitorización de alumnos en la plataforma Moodle

@@ -1,11 +1,11 @@
 # UBUMonitor
+[![GitHub release](https://img.shields.io/github/release/yjx0003/UBUMonitor.svg)](https://github.com/yjx0003/UBUMonitor/releases/)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=yjx0003_UBUMonitor&metric=alert_status)](https://sonarcloud.io/dashboard?id=yjx0003_UBUMonitor)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f79d51e496b3495690aa6480269536b8)](https://www.codacy.com/app/yjx0003/UBUMonitor?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yjx0003/UBUMonitor&amp;utm_campaign=Badge_Grade)
 [![HitCount](http://hits.dwyl.io/yjx0003/UBUMonitor.svg)](http://hits.dwyl.io/yjx0003/UBUMonitor)
 <p align="center"><img height="300" src="/resources/img/logo.png" />
 
 ## Monitorización de alumnos en la plataforma Moodle
-[Click aquí si quieres acceder directamente a la última versión de la aplicación](https://github.com/yjx0003/UBUMonitor/releases/latest)
 ### Descripción:
 
 Herramienta de visualización de calificaciones y registros (logs) del curso en diferentes tipos de gráficas.

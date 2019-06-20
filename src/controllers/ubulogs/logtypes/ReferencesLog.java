@@ -3,7 +3,6 @@ package controllers.ubulogs.logtypes;
 import java.util.List;
 
 import controllers.Controller;
-import controllers.ubulogs.LogTypes;
 import model.Component;
 import model.ComponentEvent;
 import model.EnrolledUser;
@@ -27,7 +26,7 @@ public abstract class ReferencesLog {
 	 * @return clase encargada de gestionar
 	 */
 	public static ReferencesLog getReferenceLog(Component component, Event eventName) {
-		return LogTypes.getLogTypes().getOrDefault(ComponentEvent.get(component, eventName), Default.getInstance());
+		return LogTypes.getTypes().getOrDefault(ComponentEvent.get(component, eventName), Default.getInstance());
 	}
 
 	/**

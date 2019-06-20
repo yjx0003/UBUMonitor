@@ -3,6 +3,13 @@ package model.mod;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Enumeración de los diferentes tipos de modulos del curso y con metodos de
+ * creacion de instancias de ese tipo segun u codigo nemotecnico.
+ * 
+ * @author Yi Peng Ji
+ *
+ */
 public enum ModuleType {
 
 	ASSIGNMENT("assign") {
@@ -71,17 +78,28 @@ public enum ModuleType {
 			return new Forum();
 		}
 	},
-
+	GLOSSARY("glossary") {
+		@Override
+		protected Module create() {
+			return new Glossary();
+		}
+	},
+	HOT_POT("hotpot") {
+		@Override
+		protected Module create() {
+			return new HotPot();
+		}
+	},
 	IMS_PACKAGE("imscp") {
 		@Override
 		protected Module create() {
 			return new IMSContentPackage();
 		}
 	},
-	GLOSSARY("glossary") {
+	JOURNAL("journal") {
 		@Override
 		protected Module create() {
-			return new Glossary();
+			return new Journal();
 		}
 	},
 	LABEL("label") {
@@ -184,7 +202,9 @@ public enum ModuleType {
 
 	/**
 	 * Crea una instancia del modulo segun el id
-	 * @param id id 
+	 * 
+	 * @param id
+	 *            id
 	 * @return modulo con ese id
 	 */
 	public Module createInstance(int id) {
@@ -192,5 +212,5 @@ public enum ModuleType {
 		module.setId(id);
 		return module;
 	}
-	
+
 }

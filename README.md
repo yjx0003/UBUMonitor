@@ -1,28 +1,80 @@
-# UBUGrades
-<p align="center"><img height="300" src="https://github.com/huco95/UBUGrades/blob/master/resources/img/logo.png" />
-</p>
-<h1>Herramienta de extracción y visualización de calificaciones para Moodle</h1>
-<h2>Descripción:</h2>
-Este proyecto es la continuación del desarrollo iniciado por Claudia Martinez Herrero(https://github.com/claumartinezh/TFG_UBUGrades).
-Este desarrollo busca crear una herramienta que representase las calificaciones de una manera gráfica, permitiendo a los profesores tener una mejor visión del progreso de sus alumnos en las distintas asignaturas que imparte.
+# UBUMonitor
+<p align="center"><img height="300" src="/resources/img/logo.png" /><\p>
 
-El docente puede acceder mediante su correo y contraseña de UBUVirtual, podra seleccionar cualquier asignatura siempre y cuando tenga acceso a esta. Una vez seleccionada la aplicacion cargara los datos y el docente podra visualizar de manera gráfica las notas de sus alumnos.
+## Monitorización de alumnos en la plataforma Moodle
+### Descripción:
 
-El proyecto está desarrollado para plataformas Moodle, como es UBUVirtual, y utiliza servicios web que esta plataforma ofrece para obtener los datos.
+Herramienta de visualización de calificaciones y registros (logs) del curso en diferentes tipos de gráficas.
 
-<p align="center"><img src="https://github.com/huco95/UBUGrades/blob/master/resources/img/ubugrades.png" />
+Esta aplicación está dirigida a docentes que usen los servicios de Moodle.
 
-<h2>Manual de usuario</h2>
-<ul>
-<li>https://huco95.gitbooks.io/ubugrades/content/</li>
-</ul>
+<p align="center"><img src="/latex/img/ejemplo_barras_apiladas.png" /><\p>
 
-<h2>Autor</h2>
-<ul>
-<li>Félix Nogal Santamaría</li>
-</ul>
-<h2>Tutor</h2>
-<ul>
-<li>Raúl Marticorena Sánchez</li>
-</ul>
-<br/>
+## Dependencias:
+La aplicación requiere **Java 8**.
+Las librerías externas de **Java** están incluidas en la carpeta [lib](lib) y de **JavaScript** en [resources/graphics/lib/](resources/graphics/lib/)
+
+### Dependencias de Java:
+* [Apache Commons CSV](https://commons.apache.org/proper/commons-csv/)
+  * Versión: **1.6**
+  * [Github](https://github.com/apache/commons-csv)
+  * [Maven Repository](https://mvnrepository.com/artifact/org.apache.commons/commons-csv)
+* [Apache Commons Math](https://commons.apache.org/proper/commons-math/)
+  * Versión: **3.6.1**
+  * [Github](https://github.com/apache/commons-math)
+  * [Maven Repository](https://mvnrepository.com/artifact/org.apache.commons/commons-math3)
+* [Apache Log4j](http://logging.apache.org/log4j/1.2/)
+  * Versión: **1.2.17**
+  * [Github](https://github.com/apache/log4j)
+  * [Maven Repository](https://mvnrepository.com/artifact/log4j/log4j)
+* [Gson](https://sites.google.com/site/gson/)
+  * Version: **2.8.5**
+  * [Github](https://github.com/google/gson)
+  * [Maven Repository](https://mvnrepository.com/artifact/com.google.code.gson/gson)
+* **JSON In Java**
+  * Versión: **20180813**
+  * [Github](https://github.com/stleary/JSON-java)
+  * [Maven Repository](https://mvnrepository.com/artifact/org.json/json)
+* [JSoup Java HTML Parser](https://jsoup.org/)
+  * Versión: **1.11.3**
+  * [Github](https://github.com/jhy/jsoup)
+  * [Maven Repository](https://mvnrepository.com/artifact/org.jsoup/jsoup/1.11.3)
+* [SLF4J API Module](https://www.slf4j.org/)
+  * Versión: **1.7.26**
+  * [Github](https://github.com/qos-ch/slf4j)
+  * [Maven Repository](https://mvnrepository.com/artifact/org.slf4j/slf4j-api)
+* [SLF4J LOG4J 12 Binding](https://www.slf4j.org/)
+  * Versión: **1.7.26**
+  * [Github](https://github.com/qos-ch/slf4j/tree/master/slf4j-log4j12)
+  * [Maven Repository](https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12)
+* [ThreeTen Extra](https://www.threeten.org/threeten-extra/)
+  * Versión: **1.5.0**
+  * [Github](https://github.com/ThreeTen/threeten-extra)
+  * [Maven Repository](https://mvnrepository.com/artifact/org.threeten/threeten-extra)
+  
+### Dependencias de JavaScript:
+* [Chart.js](https://www.chartjs.org/)
+  * Versión: **2.8.0**
+  * [Github](https://github.com/chartjs/Chart.js)
+  * [CDNJS Repository](https://cdnjs.com/libraries/Chart.js/)
+* **color-hash**
+  * Versión: **1.0.3**
+  * [Github](https://github.com/zenozeng/color-hash)
+  * [jsDelivr Repository](https://www.jsdelivr.com/package/npm/color-hash)
+* [Google Charts](https://google-developers.appspot.com/chart/)
+* [html2canvas](https://html2canvas.hertzen.com/)
+  * Versión: **0.4.1**
+  * [Github](https://github.com/niklasvh/html2canvas/)
+
+## Autor
+
+- Yi Peng Ji
+
+## Tutores
+- Raúl Marticorena Sánchez
+- Carlos Pardo Aguilar
+
+## Licencia
+Este proyecto está licenciado bajo la licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
+
+## Agradecimientos

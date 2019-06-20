@@ -1,5 +1,5 @@
 # UBUMonitor
-<p align="center"><img height="300" src="/resources/img/logo.png" /><\p>
+<p align="center"><img height="300" src="/resources/img/logo.png" />
 
 ## Monitorización de alumnos en la plataforma Moodle
 ### Descripción:
@@ -8,11 +8,11 @@ Herramienta de visualización de calificaciones y registros (logs) del curso en 
 
 Esta aplicación está dirigida a docentes que usen los servicios de Moodle.
 
-<p align="center"><img src="/latex/img/ejemplo_barras_apiladas.png" /><\p>
+<p align="center"><img src="/latex/img/ejemplo_barras_apiladas.png" />
 
 ## Dependencias:
 La aplicación requiere **Java 8**.
-Las librerías externas de **Java** están incluidas en la carpeta [lib](lib) y de **JavaScript** en [resources/graphics/lib/](resources/graphics/lib/)
+Las librerías externas de **Java** están incluidas en la carpeta [lib](lib) y de **JavaScript** en [resources/graphics/lib/](resources/graphics/lib/) excepto Google Charts
 
 ### Dependencias de Java:
 * [Apache Commons CSV](https://commons.apache.org/proper/commons-csv/)

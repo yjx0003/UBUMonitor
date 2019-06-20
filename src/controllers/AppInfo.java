@@ -9,7 +9,7 @@ public class AppInfo {
 
 	public static final String APPLICATION_NAME = "UBUMonitor";
 
-	public static final String APPLICATION_VERSION = "v2.3.6-alpha";
+	public static final String APPLICATION_VERSION = "v2.3.6.1";
 
 	public static final String GITHUB = "https://github.com/yjx0003/UBUMonitor";
 

@@ -5,15 +5,15 @@ import java.util.List;
 import model.LogLine;
 
 /**
- * Log con dos tipos de descripciones diferentes.
- *            "The user with id '' restored the course with id ''.",
-            "The user with id '' restored old course with id '' to a new course with id ''."
+ * Log con dos tipos de descripciones diferentes. "The user with id '' restored
+ * the course with id ''.", "The user with id '' restored old course with id ''
+ * to a new course with id ''."
+ * 
  * @author Yi Peng Ji
  *
  */
 public class SystemCourseRestored extends ReferencesLog {
 
-	
 	/**
 	 * Instacia única de la clase SystemCourseRestored.
 	 */
@@ -27,6 +27,7 @@ public class SystemCourseRestored extends ReferencesLog {
 
 	/**
 	 * Devuelve la instancia única de SystemCourseRestored.
+	 * 
 	 * @return instancia singleton
 	 */
 	public static SystemCourseRestored getInstance() {
@@ -35,15 +36,15 @@ public class SystemCourseRestored extends ReferencesLog {
 		}
 		return instance;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
-		if(ids.size()==2) {
+		if (ids.size() == 2) {
 			UserCourse.getInstance().setLogReferencesAttributes(log, ids);
-		}else if (ids.size()==3) {
+		} else if (ids.size() == 3) {
 			UserCourseCourse.getInstance().setLogReferencesAttributes(log, ids);
 		}
 

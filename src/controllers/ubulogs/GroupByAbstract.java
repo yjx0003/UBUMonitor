@@ -27,9 +27,11 @@ import model.LogLine;
 
 /**
  * Clase abstracta con metodos de creacion de agrupamiento de los logs.
+ * 
  * @author Yi Peng Ji
  *
- * @param <T> tipo de agrupamiento
+ * @param <T>
+ *            tipo de agrupamiento
  */
 public abstract class GroupByAbstract<T extends Serializable> implements Serializable {
 
@@ -42,7 +44,12 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 
 	private Map<EnrolledUser, Map<Component, Map<Event, Map<T, Long>>>> countsEvents;
 
+	private String jsonCountEvents;
+
+
+
 	private Map<EnrolledUser, Map<Component, Map<T, Long>>> countsComponents;
+	private String jsonCountComponents;
 
 	private Map<Component, Map<T, DescriptiveStatistics>> componentStatistics;
 	private Map<Component, Map<Event, Map<T, DescriptiveStatistics>>> componentEventStatistics;
@@ -83,8 +90,9 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 										Collectors.groupingBy(getGroupByFunction(), Collectors.counting())))));
 
 		Gson gsonBuilder = new GsonBuilder().create();
+		jsonCountEvents = gsonBuilder.toJson(countsEvents);
 		LOGGER.info("JSON del contador de logs de componentes y eventos  para {} : {}", getTypeTime(),
-				gsonBuilder.toJson(countsEvents));
+				jsonCountEvents);
 
 		countsComponents = logLines.stream()
 				.filter(l -> l.getUser() != null)
@@ -92,8 +100,9 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 						Collectors.groupingBy(LogLine::getComponent,
 								Collectors.groupingBy(getGroupByFunction(), Collectors.counting()))));
 
+		jsonCountComponents=gsonBuilder.toJson(countsComponents);
 		LOGGER.info("JSON del contador de logs de componentes  para {} : {}", getTypeTime(),
-				gsonBuilder.toJson(countsComponents));
+				jsonCountComponents);
 
 	}
 
@@ -145,7 +154,8 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 		// se crea y devuelve el valor nuevo.
 		for (EnrolledUser user : enrolledUsers) {
 
-			Map<Component, Map<T, Long>> userCounts = countsComponents.computeIfAbsent(user, k -> new EnumMap<>(Component.class));
+			Map<Component, Map<T, Long>> userCounts = countsComponents.computeIfAbsent(user,
+					k -> new EnumMap<>(Component.class));
 			for (Component component : components) {
 
 				Map<T, Long> userComponentsCounts = userCounts.computeIfAbsent(component, k -> new HashMap<>());
@@ -214,7 +224,8 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 
 		}
 
-		LOGGER.info("Estadisticas de todos los usuarios del curso para components {} y {}:\n{}" ,componentsEvents, groupByRange, componentEventStatistics);
+		LOGGER.info("Estadisticas de todos los usuarios del curso para components {} y {}:\n{}", componentsEvents,
+				groupByRange, componentEventStatistics);
 	}
 
 	/**
@@ -319,8 +330,10 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 		Map<EnrolledUser, Map<Component, List<Long>>> result = new HashMap<>();
 
 		for (EnrolledUser user : users) {
-			Map<Component, List<Long>> componentsCount = result.computeIfAbsent(user, k -> new EnumMap<>(Component.class));
-			Map<Component, Map<T, Long>> userCounts = countsComponents.computeIfAbsent(user, k -> new EnumMap<>(Component.class));
+			Map<Component, List<Long>> componentsCount = result.computeIfAbsent(user,
+					k -> new EnumMap<>(Component.class));
+			Map<Component, Map<T, Long>> userCounts = countsComponents.computeIfAbsent(user,
+					k -> new EnumMap<>(Component.class));
 
 			for (Component component : components) {
 				List<Long> userComponentCounts = componentsCount.computeIfAbsent(component, k -> new ArrayList<>());
@@ -367,7 +380,8 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 				Event event = componentEvent.getEventName();
 
 				List<Long> countsResult = componentEventResult.computeIfAbsent(componentEvent, k -> new ArrayList<>());
-				Map<Event, Map<T, Long>> eventCounts = componentCounts.computeIfAbsent(component, k -> new EnumMap<>(Event.class));
+				Map<Event, Map<T, Long>> eventCounts = componentCounts.computeIfAbsent(component,
+						k -> new EnumMap<>(Event.class));
 				Map<T, Long> counts = eventCounts.computeIfAbsent(event, k -> new HashMap<>());
 
 				for (T groupBy : groupByRange) {
@@ -481,6 +495,14 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 			}
 		}
 		return max;
+	}
+	
+	public String getJsonCountEvents() {
+		return jsonCountEvents;
+	}
+
+	public String getJsonCountComponents() {
+		return jsonCountComponents;
 	}
 
 	/**

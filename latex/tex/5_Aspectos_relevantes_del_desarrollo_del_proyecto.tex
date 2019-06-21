@@ -113,3 +113,17 @@ También se ha creado otra herramienta que usa el fichero JSON comentado anterio
 
 \section{Términos y condiciones de uso en Google Charts}
 Se descubrió que la librería Google Charts usada en el proyecto anterior no permite la descarga y uso en local en sus \textbf{Términos y condiciones de uso} \cite{noauthor_frequently_nodate}. Por tanto se ha eliminado el fichero de esa librería y puesto en la etiqueta HTML de JavaScript el enlace que proporciona Google \cite{noauthor_quick_nodate} en su lugar.
+
+\section{Evaluación del código}
+
+Al usar las herramientas de evaluación de código, SonarQube y Codacy, sin usar filtros de ficheros también evaluaba las librerías externas de JavaScript que está dentro del proyecto. Con estas dependencias, los informes de resultado eran bastantes malos por lo que se decidió ignorar estas librerías en el análisis de código.
+
+Al ejecutar las pruebas solo en la carpeta \textbf{src} de Java, pasa satisfactoriamente en Codac\cite{noauthor_ubumonitor_nodate-1} y Sonarqube \cite{noauthor_ubumonitor_nodate} que se ven en las imágenes \ref{fig:codacy_resultado} y \ref{fig:sonarqube_resultado} respectivamente.
+
+\imagenflotante{codacy_resultado}{Resultado de análisis de Codacy en el proyecto}
+
+\imagenflotante{sonarqube_resultado}{Resultado de análisis de Sonarqube en el proyecto}
+
+
+
+

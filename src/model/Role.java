@@ -14,9 +14,9 @@ import java.util.Set;
 public class Role implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private int id;
-	private String name;
-	private String shortName;
+	private int roleId;
+	private String roleName;
+	private String roleShortName;
 	private Set<EnrolledUser> enrolledUsers;
 
 	public Role() {
@@ -26,7 +26,7 @@ public class Role implements Serializable {
 
 	public Role(int id) {
 		this();
-		setId(id);
+		setRoleId(id);
 	}
 
 	/**
@@ -34,8 +34,8 @@ public class Role implements Serializable {
 	 * 
 	 * @return id
 	 */
-	public int getId() {
-		return id;
+	public int getRoleId() {
+		return roleId;
 	}
 
 	/**
@@ -44,8 +44,8 @@ public class Role implements Serializable {
 	 * @param id
 	 *            El id.
 	 */
-	public void setId(int id) {
-		this.id = id;
+	public void setRoleId(int id) {
+		this.roleId = id;
 	}
 
 	/**
@@ -53,8 +53,8 @@ public class Role implements Serializable {
 	 * 
 	 * @return name
 	 */
-	public String getName() {
-		return name;
+	public String getRoleName() {
+		return roleName;
 	}
 
 	/**
@@ -63,8 +63,8 @@ public class Role implements Serializable {
 	 * @param name
 	 *            El nombre.
 	 */
-	public void setName(String name) {
-		this.name = name;
+	public void setRoleName(String name) {
+		this.roleName = name;
 	}
 
 	/**
@@ -72,8 +72,8 @@ public class Role implements Serializable {
 	 * 
 	 * @return shortName
 	 */
-	public String getShortName() {
-		return shortName;
+	public String getRoleShortName() {
+		return roleShortName;
 	}
 
 	/**
@@ -82,8 +82,8 @@ public class Role implements Serializable {
 	 * @param shortName
 	 *            El nombre corto.
 	 */
-	public void setShortName(String shortName) {
-		this.shortName = shortName;
+	public void setRoleShortName(String shortName) {
+		this.roleShortName = shortName;
 	}
 
 	/**
@@ -113,12 +113,12 @@ public class Role implements Serializable {
 
 	@Override
 	public String toString() {
-		return name;
+		return roleName;
 	}
 
 	@Override
 	public int hashCode() {
-		return id;
+		return roleId;
 	}
 
 	@Override
@@ -128,7 +128,7 @@ public class Role implements Serializable {
 		if (!(obj instanceof Role))
 			return false;
 		Role other = (Role) obj;
-		return id == other.id;
+		return roleId == other.roleId;
 		
 	}
 

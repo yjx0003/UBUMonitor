@@ -328,7 +328,7 @@ public class MainController implements Initializable {
 				if (group == null) {
 					return I18n.get(ALL);
 				}
-				return group.getName();
+				return group.getGroupName();
 			}
 		});
 
@@ -351,7 +351,7 @@ public class MainController implements Initializable {
 				if (role == null) {
 					return I18n.get(ALL);
 				}
-				return role.getName().isEmpty() ? role.getShortName() : role.getName();
+				return role.getRoleName().isEmpty() ? role.getRoleShortName() : role.getRoleName();
 			}
 		});
 

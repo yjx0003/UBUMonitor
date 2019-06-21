@@ -19,7 +19,7 @@ public class Module implements Serializable {
 	/**
 	 * course module id
 	 */
-	private int id;
+	private int cmid;
 
 	/**
 	 * activity url Optional.
@@ -30,7 +30,7 @@ public class Module implements Serializable {
 	/**
 	 * activity module name
 	 */
-	private String name;
+	private String moduleName;
 
 	/**
 	 * instance id
@@ -96,7 +96,7 @@ public class Module implements Serializable {
 	
 	public Module(int id) {
 		this();
-		setId(id);
+		setCmid(id);
 	}
 
 	public Course getCourse() {
@@ -130,12 +130,12 @@ public class Module implements Serializable {
 		this.url = url;
 	}
 
-	public String getName() {
-		return name;
+	public String getModuleName() {
+		return moduleName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setModuleName(String name) {
+		this.moduleName = name;
 	}
 
 	public int getInstance() {
@@ -236,22 +236,22 @@ public class Module implements Serializable {
 		this.indent = indent;
 	}
 
-	public int getId() {
-		return id;
+	public int getCmid() {
+		return cmid;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setCmid(int id) {
+		this.cmid = id;
 	}
 
 	@Override
 	public String toString() {
-		return name;
+		return moduleName;
 	}
 
 	@Override
 	public int hashCode() {
-		return id;
+		return cmid;
 	}
 
 	@Override
@@ -262,7 +262,7 @@ public class Module implements Serializable {
 		if (!(obj instanceof Module))
 			return false;
 		Module other = (Module) obj;
-		return id == other.id;
+		return cmid == other.cmid;
 			
 	}
 	

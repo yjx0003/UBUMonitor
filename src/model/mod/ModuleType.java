@@ -209,7 +209,7 @@ public enum ModuleType {
 	 */
 	public Module createInstance(int id) {
 		Module module = this.create();
-		module.setId(id);
+		module.setCmid(id);
 		return module;
 	}
 

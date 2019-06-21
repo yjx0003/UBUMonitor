@@ -16,8 +16,8 @@ import java.util.Set;
 public class Group implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private int id;
-	private String name;
+	private int groupId;
+	private String groupName;
 	private String description;
 	private DescriptionFormat descriptionFormat;
 
@@ -30,7 +30,7 @@ public class Group implements Serializable {
 
 	public Group(int id) {
 		this();
-		setId(id);
+		setGroupId(id);
 	}
 
 	/**
@@ -38,8 +38,8 @@ public class Group implements Serializable {
 	 * 
 	 * @return id
 	 */
-	public int getId() {
-		return this.id;
+	public int getGroupId() {
+		return this.groupId;
 	}
 
 	/**
@@ -48,8 +48,8 @@ public class Group implements Serializable {
 	 * @param id
 	 *            El id.
 	 */
-	public void setId(int id) {
-		this.id = id;
+	public void setGroupId(int id) {
+		this.groupId = id;
 	}
 
 	/**
@@ -57,8 +57,8 @@ public class Group implements Serializable {
 	 * 
 	 * @return name
 	 */
-	public String getName() {
-		return this.name;
+	public String getGroupName() {
+		return this.groupName;
 	}
 
 	/**
@@ -67,8 +67,8 @@ public class Group implements Serializable {
 	 * @param name
 	 *            El nombre.
 	 */
-	public void setName(String name) {
-		this.name = name;
+	public void setGroupName(String name) {
+		this.groupName = name;
 	}
 
 	/**
@@ -140,12 +140,12 @@ public class Group implements Serializable {
 
 	@Override
 	public String toString() {
-		return name;
+		return groupName;
 	}
 
 	@Override
 	public int hashCode() {
-		return id;
+		return groupId;
 	}
 
 	@Override
@@ -155,7 +155,7 @@ public class Group implements Serializable {
 		if (!(obj instanceof Group))
 			return false;
 		Group other = (Group) obj;
-		return id == other.id;
+		return groupId == other.groupId;
 	
 	}
 

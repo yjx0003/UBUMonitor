@@ -377,8 +377,8 @@ public class CreatorUBUGradesController {
 		String name = jsonObject.getString("name");
 		String shortName = jsonObject.getString("shortname");
 
-		role.setName(name);
-		role.setShortName(shortName);
+		role.setRoleName(name);
+		role.setRoleShortName(shortName);
 
 		CONTROLLER.getDataBase().getActualCourse().addRole(role);
 
@@ -426,7 +426,7 @@ public class CreatorUBUGradesController {
 		String description = jsonObject.getString(DESCRIPTION);
 		DescriptionFormat descriptionFormat = DescriptionFormat.get(jsonObject.getInt(DESCRIPTIONFORMAT));
 
-		group.setName(name);
+		group.setGroupName(name);
 		group.setDescription(description);
 		group.setDescriptionFormat(descriptionFormat);
 
@@ -492,9 +492,9 @@ public class CreatorUBUGradesController {
 
 		Module module = CONTROLLER.getDataBase().getCourseModuleByIdOrCreate(cmid, moduleType);
 
-		module.setId(jsonObject.getInt("id"));
+		module.setCmid(jsonObject.getInt("id"));
 		module.setUrl(jsonObject.optString("url"));
-		module.setName(jsonObject.optString("name"));
+		module.setModuleName(jsonObject.optString("name"));
 		module.setInstance(jsonObject.optInt("instance"));
 		module.setDescription(jsonObject.optString(DESCRIPTION));
 		module.setVisible(jsonObject.optInt("visible"));

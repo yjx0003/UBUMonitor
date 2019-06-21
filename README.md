@@ -16,7 +16,7 @@ Esta aplicación está dirigida a docentes que usen los servicios de Moodle.
 
 ## Dependencias:
 La aplicación requiere **Java 8**.
-Las librerías externas de **Java** están incluidas en la carpeta [lib](lib) y de **JavaScript** en [resources/graphics/lib/](resources/graphics/lib/) excepto Google Charts
+Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), de **JavaScript** en [resources/graphics/lib/](resources/graphics/lib/) (excepto Google Charts) y un pack de iconos.
 
 ### Dependencias de Java:
 * [Apache Commons CSV](https://commons.apache.org/proper/commons-csv/)
@@ -69,6 +69,12 @@ Las librerías externas de **Java** están incluidas en la carpeta [lib](lib) y 
 * [html2canvas](https://html2canvas.hertzen.com/)
   * Versión: **0.4.1**
   * [Github](https://github.com/niklasvh/html2canvas/)
+  
+### Pack de iconos:
+* [Font Awesome](https://fontawesome.com/)
+  * Versión: **4.7.0**
+  * [Github](https://github.com/FortAwesome/Font-Awesome/)
+  * [fa2png](http://fa2png.io/r/font-awesome/)
 
 ## Autor
 

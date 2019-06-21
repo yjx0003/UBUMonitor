@@ -108,7 +108,7 @@ public class DataBase implements Serializable {
 	 * @return el rol
 	 */
 	public Role putIfAbsentRole(Role role) {
-		return roles.putIfAbsent(role.getId(), role);
+		return roles.putIfAbsent(role.getRoleId(), role);
 	}
 
 	// #################################################################################
@@ -155,7 +155,7 @@ public class DataBase implements Serializable {
 	 *         anterior si ya llevaba
 	 */
 	public Group putIfAbsentGroup(Group group) {
-		return groups.putIfAbsent(group.getId(), group);
+		return groups.putIfAbsent(group.getGroupId(), group);
 	}
 
 	// #################################################################################
@@ -256,7 +256,7 @@ public class DataBase implements Serializable {
 	 * @return null si no existia o el anterior instancia.
 	 */
 	public Module putIfAbsentModule(Module module) {
-		return modules.putIfAbsent(module.getId(), module);
+		return modules.putIfAbsent(module.getCmid(), module);
 	}
 
 	// #################################################################################

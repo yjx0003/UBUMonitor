@@ -551,25 +551,22 @@ public class CreatorUBUGradesController {
 			GradeItem original = CONTROLLER.getDataBase().getGradeItemById(gradeItem.getId());
 			CONTROLLER.getDataBase().getActualCourse().addGradeItem(original);
 
-			// comparamos si son diferente instancia. OJO no confundirse con != de Python
-			if (gradeItem != original) {
-				if (gradeItem.getFather() != null) {
-					GradeItem originalFather = CONTROLLER.getDataBase().getGradeItemById(gradeItem.getFather().getId());
-					original.setFather(originalFather);
-				}
-				List<GradeItem> originalChildren = new ArrayList<>();
-				for (GradeItem child : gradeItem.getChildren()) {
-					originalChildren.add(CONTROLLER.getDataBase().getGradeItemById(child.getId()));
-				}
-				original.setChildren(originalChildren);
-
-				original.setItemname(gradeItem.getItemname());
-				original.setLevel(gradeItem.getLevel());
-				original.setWeightraw(gradeItem.getWeightraw());
-				original.setGraderaw(gradeItem.getGraderaw());
-				original.setGrademax(gradeItem.getGrademax());
-				original.setGrademin(gradeItem.getGrademin());
+			if (gradeItem.getFather() != null) {
+				GradeItem originalFather = CONTROLLER.getDataBase().getGradeItemById(gradeItem.getFather().getId());
+				original.setFather(originalFather);
 			}
+			List<GradeItem> originalChildren = new ArrayList<>();
+			for (GradeItem child : gradeItem.getChildren()) {
+				originalChildren.add(CONTROLLER.getDataBase().getGradeItemById(child.getId()));
+			}
+			original.setChildren(originalChildren);
+
+			original.setItemname(gradeItem.getItemname());
+			original.setLevel(gradeItem.getLevel());
+			original.setWeightraw(gradeItem.getWeightraw());
+			original.setGraderaw(gradeItem.getGraderaw());
+			original.setGrademax(gradeItem.getGrademax());
+			original.setGrademin(gradeItem.getGrademin());
 
 		}
 	}

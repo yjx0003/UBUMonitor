@@ -5,3 +5,5 @@ bin
 /resultadosTest/
 /test/
 /config.properties
+/sonar-project.properties
+/.scannerwork/

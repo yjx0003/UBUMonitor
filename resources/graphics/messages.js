@@ -45,7 +45,7 @@ var messages = {
 		es: "Selecciona un grupo para mostrar el gráfico",
 		en: "Select a group to show the chart"
 	}
-}
+};
 
 //Modifica el valor de los inputs segun el idioma pasado
 function getI18n(item, lang) {

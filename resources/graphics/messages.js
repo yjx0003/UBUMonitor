@@ -48,21 +48,21 @@ var messages = {
 }
 
 //Modifica el valor de los inputs segun el idioma pasado
-function get_i18n(item, lang) {
+function getI18n(item, lang) {
 	document.getElementById(item).value = messages[item][lang];
 }
 
 // Establece el idioma
 function setLanguage(lang) {
-	get_i18n('btnLineas', lang);
-	get_i18n('btnRadar', lang);
-	get_i18n('btnBoxPlot', lang);
-	get_i18n('btnBoxPlotGroup', lang);
-	get_i18n('btnCalificaciones', lang);
-	get_i18n('btnLegend', lang);
-	get_i18n('btnMean', lang);
-	get_i18n('btnGroupMean', lang);
-	document.getElementById('noradarText').innerHTML = messages['noradarText'][lang];
-	document.getElementById('noGroupText').innerHTML = messages['noGroupText'][lang];
+	getI18n("btnLineas", lang);
+	getI18n("btnRadar", lang);
+	getI18n("btnBoxPlot", lang);
+	getI18n("btnBoxPlotGroup", lang);
+	getI18n("btnCalificaciones", lang);
+	getI18n("btnLegend", lang);
+	getI18n("btnMean", lang);
+	getI18n("btnGroupMean", lang);
+	document.getElementById("noradarText").innerHTML = messages["noradarText"][lang];
+	document.getElementById("noGroupText").innerHTML = messages["noGroupText"][lang];
 	
 }

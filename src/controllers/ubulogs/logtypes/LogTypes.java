@@ -101,7 +101,7 @@ public class LogTypes {
 		TYPES.put(get(FORUM, DISCUSSION_CREATED), UserDiscussionCmid.getInstance());
 		TYPES.put(get(FORUM, DISCUSSION_DELETED), UserDiscussionCmid.getInstance());
 		TYPES.put(get(FORUM, DISCUSSION_MOVED), UserDiscussionCmid.getInstance()); 
-		TYPES.put(get(FORUM, DISCUSSION_PINNED), Default.getInstance()); //TODO
+		TYPES.put(get(FORUM, DISCUSSION_PINNED), UserDiscussionCmid.getInstance());
 		TYPES.put(get(FORUM, DISCUSSION_SUBSCRIPTION_CREATED), UserAffectedDiscussionCmid.getInstance());
 		TYPES.put(get(FORUM, DISCUSSION_SUBSCRIPTION_DELETED), UserAffectedDiscussionCmid.getInstance()); 
 		TYPES.put(get(FORUM, DISCUSSION_VIEWED), UserDiscussionCmid.getInstance());
@@ -252,9 +252,9 @@ public class LogTypes {
 		TYPES.put(get(SYSTEM, ROLE_CAPABILITIES_UPDATED), UserRole.getInstance());
 		TYPES.put(get(SYSTEM, ROLE_UNASSIGNED), UserRoleAffected.getInstance());
 		TYPES.put(get(SYSTEM, SCALE_CREATED), UserScaleCourse.getInstance());
-		TYPES.put(get(SYSTEM, TAG_ADDED_TO_AN_ITEM), Default.getInstance()); //TODO
-		TYPES.put(get(SYSTEM, USER_COMPETENCY_RATED_IN_COURSE), Default.getInstance()); //TODO
-		TYPES.put(get(SYSTEM, USER_COMPETENCY_VIEWED_IN_A_COURSE), UserCompetencyCourse.getInstance()); //TODO
+		TYPES.put(get(SYSTEM, TAG_ADDED_TO_AN_ITEM), Default.getInstance());
+		TYPES.put(get(SYSTEM, USER_COMPETENCY_RATED_IN_COURSE), Default.getInstance());
+		TYPES.put(get(SYSTEM, USER_COMPETENCY_VIEWED_IN_A_COURSE), UserCompetencyCourse.getInstance());
 		TYPES.put(get(SYSTEM, USER_ENROLLED_IN_COURSE), UserAffectedCourse.getInstance());
 		TYPES.put(get(SYSTEM, USER_GRADED), UserGradeAffectedGradeitem.getInstance());
 		TYPES.put(get(SYSTEM, USER_LIST_VIEWED), UserCourse.getInstance());

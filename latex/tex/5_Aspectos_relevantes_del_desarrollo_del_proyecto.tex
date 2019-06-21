@@ -1,13 +1,14 @@
 \capitulo{5}{Aspectos relevantes del desarrollo del proyecto}
 
-En este apartado se comenta los aspectos importantes que han surgido durante el desarrollo del proyecto. Las decisiones tomadas relativas a la funcionalidad de la aplicación y qué consecuencias ha tenido. También explicaremos sobre los problemas encontrados y las soluciones aplicadas.
+En este apartado se comenta los aspectos importantes que han surgido durante el desarrollo del proyecto. Las decisiones tomadas relativas a la funcionalidad de la aplicación y qué consecuencias han tenido. También explicaremos los problemas encontrados y las soluciones aplicadas.
 
 \section{Sin acceso a permisos de profesor en el Moodle de la Universidad (UBUVirtual)}
 
-Uno de los principales problemas para realizar las pruebas no se ha podido tener acceso a asignaturas con rol de profesor. Es decir, muchas funciones de Moodle no son accesibles con el rol de estudiante mientras que los profesores si lo tienen.
+Uno de los principales problemas para realizar las pruebas es que no se ha podido tener acceso a asignaturas con rol de profesor. Es decir, muchas funciones de Moodle no son accesibles con el rol de estudiante mientras que los profesores si lo tienen.
 
 
-Se ha instalado una versión en el equipo para realizar las pruebas, se comentara con más detalle en la sección \ref{sec:instalacionMoodle}. También se ha empleado una versión de prueba oficial del propio equipo de desarrollo \href{https://school.demo.moodle.net}{\textit{Mount Orange School}} en la versión \textbf{3.7}, probablemente se use esta versión en el aula virtual de la Universidad de Burgos en el futuro.
+Se ha instalado una versión en el equipo para realizar las pruebas (se comentara con más detalle en la sección \ref{sec:instalacionMoodle}) . También se ha empleado una versión de prueba oficial del propio equipo de desarrollo \href{https://school.demo.moodle.net}{\textit{Mount Orange School}}.
+ en la versión \textbf{3.7}\footnote{La mayoría de la imágenes mostradas de Moodle están capturadas de este servidor de pruebas}. Probablemente se use esta versión en el aula virtual de la Universidad de Burgos en el futuro.
 
 Las comprobaciones en un entorno real lo han realizado varios profesores docentes de la universidad, entre ellos los tutores, en UBUVirtual. 
 
@@ -19,7 +20,9 @@ Después de conocer la versión de Moodle que usa la Universidad (\textbf{3.5.1}
 A pesar de usar una versión con cambios menores respecto al de la Universidad. Si que se encontró una diferencia reseñable. 
 
 \subsection{Token para el ingreso} \label{sec:logintoken}
-Añaden el Token para ingreso \cite{noauthor_token_nodate} (en inglés \textit{login token}), una característica relacionada con la seguridad introducida en las versiones de Moodle 3.1.15, 3.3.9, 3.4.6, 3.5.3 y 3.6.0. Ayuda a proteger frente a vulnerabilidades como el robo de sesión de los usuarios. Este token de ingreso aparece como un \textit{input} HTML oculto\cite{noauthor_html_nodate-1} al iniciar sesión y se envía el formulario de ingreso junto con el usuario y contraseña.
+A partir de las versiones de Moodle 3.1.15, 3.3.9, 3.4.6, 3.5.3 y 3.6.0 añaden una característica relacionada con la seguridad, el Token para ingreso \cite{noauthor_token_nodate} (en inglés \textit{login token}). Esta nueva funcionalidad ayuda a proteger frente a vulnerabilidades como el robo de sesión de los usuarios. 
+
+Este token de ingreso aparece como un \textit{input} HTML oculto\cite{noauthor_html_nodate} al iniciar sesión y se envía en el formulario de ingreso junto con el usuario y contraseña.
 
 \imagen{logintoken}{Ejemplo de Login Token en el inicio de sesión de la página \href{https://school.demo.moodle.net/login/index.php}{Mount Orange School}}
 
@@ -29,19 +32,19 @@ Hay que destacar que el Token de ingreso solo afecta si se quiere iniciar sesió
 
 \section{Empezar de cero la parte de los registros}
 
-Se decidió prescindir totalmente del trabajo de UBULogs y empezar de nuevo debido a las modificaciones de Moodle como el token de ingreso (ver sección \ref{sec:logintoken}). 
+Se decidió prescindir totalmente del trabajo de UBULogs y empezar de nuevo debido a las modificaciones de Moodle, como el token de ingreso (ver sección \ref{sec:logintoken}). 
 
-Se ha seguido por una vía diferente al mencionado proyecto, descargar los CSV directamente en memoria sin guardarlo en un fichero temporal. También se ha aplicado una mejora para bajarse los registros de forma diaria cuando se actualiza los datos.
+Se ha seguido por una vía diferente al mencionado proyecto, descargando los CSV directamente en memoria sin guardarlo en un fichero temporal. También se ha aplicado una mejora para bajarse los registros de forma diaria cuando se actualiza los datos.
 
 Otra mejora reseñable, al estar las horas de los registros mostradas en función de la zona horaria usada por el usuario, se ha decidido tomar como referencia para la aplicación la zona horaria del servidor. No importa si el usuario esta usando otra que no sea la misma que el servidor.
 
 \section{Decisión sobre seguir el código fuente de UBUGrades o refactorizar}
 
-Cuando pasaron dos semanas desde el inicio del proyecto, acabé en la tesitura sobre seguir con el código fuente o refactorizar la parte lógica de la aplicación (back-end) aplicando patrones de diseño y tenga mejor mantenibiliad. 
+Cuando pasaron dos semanas desde el inicio del proyecto, acabé en la tesitura sobre seguir con el código fuente o refactorizar la parte lógica de la aplicación (back-end)\cite{noauthor_what_nodate} aplicando patrones de diseño para obtener mejor mantenibiliad. 
 
-Dos de los temores de tomar la decisión de refactorizar fue quedarme a medio camino en la entrega del proyecto o problemas de integración con el vista e interacción con el usuario (front-end).
+Dos de los temores de tomar la decisión de refactorizar fue quedarme a medio camino en la entrega del proyecto o problemas de integración con la vista e interacción con el usuario (front-end).
 
-Finalmente, después de otras dos semanas de reflexión, se decide refactorizar el código de la parte del back-end completamente. Al empezar de nuevo el código,  se dedica un esfuerzo extra en el proyecto para cumplir los tiempos.
+Finalmente, después de otras dos semanas de reflexión, se decide refactorizar el código de la parte del back-end  completamente. Al empezar de nuevo el código,  se dedica un esfuerzo extra en el proyecto para cumplir los tiempos.
 
 \section{Guardar los datos de los usuarios en ficheros locales}
 
@@ -56,17 +59,24 @@ Al igual que el anterior proyecto de UBUGrades, se volvió a implementar funció
 
 \imagenflotante{ejemplo_grade_items}{Extracto de la respuesta \textbf{\textit{gradereport\_user\_get\_grade\_items}}}
 
-Después de implementar esta funcionalidad, cuando lo probó uno de tutores daba error en la respuesta del servicio web (imagen en la figura \ref{fig:excepctiongradeitems}). Finalmente se descubrió que era un error de Moodle cuando se oculta la columna de \textbf{Retroalimentación o Feedback} del calificador\cite{zadok_[mdl-64298]_nodate}. Este error aun no se ha solucionado en la versión 3.7 de Moodle.  
+Después de implementar esta funcionalidad, cuando lo probó uno de tutores daba error en la respuesta del servicio web (imagen en la figura \ref{fig:excepctiongradeitems}). Finalmente se descubrió que era un error de Moodle cuando se oculta la columna de \textbf{Retroalimentación o Feedback} del calificador \cite{zadok_[mdl-64298]_nodate}. Este error aun no se ha solucionado en la versión 3.7 de Moodle.  
 
 \imagenflotante{excepctiongradeitems}{Mensaje de error cuando la retroalimentación del calificador está oculto}
 
-Debido a este inconveniente, se decidió trabajar con otra función del servicio web, \textbf{\textit{gradereport\_user\_get\_grades\_table}}, mucho más incómoda para extraer datos debido a que las respuestas contienen HTML como se puede ver en la figura \ref{fig:grades_table}. 
+Debido a este inconveniente, se decidió trabajar con otra función del servicio web, \textbf{\textit{gradereport\_user\_get\_grades\_table}}, mucho más incómoda para extraer datos debido a que las respuestas contienen HTML como se puede ver en la figura \ref{fig:grades_table}. Con está nueva forma implica varias cosas:
+\begin{itemize}
+	\item Se puede ocultar la columna de \textbf{Retroalimentación}.
+	\item Necesita que la columna de \textbf{Porcentaje} no esté oculto para calcular los valores de escalas.
+	\item Los \textbf{Rangos} de mínimo y máximo no debería tener decimales ya que no se muestran. Por ejemplo, se puede ver en la figura \ref{fig:rangos_decimales} que la calificación máxima es 5.25 pero el rango que muestra es solo 0-5. La aplicación seguiría funcionando pero se mostraría como nota en las gráficas que ha sacado un 5.25 sobre 5 (5.25/5).
+	\imagenflotante{rangos_decimales}{Ejemplo de ítem de calificación usando rangos con decimales}
+\end{itemize}
 
 Este imprevisto ha supuesto un retraso de una semana en el proyecto.
 
 \imagenflotante{grades_table}{Extracto de la función \textbf{\textit{gradereport\_user\_get\_grades\_table}}}
 
-
+\section{Idioma de los registros}
+Las descargas de los registros se realizan en inglés ya que ese paquete de idiomas está incluido en todos los servidores Moodle por defecto y no se puede eliminar.
 
 \section{Gráfica para mostrar los registros}
 
@@ -74,7 +84,7 @@ Ha sido una tarea titánica buscar una forma de mostrar gráficamente los regist
 
 Se probado diferentes maneras de crear gráficas, experimentando varios plugins de Chart.js \cite{noauthor_plugins_nodate} como \textit{chartjs-plugin-datalabels} \cite{noauthor_chartjs-plugin-datalabels_nodate} o Chart.BarFunnel.js\cite{noauthor_bar_2019}. Se han creado varios prototipos con estas librerías pero finalmente se desecharon porque no daban muy buenos resultados y para no tener una excesiva dependencia a librerías externas.
 
-Todos los prototipos se realizaron con CodePen como este:
+Todos los prototipos se realizaron con CodePen, como este:
 
 \href{https://codepen.io/yipengji/pen/yrPzLr}{https://codepen.io/yipengji/pen/yrPzLr}
 
@@ -90,8 +100,7 @@ En general, se ha dedicado más tiempo en pensar cómo estructurar el código qu
 
 Se ha hecho un gran esfuerzo para que el código sea mantenible en la mayoría de los paquetes excepto el de \textit{controllers} por falta de tiempo.
 
-Por ejemplo, es muy fácil añadir una nueva forma de agrupar los tiempos,
-se puede agregar nuevas combinaciones de Componentes y Eventos de los registros del curso.
+Por ejemplo, es muy fácil añadir una nueva forma de agrupar los tiempos, y se puede agregar nuevas combinaciones de Componentes y Eventos de los registros del curso.
 
 \section{Herramienta para buscar los Componentes y Eventos únicos}\label{sec:componeteyevento}
 
@@ -101,3 +110,6 @@ Se ha creado una herramienta en \textbf{\textit{Jupyter Notebook}} usando Python
 \section{Herramientas de generación de código Java}
 
 También se ha creado otra herramienta que usa el fichero JSON comentado anteriormente en la sección \ref{sec:componeteyevento} para generar código en Java de las enumeraciones de Componentes y Eventos, además de las traducciones en inglés o español.
+
+\section{Términos y condiciones de uso en Google Charts}
+Se descubrió que la librería Google Charts usada en el proyecto anterior no permite la descarga y uso en local en sus \textbf{Términos y condiciones de uso} \cite{noauthor_frequently_nodate}. Por tanto se ha eliminado el fichero de esa librería y puesto en la etiqueta HTML de JavaScript el enlace que proporciona Google \cite{noauthor_quick_nodate} en su lugar.

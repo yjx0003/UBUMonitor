@@ -1,20 +1,25 @@
 \capitulo{4}{Técnicas y herramientas}
 
-En este apartado se explicará las técnicas y herramientas usadas para el desarrollo del proyecto.
+En este apartado se explicarán las técnicas y herramientas usadas para el desarrollo del proyecto.
 
 \section{Metodología SCRUM}
 
-Se ha seguido una de las metodologías ágiles conocido como SCRUM adaptado a para una sola persona con reuniones semanales en vez diarias. Con una estrategia iterativa (incremental) con entregas parciales en los \textit{sprints}.
+Se ha seguido una de las metodologías ágiles conocida como SCRUM adaptada para una sola persona con reuniones semanales en vez de diarias. Con una estrategia iterativa (incremental) con entregas parciales en los \textit{sprints}.
 
 \section{Moodle}
-\href{https://moodle.org}{Moodle} es una herramienta de gestión del aprendizaje, distribución libre y escrita en PHP. Ayuda a los docentes en la educación a distancia y en la gestión de los diferentes modos de calificación.
+\href{https://moodle.org}{Moodle} es una herramienta de gestión del aprendizaje y de distribución libre. Está desarrollado principalmente en Linux usando Apache, PostgreSQL/MySQL/MariaDB y PHP (también conocida como plataforma LAMP) \cite{noauthor_35/instalacion_nodate}.
+
+Ayuda a los docentes en la educación a distancia y en la gestión de los diferentes modos de calificación.
+
+
+
 
 En la página oficial de Moodle ofrece varias versiones de prueba que cualquiera puede acceder con unos usuarios y contraseña predefinidos.
 
 \section{REST API}
 REST \cite{noauthor_api_nodate} son todas las interfaces entre sistemas que usa HTTP para conseguir datos o realizar operaciones sobre esos datos en todos los formatos posibles, como puede ser XML y JSON.
 
-En Moodle la funcionalidad de REST API se conoce como \textit{Web Services} que a partir de un \textit{token} generado previamente por la función \textbf{\textit{moodle\_mobile\_app}} se puede acceder a otras funciones del servicio. Puede ser desde ver las calificaciones de alumnos hasta crear actividades o tareas.
+En Moodle la funcionalidad de REST API se conoce como \textit{Web Services} que a partir de un \textit{token} generado previamente por la función \textbf{\textit{moodle\_mobile\_app}} permite el acceso a otras funciones del servicio. Puede ser desde ver las calificaciones de alumnos hasta crear actividades o tareas.
 
 \section{Java}
 Java es un lenguaje de programación orientado a objetos, diseñado para escribir el código una vez y ejecutar en cualquier otro dispositivo sin tener que recompilar siempre y cuando se tenga instalado\textit{Java Runtime Enviroment (JRE)}. Actualmente es uno de los lenguajes programación con mayor popularidad de uso, tanto en el ámbito de desarrollo como en el de usuarios.
@@ -74,16 +79,16 @@ El presente proyecto está realizado en \LaTeX usando las versiones portables de
 
 \href{https://www.texstudio.org/}{TeXstudio} es un entorno de desarrollo integrado (IDE) de edición de texto, código abierto con resaltado de sintaxis orientado a la creación de documentos \LaTeX.
 
-\subsection{Zotero}
+\section{Zotero}
 \href{https://www.zotero.org/}{Zotero} es un gestor de referencias bibliográficas de código libre creado por el Center for History and New Media de la Universidad George Mason.
 
 \section{Python}
 \href{https://www.python.org/}{Python} es un lenguaje de programación interpretado, orientado a objetos, dinámicamente tipado y de alto nivel. Este lenguaje es muy atractivo para crear prototipos de forma sencilla y rápida. 
 
-Se ha empleado Python con el IDE \href{https://jupyter.org/}{Jupyter Notebook} programando varias funciones de utilidad para el programador, una de estas funcionalidades genera código Java automáticamente.
+Se ha empleado Python con el IDE \href{https://jupyter.org/}{Jupyter Notebook} programando varias funciones de utilidad para el programador. Una de estas funcionalidades genera código Java automáticamente.
 
 \section{Dependencias externas de Java}
-En este apartado se explicará las librerías externas de Java usadas durante el desarrollo del proyecto. 
+En este apartado se explicarán las librerías externas de Java usadas durante el desarrollo del proyecto. 
 
 \subsection{Apache Commons CSV}
 \href{https://commons.apache.org/proper/commons-csv/
@@ -123,11 +128,22 @@ Al manejar una ventana de navegador web para mostrar las gráficas, se han apoya
 \subsection{Chart.js}
 \href{https://www.chartjs.org/}{Chart.js} es una librería de de visualización de datos convertidos en múltiples tipos de gráficas.
 
-Se ha mantenido está librería por su facilidad de crear las gráficas y sus múltiples opciones. Sin embargo por un error de la librería en el anterior proyecto, se ha actualizado Chart.js a la última versión disponible \href{https://www.chartjs.org/dist/2.8.0/Chart.min.js}{v2.8.0}
+Se ha mantenido está librería por su facilidad de crear las gráficas y sus múltiples opciones. Sin embargo por un error de la librería en el anterior proyecto, se ha actualizado Chart.js a la última versión disponible \href{https://www.chartjs.org/dist/2.8.0/Chart.min.js}{v2.8.0}.
 
 \subsection{Google Charts}
 
-\href{https://developers.google.com/chart/}{Google Charts} es una librería \textit{open source} de gráficas, dispone de múltiples tipos de gráficas interactivas. Se usa para mostrar la tabla de calificaciones.
+\href{https://developers.google.com/chart/}{Google Charts} es una librería gratuita de gráficas muy fáciles de usar, dispone de múltiples tipos de gráficas interactivas. En sus términos y condiciones de uso no permite descargar el fichero JavaScript y usarlo en local \cite{noauthor_frequently_nodate}. En vez de eso, hay que utilizar el enlace que proporciona Google \cite{noauthor_quick_nodate}.
 
+Se usa para mostrar la tabla de calificaciones de los alumnos. 
 
+\subsection{color-hash}
+
+color-hash \cite{zeng_generate_2019} es una librería que permite generar colores en función de la cadena de texto usado.
+
+\subsection{html2canvas}
+
+\href{https://html2canvas.hertzen.com/}{html2canvas}
+Realiza capturas de pantalla en una página web con JavaScript.
+
+\section{Herramientas de evaluación de código}
 

@@ -27,10 +27,8 @@ import webservice.WebService;
 public class Controller {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Controller.class);
 
-	
-	
-	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
-
+	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
+			.ofLocalizedDateTime(FormatStyle.SHORT);
 
 	private Languages selectedLanguage;
 
@@ -72,14 +70,14 @@ public class Controller {
 	}
 
 	public void initialize() {
-	
+
 		setDataBase(new DataBase());
 		// Si no existe el recurso de idioma especificado cargamos el Español
 		Languages lang = Languages.getLanguageByLocale(Locale.getDefault());
 		try {
 
 			if (lang == null) {
-				LOGGER.info("No existe fichero de idioma para :{}" , Locale.getDefault());
+				LOGGER.info("No existe fichero de idioma para :{}", Locale.getDefault());
 				LOGGER.info("Cargando idioma:{} ", Languages.SPANISH);
 				setSelectedLanguage(Languages.SPANISH);
 			} else {
@@ -180,15 +178,20 @@ public class Controller {
 	}
 
 	/**
-	 * Intenta buscar el token de acceso a la REST API de moodle
-	 * @param host servidor moodle
-	 * @param username nombre de usuario
-	 * @param password contraseña
-	 * @throws IOException si no ha podido conectarse o la contraseña es erronea
+	 * Intenta buscar el token de acceso a la REST API de moodle e iniciar sesion en la pagina de moodle.
+	 * 
+	 * @param host
+	 *            servidor moodle
+	 * @param username
+	 *            nombre de usuario
+	 * @param password
+	 *            contraseña
+	 * @throws IOException
+	 *             si no ha podido conectarse o la contraseña es erronea
 	 */
 	public void tryLogin(String host, String username, String password) throws IOException {
 		WebService.initialize(host, username, password);
-
+		cookies = login(host, username, password);
 		setHost(host);
 
 		setUsername(username);
@@ -198,6 +201,7 @@ public class Controller {
 
 	/**
 	 * Devuelve las estadisticas de calificaciones del curso.
+	 * 
 	 * @return estadistica de calificaciones del curso
 	 */
 	public Stats getStats() {
@@ -208,7 +212,7 @@ public class Controller {
 	/**
 	 * Crea las estadisticas del curso tanto de calificaciones como de logs.
 	 */
-	public void createStats(){
+	public void createStats() {
 		Stats stats = new Stats(getActualCourse());
 		getActualCourse().setStats(stats);
 
@@ -218,7 +222,9 @@ public class Controller {
 
 	/**
 	 * Selecciona el curso en la base de datos.
- 	 * @param selectedCourse curso seleccionado
+	 * 
+	 * @param selectedCourse
+	 *            curso seleccionado
 	 */
 	public void setActualCourse(Course selectedCourse) {
 		dataBase.setActualCourse(selectedCourse);
@@ -236,7 +242,7 @@ public class Controller {
 	 * @throws IllegalStateException
 	 *             si no ha podido loguearse
 	 */
-	private Map<String, String> login(String username, String password) {
+	private Map<String, String> login(String host, String username, String password) {
 
 		try {
 			LOGGER.info("Logeandose para web scraping");
@@ -263,19 +269,20 @@ public class Controller {
 	}
 
 	/**
-	 * Devuelve los cookies de sesion de moodle, si no hay cookies intenta loguearse de forma manual al moodle
+	 * Devuelve los cookies de sesion de moodle, si no hay cookies intenta loguearse
+	 * de forma manual al moodle
+	 * 
 	 * @return los cookies de sesion
 	 */
 	public Map<String, String> getCookies() {
-		if (cookies == null) {
-			this.cookies = login(username, password);
-		}
 		return cookies;
 	}
 
 	/**
 	 * Modifica los cookies de sesion
-	 * @param cookies cookies
+	 * 
+	 * @param cookies
+	 *            cookies
 	 */
 	public void setCookies(Map<String, String> cookies) {
 		this.cookies = cookies;

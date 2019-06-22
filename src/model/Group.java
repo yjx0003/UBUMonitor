@@ -137,6 +137,10 @@ public class Group implements Serializable {
 	public void addEnrolledUser(EnrolledUser user) {
 		enrolledUsers.add(user);
 	}
+	
+	public void removeEnrolledUser(EnrolledUser enrolledUser) {
+		enrolledUsers.remove(enrolledUser);
+	}
 
 	@Override
 	public String toString() {

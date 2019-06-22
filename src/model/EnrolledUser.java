@@ -478,14 +478,29 @@ public class EnrolledUser implements Serializable {
 		this.enrolledcourses.add(couse);
 	}
 
+	public void clearCourses() {
+		this.enrolledcourses.clear();
+
+	}
+
 	public void addGroup(Group group) {
 		this.groups.add(group);
 		group.addEnrolledUser(this);
 	}
-	
+
+	/**
+	 * Elimina el usuario de todos los grupos de forma bidireccional.
+	 */
+	public void clearGroups() {
+		groups.forEach(group -> group.removeEnrolledUser(this));
+		groups.clear();
+	}
+
 	/**
 	 * Comprueba si el usuario pertece a un grupo
-	 * @param group el grupo que pertenece
+	 * 
+	 * @param group
+	 *            el grupo que pertenece
 	 * @return true si el grupo es nulo o el usuario pertece al grupo
 	 */
 	public boolean inGroup(Group group) {
@@ -497,15 +512,22 @@ public class EnrolledUser implements Serializable {
 		role.addEnrolledUser(this);
 	}
 
+	public void clearRoles() {
+		roles.forEach(role -> role.removeEnrolledUser(this));
+		roles.clear();
+	}
+
 	/**
 	 * Comprueba si el usuario pertece a rol
-	 * @param role el rol que pertenece
+	 * 
+	 * @param role
+	 *            el rol que pertenece
 	 * @return true si el rol es nulo o el usuario pertece al rol
 	 */
 	public boolean inRole(Role role) {
 		return role == null || roles.contains(role);
 	}
-	
+
 	public void addGrade(GradeItem gradeItem, double grade) {
 		grades.put(gradeItem, grade);
 		gradeItem.addUserGrade(this, grade);
@@ -523,13 +545,10 @@ public class EnrolledUser implements Serializable {
 		this.imageBytes = imageBytes;
 	}
 
-
 	@Override
 	public int hashCode() {
 		return id;
 	}
-
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -539,7 +558,7 @@ public class EnrolledUser implements Serializable {
 			return false;
 		EnrolledUser other = (EnrolledUser) obj;
 		return id == other.id;
-		
+
 	}
 
 	@Override

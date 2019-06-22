@@ -109,6 +109,10 @@ public class Role implements Serializable {
 	public void addEnrolledUser(EnrolledUser user) {
 		enrolledUsers.add(user);
 	}
+	
+	public void removeEnrolledUser(EnrolledUser user) {
+		enrolledUsers.remove(user);
+	}
 
 
 	@Override

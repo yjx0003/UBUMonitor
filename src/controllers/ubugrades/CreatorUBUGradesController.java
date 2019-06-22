@@ -254,6 +254,10 @@ public class CreatorUBUGradesController {
 
 			enrolledUser.setImageBytes(imageBytes);
 		}
+		
+		enrolledUser.clearCourses();
+		enrolledUser.clearRoles();
+		enrolledUser.clearGroups();
 
 		List<Course> courses = createCourses(user.optJSONArray("enrolledcourses"));
 		courses.forEach(course -> course.addEnrolledUser(enrolledUser));

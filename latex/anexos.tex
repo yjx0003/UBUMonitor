@@ -9,6 +9,9 @@
 \usepackage{microtype}
 \usepackage{placeins}
 
+\usepackage[backend=bibtex,dateabbrev=false]{biblatex}
+\addbibresource{bibliografiaAnexos.bib}
+
 \RequirePackage{booktabs}
 \RequirePackage[table]{xcolor}
 \RequirePackage{xtab}
@@ -345,9 +348,9 @@
 
 
 % Datos de portada
-\title{título del TFG \\Documentación Técnica}
-\author{nombre alumno}
-\tutor{nombre tutor}
+\title{{\Huge UBUMonitor}\\[0.5cm]Monitorización de alumnos en la plataforma Moodle.}
+\author{Yi Peng Ji}
+\tutor{Dr.D. Raúl Marticorena Sánchez\\y Dr.D. Carlos Pardo Aguilar}
 \date{\today}
 
 \begin{document}
@@ -393,7 +396,6 @@
 \include{./tex/E_Manual_usuario}
 
 
-\bibliographystyle{plain}
-\bibliography{bibliografiaAnexos}
+\printbibliography
 
 \end{document}

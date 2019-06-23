@@ -1,7 +1,6 @@
 
 package controllers;
 
-import java.awt.IllegalComponentStateException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -78,7 +77,7 @@ public class LoginController implements Initializable {
 			LOGGER.error("No se ha podido inicializar el fichero properties");
 		}
 
-		Platform.runLater(() -> { 
+		Platform.runLater(() -> {
 			if (txtUsername != null && !txtUsername.getText().isEmpty()) {
 				txtPassword.requestFocus(); // si hay texto cargado del usuario cambiamos el focus al texto de
 											// password
@@ -115,8 +114,8 @@ public class LoginController implements Initializable {
 			try (InputStream in = new FileInputStream(file)) {
 
 				properties.load(in);
-				txtHost.setText(properties.getProperty("host",""));
-				txtUsername.setText(properties.getProperty("username",""));
+				txtHost.setText(properties.getProperty("host", ""));
+				txtUsername.setText(properties.getProperty("username", ""));
 				chkSaveUsername.setSelected(Boolean.parseBoolean(properties.getProperty("saveUsername")));
 				chkSaveHost.setSelected(Boolean.parseBoolean(properties.getProperty("saveHost")));
 
@@ -163,7 +162,6 @@ public class LoginController implements Initializable {
 			controller.getStage().getScene().setCursor(Cursor.WAIT);
 
 			Task<Void> loginTask = getUserDataWorker();
-			lblStatus.textProperty().bind(loginTask.messageProperty());
 
 			loginTask.setOnSucceeded(s -> {
 				saveProperties();
@@ -172,8 +170,10 @@ public class LoginController implements Initializable {
 			});
 
 			loginTask.setOnFailed(e -> {
+				LOGGER.error("Error al recuperar los datos: ", e.getSource().getException());
 				controller.getStage().getScene().setCursor(Cursor.DEFAULT);
-				txtPassword.setText("");
+				txtPassword.clear();
+				lblStatus.setText(e.getSource().getException().getMessage());
 			});
 			Thread th = new Thread(loginTask, "login");
 
@@ -217,29 +217,31 @@ public class LoginController implements Initializable {
 	private Task<Void> getUserDataWorker() {
 		return new Task<Void>() {
 			@Override
-			protected Void call() throws Exception {
+			protected Void call() {
 				try {
 
 					controller.tryLogin(txtHost.getText(), txtUsername.getText(), txtPassword.getText());
 
 				} catch (IOException e) {
 					LOGGER.error("No se ha podido conectar con el host.", e);
-					updateMessage(I18n.get("error.host"));
-					throw new IllegalComponentStateException();
+					throw new IllegalArgumentException(I18n.get("error.host"));
 				} catch (JSONException e) {
 					LOGGER.error("Usuario y/o contraseña incorrectos", e);
-					updateMessage(I18n.get("error.login"));
-					throw new IllegalArgumentException();
+					throw new IllegalArgumentException(I18n.get("error.login"));
 
+				} catch (IllegalArgumentException e) {
+					LOGGER.error("URL mal formada. ¿Has añadido protocolo http(s)?", e);
+					throw new IllegalArgumentException(I18n.get("error.malformedurl"));
 				}
+
 				try {
 					MoodleUser moodleUser = CreatorUBUGradesController.createMoodleUser(controller.getUsername());
 					controller.setUser(moodleUser);
 				} catch (IOException e) {
-					LOGGER.error("Error al obtener los datos del usuario.", e);
-					updateMessage("Error al obtener los datos del usuario.");
-					throw new IllegalStateException();
+					LOGGER.error("Error al recuperar los datos del usuario.", e);
+					throw new IllegalStateException(I18n.get("error.user"));
 				}
+
 				return null;
 			}
 		};

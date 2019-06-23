@@ -104,7 +104,7 @@ public class WelcomeController implements Initializable {
 			chkUpdateData.setDisable(true);
 			listCourses.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
 
-				LOGGER.debug("Buscando si existe {}" , directoryObject + newValue);
+				LOGGER.debug("Buscando si existe {}", directoryObject + newValue);
 
 				File f = new File(directoryObject + newValue);
 
@@ -146,7 +146,7 @@ public class WelcomeController implements Initializable {
 			return;
 		}
 
-		LOGGER.info(" Curso seleccionado: {}" ,selectedCourse.getFullName());
+		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getFullName());
 
 		if (chkUpdateData.isSelected()) {
 			if (!isFileCacheExists) {
@@ -254,7 +254,10 @@ public class WelcomeController implements Initializable {
 		Task<Void> task = getUserDataWorker();
 		lblProgress.textProperty().bind(task.messageProperty());
 		task.setOnSucceeded(v -> loadNextWindow());
-		task.setOnFailed(e -> errorWindow(task.getMessage()));
+		task.setOnFailed(e -> {
+			errorWindow(task.getException().getMessage());
+			LOGGER.error("Error al actualizar los datos del curso: {}", task.getException());
+		});
 
 		Thread thread = new Thread(task, "datos");
 		thread.start();
@@ -302,7 +305,7 @@ public class WelcomeController implements Initializable {
 			protected Void call() throws Exception {
 				try {
 					controller.getActualCourse().clear();
-					LOGGER.info("Cargando datos del curso: {}" , controller.getActualCourse().getFullName());
+					LOGGER.info("Cargando datos del curso: {}", controller.getActualCourse().getFullName());
 					// Establecemos los usuarios matriculados
 					updateMessage(I18n.get("label.loadingstudents"));
 					CreatorUBUGradesController.createEnrolledUsers(controller.getActualCourse().getId());
@@ -329,7 +332,7 @@ public class WelcomeController implements Initializable {
 
 					updateMessage(I18n.get("label.savelocal"));
 					saveData();
-					LOGGER.debug("Elementos de la base de datos: {}",controller.getDataBase());
+					LOGGER.debug("Elementos de la base de datos: {}", controller.getDataBase());
 				} catch (IOException e) {
 					LOGGER.error("Error al cargar los datos de los alumnos: {}", e);
 					updateMessage("Se produjo un error inesperado al cargar los datos.\n" + e.getMessage());

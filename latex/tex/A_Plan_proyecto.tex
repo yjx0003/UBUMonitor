@@ -2,7 +2,7 @@
 
 \section{Introducción}
 
-El plan de proyecto 
+En este apartado se comentará la planificación temporal de proyecto junto con su viabilidad económica y legal.
 
 \section{Planificación temporal}
 
@@ -25,36 +25,62 @@ Después de hablar con los tres en esa semana, hubo varios de reflexión sobre l
 
 En la siguiente semana se prepara la primera reunión comentando en profundidad los detalles del trabajo y los objetivos finales que se espera.
 
-En este \textit{sprint} también se prepara las instalaciones de las herramientas de necesarias para el desarrollo. Se ha usado el manual del programador aportado por el autor de  UBUGrades 2.0 \cite{} como medida de apoyo.
+En este \textit{sprint} también se prepara las instalaciones de las herramientas de necesarias para el desarrollo. Se ha usado el manual del programador aportado por el autor de  UBUGrades 2.0 \cite{\\TODO} como medida de apoyo.
 
 
 \subsection{Sprint 1 (08/02/2019 - 15/02/2019)}
 
-Buscar la manera de guardar los datos extraídos del servicio web en ficheros locales cifrados usando la contraseña de acceso a Moodle como clave. Se decide usar el algoritmo de encriptación \textbf{Blowfish} \cite{} que permite claves de 32 hasta 448 bits. Cabe destacar que se han descartado los algoritmos de cifrado que usan tamaños específicos de claves. Un ejemplo de ellos es el algoritmo \textit{Advanced Encryption Standard} (AES) \cite{} que necesita claves de cifrado de 128, 192 o 256 bits.
+Buscar la manera de guardar los datos extraídos del servicio web en ficheros locales cifrados usando la contraseña de acceso a Moodle como clave. Se decide usar el algoritmo de encriptación \textbf{Blowfish} \cite{noauthor_schneier_nodate} que permite claves de 32 hasta 448 bits. Cabe destacar que se han descartado los algoritmos de cifrado que usan tamaños específicos de claves. Un ejemplo de ellos es el algoritmo \textit{Advanced Encryption Standard} (AES) \cite{rouse_what_2017} que necesita claves de cifrado de 128, 192 o 256 bits.
+
+Se acuerda empezar de nuevo el trabajo de UBULogs al no funcionar para la nueva versión de Moodle de la Universidad usando una alternativa diferente.
 
 También se arregla un error del anterior proyecto el cual trataba al nombre de usuario como si fuera un correo.
 
 \subsection{Sprint 2 (15/02/2019 - 13/03/2019)}
 
-Durante este sprint se empieza a descargar el log mediante técnicas de web scraping.
+En este \textit{sprint} se busca la forma de iniciar sesión con el usuario y contraseña de Moodle y así poder descargar los registros del curso. Inicialmente se intentó usar solo el paquete \textbf{java.net} \cite{noauthor_java.net_nodate} para realizar las conexiones al no ser una de dependencia externa. Sin embargo los resultados fueron infructuosos y finalmente se empleó Jsoup \cite{noauthor_jsoup_nodate}, una librería muy famosa de web scraping.
 
-Refactorición de las clases de servicio web.
-
+Además se decide modificar completamente las clases encargadas de recoger información de los servicios web de Moodle.
 
 \subsection{Sprint 3 (13/03/2019 - 21/03/2019)}
-Refactorización del paquete model
-Enlazar los usuarios y modulos del curso al log
+
+Los objetivos fueron arreglar los errores encontrados en el anterior \textit{sprint} y cambiar el paquete model modificando las clases y añadiendo todos los tipos disponibles de actividades y recursos del curso.
 
 \subsection{Sprint 4 (21/03/2019 - 26/03/2019}
-Seguir refactorizando y arreglando bugs
+
+Centrado exclusivamente en recoger los datos de los servicios web y transformarlo en objetos de Java. La información que nos interesa son los usuarios matriculados, los contenidos (actividades y recursos), las calificaciones, los roles y grupos del curso.
+
+Todo esto se extrae de los JSON que devuelve el servicio web de Moodle, se han creado métodos que recogen los campos más útiles del JSON.
 
 \subsection{Sprint 5 (26/03/2019 - 03/04/2019)}
 
+Buscado la forma de encontrar cómo actualizar los datos, tanto de las calificaciones como de los registros del curso.
+
+En cuanto a los registros del curso se descubre una forma de descargar los datos por días a través de un parámetro de la URL. Los tiempos de actualización de datos baja considerablemente con este método al descargar registros parciales en vez de completos.
+
+También se refactoriza códigos de anteriores \textit{sprints} y \textbf{Carlos Pardo Aguilar} se incorpora como segundo tutor.
+
+Se acuerda en qué tipo de gráfica debe mostrar los registros del curso, barras apiladas.
+
 \subsection{Sprint 6 (03/04/2019 - 26/04/2019)}
+
+Los objetivos son arreglar los errores de programación encontrados. También aparece un bug de los servicios web con la función \textbf{gradereport\_user\_get\_grade\_items} que devuelve un mensaje de error si la \textbf{Retroalimentación} está oculta en el calificador.
+
+Después de varias propuestas se llega el consenso de usar la otra función 
+del servicio web \textbf{gradereport\_user\_get\_grades\_table} mucho más incómoda de trabajar. Este inconveniente ha supuesto un retraso de una semana en el proyecto.
+
+Se añadió un fichero de de configuración para guardar los nombres de usuario y el servidor de Moodle en la pantalla de inicio de sesión.
 
 \subsection{Sprint 7 (26/04/2019 - 11/05/2019)}
 
+Durante este proceso se implementó la agrupación de los registros por usuarios, componente y distintos tipos de tiempo (días, meses, años, etc) y finalmente contándolos. Se calcula también la media de todos los participantes según el número de registros.
+
+Con todos estos datos se crean métodos que transforma en formato específico de Chart.js.
+
 \subsection{Sprint 8 (11/05/2019 - 18/05/2019)}
+
+Durante este \textit{sprint} se ha buscado una manera de 
+
 
 \subsection{Sprint 9 (18/05/2019 - 23/05/2019)}
 Empezar la documentación de la memoria. Probar si se puede añaadir grafica en funcion de componente y evento del registro
@@ -63,7 +89,7 @@ Empezar la documentación de la memoria. Probar si se puede añaadir grafica en 
 
 \subsection{Sprint 11 (08/06/2019 - 22/06/2019)}
 
-\subsection{Sprint 12 (22/06/2019 - //TODO)}
+\subsection{Sprint 12 (22/06/2019 - 30/06/2019)}
 
 
 \section{Estudio de viabilidad}

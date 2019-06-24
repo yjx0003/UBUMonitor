@@ -2,10 +2,47 @@
 
 \section{Introducción}
 
-\section{Requisitos de usuarios}
+En este manual se explica los requerimientos de la aplicación, su ejecución en el ordenador e instrucciones de cómo usarlo correctamente.
+
+
+\section{Requisitos de usuarios} \label{sec:requisitos_usuarios}
+
+\begin{itemize}
+	
+	\item Tener instalado \href{https://www.java.com/es/download/}{Java 8}. 
+	\item Obtener el jar ejecutable de la última versión disponible en:
+	
+	\href{https://github.com/yjx0003/UBUMonitor/releases/latest}{https://github.com/yjx0003/UBUMonitor/releases/latest}
+	\item Debe disponer conexión a Internet.
+	\item Una cuenta de Moodle con acceso a asignaturas con rol de Profesor.
+\end{itemize}
+
+
 
 \section{Instalación}
 
+La aplicación no necesita instalar nada más a parte de poseer Java 8.
+
 \section{Manual del usuario}
+
+Después de ejecutar el jar previamente descargado, inicialmente nos mostrará una pantalla de inicio.
+
+\subsection{Inicio de sesión}
+
+En esta primera pantalla es la de inicio de sesión. Ahí introducimos las credenciales de usuario, contraseña y en el campos host la URL de la página web de la plataforma Moodle.
+\imagen{manual_login}{Primera pantalla de inicio de sesión.}
+Da la opción de recordar el usuario y host para los siguientes usos de la aplicación. Esa información se guarda en un fichero \textbf{config.properties} si marcamos una o ambas opciones.
+
+En la esquina superior derecha nos permite cambiar el idioma de la aplicación y el botón \textbf{Borrar} para eliminar el texto de los tres campos. 
+
+Después de introducir las credenciales pulsamos el botón de \textbf{Entrar}. Si los datos son válidos cargará la siguiente pantalla y si no mostrará un mensaje de error.
+
+
+\subsection{Elección del curso}
+
+En esta pantalla muestra un listado de cursos que está matriculado el usuario y permite seleccionar uno de ellos y acceder a la siguiente pantalla. Cuando se elige uno de los curso cambia la información de fecha de la última actualización en local. Esta fecha se muestra en función del fichero local que este guardado en el directorio \textbf{cache} en caso contrario indica el texto \textbf{Nunca}.
+
+
+\imagen{seleccion_curso}{Pantalla de selección de curso}
 
 

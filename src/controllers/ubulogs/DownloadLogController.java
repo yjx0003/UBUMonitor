@@ -245,11 +245,11 @@ public class DownloadLogController {
 
 		ZonedDateTime newzonedInicio = convertTimezone(zonedInicio, userTimeZone);
 		ZonedDateTime newzonedFin = convertTimezone(zonedFin, userTimeZone);
-
+		LOGGER.info("Descargando los logs desde {} hasta {}",newzonedInicio,newzonedFin);
 		List<String> logs = new ArrayList<>();
 		// mientras la fecha de inicio sea menor que la fecha de fin
 		while (newzonedInicio.isBefore(newzonedFin)) {
-			logs.add(downloadLog(zonedInicio));
+			logs.add(downloadLog(newzonedInicio));
 			newzonedInicio = newzonedInicio.plusDays(1);
 		}
 

@@ -88,6 +88,8 @@ public class LogCreator {
 		setDateTimeFormatter(download.getUserTimeZone());
 
 		ZonedDateTime lastDateTime = logs.getLastDatetime();
+		
+		LOGGER.info("La fecha del ultimo log antes de actualizar es {}", lastDateTime);
 
 		List<String> dailyLogs = download.downloadLog(lastDateTime,
 				ZonedDateTime.now().withZoneSameInstant(lastDateTime.getZone()));

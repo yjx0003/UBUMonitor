@@ -25,7 +25,7 @@ Después de hablar con los tres en esa semana, hubo varios de reflexión sobre l
 
 En la siguiente semana se prepara la primera reunión comentando en profundidad los detalles del trabajo y los objetivos finales que se espera.
 
-En este \textit{sprint} también se prepara las instalaciones de las herramientas de necesarias para el desarrollo. Se ha usado el manual del programador aportado por el autor de  UBUGrades 2.0 \cite{\\TODO} como medida de apoyo.
+En este \textit{sprint} también se prepara las instalaciones de las herramientas de necesarias para el desarrollo. Se ha usado el manual del programador aportado por el autor de  UBUGrades 2.0 como medida de apoyo.
 
 
 \subsection{Sprint 1 (08/02/2019 - 15/02/2019)}
@@ -79,25 +79,86 @@ Con todos estos datos se crean métodos que transforma en formato específico de
 
 \subsection{Sprint 8 (11/05/2019 - 18/05/2019)}
 
-Durante este \textit{sprint} se ha buscado una manera de 
-
+Durante este \textit{sprint} se ha buscado una manera de añadir fácilmente nuevos tipos de registros según el componente y evento. Finalmente se ha creado varias herramientas en Python que busca los diferentes tipos que hay a partir de los registros en CSV y los guarda en un fichero JSON. Con este fichero se ha creado otra herramienta para generar las enumeraciones Java de los componentes y eventos junto con las traducciones. Todo esto se comenta con más detalles en el manual del programador (\ref{sec:manual_programdor}).
 
 \subsection{Sprint 9 (18/05/2019 - 23/05/2019)}
-Empezar la documentación de la memoria. Probar si se puede añaadir grafica en funcion de componente y evento del registro
+
+Los objetivos fueron empezar la documentación de la memoria y probar si se puede añadir la opción de agrupar por componente y evento en los registros. Para esto se creo una nueva rama con resultados satisfactorios.
+
+También se añadieron las fotografías de los participantes del curso.
 
 \subsection{Sprint 10 (23/05/2019 - 08/06/2019)}
 
+En este \textit{sprint} se añadieron varias mejoras de interacción con el usuario:
+\begin{itemize}
+	\item Valores predefinido en el campo \textit{host} de la pantalla de inicio.
+	\item Mostrar la categoría del curso al en la pantalla de selección del curso.
+	\item Añadir una opción de ajustar el valor máximo del eje Y en el gráfico de barras.
+\end{itemize}
+
 \subsection{Sprint 11 (08/06/2019 - 22/06/2019)}
+
+Los objetivos fueron completar la memoria, documentación de los métodos de Java, arreglar varios errores y refactorización del código arreglando la gran mayoría de \textit{code smells} detectados por Sonarqube y Codacy.
 
 \subsection{Sprint 12 (22/06/2019 - 30/06/2019)}
 
+Completar los apartados restantes del anexo y su revisión final.
 
 \section{Estudio de viabilidad}
-
 \subsection{Viabilidad económica}
 
+Desarrollado por una sola persona durante 5 meses. Calculando usando salarios medios brutos de \EUR{19.485} para un programador junior \cite{noauthor_salarios_2019}.
+ Empleando la calculadora de sueldos netos de Cinco Días \cite{pais_calculadora_nodate} nos da los resultados en costes anuales. Calculamos también el sueldo mensual y el coste en 5 meses:
+
+\tablaSmallSinColores{Sueldos anuales, mensuales y de 5 meses.}{l c c c}{tabla_sueldos}
+{ \multicolumn{1}{l}{Concepto} & Coste anual & Coste mensual & Coste 5 meses \\}{
+	Sueldo bruto            & \EUR{19.485,00} & \EUR{1.623,75}      & \EUR{8.118,75}       \\
+	Retenciones por IRPF    & \EUR{2.221,30}  & \EUR{185,11}        & \EUR{925,54}         \\
+	Cuotas a la Seg. Social & \EUR{1.237,30}  & \EUR{103,11}        & \EUR{515,54}         \\
+	Sueldo neto             & \textbf{\EUR{16.026,40}} & \textbf{\EUR{1.335,53}}      & \textbf{\EUR{6.677,67}}       \\
+}
+
+En principio el producto no está pensado venderlo, la intención es que sea de código libre y gratuito. Los potenciales clientes serían las Universidades que usen Moodle, por lo que si podríamos cobrar por crear versiones específicas de la aplicación para cada una de las Universidades. Otra forma de ingresos sería a partir de donaciones de la comunidad.
 
 
 \subsection{Viabilidad legal}
 
+Se mantiene la licencia de MIT al ser una de las más permisivas para productos de código libre. Permite a la gente hacer casi todo lo que quieran con el proyecto, incluyendo crear y distribuir versiones de código cerrado.
 
+En el desarrollo del proyecto se han empleado varias librerías externas, algunas de ellas nuevas y otras que estaban en el anterior proyecto se han quitado en este desarrollo.
+
+En definitiva, se han usado varias librerías de Java, JavaScript y un paquete de iconos.
+
+\subsubsection{Dependecias de Java}
+En la siguiente tabla se muestran las dependencias de Java junto con su versión y licencia.
+\tablaSmallSinColores{Dependencias de Java.}{l c c}{dependencias_java}
+{ \multicolumn{1}{l}{Dependencia} & Versión & Licencia \\}{
+	Apache Commons CSV     & 1.6      & Apache-2.0   \\
+	Apache Commons Math    & 3.6.1    & Apache-2.0   \\
+	Apache Log4j           & 1.2.17   & Apache-2.0   \\
+	Gson                   & 2.8.5    & Apache-2.0   \\
+	JSON In Java           & 20180813 & MIT          \\
+	JSoup Java HTML Parser & 1.11.3   & MIT          \\
+	SLF4J API Module       & 1.7.26   & MIT          \\
+	SLF4J LOG4J 12 Binding & 1.7.26   & MIT          \\
+	ThreeTen Extra         & 1.5.0    & BSD 3-Clause \\
+}
+
+\subsubsection{Dependencias de JavaScript}
+
+En esta otra tabla se muestra las dependencias de JavaScript. Cabe destacar que Google Charts no es de código libre, no permite descargar y usarlo en un fichero local sin conexión \cite{noauthor_frequently_nodate}.
+
+
+\tablaSmallSinColores{Dependencias de JavaScript.}{l c c}{dependencias_javascript}
+{ \multicolumn{1}{l}{Dependencia} & Versión & Licencia \\}{
+Chart.js      & 2.8.0       & MIT      \\
+color-hash    & 1.0.3       & MIT      \\
+Google Charts & Desconocida & Privada  \\
+html2canvas   & 0.4.1       & MIT      \\
+}
+
+\subsubsection{Paquete de iconos}
+
+Se ha usado el paquete de iconos Font Awesome \cite{noauthor_font_nodate} que también se emplea en Moodle. 
+
+Los iconos de Font Awesome están sacados de \href{http://fa2png.io/r/font-awesome/}{fa2png} versión \textbf{4.7.0} y licencia \textbf{SIL OFL 1.1}.

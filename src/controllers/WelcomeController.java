@@ -41,6 +41,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -202,11 +203,17 @@ public class WelcomeController implements Initializable {
 	private void previusPasswordWindow() {
 		Dialog<String> dialog = new Dialog<>();
 		dialog.setTitle(I18n.get("title.passwordChanged"));
+		
+		dialog.getDialogPane().setGraphic(new ImageView("img/error.png"));
 		dialog.setHeaderText(
 				I18n.get("header.passwordChangedMessage") + "\n"
 						+ I18n.get("header.passwordDateTime")
 						+ lblDateUpdate.getText());
 
+		Image errorIcon = new Image("img/error.png");
+	    Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+	    dialogStage.getIcons().add(errorIcon);
+	    dialog.setGraphic(new ImageView(errorIcon));
 		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
 
 		PasswordField pwd = new PasswordField();

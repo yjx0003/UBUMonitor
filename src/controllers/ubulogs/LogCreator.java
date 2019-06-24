@@ -131,8 +131,6 @@ public class LogCreator {
 	 * @param reader
 	 *            reader con el csv
 	 * @return lista de mapas con clave de mapa los nombres de las columnas
-	 * @throws Exception
-	 *             si ha habido un problema al parsear el csv
 	 */
 	public static List<Map<String, String>> parse(Reader reader) {
 

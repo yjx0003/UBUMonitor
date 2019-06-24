@@ -398,7 +398,7 @@ public class MainController implements Initializable {
 					// Instant lastCourseAccess = user.getLastcourseaccess(); // cuando moodle ya
 					// devuelva la fecha de ultimo acceso al curso.
 					Instant lastCourseAccess = user.getLastaccess();
-					Instant lastLogInstant = controller.getActualCourse().getLogs().getLastDatetime().toInstant();
+					Instant lastLogInstant = Instant.now();
 					setText(user + "\n" + I18n.get("text.lastaccess")
 							+ formatDates(lastCourseAccess, lastLogInstant));
 					try {
@@ -464,7 +464,7 @@ public class MainController implements Initializable {
 	 * @return numero de diferencia absoluta
 	 */
 	private long betweenDates(ChronoUnit type, Instant lastCourseAccess, Instant lastLogInstant) {
-		return Math.abs(type.between(lastCourseAccess, lastLogInstant));
+		return type.between(lastCourseAccess, lastLogInstant);
 	}
 
 	/**

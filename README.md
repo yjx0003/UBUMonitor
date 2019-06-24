@@ -14,6 +14,9 @@ Esta aplicación está dirigida a docentes que usen los servicios de Moodle.
 
 <p align="center"><img src="/latex/img/ejemplo_barras_apiladas.png" />
 
+## Manual de usuario:
+* https://yjx0003.gitbook.io/ubumonitor/
+
 ## Dependencias:
 La aplicación requiere **Java 8**.
 Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), de **JavaScript** en [resources/graphics/lib/](resources/graphics/lib/) (excepto Google Charts) y un pack de iconos.

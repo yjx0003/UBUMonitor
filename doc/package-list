@@ -1,12 +1,1 @@
-controllers
-controllers.datasets
-controllers.ubugrades
 controllers.ubulogs
-controllers.ubulogs.logtypes
-model
-model.mod
-persistence
-webservice
-webservice.core
-webservice.gradereport
-webservice.mod

@@ -12,6 +12,7 @@ Herramienta de visualización de calificaciones y registros (logs) del curso en 
 
 Esta aplicación está dirigida a docentes que usen los servicios de Moodle.
 
+Esta versión es la continuación de [UBUGrades](https://github.com/huco95/UBUGrades) de [Félix Nogal Santamaría](https://github.com/huco95).
 <p align="center"><img src="/latex/img/ejemplo_barras_apiladas.png" />
 
 ## Manual de usuario:

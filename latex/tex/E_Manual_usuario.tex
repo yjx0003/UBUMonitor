@@ -26,6 +26,9 @@ La aplicación no necesita instalar nada más a parte de poseer Java 8.
 \section{Manual del usuario}
 
 Después de ejecutar el jar previamente descargado, inicialmente nos mostrará una pantalla de inicio.
+Este manual de usuario también se encuentra en:
+
+
 
 \subsection{Inicio de sesión}
 
@@ -40,9 +43,139 @@ Después de introducir las credenciales pulsamos el botón de \textbf{Entrar}. S
 
 \subsection{Elección del curso}
 
-En esta pantalla muestra un listado de cursos que está matriculado el usuario y permite seleccionar uno de ellos y acceder a la siguiente pantalla. Cuando se elige uno de los curso cambia la información de fecha de la última actualización en local. Esta fecha se muestra en función del fichero local que este guardado en el directorio \textbf{cache} en caso contrario indica el texto \textbf{Nunca}.
+En esta pantalla muestra un listado de cursos que está matriculado el usuario y permite seleccionar uno de ellos y acceder a la siguiente pantalla. Cuando se elige uno de los curso cambia la información de fecha de la última actualización en local. Esta fecha se muestra en función del fichero local que este guardado en el directorio \textbf{cache} con la opción de marcar o no la casilla de actualizar los datos. En caso contrario indica el texto \textbf{Nunca} y se deshabilita marca la casilla.
 
 
 \imagen{seleccion_curso}{Pantalla de selección de curso}
 
+Cuando se haya seleccionado un curso y pulsamos en el botón \textbf{Entrar}, si la casilla de actualizar los datos está seleccionado, carga fichero en local o crea en caso de que no exista y actualiza los datos del curso (usuarios matriculados, calificaciones, registros, etc...). El fichero local se \textbf{cifra} usando la contraseña de Moodle como clave. Este proceso puede tardar varios minutos si los registros son muy grandes. Si no está marcado descifra el fichero y lo carga de forma instantánea. 
 
+Carga la siguiente después de finalizar cualquiera de los dos procesos.
+
+\subsubsection{Contraseña modificada}
+
+En caso de que se haya modificado la contraseña de Moodle, muestra una ventana emergente de que se ha detectado un cambio en la contraseña y que pide la anterior que tuvieras en la fecha señalada.
+
+\imagen{contrasena_antigua}{Ventana emergente pidiendo la contraseña antigua.}
+
+Cuando se haya introducido correctamente la contraseña antigua, el fichero en cache local se guarda con la nueva.
+
+\section{Visualización de gráficas}
+
+Ventana principal de visualización de gráficas del calificador y de los registros.
+
+En esta ventana muestra los diferentes menús existentes, la lista de usuarios matriculados y las elecciones de diferentes gráficos.
+
+\imagen{vetana_graficas}{Pantalla inicial.}
+
+\subsubsection{Barra de herramientas}
+
+En la parte superior de la ventana muestra una barra de herramientas con diferentes opciones:
+
+\begin{itemize}
+	\item \textbf{Archivo}
+	\begin{itemize}
+		\item Cambiar asignatura: vuelve a la ventana de Elección del curso
+		\item Guardar gráfico como...: Permite guardar en formato PNG el gráfico actual \item mostrado en la aplicación.
+		\item Guardar todo como...: Permite guardar en formato HTML todos los gráficos.
+		\item Cerrar sesión: Cierra la sesión y vuelve a la pantalla de inicio.
+		\item Salir: Cierra la aplicación.
+	\end{itemize}
+
+	\item \textbf{Editar}
+	\begin{itemize}
+		\item Borrar selección: Quita la selección de todos los listados disponibles.
+	\end{itemize}
+	\item \textbf{Ayuda}
+		\begin{itemize}
+		\item Acerca de la aplicación: Abre en la ventana del navegador el proyecto de GitHub.
+	\end{itemize}
+\end{itemize}
+
+También muestra los datos del usuario actual, el curso seleccionado y la página de la plataforma de Moodle (host).
+
+\subsubsection{Listado de usuarios matriculados}
+\imagen{usuarios_matriculados}{Listado de usuario matriculados en el curso.}
+
+En este apartado se muestra el listado de los usuarios matriculados en el curso junto con su fotografía y el tiempo desde su último acceso a la plataforma de Moodle ya sea en minutos horas o días. Se toma como referencia la hora del sistema. Es de selección múltiple, elegir varios usuarios mientras se mantiene pulsando la tecla Control.
+
+También da la opción de aplicar tres filtros juntos de forma conjunta:
+
+\begin{itemize}
+	\item Campo de texto: filtrar el listado por nombre y/o apellidos.
+	\item Selector de rol: seleccionar el rol por el que se quiere filtrar.
+	\item Selector de grupo: grupo por el que se quiere filtrar.
+\end{itemize}
+
+\subsubsection{Gráficas de calificaciones}
+
+\begin{itemize}
+	\item \textbf{Listado de elementos del calificador (Grade Items)}
+		\begin{itemize}
+			\item Listado de elementos del calificador (Grade Items). 
+			
+			En la pestaña de calificaciones muestra la jerarquía del calificador junto con sus filtros. Es de selección múltiple. En cualquier momento se puede desplegar y hacer más grande esta zona para ver mejor los nombres.
+			\imagen{listado_calificaciones}{Listado de calificaciones.}
+			Existe dos tipos de filtros que se usan de modo conjunto:
+			\begin{itemize}
+				\item Campo de texto: por nombre del elemento del calificador.
+				\item Selector de tipo: según el tipo que sea  (foro, tarea, cuestionario, et...)
+			\end{itemize}
+			También tiene varias pestañas de ocultar la leyenda, media general y media del grupo.
+		\end{itemize}
+	\item \textbf{Gráfico de líneas}
+	
+		Muestra un gráfico de líneas donde se representan las notas de los alumnos para cada elemento del calificador seleccionado.
+		\imagen{grafico_lineas}{Gráfico de líneas de las calificaciones.}
+	\item \textbf{Gráfico radar}
+	
+		Gráfico de tipo radar o también conocido como diagrama de araña. Muy útil para comparar dos participantes del curso.
+		\imagen{grafico_radar}{Gráfico radar de las calificaciones.}
+	\item \textbf{Gráfico BoxPlot general}
+	
+		Muestra la información de un boxplot o diagrama de caja y bigotes mediante un gráfico de lineas. En este gráfico representa también los máximos, mínimos, la mediana así como los cuartiles primero y tercero.
+		\imagen{boxplot_general}{Gráfico de BoxPlot general de las calificaciones.}
+		
+	\item \textbf{Gráfico BoxPlot grupo}
+	
+	Muestra la misma información que el gráfico anterior pero para un grupo concreto. Para que este gráfico sea visible debemos seleccionar primero un grupo.
+	
+	\imagen{boxplot_grupo}{Gráfico BoxPlot de grupo de las calificaciones.}
+	
+	\item  \textbf{Tabla de calificaciones}
+	
+	Muestra una tabla con las calificaciones así como la media general y la media de cada uno de los grupos del curso.
+	\imagen{tabla_calificaciones}{Tabla de calificaciones de tres personas y las medias del grupo y general.}
+\end{itemize}
+
+\subsubsection{Gráficas de los registros}
+
+\begin{itemize}
+	\item \textbf{Opciones de los registros}
+	
+	Al pulsar la pestaña de Registros aparece varias opciones en la pantalla inferior.
+	\imagen{opciones_registros}{Opciones para las gráfica de registros.}
+	\begin{itemize}
+		\item Cambiar escala máxima sugerida: permite modificar la escala máxima del eje Y. Se actualiza los valores al cambiar los componentes y/o eventos seleccionados o  las otras opciones. Aporta información útil también al mostrar que existe un usuario con esa escala.
+		\item Agrupar por: agrupa los registros en diferentes formas de tiempo (día, mes, año, etc...). 
+		\item Fecha de referencia inicial: la fecha de inicio orientativo que se muestra al agrupar.
+		\item Fecha de referencia final:  fecha límite orientativo que se muestra al agrupar.
+	\end{itemize}
+	Hay que tener en cuenta que la fecha de referencia  incial y final no toman todos los datos al realizar las agrupaciones. Por ejemplo al agrupar por meses y una fecha inicial del 17/06/2019 a 24/06/2019 no mostrará los registros entre esos dos días si no que mostrara todas las de junio.
+	También las agrupaciones por Hora y Día de la semana no usa el selector de fechas, por lo tanto se deshabilitan.
+	
+	\item \textbf{Componente}
+	
+	Lista los registros del curso en función del Componente que sea. Solo se visualizan componentes que hayan generado los usuarios matriculados en el curso actualmente.
+	\imagen{lista_componentes}{Listado de componentes ordenados alfabéticamente.}
+	
+	\item \textbf{Evento}
+	
+	Lista los registros del curso en función del Componente y Evento que sea. Se muestran solo los componentes y eventos generados por los usuarios actuales matriculados en el curso. 
+	\imagen{listado_componente_evento}{Listado de componente y evento ordenados alfabéticamente por componente.}
+	
+	\item \textbf{Gráfica de barras apiladas}
+	
+	Para ambos tipos de subpestañas (Componentes y Eventos)  la gráfica que se usa para mostrar los registros del curso son barras apiladas. Muestra en barras cada uno de los usuarios seleccionados con los componentes y/o eventos apilados con diferentes colores cada uno. También se apilan las líneas que indican el valor medio de los usuarios filtrados en ese momento.
+	\imagen{grafica_barras}{Gráfica de barras apiladas con dos participantes y tres componentes agrupados por día de la semana.}
+\end{itemize}

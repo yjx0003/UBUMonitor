@@ -2,10 +2,123 @@
 
 \section{Introducción}
 
+En esta sección del anexo se explicarán cómo están organizados los paquetes del proyecto; un manual para el programador sobre las herramientas que debe instalar para seguir el desarrollo; su compilación, instalación y ejecución del proyecto y las pruebas realizadas en la aplicación.
+
 \section{Estructura de directorios}
+
+El repositorio del proyecto está distribuido de la siguiente forma:
+
+\begin{itemize}
+	\item /doc/: los ficheros javadoc del proyecto.
+	\item /latex/: los elementos necesarios para generar la memoria y el anexo junto con sus PDF.
+	\item /lib/: librerías externas de Java.
+	\item /lib/src: el código fuente de las librerías externas de Java.
+	\item /lib/docs: los javadoc de las librerías externas de Java.
+	\item /python/: varios archivos de utilidad para los registros del curso:
+	\begin{itemize}
+		\item \textbf{Componentes y eventos.json}: fichero dividido en tres niveles que son Componentes, Eventos y Descripciones de los registros del curso.
+		\item \textbf{Contains checker.ibynb}: funciones de utilidad que comprueba en las Descripciones de los registros si existe o no un carácter o varios.
+		\item \textbf{Generador de código componentes y eventos.ipynb}: funciones que generan código Java automáticamente a partir del fichero JSON mencionado.
+		\item \textbf{Rastreador de componentes y eventos.ipynb}: programa de utilidad que escanea los registros del curso en formato CSV y con eso crea un fichero JSON con todos los Componentes, Eventos y Descripciones encontrados.
+	\end{itemize}
+
+	\item /resources/: recursos de apoyo para el programa.
+	\item /resources/css/: ficheros CSS que modifica la visualización y colores de la aplicación.
+	\item /resources/graphics/: ficheros HTML para dibujar las gráficas.
+	\item /resources/graphics/lib: librerías externas de JavaScript usado para las gráficas.
+	\item /resources/img/: todas las imágenes de la aplicación.
+	\item /resources/messages/: ficheros de internacionalización de textos.
+	\item /resources/view/: se encuentra los ficheros FXML.
+	\item /src/: código fuente del desarrollo.
+	\item /src/controllers/: paquete encargado del flujo de la ejecución.
+	\item /src/controllers/datasets/: dirige las generaciones de los datos en formato válido para Chart.js.
+	\item /src/controllers/ubugrades/: encargado de la generación de los cursos, usuarios matriculados, calificaciones, etc. Toda la parte de los servicios web.
+	\item /src/controllers/ubulogs/: gestiona la descarga de los registros y su posterior \textit{parseo}.
+	\item /src/conrollers/ubulogs/logtypes/: las clases encargadas de gestionar los ids de las Descripciones del registro.
+	\item /src/model/: representación de los datos, su lógica de negocio.
+	\item /src/model/mod: todas las clases de los tipos de módulos del curso.
+	\item /src/persistence/: encriptación y desencriptación de archivos de objetos Serializados.
+	\item /src/webservice/**: paquete y subpaquetes encargados de llamar a las funciones de Moodle y recibir las respuestas.
+\end{itemize}
 
 \section{Manual del programador} \label{sec:manual_programdor}
 
+Este manual sirve de referencia para personas que tomen el proyecto en el futuro. Se explicarán como construir el entorno de desarrollo, qué es lo que necesitan instalar.
+
+\subsection{Instalación de Java}
+
+La aplicación está desarrollada en Java 8, por lo tanto para trabajar en ella necesitará tener el JDK 8. Durante el proyecto se ha trabajado con la \textbf{versión 1.8.0\_201} pero sería recomendable trabajar con la última disponible que se encuentra en:
+
+\href{
+https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html}{https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html}
+
+\subsection{Instalación de Eclipse}
+
+Durante el desarrollo se ha empleado la versión \textbf{Oxygen.1a Release (4.7.1a)} de Eclipse aunque no habría muchos problemas usar una versión más reciente. Se puede descargar en:
+
+\href{https://www.eclipse.org/downloads/}{https://www.eclipse.org/downloads/}
+
+\subsection{Instalación de e(fx)clipse}
+
+e(fx)clipse es una herramienta adicional de Eclipse que facilita el desarrollo de aplicaciones que usen JavaFX. 
+Para instalar e(fx)clipse realizamos los siguientes pasos:
+
+\begin{enumerate}
+	\item Seleccionamos el menú \textbf{Help} de la barra de herramientas de Eclipse.
+	\item Seleccionamos el elemento del menú \textbf{Install New Software...}
+	
+	\imagen{efxclipse}{Menú \textbf{Help} y seleccionar \textbf{Install New Software...}}
+	
+	\item Seleccionamos la opción \textbf{--All Available Sites --} de la lista desplegable de \textbf{Work with:}.
+	\item Escribimos e(fx)clipse en el cuadro de texto.
+	\item Marcamos solo la casilla que pone \textbf{e(fx)clipse - IDE}.
+	\item Pulsamos el botón \textbf{Next} y debería descargar e instalarse.
+	\imagen{efxclipse2}{Instalación de la herramienta.}
+\end{enumerate}
+
+
+\subsection{Instalación de Scene Builder}
+
+La herramienta del Scene Builder (2.0) se puede conseguir desde: 
+
+\href{http://www.oracle.com/technetwork/java/javase/downloads/javafxscenebuilder-1x-archive-2199384.html}{http://www.oracle.com/technetwork/java/javase/downloads/javafxscenebuilder-1x-archive-2199384.html}
+
+\subsection{Instalación de Moodle}
+
+Para instalar Moodle en el equipo personal, se puede descargar desde la página oficial con todo incluido para su funcionamiento:
+
+\href{https://download.moodle.org/windows/}{https://download.moodle.org/windows/}
+
+Una vez descargado y descomprimido la carpeta, ejecutamos \textbf{StartMoodle.exe} que inicia la  arranque del servidor.
+
+Para acceder al sitio web de Moodle se usa el localhost: \href{http://localhost}{http://localhost}
+En la página web, la primera vez iniciará el proceso de instalación del servidor. Se sigue las instrucciones del instalador.
+
+Por defecto no están activados los servicios web de Moodle. Para habilitarlo seguimos los siguientes pasos después de iniciar sesión con la cuenta del administrador:
+
+\begin{enumerate}
+	
+	\item Pulsamos el botón \textbf{Administración del sitio}.
+	\item Entramos dentro de \textbf{Mobile Settings}.
+	\imagen{servicios_moodle}{Habilitar servicios web.}
+	\item Marcamos la casilla de \textbf{Habilitar servicio web para dispositivos móviles}.
+	\item Pulsamos en \textbf{Guardar cambios}
+	\imagen{servicios_moodle}{Habilitar servicios web parte 2.}
+\end{enumerate}
+
+\subsection{Instalación de Jupyter Notebook}
+
+Según la página oficial de Jupyter Notebook \cite{noauthor_project_nodate}, lo más recomendable es instalarlo a través de Anaconda en:
+
+\href{https://www.anaconda.com/distribution/\#download-section}{https://www.anaconda.com/distribution/\#download-section}.
+
+La versión recomendable que se debe descargar es el que incluye Python 3.7 o superior debido a que los diccionarios están ordenados por orden de inserción.
+
 \section{Compilación, instalación y ejecución del proyecto}
+
+Lo primero de todo, hay que descargar todo el ficheros fuentes.
+
+
+
 
 \section{Pruebas del sistema}

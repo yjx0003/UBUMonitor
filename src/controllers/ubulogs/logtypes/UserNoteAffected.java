@@ -5,7 +5,7 @@ import java.util.List;
 import model.LogLine;
 
 /**
- * The user with id '' assigned the group with id '' to the grouping with id ''.
+ * 
  * @author Yi Peng Ji
  *
  */

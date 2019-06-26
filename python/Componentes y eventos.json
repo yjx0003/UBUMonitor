@@ -660,11 +660,9 @@
     },
     "User tours": {
         "Step shown": [
-            "The user with id 'INTEGER' has viewed the tour with id 'STRING' at step index 'STRING' (id 'INTEGER') on the page with URL 'STRING'.",
             "The user with id 'INTEGER' has viewed the tour with id 'INTEGER' at step index 'INTEGER' (id 'INTEGER') on the page with URL 'STRING'."
         ],
         "Tour ended": [
-            "The user with id 'INTEGER' has ended the tour with id 'INTEGER' at step index 'STRING' (id 'STRING') on the page with URL 'STRING'.",
             "The user with id 'INTEGER' has ended the tour with id 'INTEGER' at step index 'INTEGER' (id 'INTEGER') on the page with URL 'STRING'."
         ],
         "Tour started": [

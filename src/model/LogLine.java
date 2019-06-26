@@ -9,6 +9,7 @@ import java.time.YearMonth;
 import java.time.ZonedDateTime;
 import java.time.temporal.IsoFields;
 
+import org.threeten.extra.AmPm;
 import org.threeten.extra.YearQuarter;
 import org.threeten.extra.YearWeek;
 
@@ -125,7 +126,8 @@ public class LogLine implements Serializable {
 	/**
 	 * Modifica el origen del log.
 	 * 
-	 * @param origin origin
+	 * @param origin
+	 *            origin
 	 */
 	public void setOrigin(Origin origin) {
 		this.origin = origin;
@@ -143,7 +145,8 @@ public class LogLine implements Serializable {
 	/**
 	 * Modfica la ip del log.
 	 * 
-	 * @param iPAdress direccion ip
+	 * @param iPAdress
+	 *            direccion ip
 	 */
 	public void setIPAdress(String iPAdress) {
 		ipAdress = iPAdress;
@@ -188,17 +191,27 @@ public class LogLine implements Serializable {
 		this.affectedUser = affectedUser;
 		affectedUser.addLog(this);
 	}
-	
+
+	/**
+	 * Devuelve si es AM o PM del log.
+	 * @return AM o PM del log
+	 */
+	public AmPm getAmPm() {
+		return AmPm.from(time);
+	}
+
 	/**
 	 * Devuelve la hora del log.
+	 * 
 	 * @return hora del log
 	 */
 	public int getHour() {
 		return time.getHour();
 	}
-	
+
 	/**
 	 * Devuelve el dia de la semana del log.
+	 * 
 	 * @return dia de la semana
 	 */
 	public DayOfWeek getDayOfWeek() {

@@ -5,7 +5,7 @@ import java.util.List;
 import model.LogLine;
 /**
  * The user with id '' updated section number '' for the course with id ''
- * The user with id '' viewed the section number '3' of the course with id ''.
+ * The user with id '' viewed the section number '' of the course with id ''.
 
  * 
  * @author Yi Peng Ji

@@ -5,7 +5,7 @@ import java.util.List;
 import model.LogLine;
 
 /**
- * The user with id '' has added the option with id '' for the\n            user with id '' from the choice activity with course module id ''.
+ * The user with id 'INTEGER' made the choice with id 'INTEGER' in the choice activity\n            with course module id 'INTEGER'.
  * @author Yi Peng Ji
  *
  */

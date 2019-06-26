@@ -103,7 +103,7 @@ Por defecto no están activados los servicios web de Moodle. Para habilitarlo se
 	\imagen{servicios_moodle}{Habilitar servicios web.}
 	\item Marcamos la casilla de \textbf{Habilitar servicio web para dispositivos móviles}.
 	\item Pulsamos en \textbf{Guardar cambios}
-	\imagen{servicios_moodle}{Habilitar servicios web parte 2.}
+	\imagen{servicios_moodle2}{Habilitar servicios web parte 2.}
 \end{enumerate}
 
 \subsection{Instalación de Jupyter Notebook}
@@ -114,11 +114,170 @@ Según la página oficial de Jupyter Notebook \cite{noauthor_project_nodate}, lo
 
 La versión recomendable que se debe descargar es el que incluye Python 3.7 o superior debido a que los diccionarios están ordenados por orden de inserción.
 
+\subsubsection{Clasificación de registros}
+
+Para clasificar se ha partido de la premisa de que las columnas \textbf{Componente} y \textbf{Nombre de Evento} usa un esqueleto de \textbf{Descripción} único. 
+
+A partir de expresiones regulares, se ha buscado las posibles los ids de las descripciones y con esos números pasado a un delegado (clase) en función del Componente y Evento. 
+
+\imagen{tipos_logs}{Clasificación de los registros junto con sus delegados.}
+
+\subsubsection{Delegados}
+
+Los nombres de los delegados son códigos nemotécnicos en función el tipo de ids asigna. Por ejemplo en la siguiente imagen usa los códigos nemotécnicos User, Affected y Cmid. Está asignando el usuario, usuario afectado y el módulo del curso.
+\imagen{ejemplo_tipo_log}{Un delegado UserAffectedCmid}
+
+En la tabla \ref{tabla:tipos_delegados} se puede ver los códigos nemotécnicos usados y una pequeña descripción.
+
+\tablaSmall{Códigos nemotécnicos de los delegados.}{l c }{tipos_delegados}{ \multicolumn{1}{l}{Código nemotécnico} & Descripción \\}{ 
+	Affected         & id del usuario afectado                          \\
+	Attempt          & id del intento                                   \\
+	Calendar         & id del evento del calendario                     \\
+	Category         & id de la categoría                               \\
+	Chapter          & id del capitulo del libro                        \\
+	Choice           & id de elección (choice)                          \\
+	Cmid             & id del módulo del curso                          \\
+	Comment          & id del comentario                                \\
+	Competency       & id de competencia del curso                      \\
+	Course           & id del curso                                     \\
+	Discussion       & id de la discusión del foro                      \\
+	Evidence         & id de la evidencia                               \\
+	Field            & id del campo                                     \\
+	Files            & número de ficheros                               \\
+	Glossary         & id de la entrada al glosario                     \\
+	Grade            & id de calificación                               \\
+	Gradeitem        & id de grade ítem                                 \\
+	Group            & id del grupo                                     \\
+	Grouping         & id de grouping                                   \\
+	Item             & id de item                                       \\
+	Note             & id de note                                       \\
+	Option           & id de opción                                     \\
+	Override         & id de anulación (override)                       \\
+	Page             & id de la página                                  \\
+	Post             & id del post del foro                             \\
+	Question         & id de pregunta del cuestionario                  \\
+	Questioncategory & id de categoría de cuestionario                  \\
+	Record           & id de record                                     \\
+	Role             & id del rol                                       \\
+	Rule             & id de regla                                      \\
+	Scale            & id de escala                                     \\
+	Sco              & id del scorm package                             \\
+	Section          & número de sección                                \\
+	Submission       & id de la entrega                                 \\
+	Subscription     & id de subscripción al evento                 	\\
+	Tour             & id de tour                                       \\
+	User             & id del usuario del usuario que realiza la acción \\
+	Words            & número de palabras                               \\
+}
+
+\subsection{Uso de las herramientas de utilidad Python}
+
+En este apartado se comentará las tres herramientas existentes en Jupyter Notebook. Estos facilitan al programador crear ciertos códigos que tienen que ver con los registros del curso.
+
+\subsubsection{Rastreador de componentes y eventos} \label{rastreador_componentes_eventos}
+
+Programa que selecciona uno o varios CSV de los registros descargados en inglés. Y de forma opcional elegir el archivo JSON donde se actualizarán todos los \textbf{Componentes}, \textbf{Eventos} junto con las \textbf{Descripciones}. Si no se selecciona el fichero JSON generará uno nuevo de los registros del CSV.
+
+Se aporta ya un fichero JSON (\textbf{Componentes y eventos.json}) con \textbf{48 Componentes} y \textbf{193 Eventos} diferentes detectados hasta el momento. 
+
+Este fichero usa tres niveles:
+\begin{enumerate}
+	\item En el primer nivel indica el Componente.
+	\item En el segundo nivel es el Evento.
+	\item En el tercer nivel es un listado del esqueleto de las Descripciones asociados al Componente y Evento.
+\end{enumerate}
+
+En la figura \ref{fig:json_componente_evento} podemos ver un extracto del JSON recuadrado los Componentes (en rojo) y los Eventos (en verde).
+
+\imagen{json_componente_evento}{Extracto de Componentes y eventos.json}
+
+Los pasos a seguir añadir nuevos elementos son:
+
+\begin{enumerate}
+	\item Abrir el archivo \textbf{Rastreador de componentes y eventos.ipynb} con Jupyter Notebook.
+	\item El programa está preparado para ejecutar todas las celdas seguidas, elegimos el menú \textbf{Cell} y luego la opción \textbf{Run All}.
+	\imagen{rastreador}{Menú \textbf{Cell} y opción \textbf{Run All}}
+	\item Aparecerá una primera ventana que pide seleccionar los ficheros CSV de los registros en inglés.
+	\imagen{elegir_Csv}{Selección múltiple de los archivos CSV.}
+	\item A continuación se mostrará una nueva ventana que pide el fichero JSON.
+	\imagen{seleccion_json}{Seleccionar el archivo JSON.}
+	\item Si no hay ningún problema encontrado durante la ejecución de las celdas, ha salido todo bien. 
+\end{enumerate}
+
+Uno de los problemas que se puede encontrar es que haya elegido accidentalmente un CSV en otro idioma que no sea en inglés. Una de las celdas saltará un error y las siguientes no se ejecutarán.
+
+Por ejemplo en la siguiente imagen se puede ver que salta un error de que no se encuentra la columna Component. Producido por el último fichero en \textit{parsearse} indicado en un recuadro en rojo.
+\imagen{key_error}{Error producido al usar un CSV que no está en inglés.}
+
+
+Para solucionar solo hay que volver ejecutar todas las celdas sin elegir ese archivo CSV que da problemas.
+
+\subsubsection{Generador de código componentes y eventos}
+
+Este segundo programa usa el fichero JSON generado comentado anteriormente (\ref{rastreador_componentes_eventos}) y va mostrando en pantalla lo que hay que copiar y pegar en el proyecto.
+
+Genera automáticamente las enumeraciones de los Componentes y Eventos, las traducciones del \textit{Resource Bundle} en inglés y las combinaciones de Componente y Evento existentes.
+
+\begin{enumerate}
+	\item Abrir el archivo \textbf{Generador de código componentes y eventos.ipynb} con Jupyter Notebook.
+	\item El programa está preparado para ejecutar todas las celdas seguidas, elegimos el menú \textbf{Cell} y luego la opción \textbf{Run All}.
+	\imagen{generador_java}{Menú \textbf{Cell} y opción \textbf{Run All}}
+	\item Lo primero que mostrará una ventana que pide seleccionar el archivo JSON.
+	\imagen{seleccion_json}{Seleccionar el archivo JSON.}
+	\item En las siguientes celdas se parará en una que pide que copiemos los componentes del Resource Bundle en español desde:
+	
+	\textbf{/resources/messages/messages\_es.properties}
+	\imagen{resource_bundle_es}{Celda que parará el flujo el ejecución.}
+	\imagen{copiarcomponentes}{Copiar los componentes que se encuentra en el Resource Bundle español.}
+	\item Cuando lo hayamos copiado, en el cuadro de texto Notebook pulsamos la tecla \textbf{Entar} para que siga ejecutando las siguientes celdas.
+	\item Realizamos las mismas acciones pero ahora con los eventos del Resource Bundle en español.
+	\imagen{copiar_eventos}{Copiar los eventos que se encuentra en el Resource Bundle español.}
+	\item Realizamos la misma acción con los tipos de logs que se encuentra en:
+	
+	 \textbf{/controllers/ubulogs/logtypes/Logtypes.java}
+	\imagen{copiar_logtypes}{Copiar los tipos de logs.}
+	\item El último paso es solo ir copiando y pegando las salidas de las celdas al proyecto de Java.
+\end{enumerate}
+
+
+
 \section{Compilación, instalación y ejecución del proyecto}
 
-Lo primero de todo, hay que descargar todo el ficheros fuentes.
+\subsection{Importar el proyecto a Eclipse}
+Lo primero de todo hay que descargar todo el ficheros fuentes desde el repositorio de GitHub y descargamos el ZIP:
 
+\href{https://github.com/yjx0003/UBUMonitor}{https://github.com/yjx0003/UBUMonitor}
 
+Para importar en Eclipse seguimos los siguientes pasos:
 
+\begin{enumerate}
+	\item Pulsar el menú \textbf{File} y elegir la opción \textbf{Import...}
+	\imagen{import_project}{Menú File y opción Import...}
+	\item Seleccionar la opción de \textbf{Existing Projects into
+		Workspace} y luego al botón \textbf{Next}.
+	\imagen{existing_project}{Existing Projects into
+		Workspace} 
+	\item Marcamos la opción \textbf{Select archive file} y seleccionamos el fichero ZIP descargado previamente del repositorio GitHub. Pulsamos Finish e importara el fichero.
+	
+	\imagen{import_projects}{Selección del archivo ZIP e importar proyecto.}
+\end{enumerate}
 
+\subsection{Generación del ejecutable de la aplicación}
+
+Para generar el ejecutable jar de la aplicación debemos seleccionar la opción \textbf{Exportar...} con click derecho del ratón al proyecto.
+\imagen{export_jar}{Exportar jar}
+
+Seleccionamos la exportación del proyecto como \textbf{Runnable JAR file} dentro de la carpeta Java.
+
+\imagen{runnable_jar}{Seleccionar Runnable JAR file.}
+
+Seleccionar al opción \textbf{ Extract required libraries into generated JAR} y exportar.
+
+\imagen{runnable_jar_2}{Configuración del Runnble JAR.}
+
+\subsection{Ejecución de la aplicación}
+
+Para ejecutar el proyecto desde Eclipse: Buscamos el archivo java \textbf{UBUMonitor} dentro del paquete \textbf{controllers} que es donde se encuentra el Main. Click derecho y \textbf{Run as...} -> \textbf{Java Application}
+
+\imagen{run}{Ejecución de la aplicación.}
 \section{Pruebas del sistema}

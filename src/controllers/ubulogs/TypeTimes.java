@@ -6,8 +6,8 @@ package controllers.ubulogs;
  *
  */
 public enum TypeTimes {
-	
-
+	ALL,
+	AM_PM,
 	DAY,
 	DAY_OF_WEEK,
 	HOUR,

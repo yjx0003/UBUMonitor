@@ -231,10 +231,11 @@ public class CreatorGradeItems {
 		JSONObject range = tabledataJsonObject.getJSONObject("range");
 		String content = range.getString(CONTENT);
 
-		String[] minMax = content.split("&ndash;");
+		
 		double minGrade;
 		double maxGrade;
 		try {
+			String[] minMax = content.split("&ndash;");
 			minGrade = Double.parseDouble(minMax[0]);
 			maxGrade = Double.parseDouble(minMax[1]);
 		} catch (NumberFormatException e) {
@@ -242,6 +243,9 @@ public class CreatorGradeItems {
 			// la escala
 			minGrade = 0.0;
 			maxGrade = 100.0;
+		} catch (RuntimeException e) {
+			minGrade = 0.0;
+			maxGrade = 1.0;
 		}
 
 		gradeItem.setGrademin(minGrade);

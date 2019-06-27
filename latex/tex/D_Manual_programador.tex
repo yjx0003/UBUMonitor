@@ -10,7 +10,7 @@ El repositorio del proyecto está distribuido de la siguiente forma:
 
 \begin{itemize}
 	\item /doc/: los ficheros javadoc del proyecto.
-	\item /latex/: los elementos necesarios para generar la memoria y el anexo junto con sus PDF.
+	\item /latex/: los elementos necesarios para generar la memoria y el anexo, tanto los ficheros .tex como los .pdf. También se incluye las imágenes y la bibliografía en formato .bib.
 	\item /lib/: librerías externas de Java.
 	\item /lib/src: el código fuente de las librerías externas de Java.
 	\item /lib/docs: los javadoc de las librerías externas de Java.
@@ -38,7 +38,7 @@ El repositorio del proyecto está distribuido de la siguiente forma:
 	\item /src/model/: representación de los datos, su lógica de negocio.
 	\item /src/model/mod: todas las clases de los tipos de módulos del curso.
 	\item /src/persistence/: encriptación y desencriptación de archivos de objetos Serializados.
-	\item /src/webservice/**: paquete y subpaquetes encargados de llamar a las funciones de Moodle y recibir las respuestas.
+	\item /src/webservice/.../: paquete y subpaquetes encargados de llamar a las funciones de Moodle añadiendo los parámetros necesarios a la URL y recibir las respuestas.
 \end{itemize}
 
 \section{Manual del programador} \label{sec:manual_programdor}
@@ -271,7 +271,7 @@ Seleccionamos la exportación del proyecto como \textbf{Runnable JAR file} dentr
 
 \imagen{runnable_jar}{Seleccionar Runnable JAR file.}
 
-Seleccionar al opción \textbf{ Extract required libraries into generated JAR} y exportar.
+Seleccionar al opción \textbf{Extract required libraries into generated JAR} y exportar.
 
 \imagen{runnable_jar_2}{Configuración del Runnble JAR.}
 

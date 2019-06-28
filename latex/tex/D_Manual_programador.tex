@@ -47,16 +47,38 @@ Este manual sirve de referencia para personas que tomen el proyecto en el futuro
 
 \subsection{Instalación de Java}
 
-La aplicación está desarrollada en Java 8, por lo tanto para trabajar en ella necesitará tener el JDK 8. Durante el proyecto se ha trabajado con la \textbf{versión 1.8.0\_201} pero sería recomendable trabajar con la última disponible que se encuentra en:
+La aplicación está desarrollada en Java 8, por lo tanto para trabajar en ella necesitará tener el JDK 8. Durante el proyecto se ha trabajado con la \textbf{versión 1.8.0\_201} pero sería recomendable trabajar con la última disponible. Realizamos los siguientes pasos si queremos descargar la última versión de JDK: 
 
-\href{
-https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html}{https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html}
+\begin{enumerate}
+	\item Entrar en la página de  \href{https://www.oracle.com/technetwork/java/javase/downloads/index.html}{descargas de Java}.
+	\item Buscamos \textbf{Java SE 8uxxx} siendo las xxx el número de subversión de Java 8. 
+	\item Descargamos el JDK.
+	\imagen{elegir_jdl}{Elegir la descarga de JDK.}
+	\item Leemos la licencia de uso de Oracle y aceptamos las condiciones.
+	\item Cuando hayamos aceptado la licencia de uso descargamos el ejecutable según el sistema operativo que tengamos.
+	
+	\textbf{Nota:} x86 es 32 bits y x64 es 64 bits.
+	\imagen{descarga_java}{Descarga}
+	\item Seguir las instrucciones del instalador
+	
+	
+\end{enumerate}
 
-\subsection{Instalación de Eclipse}
+Es recomendable desinstalar la versión antigua de Java si descargamos la última versión \cite{noauthor_por_nodate}.
+\subsection{Eclipse}
 
-Durante el desarrollo se ha empleado la versión \textbf{Oxygen.1a Release (4.7.1a)} de Eclipse aunque no habría muchos problemas usar una versión más reciente. Se puede descargar en:
+Durante el desarrollo se ha empleado la versión \textbf{Oxygen.1a Release (4.7.1a)} de Eclipse aunque no habría muchos problemas usar una versión más reciente. A continuación se muestra el método de descargar una versión portable de Eclipse:
 
-\href{https://www.eclipse.org/downloads/}{https://www.eclipse.org/downloads/}
+\begin{enumerate}
+	\item  Entrar en la página web descarga de \href{https://www.eclipse.org/downloads/packages/}{paquetes de Eclipse}.
+	\item Descargamos el paquete \textbf{Eclipse IDE for Java Developers}, en el sistema operativo que se tenga.
+	\imagen{descargar_eclipse}{Descarga del paquete de Eclipse.}
+	\item Pulsamos el botón de descarga \textbf{Download}.
+	\imagen{boton_descarga_eclipse}{Pulsar el botón de descarga.}
+	\item Descomprimir la carpeta dentro del ZIP.
+	\item Ejecutar \textbf{eclipse.exe} cuando se quiera usar.
+\end{enumerate}
+
 
 \subsection{Instalación de e(fx)clipse}
 
@@ -114,7 +136,7 @@ Según la página oficial de Jupyter Notebook \cite{noauthor_project_nodate}, lo
 
 La versión recomendable que se debe descargar es el que incluye Python 3.7 o superior debido a que los diccionarios están ordenados por orden de inserción.
 
-\subsubsection{Clasificación de registros}
+\subsection{Clasificación de registros}
 
 Para clasificar se ha partido de la premisa de que las columnas \textbf{Componente} y \textbf{Nombre de Evento} usa un esqueleto de \textbf{Descripción} único. 
 
@@ -273,11 +295,17 @@ Seleccionamos la exportación del proyecto como \textbf{Runnable JAR file} dentr
 
 Seleccionar al opción \textbf{Extract required libraries into generated JAR} y exportar.
 
-\imagen{runnable_jar_2}{Configuración del Runnble JAR.}
+\imagen{runnable_jar_2}{Configuración del Runnable JAR.}
 
 \subsection{Ejecución de la aplicación}
 
 Para ejecutar el proyecto desde Eclipse: Buscamos el archivo java \textbf{UBUMonitor} dentro del paquete \textbf{controllers} que es donde se encuentra el Main. Click derecho y \textbf{Run as...} -> \textbf{Java Application}
 
 \imagen{run}{Ejecución de la aplicación.}
+
+La ejecución del jar ejecutable es con doble \textit{click} directamente.
 \section{Pruebas del sistema}
+
+Las pruebas de las nuevas funcionalidades se realizaron contra la el Moodle instalado en el equipo en la versión \textbf{3.5.4+} y el servidor \textit{demo} de Moodle \href{https://school.demo.moodle.net}{Mount Orange School} en la versión \textbf{3.7}. 
+
+Cuando se tenía unos cambios grandes, los tutores realizaban pruebas contra UBUVirtual con datos reales de alumnos. Con esto daban el visto bueno o informes de errores encontrados.

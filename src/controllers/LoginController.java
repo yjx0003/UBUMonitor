@@ -92,7 +92,8 @@ public class LoginController implements Initializable {
 		languageSelector.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
 
 			controller.setSelectedLanguage(newValue);
-			LOGGER.info("Idioma cargado: {}", I18n.getResourceBundle().getLocale());
+			LOGGER.info("Idioma de la aplicación: {}", newValue);
+			LOGGER.info("Idioma cargado del resource bundle: {}", I18n.getResourceBundle().getLocale());
 			LOGGER.info("[Bienvenido a " + AppInfo.APPLICATION_NAME + "]");
 			changeScene(getClass().getResource("/view/Login.fxml"));
 		});

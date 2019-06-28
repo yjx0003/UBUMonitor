@@ -506,7 +506,7 @@ public class MainController implements Initializable {
 
 			@Override
 			public String toString(GroupByAbstract<?> typeTimes) {
-				return I18n.get("choiceBox." + typeTimes);
+				return I18n.get(typeTimes.getTypeTime());
 			}
 		});
 

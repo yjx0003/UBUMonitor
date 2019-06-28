@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.ubulogs.TypeTimes;
 import model.Component;
 import model.Event;
 import model.mod.ModuleType;
@@ -85,6 +86,15 @@ public class I18n {
 	public static String get(ModuleType moduleType) {
 		return getOrDefault("module." + moduleType.getModName(), moduleType.getModName());
 	}
+	
+	/**
+	 * Traduce el tipo de tiempo
+	 * @param typeTimes tipo de tiempo
+	 * @return la traducción o {@link TypeTimes#toString()} si no existe
+	 */
+	public static String get(TypeTimes typeTimes) {
+		return getOrDefault("choiceBox." + typeTimes, typeTimes.toString());
+	}
 
 	/**
 	 * Devuelve el valor de la key o el de defecto si no existe en el resource
@@ -102,11 +112,13 @@ public class I18n {
 		}
 		LOGGER.warn("No existe entrada en el resource bundle la key: {}", key);
 		return defaultValue;
-	
+
 	}
-	
+
 	private I18n() {
 		throw new UnsupportedOperationException();
 	}
+
+
 
 }

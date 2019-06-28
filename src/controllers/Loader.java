@@ -19,7 +19,6 @@ import javafx.stage.Stage;
  *
  */
 public class Loader extends Application {
-	
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Loader.class);
 	private Controller controller = Controller.getInstance();
@@ -29,7 +28,7 @@ public class Loader extends Application {
 
 		try {
 			controller.initialize();
-			LOGGER.info("[Bienvenido a controller]");
+			LOGGER.info("[Bienvenido a {}]", AppInfo.APPLICATION_NAME);
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Login.fxml"), I18n.getResourceBundle());
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
@@ -45,7 +44,7 @@ public class Loader extends Application {
 		}
 	}
 
-	public static void init(String[] args) {	
+	public static void init(String[] args) {
 		launch(args);
 	}
 }

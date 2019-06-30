@@ -2,18 +2,96 @@
 
 \section{Introducción}
 
-En este anexo se va a comentar los aspectos más relevantes del diseño de esta aplicación
+En este anexo se va a comentar los aspectos más relevantes del diseño de esta aplicación.
 
 \section{Diseño de datos}
 
+Toda la información que se almacena en Moodle es con bases de datos con un campo numérico de identificador único (\textit{ID}) para cada uno de los elementos (usuarios, cursos, módulos del curso). Para simular este efecto en Java se ha creado una clase que incluye varios HashMap para los elementos comentados anteriormente usando los identificadores de cada tipo como clave del HashMap tal y como se puede ver en la figura \ref{fig:database_java}. Está clase también es el encargado de instanciar cada uno de los tipos con el objetivo de tener instancias únicas por cada identificador.
+
+\imagen{database_java}{Simulación de base de datos.}
+
+
 \section{Diseño procedimental}
 
-\imagenflotante{diagrama_despliegue}{Diagrama de despliegue de la aplicación.}
+En este apartado informa sobre las conexiones realizadas en la plataforma de Moodle durante la ejecución del producto. Comunicándose además de los servicios web de REST API, se inicia sesión también en la web para realizar acciones no disponibles como la descarga de los registros. Todas las peticiones HTTP y recibir las respuestas lo realiza librería jsoup.
+
+Estas comunicaciones lo dividiremos en dos partes:
+
+\subsection{Inicio de sesión}
+
+Al introducir los datos de usuario, contraseña y \textit{host} en la aplicación, se inicia sesión tanto en el servicio de REST API como en la web para \textit{web scraping}.
+
+Los pasos que sigue la aplicación en el inicio de sesión son:
+\begin{enumerate}
+	\item Busca el \textit{token} del REST API a partir del usuario y contraseña como parámetros de URL.
+	\item Busca el \textit{login token} de inicio de sesión en la web.
+	\item Inicia sesión usando el \textit{login token} como parámetro adicional si existe, guarda los \textit{cookies} de sesión para futuras peticiones. 
+	\item En la API recupera la información del usuario conectado usando la función del servicio web \textbf{core\_user\_get\_users\_by\_field}.
+	\item Descarga la imagen del usuario conectado.
+	\item Recupera de los servicios web la información de los cursos matriculados por el usuario con la función \textbf{core\_enrol\_get\_users\_courses}.
+	\item Con la función de la API \textbf{core\_course\_get\_categories} devuelve la información de las categorías en el que se encuentran los cursos.
+\end{enumerate}
+Estos pasos se visualizan también en el diagrama de secuencias de la figura \ref{fig:diagrama_secuencia_login}.
 
 \imagenflotante{diagrama_secuencia_login}{Diagrama de secuencia del inicio de sesión.}
+
+
+
+\subsection{Elección del curso}
+
+Después de elegir el curso, la aplicación descargará información de la REST API y también los registros del curso. 
+
+\subsubsection{REST API}
+
+De la información que se busca en los servicios web de Moodle:
+
+
+\begin{enumerate}
+	\item A través de la función \textbf{core\_enrol\_get\_enrolled\_users} recogemos la información de los usuario matriculados del curso junto con sus roles y grupos.
+	\item Descargamos cada uno de las fotos de los usuarios matriculados.
+	\item Se busca la información de los módulos del curso que hay con la función
+	\textbf{core\_course\_get\_contents}.
+	\item Con la función \textbf{gradereport\_user\_get\_grades\_table} nos proporciona los calificadores de todos los alumnos.
+	
+\end{enumerate}
+
+Esta información queda reflejada en el diagrama de secuencia de la figura \ref{fig:diagrama_secuencia_webservice}
 \imagenflotante{diagrama_secuencia_webservice}{Diagrama de secuencia de recogida de datos de los servicios web.}
-\imagenflotante{diagrama_secuencia_logs}{Diagrama de secuencia de descarga de los registros del curso.}
+
+\subsubsection{Descarga de registros}
+
+En la descarga de los registros es diferente si tiene el fichero de caché guardado previamente o no.
+
+\begin{itemize}
+	\item Cuando existe el archivo caché
+	\begin{enumerate}
+		\item Si la zona horaria del usuario es la misma que el servidor (99) hay que buscarlo en el perfil del usuario mediante \textit{web scraping}. 
+		\item Luego va descargando los registros de forma diaria desde la fecha del último registro hasta la fecha y hora actual.
+	\end{enumerate}
+	\item Cuando no existe el archivo caché
+	\begin{enumerate}
+		\item Busca la zona horaria del servidor a partir del perfil del usuario.
+		\item Descarga los registros completos del curso.
+	\end{enumerate}
+\end{itemize}
+
+En el diagrama de secuencia de la figura \ref{fig:diagrama_secuencia_logs} recoge los pasos que se realiza en la descarga de registros.
+
+\imagen{diagrama_secuencia_logs}{Diagrama de secuencia de descarga de los registros del curso.}
 
 \section{Diseño arquitectónico}
 
+\subsection{Arquitectura cliente-servidor}
+Esta arquitectura consiste en un cliente que realiza peticiones a un servidor que le da respuestas. En este caso, el cliente sería la aplicación y el servidor es la plataforma de Moodle y sus servicios web (REST API) y la web.
 
+En la figura \ref{fig:diagrama_despliegue} se visualiza un diagrama de despliegue que muestra la conexión de la aplicación con el servidor Moodle a través de Internet.
+
+
+\imagen{diagrama_despliegue}{Diagrama de despliegue de la aplicación.}
+
+\subsection{Arquitectura MVC}
+
+\subsection{Patrones de diseño}
+
+\section{Diseño de la interfaz}
+En cuanto al diseño de la interfaz se ha mantenido el del proyecto de UBUGrades añadiendo las nuevas características del presente desarrollo.

@@ -23,10 +23,18 @@ Estos son los siguientes requisitos funcionales y no funcionales:
 	\end{itemize}
 	\item \textbf{RF-2 Recordar datos sesión:} la aplicación debe dar la opción de recordar el usuario y \textit{host} en sucesivas ejecuciones.
 	\item \textbf{RF-3 Opción de actualizar:} el usuario debe tener la posibilidad de elegir 
-	\item Visualización de los registros con diferentes filtros
-	\item Aspectos de visualización de los usuarios
-	\item Continuación con proyectos previos
-	
+	\item \textbf{RF-3 Filtros de visualización:} en la visualización de los registros tenga posibilidad de filtrar.
+	\begin{itemize}
+		\item \textbf{RF-3.1 Filtrado por agrupaciones:} filtros agrupando por diferentes formas de tiempo.
+		\item \textbf{RF-3.2 Filtrado por fechas:} filtros según fechas del calendario.
+	\end{itemize}
+	\item \textbf{RF-4 Aspectos de visualización de los usuarios:} mejorar la visualización de los participantes del curso.
+		\begin{itemize}
+		\item \textbf{RF-4.1 Imágenes de los usuarios:} mostrar los fotos de los usuarios asociados en Moodle.
+		\item \textbf{RF-3.2 Últimos accesos:} mostrar los últimos accesos de los usuarios a la plataforma de Moodle.
+	\end{itemize}
+	\item \textbf{RF-5 Integrar con otros proyectos:} debe poder integrar lo máximo posible de los proyectos UBUGrades y UBULogs.s
+	\item \textbf{RF-6 Fechas de los registros:} los registros se deben guardar en la zona horaria del servidor, hay que transformar a la del servidor si el usuario está usando otra zona horaria .
 	
 	
 \end{itemize}
@@ -36,10 +44,13 @@ Estos son los siguientes requisitos funcionales y no funcionales:
 \begin{itemize}
 	\item \textbf{RNF-1 Tiempos de respuesta:} la aplicación debe tener buenos tiempos de respuesta a las diferentes acciones del usuarios. 
 	\item \textbf{RNF-2 Gestión de memoria:} el consumo de memoria de la aplicación no debe ser excesiva.
-	\item Usabilidad de la aplicación.
+	\item \textbf{RNF-3 Usabilidad:} el esfuerzo del usuario para aprender a usar la aplicación debería ser mínimo.
+	\item \textbf{RNF-4 Soporte:} brindar al usuario una fácil instalación, documentaciones de uso y facilidad de actualización hacia versiones más recientes.
+	\item \textbf{RNF-5 Internacionalización:} la aplicación debe poder añadir fácilmente otros idiomas.
 \end{itemize}
 
 
 \section{Especificación de requisitos}
-
-\imagenflotante{diagrama_casos_uso}{Diagrama de casos de uso.}
+La aplicación solo posee un actor en los casos de uso, el usuario.
+\subsection{Diagrama de casos de uso}
+\imagen{diagrama_casos_uso}{Diagrama de casos de uso.}

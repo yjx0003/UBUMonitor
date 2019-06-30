@@ -39,6 +39,8 @@ El repositorio del proyecto está distribuido de la siguiente forma:
 	\item /src/model/mod: todas las clases de los tipos de módulos del curso.
 	\item /src/persistence/: encriptación y desencriptación de archivos de objetos Serializados.
 	\item /src/webservice/.../: paquete y subpaquetes encargados de llamar a las funciones de Moodle añadiendo los parámetros necesarios a la URL y recibir las respuestas.
+	
+
 \end{itemize}
 
 \section{Manual del programador} \label{sec:manual_programdor}
@@ -51,14 +53,14 @@ La aplicación está desarrollada en Java 8, por lo tanto para trabajar en ella 
 
 \begin{enumerate}
 	\item Entrar en la página de  \href{https://www.oracle.com/technetwork/java/javase/downloads/index.html}{descargas de Java}.
-	\item Buscamos \textbf{Java SE 8uxxx} siendo las xxx el número de subversión de Java 8. 
+	\item Buscamos \textbf{Java SE 8uxxx} siendo las xxx el número de actualización de Java 8. 
 	\item Descargamos el JDK.
 	\imagen{elegir_jdl}{Elegir la descarga de JDK.}
 	\item Leemos la licencia de uso de Oracle y aceptamos las condiciones.
 	\item Cuando hayamos aceptado la licencia de uso descargamos el ejecutable según el sistema operativo que tengamos.
 	
-	\textbf{Nota:} x86 es 32 bits y x64 es 64 bits.
-	\imagen{descarga_java}{Descarga}
+	\textbf{Nota:} x86 es de 32 bits y x64 de 64 bits.
+	\imagen{descarga_java}{Descarga del JDK 8}
 	\item Seguir las instrucciones del instalador
 	
 	
@@ -105,6 +107,13 @@ La herramienta del Scene Builder (2.0) se puede conseguir desde:
 
 \href{http://www.oracle.com/technetwork/java/javase/downloads/javafxscenebuilder-1x-archive-2199384.html}{http://www.oracle.com/technetwork/java/javase/downloads/javafxscenebuilder-1x-archive-2199384.html}
 
+Después de entrar a la página se busca la versión 2.0 de Scene Builder, se acepta la licencia y descargamos la versión según el sistema operativo que se use.
+
+\imagen{descargar_scene_builder}{Aceptar la licencia de Oracle BSD y descargr.}
+
+Se sigue las instrucciones del instalador.
+
+
 \subsection{Instalación de Moodle}
 
 Para instalar Moodle en el equipo personal, se puede descargar desde la página oficial con todo incluido para su funcionamiento:
@@ -126,6 +135,18 @@ Por defecto no están activados los servicios web de Moodle. Para habilitarlo se
 	\item Marcamos la casilla de \textbf{Habilitar servicio web para dispositivos móviles}.
 	\item Pulsamos en \textbf{Guardar cambios}
 	\imagen{servicios_moodle2}{Habilitar servicios web parte 2.}
+\end{enumerate}
+
+\subsubsection{Listado de funciones de los servicios web de Moodle}
+
+Moodle ofrece también un listado de funciones del servicio web junto con información de parámetros y el esqueleto del JSON que devuelve. Para acceder a ella es necesario haber iniciado sesión con la cuenta del administrador.
+\begin{enumerate}
+	\item Después de iniciar sesión con el administrador. Pulsamos \textbf{Administración del sitio} y luego a la pestaña de \textbf{Extensiones}.
+	\imagen{api_moodle}{Acceso al listado de funciones del servicio web de Moodle.}
+	\item Bajamos abajo hasta la fila de \textbf{Servicios Web} y accedemos a \textbf{Documentación API}-
+	\imagen{documentacion_api_moodle}{Acceder a la Documentación API.}
+	\item Muestra un listado de todas las funciones que al desplegar se puede visualizar los parámetros y esqueletos de la información que devuelve.
+	\imagen{listado_de_funciones}{Listado de funciones del servicio web de Moodle.}
 \end{enumerate}
 
 \subsection{Instalación de Jupyter Notebook}

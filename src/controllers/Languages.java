@@ -13,8 +13,16 @@ import java.util.Map;
  */
 public enum Languages {
 
+	CATALAN("ca"),
+	GERMAN("de"),
 	SPANISH("es"),
-	SPANISH_SPAIN("es-ES"), 
+	SPANISH_SPAIN("es-ES"),
+	FRENCH("fr"),
+	ITALIAN("it"),
+	//JAPANESE("ja"),
+	PORTUGUESE("pt"),
+	//RUSSIAN("ru"),
+	//CHINESE_SIMPLIFIED("zh-CN"),
 	ENGLISH("en");
 
 
@@ -84,7 +92,7 @@ public enum Languages {
 		String language = locale.getDisplayLanguage(locale);
 		String country = locale.getDisplayCountry(locale);
 
-		return country.isEmpty() ? language : language + "-" + country ;
+		return country.isEmpty() ? language : language + " - " + country ;
 	}
 
 }

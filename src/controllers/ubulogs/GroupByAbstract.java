@@ -2,14 +2,12 @@ package controllers.ubulogs;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -65,13 +63,6 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 
 	}
 
-	public static Predicate<LogLine> isBetweenTwoDates(ZonedDateTime start, ZonedDateTime end) {
-		return l -> l.getTime().isAfter(start) && l.getTime().isBefore(end);
-	}
-
-	public static Predicate<LogLine> containsComponent(List<Component> components) {
-		return l -> components.contains(l.getComponent());
-	}
 
 	/**
 	 * Crea la estructura de contadores en un formato multi nivel.

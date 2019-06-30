@@ -19,29 +19,29 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="1024.0" maxWidth="728.0" minHeight="500.0" minWidth="400.0" prefHeight="500.0" prefWidth="400.0" styleClass="anchorpane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.LoginController">
+<AnchorPane maxHeight="1024.0" maxWidth="728.0" minHeight="500.0" minWidth="400.0" prefHeight="520.0" prefWidth="400.0" styleClass="anchorpane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.LoginController">
 	<!-- TODO Add Nodes -->
 
 	<children>
 		<Group id="Group" layoutX="43.0" layoutY="250.0">
 			<children>
-				<Label id="loginLabels" layoutX="20.0" layoutY="30.0" text="%label.user">
+				<Label id="loginLabels" layoutX="20.0" layoutY="30.0" text="%label.user" textAlignment="CENTER">
 					<font>
 						<Font size="13.0" fx:id="x1" />
 					</font>
 				</Label>
-				<Label id="loginLabels" font="$x1" layoutX="20.0" layoutY="68.0" text="%label.pass" />
-				<Label id="loginLabels" font="$x1" layoutX="20.0" layoutY="105.0" text="%label.host" />
+				<Label id="loginLabels" font="$x1" layoutX="20.0" layoutY="68.0" text="%label.pass" textAlignment="CENTER" />
+				<Label id="loginLabels" font="$x1" layoutX="20.0" layoutY="105.0" text="%label.host" textAlignment="CENTER" />
 			</children>
 		</Group>
 		<Group id="Group" layoutX="145.0" layoutY="250.0">
 			<children>
       				<TextField id="txtUname" fx:id="txtUsername" layoutY="27.0" prefWidth="173.0" styleClass="text-field-login" stylesheets="@/css/style.css" />
 				<PasswordField id="yxyPassword" fx:id="txtPassword" layoutY="63.0" prefWidth="173.00009999999747" styleClass="text-field-login" stylesheets="@/css/style.css" />
-				<TextField fx:id="txtHost" layoutY="100.0" prefWidth="173.0" styleClass="text-field-login" stylesheets="@/css/style.css" promptText="https://demo.moodle.net"/>
+				<TextField fx:id="txtHost" layoutY="100.0" prefWidth="173.0" promptText="https://demo.moodle.net" styleClass="text-field-login" stylesheets="@/css/style.css" />
 			</children>
 		</Group>
-		<Button id="Entrar" fx:id="btnLogin" cancelButton="false" defaultButton="true" disable="false" focusTraversable="true" graphicTextGap="5.0" layoutX="100.0" layoutY="425.0" mnemonicParsing="false" onAction="#login" prefWidth="70.0" text="%btn.enter" textOverrun="ELLIPSIS" underline="false" visible="true">
+		<Button id="Entrar" fx:id="btnLogin" cancelButton="false" defaultButton="true" disable="false" focusTraversable="true" graphicTextGap="5.0" layoutX="99.0" layoutY="460.0" mnemonicParsing="false" onAction="#login" prefWidth="70.0" text="%btn.enter" textOverrun="ELLIPSIS" underline="false" visible="true">
 			<font>
 				<Font size="14.0" fx:id="x2" />
 			</font>
@@ -49,7 +49,7 @@
 				<Cursor fx:constant="HAND" />
 			</cursor>
 		</Button>
-		<Button fx:id="btnDelete" font="$x2" layoutX="230.0" layoutY="425.0" mnemonicParsing="false" onAction="#clear" prefWidth="70.0" stylesheets="@/css/style.css" text="%btn.clear">
+		<Button fx:id="btnDelete" font="$x2" layoutX="232.0" layoutY="460.0" mnemonicParsing="false" onAction="#clear" prefWidth="70.0" stylesheets="@/css/style.css" text="%btn.clear">
 			<cursor>
 				<Cursor fx:constant="HAND" />
 			</cursor>
@@ -59,13 +59,13 @@
 				<Image url="@../img/logo.png" />
 			</image>
 		</ImageView>
-		<Label fx:id="lblStatus" alignment="CENTER" layoutX="12.0" layoutY="464.0" minHeight="27.0" minWidth="375.0" prefHeight="27.0" prefWidth="375.0" style="-fx-text-fill: #ff5050;" textFill="#cd0909">
+		<Label fx:id="lblStatus" alignment="CENTER" layoutX="13.0" layoutY="493.0" minHeight="27.0" minWidth="375.0" prefHeight="27.0" prefWidth="375.0" style="-fx-text-fill: #ff5050;" textFill="#cd0909">
          <font>
             <Font name="System Bold" size="12.0" />
          </font></Label>
       <ChoiceBox fx:id="languageSelector" layoutX="295.0" layoutY="14.0" prefHeight="25.0" prefWidth="94.0" />
-      <CheckBox fx:id="chkSaveUsername" layoutX="65.0" layoutY="391.0" mnemonicParsing="false" text="%chk.saveusername" />
-      <CheckBox fx:id="chkSaveHost" layoutX="257.0" layoutY="391.0" mnemonicParsing="false" text="%chk.savehost" />
+      <CheckBox fx:id="chkSaveUsername" layoutX="65.0" layoutY="392.0" mnemonicParsing="false" text="%chk.saveusername" />
+      <CheckBox fx:id="chkSaveHost" layoutX="65.0" layoutY="426.0" mnemonicParsing="false" text="%chk.savehost" />
       
 	</children>
 </AnchorPane>

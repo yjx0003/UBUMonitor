@@ -1,53 +1,109 @@
 //------------------------------------------Traducción-----------------------------------------------------------------
 // Contiene el texto a mostrar para los distintos elementos e idiomas
 var messages = {
-	btnLineas: {
-		es: "Lineas",
-		en: "Lines"
+	btnLineas : {
+		en: "Lines",
+		es: "Líneas",
+		ca: "Línies",
+		de: "Linien",
+		fr: "Lignes",
+		it: "Linee",
+		pt: "Lines",
 	},
-	btnRadar: {
+	btnRadar : {
+		en: "Radar",
 		es: "Radar",
-		en: "Radar"
+		ca: "Radar",
+		de: "Radar",
+		fr: "Radar",
+		it: "Radar",
+		pt: "Radar",
 	},
-	btnBoxPlot: {
+	btnBoxPlot : {
+		en: "General BoxPlot",
 		es: "BoxPlot General",
-		en: "General BoxPlot"
+		ca: "General Diagramacaja",
+		de: "Allgemein Boxplot",
+		fr: "Général Boxplot",
+		it: "Generale Boxplot",
+		pt: "Geral Boxplot",
 	},
-	btnBoxPlotGroup: {
+	btnBoxPlotGroup : {
+		en: "Group BoxPlot",
 		es: "BoxPlot Del Grupo",
-		en: "Group BoxPlot"
+		ca: "Grup Boxplot",
+		de: "Gruppe Boxplot",
+		fr: "Groupe Boxplot",
+		it: "Gruppo Boxplot",
+		pt: "Grupo Boxplot",
 	},
-	btnCalificaciones: {
-		es: "Calificaciones",
-		en: "Grades"
+	btnCalificaciones : {
+		en: "Qualification",
+		es: "Calificación",
+		ca: "Qualificació",
+		de: "Qualifikation",
+		fr: "Qualification",
+		it: "Qualificazione",
+		pt: "Qualificação",
 	},
-	btnStackedBar:{
-		es:"Barras Apiladas",
-		en:"Stacked Bar"
+	btnStackedBar : {
+		en: "Stacked Bar",
+		es: "De Barras Apiladas",
+		ca: "De Barres Apilades",
+		de: "Stacked Bar",
+		fr: "Bar Empilée",
+		it: "A Barre In Pila",
+		pt: "Bar Empilhados",
+
 	},
-	btnLegend: {
+	btnLegend : {
+		en: "Legend",
 		es: "Leyenda",
-		en: "Legend"
+		ca: "Llegenda",
+		de: "Legende",
+		fr: "Légende",
+		it: "Leggenda",
+		pt: "Lenda",
 	},
-	btnMean: {
+	btnMean : {
+		en: "General Mean",
 		es: "Media General",
-		en: "General Mean"
+		ca: "Mitjana General",
+		de: "Allgemein Mittlere",
+		fr: "General Mean",
+		it: "Generale Media",
+		pt: "Média Geral",
 	},
-	btnGroupMean: {
-		es: "Media Del Grupo",
-		en: "Group Mean"
+	btnGroupMean : {
+		en: "Group Mean",
+		es: "Grupo Media",
+		ca: "Grup Mitjana",
+		de: "Gruppe Mittlere",
+		fr: "Groupe Moyen",
+		it: "Gruppo Medio",
+		pt: "Grupo Média",
 	},
-	noradarText: {
-		es: "Selecciona al menos 3 actividades para mostrar el gráfico",
-		en: "Select at least 3 activities to show the chart"
+	noradarText : {
+		en: "Select at least 3 activities to show the chart",
+		es: "Seleccionar al menos 3 actividades para mostrar el gráfico",
+		ca: "Seleccionar almenys 3 activitats per mostrar el gràfic",
+		de: "Wählen Sie mindestens 3 Aktivitäten das Diagramm zeigen",
+		fr: "Sélectionnez au moins 3 activités pour montrer le tableau",
+		it: "Selezionare almeno 3 attività per mostrare il grafico",
+		pt: "Selecione pelo menos 3 atividades para mostrar o gráfico",
 	},
-	noGroupText: {
-		es: "Selecciona un grupo para mostrar el gráfico",
-		en: "Select a group to show the chart"
+	noGroupText : {
+		en: "Select a group to show the chart",
+		es: "Seleccionar un grupo para mostrar el gráfico",
+		ca: "Seleccionar un grup per mostrar el gràfic",
+		de: "Wählen Sie eine Gruppe um das Diagramm zu zeigen,",
+		fr: "Sélectionnez un groupe pour afficher le tableau",
+		it: "Selezionare un gruppo per visualizzare il grafico",
+		pt: "Selecione um grupo para mostrar o gráfico",
 	}
 };
 
-//Modifica el valor de los inputs segun el idioma pasado
+// Modifica el valor de los inputs segun el idioma pasado
 function getI18n(item, lang) {
 	document.getElementById(item).value = messages[item][lang];
 }
@@ -62,8 +118,10 @@ function setLanguage(lang) {
 	getI18n("btnLegend", lang);
 	getI18n("btnMean", lang);
 	getI18n("btnGroupMean", lang);
-	getI18n("btnStackedBar",lang);
+	getI18n("btnStackedBar", lang);
 	document.getElementById("noradarText").innerHTML = messages["noradarText"][lang];
 	document.getElementById("noGroupText").innerHTML = messages["noGroupText"][lang];
-	
+
 }
+
+

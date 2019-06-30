@@ -96,7 +96,7 @@ public class MainController implements Initializable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
 
-	private static final Image ERROR_ICON = new Image("/img/error.png");
+	private static final Image NONE_ICON = new Image("/img/manual.png");
 
 	private StackedBarDataSetComponent stackedBarDatasetComponent = StackedBarDataSetComponent.getInstance();
 
@@ -884,7 +884,7 @@ public class MainController implements Initializable {
 			path = AppInfo.IMG_DIR + item.getValue().getItemModule().getModName() + ".png";
 			item.setGraphic(new ImageView(new Image(path)));
 		} catch (Exception e) {
-			item.setGraphic(new ImageView(ERROR_ICON));
+			item.setGraphic(new ImageView(NONE_ICON));
 			LOGGER.error("No se ha podido cargar la imagen del elemento " + item + "en la ruta " + path + ") : {}", e);
 		}
 	}
@@ -1176,7 +1176,7 @@ public class MainController implements Initializable {
 		for (Group grupo : slcGroup.getItems()) {
 			if (grupo != null) {
 				tableData.append(",['" + I18n.get("chartlabel.tableGroupMean") + " "
-						+ grupo + "'");
+						+ escapeJavaScriptText(grupo.getGroupName()) + "'");
 				for (TreeItem<GradeItem> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
 					String grade = stats.getElementMean(stats.getGroupStats(grupo),
 							structTree.getValue());

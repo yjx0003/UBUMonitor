@@ -1,13 +1,63 @@
 package controllers.ubulogs.logtypes;
 
-import static model.ComponentEvent.get;
-import static model.Component.*;
+import static model.Component.ACTIVITY_REPORT;
+import static model.Component.ASSIGNMENT;
+import static model.Component.BOOK;
+import static model.Component.BOOK_PRINTING;
+import static model.Component.CHAT;
+import static model.Component.CHOICE;
+import static model.Component.COMMENTS;
+import static model.Component.COURSE_COMPLETION;
+import static model.Component.COURSE_PARTICIPATION;
+import static model.Component.DATABASE;
+import static model.Component.EVENT_MONITOR;
+import static model.Component.EXCEL_SPREADSHEET;
+import static model.Component.EXTERNAL_TOOL;
+import static model.Component.FEEDBACK;
+import static model.Component.FILE;
+import static model.Component.FILE_SUBMISSIONS;
+import static model.Component.FOLDER;
+import static model.Component.FORUM;
+import static model.Component.GLOSSARY;
+import static model.Component.GRADER_REPORT;
+import static model.Component.GUIA_DOCENTE;
+import static model.Component.HOTPOT_MODULE;
+import static model.Component.IMS_CONTENT_PACKAGE;
+import static model.Component.JOURNAL;
+import static model.Component.LESSON;
+import static model.Component.LIVE_LOGS;
+import static model.Component.LOGS;
+import static model.Component.ONLINE_TEXT_SUBMISSIONS;
+import static model.Component.OPENDOCUMENT_SPREADSHEET;
+import static model.Component.OUTCOMES_REPORT;
+import static model.Component.OVERVIEW_REPORT;
+import static model.Component.PAGE;
+import static model.Component.PLAIN_TEXT_FILE;
+import static model.Component.QUIZ;
+import static model.Component.RECYCLE_BIN;
+import static model.Component.SCORM_PACKAGE;
+import static model.Component.SINGLE_VIEW;
+import static model.Component.STATISTICS;
+import static model.Component.SUBMISSION_COMMENTS;
+import static model.Component.SURVEY;
+import static model.Component.SYSTEM;
+import static model.Component.TURNITIN_ASSIGNMENT_2;
+import static model.Component.URL;
+import static model.Component.USER_REPORT;
+import static model.Component.USER_TOURS;
+import static model.Component.WIKI;
+import static model.Component.WORKSHOP;
+import static model.Component.XML_FILE;
+
 import static model.Event.*;
 
+import static model.ComponentEvent.get;
 import java.util.HashMap;
 import java.util.Map;
 
+import model.Component;
 import model.ComponentEvent;
+import model.Event;
 
 public class LogTypes {
 	
@@ -299,9 +349,21 @@ public class LogTypes {
 
 	}
 
-	public static Map<ComponentEvent, ReferencesLog> getTypes() {
-		return TYPES;
+	/**
+	 * Devuelve la clase encargada de gestionar los numeros a partir del componente
+	 * y evento, si no existe esa combinacion de componente y event devuelve uno por
+	 * defecto que no hace nada.
+	 * 
+	 * @param component
+	 *            el componente del log
+	 * @param eventName
+	 *            evento del log
+	 * @return clase encargada de gestionar
+	 */
+	public static ReferencesLog getReferenceLog(Component component, Event eventName) {
+		return TYPES.getOrDefault(get(component, eventName), Default.getInstance());
 	}
+
 	
 	
 	private LogTypes() {

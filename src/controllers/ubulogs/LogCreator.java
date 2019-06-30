@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controllers.Controller;
+import controllers.ubulogs.logtypes.LogTypes;
 import controllers.ubulogs.logtypes.ReferencesLog;
 import model.Component;
 import model.Event;
@@ -218,7 +219,7 @@ public class LogCreator {
 		log.setOrigin(Origin.get(mapLog.get(LogCreator.ORIGIN)));
 		log.setIPAdress(mapLog.get(LogCreator.IP_ADRESS));
 
-		ReferencesLog referencesLog = ReferencesLog.getReferenceLog(component, event);
+		ReferencesLog referencesLog = LogTypes.getReferenceLog(component, event);
 
 		try {
 			referencesLog.setLogReferencesAttributes(log, ids);

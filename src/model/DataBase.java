@@ -21,9 +21,6 @@ import model.mod.ModuleType;
  */
 public class DataBase implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private Map<Integer, Role> roles;
 	private Map<Integer, Group> groups;

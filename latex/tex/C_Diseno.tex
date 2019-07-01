@@ -6,14 +6,14 @@ En este anexo se va a comentar los aspectos más relevantes del diseño de esta 
 
 \section{Diseño de datos}
 
-Toda la información que se almacena en Moodle es con bases de datos con un campo numérico de identificador único (\textit{ID}) para cada uno de los elementos (usuarios, cursos, módulos del curso). Para simular este efecto en Java se ha creado una clase que incluye varios HashMap para los elementos comentados anteriormente usando los identificadores de cada tipo como clave del HashMap tal y como se puede ver en la figura \ref{fig:database_java}. Está clase también es el encargado de instanciar cada uno de los tipos con el objetivo de tener instancias únicas por cada identificador.
+Toda la información que se almacena en Moodle es con bases de datos con un campo numérico de identificador único (\textit{ID}) para cada uno de los elementos (usuarios, cursos, módulos del curso). Para simular este efecto en Java se ha creado una clase que incluye varios HashMap para los elementos comentados anteriormente usando los identificadores de cada tipo como clave del HashMap tal y como se puede ver en la figura \ref{fig:database_java}. Está clase también es la encargada de instanciar cada uno de los tipos con el objetivo de tener instancias únicas para cada identificador.
 
 \imagen{database_java}{Simulación de base de datos.}
 
 
 \section{Diseño procedimental}
 
-En este apartado informa sobre las conexiones realizadas en la plataforma de Moodle durante la ejecución del producto. Comunicándose además de los servicios web de REST API, se inicia sesión también en la web para realizar acciones no disponibles como la descarga de los registros. Todas las peticiones HTTP y recibir las respuestas lo realiza librería jsoup.
+En este apartado informa sobre las conexiones realizadas en la plataforma de Moodle durante la ejecución del producto. Comunicándose con los servicios web de REST API, también se inicia sesión en la web para realizar acciones no disponibles como la descarga de los registros. Todas las peticiones HTTP y recibir las respuestas lo realiza librería jsoup.
 
 Estas comunicaciones lo dividiremos en dos partes:
 
@@ -106,7 +106,7 @@ Estos cambios se puede apreciar en la figura \ref{fig:comparacion_login}
 
 En la ventana de selección del curso se añadió información de las categorías del curso.
 
-Otra de las características fue la información de la fecha de la última vez que se ha actualizado los datos y la opción de actualizar estos datos.
+Otra de las características, fue la información de la fecha de la última vez que se ha actualizado los datos y la opción de actualizar estos datos.
 
 Las diferencias se puede ver en las  figuras \ref{fig:pantalla_ubugrades} y \ref{fig:pantalla_ubumonitor}.
 
@@ -125,7 +125,7 @@ Por una parte, en el listado de usuarios se han añadido las fotografías asocia
 En el calificador se añadieron imágenes de todos los módulos del curso y en un tamaño más grande en la figura \ref{fig:comparacion_grades}. 
 \imagenflotante{comparacion_grades}{Comparación del calificador.}
 
-Se añadieron varias pestañas para dividir las calificaciones de los registros y dentro de los registros se subdividen en Componentes y eventos (figura \ref{fig:lista_componentes_eventos}).
+Se añadieron varias pestañas para dividir las calificaciones de los registros y dentro de los registros se subdividen en componentes y de componentes-eventos (figura \ref{fig:lista_componentes_eventos}).
 
 \imagenflotante{lista_componentes_eventos}{Listado de componentes y de componentes-eventos.}
 

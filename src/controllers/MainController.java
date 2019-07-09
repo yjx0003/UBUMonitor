@@ -36,6 +36,7 @@ import com.sun.javafx.webkit.WebConsoleListener;
 import controllers.datasets.StackedBarDataSetComponent;
 import controllers.datasets.StackedBarDataSetComponentEvent;
 import controllers.ubulogs.GroupByAbstract;
+import export.CSVExport;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
@@ -46,6 +47,7 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -970,6 +972,24 @@ public class MainController implements Initializable {
 			errorWindow(I18n.get("error.savechart"), false);
 		}
 	}
+	
+	/**
+	 * Exporta todos los datos actuales en formato CSV.
+	 * 
+	 * @param actionEvent evento
+	 * @since 2.4.0.0
+	 */
+	public void exportCSV(ActionEvent actionEvent) {
+		LOGGER.info("Exportando ficheros CSV");
+		try {
+			CSVExport.run();
+			// Si todo va con éxito, informamos.
+			infoWindow(I18n.get("message.export_csv_success"), false);
+		} catch (Exception e) {
+			LOGGER.error("Error al exportar ficheros CSV.", e);
+			errorWindow(I18n.get("error.savecsvfiles"), false);
+		}
+	}
 
 	/**
 	 * Exporta todos los gráficos a un html.
@@ -1492,6 +1512,34 @@ public class MainController implements Initializable {
 
 		alert.setTitle(AppInfo.APPLICATION_NAME);
 		alert.setHeaderText("Error");
+		alert.initModality(Modality.APPLICATION_MODAL);
+		alert.initOwner(controller.getStage());
+		alert.getDialogPane().setContentText(mensaje);
+
+		if (exit) {
+			alert.getButtonTypes().setAll(ButtonType.CLOSE);
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.isPresent() && result.get() == ButtonType.CLOSE)
+				controller.getStage().close();
+		} else {
+			alert.showAndWait();
+		}
+
+	}
+	
+	/**
+	 * Muestra una ventana de información.
+	 * 
+	 * @param mensaje
+	 *            El mensaje que se quiere mostrar.
+	 * @param exit
+	 *            Indica si se quiere mostar el boton de salir o no.
+	 */
+	private void infoWindow(String mensaje, boolean exit) {
+		Alert alert = new Alert(AlertType.INFORMATION);
+
+		alert.setTitle(AppInfo.APPLICATION_NAME);
+		alert.setHeaderText("Information");
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.initOwner(controller.getStage());
 		alert.getDialogPane().setContentText(mensaje);

@@ -31,7 +31,7 @@ public class CSVExport {
 	 */
 	public static void run() {
 		DataBase dataBase = Controller.getInstance().getDataBase();
-		generateFile(new CSVEnrolledUser("enrollment_users", dataBase));
+		generateFile(new CSVEnrolledUser("enrolled_users", dataBase));
 		generateFile(new CSVCourseModule("course_modules", dataBase));
 		generateFile(new CSVLog("logs", dataBase));
 		generateFile(new CSVGrade("grades", dataBase));

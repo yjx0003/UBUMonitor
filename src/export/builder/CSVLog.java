@@ -23,8 +23,8 @@ public class CSVLog extends CSVBuilderAbstract {
 
 	/** Header. */
 	private static final String[] HEADER = new String[] { "Time", "Component", "EventName", "UserId", "AffectedUserId",
-			"CourseModule", "Origin", "IP", "Hour", "AmPm", "DayOfWeek", "DayOfMonth", "DayOfYear", "WeekOfYear",
-			"Month", "YearQuarter", "YearMonth", "YearWeek", "Year" };
+			"CourseModule", "Origin", "IP", "Hour", "AmPm", "DayOfWeek", "DayOfWeekName", "DayOfMonth", "DayOfYear", "WeekOfYear",
+			"Month", "MonthName", "YearQuarter", "YearMonth", "YearWeek", "Year" };
 
 	/**
 	 * Constructor.
@@ -48,19 +48,19 @@ public class CSVLog extends CSVBuilderAbstract {
 			courseModule = log.getCourseModule() != null ? Integer.toString(log.getCourseModule().getCmid()) : "";
 			IP = log.getIPAdress() != null ? log.getIPAdress().toString() : "";
 			// Add data
-			LOGGER.debug("Data line: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}",
+			LOGGER.debug("Data line: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}",
 					log.getTime().toLocalDateTime().toString(), log.getComponent().getName(),
 					log.getEventName().getName(), userId, affectedUserId, courseModule, log.getOrigin().toString(), IP,
-					Integer.toString(log.getHour()), log.getAmPm().toString(), log.getDayOfWeek().toString(),
+					Integer.toString(log.getHour()), log.getAmPm().toString(), log.getDayOfWeek().getValue(), log.getDayOfWeek().toString(),
 					Integer.toString(log.getDayOfMonth()), Integer.toString(log.getDayOfYear()),
-					Integer.toString(log.getWeekOfYear()), log.getMonth().toString(), log.getYearQuarter().toString(),
+					Integer.toString(log.getWeekOfYear()), log.getMonth().getValue(), log.getMonth().toString(), log.getYearQuarter().toString(),
 					log.getYearMonth().toString(), log.getYearWeek().toString(), log.getYear().toString());
 
 			getData().add(new String[] { log.getTime().toLocalDateTime().toString(), log.getComponent().getName(),
 					log.getEventName().getName(), userId, affectedUserId, courseModule, log.getOrigin().toString(), IP,
-					Integer.toString(log.getHour()), log.getAmPm().toString(), log.getDayOfWeek().toString(),
+					Integer.toString(log.getHour()), log.getAmPm().toString(), Integer.toString(log.getDayOfWeek().getValue()), log.getDayOfWeek().toString(),
 					Integer.toString(log.getDayOfMonth()), Integer.toString(log.getDayOfYear()),
-					Integer.toString(log.getWeekOfYear()), log.getMonth().toString(), log.getYearQuarter().toString(),
+					Integer.toString(log.getWeekOfYear()), Integer.toString(log.getMonth().getValue()), log.getMonth().toString(), log.getYearQuarter().toString(),
 					log.getYearMonth().toString(), log.getYearWeek().toString(), log.getYear().toString() });
 		}
 	}

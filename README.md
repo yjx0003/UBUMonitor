@@ -47,6 +47,9 @@ Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), d
   * Versión: **1.11.3**
   * [Github](https://github.com/jhy/jsoup)
   * [Maven Repository](https://mvnrepository.com/artifact/org.jsoup/jsoup/1.11.3)
+* [OpenCSV](http://opencsv.sourceforge.net/)
+  * [GitHub](https://github.com/jlawrie/opencsv)
+  * [Maven Repository](https://mvnrepository.com/artifact/com.opencsv/opencsv/4.6)
 * [SLF4J API Module](https://www.slf4j.org/)
   * Versión: **1.7.26**
   * [Github](https://github.com/qos-ch/slf4j)

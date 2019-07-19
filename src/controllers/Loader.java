@@ -43,6 +43,11 @@ public class Loader extends Application {
 			LOGGER.error("Error al iniciar controller: {}", e);
 		}
 	}
+	
+	@Override
+	public void stop() {
+		Controller.getInstance().cancelTimer();
+	}
 
 	public static void initialize() {
 		launch();

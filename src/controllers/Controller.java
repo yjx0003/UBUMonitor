@@ -34,6 +34,7 @@ public class Controller {
 			.ofLocalizedDateTime(FormatStyle.SHORT);
 
 	private Languages selectedLanguage;
+	private Timer timer;
 
 	private DataBase dataBase;
 
@@ -216,12 +217,12 @@ public class Controller {
 					Jsoup.connect(host.toString()).cookies(getCookies()).execute();
 					LOGGER.info("Ejecutado el temporizador yendo a la pagina principal.");
 				} catch (IOException e) {
-					LOGGER.error("Fallo en la conexion del temporizador con Moodle");
+					LOGGER.error("Fallo en la conexion del temporizador con Moodle", e);
 				}
 			}
 
 		};
-		Timer timer = new Timer();
+		timer = new Timer();
 		timer.schedule(timerTask, 1800000, 1800000); // Cada 30 minutos se ejecuta
 	}
 
@@ -312,6 +313,21 @@ public class Controller {
 	 */
 	public void setCookies(Map<String, String> cookies) {
 		this.cookies = cookies;
+	}
+
+	public Timer getTimer() {
+		return timer;
+	}
+
+	public void setTimer(Timer timer) {
+		this.timer = timer;
+	}
+
+	public void cancelTimer() {
+		if (timer != null) {
+			timer.cancel();
+			LOGGER.debug("Temporizador apagado.");
+		}
 	}
 
 }

@@ -3,6 +3,8 @@ package export;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,47 +13,49 @@ import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVWriter;
 
+import controllers.AppInfo;
 import controllers.Controller;
 import model.DataBase;
 
 /**
  * Abstract builder.
  * 
- * @author Raúl Marticorena
- *  * @since 2.4.0.0
+ * @author Raúl Marticorena * @since 2.4.0.0
  */
 public abstract class CSVBuilderAbstract implements CSVBuilder {
-	
+
 	/** Export path. **/
-	static final String PATH;
-	
+	static final Path PATH;
+
+	/** File extensio. */
+	static final String EXTENSION = ".csv";
+
 	// Build the path if not exists.
 	static {
-		PATH = "./export/" + Controller.getInstance().getUser().getFullName() + "/"
-				+ Controller.getInstance().getActualCourse().getFullName();
-		File directory = new File(PATH);
+		PATH = Paths.get (AppInfo.EXPORT_DIR,Controller.getInstance().getUser().getFullName()+"-"+Controller.getInstance().getUser().getId(),
+				Controller.getInstance().getActualCourse().getFullName()+"-"+Controller.getInstance().getActualCourse().getId());
+		File directory = PATH.toFile();
 		if (!directory.isDirectory()) {
 			directory.mkdirs();
 		}
 	}
-	
-	
+
 	/** Logger. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(CSVBuilderAbstract.class);
 
 	/** File name. */
 	private String name;
-	
+
 	/** Header. */
 	private String[] header;
-	
+
 	/** Body data. */
-	private List<String[]> data;	
+	private List<String[]> data;
 
 	/** Database. */
 	private DataBase dataBase;
-	
-	/** 
+
+	/**
 	 * Gets header.
 	 * 
 	 * @return header
@@ -63,7 +67,8 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	/**
 	 * Sets header.
 	 * 
-	 * @param header header
+	 * @param header
+	 *            header
 	 */
 	protected void setHeader(String[] header) {
 		this.header = header;
@@ -81,14 +86,14 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	/**
 	 * Sets datata.
 	 * 
-	 * @param data data
+	 * @param data
+	 *            data
 	 */
 	protected void setData(List<String[]> data) {
 		this.data = data;
 	}
 
-	
-	/** 
+	/**
 	 * Gets database.
 	 * 
 	 * @return database
@@ -98,9 +103,10 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	}
 
 	/**
-	 * Sets database. 
+	 * Sets database.
 	 * 
-	 * @param dataBase database
+	 * @param dataBase
+	 *            database
 	 */
 	private void setDataBase(DataBase dataBase) {
 		this.dataBase = dataBase;
@@ -109,9 +115,12 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	/**
 	 * Constructor.
 	 * 
-	 * @param name name
-	 * @param dataBase dataBase
-	 * @param header header
+	 * @param name
+	 *            name
+	 * @param dataBase
+	 *            dataBase
+	 * @param header
+	 *            header
 	 */
 	public CSVBuilderAbstract(String name, DataBase dataBase, String[] header) {
 		setName(name);
@@ -132,24 +141,26 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	/**
 	 * Sets file name.
 	 * 
-	 * @param name file name
+	 * @param name
+	 *            file name
 	 */
 	private void setName(String name) {
 		this.name = name;
-	}	
-	
+	}
+
 	public String getFileName() {
 		return name + EXTENSION;
 	}
 
 	/**
-	 * Writes the data to a csv file. Using OpenCSV (see http://http://opencsv.sourceforge.net/).
+	 * Writes the data to a csv file. Using OpenCSV (see
+	 * http://http://opencsv.sourceforge.net/).
 	 */
 	@Override
 	public void writeCSV() {
 		final CSVWriter writer;
 		try {
-			writer = new CSVWriter(new FileWriter(PATH + "/" +  getFileName()));
+			writer = new CSVWriter(new FileWriter(PATH.resolve(getFileName()).toFile()));
 			writer.writeAll(getData());
 			writer.close();
 		} catch (IOException e) {
@@ -157,7 +168,7 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 			throw new IllegalStateException("Error exporting CSV file" + getFileName(), e);
 		}
 	}
-	
+
 	/**
 	 * Builds header. Add the header to the data as first row.
 	 */

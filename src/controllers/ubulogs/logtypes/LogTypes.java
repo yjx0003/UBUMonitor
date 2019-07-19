@@ -132,7 +132,7 @@ public class LogTypes {
 		TYPES.put(get(EXTERNAL_TOOL, COURSE_MODULE_VIEWED), UserCmid.getInstance());
 
 		TYPES.put(get(FEEDBACK, COURSE_MODULE_INSTANCE_LIST_VIEWED), UserCourse.getInstance());
-		TYPES.put(get(FEEDBACK, COURSE_MODULE_VIEWED), Default.getInstance());
+		TYPES.put(get(FEEDBACK, COURSE_MODULE_VIEWED), UserCmid.getInstance());
 		TYPES.put(get(FEEDBACK, RESPONSE_SUBMITTED), UserCmid.getInstance()); 
 
 		TYPES.put(get(FILE, COURSE_MODULE_VIEWED), UserCmid.getInstance());

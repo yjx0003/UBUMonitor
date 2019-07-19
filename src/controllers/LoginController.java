@@ -110,8 +110,6 @@ public class LoginController implements Initializable {
 					try {
 						Image countryImage = new Image(AppInfo.IMG_FLAGS + item.getCountry() + ".png");
 						ImageView imageView = new ImageView(countryImage);
-						imageView.setFitHeight(16);
-						imageView.setFitWidth(24);
 						setGraphic(imageView);
 					} catch (Exception e) {
 						LOGGER.warn("No disponible la foto de bandera para: {}", item);

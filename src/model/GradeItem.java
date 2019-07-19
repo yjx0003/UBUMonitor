@@ -32,6 +32,7 @@ public class GradeItem implements Serializable {
 	private CourseModule module;
 	private double weightraw;
 	private Map<EnrolledUser, Double> graderaw;
+	private Map<EnrolledUser, Double> percentages;
 	private double grademin;
 	private double grademax;
 
@@ -46,6 +47,7 @@ public class GradeItem implements Serializable {
 	public GradeItem() {
 		children = new ArrayList<>();
 		graderaw = new HashMap<>();
+		percentages= new HashMap<>();
 	}
 
 	/**
@@ -289,6 +291,11 @@ public class GradeItem implements Serializable {
 		graderaw.put(enrolledUser, grade);
 
 	}
+	
+
+	public void addUserPercentage(EnrolledUser enrolledUser, double percentage) {
+		percentages.put(enrolledUser, percentage);
+	}
 
 	/**
 	 * Devuelve el tipo de modulo.
@@ -317,6 +324,8 @@ public class GradeItem implements Serializable {
 	public Collection<Double> getEnrolledUserGrades() {
 		return graderaw.values();
 	}
+	
+	
 
 	/**
 	 * Devuelve la nota de un usuaro o NaN si no existe
@@ -327,6 +336,15 @@ public class GradeItem implements Serializable {
 	 */
 	public double getEnrolledUserGrade(EnrolledUser user) {
 		return graderaw.getOrDefault(user, Double.NaN);
+	}
+	
+	/**
+	 * Devuelve el porcentaje del usuario
+	 * @param user usuario
+	 * @return el porcentaje o NaN si no existe.
+	 */
+	public double getEnrolledUserPercentage(EnrolledUser user) {
+		return percentages.getOrDefault(user, Double.NaN);
 	}
 
 	/**
@@ -379,5 +397,6 @@ public class GradeItem implements Serializable {
 	public String toString() {
 		return this.itemname;
 	}
+
 
 }

@@ -30,10 +30,13 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	/** File extensio. */
 	static final String EXTENSION = ".csv";
 
+	private static final Controller CONTROLLER = Controller.getInstance();
 	// Build the path if not exists.
 	static {
-		PATH = Paths.get (AppInfo.EXPORT_DIR,Controller.getInstance().getUser().getFullName()+"-"+Controller.getInstance().getUser().getId(),
-				Controller.getInstance().getActualCourse().getFullName()+"-"+Controller.getInstance().getActualCourse().getId());
+		
+		PATH = Paths.get(AppInfo.EXPORT_DIR, CONTROLLER.getUrlHost().getHost(),
+				CONTROLLER.getUser().getFullName() + "-" + CONTROLLER.getUser().getId(),
+				CONTROLLER.getActualCourse() + "-"+ CONTROLLER.getActualCourse().getId());
 		File directory = PATH.toFile();
 		if (!directory.isDirectory()) {
 			directory.mkdirs();

@@ -220,7 +220,6 @@ public class MainController implements Initializable {
 
 			);
 
-
 			initLogOptionsFilter();
 
 			initTabGrades();
@@ -505,29 +504,27 @@ public class MainController implements Initializable {
 		LocalDate lastLogDate = controller.getActualCourse().getLogs().getLastDatetime().toLocalDate();
 		datePickerStart.setValue(lastLogDate.minusWeeks(1));
 		datePickerEnd.setValue(lastLogDate);
-		
+
 		datePickerStart.setOnAction(event -> applyFilterLogs());
 		datePickerEnd.setOnAction(event -> applyFilterLogs());
 		dateStart = datePickerStart.getValue();
 		dateEnd = datePickerEnd.getValue();
-		
+
 		datePickerStart.setDayCellFactory(picker -> new DateCell() {
 			@Override
-	        public void updateItem(LocalDate date, boolean empty) {
-	            super.updateItem(date, empty);
-	            setDisable(empty || date.isAfter(dateEnd) || date.isAfter(LocalDate.now()));
-	        }
-	    });
-		
+			public void updateItem(LocalDate date, boolean empty) {
+				super.updateItem(date, empty);
+				setDisable(empty || date.isAfter(dateEnd) || date.isAfter(LocalDate.now()));
+			}
+		});
+
 		datePickerEnd.setDayCellFactory(picker -> new DateCell() {
 			@Override
-	        public void updateItem(LocalDate date, boolean empty) {
-	            super.updateItem(date, empty);
-	            setDisable(empty || date.isBefore(dateStart) ||date.isAfter(LocalDate.now()));
-	        }
-	    });
-		
-
+			public void updateItem(LocalDate date, boolean empty) {
+				super.updateItem(date, empty);
+				setDisable(empty || date.isBefore(dateStart) || date.isAfter(LocalDate.now()));
+			}
+		});
 
 		optionsUbuLogs.setVisible(false);
 		optionsUbuLogs.setManaged(false);
@@ -800,7 +797,6 @@ public class MainController implements Initializable {
 		LocalDate start = datePickerStart.getValue();
 		LocalDate end = datePickerEnd.getValue();
 
-
 		selectedChoiceBoxDate = choiceBoxDate.getSelectionModel().getSelectedItem();
 		dateStart = start;
 		dateEnd = end;
@@ -819,7 +815,7 @@ public class MainController implements Initializable {
 		String textField = tfdParticipants.getText().toLowerCase();
 
 		filteredEnrolledList.setPredicate(
-				e -> e.inRole(rol) && e.inGroup(group) &&
+				e -> (rol == null || rol.contains(e)) && (group == null || group.contains(e)) &&
 						(textField.isEmpty() || e.getFullName().toLowerCase().contains(textField)));
 
 		// Actualizamos los graficos
@@ -1240,7 +1236,7 @@ public class MainController implements Initializable {
 								labels.append(",'" + escapeJavaScriptText(structTree.getValue().toString()) + "'");
 							}
 						}
-						calculatedGrade = Math.round(actualLine.adjustTo10(actualUser) * 100) / (double) 100;
+						calculatedGrade = Math.round(actualLine.getEnrolledUserPercentage(actualUser)*10)/100.0;
 
 						if (firstGrade) {
 							dataSet.append(calculatedGrade);
@@ -1443,7 +1439,7 @@ public class MainController implements Initializable {
 			}
 		} catch (JSException e) {
 			LOGGER.error("Error al generar los gráficos.", e);
-			errorWindow(I18n.get("error.generateCharts"), true);
+			errorWindow(I18n.get("error.generateCharts"), false);
 		}
 	}
 

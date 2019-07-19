@@ -171,7 +171,9 @@ public class WelcomeController implements Initializable {
 			} else {
 				DataBase copia = new DataBase();
 				controller.setDataBase(copia);
-				controller.setActualCourse(copia.getCourses().getById(selectedCourse.getId()));
+				Course copyCourse=copia.getCourses().getById(selectedCourse.getId());
+				copyCourse.setCourseCategory(selectedCourse.getCourseCategory());
+				controller.setActualCourse(copyCourse);
 				isBBDDLoaded = true;
 			}
 			downloadData();

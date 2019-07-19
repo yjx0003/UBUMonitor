@@ -181,7 +181,8 @@ public class Controller {
 	}
 
 	/**
-	 * Intenta buscar el token de acceso a la REST API de moodle e iniciar sesion en la pagina de moodle.
+	 * Intenta buscar el token de acceso a la REST API de moodle e iniciar sesion en
+	 * la pagina de moodle.
 	 * 
 	 * @param host
 	 *            servidor moodle
@@ -193,9 +194,9 @@ public class Controller {
 	 *             si no ha podido conectarse o la contraseña es erronea
 	 */
 	public void tryLogin(String host, String username, String password) throws IOException {
-		
+
 		URL hostURL = new URL(host);
-		
+
 		WebService.initialize(hostURL.toString(), username, password);
 		cookies = loginWebScraping(hostURL.toString(), username, password);
 		setURLHost(hostURL);
@@ -204,11 +205,11 @@ public class Controller {
 		setPassword(password);
 
 		initTimer();
-		
+
 	}
 
 	private void initTimer() {
-		TimerTask timerTask	=new TimerTask() {
+		TimerTask timerTask = new TimerTask() {
 			@Override
 			public void run() {
 				try {
@@ -218,10 +219,10 @@ public class Controller {
 					LOGGER.error("Fallo en la conexion del temporizador con Moodle");
 				}
 			}
-			
+
 		};
-		Timer timer =new Timer();
-		timer.schedule(timerTask,1800000); // Cada 30 minutos se ejecuta
+		Timer timer = new Timer();
+		timer.schedule(timerTask, 1800000, 1800000); // Cada 30 minutos se ejecuta
 	}
 
 	/**

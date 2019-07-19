@@ -10,8 +10,7 @@ import model.DataBase;
  */
 public interface CSVBuilder {
 	
-	/** File extensio. */
-	static final String EXTENSION = ".csv";
+
 
 	/**
 	 * Builds the header.

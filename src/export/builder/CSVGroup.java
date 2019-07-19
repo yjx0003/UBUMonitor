@@ -20,7 +20,7 @@ import model.Group;
 public class CSVGroup extends CSVBuilderAbstract {
 
 	/** Logger. */
-	private static final Logger LOGGER = LoggerFactory.getLogger(CSVCourseModule.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CSVGroup.class);
 
 	/** Header. */
 	private static final String[] HEADER = new String[] { "GroupId", "Name", "Description", "UserId", "FullName" };
@@ -37,16 +37,19 @@ public class CSVGroup extends CSVBuilderAbstract {
 
 	@Override
 	public void buildBody() {
-		Collection<Group> groups = getDataBase().getGroups().values();
+		Collection<Group> groups = getDataBase().getGroups().getMap().values();
 		// Load data
 		for (Group group : groups) {
-			Stream<EnrolledUser> users = group.getEnrolledUsers().stream().filter(user -> user.getFullName() != null)
-					.sorted(compareByFullName);
+			Stream<EnrolledUser> users = group.getEnrolledUsers().stream()
+					.sorted(EnrolledUser.NAME_COMPARATOR);
 			for (EnrolledUser enrollmentUser : (Iterable<EnrolledUser>) users::iterator) {
 				LOGGER.debug("Data line: {}, {}, {}, {}, {}", group.getGroupId(), group.getGroupName(), group.getDescription(),
 						enrollmentUser.getId(), enrollmentUser.getFullName());
-				getData().add(new String[] { Integer.toString(group.getGroupId()), group.getGroupName(),
-						group.getDescription(), Integer.toString(enrollmentUser.getId()),
+				getData().add(new String[] {
+						Integer.toString(group.getGroupId()),
+						group.getGroupName(),
+						group.getDescription(),
+						Integer.toString(enrollmentUser.getId()),
 						enrollmentUser.getFullName() });
 			}
 		}

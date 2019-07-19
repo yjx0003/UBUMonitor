@@ -37,7 +37,6 @@ import controllers.datasets.StackedBarDataSetComponent;
 import controllers.datasets.StackedBarDataSetComponentEvent;
 import controllers.ubulogs.GroupByAbstract;
 import export.CSVExport;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
@@ -47,14 +46,13 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -80,9 +78,9 @@ import model.ComponentEvent;
 import model.EnrolledUser;
 import model.GradeItem;
 import model.Group;
+import model.ModuleType;
 import model.Role;
 import model.Stats;
-import model.mod.ModuleType;
 import netscape.javascript.JSException;
 
 /**
@@ -186,9 +184,6 @@ public class MainController implements Initializable {
 	private LocalDate dateEnd;
 
 	@FXML
-	private Button filterLogButton;
-
-	@FXML
 	private ListView<Component> listViewComponents;
 
 	@FXML
@@ -225,11 +220,6 @@ public class MainController implements Initializable {
 
 			);
 
-			// Coloca el divider a la izquierda al redimensionar la ventana
-			ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) -> splitPane
-					.setDividerPositions(0);
-			controller.getStage().widthProperty().addListener(stageSizeListener);
-			controller.getStage().heightProperty().addListener(stageSizeListener);
 
 			initLogOptionsFilter();
 
@@ -250,7 +240,7 @@ public class MainController implements Initializable {
 					+ controller.getActualCourse().getFullName());
 
 			// Mostramos Host actual
-			lblActualHost.setText(I18n.get("label.host") + " " + controller.getHost());
+			lblActualHost.setText(I18n.get("label.host") + " " + controller.getUrlHost());
 		} catch (Exception e) {
 			LOGGER.error("Error en la inicialización.", e);
 		}
@@ -492,7 +482,7 @@ public class MainController implements Initializable {
 		selectedChoiceBoxDate = choiceBoxDate.getValue();
 
 		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> {
-			applyFilterLogs(null);
+			applyFilterLogs();
 			boolean useDatePicker = newValue.useDatePicker();
 			datePickerStart.setDisable(!useDatePicker);
 			datePickerEnd.setDisable(!useDatePicker);
@@ -515,19 +505,29 @@ public class MainController implements Initializable {
 		LocalDate lastLogDate = controller.getActualCourse().getLogs().getLastDatetime().toLocalDate();
 		datePickerStart.setValue(lastLogDate.minusWeeks(1));
 		datePickerEnd.setValue(lastLogDate);
-
+		
+		datePickerStart.setOnAction(event -> applyFilterLogs());
+		datePickerEnd.setOnAction(event -> applyFilterLogs());
 		dateStart = datePickerStart.getValue();
 		dateEnd = datePickerEnd.getValue();
+		
+		datePickerStart.setDayCellFactory(picker -> new DateCell() {
+			@Override
+	        public void updateItem(LocalDate date, boolean empty) {
+	            super.updateItem(date, empty);
+	            setDisable(empty || date.isAfter(dateEnd) || date.isAfter(LocalDate.now()));
+	        }
+	    });
+		
+		datePickerEnd.setDayCellFactory(picker -> new DateCell() {
+			@Override
+	        public void updateItem(LocalDate date, boolean empty) {
+	            super.updateItem(date, empty);
+	            setDisable(empty || date.isBefore(dateStart) ||date.isAfter(LocalDate.now()));
+	        }
+	    });
+		
 
-		datePickerStart.valueProperty()
-				.addListener((ov, oldValue, newValue) -> enableFilterLogButton(dateStart, newValue, dateEnd,
-						datePickerEnd.getValue()));
-
-		datePickerEnd.valueProperty()
-				.addListener((ov, oldValue, newValue) -> enableFilterLogButton(dateStart, datePickerStart.getValue(),
-						dateEnd, newValue));
-
-		filterLogButton.setDisable(true);
 
 		optionsUbuLogs.setVisible(false);
 		optionsUbuLogs.setManaged(false);
@@ -543,26 +543,6 @@ public class MainController implements Initializable {
 	private void updateMaxScale(long value) {
 
 		webViewChartsEngine.executeScript("changeYMaxStackedBar(" + value + ")");
-
-	}
-
-	/**
-	 * Habilita o deshabilita el boton de filtrar por fechas en funcion de si es
-	 * igual que la fecha anterior.
-	 * 
-	 * @param dateStartOld
-	 *            fecha inicio antiguo
-	 * @param dateStartNew
-	 *            fecha inico nuevo
-	 * @param dateEndOld
-	 *            fecha de fin antiguo
-	 * @param dateEndNew
-	 *            fecha de fin nuevo
-	 */
-	private void enableFilterLogButton(
-			LocalDate dateStartOld, LocalDate dateStartNew, LocalDate dateEndOld, LocalDate dateEndNew) {
-
-		filterLogButton.setDisable(dateStartOld.equals(dateStartNew) && dateEndOld.equals(dateEndNew));
 
 	}
 
@@ -725,7 +705,7 @@ public class MainController implements Initializable {
 		String stackedbardataset = stackedBarDatasetComponent.createData(listParticipants.getItems(),
 				listParticipants.getSelectionModel().getSelectedItems(),
 				listViewComponents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
-		LOGGER.info("Dataset para el stacked bar de componentes solo en JS: {}" , stackedbardataset);
+		LOGGER.info("Dataset para el stacked bar de componentes solo en JS: {}", stackedbardataset);
 		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
 	}
 
@@ -815,18 +795,12 @@ public class MainController implements Initializable {
 	 * @param event
 	 *            evento
 	 */
-	@FXML
-	public void applyFilterLogs(ActionEvent event) {
+	public void applyFilterLogs() {
 
 		LocalDate start = datePickerStart.getValue();
 		LocalDate end = datePickerEnd.getValue();
 
-		if (start == null || end == null || end.isBefore(start)) {
-			errorWindow("La fecha de fin es anterior a la fecha de inicio.", false);
-			return;
-		}
 
-		filterLogButton.setDisable(true);
 		selectedChoiceBoxDate = choiceBoxDate.getSelectionModel().getSelectedItem();
 		dateStart = start;
 		dateEnd = end;
@@ -887,7 +861,7 @@ public class MainController implements Initializable {
 			item.setGraphic(new ImageView(new Image(path)));
 		} catch (Exception e) {
 			item.setGraphic(new ImageView(NONE_ICON));
-			LOGGER.error("No se ha podido cargar la imagen del elemento " + item + "en la ruta " + path + ") : {}", e);
+			LOGGER.warn("No se ha podido cargar la imagen del elemento " + item + "en la ruta " + path + ") : {}", e);
 		}
 	}
 
@@ -972,11 +946,12 @@ public class MainController implements Initializable {
 			errorWindow(I18n.get("error.savechart"), false);
 		}
 	}
-	
+
 	/**
 	 * Exporta todos los datos actuales en formato CSV.
 	 * 
-	 * @param actionEvent evento
+	 * @param actionEvent
+	 *            evento
 	 * @since 2.4.0.0
 	 */
 	public void exportCSV(ActionEvent actionEvent) {
@@ -1102,7 +1077,9 @@ public class MainController implements Initializable {
 	 */
 	public void aboutApp(ActionEvent actionEvent) {
 		try {
-			Desktop.getDesktop().browse(new URL(AppInfo.GITHUB).toURI());
+			if (Desktop.isDesktopSupported()) {
+				Desktop.getDesktop().browse(new URL(AppInfo.GITHUB).toURI());
+			}
 		} catch (IOException | URISyntaxException e) {
 			LOGGER.error("Error al abir la pagina aboutApp: {}", e);
 		}
@@ -1526,7 +1503,7 @@ public class MainController implements Initializable {
 		}
 
 	}
-	
+
 	/**
 	 * Muestra una ventana de información.
 	 * 

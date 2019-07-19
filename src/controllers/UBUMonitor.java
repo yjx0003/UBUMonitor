@@ -13,6 +13,6 @@ public class UBUMonitor {
 	public static void main(String[] args) {
 		// https://www.mkyong.com/logging/logback-set-log-file-name-programmatically/
 		System.setProperty("logfile.name", AppInfo.LOGGER_FILE_APPENDER);
-		Loader.init(args);
+		Loader.initialize();
 	}
 }

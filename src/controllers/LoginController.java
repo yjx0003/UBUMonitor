@@ -6,7 +6,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Comparator;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
@@ -27,12 +29,16 @@ import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import model.MoodleUser;
 
 /**
@@ -58,7 +64,7 @@ public class LoginController implements Initializable {
 	private TextField txtHost;
 
 	@FXML
-	private ChoiceBox<Languages> languageSelector;
+	private ComboBox<Languages> languageSelector;
 
 	@FXML
 	private CheckBox chkSaveUsername;
@@ -84,7 +90,42 @@ public class LoginController implements Initializable {
 			}
 		});
 
+		initLanguagesList();
+	}
+
+	/**
+	 * Initialize languages list choice box from Languages enum class.
+	 */
+	private void initLanguagesList() {
+
+		Callback<ListView<Languages>, ListCell<Languages>> listCell = callback -> new ListCell<Languages>() {
+			@Override
+			protected void updateItem(Languages item, boolean empty) {
+				super.updateItem(item, empty);
+				if (item == null || empty) {
+					setGraphic(null);
+					setText(null);
+				} else {
+					setText(item.getDisplayLanguage());
+					try {
+						Image countryImage = new Image(AppInfo.IMG_FLAGS + item.getCountry() + ".png");
+						ImageView imageView = new ImageView(countryImage);
+						imageView.setFitHeight(16);
+						imageView.setFitWidth(24);
+						setGraphic(imageView);
+					} catch (Exception e) {
+						LOGGER.warn("No disponible la foto de bandera para: {}", item);
+						setGraphic(null);
+					}
+
+				}
+			}
+		};
+		languageSelector.setCellFactory(listCell);
+		languageSelector.setButtonCell(listCell.call(null));
+
 		ObservableList<Languages> languages = FXCollections.observableArrayList(Languages.values());
+		languages.sort(Comparator.comparing(Languages::getDisplayLanguage, String.CASE_INSENSITIVE_ORDER));
 		languageSelector.setItems(languages);
 		languageSelector.setValue(controller.getSelectedLanguage());
 
@@ -97,6 +138,7 @@ public class LoginController implements Initializable {
 			LOGGER.info("[Bienvenido a " + AppInfo.APPLICATION_NAME + "]");
 			changeScene(getClass().getResource("/view/Login.fxml"));
 		});
+
 	}
 
 	/**
@@ -223,6 +265,9 @@ public class LoginController implements Initializable {
 
 					controller.tryLogin(txtHost.getText(), txtUsername.getText(), txtPassword.getText());
 
+				} catch (MalformedURLException e) {
+					LOGGER.error("URL mal formada. ¿Has añadido protocolo http(s)?", e);
+					throw new IllegalArgumentException(I18n.get("error.malformedurl"));
 				} catch (IOException e) {
 					LOGGER.error("No se ha podido conectar con el host.", e);
 					throw new IllegalArgumentException(I18n.get("error.host"));
@@ -230,9 +275,6 @@ public class LoginController implements Initializable {
 					LOGGER.error("Usuario y/o contraseña incorrectos", e);
 					throw new IllegalArgumentException(I18n.get("error.login"));
 
-				} catch (IllegalArgumentException e) {
-					LOGGER.error("URL mal formada. ¿Has añadido protocolo http(s)?", e);
-					throw new IllegalArgumentException(I18n.get("error.malformedurl"));
 				}
 
 				try {

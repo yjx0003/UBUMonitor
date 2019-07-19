@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import controllers.ubulogs.TypeTimes;
 import model.Component;
 import model.Event;
-import model.mod.ModuleType;
+import model.ModuleType;
 
 /**
  * Clase encargada de traducir los elementos del resource bundle.

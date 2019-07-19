@@ -40,28 +40,47 @@ public class CSVLog extends CSVBuilderAbstract {
 	public void buildBody() {
 		List<LogLine> logs = Controller.getInstance().getActualCourse().getLogs().getList();
 		// Load data
-		String userId, affectedUserId, courseModule, IP;
+		String userId;
+		String affectedUserId;
+		String courseModule;
+		String ip;
+		
 		for (LogLine log : logs) {
 			// Preprocess data
 			userId = log.getUser() != null ? Integer.toString(log.getUser().getId()) : "";
 			affectedUserId = log.getAffectedUser() != null ? Integer.toString(log.getAffectedUser().getId()) : "";
 			courseModule = log.getCourseModule() != null ? Integer.toString(log.getCourseModule().getCmid()) : "";
-			IP = log.getIPAdress() != null ? log.getIPAdress().toString() : "";
+			ip = log.getIPAdress() != null ? log.getIPAdress() : "";
 			// Add data
 			LOGGER.debug("Data line: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}",
-					log.getTime().toLocalDateTime().toString(), log.getComponent().getName(),
-					log.getEventName().getName(), userId, affectedUserId, courseModule, log.getOrigin().toString(), IP,
-					Integer.toString(log.getHour()), log.getAmPm().toString(), log.getDayOfWeek().getValue(), log.getDayOfWeek().toString(),
-					Integer.toString(log.getDayOfMonth()), Integer.toString(log.getDayOfYear()),
-					Integer.toString(log.getWeekOfYear()), log.getMonth().getValue(), log.getMonth().toString(), log.getYearQuarter().toString(),
-					log.getYearMonth().toString(), log.getYearWeek().toString(), log.getYear().toString());
+					log.getTime().toLocalDateTime(), log.getComponent().getName(),
+					log.getEventName().getName(), userId, affectedUserId, courseModule, log.getOrigin(), ip,
+					log.getHour(), log.getAmPm(), log.getDayOfWeek().getValue(), log.getDayOfWeek(),
+					log.getDayOfMonth(), log.getDayOfYear(),
+					log.getWeekOfYear(), log.getMonth().getValue(), log.getMonth(), log.getYearQuarter(),
+					log.getYearMonth(), log.getYearWeek(), log.getYear());
 
-			getData().add(new String[] { log.getTime().toLocalDateTime().toString(), log.getComponent().getName(),
-					log.getEventName().getName(), userId, affectedUserId, courseModule, log.getOrigin().toString(), IP,
-					Integer.toString(log.getHour()), log.getAmPm().toString(), Integer.toString(log.getDayOfWeek().getValue()), log.getDayOfWeek().toString(),
-					Integer.toString(log.getDayOfMonth()), Integer.toString(log.getDayOfYear()),
-					Integer.toString(log.getWeekOfYear()), Integer.toString(log.getMonth().getValue()), log.getMonth().toString(), log.getYearQuarter().toString(),
-					log.getYearMonth().toString(), log.getYearWeek().toString(), log.getYear().toString() });
+			getData().add(new String[] { log.getTime().toLocalDateTime().toString(),
+					log.getComponent().getName(),
+					log.getEventName().getName(), 
+					userId,
+					affectedUserId,
+					courseModule,
+					log.getOrigin().toString(),
+					ip,
+					Integer.toString(log.getHour()),
+					log.getAmPm().toString(),
+					Integer.toString(log.getDayOfWeek().getValue()),
+					log.getDayOfWeek().toString(),
+					Integer.toString(log.getDayOfMonth()),
+					Integer.toString(log.getDayOfYear()),
+					Integer.toString(log.getWeekOfYear()),
+					Integer.toString(log.getMonth().getValue()),
+					log.getMonth().toString(), 
+					log.getYearQuarter().toString(),
+					log.getYearMonth().toString(),
+					log.getYearWeek().toString(), 
+					log.getYear().toString() });
 		}
 	}
 

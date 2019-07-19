@@ -14,11 +14,12 @@ import java.util.Set;
 public class Role implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
 	private int roleId;
 	private String roleName;
 	private String roleShortName;
 	private Set<EnrolledUser> enrolledUsers;
-
+	
 	public Role() {
 		this.enrolledUsers=new HashSet<>();
 	}

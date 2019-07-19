@@ -1,61 +1,66 @@
 package model;
 
+import java.io.Serializable;
+
 /**
- * Secciones de contenido de un curso donde se guardan los modulos del curso.
- * De momento no se usa está clase.
+ * Secciones de contenido de un curso donde se guardan los modulos del curso. De
+ * momento no se usa está clase.
+ * 
  * @author Yi Peng Ji
  *
  */
-public class Section {
-	
+public class Section implements Serializable{
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Section ID
 	 */
 	private int id;
-	
+
 	/**
 	 * Section name
 	 */
 	private String name;
-	
+
 	/**
-	 * Optional.
-	 * is the section visible
+	 * Optional. is the section visible
 	 */
 	private boolean visible;
-	
+
 	/**
 	 * Section description
 	 */
 	private String summary;
-	
+
 	/**
 	 * summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)
 	 */
-	private int summaryformat;
+	private DescriptionFormat summaryformat;
 
 	/**
-	 * Optional.
-	 * Section number inside the course
+	 * Optional. Section number inside the course
 	 */
-	private int sectionName;
-	
+	private int sectionNumber;
+
 	/**
-	 * Optional.
-	 * Whether is a section hidden in the course format
+	 * Optional. Whether is a section hidden in the course format
 	 */
 	private int hiddenbynumsections;
 	/**
-	 * Optional.
-	 * Is the section visible for the user?
+	 * Optional. Is the section visible for the user?
 	 */
-	private boolean uservisible; 
-	
+	private boolean uservisible;
+
 	/**
-	 * Optional.
-	 * Availability information.
+	 * Optional. Availability information.
 	 */
 	private String availabilityinfo;
+	
+
+	public Section(int id) {
+		this.id = id;
+	}
 
 	public int getId() {
 		return id;
@@ -89,20 +94,20 @@ public class Section {
 		this.summary = summary;
 	}
 
-	public int getSummaryformat() {
+	public DescriptionFormat getSummaryformat() {
 		return summaryformat;
 	}
 
-	public void setSummaryformat(int summaryformat) {
+	public void setSummaryformat(DescriptionFormat summaryformat) {
 		this.summaryformat = summaryformat;
 	}
 
-	public int getSectionName() {
-		return sectionName;
+	public int getSectionNumber() {
+		return sectionNumber;
 	}
 
-	public void setSectionName(int section) {
-		this.sectionName = section;
+	public void setSectionNumber(int section) {
+		this.sectionNumber = section;
 	}
 
 	public int getHiddenbynumsections() {
@@ -128,5 +133,23 @@ public class Section {
 	public void setAvailabilityinfo(String availabilityinfo) {
 		this.availabilityinfo = availabilityinfo;
 	}
+
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof Section))
+			return false;
+		Section other = (Section) obj;
+		return id == other.id;
+			
+	}
 	
+	
+
 }

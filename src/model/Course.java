@@ -3,14 +3,12 @@ package model;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
-import model.mod.Module;
-import model.mod.ModuleType;
 
 /**
  * Clase curso (asignatura). Guarda información de los roles, usuarios
@@ -19,13 +17,11 @@ import model.mod.ModuleType;
  * 
  * @author Claudia Martínez Herrero
  * @since 1.0
- * @version 2.0
+ * @version 2.4.1.0
  */
 public class Course implements Serializable {
 
-	
 	private static final long serialVersionUID = 1L;
-	
 	private int id;
 	private String shortName;
 	private String fullName;
@@ -40,24 +36,21 @@ public class Course implements Serializable {
 	private Set<EnrolledUser> enrolledUsers;
 	private Set<Role> roles; // roles que hay en el curso
 	private Set<Group> groups; // grupos que hay en el curso
-	private Set<Module> modules;
+	private Set<CourseModule> modules;
 	private Set<GradeItem> gradeItems;
+	private Set<Section> sections;
 	private Logs logs;
 	private Stats stats;
 	private LogStats logStats;
 
-	
-
 	public Course() {
-		// Comparamos por apellidos y en caso de empate por primer nombre, se ignora
-		// case sensitive
 		this.enrolledUsers = new HashSet<>();
 		this.roles = new HashSet<>();
 		this.groups = new HashSet<>();
 		this.gradeItems = new HashSet<>();
-		this.modules = new HashSet<>();
+		this.modules = new LinkedHashSet<>();
+		this.sections = new LinkedHashSet<>();
 	}
-
 
 	public Course(int id) {
 		this();
@@ -202,7 +195,8 @@ public class Course implements Serializable {
 	/**
 	 * Modifica los grade item
 	 * 
-	 * @param gradeItems grade items
+	 * @param gradeItems
+	 *            grade items
 	 */
 	public void setGradeItems(Set<GradeItem> gradeItems) {
 		this.gradeItems = gradeItems;
@@ -220,7 +214,8 @@ public class Course implements Serializable {
 	/**
 	 * Modifica el tiempo
 	 * 
-	 * @param startDate fecha de inicio
+	 * @param startDate
+	 *            fecha de inicio
 	 */
 	public void setStartDate(Instant startDate) {
 		this.startDate = startDate;
@@ -326,7 +321,7 @@ public class Course implements Serializable {
 	 * 
 	 * @return los modulos del curso
 	 */
-	public Set<Module> getModules() {
+	public Set<CourseModule> getModules() {
 		return modules;
 	}
 
@@ -336,7 +331,7 @@ public class Course implements Serializable {
 	 * @param modules
 	 *            modulos del curso
 	 */
-	public void setModules(Set<Module> modules) {
+	public void setModules(Set<CourseModule> modules) {
 		this.modules = modules;
 	}
 
@@ -346,9 +341,8 @@ public class Course implements Serializable {
 	 * @param module
 	 *            nuevo modulo
 	 */
-	public void addModule(Module module) {
+	public void addModule(CourseModule module) {
 		modules.add(module);
-		module.setCourse(this);
 
 	}
 
@@ -369,6 +363,14 @@ public class Course implements Serializable {
 	 */
 	public void setEnrolledUsers(Set<EnrolledUser> enrolledUsers) {
 		this.enrolledUsers = enrolledUsers;
+	}
+
+	public Set<Section> getSections() {
+		return sections;
+	}
+
+	public void setSections(Set<Section> sections) {
+		this.sections = sections;
 	}
 
 	/**
@@ -401,6 +403,14 @@ public class Course implements Serializable {
 		groups.add(group);
 
 	}
+	
+	/**
+	 * Add section to this course.
+	 * @param section section
+	 */
+	public void addSection(Section section) {
+		sections.add(section);
+	}
 
 	/**
 	 * Añade un item de calificacion nuevo.
@@ -421,6 +431,7 @@ public class Course implements Serializable {
 		this.groups.clear();
 		this.modules.clear();
 		this.gradeItems.clear();
+		this.sections.clear();
 	}
 
 	public LogStats getLogStats() {
@@ -450,7 +461,7 @@ public class Course implements Serializable {
 				.map(GradeItem::getItemModule)
 				.filter(Objects::nonNull)
 				.collect(Collectors.toCollection(TreeSet::new));
-		
+
 	}
 
 	/**
@@ -491,10 +502,7 @@ public class Course implements Serializable {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + id;
-		return result;
+		return id;
 	}
 
 	@Override
@@ -505,9 +513,8 @@ public class Course implements Serializable {
 			return false;
 		Course other = (Course) obj;
 		return id == other.id;
-		
-	}
 
+	}
 
 
 }

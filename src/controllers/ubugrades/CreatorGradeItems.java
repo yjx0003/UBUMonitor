@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
 import controllers.Controller;
 import model.EnrolledUser;
 import model.GradeItem;
-import model.mod.Module;
-import model.mod.ModuleType;
+import model.CourseModule;
+import model.ModuleType;
 import webservice.WebService;
 import webservice.gradereport.GradereportUserGetGradesTable;
 
@@ -125,7 +125,7 @@ public class CreatorGradeItems {
 			String contentString = itemname.getString(CONTENT);
 			Document content = Jsoup.parseBodyFragment(contentString);
 
-			GradeItem gradeItem = CONTROLLER.getDataBase().getGradeItemById(i);
+			GradeItem gradeItem = CONTROLLER.getDataBase().getGradeItems().getById(i);
 			gradeItem.setItemname(content.text());
 			gradeItem.clearChildren();
 
@@ -183,7 +183,7 @@ public class CreatorGradeItems {
 		if (matcher.find()) {
 
 			int cmid = Integer.parseInt(matcher.group(1));
-			Module module = CONTROLLER.getDataBase().getCourseModuleById(cmid);
+			CourseModule module = CONTROLLER.getDataBase().getModules().getById(cmid);
 			gradeItem.setModule(module);
 			gradeItem.setItemModule(module.getModuleType());
 		}
@@ -299,7 +299,7 @@ public class CreatorGradeItems {
 				continue;
 			}
 			int userid = table.getInt("userid");
-			EnrolledUser enrolledUser = CONTROLLER.getDataBase().getEnrolledUserById(userid);
+			EnrolledUser enrolledUser = CONTROLLER.getDataBase().getUsers().getById(userid);
 			JSONArray tabledata = table.getJSONArray("tabledata");
 			int gradeItemCount = 0;
 			for (int j = 0; j < tabledata.length(); j++) {

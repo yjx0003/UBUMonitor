@@ -1,18 +1,15 @@
-package model.mod;
+package model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import model.Course;
-import model.LogLine;
 
 /**
  * Representa las actividades o recursos presentes en un curso.
  * @author Yi Peng Ji
  *
  */
-public class Module implements Serializable {
+public class CourseModule implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -87,27 +84,17 @@ public class Module implements Serializable {
 
 	private List<LogLine> logs;
 	
-	private Course course;
+	private Section section;
 
 
-	public Module() {
+	public CourseModule() {
 		logs = new ArrayList<>();
 	}
 	
-	public Module(int id) {
+	public CourseModule(int id) {
 		this();
 		setCmid(id);
 	}
-
-	public Course getCourse() {
-		return course;
-	}
-
-
-	public void setCourse(Course course) {
-		this.course = course;
-	}
-
 
 	
 	public void addLog(LogLine log) {
@@ -244,6 +231,14 @@ public class Module implements Serializable {
 		this.cmid = id;
 	}
 
+	public Section getSection() {
+		return section;
+	}
+
+	public void setSection(Section section) {
+		this.section = section;
+	}
+
 	@Override
 	public String toString() {
 		return moduleName;
@@ -259,9 +254,9 @@ public class Module implements Serializable {
 		if (this == obj)
 			return true;
 
-		if (!(obj instanceof Module))
+		if (!(obj instanceof CourseModule))
 			return false;
-		Module other = (Module) obj;
+		CourseModule other = (CourseModule) obj;
 		return cmid == other.cmid;
 			
 	}

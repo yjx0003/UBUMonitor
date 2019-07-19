@@ -2,13 +2,17 @@ package persistence;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SealedObject;
 import javax.crypto.SecretKey;
@@ -59,8 +63,12 @@ public class Encryption {
 	 * @param key contraseña
 	 * @param ruta ruta del fichero
 	 * @return el objecto deserializado
+	 * @throws BadPaddingException
+	 * @throws IllegalBlockSizeException 
+	 * @throws ClassNotFoundException
+	 * @throws InvalidClassException 
 	 */
-	public static Object decrypt(String key, String ruta) {
+	public static Object decrypt(String key, String ruta) throws ClassNotFoundException, IllegalBlockSizeException, BadPaddingException, InvalidClassException {
 		Cipher cipher = initCipher(key, Cipher.DECRYPT_MODE);
 		LOGGER.info("Intentando descifrar el fichero: {}",ruta);
 		try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(ruta))) {
@@ -68,11 +76,11 @@ public class Encryption {
 			SealedObject sealedObject = (SealedObject) inputStream.readObject();
 			return sealedObject.getObject(cipher);
 
-		} catch (Exception e) {
-			LOGGER.error("No se ha podido abrir el fichero al intentar descifrar {}", e);
-	
+		} catch (InvalidClassException e) {
+			throw e;
+		} catch (IOException e) {
+			throw new IllegalStateException("No se ha podido abrir el fichero al intentar descifrar",e);
 		}
-		return null;
 	}
 
 	/**

@@ -14,9 +14,6 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import model.Component;
 import model.ComponentEvent;
 import model.EnrolledUser;
@@ -42,12 +39,8 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 
 	private Map<EnrolledUser, Map<Component, Map<Event, Map<T, Long>>>> countsEvents;
 
-	private String jsonCountEvents;
-
-
 
 	private Map<EnrolledUser, Map<Component, Map<T, Long>>> countsComponents;
-	private String jsonCountComponents;
 
 	private Map<Component, Map<T, DescriptiveStatistics>> componentStatistics;
 	private Map<Component, Map<Event, Map<T, DescriptiveStatistics>>> componentEventStatistics;
@@ -80,10 +73,7 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 								Collectors.groupingBy(LogLine::getEventName,
 										Collectors.groupingBy(getGroupByFunction(), Collectors.counting())))));
 
-		Gson gsonBuilder = new GsonBuilder().create();
-		jsonCountEvents = gsonBuilder.toJson(countsEvents);
-		LOGGER.info("JSON del contador de logs de componentes y eventos  para {} : {}", getTypeTime(),
-				jsonCountEvents);
+
 
 		countsComponents = logLines.stream()
 				.filter(l -> l.getUser() != null)
@@ -91,9 +81,6 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 						Collectors.groupingBy(LogLine::getComponent,
 								Collectors.groupingBy(getGroupByFunction(), Collectors.counting()))));
 
-		jsonCountComponents=gsonBuilder.toJson(countsComponents);
-		LOGGER.info("JSON del contador de logs de componentes  para {} : {}", getTypeTime(),
-				jsonCountComponents);
 
 	}
 
@@ -162,8 +149,6 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 				}
 			}
 		}
-		LOGGER.info("Estadisticas de todos los usuarios del curso para components {} y {} :\n{}", components,
-				groupByRange, componentStatistics);
 
 	}
 
@@ -488,13 +473,6 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 		return max;
 	}
 	
-	public String getJsonCountEvents() {
-		return jsonCountEvents;
-	}
-
-	public String getJsonCountComponents() {
-		return jsonCountComponents;
-	}
 
 	/**
 	 * Devuelve el rango entre dos local date

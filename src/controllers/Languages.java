@@ -13,17 +13,17 @@ import java.util.Map;
  */
 public enum Languages {
 
-	CATALAN("ca"),
-	GERMAN("de"),
-	SPANISH("es"),
+	CATALAN("ca-ES"),
+	GERMAN("de-DE"),
+	//SPANISH("es"),
 	SPANISH_SPAIN("es-ES"),
-	FRENCH("fr"),
-	ITALIAN("it"),
+	FRENCH("fr-FR"),
+	ITALIAN("it-IT"),
 	//JAPANESE("ja"),
-	PORTUGUESE("pt"),
+	PORTUGUESE("pt-PT"),
 	//RUSSIAN("ru"),
 	//CHINESE_SIMPLIFIED("zh-CN"),
-	ENGLISH("en");
+	ENGLISH("en-GB");
 
 
 	private Locale locale;
@@ -84,6 +84,14 @@ public enum Languages {
 	public Locale getLocale() {
 		return locale;
 
+	}
+	
+	public String getDisplayLanguage() {
+		return locale.getDisplayLanguage(locale);
+	}
+	
+	public String getCountry() {
+		return locale.getCountry();
 	}
 
 

@@ -39,7 +39,7 @@ var messages = {
 	},
 	btnCalificaciones : {
 		en: "Qualification",
-		es: "Calificación",
+		es: "Calificaciones",
 		ca: "Qualificació",
 		de: "Qualifikation",
 		fr: "Qualification",
@@ -48,8 +48,8 @@ var messages = {
 	},
 	btnStackedBar : {
 		en: "Stacked Bar",
-		es: "De Barras Apiladas",
-		ca: "De Barres Apilades",
+		es: "Barras Apiladas",
+		ca: "Barres Apilades",
 		de: "Stacked Bar",
 		fr: "Bar Empilée",
 		it: "A Barre In Pila",

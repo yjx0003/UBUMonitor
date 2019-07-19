@@ -11,7 +11,6 @@ import export.CSVBuilderAbstract;
 import model.DataBase;
 import model.EnrolledUser;
 
-
 /**
  * Builds the enrolled user file.
  * 
@@ -19,19 +18,21 @@ import model.EnrolledUser;
  * @since 2.4.0.0
  */
 public class CSVEnrolledUser extends CSVBuilderAbstract {
-	
+
 	/** Logger. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(CSVEnrolledUser.class);
-	
-	/** Header. */
-	private static final String[] HEADER = new String[] { "UserId", "FullName", "eMail", "LastAccess" };
 
+	/** Header. */
+	private static final String[] HEADER = new String[] { "UserId", "LastName", "FirstName", "FullName", "eMail",
+			"LastAccess" };
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param name name 
-	 * @param dataBase dataBase
+	 * @param name
+	 *            name
+	 * @param dataBase
+	 *            dataBase
 	 */
 	public CSVEnrolledUser(String name, DataBase dataBase) {
 		super(name, dataBase, HEADER);
@@ -40,16 +41,22 @@ public class CSVEnrolledUser extends CSVBuilderAbstract {
 	@Override
 	public void buildBody() {
 		// Gets users
-		Map<Integer, EnrolledUser> enrolledUsers = getDataBase().getUsers();
+		Map<Integer, EnrolledUser> enrolledUsers = getDataBase().getUsers().getMap();
 		Collection<EnrolledUser> studentsCollection = enrolledUsers.values();
 		// Remove nulls and sort
-		Stream<EnrolledUser> usersWithoutNull = studentsCollection.stream().filter(user -> user.getFullName() != null)
-				.sorted(compareByFullName);
+		Stream<EnrolledUser> sortedUsers = studentsCollection.stream()
+				.sorted(EnrolledUser.NAME_COMPARATOR);
 		// Load data users
-		usersWithoutNull.forEach(eu -> {
-			LOGGER.debug("Data line: {}, {}, {}, {}", eu.getId(), eu.getFullName(), eu.getEmail(), eu.getLastaccess());
-			getData().add(new String[] { Integer.toString(eu.getId()), eu.getFullName(), eu.getEmail(),
-					eu.getLastaccess().toString() });
+		sortedUsers.forEach(eu -> {
+			LOGGER.debug("Data line: {}, {}, {}, {}, {}, {}", eu.getId(), eu.getLastname(), eu.getFirstname(),
+					eu.getFullName(), eu.getEmail(), eu.getLastaccess());
+			getData().add(new String[] {
+					Integer.toString(eu.getId()),
+					eu.getLastname(),
+					eu.getFirstname(),
+					eu.getFullName(),
+					eu.getEmail(),
+					eu.getLastaccess() == null ? null : eu.getLastaccess().toString() });
 		});
 	}
 

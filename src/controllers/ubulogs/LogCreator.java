@@ -77,19 +77,21 @@ public class LogCreator {
 	 * 
 	 * @param logs
 	 *            los logs que se van a actualizar
-	 * @throws IOException
-	 *             si no ha podido actualizar
 	 */
-	public static void updateCourseLog(Logs logs) throws IOException {
+	public static void updateCourseLog(Logs logs) {
 
-		DownloadLogController download = new DownloadLogController(CONTROLLER.getHost(),
-				CONTROLLER.getActualCourse().getId(), CONTROLLER.getUser().getTimezone(),
+		ZoneId userZoneDateTime = "99".equals(CONTROLLER.getUser().getTimezone()) ? logs.getZoneId()
+				: ZoneId.of(CONTROLLER.getUser().getTimezone());
+		LOGGER.info("Zona horaria del usuario: {}",userZoneDateTime);
+		
+		DownloadLogController download = new DownloadLogController(CONTROLLER.getUrlHost().toString(),
+				CONTROLLER.getActualCourse().getId(), userZoneDateTime,
 				CONTROLLER.getCookies());
 
 		setDateTimeFormatter(download.getUserTimeZone());
 
 		ZonedDateTime lastDateTime = logs.getLastDatetime();
-		
+
 		LOGGER.info("La fecha del ultimo log antes de actualizar es {}", lastDateTime);
 
 		List<String> dailyLogs = download.downloadLog(lastDateTime,
@@ -113,7 +115,7 @@ public class LogCreator {
 	 *             si ha habido un problema al crearlo
 	 */
 	public static Logs createCourseLog() throws IOException {
-		DownloadLogController download = new DownloadLogController(CONTROLLER.getHost(),
+		DownloadLogController download = new DownloadLogController(CONTROLLER.getUrlHost().toString(),
 				CONTROLLER.getActualCourse().getId(), CONTROLLER.getUser().getTimezone(),
 				CONTROLLER.getCookies());
 
@@ -263,9 +265,9 @@ public class LogCreator {
 		List<Integer> list = new ArrayList<>();
 		while (m.find()) {
 			String integer = null;
-			if (m.group("idQuote") != null) {
+			if (m.group("idQuote") != null) { // si el id esta entre comillas simples o dobles
 				integer = m.group("idQuote");
-			} else if (m.group("idNoQuote") != null) {
+			} else if (m.group("idNoQuote") != null) { // si el id no esta entre comillas
 				integer = m.group("idNoQuote");
 			}
 
@@ -273,7 +275,6 @@ public class LogCreator {
 				list.add(Integer.parseInt(integer));
 			}
 		}
-		LOGGER.debug("{} : {}", description, list);
 		return list;
 	}
 

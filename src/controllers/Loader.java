@@ -44,7 +44,7 @@ public class Loader extends Application {
 		}
 	}
 
-	public static void init(String[] args) {
-		launch(args);
+	public static void initialize() {
+		launch();
 	}
 }

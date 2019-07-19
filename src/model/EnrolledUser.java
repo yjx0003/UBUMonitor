@@ -23,11 +23,12 @@ public class EnrolledUser implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	
 	public static final Comparator<EnrolledUser> NAME_COMPARATOR = Comparator
-			.comparing(EnrolledUser::getLastname, String.CASE_INSENSITIVE_ORDER)
-			.thenComparing(EnrolledUser::getFirstname, String.CASE_INSENSITIVE_ORDER);
+			.comparing(EnrolledUser::getLastname, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
+			.thenComparing(EnrolledUser::getFirstname, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
 
+	
 	/**
 	 * ID of the user
 	 */
@@ -190,8 +191,6 @@ public class EnrolledUser implements Serializable {
 	public EnrolledUser(int id) {
 		this();
 		this.id = id;
-		lastname = "LastName_" + id;
-		firstname = "FirstName_" + id;
 	}
 
 	public int getId() {
@@ -565,5 +564,6 @@ public class EnrolledUser implements Serializable {
 	public String toString() {
 		return lastname + ", " + firstname;
 	}
+
 
 }

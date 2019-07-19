@@ -7,3 +7,4 @@ bin
 /config.properties
 /sonar-project.properties
 /.scannerwork/
+/export/

@@ -2,9 +2,7 @@ package export.builder;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.Collection;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -28,7 +26,7 @@ public class CSVGrade extends CSVBuilderAbstract {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CSVGrade.class);
 
 	/** Header. */
-	private static final String[] HEADER = new String[] { "UserId", "CourseModule", "Level", "Grade", "MinGrade",
+	private static final String[] HEADER = new String[] { "UserId", "CourseModule", "Level", "Grade", "Percentage", "MinGrade",
 			"MaxGrade", "WeightRaw", "UserFullName", "CourseModuleName" };
 
 	/** Decimal format (change , by . ). */
@@ -59,18 +57,18 @@ public class CSVGrade extends CSVBuilderAbstract {
 		
 		Set<GradeItem> gradeItems = getDataBase().getActualCourse().getGradeItems();
 
-		Map<Integer, EnrolledUser> enrolledUsers = getDataBase().getUsers().getMap();
-		Collection<EnrolledUser> studentsCollection = enrolledUsers.values();
+		Set<EnrolledUser> enrolledUsers = getDataBase().getActualCourse().getEnrolledUsers();
 
-		Stream<EnrolledUser> usersWithoutNull = studentsCollection.stream()
+		Stream<EnrolledUser> enrolledUsersSorted = enrolledUsers.stream()
 				.sorted(EnrolledUser.NAME_COMPARATOR);
 
-		String modName;
-		String courseModuleId;
-		String fullName;
-		String weightRaw;
-		for (EnrolledUser eu : (Iterable<EnrolledUser>) usersWithoutNull::iterator) {
-
+		
+		enrolledUsersSorted.forEach(eu->{
+			String modName;
+			String courseModuleId;
+			String fullName;
+			String weightRaw;
+			
 			for (GradeItem gradeItem : gradeItems) {
 				double value = gradeItem.getEnrolledUserGrade(eu);
 				modName = gradeItem.getItemModule() != null ? gradeItem.getItemModule().getModName()
@@ -80,9 +78,11 @@ public class CSVGrade extends CSVBuilderAbstract {
 						: "";
 				weightRaw = !Double.isNaN(gradeItem.getWeightraw()) ? decimalFormat.format(gradeItem.getWeightraw())
 						: "NaN";
-				LOGGER.debug("Data line: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}", eu.getId(), courseModuleId,
+				
+				double percentage = gradeItem.getEnrolledUserPercentage(eu);
+				LOGGER.debug("Data line: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}", eu.getId(), courseModuleId,
 						gradeItem.getLevel(),
-						value, gradeItem.getGrademin(), gradeItem.getGrademax(),
+						value, percentage, gradeItem.getGrademin(), gradeItem.getGrademax(),
 						weightRaw, fullName, gradeItem.getItemname(), modName);
 
 				getData().add(new String[] {
@@ -90,6 +90,7 @@ public class CSVGrade extends CSVBuilderAbstract {
 						courseModuleId,
 						Integer.toString(gradeItem.getLevel()),
 						Double.toString(value),
+						Double.toString(percentage),
 						Double.toString(gradeItem.getGrademin()),
 						Double.toString(gradeItem.getGrademax()),
 						weightRaw,
@@ -99,6 +100,6 @@ public class CSVGrade extends CSVBuilderAbstract {
 				});
 			}
 
-		}
+		});
 	}
 }

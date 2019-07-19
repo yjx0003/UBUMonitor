@@ -167,7 +167,6 @@ public class LogLine implements Serializable {
 	 */
 	public void setUser(EnrolledUser user) {
 		this.user = user;
-		user.addLog(this);
 	}
 
 	/**
@@ -187,7 +186,6 @@ public class LogLine implements Serializable {
 	 */
 	public void setAffectedUser(EnrolledUser affectedUser) {
 		this.affectedUser = affectedUser;
-		affectedUser.addLog(this);
 	}
 
 	/**

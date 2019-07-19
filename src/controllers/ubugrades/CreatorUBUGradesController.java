@@ -258,19 +258,15 @@ public class CreatorUBUGradesController {
 			enrolledUser.setImageBytes(imageBytes);
 		}
 
-		enrolledUser.clearCourses();
-		enrolledUser.clearRoles();
-		enrolledUser.clearGroups();
-
 		List<Course> courses = createCourses(user.optJSONArray("enrolledcourses"));
 		courses.forEach(course -> course.addEnrolledUser(enrolledUser));
 
 		List<Role> roles = createRoles(user.optJSONArray("roles"));
-		roles.forEach(enrolledUser::addRole);
+		roles.forEach(role-> role.addEnrolledUser(enrolledUser));
+		
 
 		List<Group> groups = createGroups(user.getJSONArray("groups"));
-
-		groups.forEach(enrolledUser::addGroup);
+		groups.forEach(group->group.addEnrolledUser(enrolledUser));
 
 		return enrolledUser;
 
@@ -740,8 +736,7 @@ public class CreatorUBUGradesController {
 				JSONObject gradeitem = gradeitems.getJSONObject(j);
 				GradeItem gradeItem = gradeItems.get(j);
 
-				enrolledUser.addGrade(gradeItem, gradeitem.optDouble("graderaw"));
-
+				gradeItem.addUserGrade(enrolledUser, gradeitem.optDouble("graderaw"));
 			}
 		}
 

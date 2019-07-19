@@ -114,7 +114,14 @@ public class Role implements Serializable {
 	public void removeEnrolledUser(EnrolledUser user) {
 		enrolledUsers.remove(user);
 	}
+	
+	public boolean contains(EnrolledUser e) {
+		return enrolledUsers.contains(e);
+	}
 
+	public void clear() {
+		enrolledUsers.clear();
+	}
 
 	@Override
 	public String toString() {
@@ -136,5 +143,8 @@ public class Role implements Serializable {
 		return roleId == other.roleId;
 		
 	}
+
+
+
 
 }

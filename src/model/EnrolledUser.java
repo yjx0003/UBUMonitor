@@ -2,13 +2,7 @@ package model;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Clase usuario de moodle. Los atributos optional pueden aparecer o no aparecer
@@ -154,42 +148,13 @@ public class EnrolledUser implements Serializable {
 	 * Optional. User image profile URL - big version
 	 */
 	private String profileimageurl;
-	/**
-	 * Optional. user groups
-	 */
-	private Set<Group> groups;
 
-	/**
-	 * Opcional. user roles
-	 */
-	private Set<Role> roles;
-
-	/**
-	 * Opcional. Courses where the user is enrolled - limited by which courses the
-	 * user is able to see
-	 */
-	private Set<Course> enrolledcourses;
-
-	private List<LogLine> logs;
-
-	private List<LogLine> affectedLogs;
-
-	private Map<GradeItem, Double> grades;
 
 	private byte[] imageBytes;
 
-	public EnrolledUser() {
-		roles = new HashSet<>();
-		logs = new ArrayList<>();
-		affectedLogs = new ArrayList<>();
-		enrolledcourses = new HashSet<>();
-		grades = new HashMap<>();
-		groups = new HashSet<>();
 
-	}
 
 	public EnrolledUser(int id) {
-		this();
 		this.id = id;
 	}
 
@@ -417,124 +382,6 @@ public class EnrolledUser implements Serializable {
 		this.profileimageurl = profileimageurl;
 	}
 
-	public List<LogLine> getLogs() {
-		return logs;
-	}
-
-	public void setLogs(List<LogLine> logs) {
-		this.logs = logs;
-	}
-
-	public List<LogLine> getAffectedLogs() {
-		return affectedLogs;
-	}
-
-	public void setAffectedLogs(List<LogLine> affectedLogs) {
-		this.affectedLogs = affectedLogs;
-	}
-
-	public Map<GradeItem, Double> getGrades() {
-		return grades;
-	}
-
-	public void setGrades(Map<GradeItem, Double> grades) {
-		this.grades = grades;
-	}
-
-	public Set<Group> getGroups() {
-		return groups;
-	}
-
-	public void setGroups(Set<Group> groups) {
-		this.groups = groups;
-	}
-
-	public Set<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(Set<Role> roles) {
-		this.roles = roles;
-	}
-
-	public Set<Course> getEnrolledcourses() {
-		return enrolledcourses;
-	}
-
-	public void setEnrolledcourses(Set<Course> courses) {
-		this.enrolledcourses = courses;
-	}
-
-	public void addLog(LogLine log) {
-		this.logs.add(log);
-	}
-
-	public void addAffectedLog(LogLine log) {
-		this.affectedLogs.add(log);
-	}
-
-	public void addCourse(Course couse) {
-		this.enrolledcourses.add(couse);
-	}
-
-	public void clearCourses() {
-		this.enrolledcourses.clear();
-
-	}
-
-	public void addGroup(Group group) {
-		this.groups.add(group);
-		group.addEnrolledUser(this);
-	}
-
-	/**
-	 * Elimina el usuario de todos los grupos de forma bidireccional.
-	 */
-	public void clearGroups() {
-		groups.forEach(group -> group.removeEnrolledUser(this));
-		groups.clear();
-	}
-
-	/**
-	 * Comprueba si el usuario pertece a un grupo
-	 * 
-	 * @param group
-	 *            el grupo que pertenece
-	 * @return true si el grupo es nulo o el usuario pertece al grupo
-	 */
-	public boolean inGroup(Group group) {
-		return group == null || groups.contains(group);
-	}
-
-	public void addRole(Role role) {
-		this.roles.add(role);
-		role.addEnrolledUser(this);
-	}
-
-	public void clearRoles() {
-		roles.forEach(role -> role.removeEnrolledUser(this));
-		roles.clear();
-	}
-
-	/**
-	 * Comprueba si el usuario pertece a rol
-	 * 
-	 * @param role
-	 *            el rol que pertenece
-	 * @return true si el rol es nulo o el usuario pertece al rol
-	 */
-	public boolean inRole(Role role) {
-		return role == null || roles.contains(role);
-	}
-
-	public void addGrade(GradeItem gradeItem, double grade) {
-		grades.put(gradeItem, grade);
-		gradeItem.addUserGrade(this, grade);
-	}
-
-	public double getGrade(GradeItem gradeItem) {
-		return grades.get(gradeItem);
-	}
 
 	public byte[] getImageBytes() {
 		return imageBytes;

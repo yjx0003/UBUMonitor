@@ -141,6 +141,15 @@ public class Group implements Serializable {
 	public void removeEnrolledUser(EnrolledUser enrolledUser) {
 		enrolledUsers.remove(enrolledUser);
 	}
+	
+
+	public boolean contains(EnrolledUser e) {
+		return enrolledUsers.contains(e);
+	}
+	
+	public void clear() {
+		enrolledUsers.clear();
+	}
 
 	@Override
 	public String toString() {
@@ -162,5 +171,6 @@ public class Group implements Serializable {
 		return groupId == other.groupId;
 
 	}
+
 
 }

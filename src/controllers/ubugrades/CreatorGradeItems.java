@@ -67,7 +67,7 @@ public class CreatorGradeItems {
 	 *            locale
 	 */
 	public CreatorGradeItems(Locale locale) {
-		decimalFormat = new DecimalFormat("0.0", new DecimalFormatSymbols(locale));
+		decimalFormat = new DecimalFormat("###.##", new DecimalFormatSymbols(locale));
 	}
 
 	/**
@@ -231,7 +231,6 @@ public class CreatorGradeItems {
 		JSONObject range = tabledataJsonObject.getJSONObject("range");
 		String content = range.getString(CONTENT);
 
-		
 		double minGrade;
 		double maxGrade;
 		try {
@@ -308,6 +307,7 @@ public class CreatorGradeItems {
 				if (tabledataObject != null && tabledataObject.has("grade")) {
 
 					setGrade(tabledataObject, gradeItems.get(gradeItemCount), enrolledUser);
+					setPercentage(tabledataObject, gradeItems.get(gradeItemCount), enrolledUser);
 					gradeItemCount++;
 				}
 
@@ -336,9 +336,14 @@ public class CreatorGradeItems {
 				grade = decimalFormat.parse(content).doubleValue();
 			} catch (ParseException e) {
 				LOGGER.info("No se puede parsear: {}, lo intentamos buscando el porcentaje", content);
-				content = tabledataObject.getJSONObject("percentage").getString(CONTENT);
+
 				try {
-					grade = decimalFormat.parse(content).doubleValue();
+					JSONObject percentage = tabledataObject.optJSONObject("percentage");
+					if (percentage != null) {
+						content = percentage.optString(CONTENT);
+						grade = decimalFormat.parse(content).doubleValue();
+					}
+
 				} catch (ParseException e1) {
 					LOGGER.error("No se puede parsear la nota de: " + tabledataObject.toString(2), e1);
 				}
@@ -347,6 +352,31 @@ public class CreatorGradeItems {
 
 		gradeItem.addUserGrade(enrolledUser, grade);
 
+	}
+
+	/**
+	 * Asigna la columna del porcentaje.
+	 * 
+	 * @param tabledataObject
+	 *            json
+	 * @param gradeItem
+	 *            gradeitem actual
+	 * @param enrolledUser
+	 *            usuario
+	 */
+	private void setPercentage(JSONObject tabledataObject, GradeItem gradeItem, EnrolledUser enrolledUser) {
+
+		JSONObject percentageJson = tabledataObject.optJSONObject("percentage");
+		double percentage = Double.NaN;
+		if (percentageJson != null) {
+			String content = percentageJson.optString(CONTENT);
+			try {
+				percentage = decimalFormat.parse(content).doubleValue();
+			} catch (ParseException e) {
+				LOGGER.warn("No se puede parsear {} a decimal", content);
+			}
+		}
+		gradeItem.addUserPercentage(enrolledUser, percentage);
 	}
 
 }

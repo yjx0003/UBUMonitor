@@ -10,11 +10,7 @@ import java.io.Serializable;
  */
 public class CourseCategory implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-
 	private int id;
 
 	/**
@@ -257,5 +253,6 @@ public class CourseCategory implements Serializable {
 	public String toString() {
 		return name;
 	}
+
 
 }

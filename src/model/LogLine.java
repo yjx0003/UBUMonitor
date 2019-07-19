@@ -13,8 +13,6 @@ import org.threeten.extra.AmPm;
 import org.threeten.extra.YearQuarter;
 import org.threeten.extra.YearWeek;
 
-import model.mod.Module;
-
 /**
  * Las líneas de log que guardan los datos de varias columnas de los logs.
  * 
@@ -33,7 +31,7 @@ public class LogLine implements Serializable {
 
 	private EnrolledUser user;
 	private EnrolledUser affectedUser;
-	private Module courseModule;
+	private CourseModule courseModule;
 
 	/**
 	 * Devuelve el modulo del curso asociado al log, null si el log no tiene el
@@ -41,7 +39,7 @@ public class LogLine implements Serializable {
 	 * 
 	 * @return el modulo del curso o null si el log no tiene
 	 */
-	public Module getCourseModule() {
+	public CourseModule getCourseModule() {
 		return courseModule;
 	}
 
@@ -52,7 +50,7 @@ public class LogLine implements Serializable {
 	 * @param courseModule
 	 *            modulo del curso
 	 */
-	public void setCourseModule(Module courseModule) {
+	public void setCourseModule(CourseModule courseModule) {
 		this.courseModule = courseModule;
 		courseModule.addLog(this);
 	}

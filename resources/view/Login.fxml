@@ -63,9 +63,9 @@
          <font>
             <Font name="System Bold" size="12.0" />
          </font></Label>
-      <ChoiceBox fx:id="languageSelector" layoutX="295.0" layoutY="14.0" prefHeight="25.0" prefWidth="94.0" />
       <CheckBox fx:id="chkSaveUsername" layoutX="65.0" layoutY="392.0" mnemonicParsing="false" text="%chk.saveusername" />
       <CheckBox fx:id="chkSaveHost" layoutX="65.0" layoutY="426.0" mnemonicParsing="false" text="%chk.savehost" />
+      <ComboBox fx:id="languageSelector" layoutX="267.0" layoutY="14.0" prefHeight="30.0" prefWidth="135.0" />
       
 	</children>
 </AnchorPane>

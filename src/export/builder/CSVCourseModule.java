@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import controllers.Controller;
 import export.CSVBuilderAbstract;
 import model.DataBase;
-import model.mod.Module;
+import model.CourseModule;
 
 /**
  * Builds the course module file.
@@ -26,11 +26,10 @@ public class CSVCourseModule extends CSVBuilderAbstract {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CSVCourseModule.class);
 
 	/** Header. */
-	private static final String[] HEADER = new String[] { "CourseModule", "ModuleName", "ModuleTypeName" };
+	private static final String[] HEADER = new String[] { "CourseModule", "ModuleName", "ModuleTypeName", "SectionId" };
 
 	/** Comparator for modules. */
-	static Comparator<Module> compareById = (Module o1, Module o2) -> Integer.valueOf(o1.getCmid())
-			.compareTo(Integer.valueOf(o2.getCmid()));
+	private static final Comparator<CourseModule> COMPARATOR_BY_ID = Comparator.comparing(CourseModule::getCmid); 
 
 	/**
 	 * Constructor.
@@ -44,16 +43,18 @@ public class CSVCourseModule extends CSVBuilderAbstract {
 
 	@Override
 	public void buildBody() {
-		Set<Module> modulesSet = Controller.getInstance().getActualCourse().getModules();
-		List<Module> modules = new ArrayList<>(modulesSet);
+		Set<CourseModule> modulesSet = Controller.getInstance().getActualCourse().getModules();
+		List<CourseModule> modules = new ArrayList<>(modulesSet);
 		// Sort
-		Collections.sort(modules, compareById);
+		Collections.sort(modules, COMPARATOR_BY_ID);
 		// Build body
-		for (Module module : modules) {
-			LOGGER.debug("Data line: {}, {}, {}", module.getCmid(), module.getModuleName(), module.getDescription());
-			getData().add(new String[] { Integer.toString(module.getCmid()), module.getModuleName(),
-					module.getModuleType().getModName()
-
+		for (CourseModule module : modules) {
+			LOGGER.debug("Data line: {}, {}, {}, {}", module.getCmid(), module.getModuleName(), module.getDescription(), module.getSection().getId());
+			getData().add(new String[] { 
+					Integer.toString(module.getCmid()),
+					module.getModuleName(),
+					module.getModuleType().getModName(),
+					Integer.toString(module.getSection().getId())
 			});
 		}
 	}

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -14,7 +13,6 @@ import com.opencsv.CSVWriter;
 
 import controllers.Controller;
 import model.DataBase;
-import model.EnrolledUser;
 
 /**
  * Abstract builder.
@@ -37,9 +35,6 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 		}
 	}
 	
-	/** Comparator for enrolleduser by fullname. */
-	protected static Comparator<EnrolledUser> compareByFullName = (EnrolledUser o1, EnrolledUser o2) -> o1.getFullName()
-			.compareTo(o2.getFullName());
 	
 	/** Logger. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(CSVBuilderAbstract.class);
@@ -159,7 +154,7 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 			writer.close();
 		} catch (IOException e) {
 			LOGGER.error("Error writing csv file: {}.csv", getFileName());
-			throw new RuntimeException("Error exporting CSV file" + getFileName(), e);
+			throw new IllegalStateException("Error exporting CSV file" + getFileName(), e);
 		}
 	}
 	

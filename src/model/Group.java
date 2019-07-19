@@ -16,6 +16,7 @@ import java.util.Set;
 public class Group implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
 	private int groupId;
 	private String groupName;
 	private String description;
@@ -26,7 +27,6 @@ public class Group implements Serializable {
 	public Group() {
 		this.enrolledUsers = new HashSet<>();
 	}
-
 
 	public Group(int id) {
 		this();
@@ -137,7 +137,7 @@ public class Group implements Serializable {
 	public void addEnrolledUser(EnrolledUser user) {
 		enrolledUsers.add(user);
 	}
-	
+
 	public void removeEnrolledUser(EnrolledUser enrolledUser) {
 		enrolledUsers.remove(enrolledUser);
 	}
@@ -160,7 +160,7 @@ public class Group implements Serializable {
 			return false;
 		Group other = (Group) obj;
 		return groupId == other.groupId;
-	
+
 	}
 
 }

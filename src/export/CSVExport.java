@@ -7,6 +7,7 @@ import export.builder.CSVGrade;
 import export.builder.CSVGroup;
 import export.builder.CSVLog;
 import export.builder.CSVRole;
+import export.builder.CSVSection;
 import model.DataBase;
 
 /**
@@ -19,6 +20,7 @@ import model.DataBase;
  * <li>Grades</li>
  * <li>Roles</li>
  * <li>Groups</li>
+ * <li>Sections</li>
  * </ul>
  * 
  * @author Raúl Marticorena
@@ -37,6 +39,7 @@ public class CSVExport {
 		generateFile(new CSVGrade("grades", dataBase));
 		generateFile(new CSVGroup("groups", dataBase));
 		generateFile(new CSVRole("roles", dataBase));
+		generateFile(new CSVSection("sections", dataBase));
 	}	
 
 	/**
@@ -48,5 +51,10 @@ public class CSVExport {
 		builder.buildHeader();
 		builder.buildBody();
 		builder.writeCSV();
+	}
+	
+	
+	private CSVExport() {
+		throw new UnsupportedOperationException();
 	}
 }

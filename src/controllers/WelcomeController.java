@@ -2,7 +2,10 @@ package controllers;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -11,6 +14,9 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,8 +51,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import model.DataBase;
 import model.Course;
+import model.DataBase;
 import model.Logs;
 import persistence.Encryption;
 
@@ -62,7 +68,14 @@ import persistence.Encryption;
 public class WelcomeController implements Initializable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WelcomeController.class);
-	private String directoryObject;
+	/**
+	 * Path de los directorios del cache sin el fichero encriptado
+	 */
+	private Path directoryCache;
+	/**
+	 * path con directorios de los ficheros cache
+	 */
+	private Path cacheFilePath;
 	private Controller controller = Controller.getInstance();
 	private boolean isFileCacheExists;
 
@@ -92,7 +105,9 @@ public class WelcomeController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		try {
-			directoryObject = AppInfo.CACHE_DIR + controller.getUser().getFullName() + "/";
+			directoryCache = Paths.get(AppInfo.CACHE_DIR, controller.getUrlHost().getHost(),
+					controller.getUser().getFullName() + "-" + controller.getUser().getId());
+
 			lblUser.setText(controller.getUser().getFullName());
 			LOGGER.info("Cargando cursos...");
 
@@ -105,9 +120,10 @@ public class WelcomeController implements Initializable {
 			chkUpdateData.setDisable(true);
 			listCourses.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
 
-				LOGGER.debug("Buscando si existe {}", directoryObject + newValue);
+				cacheFilePath = directoryCache.resolve(newValue + "-" + newValue.getId());
+				LOGGER.debug("Buscando si existe {}", cacheFilePath);
 
-				File f = new File(directoryObject + newValue);
+				File f = cacheFilePath.toFile();
 
 				if (f.exists() && f.isFile()) {
 					chkUpdateData.setSelected(false);
@@ -155,7 +171,7 @@ public class WelcomeController implements Initializable {
 			} else {
 				DataBase copia = new DataBase();
 				controller.setDataBase(copia);
-				controller.setActualCourse(copia.getCourseById(selectedCourse.getId()));
+				controller.setActualCourse(copia.getCourses().getById(selectedCourse.getId()));
 				isBBDDLoaded = true;
 			}
 			downloadData();
@@ -172,30 +188,28 @@ public class WelcomeController implements Initializable {
 			return;
 		}
 
-		File f = new File(directoryObject);
+		File f = directoryCache.toFile();
 		if (!f.isDirectory()) {
-			LOGGER.info("No existe el directorio, se va a crear: {}", directoryObject);
+			LOGGER.info("No existe el directorio, se va a crear: {}", directoryCache);
 			f.mkdirs();
 		}
 		LOGGER.info("Guardando los datos encriptados en: {}", f.getAbsolutePath());
-		Encryption.encrypt(controller.getPassword(),
-				directoryObject + listCourses.selectionModelProperty().getValue().getSelectedItem(),
-				controller.getDataBase());
+		Encryption.encrypt(controller.getPassword(), cacheFilePath.toString(), controller.getDataBase());
 
 	}
 
 	private void loadData(String password) {
 
-		DataBase dataBase = (DataBase) Encryption.decrypt(password,
-				directoryObject + listCourses.selectionModelProperty().getValue().getSelectedItem());
-		if (dataBase != null) {
-
+		DataBase dataBase;
+		try {
+			dataBase = (DataBase) Encryption.decrypt(password, cacheFilePath.toString());
 			controller.setDataBase(dataBase);
 			isBBDDLoaded = true;
-		} else {
-
+		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			previusPasswordWindow();
-
+		} catch (InvalidClassException | ClassNotFoundException e) {
+			LOGGER.warn("Se ha modificado una de las clases serializables", e);
+			// TODO eliminar fichero y descargar de nuevo
 		}
 
 	}
@@ -203,7 +217,7 @@ public class WelcomeController implements Initializable {
 	private void previusPasswordWindow() {
 		Dialog<String> dialog = new Dialog<>();
 		dialog.setTitle(I18n.get("title.passwordChanged"));
-		
+
 		dialog.getDialogPane().setGraphic(new ImageView("img/error.png"));
 		dialog.setHeaderText(
 				I18n.get("header.passwordChangedMessage") + "\n"
@@ -211,9 +225,9 @@ public class WelcomeController implements Initializable {
 						+ lblDateUpdate.getText());
 
 		Image errorIcon = new Image("img/error.png");
-	    Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
-	    dialogStage.getIcons().add(errorIcon);
-	    dialog.setGraphic(new ImageView(errorIcon));
+		Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
+		dialogStage.getIcons().add(errorIcon);
+		dialog.setGraphic(new ImageView(errorIcon));
 		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
 
 		PasswordField pwd = new PasswordField();
@@ -316,7 +330,7 @@ public class WelcomeController implements Initializable {
 					// Establecemos los usuarios matriculados
 					updateMessage(I18n.get("label.loadingstudents"));
 					CreatorUBUGradesController.createEnrolledUsers(controller.getActualCourse().getId());
-					CreatorUBUGradesController.createModules(controller.getActualCourse().getId());
+					CreatorUBUGradesController.createSectionsAndModules(controller.getActualCourse().getId());
 					updateMessage(I18n.get("label.loadingqualifier"));
 					// Establecemos calificador del curso
 					CreatorGradeItems creatorGradeItems = new CreatorGradeItems(
@@ -339,7 +353,6 @@ public class WelcomeController implements Initializable {
 
 					updateMessage(I18n.get("label.savelocal"));
 					saveData();
-					LOGGER.debug("Elementos de la base de datos: {}", controller.getDataBase());
 				} catch (IOException e) {
 					LOGGER.error("Error al cargar los datos de los alumnos: {}", e);
 					updateMessage("Se produjo un error inesperado al cargar los datos.\n" + e.getMessage());

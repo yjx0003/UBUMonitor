@@ -21,36 +21,41 @@ public class CSVRole extends CSVBuilderAbstract {
 
 	/** Logger. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(CSVRole.class);
-	
+
 	/** Header. */
 	private static final String[] HEADER = new String[] { "RoleId", "Name", "ShortName", "UserId", "FullName" };
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param name name 
-	 * @param dataBase dataBase
+	 * @param name
+	 *            name
+	 * @param dataBase
+	 *            dataBase
 	 */
 	public CSVRole(String name, DataBase dataBase) {
 		super(name, dataBase, HEADER);
 	}
-	
+
 	@Override
 	public void buildBody() {
-		Collection<Role> roles = getDataBase().getRoles().values();
+		Collection<Role> roles = getDataBase().getRoles().getMap().values();
 		// Load data rows for roles
 		for (Role role : roles) {
 			// Filter nulls and sort
-			Stream<EnrolledUser> users= role.getEnrolledUsers().stream().filter(user -> user.getFullName() != null)
-					.sorted(compareByFullName);
+			Stream<EnrolledUser> users = role.getEnrolledUsers().stream()
+					.sorted(EnrolledUser.NAME_COMPARATOR);
 			// Load data rows for enrolledUsers
-			for (EnrolledUser enrollmentUser :  (Iterable<EnrolledUser>) users::iterator) {
+			users.forEach(enrollmentUser -> {
 				LOGGER.debug(role.getRoleId() + "," + role.getRoleName() + "," + role.getRoleShortName() + ","
 						+ enrollmentUser.getId() + "," + enrollmentUser.getFullName());
-				getData().add(new String[] { Integer.toString(role.getRoleId()), role.getRoleName(), role.getRoleShortName(),
+				getData().add(new String[] {
+						Integer.toString(role.getRoleId()),
+						role.getRoleName(),
+						role.getRoleShortName(),
 						Integer.toString(enrollmentUser.getId()),
-						enrollmentUser.getFullName()});
-			}
+						enrollmentUser.getFullName() });
+			});
 		}
 	}
 

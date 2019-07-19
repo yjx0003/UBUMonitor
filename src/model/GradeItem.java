@@ -7,9 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import model.mod.Module;
-import model.mod.ModuleType;
-
 /**
  * Clase que indica item de calificación.
  * 
@@ -21,7 +18,6 @@ public class GradeItem implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Grade item id
 	 */
@@ -33,7 +29,7 @@ public class GradeItem implements Serializable {
 	private String itemname;
 
 	private ModuleType itemModule;
-	private Module module;
+	private CourseModule module;
 	private double weightraw;
 	private Map<EnrolledUser, Double> graderaw;
 	private double grademin;
@@ -66,7 +62,8 @@ public class GradeItem implements Serializable {
 	/**
 	 * Contructor inicializado con el nombre del grade item.
 	 * 
-	 * @param name el nombre del grade item
+	 * @param name
+	 *            el nombre del grade item
 	 */
 	public GradeItem(String name) {
 		this();
@@ -116,7 +113,7 @@ public class GradeItem implements Serializable {
 	 * 
 	 * @return modulo asociado al grade item
 	 */
-	public Module getModule() {
+	public CourseModule getModule() {
 		return module;
 	}
 
@@ -126,7 +123,7 @@ public class GradeItem implements Serializable {
 	 * @param module
 	 *            el nuevo modulo
 	 */
-	public void setModule(Module module) {
+	public void setModule(CourseModule module) {
 		this.module = module;
 	}
 
@@ -236,7 +233,9 @@ public class GradeItem implements Serializable {
 
 	/**
 	 * Modifica los hijos del grade item.
-	 * @param children los nuevos hijos
+	 * 
+	 * @param children
+	 *            los nuevos hijos
 	 */
 	public void setChildren(List<GradeItem> children) {
 		this.children = children;
@@ -244,7 +243,9 @@ public class GradeItem implements Serializable {
 
 	/**
 	 * Añade un hijo del grade item.
-	 * @param children nuevo hijo
+	 * 
+	 * @param children
+	 *            nuevo hijo
 	 */
 	public void addChildren(GradeItem children) {
 		this.children.add(children);
@@ -259,6 +260,7 @@ public class GradeItem implements Serializable {
 
 	/**
 	 * Devuelve el nivel en que está dentro de la jerarquía de 1 a N.
+	 * 
 	 * @return nivel dentro de la jeraquía
 	 */
 	public int getLevel() {
@@ -267,7 +269,9 @@ public class GradeItem implements Serializable {
 
 	/**
 	 * Modifica el nivel de la jerarquía.
-	 * @param level nivel de jearquía
+	 * 
+	 * @param level
+	 *            nivel de jearquía
 	 */
 	public void setLevel(int level) {
 		this.level = level;
@@ -275,15 +279,20 @@ public class GradeItem implements Serializable {
 
 	/**
 	 * Añade una nota de un usuario.
-	 * @param enrolledUser el usuario
-	 * @param grade nota del usuario
+	 * 
+	 * @param enrolledUser
+	 *            el usuario
+	 * @param grade
+	 *            nota del usuario
 	 */
 	public void addUserGrade(EnrolledUser enrolledUser, double grade) {
 		graderaw.put(enrolledUser, grade);
 
 	}
+
 	/**
 	 * Devuelve el tipo de modulo.
+	 * 
 	 * @return el tipo de modulo
 	 */
 	public ModuleType getItemModule() {
@@ -292,7 +301,9 @@ public class GradeItem implements Serializable {
 
 	/**
 	 * Modifica el tipo de modulo.
-	 * @param itemModule el nuevo tipo de modulo
+	 * 
+	 * @param itemModule
+	 *            el nuevo tipo de modulo
 	 */
 	public void setItemModule(ModuleType itemModule) {
 		this.itemModule = itemModule;
@@ -300,6 +311,7 @@ public class GradeItem implements Serializable {
 
 	/**
 	 * Devuelve todas las notas del los usarios.
+	 * 
 	 * @return devuelve todas las notas de los usuario
 	 */
 	public Collection<Double> getEnrolledUserGrades() {
@@ -307,8 +319,10 @@ public class GradeItem implements Serializable {
 	}
 
 	/**
-	 * Devuelve la nota de un usuaro o NaN si no existe 
-	 * @param user usuario que se busca la nota
+	 * Devuelve la nota de un usuaro o NaN si no existe
+	 * 
+	 * @param user
+	 *            usuario que se busca la nota
 	 * @return la nota o NaN si no existe
 	 */
 	public double getEnrolledUserGrade(EnrolledUser user) {
@@ -332,7 +346,7 @@ public class GradeItem implements Serializable {
 	 * Normalizar la nota de 0 a 10.
 	 * 
 	 * @param grade
-	 *            nota 
+	 *            nota
 	 * @return nota normalizada de 0 a 10 o NaN si grade es NaN
 	 */
 	public double adjustTo10(double grade) {
@@ -358,11 +372,12 @@ public class GradeItem implements Serializable {
 			return false;
 		GradeItem other = (GradeItem) obj;
 		return id == other.id;
-			
+
 	}
 
 	@Override
 	public String toString() {
 		return this.itemname;
 	}
+
 }

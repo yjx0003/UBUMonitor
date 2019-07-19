@@ -1,12 +1,15 @@
 package controllers;
 
 import java.io.IOException;
+import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.jsoup.Connection.Method;
 import org.jsoup.Connection.Response;
@@ -17,8 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javafx.stage.Stage;
-import model.DataBase;
 import model.Course;
+import model.DataBase;
 import model.LogStats;
 import model.MoodleUser;
 import model.Stats;
@@ -34,7 +37,7 @@ public class Controller {
 
 	private DataBase dataBase;
 
-	private String host;
+	private URL host;
 	private Stage stage;
 	private String password;
 	private String username;
@@ -78,8 +81,8 @@ public class Controller {
 
 			if (lang == null) {
 				LOGGER.info("No existe fichero de idioma para :{}", Locale.getDefault());
-				LOGGER.info("Cargando idioma:{} ", Languages.SPANISH);
-				setSelectedLanguage(Languages.SPANISH);
+				LOGGER.info("Cargando idioma:{} ", Languages.ENGLISH);
+				setSelectedLanguage(Languages.ENGLISH);
 			} else {
 				setSelectedLanguage(lang);
 			}
@@ -87,7 +90,7 @@ public class Controller {
 		} catch (NullPointerException | MissingResourceException e) {
 			LOGGER.error(
 					"No se ha podido encontrar el recurso de idioma, cargando idioma " + lang + ": {}", e);
-			setSelectedLanguage(Languages.SPANISH);
+			setSelectedLanguage(Languages.ENGLISH);
 		}
 	}
 
@@ -115,7 +118,7 @@ public class Controller {
 	/**
 	 * @return the host
 	 */
-	public String getHost() {
+	public URL getUrlHost() {
 		return host;
 	}
 
@@ -123,7 +126,7 @@ public class Controller {
 	 * @param host
 	 *            the host to set
 	 */
-	public void setHost(String host) {
+	public void setURLHost(URL host) {
 		this.host = host;
 	}
 
@@ -190,13 +193,35 @@ public class Controller {
 	 *             si no ha podido conectarse o la contraseña es erronea
 	 */
 	public void tryLogin(String host, String username, String password) throws IOException {
-		WebService.initialize(host, username, password);
-		cookies = login(host, username, password);
-		setHost(host);
+		
+		URL hostURL = new URL(host);
+		
+		WebService.initialize(hostURL.toString(), username, password);
+		cookies = loginWebScraping(hostURL.toString(), username, password);
+		setURLHost(hostURL);
 
 		setUsername(username);
 		setPassword(password);
 
+		initTimer();
+		
+	}
+
+	private void initTimer() {
+		TimerTask timerTask	=new TimerTask() {
+			@Override
+			public void run() {
+				try {
+					Jsoup.connect(host.toString()).cookies(getCookies()).execute();
+					LOGGER.info("Ejecutado el temporizador yendo a la pagina principal.");
+				} catch (IOException e) {
+					LOGGER.error("Fallo en la conexion del temporizador con Moodle");
+				}
+			}
+			
+		};
+		Timer timer =new Timer();
+		timer.schedule(timerTask,1800000); // Cada 30 minutos se ejecuta
 	}
 
 	/**
@@ -242,7 +267,7 @@ public class Controller {
 	 * @throws IllegalStateException
 	 *             si no ha podido loguearse
 	 */
-	private Map<String, String> login(String host, String username, String password) {
+	private Map<String, String> loginWebScraping(String host, String username, String password) {
 
 		try {
 			LOGGER.info("Logeandose para web scraping");

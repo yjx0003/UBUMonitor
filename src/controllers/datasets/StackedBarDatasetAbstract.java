@@ -134,18 +134,22 @@ public abstract class StackedBarDatasetAbstract<T> {
 
 			List<Double> data = meanTs.get(element);
 
-			int[] color = colors.get(element);
+			boolean anyNotZero = data.stream().anyMatch(value -> value != 0.0);
 
-			stringBuilder.append("{");
-			stringBuilder.append(
-					"label:'" + escapeJavaScriptText(I18n.get("chart.mean") + " "
-							+ escapeJavaScriptText(translate(element))) + "',");
-			stringBuilder.append("type: 'line',");
-			stringBuilder.append("borderWidth: 2,");
-			stringBuilder.append("fill: false,");
-			stringBuilder.append("borderColor: 'rgb(" + color[0] + ", " + color[1] + "," + color[2] + ")',");
-			stringBuilder.append("data: [" + join(data) + "]");
-			stringBuilder.append("},");
+			if (anyNotZero) {
+				int[] color = colors.get(element);
+
+				stringBuilder.append("{");
+				stringBuilder.append(
+						"label:'" + escapeJavaScriptText(I18n.get("chart.mean") + " "
+								+ escapeJavaScriptText(translate(element))) + "',");
+				stringBuilder.append("type: 'line',");
+				stringBuilder.append("borderWidth: 2,");
+				stringBuilder.append("fill: false,");
+				stringBuilder.append("borderColor: 'rgb(" + color[0] + ", " + color[1] + "," + color[2] + ")',");
+				stringBuilder.append("data: [" + join(data) + "]");
+				stringBuilder.append("},");
+			}
 		}
 
 	}
@@ -159,16 +163,22 @@ public abstract class StackedBarDatasetAbstract<T> {
 		for (EnrolledUser user : selectedUsers) {
 			Map<T, List<Long>> elementDataset = userTDataset.get(user);
 			for (T element : selecteds) {
-				int[] c = colors.get(element);
+
 				List<Long> data = elementDataset.get(element);
 
-				stringBuilder.append("{");
-				stringBuilder.append("label:'" + escapeJavaScriptText(translate(element)) + "',");
-				stringBuilder.append("stack: '" + escapeJavaScriptText(user.toString()) + "',");
-				stringBuilder.append(
-						"backgroundColor: 'rgba(" + c[0] + ", " + c[1] + "," + c[2] + "," + OPACITY_BAR + ")',");
-				stringBuilder.append("data: [" + join(data) + "]");
-				stringBuilder.append("},");
+				boolean anyNotZero = data.stream().anyMatch(value -> value != 0);
+
+				if (anyNotZero) {
+					int[] c = colors.get(element);
+					stringBuilder.append("{");
+					stringBuilder.append("label:'" + escapeJavaScriptText(translate(element)) + "',");
+					stringBuilder.append("name:'" + escapeJavaScriptText(user.toString()) + "',");
+					stringBuilder.append("stack: '" + user.getId() + "',");
+					stringBuilder.append(
+							"backgroundColor: 'rgba(" + c[0] + ", " + c[1] + "," + c[2] + "," + OPACITY_BAR + ")',");
+					stringBuilder.append("data: [" + join(data) + "]");
+					stringBuilder.append("},");
+				}
 
 			}
 		}

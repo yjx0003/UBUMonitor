@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
@@ -22,7 +28,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.web.WebView?>
 
-<BorderPane fx:id="canvas" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="500.0" minWidth="750.0" prefHeight="500.0" prefWidth="750.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
+<BorderPane fx:id="canvas" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="500.0" minWidth="750.0" prefHeight="500.0" prefWidth="750.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
    <top>
       <GridPane id="topBar" BorderPane.alignment="CENTER">
         <columnConstraints>
@@ -80,19 +86,12 @@
       </GridPane>
    </top>
    <center>
-      <SplitPane fx:id="splitPane" dividerPositions="0.0" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <SplitPane fx:id="splitPane" dividerPositions="0.0" BorderPane.alignment="CENTER">
          <items>
             <BorderPane maxWidth="600.0" prefHeight="200.0" prefWidth="200.0">
                <center>
-                  <GridPane minWidth="250.0" prefHeight="464.0" prefWidth="250.0" BorderPane.alignment="CENTER">
-                    <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" percentWidth="100.0" prefWidth="250.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                      <RowConstraints percentHeight="50.0" vgrow="SOMETIMES" />
-                      <RowConstraints percentHeight="50.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                     <children>
+                  <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
+                     <items>
                         <BorderPane prefHeight="200.0" prefWidth="200.0">
                            <top>
                               <Pane minHeight="64.0" prefHeight="64.0" prefWidth="250.0" BorderPane.alignment="CENTER">
@@ -110,7 +109,7 @@
                               <ListView fx:id="listParticipants" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
                            </center>
                         </BorderPane>
-                        <TabPane fx:id="tabPane" tabMinWidth="100.0" GridPane.rowIndex="1">
+                        <TabPane fx:id="tabPane" minWidth="-Infinity" prefWidth="250.0" tabMinWidth="100.0">
                            <tabs>
                               <Tab fx:id="tabUbuGrades" closable="false" text="%tab.grades">
                                  <content>
@@ -126,7 +125,7 @@
                                           </Pane>
                                        </top>
                                        <center>
-                                          <TreeView fx:id="tvwGradeReport" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                                          <TreeView fx:id="tvwGradeReport" minWidth="250.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
                                        </center>
                                     </BorderPane>
                                  </content>
@@ -175,8 +174,8 @@
                               </Tab>
                            </tabs>
                         </TabPane>
-                     </children>
-                  </GridPane>
+                     </items>
+                  </SplitPane>
                </center>
             </BorderPane>
             <BorderPane prefHeight="200.0" prefWidth="200.0">
@@ -187,7 +186,6 @@
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="227.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="227.0" />
                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="227.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="308.0" minWidth="10.0" prefWidth="263.0" />
                     </columnConstraints>
                     <rowConstraints>
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -201,7 +199,6 @@
                         <DatePicker fx:id="datePickerStart" editable="false" showWeekNumbers="true" GridPane.columnIndex="3" GridPane.rowIndex="1" />
                         <Label text="%label.startdate" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
                         <Label text="%label.enddate" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
-                        <Button fx:id="filterLogButton" mnemonicParsing="false" onAction="#applyFilterLogs" text="%btn.filter" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
                         <Label text="%label.groupbydate" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
                         <DatePicker fx:id="datePickerEnd" editable="false" showWeekNumbers="true" GridPane.columnIndex="3" GridPane.rowIndex="3" />
                         <Label text="%label.setMax" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />

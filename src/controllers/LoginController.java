@@ -108,11 +108,11 @@ public class LoginController implements Initializable {
 				} else {
 					setText(item.getDisplayLanguage());
 					try {
-						Image countryImage = new Image(AppInfo.IMG_FLAGS + item.getCountry() + ".png");
+						Image countryImage = new Image(AppInfo.IMG_FLAGS + item.getFlag() + ".png");
 						ImageView imageView = new ImageView(countryImage);
 						setGraphic(imageView);
 					} catch (Exception e) {
-						LOGGER.warn("No disponible la foto de bandera para: {}", item);
+						LOGGER.warn("No disponible la foto de bandera para: {}", item.getFlag());
 						setGraphic(null);
 					}
 

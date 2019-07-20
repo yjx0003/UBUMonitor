@@ -403,10 +403,12 @@ public class Course implements Serializable {
 		groups.add(group);
 
 	}
-	
+
 	/**
 	 * Add section to this course.
-	 * @param section section
+	 * 
+	 * @param section
+	 *            section
 	 */
 	public void addSection(Section section) {
 		sections.add(section);
@@ -427,7 +429,9 @@ public class Course implements Serializable {
 	 */
 	public void clear() {
 		this.enrolledUsers.clear();
+		this.roles.forEach(Role::clear); //eliminamos los usuarios de ese rol
 		this.roles.clear();
+		this.groups.forEach(Group::clear); //eliminamos los usuarios de ese grupo
 		this.groups.clear();
 		this.modules.clear();
 		this.gradeItems.clear();
@@ -515,6 +519,5 @@ public class Course implements Serializable {
 		return id == other.id;
 
 	}
-
 
 }

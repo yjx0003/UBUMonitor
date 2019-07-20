@@ -13,21 +13,20 @@ import java.util.Map;
  */
 public enum Languages {
 
-	CATALAN("ca-ES"),
-	GERMAN("de-DE"),
-	//SPANISH("es"),
+	CATALAN_SPAIN("ca-ES","ES-CT"),
+	GERMAN_GERMANY("de-DE"),
 	SPANISH_SPAIN("es-ES"),
-	FRENCH("fr-FR"),
-	ITALIAN("it-IT"),
-	//JAPANESE("ja"),
-	PORTUGUESE("pt-PT"),
-	//RUSSIAN("ru"),
-	//CHINESE_SIMPLIFIED("zh-CN"),
-	ENGLISH("en-GB");
-
+	FRENCH_FRANCE("fr-FR"),
+	ITALIAN_ITALY("it-IT"),
+	// JAPANESE("ja"),
+	PORTUGUESE_PORTUGAL("pt-PT"),
+	// RUSSIAN("ru"),
+	// CHINESE_SIMPLIFIED("zh-CN"),
+	ENGLISH_UK("en-GB");
 
 	private Locale locale;
-	
+	private String flag;
+
 	private static Map<Locale, Languages> localeMap;
 
 	static {
@@ -48,6 +47,13 @@ public enum Languages {
 	 */
 	private Languages(String languageTag) {
 		this.locale = Locale.forLanguageTag(languageTag);
+		this.flag = locale.getCountry();
+	}
+
+	private Languages(String languageTag, String flag) {
+		this.locale = Locale.forLanguageTag(languageTag);
+		this.flag = flag;
+
 	}
 
 	/**
@@ -59,7 +65,7 @@ public enum Languages {
 	 * @return elemento de la enumeracion asociada o el ingles si no existe.
 	 */
 	public static Languages getLanguageByTag(String code) {
-		return localeMap.getOrDefault(Locale.forLanguageTag(code), Languages.ENGLISH);
+		return localeMap.getOrDefault(Locale.forLanguageTag(code), Languages.ENGLISH_UK);
 	}
 
 	/**
@@ -85,22 +91,25 @@ public enum Languages {
 		return locale;
 
 	}
-	
+
 	public String getDisplayLanguage() {
 		return locale.getDisplayLanguage(locale);
 	}
-	
+
 	public String getCountry() {
 		return locale.getCountry();
 	}
-
+	
+	public String getFlag() {
+		return flag;
+	}
 
 	@Override
 	public String toString() {
 		String language = locale.getDisplayLanguage(locale);
 		String country = locale.getDisplayCountry(locale);
 
-		return country.isEmpty() ? language : language + " - " + country ;
+		return country.isEmpty() ? language : language + " - " + country;
 	}
 
 }

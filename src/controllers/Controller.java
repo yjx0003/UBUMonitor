@@ -82,8 +82,8 @@ public class Controller {
 
 			if (lang == null) {
 				LOGGER.info("No existe fichero de idioma para :{}", Locale.getDefault());
-				LOGGER.info("Cargando idioma:{} ", Languages.ENGLISH);
-				setSelectedLanguage(Languages.ENGLISH);
+				LOGGER.info("Cargando idioma:{} ", Languages.ENGLISH_UK);
+				setSelectedLanguage(Languages.ENGLISH_UK);
 			} else {
 				setSelectedLanguage(lang);
 			}
@@ -91,7 +91,7 @@ public class Controller {
 		} catch (NullPointerException | MissingResourceException e) {
 			LOGGER.error(
 					"No se ha podido encontrar el recurso de idioma, cargando idioma " + lang + ": {}", e);
-			setSelectedLanguage(Languages.ENGLISH);
+			setSelectedLanguage(Languages.ENGLISH_UK);
 		}
 	}
 

@@ -21,7 +21,7 @@ public abstract class StackedBarDatasetAbstract<T> {
 
 	protected List<EnrolledUser> enrolledUsers;
 	protected List<EnrolledUser> selectedUsers;
-	protected List<T> selecteds;
+	protected List<T> elements;
 	protected Map<T, int[]> colors;
 	protected GroupByAbstract<?> groupBy;
 	protected LocalDate start;
@@ -86,7 +86,7 @@ public abstract class StackedBarDatasetAbstract<T> {
 		// los elementos
 		this.enrolledUsers = new ArrayList<>(enrolledUsers);
 		this.selectedUsers = new ArrayList<>(selectedUsers);
-		this.selecteds = new ArrayList<>(selecteds);
+		this.elements = new ArrayList<>(selecteds);
 		this.groupBy = groupBy;
 		this.start = dateStart;
 		this.end = dateEnd;
@@ -130,7 +130,7 @@ public abstract class StackedBarDatasetAbstract<T> {
 
 		Map<T, List<Double>> meanTs = getMeans();
 
-		for (T element : selecteds) {
+		for (T element : elements) {
 
 			List<Double> data = meanTs.get(element);
 
@@ -141,8 +141,7 @@ public abstract class StackedBarDatasetAbstract<T> {
 
 				stringBuilder.append("{");
 				stringBuilder.append(
-						"label:'" + escapeJavaScriptText(I18n.get("chart.mean") + " "
-								+ escapeJavaScriptText(translate(element))) + "',");
+						"label:'" + escapeJavaScriptText(I18n.get("chart.mean") + " " + element) + "',");
 				stringBuilder.append("type: 'line',");
 				stringBuilder.append("borderWidth: 2,");
 				stringBuilder.append("fill: false,");
@@ -162,7 +161,7 @@ public abstract class StackedBarDatasetAbstract<T> {
 
 		for (EnrolledUser user : selectedUsers) {
 			Map<T, List<Long>> elementDataset = userTDataset.get(user);
-			for (T element : selecteds) {
+			for (T element : elements) {
 
 				List<Long> data = elementDataset.get(element);
 
@@ -217,13 +216,13 @@ public abstract class StackedBarDatasetAbstract<T> {
 	private void setRandomColors() {
 		colors = new HashMap<>();
 
-		for (int i = 0; i < selecteds.size(); i++) {
+		for (int i = 0; i < elements.size(); i++) {
 
 			// generamos un color a partir de HSB, el hue(H) es el color, saturacion (S), y
 			// brillo(B)
-			Color c = new Color(Color.HSBtoRGB(i / (float) selecteds.size(), 0.8f, 1.0f));
+			Color c = new Color(Color.HSBtoRGB(i / (float) elements.size(), 0.8f, 1.0f));
 			int[] array = { c.getRed(), c.getGreen(), c.getBlue() };
-			colors.put(selecteds.get(i), array);
+			colors.put(elements.get(i), array);
 		}
 
 	}

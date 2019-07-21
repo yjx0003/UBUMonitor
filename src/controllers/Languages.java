@@ -18,7 +18,7 @@ public enum Languages {
 	SPANISH_SPAIN("es-ES"),
 	FRENCH_FRANCE("fr-FR"),
 	ITALIAN_ITALY("it-IT"),
-	// JAPANESE("ja"),
+	//JAPANESE("ja"),
 	PORTUGUESE_PORTUGAL("pt-PT"),
 	// RUSSIAN("ru"),
 	// CHINESE_SIMPLIFIED("zh-CN"),
@@ -40,9 +40,7 @@ public enum Languages {
 	/**
 	 * Contructor de la enumeración
 	 * 
-	 * @param lang
-	 *            nombre del lenguaje
-	 * @param codeLanguage
+	 * @param languageTag
 	 *            codigo de lenguaje según IETF BCP 47
 	 */
 	private Languages(String languageTag) {

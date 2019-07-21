@@ -132,7 +132,7 @@
                               </Tab>
                               <Tab fx:id="tabUbuLogs" closable="false" text="%tab.logs">
                                  <content>
-                                    <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+                                    <TabPane fx:id="tabPaneUbuLogs" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
                                       <tabs>
                                           <Tab fx:id="tabUbuLogsComponent" closable="false" text="%tab.component">
                                              <content>
@@ -162,6 +162,40 @@
                                                          <children>
                                                             <Label alignment="TOP_LEFT" layoutX="22.0" layoutY="9.0" text="%label.componentorevent" textAlignment="RIGHT" />
                                                             <TextField fx:id="componentEventTextField" layoutX="125.0" layoutY="15.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+                                                         </children>
+                                                      </Pane>
+                                                   </top>
+                                                </BorderPane>
+                                             </content>
+                                          </Tab>
+                                          <Tab fx:id="tabUbuLogsSection" closable="false" text="%tab.section">
+                                             <content>
+                                                <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+                                                   <center>
+                                                      <ListView fx:id="listViewSection" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                                                   </center>
+                                                   <top>
+                                                      <Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+                                                         <children>
+                                                            <Label layoutX="14.0" layoutY="21.0" text="%label.section" />
+                                                            <TextField fx:id="sectionTextField" layoutX="128.0" layoutY="16.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+                                                         </children>
+                                                      </Pane>
+                                                   </top>
+                                                </BorderPane>
+                                             </content>
+                                          </Tab>
+                                          <Tab fx:id="tabUbuLogsCourseModule" closable="false" text="%tab.coursemodule">
+                                             <content>
+                                                <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+                                                   <center>
+                                                      <ListView fx:id="listViewCourseModule" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                                                   </center>
+                                                   <top>
+                                                      <Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+                                                         <children>
+                                                            <Label layoutX="14.0" layoutY="21.0" text="%label.coursemodule" />
+                                                            <TextField fx:id="courseModuleTextField" layoutX="128.0" layoutY="16.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
                                                          </children>
                                                       </Pane>
                                                    </top>

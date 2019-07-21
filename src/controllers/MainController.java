@@ -35,6 +35,8 @@ import com.sun.javafx.webkit.WebConsoleListener;
 
 import controllers.datasets.StackedBarDataSetComponent;
 import controllers.datasets.StackedBarDataSetComponentEvent;
+import controllers.datasets.StackedBarDataSetSection;
+import controllers.datasets.StackedBarDatasSetCourseModule;
 import controllers.ubulogs.GroupByAbstract;
 import export.CSVExport;
 import javafx.collections.FXCollections;
@@ -75,11 +77,13 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import model.Component;
 import model.ComponentEvent;
+import model.CourseModule;
 import model.EnrolledUser;
 import model.GradeItem;
 import model.Group;
 import model.ModuleType;
 import model.Role;
+import model.Section;
 import model.Stats;
 import netscape.javascript.JSException;
 
@@ -97,11 +101,6 @@ public class MainController implements Initializable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
 
 	private static final Image NONE_ICON = new Image("/img/manual.png");
-
-	private StackedBarDataSetComponent stackedBarDatasetComponent = StackedBarDataSetComponent.getInstance();
-
-	private StackedBarDataSetComponentEvent stackedBarDatasetComponentEvent = StackedBarDataSetComponentEvent
-			.getInstance();
 
 	private Controller controller = Controller.getInstance();
 
@@ -155,16 +154,41 @@ public class MainController implements Initializable {
 	private Tab tabUbuLogs;
 
 	@FXML
+	private TabPane tabPaneUbuLogs;
+
+	@FXML
 	private Tab tabUbuLogsComponent;
 
 	@FXML
 	private Tab tabUbuLogsEvent;
 
 	@FXML
+	private Tab tabUbuLogsSection;
+
+	@FXML
+	private Tab tabUbuLogsCourseModule;
+
+	@FXML
 	private TextField componentTextField;
 
 	@FXML
 	private TextField componentEventTextField;
+
+	@FXML
+	private TextField sectionTextField;
+	@FXML
+	private TextField courseModuleTextField;
+
+	@FXML
+	private ListView<Component> listViewComponents;
+
+	@FXML
+	private ListView<ComponentEvent> listViewEvents;
+
+	@FXML
+	private ListView<Section> listViewSection;
+	@FXML
+	private ListView<CourseModule> listViewCourseModule;
 
 	@FXML
 	private GridPane optionsUbuLogs;
@@ -183,14 +207,9 @@ public class MainController implements Initializable {
 	private DatePicker datePickerEnd;
 	private LocalDate dateEnd;
 
-	@FXML
-	private ListView<Component> listViewComponents;
-
-	@FXML
-	private ListView<ComponentEvent> listViewEvents;
-
 	private Stats stats;
-
+	
+	
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades de
 	 * las que se compone.
@@ -550,18 +569,25 @@ public class MainController implements Initializable {
 
 		tabUbuLogs.setOnSelectionChanged(this::setTablogs);
 
-		tabUbuLogsComponent.setOnSelectionChanged(event -> {
-			updateLogsChart();
-			findMax();
-		});
-
-		tabUbuLogsEvent.setOnSelectionChanged(event -> {
-			updateLogsChart();
-			findMax();
-		});
+		initTabLogs(tabUbuLogsComponent, tabUbuLogsEvent, tabUbuLogsSection, tabUbuLogsCourseModule);
 
 		initListViewComponents();
 		initListViewComponentsEvents();
+		initListViewSections();
+		initListViewCourseModules();
+
+	}
+
+	private void initTabLogs(Tab... tabs) {
+		for (Tab tab : tabs) {
+			tab.setOnSelectionChanged(event -> {
+				if (tab.isSelected()) {
+					updateLogsChart();
+					findMax();
+				}
+			});
+		}
+
 	}
 
 	/**
@@ -679,6 +705,112 @@ public class MainController implements Initializable {
 	}
 
 	/**
+	 * Inicializa el listado de componentes de la pestaña Componentes en
+	 */
+	public void initListViewSections() {
+		// cada vez que se seleccione nuevos elementos del list view actualizamos la
+		// grafica y la escala
+		listViewSection.getSelectionModel().getSelectedItems()
+				.addListener((Change<? extends Section> section) -> {
+					updateLogsChart();
+					findMax();
+				});
+
+		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
+		// ponemos un icono
+		listViewSection.setCellFactory(callback -> new ListCell<Section>() {
+			@Override
+			public void updateItem(Section section, boolean empty) {
+				super.updateItem(section, empty);
+				if (empty) {
+					setText(null);
+					setGraphic(null);
+				} else {
+					setText(section.getName());
+					try {
+						Image image = new Image(AppInfo.IMG_DIR + section + ".png");
+						setGraphic(new ImageView(image));
+					} catch (Exception e) {
+						setGraphic(null);
+					}
+				}
+			}
+		});
+
+		Set<Section> sections = controller.getActualCourse().getSections();
+
+		ObservableList<Section> observableListComponents = FXCollections.observableArrayList(sections);
+		FilteredList<Section> filterComponents = new FilteredList<>(observableListComponents);
+		listViewSection.setItems(filterComponents);
+		listViewSection.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+		// ponemos un listener al cuadro de texto para que se filtre el list view en
+		// tiempo real
+		sectionTextField.textProperty()
+				.addListener(((observable, oldValue, newValue) -> filterComponents.setPredicate(section -> {
+					if (newValue == null || newValue.isEmpty()) {
+						return true;
+					}
+					String textField = newValue.toLowerCase();
+					return section.getName().toLowerCase().contains(textField);
+				})));
+
+	}
+
+	/**
+	 * Inicializa el listado de componentes de la pestaña Componentes en
+	 */
+	public void initListViewCourseModules() {
+		// cada vez que se seleccione nuevos elementos del list view actualizamos la
+		// grafica y la escala
+		listViewCourseModule.getSelectionModel().getSelectedItems()
+				.addListener((Change<? extends CourseModule> courseModule) -> {
+					updateLogsChart();
+					findMax();
+				});
+
+		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
+		// ponemos un icono
+		listViewCourseModule.setCellFactory(callback -> new ListCell<CourseModule>() {
+			@Override
+			public void updateItem(CourseModule courseModule, boolean empty) {
+				super.updateItem(courseModule, empty);
+				if (empty) {
+					setText(null);
+					setGraphic(null);
+				} else {
+					setText(courseModule.getModuleName());
+					try {
+						Image image = new Image(AppInfo.IMG_DIR + courseModule.getModuleType().getModName() + ".png");
+						setGraphic(new ImageView(image));
+					} catch (Exception e) {
+						setGraphic(null);
+					}
+				}
+			}
+		});
+
+		Set<CourseModule> courseModules = controller.getActualCourse().getModules();
+
+		ObservableList<CourseModule> observableListComponents = FXCollections.observableArrayList(courseModules);
+		FilteredList<CourseModule> filterComponents = new FilteredList<>(observableListComponents);
+		listViewCourseModule.setItems(filterComponents);
+		listViewCourseModule.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+		// ponemos un listener al cuadro de texto para que se filtre el list view en
+		// tiempo real
+		courseModuleTextField.textProperty()
+				.addListener(((observable, oldValue, newValue) -> filterComponents.setPredicate(cm -> {
+					if (newValue == null || newValue.isEmpty()) {
+						return true;
+					}
+					String textField = newValue.toLowerCase();
+					return cm.getModuleName().toLowerCase().contains(textField);
+				})));
+
+	}
+
+	/**
 	 * Actualiza los graficos de log en funcion de que subpestaña esta seleccionada
 	 */
 	private void updateLogsChart() {
@@ -686,38 +818,32 @@ public class MainController implements Initializable {
 			return;
 		}
 
+		String stackedbardataset = null;
+		
 		if (tabUbuLogsComponent.isSelected()) {
-			updateComponentsChart();
-		} else if (tabUbuLogsEvent.isSelected()) {
-			updateComponentsEventsChart();
+			stackedbardataset = StackedBarDataSetComponent.getInstance().createData(listParticipants.getItems(),
+					listParticipants.getSelectionModel().getSelectedItems(),
+					listViewComponents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
+		}else if (tabUbuLogsEvent.isSelected()) {
+			stackedbardataset = StackedBarDataSetComponentEvent.getInstance().createData(listParticipants.getItems(),
+					listParticipants.getSelectionModel().getSelectedItems(),
+					listViewEvents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
+		}else if (tabUbuLogsSection.isSelected()) {
+			stackedbardataset = StackedBarDataSetSection.getInstance().createData(listParticipants.getItems(),
+					listParticipants.getSelectionModel().getSelectedItems(),
+					listViewSection.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
+		}else if (tabUbuLogsCourseModule.isSelected()) {
+			stackedbardataset = StackedBarDatasSetCourseModule.getInstance().createData(listParticipants.getItems(),
+					listParticipants.getSelectionModel().getSelectedItems(),
+					listViewCourseModule.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
 		}
-
-	}
-
-	/**
-	 * Actualiza los graficos de componentes
-	 */
-	private void updateComponentsChart() {
-
-		String stackedbardataset = stackedBarDatasetComponent.createData(listParticipants.getItems(),
-				listParticipants.getSelectionModel().getSelectedItems(),
-				listViewComponents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
-		LOGGER.info("Dataset para el stacked bar de componentes solo en JS: {}", stackedbardataset);
+		
+		
+		LOGGER.info("Dataset para el stacked bar en JS: {}", stackedbardataset);
 		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
+		
 	}
 
-	/**
-	 * Actualiza las graficas de los eventos.
-	 */
-	private void updateComponentsEventsChart() {
-		String stackedbardataset = stackedBarDatasetComponentEvent.createData(listParticipants.getItems(),
-				listParticipants.getSelectionModel().getSelectedItems(),
-				listViewEvents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
-
-		LOGGER.info("Dataset para el stacked bar de componentes y eventos en JS: {}", stackedbardataset);
-		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
-
-	}
 
 	/**
 	 * Metodo que se activa cuando se modifica la pestaña de logs o calificaciones
@@ -748,15 +874,23 @@ public class MainController implements Initializable {
 			return;
 		}
 
-		long maxYAxis = 0L;
+		long maxYAxis = 1L;
 		if (tabUbuLogsComponent.isSelected()) {
-			maxYAxis = selectedChoiceBoxDate.getMaxComponent(listParticipants.getItems(),
+			maxYAxis = selectedChoiceBoxDate.getComponents().getMaxElement(listParticipants.getItems(),
 					listViewComponents.getSelectionModel().getSelectedItems(),
 					dateStart, dateEnd);
 		} else if (tabUbuLogsEvent.isSelected()) {
-			maxYAxis = selectedChoiceBoxDate
-					.getMaxComponentEvent(listParticipants.getItems(),
-							listViewEvents.getSelectionModel().getSelectedItems(), dateStart, dateEnd);
+			maxYAxis = selectedChoiceBoxDate.getComponentsEvents().getMaxElement(
+					listParticipants.getItems(),
+					listViewEvents.getSelectionModel().getSelectedItems(), dateStart, dateEnd);
+		} else if (tabUbuLogsSection.isSelected()) {
+			maxYAxis = selectedChoiceBoxDate.getSections().getMaxElement(
+					listParticipants.getItems(),
+					listViewSection.getSelectionModel().getSelectedItems(), dateStart, dateEnd);
+		} else if (tabUbuLogsCourseModule.isSelected()) {
+			maxYAxis = selectedChoiceBoxDate.getCourseModules().getMaxElement(
+					listParticipants.getItems(),
+					listViewCourseModule.getSelectionModel().getSelectedItems(), dateStart, dateEnd);
 		}
 		textFieldMax.setText(Long.toString(maxYAxis));
 	}
@@ -1029,6 +1163,7 @@ public class MainController implements Initializable {
 	 */
 	public void logOut(ActionEvent actionEvent) {
 		LOGGER.info("Cerrando sesión de usuario");
+		controller.cancelTimer();
 		changeScene(getClass().getResource("/view/Login.fxml"));
 	}
 
@@ -1236,7 +1371,7 @@ public class MainController implements Initializable {
 								labels.append(",'" + escapeJavaScriptText(structTree.getValue().toString()) + "'");
 							}
 						}
-						calculatedGrade = Math.round(actualLine.getEnrolledUserPercentage(actualUser)*10)/100.0;
+						calculatedGrade = Math.round(actualLine.getEnrolledUserPercentage(actualUser) * 10) / 100.0;
 
 						if (firstGrade) {
 							dataSet.append(calculatedGrade);

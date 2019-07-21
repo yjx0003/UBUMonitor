@@ -8,9 +8,9 @@ package controllers;
  */
 public class AppInfo {
 
-	public static final String APPLICATION_NAME = "UBUMonitor";
+	public static final String APPLICATION_VERSION = "v2.4.2.0-dev";
 
-	public static final String APPLICATION_VERSION = "v2.4.1.0";
+	public static final String APPLICATION_NAME = "UBUMonitor " + APPLICATION_VERSION;
 
 	public static final String GITHUB = "https://github.com/yjx0003/UBUMonitor";
 

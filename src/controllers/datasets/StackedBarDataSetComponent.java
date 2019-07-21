@@ -52,12 +52,12 @@ public class StackedBarDataSetComponent extends StackedBarDatasetAbstract<Compon
 	 */
 	@Override
 	protected Map<Component, List<Double>> getMeans() {
-		return groupBy.getComponentsMeans(enrolledUsers, selecteds, start, end);
+		return groupBy.getComponents().getMeans(enrolledUsers, elements, start, end);
 	}
 
 	@Override
 	protected Map<EnrolledUser, Map<Component, List<Long>>> getUserCounts() {
-		return groupBy.getUsersComponentCounts(selectedUsers, selecteds, start, end);
+		return groupBy.getComponents().getUsersCounts(selectedUsers, elements, start, end);
 	}
 
 }

@@ -1,6 +1,7 @@
 package export;
 
 import controllers.Controller;
+import export.builder.CSVCourse;
 import export.builder.CSVCourseModule;
 import export.builder.CSVEnrolledUser;
 import export.builder.CSVGrade;
@@ -40,6 +41,7 @@ public class CSVExport {
 		generateFile(new CSVGroup("groups", dataBase));
 		generateFile(new CSVRole("roles", dataBase));
 		generateFile(new CSVSection("sections", dataBase));
+		generateFile(new CSVCourse("courses",dataBase));
 	}	
 
 	/**

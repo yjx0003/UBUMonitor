@@ -1,11 +1,10 @@
 package model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Representa las actividades o recursos presentes en un curso.
+ * 
  * @author Yi Peng Ji
  *
  */
@@ -82,31 +81,10 @@ public class CourseModule implements Serializable {
 	 */
 	private int indent;
 
-	private List<LogLine> logs;
-	
 	private Section section;
 
-
-	public CourseModule() {
-		logs = new ArrayList<>();
-	}
-	
 	public CourseModule(int id) {
-		this();
 		setCmid(id);
-	}
-
-	
-	public void addLog(LogLine log) {
-		logs.add(log);
-	}
-	
-	public List<LogLine> getLogs() {
-		return logs;
-	}
-
-	public void setLogs(List<LogLine> logs) {
-		this.logs = logs;
 	}
 
 	public String getUrl() {
@@ -258,14 +236,7 @@ public class CourseModule implements Serializable {
 			return false;
 		CourseModule other = (CourseModule) obj;
 		return cmid == other.cmid;
-			
+
 	}
-	
-	
-
-
-
-
-
 
 }

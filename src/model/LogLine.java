@@ -52,9 +52,25 @@ public class LogLine implements Serializable {
 	 */
 	public void setCourseModule(CourseModule courseModule) {
 		this.courseModule = courseModule;
-		courseModule.addLog(this);
 	}
 
+	/**
+	 * Devuelve true si existe modulo del curso asociado a este log
+	 * 
+	 * @return true si existe modulo del curso asociado a este log
+	 */
+	public boolean hasCourseModule() {
+		return courseModule != null;
+	}
+
+	public boolean hasSection() {
+		return hasCourseModule() && courseModule.getSection() != null;
+	}
+	
+	public Section getSection() {
+		return courseModule.getSection();
+	}
+	
 	/**
 	 * Devuelve la fecha del log.
 	 * 
@@ -100,6 +116,15 @@ public class LogLine implements Serializable {
 	 */
 	public Event getEventName() {
 		return eventName;
+	}
+
+	/**
+	 * Devuelve el par componente y evento.
+	 * 
+	 * @return componente y evento
+	 */
+	public ComponentEvent getComponentEvent() {
+		return ComponentEvent.get(component, eventName);
 	}
 
 	/**
@@ -169,6 +194,10 @@ public class LogLine implements Serializable {
 		this.user = user;
 	}
 
+	public boolean hasUser() {
+		return user != null;
+	}
+
 	/**
 	 * Devuelve el usuario afecto.
 	 * 
@@ -190,6 +219,7 @@ public class LogLine implements Serializable {
 
 	/**
 	 * Devuelve si es AM o PM del log.
+	 * 
 	 * @return AM o PM del log
 	 */
 	public AmPm getAmPm() {
@@ -301,5 +331,9 @@ public class LogLine implements Serializable {
 				+ ", IPAdress=" + ipAdress + ", user=" + user + ", affectedUser=" + affectedUser + ", courseModule="
 				+ courseModule + "]";
 	}
+
+	
+
+
 
 }

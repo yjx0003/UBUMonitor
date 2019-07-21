@@ -222,7 +222,7 @@ public class Controller {
 			}
 
 		};
-		timer = new Timer();
+		setTimer(new Timer());
 		timer.schedule(timerTask, 1800000, 1800000); // Cada 30 minutos se ejecuta
 	}
 
@@ -320,6 +320,7 @@ public class Controller {
 	}
 
 	public void setTimer(Timer timer) {
+		cancelTimer();
 		this.timer = timer;
 	}
 

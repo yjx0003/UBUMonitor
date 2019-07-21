@@ -51,7 +51,7 @@ public class StackedBarDataSetComponentEvent extends StackedBarDatasetAbstract<C
 	 */
 	@Override
 	protected Map<ComponentEvent, List<Double>> getMeans() {
-		return groupBy.getComponentEventMeans(enrolledUsers, selecteds, start, end);
+		return groupBy.getComponentsEvents().getMeans(enrolledUsers, elements, start, end);
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class StackedBarDataSetComponentEvent extends StackedBarDatasetAbstract<C
 	 */
 	@Override
 	protected Map<EnrolledUser, Map<ComponentEvent, List<Long>>> getUserCounts() {
-		return groupBy.getUserComponentEventCounts(selectedUsers, selecteds, start, end);
+		return groupBy.getComponentsEvents().getUsersCounts(selectedUsers, elements, start, end);
 	}
 
 }

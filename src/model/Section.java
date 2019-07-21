@@ -150,6 +150,11 @@ public class Section implements Serializable{
 			
 	}
 	
+	@Override
+	public String toString() {
+		return name;
+	}
+	
 	
 
 }

@@ -76,7 +76,7 @@ var messages = {
 	},
 	btnGroupMean : {
 		en: "Group Mean",
-		es: "Grupo Media",
+		es: "Media Del Grupo",
 		ca: "Grup Mitjana",
 		de: "Gruppe Mittlere",
 		fr: "Groupe Moyen",

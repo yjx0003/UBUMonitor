@@ -1,5 +1,6 @@
 package model;
 
+import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
@@ -10,8 +11,9 @@ import java.util.Objects;
  * @author Yi Peng Ji
  *
  */
-public class ComponentEvent {
+public class ComponentEvent implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private Component component;
 	private Event eventName;
 

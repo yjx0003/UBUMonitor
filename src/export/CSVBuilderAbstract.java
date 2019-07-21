@@ -1,8 +1,10 @@
 package export;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -33,10 +35,10 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	private static final Controller CONTROLLER = Controller.getInstance();
 	// Build the path if not exists.
 	static {
-		
+
 		PATH = Paths.get(AppInfo.EXPORT_DIR, CONTROLLER.getUrlHost().getHost(),
 				CONTROLLER.getUser().getFullName() + "-" + CONTROLLER.getUser().getId(),
-				CONTROLLER.getActualCourse() + "-"+ CONTROLLER.getActualCourse().getId());
+				CONTROLLER.getActualCourse() + "-" + CONTROLLER.getActualCourse().getId());
 		File directory = PATH.toFile();
 		if (!directory.isDirectory()) {
 			directory.mkdirs();
@@ -162,8 +164,9 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	@Override
 	public void writeCSV() {
 		final CSVWriter writer;
-		try {
-			writer = new CSVWriter(new FileWriter(PATH.resolve(getFileName()).toFile()));
+		try (FileOutputStream fos = new FileOutputStream(PATH.resolve(getFileName()).toFile());
+				OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
+			writer = new CSVWriter(osw);
 			writer.writeAll(getData());
 			writer.close();
 		} catch (IOException e) {

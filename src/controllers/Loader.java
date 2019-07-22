@@ -36,7 +36,7 @@ public class Loader extends Application {
 			stage.setScene(scene);
 			stage.getIcons().add(new Image("/img/logo_min.png"));
 			stage.setTitle(AppInfo.APPLICATION_NAME);
-			stage.setResizable(false);
+			stage.resizableProperty().setValue(Boolean.FALSE);
 			stage.show();
 			controller.setStage(stage);
 		} catch (Exception e) {

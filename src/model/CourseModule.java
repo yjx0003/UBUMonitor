@@ -135,10 +135,6 @@ public class CourseModule implements Serializable {
 		this.uservisible = uservisible;
 	}
 
-	public void setVisible(int uservisible) {
-		this.uservisible = uservisible != 0;
-
-	}
 
 	public String getAvailabilityinfo() {
 		return availabilityinfo;

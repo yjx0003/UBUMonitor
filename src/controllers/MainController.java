@@ -69,6 +69,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
@@ -208,8 +209,7 @@ public class MainController implements Initializable {
 	private LocalDate dateEnd;
 
 	private Stats stats;
-	
-	
+
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades de
 	 * las que se compone.
@@ -726,9 +726,18 @@ public class MainController implements Initializable {
 					setText(null);
 					setGraphic(null);
 				} else {
-					setText(section.getName());
+					String sectionName = section.getName();
+					setText(sectionName == null || sectionName.isEmpty() ? I18n.get("text.sectionplaceholder") : sectionName);
+					
+					
 					try {
-						Image image = new Image(AppInfo.IMG_DIR + section + ".png");
+						if (!section.isVisible()) {
+							setTextFill(Color.GRAY);
+						}
+						
+						String visible = section.isVisible() ? "visible" : "not_visible";
+						
+						Image image = new Image(AppInfo.IMG_DIR + visible + ".png");
 						setGraphic(new ImageView(image));
 					} catch (Exception e) {
 						setGraphic(null);
@@ -780,6 +789,9 @@ public class MainController implements Initializable {
 					setGraphic(null);
 				} else {
 					setText(courseModule.getModuleName());
+					if (!courseModule.isVisible()) {
+						setTextFill(Color.GRAY);
+					}
 					try {
 						Image image = new Image(AppInfo.IMG_DIR + courseModule.getModuleType().getModName() + ".png");
 						setGraphic(new ImageView(image));
@@ -819,31 +831,31 @@ public class MainController implements Initializable {
 		}
 
 		String stackedbardataset = null;
-		
+
 		if (tabUbuLogsComponent.isSelected()) {
 			stackedbardataset = StackedBarDataSetComponent.getInstance().createData(listParticipants.getItems(),
 					listParticipants.getSelectionModel().getSelectedItems(),
-					listViewComponents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
-		}else if (tabUbuLogsEvent.isSelected()) {
+					listViewComponents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart,
+					dateEnd);
+		} else if (tabUbuLogsEvent.isSelected()) {
 			stackedbardataset = StackedBarDataSetComponentEvent.getInstance().createData(listParticipants.getItems(),
 					listParticipants.getSelectionModel().getSelectedItems(),
 					listViewEvents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
-		}else if (tabUbuLogsSection.isSelected()) {
+		} else if (tabUbuLogsSection.isSelected()) {
 			stackedbardataset = StackedBarDataSetSection.getInstance().createData(listParticipants.getItems(),
 					listParticipants.getSelectionModel().getSelectedItems(),
 					listViewSection.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
-		}else if (tabUbuLogsCourseModule.isSelected()) {
+		} else if (tabUbuLogsCourseModule.isSelected()) {
 			stackedbardataset = StackedBarDatasSetCourseModule.getInstance().createData(listParticipants.getItems(),
 					listParticipants.getSelectionModel().getSelectedItems(),
-					listViewCourseModule.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
+					listViewCourseModule.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart,
+					dateEnd);
 		}
-		
-		
+
 		LOGGER.info("Dataset para el stacked bar en JS: {}", stackedbardataset);
 		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
-		
-	}
 
+	}
 
 	/**
 	 * Metodo que se activa cuando se modifica la pestaña de logs o calificaciones
@@ -951,7 +963,8 @@ public class MainController implements Initializable {
 		filteredEnrolledList.setPredicate(
 				e -> (rol == null || rol.contains(e)) && (group == null || group.contains(e)) &&
 						(textField.isEmpty() || e.getFullName().toLowerCase().contains(textField)));
-
+		// Mostramos nº participantes
+		lblCountParticipants.setText(I18n.get("label.participants") + filteredEnrolledList.size());
 		// Actualizamos los graficos
 		updateGradesChart();
 		updateLogsChart();

@@ -68,12 +68,10 @@
 
 .list-cell:hover {
   -fx-background-color: #6ff9ff;
-  -fx-text-fill: #000000;
 }
 
 .list-cell:selected {
   -fx-background-color: #6ff9ff;
-  -fx-text-fill: #000000;
 }
 
 .tree-cell:hover{

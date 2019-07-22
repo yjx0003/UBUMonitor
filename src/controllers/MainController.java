@@ -730,7 +730,6 @@ public class MainController implements Initializable {
 					String sectionName = section.getName();
 					setText(sectionName == null || sectionName.isEmpty() ? I18n.get("text.sectionplaceholder") : sectionName);
 					
-					
 					try {
 						if (!section.isVisible()) {
 							setTextFill(Color.GRAY);
@@ -1197,6 +1196,7 @@ public class MainController implements Initializable {
 			controller.getStage().setScene(scene);
 			controller.getStage().getIcons().add(new Image("/img/logo_min.png"));
 			controller.getStage().setTitle(AppInfo.APPLICATION_NAME);
+			controller.getStage().resizableProperty().setValue(Boolean.FALSE);
 			controller.getStage().show();
 		} catch (Exception e) {
 			LOGGER.error("Error al modifcar la ventana de JavaFX: {}", e);

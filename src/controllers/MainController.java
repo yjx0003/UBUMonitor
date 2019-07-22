@@ -1,6 +1,7 @@
 package controllers;
 
 import java.awt.Desktop;
+import java.awt.Desktop.Action;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -1221,7 +1222,8 @@ public class MainController implements Initializable {
 	 */
 	public void aboutApp(ActionEvent actionEvent) {
 		try {
-			if (Desktop.isDesktopSupported()) {
+			if (Desktop.getDesktop().isSupported(Action.BROWSE)) {
+				LOGGER.info("El sistema operativo soporta la API de desktop.");
 				Desktop.getDesktop().browse(new URL(AppInfo.GITHUB).toURI());
 			}
 		} catch (IOException | URISyntaxException e) {

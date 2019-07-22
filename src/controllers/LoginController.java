@@ -77,6 +77,8 @@ public class LoginController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		
+	
 		try {
 			initializeProperties();
 		} catch (IOException e) {
@@ -242,7 +244,7 @@ public class LoginController implements Initializable {
 			stage.setScene(scene);
 			stage.getIcons().add(new Image("/img/logo_min.png"));
 			stage.setTitle(AppInfo.APPLICATION_NAME);
-			stage.setResizable(false);
+			stage.resizableProperty().setValue(Boolean.FALSE);
 			stage.show();
 			controller.setStage(stage);
 		} catch (IOException e) {

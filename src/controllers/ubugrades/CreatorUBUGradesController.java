@@ -262,11 +262,10 @@ public class CreatorUBUGradesController {
 		courses.forEach(course -> course.addEnrolledUser(enrolledUser));
 
 		List<Role> roles = createRoles(user.optJSONArray("roles"));
-		roles.forEach(role-> role.addEnrolledUser(enrolledUser));
-		
+		roles.forEach(role -> role.addEnrolledUser(enrolledUser));
 
 		List<Group> groups = createGroups(user.getJSONArray("groups"));
-		groups.forEach(group->group.addEnrolledUser(enrolledUser));
+		groups.forEach(group -> group.addEnrolledUser(enrolledUser));
 
 		return enrolledUser;
 
@@ -475,7 +474,7 @@ public class CreatorUBUGradesController {
 				if (courseModule != null) {
 					courseModule.setSection(section);
 					modulesList.add(courseModule);
-					
+
 				}
 
 			}
@@ -496,7 +495,6 @@ public class CreatorUBUGradesController {
 		section.setSummaryformat(DescriptionFormat.get(sectionJson.optInt("summaryformat")));
 		section.setSectionNumber(sectionJson.optInt("section", -1));
 		section.setHiddenbynumsections(sectionJson.optInt("hiddenbynumsections"));
-	
 
 		return section;
 	}
@@ -525,7 +523,7 @@ public class CreatorUBUGradesController {
 		module.setModuleName(jsonObject.optString("name"));
 		module.setInstance(jsonObject.optInt("instance"));
 		module.setDescription(jsonObject.optString(DESCRIPTION));
-		module.setVisible(jsonObject.optInt("visible"));
+		module.setVisible(jsonObject.optInt("visible", 1) != 0);
 		module.setUservisible(jsonObject.optBoolean("uservisible"));
 		module.setVisibleoncoursepage(jsonObject.optInt("visibleoncoursepage"));
 		module.setModicon(jsonObject.optString("modicon"));

@@ -24,6 +24,7 @@ public enum ModuleType {
 	FOLDER("folder"),
 	FORUM("forum"),
 	GLOSSARY("glossary"),
+	GUIA_DOCENTE("guiadocente"),
 	HOT_POT("hotpot"),
 	IMS_PACKAGE("imscp"),
 	JOURNAL("journal"),
@@ -35,6 +36,7 @@ public enum ModuleType {
 	QUIZ("quiz"),
 	SCORM_PACKAGE("scorm"),
 	SURVEY("survey"),
+	TURNITIN_TOOL_2("turnitintooltwo"),
 	URL("url"),
 	WIKI("wiki"),
 	WORKSHOP("workshop");

@@ -8,7 +8,7 @@ package controllers;
  */
 public class AppInfo {
 
-	public static final String APPLICATION_VERSION = "v2.4.3-dev";
+	public static final String APPLICATION_VERSION = "v2.4.4-dev";
 
 	public static final String APPLICATION_NAME = "UBUMonitor " + APPLICATION_VERSION;
 

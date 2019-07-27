@@ -51,6 +51,8 @@ import webservice.gradereport.GradereportUserGetGradesTable;
  */
 public class CreatorUBUGradesController {
 
+	private static final String SHORTNAME = "shortname";
+
 	private static final String FULLNAME = "fullname";
 
 	private static final String DESCRIPTIONFORMAT = "descriptionformat";
@@ -84,7 +86,7 @@ public class CreatorUBUGradesController {
 		WebService ws = new CoreEnrolGetUsersCourses(userid);
 		String response = ws.getResponse();
 		JSONArray jsonArray = new JSONArray(response);
-		return createCourses(jsonArray);
+		return createCourses(jsonArray, true);
 
 	}
 
@@ -258,7 +260,7 @@ public class CreatorUBUGradesController {
 			enrolledUser.setImageBytes(imageBytes);
 		}
 
-		List<Course> courses = createCourses(user.optJSONArray("enrolledcourses"));
+		List<Course> courses = createCourses(user.optJSONArray("enrolledcourses"), false);
 		courses.forEach(course -> course.addEnrolledUser(enrolledUser));
 
 		List<Role> roles = createRoles(user.optJSONArray("roles"));
@@ -282,14 +284,14 @@ public class CreatorUBUGradesController {
 	 *            {@link webservice.WSFunctions#CORE_ENROL_GET_USERS_COURSES}
 	 * @return lista de cursos
 	 */
-	public static List<Course> createCourses(JSONArray jsonArray) {
+	public static List<Course> createCourses(JSONArray jsonArray, boolean userCourses) {
 		if (jsonArray == null)
 			return Collections.emptyList();
 
 		List<Course> courses = new ArrayList<>();
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject jsonObject = jsonArray.getJSONObject(i);
-			courses.add(createCourse(jsonObject));
+			courses.add(userCourses ? createUserCourse(jsonObject) : createEnrolleduCourse(jsonObject));
 		}
 		return courses;
 
@@ -300,18 +302,17 @@ public class CreatorUBUGradesController {
 	 * 
 	 * @param jsonObject
 	 *            json parcial
-	 *            {@link webservice.WSFunctions#CORE_ENROL_GET_ENROLLED_USERS} o
 	 *            {@link webservice.WSFunctions#CORE_ENROL_GET_USERS_COURSES}
 	 * @return curso creado
 	 */
-	public static Course createCourse(JSONObject jsonObject) {
+	public static Course createUserCourse(JSONObject jsonObject) {
 		if (jsonObject == null)
 			return null;
 
 		int id = jsonObject.getInt("id");
 		Course course = CONTROLLER.getDataBase().getCourses().getById(id);
 
-		String shortName = jsonObject.getString("shortname");
+		String shortName = jsonObject.getString(SHORTNAME);
 		String fullName = jsonObject.getString(FULLNAME);
 
 		String idNumber = jsonObject.optString("idnumber");
@@ -333,6 +334,31 @@ public class CreatorUBUGradesController {
 		course.setSummaryformat(summaryFormat);
 		course.setStartDate(startDate);
 		course.setEndDate(endDate);
+
+		return course;
+
+	}
+
+	/**
+	 * Crea un curso e inicializa sus atributos
+	 * 
+	 * @param jsonObject
+	 *            json parcial
+	 *            {@link webservice.WSFunctions#CORE_ENROL_GET_ENROLLED_USERS}
+	 * @return curso creado
+	 */
+	public static Course createEnrolleduCourse(JSONObject jsonObject) {
+		if (jsonObject == null)
+			return null;
+
+		int id = jsonObject.getInt("id");
+		Course course = CONTROLLER.getDataBase().getCourses().getById(id);
+
+		String shortName = jsonObject.getString(SHORTNAME);
+		String fullName = jsonObject.getString(FULLNAME);
+
+		course.setShortName(shortName);
+		course.setFullName(fullName);
 
 		return course;
 
@@ -377,7 +403,7 @@ public class CreatorUBUGradesController {
 		Role role = CONTROLLER.getDataBase().getRoles().getById(roleid);
 
 		String name = jsonObject.getString("name");
-		String shortName = jsonObject.getString("shortname");
+		String shortName = jsonObject.getString(SHORTNAME);
 
 		role.setRoleName(name);
 		role.setRoleShortName(shortName);

@@ -19,6 +19,7 @@ public class GroupByAll extends GroupByAbstract<Boolean> {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private static final List<Boolean> LIST= Arrays.asList(true);
 
 	/**
 	 * Contructor que recibe las lineas de logs.
@@ -34,7 +35,7 @@ public class GroupByAll extends GroupByAbstract<Boolean> {
 	 */
 	@Override
 	public List<Boolean> getRange(LocalDate start, LocalDate end) {
-		return Arrays.asList(true);
+		return LIST;
 	}
 
 	/**

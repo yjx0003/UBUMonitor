@@ -1,8 +1,10 @@
 package controllers.ubulogs;
 
 import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Function;
 
 import org.threeten.extra.YearQuarter;
@@ -11,6 +13,7 @@ import model.LogLine;
 
 /**
  * Agrupa los logs por trimestre y año.
+ * 
  * @author Yi Peng Ji
  *
  */
@@ -23,11 +26,13 @@ public class GroupByYearQuarter extends GroupByAbstract<YearQuarter> {
 
 	/**
 	 * Constructor para agrupar la lineas de log en funcion de los usuarios.
-	 * @param logLines las lineas de log
+	 * 
+	 * @param logLines
+	 *            las lineas de log
 	 */
 	public GroupByYearQuarter(List<LogLine> logLines) {
 		super(logLines);
-	
+
 	}
 
 	/**
@@ -37,11 +42,10 @@ public class GroupByYearQuarter extends GroupByAbstract<YearQuarter> {
 	public List<YearQuarter> getRange(LocalDate start, LocalDate end) {
 		List<YearQuarter> list = new ArrayList<>();
 
-		for (YearQuarter YearQuarterStart = YearQuarter.from(start),
-				YearQuarterEnd = YearQuarter.from(end);
+		for (YearQuarter YearQuarterStart = YearQuarter.from(start), YearQuarterEnd = YearQuarter.from(end);
 				!YearQuarterStart.isAfter(YearQuarterEnd);
 				YearQuarterStart = YearQuarterStart.plusQuarters(1)) {
-			
+
 			list.add(YearQuarterStart);
 
 		}
@@ -61,7 +65,7 @@ public class GroupByYearQuarter extends GroupByAbstract<YearQuarter> {
 	 */
 	@Override
 	public Function<YearQuarter, String> getStringFormatFunction() {
-		return YearQuarter::toString;
+		return yearQuarter -> yearQuarter.getQuarter().getDisplayName(TextStyle.FULL, Locale.getDefault());
 	}
 
 	/**
@@ -71,7 +75,7 @@ public class GroupByYearQuarter extends GroupByAbstract<YearQuarter> {
 	public TypeTimes getTypeTime() {
 		return TypeTimes.YEAR_QUARTER;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

@@ -18,6 +18,7 @@ public class UBUMonitor {
 		System.setProperty("logfile.name", AppInfo.LOGGER_FILE_APPENDER);
 		systemProperties();
 		Loader.initialize();
+
 	}
 
 	/**

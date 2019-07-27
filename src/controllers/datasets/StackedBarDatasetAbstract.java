@@ -141,10 +141,11 @@ public abstract class StackedBarDatasetAbstract<T> {
 
 				stringBuilder.append("{");
 				stringBuilder.append(
-						"label:'" + escapeJavaScriptText(I18n.get("chart.mean") + " " + element) + "',");
+						"label:'" + escapeJavaScriptText(I18n.get("chart.mean") + " " + translate(element)) + "',");
 				stringBuilder.append("type: 'line',");
 				stringBuilder.append("borderWidth: 2,");
 				stringBuilder.append("fill: false,");
+				stringBuilder.append("backgroundColor: 'rgb(" + color[0] + ", " + color[1] + "," + color[2] + ")',");
 				stringBuilder.append("borderColor: 'rgb(" + color[0] + ", " + color[1] + "," + color[2] + ")',");
 				stringBuilder.append("data: [" + join(data) + "]");
 				stringBuilder.append("},");
@@ -172,8 +173,7 @@ public abstract class StackedBarDatasetAbstract<T> {
 					stringBuilder.append("{");
 					stringBuilder.append("label:'" + escapeJavaScriptText(translate(element)) + "',");
 					stringBuilder.append("name:'" + escapeJavaScriptText(user.toString()) + "',");
-					stringBuilder.append("stack: '" + user.getId() + "',");
-					stringBuilder.append(
+					stringBuilder.append("stack: '" + user.getId() + "',");					stringBuilder.append(
 							"backgroundColor: 'rgba(" + c[0] + ", " + c[1] + "," + c[2] + "," + OPACITY_BAR + ")',");
 					stringBuilder.append("data: [" + join(data) + "]");
 					stringBuilder.append("},");

@@ -243,6 +243,7 @@ var optionsStackedBar= {
 	tooltips: {
 		position: 'nearest',
 		mode: 'x',
+		itemSort: function(a, b) {return b.yLabel - a.yLabel;},
 		callbacks: {
 			label: function(tooltipItem, data) {
 				return data.datasets[tooltipItem.datasetIndex].label + " : " + Math.round(tooltipItem.yLabel*100)/100;

@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Instant;
@@ -28,6 +29,7 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 
+import org.apache.commons.csv.CSVFormat.Predefined;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +42,7 @@ import controllers.datasets.StackedBarDataSetSection;
 import controllers.datasets.StackedBarDatasSetCourseModule;
 import controllers.ubulogs.GroupByAbstract;
 import export.CSVExport;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
@@ -54,6 +57,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
@@ -191,6 +195,15 @@ public class MainController implements Initializable {
 	private ListView<Section> listViewSection;
 	@FXML
 	private ListView<CourseModule> listViewCourseModule;
+
+	@FXML
+	private ChoiceBox<ModuleType> choiceBoxCourseModule;
+
+	@FXML
+	private CheckBox choiceBoxSection;
+
+	@FXML
+	private CheckBox checkBoxCourseModule;
 
 	@FXML
 	private GridPane optionsUbuLogs;
@@ -383,8 +396,6 @@ public class MainController implements Initializable {
 		observableUsers.sort(EnrolledUser.NAME_COMPARATOR);
 		filteredEnrolledList = new FilteredList<>(observableUsers);
 
-		listParticipants.setPlaceholder(new Label(I18n.get("text.nousers")));
-
 		// Activamos la selección múltiple en la lista de participantes
 		listParticipants.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
@@ -497,7 +508,7 @@ public class MainController implements Initializable {
 		ObservableList<GroupByAbstract<?>> typeTimes = FXCollections
 				.observableArrayList(controller.getActualCourse().getLogStats().getList());
 		choiceBoxDate.setItems(typeTimes);
-		choiceBoxDate.getSelectionModel().selectFirst();
+		choiceBoxDate.getSelectionModel().select(controller.getActualCourse().getLogStats().getByType());
 		selectedChoiceBoxDate = choiceBoxDate.getValue();
 
 		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> {
@@ -615,7 +626,7 @@ public class MainController implements Initializable {
 				} else {
 					setText(I18n.get(component));
 					try {
-						Image image = new Image(AppInfo.IMG_DIR + component + ".png");
+						Image image = new Image(AppInfo.IMG_DIR + component.name().toLowerCase() + ".png");
 						setGraphic(new ImageView(image));
 					} catch (Exception e) {
 						setGraphic(null);
@@ -671,7 +682,8 @@ public class MainController implements Initializable {
 					setText(I18n.get(componentEvent.getComponent()) + " - "
 							+ I18n.get(componentEvent.getEventName()));
 					try {
-						Image image = new Image(AppInfo.IMG_DIR + componentEvent.getComponent() + ".png");
+						Image image = new Image(
+								AppInfo.IMG_DIR + componentEvent.getComponent().name().toLowerCase() + ".png");
 						setGraphic(new ImageView(image));
 					} catch (Exception e) {
 						setGraphic(null);
@@ -728,15 +740,16 @@ public class MainController implements Initializable {
 					setGraphic(null);
 				} else {
 					String sectionName = section.getName();
-					setText(sectionName == null || sectionName.isEmpty() ? I18n.get("text.sectionplaceholder") : sectionName);
-					
+					setText(sectionName == null || sectionName.isEmpty() ? I18n.get("text.sectionplaceholder")
+							: sectionName);
+
 					try {
 						if (!section.isVisible()) {
 							setTextFill(Color.GRAY);
 						}
-						
+
 						String visible = section.isVisible() ? "visible" : "not_visible";
-						
+
 						Image image = new Image(AppInfo.IMG_DIR + visible + ".png");
 						setGraphic(new ImageView(image));
 					} catch (Exception e) {
@@ -749,14 +762,14 @@ public class MainController implements Initializable {
 		Set<Section> sections = controller.getActualCourse().getSections();
 
 		ObservableList<Section> observableListComponents = FXCollections.observableArrayList(sections);
-		FilteredList<Section> filterComponents = new FilteredList<>(observableListComponents);
-		listViewSection.setItems(filterComponents);
+		FilteredList<Section> filterSections = new FilteredList<>(observableListComponents);
+		listViewSection.setItems(filterSections);
 		listViewSection.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		// ponemos un listener al cuadro de texto para que se filtre el list view en
 		// tiempo real
 		sectionTextField.textProperty()
-				.addListener(((observable, oldValue, newValue) -> filterComponents.setPredicate(section -> {
+				.addListener(((observable, oldValue, newValue) -> filterSections.setPredicate(section -> {
 					if (newValue == null || newValue.isEmpty()) {
 						return true;
 					}
@@ -801,25 +814,37 @@ public class MainController implements Initializable {
 				}
 			}
 		});
-
+		
+		
 		Set<CourseModule> courseModules = controller.getActualCourse().getModules();
 
 		ObservableList<CourseModule> observableListComponents = FXCollections.observableArrayList(courseModules);
-		FilteredList<CourseModule> filterComponents = new FilteredList<>(observableListComponents);
-		listViewCourseModule.setItems(filterComponents);
+		FilteredList<CourseModule> filterCourseModules = new FilteredList<>(observableListComponents);
+		listViewCourseModule.setItems(filterCourseModules);
 		listViewCourseModule.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
+		Predicate<CourseModule> predicate = cm -> containsTextField(courseModuleText, cm.getModuleName())
+				&& (checkBoxCourseModule.isSelected() || cm.isVisible())));
+		
 		// ponemos un listener al cuadro de texto para que se filtre el list view en
 		// tiempo real
 		courseModuleTextField.textProperty()
-				.addListener(((observable, oldValue, newValue) -> filterComponents.setPredicate(cm -> {
-					if (newValue == null || newValue.isEmpty()) {
-						return true;
-					}
-					String textField = newValue.toLowerCase();
-					return cm.getModuleName().toLowerCase().contains(textField);
-				})));
+				.addListener((observable, oldValue, newValue) -> filterCourseModules
+						.setPredicate(predicate));
 
+		checkBoxCourseModule.selectedProperty().addListener(c-> filterCourseModules
+				.setPredicate(predicate));
+
+	}
+
+
+	
+	private boolean containsTextField(String newValue, String element) {
+		if (newValue == null || newValue.isEmpty()) {
+			return true;
+		}
+		String textField = newValue.toLowerCase();
+		return element.toLowerCase().contains(textField);
 	}
 
 	/**
@@ -851,6 +876,7 @@ public class MainController implements Initializable {
 					listViewCourseModule.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart,
 					dateEnd);
 		}
+		
 
 		LOGGER.info("Dataset para el stacked bar en JS: {}", stackedbardataset);
 		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
@@ -1212,6 +1238,10 @@ public class MainController implements Initializable {
 	public void clearSelection(ActionEvent actionEvent) {
 		listParticipants.getSelectionModel().clearSelection();
 		tvwGradeReport.getSelectionModel().clearSelection();
+		listViewComponents.getSelectionModel().clearSelection();
+		listViewEvents.getSelectionModel().clearSelection();
+		listViewSection.getSelectionModel().clearSelection();
+		listViewCourseModule.getSelectionModel().clearSelection();
 	}
 
 	/**
@@ -1222,9 +1252,9 @@ public class MainController implements Initializable {
 	 */
 	public void aboutApp(ActionEvent actionEvent) {
 		try {
-			if (Desktop.getDesktop().isSupported(Action.BROWSE)) {
+			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Action.BROWSE)) {
 				LOGGER.info("El sistema operativo soporta la API de desktop.");
-				Desktop.getDesktop().browse(new URL(AppInfo.GITHUB).toURI());
+				Desktop.getDesktop().browse(new URI(AppInfo.GITHUB));
 			}
 		} catch (IOException | URISyntaxException e) {
 			LOGGER.error("Error al abir la pagina aboutApp: {}", e);

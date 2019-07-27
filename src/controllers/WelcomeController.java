@@ -52,6 +52,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Course;
+import model.CourseCategory;
 import model.DataBase;
 import model.Logs;
 import persistence.Encryption;
@@ -169,10 +170,9 @@ public class WelcomeController implements Initializable {
 			if (!isFileCacheExists) {
 				loadData(controller.getPassword());
 			} else {
-				DataBase copia = new DataBase();
-				controller.setDataBase(copia);
-				Course copyCourse=copia.getCourses().getById(selectedCourse.getId());
-				copyCourse.setCourseCategory(selectedCourse.getCourseCategory());
+				DataBase copyDataBase = new DataBase();
+				Course copyCourse = copyDataBase(copyDataBase, selectedCourse);
+				controller.setDataBase(copyDataBase);
 				controller.setActualCourse(copyCourse);
 				isBBDDLoaded = true;
 			}
@@ -182,6 +182,24 @@ public class WelcomeController implements Initializable {
 			loadNextWindow();
 		}
 
+	}
+
+	private Course copyDataBase(DataBase copyDataBase, Course selectedCourse) {
+
+		Course copyCourse = copyDataBase.getCourses().getById(selectedCourse.getId());
+		copyCourse.setStartDate(selectedCourse.getStartDate());
+		copyCourse.setEndDate(selectedCourse.getEndDate());
+		copyCourse.setSummary(selectedCourse.getSummary());
+		copyCourse.setSummaryformat(selectedCourse.getSummaryformat());
+
+		CourseCategory courseCategory = selectedCourse.getCourseCategory();
+		CourseCategory copyCourseCategory = copyDataBase.getCourseCategories().getById(courseCategory.getId());
+
+		copyCourseCategory.setName(courseCategory.getName());
+
+		copyCourse.setCourseCategory(copyCourseCategory);
+
+		return copyCourse;
 	}
 
 	private void saveData() {
@@ -205,6 +223,7 @@ public class WelcomeController implements Initializable {
 		DataBase dataBase;
 		try {
 			dataBase = (DataBase) Encryption.decrypt(password, cacheFilePath.toString());
+			copyDataBase(dataBase, listCourses.getSelectionModel().getSelectedItem());
 			controller.setDataBase(dataBase);
 			isBBDDLoaded = true;
 		} catch (IllegalBlockSizeException | BadPaddingException e) {

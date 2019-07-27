@@ -29,225 +29,251 @@
 <?import javafx.scene.web.WebView?>
 
 <BorderPane fx:id="canvas" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="500.0" minWidth="750.0" prefHeight="500.0" prefWidth="750.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
-   <top>
-      <GridPane id="topBar" BorderPane.alignment="CENTER">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="75.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="0.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <MenuBar minWidth="162.0" prefHeight="24.0" prefWidth="162.0">
-              <menus>
-                <Menu mnemonicParsing="false" text="%menu.file">
-                  <items>
-                        <MenuItem fx:id="MIChangeCourse" mnemonicParsing="false" onAction="#changeCourse" text="%menu.changesubject" />
-                    	<MenuItem fx:id="MISaveChart" mnemonicParsing="false" onAction="#saveChart" text="%menu.savechart" />
-                        <MenuItem fx:id="MISaveAll" mnemonicParsing="false" onAction="#saveAll" text="%menu.saveall" />
-                        <MenuItem fx:id="MIExportCSV" mnemonicParsing="false" onAction="#exportCSV" text="%menu.exportcsv" />
-                        <MenuItem fx:id="MILogOut" mnemonicParsing="false" onAction="#logOut" text="%menu.logout" />
-                        <MenuItem fx:id="MIExit" mnemonicParsing="false" onAction="#closeApplication" text="%menu.exit" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="%menu.edit">
-                  <items>
-                    <MenuItem fx:id="MIClearSelection" mnemonicParsing="false" onAction="#clearSelection" text="%menu.clearselection" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="%menu.help">
-                  <items>
-                    <MenuItem fx:id="MIAboutUBUGrades" mnemonicParsing="false" onAction="#aboutApp" text="%menu.about" />
-                  </items>
-                </Menu>
-              </menus>
-            </MenuBar>
-            <GridPane GridPane.columnIndex="1">
-              <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-              </rowConstraints>
-               <children>
-                  <Label id="topBarLabels" fx:id="lblActualUser" text="%label.user">
-                     <padding>
-                        <Insets left="30.0" />
-                     </padding></Label>
-                  <Label id="topBarLabels" fx:id="lblActualCourse" text="%label.course" GridPane.columnIndex="1" />
-                  <Label id="topBarLabels" fx:id="lblActualHost" text="%label.host" GridPane.columnIndex="2" />
-                  <ImageView fx:id="userPhoto" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" />
-               </children>
-            </GridPane>
-         </children>
-      </GridPane>
-   </top>
-   <center>
-      <SplitPane fx:id="splitPane" dividerPositions="0.0" BorderPane.alignment="CENTER">
-         <items>
-            <BorderPane maxWidth="600.0" prefHeight="200.0" prefWidth="200.0">
-               <center>
-                  <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
-                     <items>
-                        <BorderPane prefHeight="200.0" prefWidth="200.0">
-                           <top>
-                              <Pane minHeight="64.0" prefHeight="64.0" prefWidth="250.0" BorderPane.alignment="CENTER">
-                                 <children>
-                                    <Label fx:id="lblCountParticipants" layoutX="6.0" layoutY="6.0" text="%label.participants" />
-                                    <TextField fx:id="tfdParticipants" layoutX="6.0" layoutY="31.0" prefHeight="25.0" prefWidth="100.0" promptText="%label.filter" />
-                                    <Label layoutX="115.0" layoutY="35.0" text="%label.group" />
-                                    <Label layoutX="135.0" layoutY="6.0" text="%label.rol" />
-                                    <ChoiceBox fx:id="slcRole" layoutX="162.0" layoutY="4.0" maxWidth="88.0" minHeight="25.0" prefHeight="25.0" />
-                                    <ChoiceBox fx:id="slcGroup" layoutX="162.0" layoutY="33.0" maxWidth="88.0" minHeight="25.0" prefHeight="25.0" />
-                                 </children>
-                              </Pane>
-                           </top>
-                           <center>
-                              <ListView fx:id="listParticipants" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-                           </center>
-                        </BorderPane>
-                        <TabPane fx:id="tabPane" minWidth="-Infinity" prefWidth="250.0" tabMinWidth="100.0">
-                           <tabs>
-                              <Tab fx:id="tabUbuGrades" closable="false" text="%tab.grades">
-                                 <content>
-                                    <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
-                                       <top>
-                                          <Pane minHeight="63.0" prefHeight="63.0" prefWidth="250.0" BorderPane.alignment="CENTER">
-                                             <children>
-                                                <Label layoutX="8.0" layoutY="6.0" text="%label.categoryitem" />
-                                                <TextField fx:id="tfdItems" layoutX="8.0" layoutY="30.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
-                                                <Label layoutX="123.0" layoutY="36.0" text="%label.type" />
-                                                <ChoiceBox fx:id="slcType" layoutX="162.0" layoutY="34.0" maxWidth="88.0" minHeight="25.0" prefHeight="25.0" />
-                                             </children>
-                                          </Pane>
-                                       </top>
-                                       <center>
-                                          <TreeView fx:id="tvwGradeReport" minWidth="250.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-                                       </center>
-                                    </BorderPane>
-                                 </content>
-                              </Tab>
-                              <Tab fx:id="tabUbuLogs" closable="false" text="%tab.logs">
-                                 <content>
-                                    <TabPane fx:id="tabPaneUbuLogs" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
-                                      <tabs>
-                                          <Tab fx:id="tabUbuLogsComponent" closable="false" text="%tab.component">
-                                             <content>
-                                                <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
-                                                   <center>
-                                                      <ListView fx:id="listViewComponents" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-                                                   </center>
-                                                   <top>
-                                                      <Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
-                                                         <children>
-                                                            <Label layoutX="14.0" layoutY="21.0" text="%label.component" />
-                                                            <TextField fx:id="componentTextField" layoutX="128.0" layoutY="16.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
-                                                         </children>
-                                                      </Pane>
-                                                   </top>
-                                                </BorderPane>
-                                             </content>
-                                          </Tab>
-                                          <Tab fx:id="tabUbuLogsEvent" closable="false" text="%tab.event">
-                                             <content>
-                                                <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
-                                                   <center>
-                                                      <ListView fx:id="listViewEvents" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-                                                   </center>
-                                                   <top>
-                                                      <Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
-                                                         <children>
-                                                            <Label alignment="TOP_LEFT" layoutX="22.0" layoutY="9.0" text="%label.componentorevent" textAlignment="RIGHT" />
-                                                            <TextField fx:id="componentEventTextField" layoutX="125.0" layoutY="15.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
-                                                         </children>
-                                                      </Pane>
-                                                   </top>
-                                                </BorderPane>
-                                             </content>
-                                          </Tab>
-                                          <Tab fx:id="tabUbuLogsSection" closable="false" text="%tab.section">
-                                             <content>
-                                                <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
-                                                   <center>
-                                                      <ListView fx:id="listViewSection" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-                                                   </center>
-                                                   <top>
-                                                      <Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
-                                                         <children>
-                                                            <Label layoutX="14.0" layoutY="21.0" text="%label.section" />
-                                                            <TextField fx:id="sectionTextField" layoutX="128.0" layoutY="16.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
-                                                         </children>
-                                                      </Pane>
-                                                   </top>
-                                                </BorderPane>
-                                             </content>
-                                          </Tab>
-                                          <Tab fx:id="tabUbuLogsCourseModule" closable="false" text="%tab.coursemodule">
-                                             <content>
-                                                <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
-                                                   <center>
-                                                      <ListView fx:id="listViewCourseModule" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-                                                   </center>
-                                                   <top>
-                                                      <Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
-                                                         <children>
-                                                            <Label layoutX="14.0" layoutY="21.0" text="%label.coursemodule" />
-                                                            <TextField fx:id="courseModuleTextField" layoutX="128.0" layoutY="16.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
-                                                         </children>
-                                                      </Pane>
-                                                   </top>
-                                                </BorderPane>
-                                             </content>
-                                          </Tab>
-                                      </tabs>
-                                    </TabPane>
-                                 </content>
-                              </Tab>
-                           </tabs>
-                        </TabPane>
-                     </items>
-                  </SplitPane>
-               </center>
-            </BorderPane>
-            <BorderPane prefHeight="200.0" prefWidth="200.0">
-               <bottom>
-                  <GridPane fx:id="optionsUbuLogs" prefHeight="98.0" prefWidth="490.0" BorderPane.alignment="CENTER">
-                    <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="227.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="227.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="227.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="227.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                     <children>
-                        <ChoiceBox fx:id="choiceBoxDate" prefWidth="150.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" />
-                        <DatePicker fx:id="datePickerStart" editable="false" showWeekNumbers="true" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                        <Label text="%label.startdate" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
-                        <Label text="%label.enddate" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
-                        <Label text="%label.groupbydate" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
-                        <DatePicker fx:id="datePickerEnd" editable="false" showWeekNumbers="true" GridPane.columnIndex="3" GridPane.rowIndex="3" />
-                        <Label text="%label.setMax" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
-                        <TextField fx:id="textFieldMax" maxWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                     </children>
-                     <BorderPane.margin>
-                        <Insets />
-                     </BorderPane.margin>
-                  </GridPane>
-               </bottom>
-               <center>
-                  <WebView fx:id="webViewCharts" minHeight="200.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-               </center>
-            </BorderPane>
-         </items>
-      </SplitPane>
-   </center>
+	<top>
+		<GridPane id="topBar" BorderPane.alignment="CENTER">
+			<columnConstraints>
+				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
+				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="75.0" prefWidth="100.0" />
+			</columnConstraints>
+			<rowConstraints>
+				<RowConstraints minHeight="0.0" prefHeight="30.0" vgrow="SOMETIMES" />
+			</rowConstraints>
+			<children>
+				<MenuBar minWidth="162.0" prefHeight="24.0" prefWidth="162.0">
+					<menus>
+						<Menu mnemonicParsing="false" text="%menu.file">
+							<items>
+								<MenuItem fx:id="MIChangeCourse" mnemonicParsing="false" onAction="#changeCourse" text="%menu.changesubject" />
+								<MenuItem fx:id="MISaveChart" mnemonicParsing="false" onAction="#saveChart" text="%menu.savechart" />
+								<MenuItem fx:id="MISaveAll" mnemonicParsing="false" onAction="#saveAll" text="%menu.saveall" />
+								<MenuItem fx:id="MIExportCSV" mnemonicParsing="false" onAction="#exportCSV" text="%menu.exportcsv" />
+								<MenuItem fx:id="MILogOut" mnemonicParsing="false" onAction="#logOut" text="%menu.logout" />
+								<MenuItem fx:id="MIExit" mnemonicParsing="false" onAction="#closeApplication" text="%menu.exit" />
+							</items>
+						</Menu>
+						<Menu mnemonicParsing="false" text="%menu.edit">
+							<items>
+								<MenuItem fx:id="MIClearSelection" mnemonicParsing="false" onAction="#clearSelection" text="%menu.clearselection" />
+							</items>
+						</Menu>
+						<Menu mnemonicParsing="false" text="%menu.help">
+							<items>
+								<MenuItem fx:id="MIAboutUBUGrades" mnemonicParsing="false" onAction="#aboutApp" text="%menu.about" />
+							</items>
+						</Menu>
+					</menus>
+				</MenuBar>
+				<GridPane GridPane.columnIndex="1">
+					<columnConstraints>
+						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+					</columnConstraints>
+					<rowConstraints>
+						<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+					</rowConstraints>
+					<children>
+						<Label id="topBarLabels" fx:id="lblActualUser" text="%label.user">
+							<padding>
+								<Insets left="30.0" />
+							</padding>
+						</Label>
+						<Label id="topBarLabels" fx:id="lblActualCourse" text="%label.course" GridPane.columnIndex="1" />
+						<Label id="topBarLabels" fx:id="lblActualHost" text="%label.host" GridPane.columnIndex="2" />
+						<ImageView fx:id="userPhoto" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" />
+					</children>
+				</GridPane>
+			</children>
+		</GridPane>
+	</top>
+	<center>
+		<SplitPane fx:id="splitPane" dividerPositions="0.0" BorderPane.alignment="CENTER">
+			<items>
+				<BorderPane maxWidth="600.0" prefHeight="200.0" prefWidth="200.0">
+					<center>
+						<SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
+							<items>
+								<BorderPane prefHeight="200.0" prefWidth="200.0">
+									<top>
+										<Pane minHeight="64.0" prefHeight="64.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+											<children>
+												<Label fx:id="lblCountParticipants" layoutX="6.0" layoutY="6.0" text="%label.participants" />
+												<TextField fx:id="tfdParticipants" layoutX="6.0" layoutY="31.0" prefHeight="25.0" prefWidth="100.0" promptText="%label.filter" />
+												<Label layoutX="115.0" layoutY="35.0" text="%label.group" />
+												<Label layoutX="135.0" layoutY="6.0" text="%label.rol" />
+												<ChoiceBox fx:id="slcRole" layoutX="162.0" layoutY="4.0" maxWidth="88.0" minHeight="25.0" prefHeight="25.0" />
+												<ChoiceBox fx:id="slcGroup" layoutX="162.0" layoutY="33.0" maxWidth="88.0" minHeight="25.0" prefHeight="25.0" />
+											</children>
+										</Pane>
+									</top>
+									<center>
+										<ListView fx:id="listParticipants" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+											<placeholder>
+												<Label text="%text.nousers" />
+											</placeholder>
+										</ListView>
+
+									</center>
+								</BorderPane>
+								<TabPane fx:id="tabPane" minWidth="-Infinity" prefWidth="250.0" tabMinWidth="100.0">
+									<tabs>
+										<Tab fx:id="tabUbuGrades" closable="false" text="%tab.grades">
+											<content>
+												<BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+													<top>
+														<Pane minHeight="63.0" prefHeight="63.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+															<children>
+																<Label layoutX="8.0" layoutY="6.0" text="%label.categoryitem" />
+																<TextField fx:id="tfdItems" layoutX="8.0" layoutY="30.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+																<Label layoutX="123.0" layoutY="36.0" text="%label.type" />
+																<ChoiceBox fx:id="slcType" layoutX="162.0" layoutY="34.0" maxWidth="88.0" minHeight="25.0" prefHeight="25.0" />
+															</children>
+														</Pane>
+													</top>
+													<center>
+														<TreeView fx:id="tvwGradeReport" minWidth="250.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+													</center>
+												</BorderPane>
+											</content>
+										</Tab>
+										<Tab fx:id="tabUbuLogs" closable="false" text="%tab.logs">
+											<content>
+												<TabPane fx:id="tabPaneUbuLogs" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+													<tabs>
+														<Tab fx:id="tabUbuLogsComponent" closable="false" text="%tab.component">
+															<content>
+																<BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+																	<center>
+																		<ListView fx:id="listViewComponents" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+																			<placeholder>
+																				<Label text="%text.nousers" />
+																			</placeholder>
+																		</ListView>
+																	</center>
+																	<top>
+																		<Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+																			<children>
+																				<Label layoutX="14.0" layoutY="21.0" text="%label.component" />
+																				<TextField fx:id="componentTextField" layoutX="128.0" layoutY="16.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+																			</children>
+																		</Pane>
+																	</top>
+																</BorderPane>
+															</content>
+														</Tab>
+														<Tab fx:id="tabUbuLogsEvent" closable="false" text="%tab.event">
+															<content>
+																<BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+																	<center>
+																		<ListView fx:id="listViewEvents" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+																			<placeholder>
+																				<Label text="%text.nousers" />
+																			</placeholder>
+																		</ListView>
+																	</center>
+																	<top>
+																		<Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+																			<children>
+																				<Label alignment="TOP_LEFT" layoutX="22.0" layoutY="9.0" text="%label.componentorevent" textAlignment="RIGHT" />
+																				<TextField fx:id="componentEventTextField" layoutX="125.0" layoutY="15.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+																			</children>
+																		</Pane>
+																	</top>
+																</BorderPane>
+															</content>
+														</Tab>
+														<Tab fx:id="tabUbuLogsSection" closable="false" text="%tab.section">
+															<content>
+																<BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+																	<center>
+																		<ListView fx:id="listViewSection" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+
+																			<placeholder>
+																				<Label text="%text.nousers" />
+																			</placeholder>
+																		</ListView>
+																	</center>
+																	<top>
+																		<Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+																			<children>
+																				<Label layoutX="6.0" layoutY="5.0" text="%label.section" />
+																				<TextField fx:id="sectionTextField" layoutX="6.0" layoutY="26.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+                                                            <CheckBox fx:id="checkBoxSection" layoutX="135.0" layoutY="20.0" mnemonicParsing="false" text="Ocultos" />
+																			</children>
+																		</Pane>
+																	</top>
+																</BorderPane>
+															</content>
+														</Tab>
+														<Tab fx:id="tabUbuLogsCourseModule" closable="false" text="%tab.coursemodule">
+															<content>
+																<BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+																	<center>
+																		<ListView fx:id="listViewCourseModule" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+																			<placeholder>
+																				<Label text="%text.nousers" />
+																			</placeholder>
+																		</ListView>
+																	</center>
+																	<top>
+																		<Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+																			<children>
+																				<Label layoutX="6.0" layoutY="5.0" text="%label.coursemodule" />
+																				<TextField fx:id="courseModuleTextField" layoutX="6.0" layoutY="26.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+                                                            <CheckBox fx:id="checkBoxCourseModule" layoutX="150.0" layoutY="5.0" mnemonicParsing="false" text="Ocultos" />
+                                                            <ChoiceBox fx:id="choiceBoxCourseModule" layoutX="150.0" layoutY="30.0" prefWidth="150.0" />
+																			</children>
+																		</Pane>
+																	</top>
+																</BorderPane>
+															</content>
+														</Tab>
+													</tabs>
+												</TabPane>
+											</content>
+										</Tab>
+									</tabs>
+								</TabPane>
+							</items>
+						</SplitPane>
+					</center>
+				</BorderPane>
+				<BorderPane prefHeight="200.0" prefWidth="200.0">
+					<bottom>
+						<GridPane fx:id="optionsUbuLogs" prefHeight="98.0" prefWidth="490.0" BorderPane.alignment="CENTER">
+							<columnConstraints>
+								<ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="227.0" />
+								<ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="227.0" />
+								<ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="227.0" />
+								<ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="227.0" />
+							</columnConstraints>
+							<rowConstraints>
+								<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+								<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+								<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+								<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+								<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+							</rowConstraints>
+							<children>
+								<ChoiceBox fx:id="choiceBoxDate" prefWidth="150.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" />
+								<DatePicker fx:id="datePickerStart" editable="false" showWeekNumbers="true" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+								<Label text="%label.startdate" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+								<Label text="%label.enddate" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
+								<Label text="%label.groupbydate" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
+								<DatePicker fx:id="datePickerEnd" editable="false" showWeekNumbers="true" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+								<Label text="%label.setMax" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+								<TextField fx:id="textFieldMax" maxWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+							</children>
+							<BorderPane.margin>
+								<Insets />
+							</BorderPane.margin>
+						</GridPane>
+					</bottom>
+					<center>
+						<WebView fx:id="webViewCharts" minHeight="200.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+					</center>
+				</BorderPane>
+			</items>
+		</SplitPane>
+	</center>
 </BorderPane>

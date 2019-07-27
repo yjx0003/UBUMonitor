@@ -254,7 +254,7 @@ public enum Event {
 
 	@Override
 	public String toString() {
-		return super.toString().toLowerCase();
+		return name().toLowerCase();
 	}
 
 

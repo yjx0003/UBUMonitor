@@ -8,7 +8,7 @@ package controllers;
  */
 public class AppInfo {
 
-	public static final String APPLICATION_VERSION = "v2.4.4-dev";
+	public static final String APPLICATION_VERSION = "v2.4.5-dev";
 
 	public static final String APPLICATION_NAME = "UBUMonitor " + APPLICATION_VERSION;
 
@@ -16,8 +16,7 @@ public class AppInfo {
 
 	public static final String RESOURCE_BUNDLE_FILE_NAME = "messages/Messages";
 
-	public static final String LOGGER_FILE_APPENDER = "./log/" + APPLICATION_NAME + "-log-" + APPLICATION_VERSION
-			+ ".log";
+	public static final String LOGGER_FILE_APPENDER = "./log/" + APPLICATION_NAME + ".log";
 
 	public static final String CACHE_DIR = "cache";
 

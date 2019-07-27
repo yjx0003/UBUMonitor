@@ -18,7 +18,7 @@ public class CSVCourse extends CSVBuilderAbstract {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CSVCourse.class);
 
 	/** Header. */
-	private static final String[] HEADER = new String[] { "CourseId", "ShortName", "FullName", "Summary", "UserId",
+	private static final String[] HEADER = new String[] { "CourseId", "ShortName", "FullName", "UserId",
 			"UserFullName" };
 
 	public CSVCourse(String name, DataBase dataBase) {
@@ -34,13 +34,12 @@ public class CSVCourse extends CSVBuilderAbstract {
 					.sorted(EnrolledUser.NAME_COMPARATOR)
 					.collect(Collectors.toList());
 			for (EnrolledUser enrolledUser : enrolledUsers) {
-				LOGGER.debug("Data line: {}, {}, {}, {}, {}, {}", course.getId(), course.getShortName(), course.getFullName(),
-						course.getSummary(), enrolledUser.getId(), enrolledUser.getFullName());
+				LOGGER.debug("Data line: {}, {}, {}, {}, {}", course.getId(), course.getShortName(), course.getFullName(),
+						 enrolledUser.getId(), enrolledUser.getFullName());
 				getData().add(new String[] {
 						Integer.toString(course.getId()),
 						course.getShortName(),
 						course.getFullName(),
-						course.getSummary(),
 						Integer.toString(enrolledUser.getId()),
 						enrolledUser.getFullName()
 				});

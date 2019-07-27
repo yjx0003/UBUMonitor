@@ -1,8 +1,12 @@
 package controllers.ubulogs;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Function;
 
 import org.threeten.extra.YearWeek;
@@ -22,6 +26,8 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
+
 	/**
 	 * Constructor para agrupar la lineas de log en funcion de los usuarios.
 	 * 
@@ -39,9 +45,9 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 	public List<YearWeek> getRange(LocalDate start, LocalDate end) {
 		List<YearWeek> list = new ArrayList<>();
 
-		for (YearWeek yearWeekStart = YearWeek.from(start),
-				yearWeekEnd = YearWeek.from(end); !yearWeekStart
-				.isAfter(yearWeekEnd); yearWeekStart = yearWeekStart.plusWeeks(1)) {
+		for (YearWeek yearWeekStart = YearWeek.from(start), yearWeekEnd = YearWeek.from(end);
+				!yearWeekStart.isAfter(yearWeekEnd);
+				yearWeekStart = yearWeekStart.plusWeeks(1)) {
 
 			list.add(yearWeekStart);
 
@@ -62,7 +68,8 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 	 */
 	@Override
 	public Function<YearWeek, String> getStringFormatFunction() {
-		return YearWeek::toString;
+		return yearWeek -> yearWeek.atDay(WeekFields.of(Locale.getDefault()).getFirstDayOfWeek())
+				.format(DATE_TIME_FORMATTER) + " (W" + yearWeek.getWeek() + ")";
 	}
 
 	/**

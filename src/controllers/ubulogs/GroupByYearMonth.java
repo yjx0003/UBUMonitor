@@ -2,14 +2,17 @@ package controllers.ubulogs;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Function;
 
 import model.LogLine;
 
 /**
  * Agrupa los logs por mes y año
+ * 
  * @author Yi Peng Ji
  *
  */
@@ -22,7 +25,9 @@ public class GroupByYearMonth extends GroupByAbstract<YearMonth> {
 
 	/**
 	 * Constructor para agrupar la lineas de log en funcion de los usuarios.
-	 * @param logLines las lineas de log
+	 * 
+	 * @param logLines
+	 *            las lineas de log
 	 */
 	public GroupByYearMonth(List<LogLine> logLines) {
 		super(logLines);
@@ -34,14 +39,13 @@ public class GroupByYearMonth extends GroupByAbstract<YearMonth> {
 	@Override
 	public List<YearMonth> getRange(LocalDate start, LocalDate end) {
 		List<YearMonth> list = new ArrayList<>();
-		
-		for (YearMonth yearMonthStart = YearMonth.from(start),
-				yearMonthEnd=YearMonth.from(end);
-				!yearMonthStart.isAfter(yearMonthEnd);
+
+		for (YearMonth yearMonthStart = YearMonth.from(start), yearMonthEnd = YearMonth.from(end);
+				!yearMonthStart.isAfter(yearMonthEnd); 
 				yearMonthStart = yearMonthStart.plusMonths(1)) {
-			
+
 			list.add(yearMonthStart);
-			
+
 		}
 		return list;
 	}
@@ -59,7 +63,7 @@ public class GroupByYearMonth extends GroupByAbstract<YearMonth> {
 	 */
 	@Override
 	public Function<YearMonth, String> getStringFormatFunction() {
-		return YearMonth::toString;
+		return yearMonth -> yearMonth.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
 	}
 
 	/**

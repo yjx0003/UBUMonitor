@@ -318,8 +318,8 @@ public class CreatorUBUGradesController {
 		String idNumber = jsonObject.optString("idnumber");
 		String summary = jsonObject.optString("summary");
 		DescriptionFormat summaryFormat = DescriptionFormat.get(jsonObject.optInt("summaryformat"));
-		Instant startDate = Instant.ofEpochSecond(jsonObject.optInt("startdate"));
-		Instant endDate = Instant.ofEpochSecond(jsonObject.optInt("enddate"));
+		Instant startDate = Instant.ofEpochSecond(jsonObject.optLong("startdate"));
+		Instant endDate = Instant.ofEpochSecond(jsonObject.optLong("enddate"));
 
 		int categoryId = jsonObject.optInt("category");
 		if (categoryId != 0) {

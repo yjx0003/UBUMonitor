@@ -1,10 +1,8 @@
 package controllers.ubulogs;
 
 import java.time.LocalDate;
-import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.Function;
 
 import org.threeten.extra.YearQuarter;
@@ -65,7 +63,8 @@ public class GroupByYearQuarter extends GroupByAbstract<YearQuarter> {
 	 */
 	@Override
 	public Function<YearQuarter, String> getStringFormatFunction() {
-		return yearQuarter -> yearQuarter.getQuarter().getDisplayName(TextStyle.FULL, Locale.getDefault());
+		//return yearQuarter -> yearQuarter.getQuarter().getDisplayName(TextStyle.FULL, Locale.getDefault());
+		return YearQuarter::toString;
 	}
 
 	/**

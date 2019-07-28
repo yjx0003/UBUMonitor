@@ -2,6 +2,8 @@ package model;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -9,6 +11,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
+
 
 /**
  * Clase curso (asignatura). Guarda información de los roles, usuarios
@@ -22,6 +30,9 @@ import java.util.stream.Collectors;
 public class Course implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(Course.class);
 	private int id;
 	private String shortName;
 	private String fullName;
@@ -429,9 +440,9 @@ public class Course implements Serializable {
 	 */
 	public void clear() {
 		this.enrolledUsers.clear();
-		this.roles.forEach(Role::clear); //eliminamos los usuarios de ese rol
+		this.roles.forEach(Role::clear); // eliminamos los usuarios de ese rol
 		this.roles.clear();
-		this.groups.forEach(Group::clear); //eliminamos los usuarios de ese grupo
+		this.groups.forEach(Group::clear); // eliminamos los usuarios de ese grupo
 		this.groups.clear();
 		this.modules.clear();
 		this.gradeItems.clear();
@@ -460,7 +471,7 @@ public class Course implements Serializable {
 	 * 
 	 * @return los tipos de modulo sin repetición
 	 */
-	public Set<ModuleType> getUniqueModuleTypes() {
+	public Set<ModuleType> getUniqueGradeModuleTypes() {
 		return gradeItems.stream()
 				.map(GradeItem::getItemModule)
 				.filter(Objects::nonNull)
@@ -497,6 +508,32 @@ public class Course implements Serializable {
 				.map(l -> ComponentEvent.get(l.getComponent(), l.getEventName()))
 				.distinct()
 				.collect(Collectors.toList());
+	}
+
+	public List<ModuleType> getUniqueCourseModulesTypes() {
+		return modules.stream()
+				.map(CourseModule::getModuleType)
+				.distinct()
+				.collect(Collectors.toList());
+	}
+
+	public LocalDate getStart() {
+		LOGGER.debug("Fecha de inicio del curso por el servidor: {}", startDate);
+		if (startDate.getEpochSecond() == 0) {
+			return getEnd();
+		}
+
+		return startDate.isBefore(Instant.now()) ? LocalDateTime.ofInstant(startDate, logs.getZoneId()).toLocalDate(): LocalDate.now();
+	}
+	
+	public LocalDate getEnd() {
+		LOGGER.debug("Fecha de fin del curso por el servidor: {}", endDate);
+		if (endDate.getEpochSecond() == 0) {
+			return LocalDate.now();
+		}
+		
+		return endDate.isBefore(Instant.now()) ? LocalDateTime.ofInstant(endDate, logs.getZoneId()).toLocalDate(): LocalDate.now();
+		
 	}
 
 	@Override

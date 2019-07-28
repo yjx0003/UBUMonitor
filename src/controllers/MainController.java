@@ -23,13 +23,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 
-import org.apache.commons.csv.CSVFormat.Predefined;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,6 @@ import controllers.datasets.StackedBarDataSetSection;
 import controllers.datasets.StackedBarDatasSetCourseModule;
 import controllers.ubulogs.GroupByAbstract;
 import export.CSVExport;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
@@ -80,6 +79,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import model.Component;
 import model.ComponentEvent;
@@ -200,7 +200,7 @@ public class MainController implements Initializable {
 	private ChoiceBox<ModuleType> choiceBoxCourseModule;
 
 	@FXML
-	private CheckBox choiceBoxSection;
+	private CheckBox checkBoxSection;
 
 	@FXML
 	private CheckBox checkBoxCourseModule;
@@ -282,7 +282,7 @@ public class MainController implements Initializable {
 
 		ObservableList<ModuleType> observableListModules = FXCollections.observableArrayList();
 		observableListModules.add(null); // opción por si no se filtra por grupo
-		observableListModules.addAll(controller.getActualCourse().getUniqueModuleTypes());
+		observableListModules.addAll(controller.getActualCourse().getUniqueGradeModuleTypes());
 
 		slcType.setItems(observableListModules);
 		slcType.getSelectionModel().selectFirst(); // seleccionamos el nulo
@@ -379,7 +379,7 @@ public class MainController implements Initializable {
 			}
 		});
 
-		tfdParticipants.setOnAction((ActionEvent event) -> filterParticipants());
+		tfdParticipants.setOnAction(event -> filterParticipants());
 
 		initEnrolledUsersListView();
 
@@ -532,9 +532,8 @@ public class MainController implements Initializable {
 			}
 		});
 
-		LocalDate lastLogDate = controller.getActualCourse().getLogs().getLastDatetime().toLocalDate();
-		datePickerStart.setValue(lastLogDate.minusWeeks(1));
-		datePickerEnd.setValue(lastLogDate);
+		datePickerStart.setValue(controller.getActualCourse().getStart());
+		datePickerEnd.setValue(controller.getActualCourse().getEnd());
 
 		datePickerStart.setOnAction(event -> applyFilterLogs());
 		datePickerEnd.setOnAction(event -> applyFilterLogs());
@@ -545,7 +544,7 @@ public class MainController implements Initializable {
 			@Override
 			public void updateItem(LocalDate date, boolean empty) {
 				super.updateItem(date, empty);
-				setDisable(empty || date.isAfter(dateEnd) || date.isAfter(LocalDate.now()));
+				setDisable(empty || date.isAfter(dateEnd));
 			}
 		});
 
@@ -731,7 +730,32 @@ public class MainController implements Initializable {
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
-		listViewSection.setCellFactory(callback -> new ListCell<Section>() {
+		listViewSection.setCellFactory(getListCellSection());
+
+		Set<Section> sections = controller.getActualCourse().getSections();
+
+		ObservableList<Section> observableListComponents = FXCollections.observableArrayList(sections);
+		FilteredList<Section> filterSections = new FilteredList<>(observableListComponents, getSectionPredicate());
+		listViewSection.setItems(filterSections);
+		listViewSection.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+		// ponemos un listener al cuadro de texto para que se filtre el list view en
+		// tiempo real
+		sectionTextField.textProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					filterSections.setPredicate(getSectionPredicate());
+					listViewSection.setCellFactory(getListCellSection());
+				});
+
+		checkBoxSection.selectedProperty().addListener(
+				section -> {
+					filterSections.setPredicate(getSectionPredicate());
+					listViewSection.setCellFactory(getListCellSection());
+				});
+	}
+
+	private Callback<ListView<Section>, ListCell<Section>> getListCellSection() {
+		return callback -> new ListCell<Section>() {
 			@Override
 			public void updateItem(Section section, boolean empty) {
 				super.updateItem(section, empty);
@@ -757,32 +781,19 @@ public class MainController implements Initializable {
 					}
 				}
 			}
-		});
+		};
+	}
 
-		Set<Section> sections = controller.getActualCourse().getSections();
-
-		ObservableList<Section> observableListComponents = FXCollections.observableArrayList(sections);
-		FilteredList<Section> filterSections = new FilteredList<>(observableListComponents);
-		listViewSection.setItems(filterSections);
-		listViewSection.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
-		// ponemos un listener al cuadro de texto para que se filtre el list view en
-		// tiempo real
-		sectionTextField.textProperty()
-				.addListener(((observable, oldValue, newValue) -> filterSections.setPredicate(section -> {
-					if (newValue == null || newValue.isEmpty()) {
-						return true;
-					}
-					String textField = newValue.toLowerCase();
-					return section.getName().toLowerCase().contains(textField);
-				})));
-
+	private Predicate<Section> getSectionPredicate() {
+		return s -> containsTextField(sectionTextField.getText(), s.getName())
+				&& (checkBoxSection.isSelected() || s.isVisible());
 	}
 
 	/**
 	 * Inicializa el listado de componentes de la pestaña Componentes en
 	 */
 	public void initListViewCourseModules() {
+
 		// cada vez que se seleccione nuevos elementos del list view actualizamos la
 		// grafica y la escala
 		listViewCourseModule.getSelectionModel().getSelectedItems()
@@ -791,9 +802,62 @@ public class MainController implements Initializable {
 					findMax();
 				});
 
-		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
-		// ponemos un icono
-		listViewCourseModule.setCellFactory(callback -> new ListCell<CourseModule>() {
+		listViewCourseModule.setCellFactory(getListCellCourseModule());
+
+		Set<CourseModule> courseModules = controller.getActualCourse().getModules();
+
+		ObservableList<CourseModule> observableListComponents = FXCollections.observableArrayList(courseModules);
+		FilteredList<CourseModule> filterCourseModules = new FilteredList<>(observableListComponents,
+				getCourseModulePredicate());
+		listViewCourseModule.setItems(filterCourseModules);
+		listViewCourseModule.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+		ObservableList<ModuleType> observableListModuleTypes = FXCollections.observableArrayList();
+		observableListModuleTypes.add(null); // opción por si no se filtra por grupo
+		observableListModuleTypes.addAll(controller.getActualCourse().getUniqueCourseModulesTypes());
+		observableListModuleTypes.sort(Comparator.nullsFirst(Comparator.comparing(I18n::get)));
+
+		choiceBoxCourseModule.setItems(observableListModuleTypes);
+		choiceBoxCourseModule.getSelectionModel().selectFirst(); // seleccionamos el nulo
+
+		choiceBoxCourseModule.setConverter(new StringConverter<ModuleType>() {
+			@Override
+			public ModuleType fromString(String moduleType) {
+				return null;// no se va a usar en un choiceBox.
+			}
+
+			@Override
+			public String toString(ModuleType moduleType) {
+				if (moduleType == null) {
+					return I18n.get(ALL);
+				}
+				return I18n.get(moduleType);
+			}
+		});
+
+		// ponemos un listener al cuadro de texto para que se filtre el list view en
+		// tiempo real
+		courseModuleTextField.textProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					filterCourseModules.setPredicate(getCourseModulePredicate());
+					listViewCourseModule.setCellFactory(getListCellCourseModule());
+				});
+
+		checkBoxCourseModule.selectedProperty().addListener(c -> {
+			filterCourseModules.setPredicate(getCourseModulePredicate());
+			listViewCourseModule.setCellFactory(getListCellCourseModule());
+		});
+
+		choiceBoxCourseModule.valueProperty()
+				.addListener(c -> {
+					filterCourseModules.setPredicate(getCourseModulePredicate());
+					listViewCourseModule.setCellFactory(getListCellCourseModule());
+				});
+
+	}
+
+	private Callback<ListView<CourseModule>, ListCell<CourseModule>> getListCellCourseModule() {
+		return callback -> new ListCell<CourseModule>() {
 			@Override
 			public void updateItem(CourseModule courseModule, boolean empty) {
 				super.updateItem(courseModule, empty);
@@ -813,32 +877,16 @@ public class MainController implements Initializable {
 					}
 				}
 			}
-		});
-		
-		
-		Set<CourseModule> courseModules = controller.getActualCourse().getModules();
-
-		ObservableList<CourseModule> observableListComponents = FXCollections.observableArrayList(courseModules);
-		FilteredList<CourseModule> filterCourseModules = new FilteredList<>(observableListComponents);
-		listViewCourseModule.setItems(filterCourseModules);
-		listViewCourseModule.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
-		Predicate<CourseModule> predicate = cm -> containsTextField(courseModuleText, cm.getModuleName())
-				&& (checkBoxCourseModule.isSelected() || cm.isVisible())));
-		
-		// ponemos un listener al cuadro de texto para que se filtre el list view en
-		// tiempo real
-		courseModuleTextField.textProperty()
-				.addListener((observable, oldValue, newValue) -> filterCourseModules
-						.setPredicate(predicate));
-
-		checkBoxCourseModule.selectedProperty().addListener(c-> filterCourseModules
-				.setPredicate(predicate));
-
+		};
 	}
 
+	private Predicate<CourseModule> getCourseModulePredicate() {
+		return cm -> containsTextField(courseModuleTextField.getText(),
+				cm.getModuleName())
+				&& (checkBoxCourseModule.isSelected() || cm.isVisible())
+				&& (choiceBoxCourseModule.getValue() == null || choiceBoxCourseModule.getValue() == cm.getModuleType());
+	}
 
-	
 	private boolean containsTextField(String newValue, String element) {
 		if (newValue == null || newValue.isEmpty()) {
 			return true;
@@ -876,7 +924,6 @@ public class MainController implements Initializable {
 					listViewCourseModule.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart,
 					dateEnd);
 		}
-		
 
 		LOGGER.info("Dataset para el stacked bar en JS: {}", stackedbardataset);
 		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");

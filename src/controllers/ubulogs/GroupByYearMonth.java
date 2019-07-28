@@ -2,10 +2,8 @@ package controllers.ubulogs;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.Function;
 
 import model.LogLine;
@@ -63,7 +61,8 @@ public class GroupByYearMonth extends GroupByAbstract<YearMonth> {
 	 */
 	@Override
 	public Function<YearMonth, String> getStringFormatFunction() {
-		return yearMonth -> yearMonth.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
+		//return yearMonth -> yearMonth.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
+		return YearMonth::toString;
 	}
 
 	/**

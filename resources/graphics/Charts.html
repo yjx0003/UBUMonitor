@@ -68,16 +68,14 @@
 
 	<script type="text/javascript">
 //------------------------------------------Opciones para los graficos------------------------------------------------------------------
-
 // Opciones Globales
-
 //Chart.defaults.global.defaultFontFamily= "Comic Sans MS";
 //Chart.defaults.global.defaultFontSize=14;
 
 // Opciones para el gráfico de lineas y el boxplot
 var optionsLineChart = {
 	maintainAspectRatio: false,
-	responsive: true,
+	
 	responsiveAnimationDuration: 0, // animation duration after a resize, better perfomance at 0
 	showLines: true,
 	spanGaps: false, //si se quiere mostrar las lineas cuando en algun elemento no hay dato (NaN)
@@ -173,7 +171,7 @@ var optionsLineChart = {
 // Opciones para el radar
 var optionsRadarChart = {
 	maintainAspectRatio: false,
-	responsive: true,
+	
 	responsiveAnimationDuration: 0, // animation duration after a resize, better perfomance at 0
 	showLines: true,
 	spanGaps: false, //si se quiere mostrar las lineas cuando en algun elemento no hay dato (NaN)
@@ -237,7 +235,7 @@ var optionsRadarChart = {
 
 var optionsStackedBar= {
 	maintainAspectRatio: false,
-	responsive: true,
+	
 	animation: {
         duration: 0, // general animation time
     },
@@ -312,6 +310,7 @@ var language = 'es';
 //
 var colorHash = new ColorHash();
 var ctx = document.getElementById('myChart');
+
 var myChart = new Chart(ctx,{
 	type: 'line',
 	data:LineDataSet,

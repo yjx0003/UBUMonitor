@@ -77,8 +77,9 @@ html,body
 	
 .chart-container
 {
-	height:95%;
-	width:100%;
+	height:90%;
+	width: 95%;
+	margin:2%;
 	display: none;
 }
 	

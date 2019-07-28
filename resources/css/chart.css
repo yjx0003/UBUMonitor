@@ -73,20 +73,11 @@ body
    	font-weight: bold;
 }
 	
-.chart-container
-{
-	position: relative;
-	margin: auto;
-	height: 90vh;
-	width: 90vw;
-}	
 	
 .chart-container
 {
 	position: relative;
 	margin: auto;
-	height: 90vh;
-	width: 90vw;
 	display: none;
 }
 	

@@ -770,6 +770,8 @@ public class MainController implements Initializable {
 					try {
 						if (!section.isVisible()) {
 							setTextFill(Color.GRAY);
+						}else {
+							setTextFill(Color.BLACK);
 						}
 
 						String visible = section.isVisible() ? "visible" : "not_visible";
@@ -868,6 +870,8 @@ public class MainController implements Initializable {
 					setText(courseModule.getModuleName());
 					if (!courseModule.isVisible()) {
 						setTextFill(Color.GRAY);
+					}else {
+						setTextFill(Color.BLACK);
 					}
 					try {
 						Image image = new Image(AppInfo.IMG_DIR + courseModule.getModuleType().getModName() + ".png");

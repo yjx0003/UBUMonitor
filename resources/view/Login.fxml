@@ -19,10 +19,11 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
+
 <AnchorPane maxHeight="1024.0" maxWidth="728.0" minHeight="500.0" minWidth="400.0" prefHeight="520.0" prefWidth="400.0" styleClass="anchorpane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.LoginController">
 	<!-- TODO Add Nodes -->
 
-	<children>
+      	<children>
 		<Group id="Group" layoutX="43.0" layoutY="250.0">
 			<children>
 				<Label id="loginLabels" layoutX="20.0" layoutY="30.0" text="%label.user" textAlignment="CENTER">
@@ -45,15 +46,8 @@
 			<font>
 				<Font size="14.0" fx:id="x2" />
 			</font>
-			<cursor>
-				<Cursor fx:constant="HAND" />
-			</cursor>
 		</Button>
-		<Button fx:id="btnDelete" font="$x2" layoutX="232.0" layoutY="460.0" mnemonicParsing="false" onAction="#clear" prefWidth="70.0" stylesheets="@/css/style.css" text="%btn.clear">
-			<cursor>
-				<Cursor fx:constant="HAND" />
-			</cursor>
-		</Button>
+		<Button fx:id="btnDelete" font="$x2" layoutX="232.0" layoutY="460.0" mnemonicParsing="false" onAction="#clear" prefWidth="70.0" stylesheets="@/css/style.css" text="%btn.clear" />
 		<ImageView fitHeight="271.0" fitWidth="276.0" layoutX="70.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true">
 			<image>
 				<Image url="@../img/logo.png" />
@@ -62,10 +56,16 @@
 		<Label fx:id="lblStatus" alignment="CENTER" layoutX="13.0" layoutY="493.0" minHeight="27.0" minWidth="375.0" prefHeight="27.0" prefWidth="375.0" style="-fx-text-fill: #ff5050;" textFill="#cd0909">
          <font>
             <Font name="System Bold" size="12.0" />
-         </font></Label>
+         </font>
+      </Label>
       <CheckBox fx:id="chkSaveUsername" layoutX="65.0" layoutY="392.0" mnemonicParsing="false" text="%chk.saveusername" />
       <CheckBox fx:id="chkSaveHost" layoutX="65.0" layoutY="426.0" mnemonicParsing="false" text="%chk.savehost" />
-      <ComboBox fx:id="languageSelector" layoutX="267.0" layoutY="14.0" prefHeight="30.0" prefWidth="135.0" />
+      <ComboBox fx:id="languageSelector" layoutX="264.0" layoutY="14.0" prefHeight="30.0" prefWidth="135.0" />
+      <ImageView fx:id="insecureProtocol" fitHeight="24.0" fitWidth="24.0" layoutX="325.0" layoutY="350.0" pickOnBounds="true" preserveRatio="true" visible="false">
+         <image>
+            <Image url="@../img/insecure_protocol.png" />
+         </image>
+      </ImageView>
       
-	</children>
+      	</children>
 </AnchorPane>

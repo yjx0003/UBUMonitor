@@ -145,7 +145,7 @@ public abstract class StackedBarDatasetAbstract<T> {
 				stringBuilder.append("type: 'line',");
 				stringBuilder.append("borderWidth: 2,");
 				stringBuilder.append("fill: false,");
-				stringBuilder.append("backgroundColor: 'rgb(" + color[0] + ", " + color[1] + "," + color[2] + ")',");
+				stringBuilder.append("backgroundColor: 'rgba(" + color[0] + ", " + color[1] + "," + color[2] + ","+OPACITY_BAR+")',");
 				stringBuilder.append("borderColor: 'rgb(" + color[0] + ", " + color[1] + "," + color[2] + ")',");
 				stringBuilder.append("data: [" + join(data) + "]");
 				stringBuilder.append("},");

@@ -61,7 +61,7 @@
 }
 
 .list-cell:hover {
-  -fx-background-color: #6ff9ff;
+  -fx-background-color:#cdfafa;
 }
 
 .list-cell:selected {
@@ -69,7 +69,7 @@
 }
 
 .tree-cell:hover{
-	-fx-background-color: #6ff9ff;
+	-fx-background-color:#cdfafa;
 }
 
 .tree-cell:selected{

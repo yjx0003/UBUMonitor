@@ -764,7 +764,7 @@ public class MainController implements Initializable {
 					setGraphic(null);
 				} else {
 					String sectionName = section.getName();
-					setText(sectionName == null || sectionName.isEmpty() ? I18n.get("text.sectionplaceholder")
+					setText(sectionName == null || sectionName.trim().isEmpty() ? I18n.get("text.sectionplaceholder")
 							: sectionName);
 
 					try {

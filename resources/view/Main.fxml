@@ -198,7 +198,7 @@
 																			<children>
 																				<Label layoutX="6.0" layoutY="5.0" text="%label.section" />
 																				<TextField fx:id="sectionTextField" layoutX="6.0" layoutY="26.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
-                                                            <CheckBox fx:id="checkBoxSection" layoutX="140.0" layoutY="5.0" mnemonicParsing="false" text="Con ocultos" />
+                                                            <CheckBox fx:id="checkBoxSection" layoutX="140.0" layoutY="5.0" mnemonicParsing="false" selected="true" text="Con ocultos" />
 																			</children>
 																		</Pane>
 																	</top>
@@ -220,7 +220,7 @@
 																			<children>
 																				<Label layoutX="6.0" layoutY="5.0" text="%label.coursemodule" />
 																				<TextField fx:id="courseModuleTextField" layoutX="6.0" layoutY="26.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
-                                                            <CheckBox fx:id="checkBoxCourseModule" layoutX="140.0" layoutY="5.0" mnemonicParsing="false" text="Con ocultos" />
+                                                            <CheckBox fx:id="checkBoxCourseModule" layoutX="140.0" layoutY="5.0" mnemonicParsing="false" selected="true" text="Con ocultos" />
                                                             <ChoiceBox fx:id="choiceBoxCourseModule" layoutX="140.0" layoutY="30.0" prefWidth="150.0" />
 																			</children>
 																		</Pane>

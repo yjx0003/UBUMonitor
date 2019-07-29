@@ -35,6 +35,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
@@ -72,13 +73,19 @@ public class LoginController implements Initializable {
 	@FXML
 	private CheckBox chkSaveHost;
 
+	@FXML
+	private ImageView insecureProtocol;
+
 	/**
 	 * Crea el selector de idioma.
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+
+		txtHost.textProperty()
+		.addListener((observable, oldValue, newValue) -> insecureProtocol
+				.setVisible(newValue.startsWith("http://")));
 		
-	
 		try {
 			initializeProperties();
 		} catch (IOException e) {
@@ -92,7 +99,11 @@ public class LoginController implements Initializable {
 			}
 		});
 
+		
+
+		Tooltip.install(insecureProtocol, new Tooltip(I18n.get("tooltip.insecureprotocol")));
 		initLanguagesList();
+		
 	}
 
 	/**

@@ -332,6 +332,8 @@ public class MainController implements Initializable {
 		// Mostramos nº participantes
 		lblCountParticipants.setText(I18n.get("label.participants")
 				+ controller.getActualCourse().getEnrolledUsersCount());
+		tfdParticipants.setOnAction(event -> filterParticipants());
+		initEnrolledUsersListView();
 
 		ObservableList<Group> observableListGroups = FXCollections.observableArrayList();
 		observableListGroups.add(null); // opción por si no se filtra por grupo
@@ -361,9 +363,18 @@ public class MainController implements Initializable {
 		observableListRoles.addAll(controller.getActualCourse().getRoles());
 
 		slcRole.setItems(observableListRoles);
-		slcRole.getSelectionModel().selectFirst(); // seleccionamos el nulo
-		slcRole.valueProperty().addListener((ov, oldValue, newValue) -> filterParticipants());
 
+		slcRole.valueProperty().addListener((ov, oldValue, newValue) -> filterParticipants());
+		
+		Role studentRole = controller.getActualCourse().getStudentRole();
+		if (studentRole == null) { 
+			slcRole.getSelectionModel().selectFirst(); // seleccionamos el nulo
+		}else { 
+			slcRole.getSelectionModel().select(studentRole);
+		}
+		 
+
+	
 		slcRole.setConverter(new StringConverter<Role>() {
 			@Override
 			public Role fromString(String role) {
@@ -378,11 +389,8 @@ public class MainController implements Initializable {
 				return role.getRoleName().isEmpty() ? role.getRoleShortName() : role.getRoleName();
 			}
 		});
-
-		tfdParticipants.setOnAction(event -> filterParticipants());
-
-		initEnrolledUsersListView();
-
+		
+	
 	}
 
 	/**
@@ -770,7 +778,7 @@ public class MainController implements Initializable {
 					try {
 						if (!section.isVisible()) {
 							setTextFill(Color.GRAY);
-						}else {
+						} else {
 							setTextFill(Color.BLACK);
 						}
 
@@ -870,7 +878,7 @@ public class MainController implements Initializable {
 					setText(courseModule.getModuleName());
 					if (!courseModule.isVisible()) {
 						setTextFill(Color.GRAY);
-					}else {
+					} else {
 						setTextFill(Color.BLACK);
 					}
 					try {

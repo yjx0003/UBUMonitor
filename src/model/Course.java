@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -14,9 +15,6 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-
 
 /**
  * Clase curso (asignatura). Guarda información de los roles, usuarios
@@ -30,8 +28,7 @@ import org.slf4j.LoggerFactory;
 public class Course implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(Course.class);
 	private int id;
 	private String shortName;
@@ -523,17 +520,33 @@ public class Course implements Serializable {
 			return getEnd();
 		}
 
-		return startDate.isBefore(Instant.now()) ? LocalDateTime.ofInstant(startDate, logs.getZoneId()).toLocalDate(): LocalDate.now();
+		return startDate.isBefore(Instant.now()) ? LocalDateTime.ofInstant(startDate, logs.getZoneId()).toLocalDate()
+				: LocalDate.now();
 	}
-	
+
 	public LocalDate getEnd() {
 		LOGGER.debug("Fecha de fin del curso por el servidor: {}", endDate);
 		if (endDate.getEpochSecond() == 0) {
 			return LocalDate.now();
 		}
-		
-		return endDate.isBefore(Instant.now()) ? LocalDateTime.ofInstant(endDate, logs.getZoneId()).toLocalDate(): LocalDate.now();
-		
+
+		return endDate.isBefore(Instant.now()) ? LocalDateTime.ofInstant(endDate, logs.getZoneId()).toLocalDate()
+				: LocalDate.now();
+
+	}
+
+	/**
+	 * Devuelve el rol de nombre corto "estudiante" con mayor número usuarios
+	 * matriculados o null en caso de que no haya ninguno.
+	 * 
+	 * @return student role or null
+	 */
+	public Role getStudentRole() {
+		return roles.stream()
+				.filter(r -> "student".equals(r.getRoleShortName()))
+				.max(Comparator.comparingInt(r -> r.getEnrolledUsers().size()))
+				.orElse(null);
+
 	}
 
 	@Override

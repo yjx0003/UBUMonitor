@@ -27,23 +27,14 @@ import model.DataBase;
 public abstract class CSVBuilderAbstract implements CSVBuilder {
 
 	/** Export path. **/
-	static final Path PATH;
+	private static Path path;
 
 	/** File extensio. */
-	static final String EXTENSION = ".csv";
+	private static final String EXTENSION = ".csv";
 
 	private static final Controller CONTROLLER = Controller.getInstance();
-	// Build the path if not exists.
-	static {
 
-		PATH = Paths.get(AppInfo.EXPORT_DIR, CONTROLLER.getUrlHost().getHost(),
-				CONTROLLER.getUser().getFullName() + "-" + CONTROLLER.getUser().getId(),
-				CONTROLLER.getActualCourse() + "-" + CONTROLLER.getActualCourse().getId());
-		File directory = PATH.toFile();
-		if (!directory.isDirectory()) {
-			directory.mkdirs();
-		}
-	}
+	
 
 	/** Logger. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(CSVBuilderAbstract.class);
@@ -59,6 +50,18 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 
 	/** Database. */
 	private DataBase dataBase;
+	
+	
+	public static void setPath() {
+		path = Paths.get(AppInfo.EXPORT_DIR, CONTROLLER.getUrlHost().getHost(),
+				CONTROLLER.getUser().getFullName() + "-" + CONTROLLER.getUser().getId(),
+				CONTROLLER.getActualCourse() + "-" + CONTROLLER.getActualCourse().getId());
+		File directory = path.toFile();
+		if (!directory.isDirectory()) {
+			directory.mkdirs();
+		}
+	}
+	
 
 	/**
 	 * Gets header.
@@ -164,7 +167,8 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	@Override
 	public void writeCSV() {
 		final CSVWriter writer;
-		try (FileOutputStream fos = new FileOutputStream(PATH.resolve(getFileName()).toFile());
+		setPath();
+		try (FileOutputStream fos = new FileOutputStream(path.resolve(getFileName()).toFile());
 				OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
 			writer = new CSVWriter(osw);
 			writer.writeAll(getData());

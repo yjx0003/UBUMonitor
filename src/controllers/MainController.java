@@ -1050,10 +1050,7 @@ public class MainController implements Initializable {
 						(textField.isEmpty() || e.getFullName().toLowerCase().contains(textField)));
 		// Mostramos nº participantes
 		lblCountParticipants.setText(I18n.get("label.participants") + filteredEnrolledList.size());
-		// Actualizamos los graficos
-		updateGradesChart();
-		updateLogsChart();
-		findMax();
+
 	}
 
 	/**

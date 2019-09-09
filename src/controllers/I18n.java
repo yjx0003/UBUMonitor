@@ -61,7 +61,7 @@ public class I18n {
 	 */
 	public static String get(Component component) {
 
-		return getOrDefault("component." + component, component.getName());
+		return getOrDefault("log.component." + component, component.getName());
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class I18n {
 	 * @return evento traducido
 	 */
 	public static String get(Event event) {
-		return getOrDefault("eventname." + event, event.getName());
+		return getOrDefault("log.event." + event, event.getName());
 	}
 
 	/**

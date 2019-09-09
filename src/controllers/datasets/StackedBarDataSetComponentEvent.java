@@ -43,7 +43,7 @@ public class StackedBarDataSetComponentEvent extends StackedBarDatasetAbstract<C
 	@Override
 	protected String translate(ComponentEvent element) {
 		return I18n.get(element.getComponent()) + " - "
-				+ I18n.get("eventname." + element.getEventName());
+				+ I18n.get(element.getEventName());
 	}
 
 	/**

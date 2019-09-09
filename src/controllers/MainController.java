@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -33,8 +34,6 @@ import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.javafx.webkit.WebConsoleListener;
 
 import controllers.datasets.StackedBarDataSetComponent;
 import controllers.datasets.StackedBarDataSetComponentEvent;
@@ -246,13 +245,6 @@ public class MainController implements Initializable {
 					.addListener((ov, oldState, newState) -> webViewChartsEngine.executeScript(
 							"setLanguage('" + I18n.getResourceBundle().getLocale() + "')"));
 
-			// Guardamos en el logger los errores de consola que se generan en el JS
-			WebConsoleListener.setDefaultListener((webView, message, lineNumber, sourceId) ->
-
-			LOGGER.error("Error en la consola de JS: {} [{} : {}] ", message, sourceId, lineNumber)
-
-			);
-
 			initLogOptionsFilter();
 
 			initTabGrades();
@@ -365,16 +357,14 @@ public class MainController implements Initializable {
 		slcRole.setItems(observableListRoles);
 
 		slcRole.valueProperty().addListener((ov, oldValue, newValue) -> filterParticipants());
-		
+
 		Role studentRole = controller.getActualCourse().getStudentRole();
-		if (studentRole == null) { 
+		if (studentRole == null) {
 			slcRole.getSelectionModel().selectFirst(); // seleccionamos el nulo
-		}else { 
+		} else {
 			slcRole.getSelectionModel().select(studentRole);
 		}
-		 
 
-	
 		slcRole.setConverter(new StringConverter<Role>() {
 			@Override
 			public Role fromString(String role) {
@@ -389,8 +379,7 @@ public class MainController implements Initializable {
 				return role.getRoleName().isEmpty() ? role.getRoleShortName() : role.getRoleName();
 			}
 		});
-		
-	
+
 	}
 
 	/**
@@ -425,16 +414,30 @@ public class MainController implements Initializable {
 					setText(null);
 					setGraphic(null);
 				} else {
-					// Instant lastCourseAccess = user.getLastcourseaccess(); // cuando moodle ya
+					Instant lastCourseAccess = user.getLastcourseaccess(); // cuando moodle ya
 					// devuelva la fecha de ultimo acceso al curso.
-					Instant lastCourseAccess = user.getLastaccess();
-					Instant lastLogInstant = Instant.now();
-					setText(user + "\n" + I18n.get("text.lastaccess")
-							+ formatDates(lastCourseAccess, lastLogInstant));
+					Instant lastAccess = user.getLastaccess();
+					Instant lastLogInstant = controller.getActualCourse().getLogs().getLastDatetime().toInstant();
+					setText(user + "\n"
+							+ formatDates(lastAccess, lastLogInstant) +
+							" || " + formatDates(lastCourseAccess, lastLogInstant));
 					try {
 						Image image = new Image(new ByteArrayInputStream(user.getImageBytes()), 50, 50, false,
 								false);
 						setGraphic(new ImageView(image));
+						
+					long daysDuration = Duration.between(lastCourseAccess, lastLogInstant ).toDays();
+					
+					if (daysDuration < 3) {
+						setTextFill(Color.GREEN);
+					}else if (daysDuration < 7) {
+						setTextFill(Color.YELLOW);
+					}else {
+						setTextFill(Color.RED);
+					}
+					
+					
+					
 					} catch (Exception e) {
 						LOGGER.error("No se ha podido cargar la imagen de: {}", user);
 						setGraphic(new ImageView(new Image("/img/default_user.png")));

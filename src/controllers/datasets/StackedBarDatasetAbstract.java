@@ -173,7 +173,8 @@ public abstract class StackedBarDatasetAbstract<T> {
 					stringBuilder.append("{");
 					stringBuilder.append("label:'" + escapeJavaScriptText(translate(element)) + "',");
 					stringBuilder.append("name:'" + escapeJavaScriptText(user.toString()) + "',");
-					stringBuilder.append("stack: '" + user.getId() + "',");					stringBuilder.append(
+					stringBuilder.append("stack: '" + user.getId() + "',");					
+					stringBuilder.append(
 							"backgroundColor: 'rgba(" + c[0] + ", " + c[1] + "," + c[2] + "," + OPACITY_BAR + ")',");
 					stringBuilder.append("data: [" + join(data) + "]");
 					stringBuilder.append("},");

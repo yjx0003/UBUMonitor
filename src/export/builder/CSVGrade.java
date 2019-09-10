@@ -27,7 +27,7 @@ public class CSVGrade extends CSVBuilderAbstract {
 
 	/** Header. */
 	private static final String[] HEADER = new String[] { "UserId", "CourseModule", "Level", "Grade", "Percentage", "MinGrade",
-			"MaxGrade", "WeightRaw", "UserFullName", "CourseModuleName" };
+			"MaxGrade", "WeightRaw", "UserFullName", "CourseModuleName", "ModName" };
 
 	/** Decimal format (change , by . ). */
 	static DecimalFormat decimalFormat;

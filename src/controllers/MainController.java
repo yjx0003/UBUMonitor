@@ -414,30 +414,30 @@ public class MainController implements Initializable {
 					setText(null);
 					setGraphic(null);
 				} else {
-					Instant lastCourseAccess = user.getLastcourseaccess(); // cuando moodle ya
-					// devuelva la fecha de ultimo acceso al curso.
+					Instant lastCourseAccess = user.getLastcourseaccess(); 
 					Instant lastAccess = user.getLastaccess();
 					Instant lastLogInstant = controller.getActualCourse().getLogs().getLastDatetime().toInstant();
 					setText(user + "\n"
-							+ formatDates(lastAccess, lastLogInstant) +
-							" || " + formatDates(lastCourseAccess, lastLogInstant));
+							+ I18n.get("label.course") + formatDates(lastCourseAccess, lastLogInstant) +
+							" | " + I18n.get("text.moodle") + formatDates(lastAccess, lastLogInstant));
+
+					long daysDuration = Duration.between(lastCourseAccess, lastLogInstant).toDays();
+
+					if (daysDuration < 3) {
+						setTextFill(Color.BLUE);
+					} else if (daysDuration < 7) {
+						setTextFill(Color.GREEN);
+					} else if (daysDuration < 14) {
+						setTextFill(Color.ORANGE);
+					} else {
+						setTextFill(Color.RED);
+					}
+
 					try {
 						Image image = new Image(new ByteArrayInputStream(user.getImageBytes()), 50, 50, false,
 								false);
 						setGraphic(new ImageView(image));
-						
-					long daysDuration = Duration.between(lastCourseAccess, lastLogInstant ).toDays();
-					
-					if (daysDuration < 3) {
-						setTextFill(Color.GREEN);
-					}else if (daysDuration < 7) {
-						setTextFill(Color.YELLOW);
-					}else {
-						setTextFill(Color.RED);
-					}
-					
-					
-					
+
 					} catch (Exception e) {
 						LOGGER.error("No se ha podido cargar la imagen de: {}", user);
 						setGraphic(new ImageView(new Image("/img/default_user.png")));
@@ -472,16 +472,17 @@ public class MainController implements Initializable {
 		long time;
 
 		if ((time = betweenDates(ChronoUnit.DAYS, lastCourseAccess, lastLogInstant)) != 0L) {
-			return time + " " + I18n.get("text.days");
+			return (time < 0 ? 0 : time) + " " + I18n.get("text.days");
 		}
 		if ((time = betweenDates(ChronoUnit.HOURS, lastCourseAccess, lastLogInstant)) != 0L) {
-			return time + " " + I18n.get("text.hours");
+			return (time < 0 ? 0 : time) + " " + I18n.get("text.hours");
 		}
 		if ((time = betweenDates(ChronoUnit.MINUTES, lastCourseAccess, lastLogInstant)) != 0L) {
-			return time + " " + I18n.get("text.minutes");
+			return (time < 0 ? 0 : time) + " " + I18n.get("text.minutes");
 		}
-
-		return betweenDates(ChronoUnit.SECONDS, lastCourseAccess, lastLogInstant) + " " + I18n.get("text.seconds");
+		time = betweenDates(ChronoUnit.SECONDS, lastCourseAccess, lastLogInstant);
+		long timeSeconds = time < 0 ? 0 : time;
+		return timeSeconds + " " + I18n.get("text.seconds");
 	}
 
 	/**

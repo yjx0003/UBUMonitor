@@ -36,6 +36,7 @@ public enum ModuleType {
 	QUIZ("quiz"),
 	SCORM_PACKAGE("scorm"),
 	SURVEY("survey"),
+	TAB_DISPLAY("tab"),
 	TURNITIN_TOOL_2("turnitintooltwo"),
 	URL("url"),
 	WIKI("wiki"),

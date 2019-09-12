@@ -45,9 +45,8 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 	public List<YearWeek> getRange(LocalDate start, LocalDate end) {
 		List<YearWeek> list = new ArrayList<>();
 
-		for (YearWeek yearWeekStart = YearWeek.from(start), yearWeekEnd = YearWeek.from(end);
-				!yearWeekStart.isAfter(yearWeekEnd);
-				yearWeekStart = yearWeekStart.plusWeeks(1)) {
+		for (YearWeek yearWeekStart = YearWeek.from(start), yearWeekEnd = YearWeek.from(end); !yearWeekStart
+				.isAfter(yearWeekEnd); yearWeekStart = yearWeekStart.plusWeeks(1)) {
 
 			list.add(yearWeekStart);
 
@@ -69,7 +68,7 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 	@Override
 	public Function<YearWeek, String> getStringFormatFunction() {
 		return yearWeek -> yearWeek.atDay(WeekFields.of(Locale.getDefault()).getFirstDayOfWeek())
-				.format(DATE_TIME_FORMATTER) + " (W" + yearWeek.getWeek() + ")";
+				.format(DATE_TIME_FORMATTER);
 	}
 
 	/**

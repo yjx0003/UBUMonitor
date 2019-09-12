@@ -13,9 +13,10 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.time.Duration;
+import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -86,6 +87,8 @@ import model.CourseModule;
 import model.EnrolledUser;
 import model.GradeItem;
 import model.Group;
+import model.LastActivity;
+import model.LastActivityFactory;
 import model.ModuleType;
 import model.Role;
 import model.Section;
@@ -115,6 +118,9 @@ public class MainController implements Initializable {
 	private Label lblActualUser;
 	@FXML // Host actual
 	private Label lblActualHost;
+
+	@FXML
+	private Label lblLastUpdate;
 	@FXML // Imagen del usuario
 	private ImageView userPhoto;
 
@@ -129,6 +135,9 @@ public class MainController implements Initializable {
 
 	@FXML // Botón filtro por grupo
 	private ChoiceBox<Group> slcGroup;
+
+	@FXML // Boton filtro por ultima conexion al curso
+	private ChoiceBox<LastActivity> slcActivity;
 
 	@FXML // Entrada de filtro de usuarios por patrón
 	private TextField tfdParticipants;
@@ -265,6 +274,11 @@ public class MainController implements Initializable {
 
 			// Mostramos Host actual
 			lblActualHost.setText(I18n.get("label.host") + " " + controller.getUrlHost());
+			ZonedDateTime lastLogDateTime = controller.getActualCourse().getLogs().getLastDatetime();
+			lblLastUpdate.setText(
+					I18n.get("label.lastupdate") + " " +
+							lastLogDateTime.format(Controller.DATE_TIME_FORMATTER) + " ("
+							+ formatDates(lastLogDateTime.toInstant(), Instant.now()) + ")");
 		} catch (Exception e) {
 			LOGGER.error("Error en la inicialización.", e);
 		}
@@ -380,6 +394,29 @@ public class MainController implements Initializable {
 			}
 		});
 
+		ObservableList<LastActivity> observableListActivity = FXCollections.observableArrayList();
+		observableListActivity.add(null);
+		observableListActivity.addAll(LastActivityFactory.getAllLastActivity());
+		slcActivity.setItems(observableListActivity);
+		slcActivity.getSelectionModel().selectFirst(); // seleccionamos el nulo
+		slcActivity.valueProperty().addListener((ov, oldValue, newValue) -> filterParticipants());
+
+		slcActivity.setConverter(new StringConverter<LastActivity>() {
+			@Override
+			public LastActivity fromString(String role) {
+				return null;// no se va a usar en un choiceBox.
+			}
+
+			@Override
+			public String toString(LastActivity lastActivity) {
+				if (lastActivity == null) {
+					return I18n.get(ALL);
+				}
+				return MessageFormat.format(I18n.get("text.betweendates"), lastActivity.getPreviusDays(),
+						lastActivity.getLimitDaysConnection() == Integer.MAX_VALUE ? "∞"
+								: lastActivity.getLimitDaysConnection() - 1);
+			}
+		});
 	}
 
 	/**
@@ -414,24 +451,14 @@ public class MainController implements Initializable {
 					setText(null);
 					setGraphic(null);
 				} else {
-					Instant lastCourseAccess = user.getLastcourseaccess(); 
+					Instant lastCourseAccess = user.getLastcourseaccess();
 					Instant lastAccess = user.getLastaccess();
 					Instant lastLogInstant = controller.getActualCourse().getLogs().getLastDatetime().toInstant();
 					setText(user + "\n"
 							+ I18n.get("label.course") + formatDates(lastCourseAccess, lastLogInstant) +
 							" | " + I18n.get("text.moodle") + formatDates(lastAccess, lastLogInstant));
 
-					long daysDuration = Duration.between(lastCourseAccess, lastLogInstant).toDays();
-
-					if (daysDuration < 3) {
-						setTextFill(Color.BLUE);
-					} else if (daysDuration < 7) {
-						setTextFill(Color.GREEN);
-					} else if (daysDuration < 14) {
-						setTextFill(Color.ORANGE);
-					} else {
-						setTextFill(Color.RED);
-					}
+					setTextFill(LastActivityFactory.getColorActivity(lastCourseAccess, lastLogInstant));
 
 					try {
 						Image image = new Image(new ByteArrayInputStream(user.getImageBytes()), 50, 50, false,
@@ -1047,11 +1074,15 @@ public class MainController implements Initializable {
 
 		Role rol = slcRole.getValue();
 		Group group = slcGroup.getValue();
+		LastActivity lastActivity = slcActivity.getValue();
 		String textField = tfdParticipants.getText().toLowerCase();
-
+		Instant lastLogInstant = controller.getActualCourse().getLogs().getLastDatetime().toInstant();
 		filteredEnrolledList.setPredicate(
-				e -> (rol == null || rol.contains(e)) && (group == null || group.contains(e)) &&
-						(textField.isEmpty() || e.getFullName().toLowerCase().contains(textField)));
+				e -> (rol == null || rol.contains(e))
+						&& (group == null || group.contains(e))
+						&& (textField.isEmpty() || e.getFullName().toLowerCase().contains(textField))
+						&& (lastActivity == null || LastActivityFactory.getColorActivity(e.getLastcourseaccess(),
+								lastLogInstant) == lastActivity.getColor()));
 		// Mostramos nº participantes
 		lblCountParticipants.setText(I18n.get("label.participants") + filteredEnrolledList.size());
 

@@ -36,10 +36,14 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.datasets.StackedBarDataSetComponent;
-import controllers.datasets.StackedBarDataSetComponentEvent;
-import controllers.datasets.StackedBarDataSetSection;
-import controllers.datasets.StackedBarDatasSetCourseModule;
+import com.sun.javafx.webkit.WebConsoleListener;
+
+import controllers.datasets.DataSetComponent;
+import controllers.datasets.DataSetComponentEvent;
+import controllers.datasets.DataSetSection;
+import controllers.datasets.DatasSetCourseModule;
+import controllers.datasets.heatmap.HeatmapDataSet;
+import controllers.datasets.stackedbar.StackedBarDataSet;
 import controllers.ubulogs.GroupByAbstract;
 import export.CSVExport;
 import javafx.collections.FXCollections;
@@ -232,6 +236,16 @@ public class MainController implements Initializable {
 
 	private Stats stats;
 
+	private StackedBarDataSet<Component> stackedBarComponent = new StackedBarDataSet<>();
+	private StackedBarDataSet<ComponentEvent> stackedBarEvent = new StackedBarDataSet<>();
+	private StackedBarDataSet<Section> stackedBarSection = new StackedBarDataSet<>();
+	private StackedBarDataSet<CourseModule> stackedBarCourseModule = new StackedBarDataSet<>();
+	
+	private HeatmapDataSet<Component> heatmapComponent = new HeatmapDataSet<>();
+	private HeatmapDataSet<ComponentEvent> heatmapEvent = new HeatmapDataSet<>();
+	private HeatmapDataSet<Section> heatmapSection = new HeatmapDataSet<>();
+	private HeatmapDataSet<CourseModule> heatmapCourseModule = new HeatmapDataSet<>();
+
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades de
 	 * las que se compone.
@@ -253,6 +267,10 @@ public class MainController implements Initializable {
 			webViewChartsEngine.getLoadWorker().stateProperty()
 					.addListener((ov, oldState, newState) -> webViewChartsEngine.executeScript(
 							"setLanguage('" + I18n.getResourceBundle().getLocale() + "')"));
+			
+			WebConsoleListener.setDefaultListener((webView, message, lineNumber, sourceId) -> {
+			    LOGGER.error("{} [{} at {}] {}", message,sourceId,lineNumber);
+			});
 
 			initLogOptionsFilter();
 
@@ -947,29 +965,47 @@ public class MainController implements Initializable {
 		}
 
 		String stackedbardataset = null;
-
+		String heatmapdataset=null;
+		
+		List<EnrolledUser> selectedUsers = new ArrayList<>(listParticipants.getSelectionModel().getSelectedItems());
+		List<EnrolledUser> enrolledUsers = new ArrayList<>(listParticipants.getItems());
 		if (tabUbuLogsComponent.isSelected()) {
-			stackedbardataset = StackedBarDataSetComponent.getInstance().createData(listParticipants.getItems(),
-					listParticipants.getSelectionModel().getSelectedItems(),
-					listViewComponents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart,
-					dateEnd);
-		} else if (tabUbuLogsEvent.isSelected()) {
-			stackedbardataset = StackedBarDataSetComponentEvent.getInstance().createData(listParticipants.getItems(),
-					listParticipants.getSelectionModel().getSelectedItems(),
-					listViewEvents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
-		} else if (tabUbuLogsSection.isSelected()) {
-			stackedbardataset = StackedBarDataSetSection.getInstance().createData(listParticipants.getItems(),
-					listParticipants.getSelectionModel().getSelectedItems(),
-					listViewSection.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd);
-		} else if (tabUbuLogsCourseModule.isSelected()) {
-			stackedbardataset = StackedBarDatasSetCourseModule.getInstance().createData(listParticipants.getItems(),
-					listParticipants.getSelectionModel().getSelectedItems(),
-					listViewCourseModule.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart,
-					dateEnd);
-		}
 
+			stackedbardataset = stackedBarComponent.createData(enrolledUsers,selectedUsers,
+					listViewComponents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart,
+					dateEnd, DataSetComponent.getInstance());
+			
+			heatmapdataset= heatmapComponent.createSeries(enrolledUsers,selectedUsers,
+					listViewComponents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart,
+					dateEnd, DataSetComponent.getInstance());
+		} else if (tabUbuLogsEvent.isSelected()) {
+			stackedbardataset = stackedBarEvent.createData(enrolledUsers,selectedUsers,
+					listViewEvents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd,
+					DataSetComponentEvent.getInstance());
+			heatmapdataset = heatmapEvent.createSeries(enrolledUsers,selectedUsers,
+					listViewEvents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd,
+					DataSetComponentEvent.getInstance());
+		} else if (tabUbuLogsSection.isSelected()) {
+			stackedbardataset = stackedBarSection.createData(enrolledUsers,selectedUsers,
+					listViewSection.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd, DataSetSection.getInstance());
+			heatmapdataset= heatmapSection.createSeries(enrolledUsers,selectedUsers,
+					listViewSection.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart,
+					dateEnd, DataSetSection.getInstance());
+		} else if (tabUbuLogsCourseModule.isSelected()) {
+			stackedbardataset = stackedBarCourseModule.createData(enrolledUsers,selectedUsers,
+					listViewCourseModule.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart,
+					dateEnd, DatasSetCourseModule.getInstance());
+			heatmapdataset= heatmapCourseModule.createSeries(enrolledUsers,selectedUsers,
+					listViewCourseModule.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart,
+					dateEnd, DatasSetCourseModule.getInstance());
+		}
+		String categories = HeatmapDataSet.createCategory(selectedChoiceBoxDate, dateStart, dateEnd);
 		LOGGER.info("Dataset para el stacked bar en JS: {}", stackedbardataset);
+		LOGGER.info("Dataset para el heatmap en JS: {}", heatmapdataset);
+		
+		LOGGER.info("Categorias del heatmap en JS: {}", categories);
 		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
+		webViewChartsEngine.executeScript(String.format("updateHeatmap(%s,%s)", categories,heatmapdataset));
 
 	}
 
@@ -1001,7 +1037,6 @@ public class MainController implements Initializable {
 		if (!tabUbuLogs.isSelected()) {
 			return;
 		}
-
 		long maxYAxis = 1L;
 		if (tabUbuLogsComponent.isSelected()) {
 			maxYAxis = selectedChoiceBoxDate.getComponents().getMaxElement(listParticipants.getItems(),
@@ -1085,7 +1120,7 @@ public class MainController implements Initializable {
 								lastLogInstant) == lastActivity.getColor()));
 		// Mostramos nº participantes
 		lblCountParticipants.setText(I18n.get("label.participants") + filteredEnrolledList.size());
-
+		findMax();
 	}
 
 	/**

@@ -1025,7 +1025,7 @@ public class MainController implements Initializable {
 
 		updateLogsChart();
 		findMax();
-
+		webViewChartsEngine.executeScript("manageLogsButtons()");
 	}
 
 	/**

@@ -295,8 +295,7 @@ public class MainController implements Initializable {
 			ZonedDateTime lastLogDateTime = controller.getActualCourse().getLogs().getLastDatetime();
 			lblLastUpdate.setText(
 					I18n.get("label.lastupdate") + " " +
-							lastLogDateTime.format(Controller.DATE_TIME_FORMATTER) + " ("
-							+ formatDates(lastLogDateTime.toInstant(), Instant.now()) + ")");
+							lastLogDateTime.format(Controller.DATE_TIME_FORMATTER));
 		} catch (Exception e) {
 			LOGGER.error("Error en la inicialización.", e);
 		}
@@ -1026,7 +1025,6 @@ public class MainController implements Initializable {
 
 		updateLogsChart();
 		findMax();
-		webViewChartsEngine.executeScript("manageLogsButtons()");
 
 	}
 

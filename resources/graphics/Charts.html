@@ -8,64 +8,65 @@
 
 <script type="text/javascript" src="./lib/Chart.js"></script>
 <script type="text/javascript" src="./lib/color-hash.js"></script>
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript"
+	src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript" src="./lib/html2canvas.js"></script>
 <script type="text/javascript" src="./messages.js"></script>
-
+<script type="text/javascript" src="./lib/apexcharts.js"></script>
 </head>
 
 
-	<div class="controles">
-		<div class="pestañas">
-			<input type="button"  class="btn" id="btnLineas"
-				onclick="generateChart('line')" /> <input type="button"
-				 class="btn" id="btnRadar"
-				onclick="generateChart('radar')" /> <input type="button"
-				 class="btn" id="btnBoxPlot"
-				onclick="generateChart('boxplot')" /> <input type="button"
-				 class="btn" id="btnBoxPlotGroup"
-				onclick="generateChart('boxplotgroup')" /> <input type="button"
-				 class="btn" id="btnStackedBar"
-				onclick="generateChart('stackedBar')" /> <input type="button"
-				 class="btn" id="btnCalificaciones"
-				onclick="drawTable()" />
+<div class="controles">
+	<div class="pestañas">
+		<input type="button" class="btn" id="btnLineas"
+			onclick="generateChart('line')" /> <input type="button" class="btn"
+			id="btnRadar" onclick="generateChart('radar')" /> <input
+			type="button" class="btn" id="btnBoxPlot"
+			onclick="generateChart('boxplot')" /> <input type="button"
+			class="btn" id="btnBoxPlotGroup"
+			onclick="generateChart('boxplotgroup')" /> <input type="button"
+			class="btn" id="btnStackedBar" onclick="generateChart('stackedBar')" />
+			<input type="button"
+			class="btn" id="btnHeatmap" onclick="showHeatmap()" />
+		<input type="button" class="btn" id="btnCalificaciones"
+			onclick="drawTable()" />
 
-		</div>
-
-		<div class="opciones">
-			<input type="button" value="." class="btn"
-				style="visibility: hidden; width: 0px; margin: 0px; padding: 0px;" />
-			<input type="button" value="Leyenda" class="btn" id="btnLegend"
-				onclick="hideLegend()" /> <input type="button" value="Media General"
-				class="btn" id="btnMean" onclick="showGeneralMean()" /> <input
-				type="button"  class="btn" id="btnGroupMean"
-				onclick="showGroupMean()" />
-		</div>
 	</div>
 
-	<div id="inicio" class="inicio">
-		<img alt="Logo" class="imginicio" src="../img/logo.png">
+	<div class="opciones">
+		<input type="button" value="." class="btn"
+			style="visibility: hidden; width: 0px; margin: 0px; padding: 0px;" />
+		<input type="button" value="Leyenda" class="btn" id="btnLegend"
+			onclick="hideLegend()" /> <input type="button" value="Media General"
+			class="btn" id="btnMean" onclick="showGeneralMean()" /> <input
+			type="button" class="btn" id="btnGroupMean" onclick="showGroupMean()" />
 	</div>
+</div>
 
-	<div id="noradar" class="card">
-		<div id="noradarText" class="cardText">Selecciona al menos 3
-			actividades para mostrar el gráfico</div>
-	</div>
+<div id="inicio" class="inicio">
+	<img alt="Logo" class="imginicio" src="../img/logo.png">
+</div>
 
-	<div id="noGroup" class="card">
-		<div id="noGroupText" class="cardText">Selecciona un grupo para
-			mostrar el gráfico</div>
-	</div>
+<div id="noradar" class="card">
+	<div id="noradarText" class="cardText">Selecciona al menos 3
+		actividades para mostrar el gráfico</div>
+</div>
 
-	<div id="chart-container" class="chart-container">
-		<canvas id="myChart"></canvas>
-	</div>
+<div id="noGroup" class="card">
+	<div id="noGroupText" class="cardText">Selecciona un grupo para
+		mostrar el gráfico</div>
+</div>
 
-	<div id="table_div" class="table_div"></div>
+<div id="chart-container" class="chart-container">
+	<canvas id="myChart"></canvas>
+</div>
+<div id="apexchartsDiv" style="display: none;"></div>
 
-	<div id="table_img" style="display: none;"></div>
+<div id="table_div" class="table_div"></div>
 
-	<script type="text/javascript">
+<div id="table_img" style="display: none;"></div>
+
+<script type="text/javascript">
 //------------------------------------------Opciones para los graficos------------------------------------------------------------------
 // Opciones Globales
 //Chart.defaults.global.defaultFontFamily= "Comic Sans MS";
@@ -284,6 +285,31 @@ var optionsStackedBar= {
 
 }
 
+heatmapOptions = {
+		  tooltip:{
+			    x:{
+			      show:true
+			    }
+			  },
+			  chart: {
+			    toolbar: {
+			          show: false,
+			    },
+			    animations:{
+			      enabled:false
+			    },
+			    type: "heatmap"
+			  },
+			  dataLabels: {
+			    style: { colors: ["#000000"] }
+			  },
+			  colors: ["#0ff00"],
+			  series: [],
+			  xaxis: {
+			    categories: []
+			  }
+			};
+
 //------------------------------------------Variables globales-------------------------------------------------------------
 // DataSets
 var GeneralMeanDataSet = '';
@@ -294,6 +320,7 @@ var BoxPlotGeneralDataSet = '';
 var BoxPlotGroupDataSet = '';
 var TableDataSet = '';
 var StackedBarDataSet= '';
+var HeatmapDataSet= '';
 //
 var GeneralMeanActive = false;
 var GroupMeanActive = false;
@@ -310,11 +337,15 @@ var language = 'es';
 var colorHash = new ColorHash();
 var ctx = document.getElementById('myChart');
 
+
 var myChart = new Chart(ctx,{
 	type: 'line',
 	data:LineDataSet,
 	options: optionsLineChart
 });
+
+var myApexChart= new ApexCharts(document.getElementById('apexchartsDiv'),heatmapOptions);
+myApexChart.render();
 // Cargamos la librearia de google para la tabla de calificaciones
 google.charts.load('current', {'packages':['table']});
 var table;
@@ -326,6 +357,7 @@ document.getElementById('btnStackedBar').disabled = true;
 document.getElementById('table_div').style.display = 'none';
 //ocultamos los de logs
 document.getElementById('btnStackedBar').style.display = "none";
+document.getElementById('btnHeatmap').style.display  = "none";
 
 
 document.getElementById('btnLegend').style.backgroundImage = 'url(./../img/visibility.png)';
@@ -357,6 +389,7 @@ function drawTable() {
 	document.getElementById('noGroup').style.display = 'none';
 	document.getElementById('chart-container').style.display = 'none';
 	document.getElementById('table_div').style.display = 'block';
+	document.getElementById('apexchartsDiv').syle.display='none';
 	document.getElementById('btnMean').style.display = 'none';
 	document.getElementById('btnGroupMean').style.display = 'none';
 	document.getElementById('btnLegend').style.display = 'none';
@@ -378,6 +411,7 @@ function drawTable() {
 // Funcion que genera y muestra el grafico segun el tipo que se le pase.
 function generateChart(type){
 	document.getElementById('table_div').style.display = 'none';
+	document.getElementById('apexchartsDiv').style.display='none';
 	document.getElementById('chart-container').style.display = 'block';
 	document.getElementById('inicio').style.display = 'none';
 	document.getElementById('noradar').style.display = 'none';
@@ -389,8 +423,9 @@ function generateChart(type){
 	document.getElementById('btnBoxPlot').disabled = false;
 	document.getElementById('btnBoxPlotGroup').disabled = false;
 	document.getElementById('btnCalificaciones').disabled = false;
+	document.getElementById('btnHeatmap').disabled = false;
 
-	
+	myChart.destroy();
 	currentType = type;
 
 	switch (type) {
@@ -401,7 +436,7 @@ function generateChart(type){
 			document.getElementById('btnGroupMean').style.display = 'inline';
 			if(GeneralMeanActive){showGeneralMean();}
 			if(GroupMeanActive){showGroupMean();}
-			myChart.destroy();
+			
 			myChart = new Chart(ctx,{
 				type: 'line',
 				data: LineDataSet,
@@ -424,7 +459,6 @@ function generateChart(type){
 			document.getElementById('btnGroupMean').style.display = 'none';
 			if(GeneralMeanActive){showGeneralMean();}
 			if(GroupMeanActive){showGroupMean();}
-			myChart.destroy();
 			myChart = new Chart(ctx,{
 				type: 'line',
 				data: BoxPlotGeneralDataSet,
@@ -437,7 +471,6 @@ function generateChart(type){
 			document.getElementById('btnGroupMean').style.display = 'none';
 			if(GeneralMeanActive){showGeneralMean();}
 			if(GroupMeanActive){showGroupMean();}
-			myChart.destroy();
 			myChart = new Chart(ctx,{
 				type: 'line',
 				data: BoxPlotGroupDataSet,
@@ -454,7 +487,6 @@ function generateChart(type){
 			document.getElementById('btnGroupMean').style.display = 'inline';
 			if(GeneralMeanActive){showGeneralMean();}
 			if(GroupMeanActive){showGroupMean();}
-			myChart.destroy();
 			myChart = new Chart(ctx,{
 				type: 'radar',
 				data: RadarDataSet,
@@ -477,7 +509,6 @@ function generateChart(type){
 			document.getElementById('btnStackedBar').disabled = true;
 			document.getElementById('btnMean').style.display = 'none';
 			document.getElementById('btnGroupMean').style.display = 'none';
-			myChart.destroy();
 			myChart = new Chart(ctx,{
 				type: 'bar',
 				data: StackedBarDataSet,
@@ -493,7 +524,9 @@ function generateChart(type){
 // Funcion que recibe el tipo de grafico y su data set y lo actualiza
 function updateChart(type, dataSet){
 	if(currentType != 'table') {
-		document.getElementById('chart-container').style.display = 'block';
+		if ( currentType != 'heatmap'){
+				document.getElementById('chart-container').style.display = 'block';
+		}
 		document.getElementById('inicio').style.display = 'none';
 		switch (type) {
 			case 'line':
@@ -560,11 +593,30 @@ function updateChart(type, dataSet){
 				}
 
 		}
+		
 		myChart.update();
 	}
 }
 
+function showHeatmap(){
+	document.getElementById('btnHeatmap').disabled = true;
+	document.getElementById('btnStackedBar').disabled = false;
+	document.getElementById('table_div').style.display = 'none';
+	document.getElementById('apexchartsDiv').style.display='block';
+	document.getElementById('chart-container').style.display = 'none';
+	currentType='heatmap';
+	myApexChart.updateOptions(heatmapOptions);
+}
 
+
+function updateHeatmap(categories, series){
+	heatmapOptions.series=series;
+	heatmapOptions.xaxis.categories=categories;
+	heatmapOptions.chart.height=document.documentElement.clientHeight-55;
+	if (currentType=='heatmap'){
+		showHeatmap();
+	}
+}
 
 function manageGradesButtons(){
 	
@@ -576,11 +628,13 @@ function manageGradesButtons(){
 	document.getElementById('btnBoxPlotGroup').style.display = "inline";
 	document.getElementById('btnCalificaciones').style.display = "inline";
 	
+	
 	//ocultamos los de logs
 	document.getElementById('btnStackedBar').style.display = "none";
+	document.getElementById('btnHeatmap').style.display="none";
+	
 	
 	currentLogType=currentType;
-	
 	generateChart(currentGradeType);
 }
 
@@ -597,18 +651,26 @@ function manageLogsButtons(){
 	
 	//mostramos los de logs
 	document.getElementById('btnStackedBar').style.display = "inline";
-	
+	document.getElementById('btnHeatmap').style.display="inline";
 	currentGradeType=currentType;
 	
-	generateChart(currentLogType);
+	if (currentLogType == 'heatmap'){
+		showHeatmap();
+	}else{
+		generateChart(currentLogType);
+	}
+
 	
 
 }
 
 function changeYMaxStackedBar(max){
 	optionsStackedBar.scales.yAxes[0].ticks.suggestedMax=max;
-	myChart.options.scales.yAxes[0].ticks.suggestedMax=max;
-	myChart.update();
+	if (currentType=="stackedBar"){
+		myChart.options.scales.yAxes[0].ticks.suggestedMax=max;
+		myChart.update();
+	}
+
 }
 
 //Funcion que almacena la media general.

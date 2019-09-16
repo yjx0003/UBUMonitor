@@ -56,6 +56,15 @@ var messages = {
 		pt: "Bar Empilhados",
 
 	},
+	btnHeatmap: {
+		en: "Heatmap",
+		es: "Heatmap",
+		ca: "Heatmap",
+		de: "Heatmap",
+		fr: "Heatmap",
+		it: "Heatmap",
+		pt: "Heatmap"
+	},
 	btnLegend : {
 		en: "Legend",
 		es: "Leyenda",
@@ -119,6 +128,7 @@ function setLanguage(lang) {
 	getI18n("btnMean", lang);
 	getI18n("btnGroupMean", lang);
 	getI18n("btnStackedBar", lang);
+	getI18n("btnHeatmap", lang);
 	document.getElementById("noradarText").innerHTML = messages["noradarText"][lang];
 	document.getElementById("noGroupText").innerHTML = messages["noGroupText"][lang];
 

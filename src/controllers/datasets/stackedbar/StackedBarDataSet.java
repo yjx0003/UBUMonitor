@@ -1,66 +1,37 @@
-package controllers.datasets;
+package controllers.datasets.stackedbar;
 
 import java.awt.Color;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import controllers.I18n;
+import controllers.datasets.DataSet;
+import controllers.datasets.util.DataSetsUtil;
 import controllers.ubulogs.GroupByAbstract;
 import model.EnrolledUser;
 
-public abstract class StackedBarDatasetAbstract<T> {
+public class StackedBarDataSet<T> {
 
 	/**
 	 * Nivel de opacidad para el color de fondo de las barras
 	 */
 	private static final float OPACITY_BAR = 0.4f;
 
-	protected List<EnrolledUser> enrolledUsers;
-	protected List<EnrolledUser> selectedUsers;
-	protected List<T> elements;
-	protected Map<T, int[]> colors;
-	protected GroupByAbstract<?> groupBy;
-	protected LocalDate start;
-	protected LocalDate end;
-	protected StringBuilder stringBuilder;
+	private List<EnrolledUser> enrolledUsers;
+	private List<EnrolledUser> selectedUsers;
+	private List<T> elements;
+	private Map<T, int[]> colors;
+	private GroupByAbstract<?> groupBy;
+	private LocalDate start;
+	private LocalDate end;
+	private StringBuilder stringBuilder;
 
-	/**
-	 * Escapa las comillas simples de un texto añadiendo un \
-	 * 
-	 * @param input
-	 *            texto
-	 * @return texto escapado
-	 */
-	private static String escapeJavaScriptText(String input) {
-		return input.replaceAll("'", "\\\\'");
-	}
+	private DataSet<T> dataSet;
 
-	/**
-	 * Traduce el elemento
-	 * 
-	 * @param element
-	 *            elemento
-	 * @return traducido
-	 */
-	protected abstract String translate(T element);
 
-	/**
-	 * Devuelve un mapa con las medias.
-	 * 
-	 * @return las medias
-	 */
-	protected abstract Map<T, List<Double>> getMeans();
-
-	/**
-	 * Devuele los conteos de los usuarios
-	 * 
-	 * @return los conteos de los usuarios
-	 */
-	protected abstract Map<EnrolledUser, Map<T, List<Long>>> getUserCounts();
+	
 
 	/**
 	 * Crea la cadena json para chart js
@@ -80,16 +51,15 @@ public abstract class StackedBarDatasetAbstract<T> {
 	 * @return cadena de texto en JS
 	 */
 	public String createData(List<EnrolledUser> enrolledUsers, List<EnrolledUser> selectedUsers,
-			List<T> selecteds, GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd) {
+			List<T> selecteds, GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd, DataSet<T> dataSet) {
 
-		// lo metemos en un nuevo arraylist para evitar que se actualice en tiempo real
-		// los elementos
-		this.enrolledUsers = new ArrayList<>(enrolledUsers);
-		this.selectedUsers = new ArrayList<>(selectedUsers);
-		this.elements = new ArrayList<>(selecteds);
+		this.enrolledUsers = enrolledUsers;
+		this.selectedUsers = selectedUsers;
+		this.elements = selecteds;
 		this.groupBy = groupBy;
 		this.start = dateStart;
 		this.end = dateEnd;
+		this.dataSet = dataSet;
 
 		setRandomColors();
 
@@ -108,7 +78,7 @@ public abstract class StackedBarDatasetAbstract<T> {
 	private void setLabels() {
 		List<String> rangeDates = groupBy.getRangeString(start, end);
 
-		String stringLabels = joinWithQuotes(rangeDates);
+		String stringLabels = DataSetsUtil.joinWithQuotes(rangeDates);
 
 		stringBuilder.append("labels:[" + stringLabels + "],");
 	}
@@ -128,7 +98,7 @@ public abstract class StackedBarDatasetAbstract<T> {
 	 */
 	private void setMeans() {
 
-		Map<T, List<Double>> meanTs = getMeans();
+		Map<T, List<Double>> meanTs = dataSet.getMeans(groupBy, enrolledUsers, elements, start, end);
 
 		for (T element : elements) {
 
@@ -141,13 +111,14 @@ public abstract class StackedBarDatasetAbstract<T> {
 
 				stringBuilder.append("{");
 				stringBuilder.append(
-						"label:'" + escapeJavaScriptText(I18n.get("chart.mean") + " " + translate(element)) + "',");
+						"label:'" + DataSetsUtil.escapeJavaScriptText(I18n.get("chart.mean") + " " + dataSet.translate(element)) + "',");
 				stringBuilder.append("type: 'line',");
 				stringBuilder.append("borderWidth: 2,");
 				stringBuilder.append("fill: false,");
-				stringBuilder.append("backgroundColor: 'rgba(" + color[0] + ", " + color[1] + "," + color[2] + ","+OPACITY_BAR+")',");
+				stringBuilder.append("backgroundColor: 'rgba(" + color[0] + ", " + color[1] + "," + color[2] + ","
+						+ OPACITY_BAR + ")',");
 				stringBuilder.append("borderColor: 'rgb(" + color[0] + ", " + color[1] + "," + color[2] + ")',");
-				stringBuilder.append("data: [" + join(data) + "]");
+				stringBuilder.append("data: [" + DataSetsUtil.join(data) + "]");
 				stringBuilder.append("},");
 			}
 		}
@@ -158,9 +129,10 @@ public abstract class StackedBarDatasetAbstract<T> {
 	 * Crea el dataset de los usuarios seleccionados
 	 */
 	private void setUsersDatasets() {
-		Map<EnrolledUser, Map<T, List<Long>>> userTDataset = getUserCounts();
+		Map<EnrolledUser, Map<T, List<Long>>> userTDataset = dataSet.getUserCounts(groupBy, enrolledUsers, elements, start, end);
 
 		for (EnrolledUser user : selectedUsers) {
+			if (user==null) continue;
 			Map<T, List<Long>> elementDataset = userTDataset.get(user);
 			for (T element : elements) {
 
@@ -171,12 +143,12 @@ public abstract class StackedBarDatasetAbstract<T> {
 				if (anyNotZero) {
 					int[] c = colors.get(element);
 					stringBuilder.append("{");
-					stringBuilder.append("label:'" + escapeJavaScriptText(translate(element)) + "',");
-					stringBuilder.append("name:'" + escapeJavaScriptText(user.toString()) + "',");
-					stringBuilder.append("stack: '" + user.getId() + "',");					
+					stringBuilder.append("label:'" + DataSetsUtil.escapeJavaScriptText(dataSet.translate(element)) + "',");
+					stringBuilder.append("name:'" + DataSetsUtil.escapeJavaScriptText(user.toString()) + "',");
+					stringBuilder.append("stack: '" + user.getId() + "',");
 					stringBuilder.append(
 							"backgroundColor: 'rgba(" + c[0] + ", " + c[1] + "," + c[2] + "," + OPACITY_BAR + ")',");
-					stringBuilder.append("data: [" + join(data) + "]");
+					stringBuilder.append("data: [" + DataSetsUtil.join(data) + "]");
 					stringBuilder.append("},");
 				}
 
@@ -185,31 +157,9 @@ public abstract class StackedBarDatasetAbstract<T> {
 
 	}
 
-	/**
-	 * Convierte una lista en string con los elementos entre comillas y separado por
-	 * comas.
-	 * 
-	 * @param list
-	 * @return
-	 */
-	private String joinWithQuotes(List<String> list) {
-		// https://stackoverflow.com/a/18229122
-		return list.stream()
-				.map(s -> "'" + s + "'")
-				.collect(Collectors.joining(", "));
-	}
 
-	/**
-	 * Convierte una lista de elementos en string separados por comas
-	 * 
-	 * @param datasets
-	 * @return
-	 */
-	private <E> String join(List<E> datasets) {
-		return datasets.stream()
-				.map(E::toString)
-				.collect(Collectors.joining(", "));
-	}
+
+	
 
 	/**
 	 * Selecciona colores pseudo-aleatorios a partir del HSV

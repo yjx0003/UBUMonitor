@@ -26,10 +26,9 @@
 			class="btn" id="btnBoxPlotGroup"
 			onclick="generateChart('boxplotgroup')" /> <input type="button"
 			class="btn" id="btnStackedBar" onclick="generateChart('stackedBar')" />
-			<input type="button"
-			class="btn" id="btnHeatmap" onclick="showHeatmap()" />
-		<input type="button" class="btn" id="btnCalificaciones"
-			onclick="drawTable()" />
+		<input type="button" class="btn" id="btnHeatmap"
+			onclick="showHeatmap()" /> <input type="button" class="btn"
+			id="btnCalificaciones" onclick="drawTable()" />
 
 	</div>
 
@@ -291,6 +290,24 @@ heatmapOptions = {
 			      show:true
 			    }
 			  },
+			  plotOptions: {
+			    heatmap: {
+			      shadeIntensity: 0.5,
+			      colorScale: {
+			        ranges: [
+			          {
+			            from: -1,
+			            to: 0,
+			            color: "#8b0000",
+			            name: "No activity"
+			          }
+			        ]
+			      }
+			    }
+			  },
+			  legend:{
+			      position: 'bottom'
+			  },
 			  chart: {
 			    toolbar: {
 			          show: false,
@@ -309,7 +326,7 @@ heatmapOptions = {
 		       },
 			    style: { colors: ["#000000"] }
 			  },
-			  colors: ["#0ff00"],
+			  colors: ["#00A100"],
 			  series: [],
 			  xaxis: {
 			    categories: []
@@ -610,6 +627,9 @@ function showHeatmap(){
 	document.getElementById('table_div').style.display = 'none';
 	document.getElementById('apexchartsDiv').style.display='block';
 	document.getElementById('chart-container').style.display = 'none';
+	document.getElementById('btnLegend').style.display = 'none';
+	document.getElementById('btnGroupMean').style.display = 'none';
+	document.getElementById('btnLegend').style.display = 'none';
 	currentType='heatmap';
 	myApexChart.updateOptions(heatmapOptions);
 }

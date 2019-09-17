@@ -22,17 +22,19 @@ public class HeatmapDataSet<T> {
 				dateStart, dateEnd);
 		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
 
-		for (EnrolledUser selectedUser : selectedUsers) {
-			if (selectedUser == null) continue;
+		for (int i = selectedUsers.size() - 1; i >= 0; i--) {
+			EnrolledUser selectedUser = selectedUsers.get(i);
+			if (selectedUser == null)
+				continue;
 			stringBuilder.append("{name:'" + DataSetsUtil.escapeJavaScriptText(selectedUser.toString()) + "',");
 
 			Map<T, List<Long>> types = userCounts.get(selectedUser);
 			List<Long> results = new ArrayList<>();
-			for (int i = 0; i < rangeDates.size(); i++) {
+			for (int j = 0; j < rangeDates.size(); j++) {
 				long result = 0;
 				for (T type : selecteds) {
 					List<Long> times = types.get(type);
-					result += times.get(i);
+					result += times.get(j);
 				}
 				results.add(result);
 			}
@@ -45,7 +47,7 @@ public class HeatmapDataSet<T> {
 	}
 
 	public static String createCategory(GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd) {
-		return "["+DataSetsUtil.joinWithQuotes(groupBy.getRangeString(dateStart, dateEnd))+"]";
+		return "[" + DataSetsUtil.joinWithQuotes(groupBy.getRangeString(dateStart, dateEnd)) + "]";
 	}
 
 }

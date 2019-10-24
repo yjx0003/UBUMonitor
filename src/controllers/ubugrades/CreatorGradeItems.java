@@ -106,8 +106,8 @@ public class CreatorGradeItems {
 	private List<GradeItem> createHierarchyGradeItems(JSONObject jsonObject) {
 
 		JSONObject table = jsonObject.getJSONArray("tables").optJSONObject(0);
-		if (table ==null) {
-			return Collections.<GradeItem>emptyList();
+		if (table == null) { //if there is no element in the gradereport
+			return Collections.emptyList();
 		}
 
 		int maxDepth = table.getInt("maxdepth") + 1;

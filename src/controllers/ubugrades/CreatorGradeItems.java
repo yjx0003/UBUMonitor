@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -104,7 +105,10 @@ public class CreatorGradeItems {
 	 */
 	private List<GradeItem> createHierarchyGradeItems(JSONObject jsonObject) {
 
-		JSONObject table = jsonObject.getJSONArray("tables").getJSONObject(0);
+		JSONObject table = jsonObject.getJSONArray("tables").optJSONObject(0);
+		if (table ==null) {
+			return Collections.<GradeItem>emptyList();
+		}
 
 		int maxDepth = table.getInt("maxdepth") + 1;
 

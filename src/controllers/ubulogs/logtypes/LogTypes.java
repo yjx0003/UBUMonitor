@@ -198,6 +198,8 @@ public class LogTypes {
 		TYPES.put(get(LESSON, PAGE_CREATED), UserPageCmid.getInstance());
 		TYPES.put(get(LESSON, PAGE_MOVED), UserPagePagePageCmid.getInstance());
 		TYPES.put(get(LESSON, PAGE_UPDATED), UserPageCmid.getInstance());
+		TYPES.put(get(LESSON, LESSON_RESTARTED), UserCmid.getInstance());
+		TYPES.put(get(LESSON, LESSON_RESUMED), UserCmid.getInstance());
 		TYPES.put(get(LESSON, QUESTION_ANSWERED), UserPageCmid.getInstance());
 		TYPES.put(get(LESSON, QUESTION_VIEWED), UserPageCmid.getInstance());
 

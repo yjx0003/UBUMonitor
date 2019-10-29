@@ -110,6 +110,8 @@ public enum Event {
 	JOURNAL_ENTRY_UPDATED("Journal entry updated"),
 	LESSON_ENDED("Lesson ended"),
 	LESSON_STARTED("Lesson started"),
+	LESSON_RESTARTED("Lesson restarted"),
+	LESSON_RESUMED("Lesson resumed"),
 	LIST_SUBMISSIONS("List Submissions"),
 	LIVE_LOG_REPORT_VIEWED("Live log report viewed"),
 	LOG_REPORT_VIEWED("Log report viewed"),

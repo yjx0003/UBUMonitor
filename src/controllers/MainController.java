@@ -625,7 +625,7 @@ public class MainController implements Initializable {
 	 */
 	private void updateMaxScale(long value) {
 
-		webViewChartsEngine.executeScript("changeYMaxStackedBar(" + value + ")");
+		webViewChartsEngine.executeScript("changeYMax(" + value + ")");
 
 	}
 

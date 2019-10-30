@@ -292,7 +292,8 @@ heatmapOptions = {
 			  },
 			  plotOptions: {
 			    heatmap: {
-			      shadeIntensity: 0.5,
+			    	 enableShades: false,
+			      //shadeIntensity: 0.5,
 			      colorScale: {
 			        ranges: [
 			          {
@@ -690,13 +691,51 @@ function manageLogsButtons(){
 
 }
 
-function changeYMaxStackedBar(max){
+function changeYMax(max){
 	optionsStackedBar.scales.yAxes[0].ticks.suggestedMax=max;
+	heatmapOptions.plotOptions.heatmap.colorScale.ranges =  [
+	      {
+	        from: -1,
+	        to: 0,
+	        color: "#DCDCDC",
+	        name: "0"
+	      },
+	      {
+	        from: 1,
+	        to: Math.max(Math.floor(max*0.25),1),
+	        color: "#FF7F7F",
+	      },
+	                {
+	        from: Math.ceil(max*0.25),
+	        to: Math.floor(max*0.50),
+	        color: "#FFCF9E",
+	
+	      },
+	                
+	      {
+	        from: Math.ceil(max*0.50),
+	        to: Math.floor(max*0.75),
+	        color: "#add8e6",
+	
+		},{
+	        from:Math.ceil(max*0.75),
+	        to: Math.max(max,Math.ceil(max*0.75)),
+	        color: "#90ee90",
+	   
+		},{
+	        from: max+1,
+	        to: Number.POSITIVE_INFINITY,
+	        color: "#b19cd9",
+	        name: "+"+(max+1)
+		}
+			
+]
 	if (currentType=="stackedBar"){
-		myChart.options.scales.yAxes[0].ticks.suggestedMax=max;
 		myChart.update();
-	}
+	}else if (currentType == "heatmap"){
+		myApexChart.updateOptions(heatmapOptions);
 
+		}
 }
 
 //Funcion que almacena la media general.

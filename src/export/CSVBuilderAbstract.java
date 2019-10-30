@@ -18,6 +18,7 @@ import com.opencsv.CSVWriter;
 import controllers.AppInfo;
 import controllers.Controller;
 import model.DataBase;
+import util.UtilMethods;
 
 /**
  * Abstract builder.
@@ -55,7 +56,7 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	public static void setPath() {
 		path = Paths.get(AppInfo.EXPORT_DIR, CONTROLLER.getUrlHost().getHost(),
 				CONTROLLER.getUser().getFullName() + "-" + CONTROLLER.getUser().getId(),
-				CONTROLLER.getActualCourse() + "-" + CONTROLLER.getActualCourse().getId());
+				UtilMethods.removeReservedChar(CONTROLLER.getActualCourse().getFullName()) + "-" + CONTROLLER.getActualCourse().getId());
 		File directory = path.toFile();
 		if (!directory.isDirectory()) {
 			directory.mkdirs();

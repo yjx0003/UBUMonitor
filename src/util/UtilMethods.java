@@ -1,9 +1,9 @@
-package controllers.datasets.util;
+package util;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DataSetsUtil {
+public class UtilMethods {
 	/**
 	 * Escapa las comillas simples de un texto añadiendo un \
 	 * 
@@ -40,5 +40,14 @@ public class DataSetsUtil {
 		return list.stream()
 				.map(s -> "'" + s + "'")
 				.collect(Collectors.joining(", "));
+	}
+
+	/**
+	 * Removes reserved character from Windows filename. 
+	 * @param stringToRemove need to remove reserved character
+	 * @return without reserved character
+	 */
+	public static String removeReservedChar(String stringToRemove) {
+		return stringToRemove.replaceAll(":|\\|/|\\?|\\*|\"|\\|", "");
 	}
 }

@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import controllers.datasets.DataSet;
-import controllers.datasets.util.DataSetsUtil;
 import controllers.ubulogs.GroupByAbstract;
 import model.EnrolledUser;
+import util.UtilMethods;
 
 public class HeatmapDataSet<T> {
 
@@ -26,7 +26,7 @@ public class HeatmapDataSet<T> {
 			EnrolledUser selectedUser = selectedUsers.get(i);
 			if (selectedUser == null)
 				continue;
-			stringBuilder.append("{name:'" + DataSetsUtil.escapeJavaScriptText(selectedUser.toString()) + "',");
+			stringBuilder.append("{name:'" + UtilMethods.escapeJavaScriptText(selectedUser.toString()) + "',");
 
 			Map<T, List<Long>> types = userCounts.get(selectedUser);
 			List<Long> results = new ArrayList<>();
@@ -38,7 +38,7 @@ public class HeatmapDataSet<T> {
 				}
 				results.add(result);
 			}
-			stringBuilder.append("data: [" + DataSetsUtil.join(results) + "]},");
+			stringBuilder.append("data: [" + UtilMethods.join(results) + "]},");
 
 		}
 		stringBuilder.append("]");
@@ -47,7 +47,7 @@ public class HeatmapDataSet<T> {
 	}
 
 	public static String createCategory(GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd) {
-		return "[" + DataSetsUtil.joinWithQuotes(groupBy.getRangeString(dateStart, dateEnd)) + "]";
+		return "[" + UtilMethods.joinWithQuotes(groupBy.getRangeString(dateStart, dateEnd)) + "]";
 	}
 
 }

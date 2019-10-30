@@ -122,7 +122,7 @@ public class WelcomeController implements Initializable {
 			chkUpdateData.setDisable(true);
 			listCourses.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
 
-				cacheFilePath = directoryCache.resolve(UtilMethods.removeReservedChar(newValue.getFullName()) + "-" + newValue.getId());
+				cacheFilePath = directoryCache.resolve(UtilMethods.removeReservedChar(newValue.toString()) + "-" + newValue.getId());
 				LOGGER.debug("Buscando si existe {}", cacheFilePath);
 
 				File f = cacheFilePath.toFile();

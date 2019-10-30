@@ -56,7 +56,7 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	public static void setPath() {
 		path = Paths.get(AppInfo.EXPORT_DIR, CONTROLLER.getUrlHost().getHost(),
 				CONTROLLER.getUser().getFullName() + "-" + CONTROLLER.getUser().getId(),
-				UtilMethods.removeReservedChar(CONTROLLER.getActualCourse().getFullName()) + "-" + CONTROLLER.getActualCourse().getId());
+				UtilMethods.removeReservedChar(CONTROLLER.getActualCourse().toString()) + "-" + CONTROLLER.getActualCourse().getId());
 		File directory = path.toFile();
 		if (!directory.isDirectory()) {
 			directory.mkdirs();

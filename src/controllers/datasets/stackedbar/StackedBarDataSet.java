@@ -8,9 +8,9 @@ import java.util.Map;
 
 import controllers.I18n;
 import controllers.datasets.DataSet;
-import controllers.datasets.util.DataSetsUtil;
 import controllers.ubulogs.GroupByAbstract;
 import model.EnrolledUser;
+import util.UtilMethods;
 
 public class StackedBarDataSet<T> {
 
@@ -78,7 +78,7 @@ public class StackedBarDataSet<T> {
 	private void setLabels() {
 		List<String> rangeDates = groupBy.getRangeString(start, end);
 
-		String stringLabels = DataSetsUtil.joinWithQuotes(rangeDates);
+		String stringLabels = UtilMethods.joinWithQuotes(rangeDates);
 
 		stringBuilder.append("labels:[" + stringLabels + "],");
 	}
@@ -111,14 +111,14 @@ public class StackedBarDataSet<T> {
 
 				stringBuilder.append("{");
 				stringBuilder.append(
-						"label:'" + DataSetsUtil.escapeJavaScriptText(I18n.get("chart.mean") + " " + dataSet.translate(element)) + "',");
+						"label:'" + UtilMethods.escapeJavaScriptText(I18n.get("chart.mean") + " " + dataSet.translate(element)) + "',");
 				stringBuilder.append("type: 'line',");
 				stringBuilder.append("borderWidth: 2,");
 				stringBuilder.append("fill: false,");
 				stringBuilder.append("backgroundColor: 'rgba(" + color[0] + ", " + color[1] + "," + color[2] + ","
 						+ OPACITY_BAR + ")',");
 				stringBuilder.append("borderColor: 'rgb(" + color[0] + ", " + color[1] + "," + color[2] + ")',");
-				stringBuilder.append("data: [" + DataSetsUtil.join(data) + "]");
+				stringBuilder.append("data: [" + UtilMethods.join(data) + "]");
 				stringBuilder.append("},");
 			}
 		}
@@ -143,12 +143,12 @@ public class StackedBarDataSet<T> {
 				if (anyNotZero) {
 					int[] c = colors.get(element);
 					stringBuilder.append("{");
-					stringBuilder.append("label:'" + DataSetsUtil.escapeJavaScriptText(dataSet.translate(element)) + "',");
-					stringBuilder.append("name:'" + DataSetsUtil.escapeJavaScriptText(user.toString()) + "',");
+					stringBuilder.append("label:'" + UtilMethods.escapeJavaScriptText(dataSet.translate(element)) + "',");
+					stringBuilder.append("name:'" + UtilMethods.escapeJavaScriptText(user.toString()) + "',");
 					stringBuilder.append("stack: '" + user.getId() + "',");
 					stringBuilder.append(
 							"backgroundColor: 'rgba(" + c[0] + ", " + c[1] + "," + c[2] + "," + OPACITY_BAR + ")',");
-					stringBuilder.append("data: [" + DataSetsUtil.join(data) + "]");
+					stringBuilder.append("data: [" + UtilMethods.join(data) + "]");
 					stringBuilder.append("},");
 				}
 

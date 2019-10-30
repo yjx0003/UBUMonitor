@@ -56,6 +56,7 @@ import model.CourseCategory;
 import model.DataBase;
 import model.Logs;
 import persistence.Encryption;
+import util.UtilMethods;
 
 /**
  * Clase controlador de la pantalla de bienvenida en la que se muestran los
@@ -121,7 +122,7 @@ public class WelcomeController implements Initializable {
 			chkUpdateData.setDisable(true);
 			listCourses.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
 
-				cacheFilePath = directoryCache.resolve(newValue + "-" + newValue.getId());
+				cacheFilePath = directoryCache.resolve(UtilMethods.removeReservedChar(newValue.getFullName()) + "-" + newValue.getId());
 				LOGGER.debug("Buscando si existe {}", cacheFilePath);
 
 				File f = cacheFilePath.toFile();

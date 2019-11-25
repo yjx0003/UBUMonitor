@@ -697,40 +697,41 @@ function changeYMax(max){
 	      {
 	        from: -1,
 	        to: 0,
-	        color: "#DCDCDC",
+	        color: "#f78880",
 	        name: "0"
 	      },
 	      {
 	        from: 1,
 	        to: Math.max(Math.floor(max*0.25),1),
-	        color: "#FF7F7F",
+	        color: "#f4e3ae",
 	      },
 	                {
 	        from: Math.ceil(max*0.25),
 	        to: Math.floor(max*0.50),
-	        color: "#FFCF9E",
+	        color: "#fff033",
 	
 	      },
 	                
 	      {
 	        from: Math.ceil(max*0.50),
 	        to: Math.floor(max*0.75),
-	        color: "#add8e6",
+	        color: "#b5ff33",
 	
 		},{
 	        from:Math.ceil(max*0.75),
 	        to: Math.max(max,Math.ceil(max*0.75)),
-	        color: "#90ee90",
+	        color: "#38e330",
 	   
 		},{
 	        from: max+1,
 	        to: Number.POSITIVE_INFINITY,
-	        color: "#b19cd9",
+	        color: "#67b92e",
 	        name: "+"+(max+1)
 		}
 			
 ]
 	if (currentType=="stackedBar"){
+		myChart.options.scales.yAxes[0].ticks.suggestedMax=max;
 		myChart.update();
 	}else if (currentType == "heatmap"){
 		myApexChart.updateOptions(heatmapOptions);

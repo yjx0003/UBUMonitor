@@ -22,7 +22,7 @@ public class StackedBarDataSet<T> {
 	private List<EnrolledUser> enrolledUsers;
 	private List<EnrolledUser> selectedUsers;
 	private List<T> elements;
-	private Map<T, int[]> colors;
+	private Map<T, Color> colors;
 	private GroupByAbstract<?> groupBy;
 	private LocalDate start;
 	private LocalDate end;
@@ -107,7 +107,7 @@ public class StackedBarDataSet<T> {
 			boolean anyNotZero = data.stream().anyMatch(value -> value != 0.0);
 
 			if (anyNotZero) {
-				int[] color = colors.get(element);
+				Color c = colors.get(element);
 
 				stringBuilder.append("{");
 				stringBuilder.append(
@@ -115,9 +115,9 @@ public class StackedBarDataSet<T> {
 				stringBuilder.append("type: 'line',");
 				stringBuilder.append("borderWidth: 2,");
 				stringBuilder.append("fill: false,");
-				stringBuilder.append("backgroundColor: 'rgba(" + color[0] + ", " + color[1] + "," + color[2] + ","
+				stringBuilder.append("backgroundColor: 'rgba(" + c.getRed() + ", " + c.getGreen() + "," + c.getBlue() + ","
 						+ OPACITY_BAR + ")',");
-				stringBuilder.append("borderColor: 'rgb(" + color[0] + ", " + color[1] + "," + color[2] + ")',");
+				stringBuilder.append("borderColor: 'rgb(" + c.getRed() + ", " + c.getGreen() + "," + c.getBlue() + ")',");
 				stringBuilder.append("data: [" + UtilMethods.join(data) + "]");
 				stringBuilder.append("},");
 			}
@@ -141,13 +141,13 @@ public class StackedBarDataSet<T> {
 				boolean anyNotZero = data.stream().anyMatch(value -> value != 0);
 
 				if (anyNotZero) {
-					int[] c = colors.get(element);
+					Color c = colors.get(element);
 					stringBuilder.append("{");
 					stringBuilder.append("label:'" + UtilMethods.escapeJavaScriptText(dataSet.translate(element)) + "',");
 					stringBuilder.append("name:'" + UtilMethods.escapeJavaScriptText(user.toString()) + "',");
 					stringBuilder.append("stack: '" + user.getId() + "',");
 					stringBuilder.append(
-							"backgroundColor: 'rgba(" + c[0] + ", " + c[1] + "," + c[2] + "," + OPACITY_BAR + ")',");
+							"backgroundColor: 'rgba(" + c.getRed() + ", " + c.getGreen() + "," + c.getBlue() + "," + OPACITY_BAR + ")',");
 					stringBuilder.append("data: [" + UtilMethods.join(data) + "]");
 					stringBuilder.append("},");
 				}
@@ -172,8 +172,7 @@ public class StackedBarDataSet<T> {
 			// generamos un color a partir de HSB, el hue(H) es el color, saturacion (S), y
 			// brillo(B)
 			Color c = new Color(Color.HSBtoRGB(i / (float) elements.size(), 0.8f, 1.0f));
-			int[] array = { c.getRed(), c.getGreen(), c.getBlue() };
-			colors.put(elements.get(i), array);
+			colors.put(elements.get(i), c);
 		}
 
 	}

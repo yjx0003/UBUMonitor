@@ -129,8 +129,7 @@ function setLanguage(lang) {
 	getI18n("btnGroupMean", lang);
 	getI18n("btnStackedBar", lang);
 	getI18n("btnHeatmap", lang);
-	document.getElementById("noradarText").innerHTML = messages["noradarText"][lang];
-	document.getElementById("noGroupText").innerHTML = messages["noGroupText"][lang];
+
 
 }
 

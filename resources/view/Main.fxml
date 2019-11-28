@@ -93,7 +93,7 @@
 			<items>
 				<BorderPane maxWidth="600.0" prefHeight="200.0" prefWidth="200.0">
 					<center>
-						<SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
+						<SplitPane fx:id="splitPaneLeft" dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
 							<items>
 								<BorderPane prefHeight="200.0" prefWidth="200.0">
 									<top>
@@ -121,25 +121,6 @@
 								</BorderPane>
 								<TabPane fx:id="tabPane" minWidth="-Infinity" prefWidth="250.0" tabMinWidth="100.0">
 									<tabs>
-										<Tab fx:id="tabUbuGrades" closable="false" text="%tab.grades">
-											<content>
-												<BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
-													<top>
-														<Pane minHeight="63.0" prefHeight="63.0" prefWidth="250.0" BorderPane.alignment="CENTER">
-															<children>
-																<Label layoutX="8.0" layoutY="6.0" text="%label.categoryitem" />
-																<TextField fx:id="tfdItems" layoutX="8.0" layoutY="30.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
-																<Label layoutX="123.0" layoutY="36.0" text="%label.type" />
-																<ChoiceBox fx:id="slcType" layoutX="162.0" layoutY="34.0" maxWidth="88.0" minHeight="25.0" prefHeight="25.0" />
-															</children>
-														</Pane>
-													</top>
-													<center>
-														<TreeView fx:id="tvwGradeReport" minWidth="250.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-													</center>
-												</BorderPane>
-											</content>
-										</Tab>
 										<Tab fx:id="tabUbuLogs" closable="false" text="%tab.logs">
 											<content>
 												<TabPane fx:id="tabPaneUbuLogs" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
@@ -236,6 +217,25 @@
 												</TabPane>
 											</content>
 										</Tab>
+										<Tab fx:id="tabUbuGrades" closable="false" text="%tab.grades">
+											<content>
+												<BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+													<top>
+														<Pane minHeight="63.0" prefHeight="63.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+															<children>
+																<Label layoutX="8.0" layoutY="6.0" text="%label.categoryitem" />
+																<TextField fx:id="tfdItems" layoutX="8.0" layoutY="30.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+																<Label layoutX="123.0" layoutY="36.0" text="%label.type" />
+																<ChoiceBox fx:id="slcType" layoutX="162.0" layoutY="34.0" maxWidth="88.0" minHeight="25.0" prefHeight="25.0" />
+															</children>
+														</Pane>
+													</top>
+													<center>
+														<TreeView fx:id="tvwGradeReport" minWidth="250.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+													</center>
+												</BorderPane>
+											</content>
+										</Tab>
 									</tabs>
 								</TabPane>
 							</items>
@@ -273,9 +273,25 @@
 							</BorderPane.margin>
 						</GridPane>
 					</bottom>
-					<center>
-						<WebView fx:id="webViewCharts" minHeight="200.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-					</center>
+               <center>
+                  <StackPane prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <children>
+      						<WebView fx:id="webViewCharts" minHeight="200.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" />
+                        <BorderPane fx:id="borderPaneImage" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: white;">
+                           <center>
+                              <ImageView pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+                                 <image>
+                                    <Image url="@../img/logo.png" />
+                                 </image>
+                              </ImageView>
+                           </center>
+                           <bottom>
+                              <ProgressBar fx:id="progressBar" prefHeight="35.0" prefWidth="200.0" progress="0.0" BorderPane.alignment="TOP_CENTER" />
+                           </bottom>
+                        </BorderPane>
+                     </children>
+                  </StackPane>
+               </center>
 				</BorderPane>
 			</items>
 		</SplitPane>

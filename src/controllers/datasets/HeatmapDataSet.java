@@ -1,11 +1,10 @@
-package controllers.datasets.heatmap;
+package controllers.datasets;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import controllers.datasets.DataSet;
 import controllers.ubulogs.GroupByAbstract;
 import model.EnrolledUser;
 import util.UtilMethods;

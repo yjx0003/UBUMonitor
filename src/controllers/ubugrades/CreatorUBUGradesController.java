@@ -135,6 +135,8 @@ public class CreatorUBUGradesController {
 				.collect(Collectors.toSet());
 
 		createCourseCategories(ids);
+		
+		createRecentCourses(moodleUser.getId());
 
 		return moodleUser;
 	}
@@ -320,6 +322,7 @@ public class CreatorUBUGradesController {
 		DescriptionFormat summaryFormat = DescriptionFormat.get(jsonObject.optInt("summaryformat"));
 		Instant startDate = Instant.ofEpochSecond(jsonObject.optLong("startdate"));
 		Instant endDate = Instant.ofEpochSecond(jsonObject.optLong("enddate"));
+		boolean isFavorite = jsonObject.optBoolean("isfavourite");
 
 		int categoryId = jsonObject.optInt("category");
 		if (categoryId != 0) {
@@ -334,6 +337,7 @@ public class CreatorUBUGradesController {
 		course.setSummaryformat(summaryFormat);
 		course.setStartDate(startDate);
 		course.setEndDate(endDate);
+		course.setFavorite(isFavorite);
 
 		return course;
 

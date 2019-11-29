@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javafx.scene.image.Image;
 
@@ -26,6 +27,7 @@ public class MoodleUser {
 	private String lang;
 	private Image userPhoto;
 	private List<Course> courses;
+	private List<Course> recentCourses;
 	private String timezone;
 
 	/**
@@ -33,6 +35,7 @@ public class MoodleUser {
 	 */
 	public MoodleUser() {
 		this.courses = new ArrayList<>();
+		this.setRecentCourses(new ArrayList<>());
 	}
 
 	/**
@@ -238,4 +241,18 @@ public class MoodleUser {
 		this.lang = lang;
 	}
 
+	public List<Course> getFavoriteCourses() {
+		return courses
+				.stream()
+				.filter(Course::isFavorite)
+				.collect(Collectors.toList());
+	}
+
+	public List<Course> getRecentCourses() {
+		return recentCourses;
+	}
+
+	public void setRecentCourses(List<Course> recentCourses) {
+		this.recentCourses = recentCourses;
+	}
 }

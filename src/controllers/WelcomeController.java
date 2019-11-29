@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.Optional;
@@ -46,6 +45,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -85,6 +85,16 @@ public class WelcomeController implements Initializable {
 	private Label lblUser;
 	@FXML
 	private ListView<Course> listCourses;
+
+	@FXML
+	private ListView<Course> listCoursesFavorite;
+
+	@FXML
+	private ListView<Course> listCoursesRecent;
+
+	@FXML
+	private TabPane tabPane;
+
 	@FXML
 	private Label lblNoSelect;
 	@FXML
@@ -113,41 +123,73 @@ public class WelcomeController implements Initializable {
 			lblUser.setText(controller.getUser().getFullName());
 			LOGGER.info("Cargando cursos...");
 
-			ObservableList<Course> list = FXCollections.observableArrayList(controller.getUser().getCourses());
-			Collections.sort(list, Comparator.comparing(Course::getFullName)
+			ObservableList<Course> listAll = FXCollections.observableArrayList(controller.getUser().getCourses());
+			ObservableList<Course> listFavorite = FXCollections.observableArrayList(controller.getUser().getFavoriteCourses());
+			ObservableList<Course> listRecent = FXCollections.observableArrayList(controller.getUser().getRecentCourses());
+
+			listAll.sort(Comparator.comparing(Course::getFullName)
+					.thenComparing(c -> c.getCourseCategory().getName()));
+			listFavorite.sort(Comparator.comparing(Course::getFullName)
 					.thenComparing(c -> c.getCourseCategory().getName()));
 
+			listCourses.setItems(listAll);
+			listCoursesFavorite.setItems(listFavorite);
+			listCoursesRecent.setItems(listRecent);
+
 			progressBar.setVisible(false);
-			listCourses.setItems(list);
 			chkUpdateData.setDisable(true);
-			listCourses.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
 
-				cacheFilePath = directoryCache.resolve(UtilMethods.removeReservedChar(newValue.toString()) + "-" + newValue.getId());
-				LOGGER.debug("Buscando si existe {}", cacheFilePath);
+			listCourses.getSelectionModel().selectedItemProperty()
+					.addListener((ov, value, newValue) -> checkFile(newValue));
+			listCoursesFavorite.getSelectionModel().selectedItemProperty()
+					.addListener((ov, value, newValue) -> checkFile(newValue));
+			listCoursesRecent.getSelectionModel().selectedItemProperty()
+					.addListener((ov, value, newValue) -> checkFile(newValue));
 
-				File f = cacheFilePath.toFile();
-
-				if (f.exists() && f.isFile()) {
-					chkUpdateData.setSelected(false);
-					chkUpdateData.setDisable(false);
-					long lastModified = f.lastModified();
-
-					LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastModified),
-							ZoneId.systemDefault());
-					lblDateUpdate.setText(localDateTime.format(Controller.DATE_TIME_FORMATTER));
-					isFileCacheExists = false;
-				} else {
-					chkUpdateData.setSelected(true);
-					chkUpdateData.setDisable(true);
-					lblDateUpdate.setText(I18n.get("label.never"));
-					isFileCacheExists = true;
-				}
+			tabPane.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
+				@SuppressWarnings("unchecked")
+				ListView<Course> listView = (ListView<Course>) value.getContent();
+				listView.getSelectionModel().clearSelection();
+				chkUpdateData.setDisable(true);
+				lblDateUpdate.setText(null);
 			});
 
 		} catch (Exception e) {
 			LOGGER.error("Error al cargar los cursos", e);
 		}
 
+	}
+	
+	private Course getSelectedCourse() {
+		@SuppressWarnings("unchecked")
+		ListView<Course> listView =  (ListView<Course>)tabPane.getSelectionModel().getSelectedItem().getContent();
+		return listView.getSelectionModel().getSelectedItem();
+	}
+
+	private void checkFile(Course newValue) {
+		if (newValue == null)
+			return;
+		cacheFilePath = directoryCache
+				.resolve(UtilMethods.removeReservedChar(newValue.toString()) + "-" + newValue.getId());
+		LOGGER.debug("Buscando si existe {}", cacheFilePath);
+
+		File f = cacheFilePath.toFile();
+
+		if (f.exists() && f.isFile()) {
+			chkUpdateData.setSelected(false);
+			chkUpdateData.setDisable(false);
+			long lastModified = f.lastModified();
+
+			LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastModified),
+					ZoneId.systemDefault());
+			lblDateUpdate.setText(localDateTime.format(Controller.DATE_TIME_FORMATTER));
+			isFileCacheExists = false;
+		} else {
+			chkUpdateData.setSelected(true);
+			chkUpdateData.setDisable(true);
+			lblDateUpdate.setText(I18n.get("label.never"));
+			isFileCacheExists = true;
+		}
 	}
 
 	/**
@@ -156,10 +198,12 @@ public class WelcomeController implements Initializable {
 	 * @param event
 	 *            El evento.
 	 */
+	
 	public void enterCourse(ActionEvent event) {
 
 		// Guardamos en una variable el curso seleccionado por el usuario
-		Course selectedCourse = listCourses.getSelectionModel().getSelectedItem();
+		
+		Course selectedCourse = getSelectedCourse();
 		if (selectedCourse == null) {
 			lblNoSelect.setText(I18n.get("error.nocourse"));
 			return;
@@ -219,12 +263,14 @@ public class WelcomeController implements Initializable {
 
 	}
 
+
 	private void loadData(String password) {
 
 		DataBase dataBase;
 		try {
+			
 			dataBase = (DataBase) Encryption.decrypt(password, cacheFilePath.toString());
-			copyDataBase(dataBase, listCourses.getSelectionModel().getSelectedItem());
+			copyDataBase(dataBase, getSelectedCourse());
 			controller.setDataBase(dataBase);
 			isBBDDLoaded = true;
 		} catch (IllegalBlockSizeException | BadPaddingException e) {

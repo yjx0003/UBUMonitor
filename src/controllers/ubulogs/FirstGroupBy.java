@@ -50,12 +50,11 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 	 */
 	public void generateStatistics(List<EnrolledUser> enrolledUsers, List<E> elements,
 			List<T> groupByRange) {
-
+		statistics = new HashMap<>();
 		if (enrolledUsers.isEmpty() || elements.isEmpty() || groupByRange.isEmpty()) {
 			return;
 		}
 
-		statistics = new HashMap<>();
 		// el metodo computeIfAbsent devuelve el valor de la key y si no existe la key
 		// se crea y devuelve el valor nuevo.
 		for (EnrolledUser user : enrolledUsers) {

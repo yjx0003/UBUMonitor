@@ -12,9 +12,10 @@ import controllers.datasets.DataSetComponent;
 import controllers.datasets.DataSetComponentEvent;
 import controllers.datasets.DataSetSection;
 import controllers.datasets.DatasSetCourseModule;
-import controllers.datasets.heatmap.HeatmapDataSet;
-import controllers.datasets.stackedbar.StackedBarDataSet;
+import controllers.datasets.HeatmapDataSet;
+import controllers.datasets.StackedBarDataSet;
 import controllers.ubulogs.GroupByAbstract;
+import javafx.concurrent.Worker.State;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
@@ -68,10 +69,9 @@ public class JavaConnector {
 
 	private DatePicker datePickerEnd;
 
-	private ChartType currentTypeLogs = ChartType.STACKED_BAR;
+	private ChartType currentTypeLogs = ChartType.HEAT_MAP;
 
 	private ChartType currentTypeGrades = ChartType.LINE;
-
 
 	public JavaConnector() {
 		stackedBarComponent = new StackedBarDataSet<>();
@@ -142,6 +142,9 @@ public class JavaConnector {
 		}
 
 		String categories = HeatmapDataSet.createCategory(choiceBoxDate.getValue(), dateStart, dateEnd);
+		LOGGER.info("Dataset para el heatmap en JS: {}", heatmapdataset);
+		LOGGER.info("Categorias del heatmap en JS: {}", categories);
+		
 		webViewChartsEngine.executeScript(String.format("updateHeatmap(%s,%s)", categories, heatmapdataset));
 		currentTypeLogs = ChartType.HEAT_MAP;
 	}
@@ -180,13 +183,18 @@ public class JavaConnector {
 		}
 
 		LOGGER.info("Dataset para el stacked bar en JS: {}", stackedbardataset);
-		
-		webViewChartsEngine.executeScript("updateStackedChart(" + stackedbardataset+")");
+
+		webViewChartsEngine.executeScript(
+				String.format("updateStackedChart(%s,%s)", stackedbardataset, currentTypeLogs == ChartType.STACKED_BAR));
 		currentTypeLogs = ChartType.STACKED_BAR;
 
 	}
 
 	public void updateLogsChart() {
+		if (webViewChartsEngine.getLoadWorker().getState() != State.SUCCEEDED) {
+			return;
+		}
+		
 		switch (currentTypeLogs) {
 		case HEAT_MAP:
 			updateHeatmap();
@@ -199,9 +207,9 @@ public class JavaConnector {
 
 		}
 	}
-	
+
 	public void updateGradesChart() {
-		
+
 		switch (currentTypeGrades) {
 		case GENERAL_BOXPLOT:
 			break;
@@ -215,28 +223,20 @@ public class JavaConnector {
 			break;
 		default:
 			throw new IllegalArgumentException("Not avaible grade chart for: " + currentTypeLogs);
-		
+
 		}
 	}
-	
-	
+
 	public enum ChartType {
 		HEAT_MAP, STACKED_BAR, LINE, RADAR, GENERAL_BOXPLOT, GROUP_BOXPLOT, TABLE;
 	}
 
-
 	public void updateMaxY(long max) {
 
-	
-			webViewChartsEngine.executeScript("changeYMaxHeatmap("+max+")");
-	
-			webViewChartsEngine.executeScript("changeYMaxStackedBar("+max+")");
-		
-			
-		
-	}
-	
-	
+		webViewChartsEngine.executeScript("changeYMaxHeatmap(" + max + ")");
 
+		webViewChartsEngine.executeScript("changeYMaxStackedBar(" + max + ")");
+
+	}
 
 }

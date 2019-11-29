@@ -1020,7 +1020,7 @@ public class MainController implements Initializable {
 	 * Filtra los participantes según el rol, el grupo y el patrón indicados
 	 */
 	public void filterParticipants() {
-
+		
 		Role rol = slcRole.getValue();
 		Group group = slcGroup.getValue();
 		LastActivity lastActivity = slcActivity.getValue();
@@ -1034,6 +1034,8 @@ public class MainController implements Initializable {
 								lastLogInstant) == lastActivity.getColor()));
 		// Mostramos nº participantes
 		lblCountParticipants.setText(I18n.get("label.participants") + filteredEnrolledList.size());
+		javaConnector.updateGradesChart();
+		javaConnector.updateLogsChart();
 		findMax();
 	}
 

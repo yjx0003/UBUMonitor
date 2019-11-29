@@ -399,9 +399,28 @@
     	document.getElementById('chart-container').style.display = value;
     }
     
+    function updateChartjs(update, type, dataset, options){
+    	
+    	if (update){
+        	myChart.data = dataset;
+        }else{
+        	myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: type,
+                data: dataset,
+                options: options
+              });
+        }
+        myChart.update();
+    	
+    }
     
-    function updateStackedChart(dataset){
+    
+    function updateStackedChart(dataset, update){
 
+        document.getElementById('btnHeatmap').disabled = false;
+        document.getElementById('btnStackedBar').disabled = true;
+        
         displayTable("none");
         displayApexChart("none");
         displayChartjs("block");
@@ -410,25 +429,13 @@
         displayGroupButton("none");
         displayGeneralButton("none");
         
-        if (document.getElementById('btnStackedBar').disabled){
-        	myChart.data = dataset;
-        }else{
-        	myChart.destroy();
-            myChart = new Chart(ctx, {
-                type: 'bar',
-                data: dataset,
-                options: optionsStackedBar
-              });
-        }
-        myChart.update();
+        updateChartjs(update, "bar", dataset, optionsStackedBar);
         
         
-        
-        document.getElementById('btnHeatmap').disabled = false;
-        document.getElementById('btnStackedBar').disabled = true;
     }
     
-    function updateHeatmap(categories, series, max) {
+    
+    function updateHeatmap(categories, series) {
         document.getElementById('btnHeatmap').disabled = true;
         document.getElementById('btnStackedBar').disabled = false;
         displayTable("none");

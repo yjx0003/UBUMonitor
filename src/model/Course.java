@@ -38,6 +38,7 @@ public class Course implements Serializable {
 	private DescriptionFormat summaryformat;
 	private Instant startDate;
 	private Instant endDate;
+	private boolean isFavorite;
 
 	private CourseCategory courseCategory;
 
@@ -568,6 +569,14 @@ public class Course implements Serializable {
 		Course other = (Course) obj;
 		return id == other.id;
 
+	}
+
+	public boolean isFavorite() {
+		return isFavorite;
+	}
+
+	public void setFavorite(boolean isFavorite) {
+		this.isFavorite = isFavorite;
 	}
 
 }

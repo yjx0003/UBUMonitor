@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import controllers.I18n;
-import controllers.datasets.stackedbar.StackedBarDataSet;
 import controllers.ubulogs.GroupByAbstract;
 import model.ComponentEvent;
 import model.EnrolledUser;

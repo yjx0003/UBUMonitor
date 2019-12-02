@@ -1,15 +1,10 @@
 
 package controllers;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Comparator;
-import java.util.Properties;
 import java.util.ResourceBundle;
 
 import org.json.JSONException;
@@ -52,9 +47,9 @@ import model.MoodleUser;
 public class LoginController implements Initializable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
-	private static final String PROPERTIES_PATH = "config.properties";
+	
 	private Controller controller = Controller.getInstance();
-	private Properties properties;
+
 	@FXML
 	private Label lblStatus;
 	@FXML
@@ -158,25 +153,11 @@ public class LoginController implements Initializable {
 	 * @throws IOException
 	 */
 	private void initializeProperties() throws IOException {
-
-		properties = new Properties();
-
-		File file = new File(PROPERTIES_PATH);
-		if (!file.isFile() && !file.createNewFile()) {
-			LOGGER.error("No se ha podido crear el fichero properties: " + PROPERTIES_PATH);
-		} else { // si existe el fichero properties inicializamos los valores
-			try (InputStream in = new FileInputStream(file)) {
-
-				properties.load(in);
-				txtHost.setText(properties.getProperty("host", ""));
-				txtUsername.setText(properties.getProperty("username", ""));
-				chkSaveUsername.setSelected(Boolean.parseBoolean(properties.getProperty("saveUsername")));
-				chkSaveHost.setSelected(Boolean.parseBoolean(properties.getProperty("saveHost")));
-
-			} catch (IOException e) {
-				LOGGER.error("No se ha podido cargar " + PROPERTIES_PATH);
-			}
-		}
+		
+		txtHost.setText(Config.getProperty("host", ""));
+		txtUsername.setText(Config.getProperty("username", ""));
+		chkSaveUsername.setSelected(Boolean.parseBoolean(Config.getProperty("saveUsername")));
+		chkSaveHost.setSelected(Boolean.parseBoolean(Config.getProperty("saveHost")));
 
 	}
 
@@ -186,20 +167,14 @@ public class LoginController implements Initializable {
 	private void saveProperties() {
 
 		String username = chkSaveUsername.isSelected() ? txtUsername.getText() : "";
-		properties.setProperty("username", username);
-		properties.setProperty("saveUsername", Boolean.toString(chkSaveUsername.isSelected()));
+		Config.setProperty("username", username);
+		Config.setProperty("saveUsername", Boolean.toString(chkSaveUsername.isSelected()));
 
 		String host = chkSaveHost.isSelected() ? txtHost.getText() : "";
-		properties.setProperty("host", host);
-		properties.setProperty("saveHost", Boolean.toString(chkSaveHost.isSelected()));
+		Config.setProperty("host", host);
+		Config.setProperty("saveHost", Boolean.toString(chkSaveHost.isSelected()));
 
-		File file = new File(PROPERTIES_PATH);
-		try (FileOutputStream out = new FileOutputStream(file)) {
-			properties.store(out, null);
-
-		} catch (IOException e) {
-			LOGGER.error("No se ha podido guardar el fichero {}", file.getAbsolutePath());
-		}
+		
 	}
 
 	/**

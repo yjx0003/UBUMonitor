@@ -73,7 +73,7 @@ public class Controller {
 		return instance;
 	}
 
-	public void initialize() {
+	public void initialize() throws IOException {
 
 		setDataBase(new DataBase());
 		// Si no existe el recurso de idioma especificado cargamos el Español
@@ -93,6 +93,7 @@ public class Controller {
 					"No se ha podido encontrar el recurso de idioma, cargando idioma " + lang + ": {}", e);
 			setSelectedLanguage(Languages.ENGLISH_UK);
 		}
+		Config.initialize(AppInfo.PROPERTIES_PATH);
 	}
 
 	public Languages getSelectedLanguage() {

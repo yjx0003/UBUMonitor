@@ -35,6 +35,7 @@ import model.Section;
 import webservice.WebService;
 import webservice.core.CoreCourseGetCategories;
 import webservice.core.CoreCourseGetContents;
+import webservice.core.CoreCourseGetRecentCourses;
 import webservice.core.CoreEnrolGetEnrolledUsers;
 import webservice.core.CoreEnrolGetUsersCourses;
 import webservice.core.CoreUserGetUsersByField;
@@ -136,9 +137,22 @@ public class CreatorUBUGradesController {
 
 		createCourseCategories(ids);
 		
-		createRecentCourses(moodleUser.getId());
-
+		List<Course> recentCourses = getRecentCourses(moodleUser.getId());
+		moodleUser.setRecentCourses(recentCourses);
 		return moodleUser;
+	}
+
+	private static List<Course> getRecentCourses(int id) throws IOException {
+		WebService webService = new CoreCourseGetRecentCourses(id);
+		String response = webService.getResponse();
+		try {
+			JSONArray jsonArray = new JSONArray(response);
+			return createCourses(jsonArray, true);
+		}catch(Exception ex) {
+			return Collections.emptyList();
+		}
+		
+		
 	}
 
 	/**

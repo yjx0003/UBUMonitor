@@ -52,162 +52,162 @@
 
     // Opciones para el gráfico de lineas y el boxplot
     var optionsLineChart = {
-            maintainAspectRatio: false,
+        maintainAspectRatio: false,
 
-            responsiveAnimationDuration: 0, // animation duration after a resize, better perfomance at 0
-            showLines: true,
-            spanGaps: false, //si se quiere mostrar las lineas cuando en algun elemento no hay dato (NaN)
-            animation: {
-                duration: 0 // better performance at 0
-            }, //animation
-            layout: {
-                padding: {
-                    top: 20,
-                } //pading
-            }, //layout
-            elements: {
-                point: {
-                    pointStyle: 'circle',
-                    radius: 5,
-                    hoverRadius: 7
-                }, //points
-                line: {
-                    tension: 0 //at 0 disable bezier curves, better performance
-                }
-            }, //elements
-            legend: {
-                display: true,
-                position: 'bottom',
-                labels: {
-                    padding: 20,
-                    usePointStyle: true,
-                    fontSize: 12,
-                    fontColor: 'rgba(0, 0, 0, 1)',
-                    fontFamily: 'sans-serif'
-                } //labels
-            }, //legend
-            tooltips: {
-                mode: 'index',
-                intersect: false,
-                position: 'average',
-                backgroundColor: 'rgba(0, 0, 0, 1)',
-                bodySpacing: 4,
-                cornerRadius: 0,
-                caretSize: 10,
-                itemSort: function(a, b) {
-                    return (parseFloat(a.y) - parseFloat(b.y));
-                }
-            }, //tooltips
-            scales: {
-                yAxes: [{
-                    id: 'left-y-axis',
-                    type: 'linear',
-                    position: 'left',
-                    gridLines: {
-                        display: true,
-                        color: 'rgba(0, 0, 0, 0.4)'
-                    }, //gridLines
-                    ticks: {
-                        beginAtZero: true,
-                        max: 10,
-                        stepSize: 1,
-                        fontColor: 'rgba(0, 0, 0, 1)'
-                    } //ticks
-                }, {
-                    id: 'right-y-axis',
-                    type: 'linear',
-                    position: 'right',
-                    gridLines: {
-                        display: true,
-                        color: 'rgba(0, 0, 0, 0.4)'
-                    }, //gridLines
-                    ticks: {
-                        beginAtZero: true,
-                        max: 10,
-                        stepSize: 1,
-                        fontColor: 'rgba(0, 0, 0, 1)'
-                    } //ticks
-                }], //yAxes
-                xAxes: [{
-                        gridLines: {
-                            display: true,
-                            color: 'rgba(0, 0, 0, 0.4)'
-                        }, //gridLines
-                        ticks: {
-                            autoSkip: false,
-                            fontColor: 'rgba(0, 0, 0, 1)'
-                        }
-                    }] //xAxes
-            }, //scales
-            chartArea: {
-                backgroundColor: 'rgba(255,255,255,1)'
-            } //chartArea
-        } //options
-
-    // Opciones para el radar
-    var optionsRadarChart = {
-            maintainAspectRatio: false,
-
-            responsiveAnimationDuration: 0, // animation duration after a resize, better perfomance at 0
-            showLines: true,
-            spanGaps: false, //si se quiere mostrar las lineas cuando en algun elemento no hay dato (NaN)
-            animation: {
-                duration: 0 // better performance at 0
-            }, //animation
-            layout: {
-                padding: {
-                    top: 20,
-                } //pading
-            }, //layout
-            elements: {
-                point: {
-                    pointStyle: 'circle',
-                    radius: 5,
-                    hoverRadius: 7
-                }, //points
-                line: {
-                    tension: 0 //disable bezier curves, better performance
-                }
-            }, //elements
-            legend: {
-                display: true,
-                position: 'bottom',
-                labels: {
-                    padding: 20,
-                    usePointStyle: true,
-                    fontSize: 12,
-                    fontColor: 'rgba(0, 0, 0, 1)',
-                    fontFamily: 'sans-serif'
-                } //labels
-            }, //legend
-            tooltips: {
-                mode: 'index',
-                intersect: true,
-                position: 'average',
-                backgroundColor: 'rgba(0, 0, 0, 1)',
-                bodySpacing: 4,
-                cornerRadius: 0,
-                caretSize: 10,
-                itemSort: function(a, b) {
-                    return (parseFloat(a.y) - parseFloat(b.y));
-                }
-            }, //tooltips
-            scale: {
+        responsiveAnimationDuration: 0, // animation duration after a resize, better perfomance at 0
+        showLines: true,
+        spanGaps: false, //si se quiere mostrar las lineas cuando en algun elemento no hay dato (NaN)
+        animation: {
+            duration: 0 // better performance at 0
+        }, //animation
+        layout: {
+            padding: {
+                top: 20,
+            } //pading
+        }, //layout
+        elements: {
+            point: {
+                pointStyle: 'circle',
+                radius: 5,
+                hoverRadius: 7
+            }, //points
+            line: {
+                tension: 0 //at 0 disable bezier curves, better performance
+            }
+        }, //elements
+        legend: {
+            display: true,
+            position: 'bottom',
+            labels: {
+                padding: 20,
+                usePointStyle: true,
+                fontSize: 12,
+                fontColor: 'rgba(0, 0, 0, 1)',
+                fontFamily: 'sans-serif'
+            } //labels
+        }, //legend
+        tooltips: {
+            mode: 'index',
+            intersect: false,
+            position: 'average',
+            backgroundColor: 'rgba(0, 0, 0, 1)',
+            bodySpacing: 4,
+            cornerRadius: 0,
+            caretSize: 10,
+            itemSort: function (a, b) {
+                return (parseFloat(a.y) - parseFloat(b.y));
+            }
+        }, //tooltips
+        scales: {
+            yAxes: [{
+                id: 'left-y-axis',
+                type: 'linear',
+                position: 'left',
                 gridLines: {
                     display: true,
                     color: 'rgba(0, 0, 0, 0.4)'
                 }, //gridLines
                 ticks: {
                     beginAtZero: true,
-                    suggestedMax: 10,
+                    max: 10,
                     stepSize: 1,
                     fontColor: 'rgba(0, 0, 0, 1)'
                 } //ticks
-            }, //scales
-            chartArea: {
-                backgroundColor: 'rgba(255,255,255,1)'
-            } //chartArea
-        } //options
+            }, {
+                id: 'right-y-axis',
+                type: 'linear',
+                position: 'right',
+                gridLines: {
+                    display: true,
+                    color: 'rgba(0, 0, 0, 0.4)'
+                }, //gridLines
+                ticks: {
+                    beginAtZero: true,
+                    max: 10,
+                    stepSize: 1,
+                    fontColor: 'rgba(0, 0, 0, 1)'
+                } //ticks
+            }], //yAxes
+            xAxes: [{
+                gridLines: {
+                    display: true,
+                    color: 'rgba(0, 0, 0, 0.4)'
+                }, //gridLines
+                ticks: {
+                    autoSkip: false,
+                    fontColor: 'rgba(0, 0, 0, 1)'
+                }
+            }] //xAxes
+        }, //scales
+        chartArea: {
+            backgroundColor: 'rgba(255,255,255,1)'
+        } //chartArea
+    } //options
+
+    // Opciones para el radar
+    var optionsRadarChart = {
+        maintainAspectRatio: false,
+
+        responsiveAnimationDuration: 0, // animation duration after a resize, better perfomance at 0
+        showLines: true,
+        spanGaps: false, //si se quiere mostrar las lineas cuando en algun elemento no hay dato (NaN)
+        animation: {
+            duration: 0 // better performance at 0
+        }, //animation
+        layout: {
+            padding: {
+                top: 20,
+            } //pading
+        }, //layout
+        elements: {
+            point: {
+                pointStyle: 'circle',
+                radius: 5,
+                hoverRadius: 7
+            }, //points
+            line: {
+                tension: 0 //disable bezier curves, better performance
+            }
+        }, //elements
+        legend: {
+            display: true,
+            position: 'bottom',
+            labels: {
+                padding: 20,
+                usePointStyle: true,
+                fontSize: 12,
+                fontColor: 'rgba(0, 0, 0, 1)',
+                fontFamily: 'sans-serif'
+            } //labels
+        }, //legend
+        tooltips: {
+            mode: 'index',
+            intersect: true,
+            position: 'average',
+            backgroundColor: 'rgba(0, 0, 0, 1)',
+            bodySpacing: 4,
+            cornerRadius: 0,
+            caretSize: 10,
+            itemSort: function (a, b) {
+                return (parseFloat(a.y) - parseFloat(b.y));
+            }
+        }, //tooltips
+        scale: {
+            gridLines: {
+                display: true,
+                color: 'rgba(0, 0, 0, 0.4)'
+            }, //gridLines
+            ticks: {
+                beginAtZero: true,
+                suggestedMax: 10,
+                stepSize: 1,
+                fontColor: 'rgba(0, 0, 0, 1)'
+            } //ticks
+        }, //scales
+        chartArea: {
+            backgroundColor: 'rgba(255,255,255,1)'
+        } //chartArea
+    } //options
 
     var optionsStackedBar = {
         maintainAspectRatio: false,
@@ -223,15 +223,15 @@
         tooltips: {
             position: 'nearest',
             mode: 'x',
-            itemSort: function(a, b) {
+            itemSort: function (a, b) {
                 return b.yLabel - a.yLabel;
             },
             callbacks: {
-                label: function(tooltipItem, data) {
+                label: function (tooltipItem, data) {
                     return data.datasets[tooltipItem.datasetIndex].label + " : " + Math.round(tooltipItem.yLabel *
                         100) / 100;
                 },
-                afterTitle: function(tooltipItem, data) {
+                afterTitle: function (tooltipItem, data) {
                     //Despues del titulo ponemos el nombre y apellidos del usuario
                     return data.datasets[tooltipItem[0].datasetIndex].name;
                 }
@@ -255,58 +255,58 @@
                 fontSize: 12,
                 fontColor: 'rgba(0, 0, 0, 1)',
                 fontFamily: 'sans-serif',
-                filter: function(legendItem, chartData) {
-                        //mostramos en la leyenda los que son lineas
-                        return chartData.datasets[legendItem.datasetIndex].type == "line";
-                    } //filter
+                filter: function (legendItem, chartData) {
+                    //mostramos en la leyenda los que son lineas
+                    return chartData.datasets[legendItem.datasetIndex].type == "line";
+                } //filter
             } //labels
         } //legend
 
     }
 
     heatmapOptions = {
-            tooltip: {
-                x: {
-                    show: true
-                }
-            },
-            plotOptions: {
-                heatmap: {
-                    enableShades: false,
-                    //shadeIntensity: 0.5,
-                    colorScale: {
-                        ranges: [{
-                            from: -1,
-                            to: 0,
-                            color: "#f78880",
-                            name: "0"
-                        }, {
-                            from: 1,
-                            to: 1,
-                            color: "#f4e3ae",
-                        }, {
-                            from: 1,
-                            to: 1,
-                            color: "#fff033",
+        tooltip: {
+            x: {
+                show: true
+            }
+        },
+        plotOptions: {
+            heatmap: {
+                enableShades: false,
+                //shadeIntensity: 0.5,
+                colorScale: {
+                    ranges: [{
+                        from: -1,
+                        to: 0,
+                        color: "#f78880",
+                        name: "0"
+                    }, {
+                        from: 1,
+                        to: 1,
+                        color: "#f4e3ae",
+                    }, {
+                        from: 1,
+                        to: 1,
+                        color: "#fff033",
 
-                        },
+                    },
 
-                        {
-                            from: 1,
-                            to: 1,
-                            color: "#b5ff33",
+                    {
+                        from: 1,
+                        to: 1,
+                        color: "#b5ff33",
 
-                        }, {
-                            from: 1,
-                            to: 1,
-                            color: "#38e330",
+                    }, {
+                        from: 1,
+                        to: 1,
+                        color: "#38e330",
 
-                        }, {
-                            from: 2,
-                            to: Number.POSITIVE_INFINITY,
-                            color: "#67b92e",
-                            name: "+" + (2)
-                        }
+                    }, {
+                        from: 2,
+                        to: Number.POSITIVE_INFINITY,
+                        color: "#67b92e",
+                        name: "+" + (2)
+                    }
 
                     ]
                 }
@@ -325,7 +325,7 @@
             type: "heatmap"
         },
         dataLabels: {
-            formatter: function(val, opts) {
+            formatter: function (val, opts) {
                 if (val == 0) {
                     return "";
                 }
@@ -350,13 +350,13 @@
     var colorHash = new ColorHash();
     var ctx = document.getElementById('myChart');
 
-    var myChart = new Chart(ctx,{
+    var myChart = new Chart(ctx, {
+        type: "bar",
         data: {
             labels: [],
             datasets: []
         },
-        options: {
-        }
+        options: optionsStackedBar
     });
 
     var myApexChart = new ApexCharts(document.getElementById('apexchartsDiv'), heatmapOptions);
@@ -366,86 +366,98 @@
         'packages': ['table']
     });
     var table;
-
+    var legendActive = true;
     document.getElementById('btnLegend').style.backgroundImage = 'url(./../img/visibility.png)';
 
 
     //------------------------------------------Funciones------------------------------------------------------------------
 
-    
-    
-    
-    function displayLegendButton(value){
-    	document.getElementById('btnLegend').style.display = value;
+
+
+
+    function displayLegendButton(value) {
+        document.getElementById('btnLegend').style.display = value;
     }
-    
-    function displayGroupButton(value){
-    	document.getElementById('btnGroupMean').style.display = value;
+
+    function displayGroupButton(value) {
+        document.getElementById('btnGroupMean').style.display = value;
     }
-    
-    function displayGeneralButton(value){
-    	document.getElementById('btnMean').style.display = value;
+
+    function displayGeneralButton(value) {
+        document.getElementById('btnMean').style.display = value;
     }
-    
-    function displayApexChart(value){
-    	document.getElementById('apexchartsDiv').style.display = value;
+
+    function displayApexChart(value) {
+        document.getElementById('apexchartsDiv').style.display = value;
     }
-    
-    function displayTable(value){
+
+    function displayTable(value) {
         document.getElementById('table_div').style.display = value;
     }
-    
-    function displayChartjs(value){
-    	document.getElementById('chart-container').style.display = value;
+
+    function displayChartjs(value) {
+        document.getElementById('chart-container').style.display = value;
     }
-    
-    function updateChartjs(update, type, dataset, options){
-    	
-    	if (update){
-        	myChart.data = dataset;
-        }else{
-        	myChart.destroy();
+
+    function updateChartjs(update, type, dataset, options) {
+
+        if (update) {
+            myChart.data = dataset;
+        } else {
+            options.legend.display = legendActive;
+            myChart.destroy();
             myChart = new Chart(ctx, {
                 type: type,
                 data: dataset,
                 options: options
-              });
+            });
         }
         myChart.update();
-    	
+
     }
-    
-    
-    function updateStackedChart(dataset, update){
+
+    function displayChartsButtons(div_id, type) {
+        let tabs = document.getElementById(div_id);
+        let children = tabs.children;
+        for (i = 0; i < children.length; i++) {
+            if (children[i].tagName == "INPUT") {
+                children[i].style.display = type;
+            }
+
+        }
+    }
+
+
+    function updateStackedChart(dataset, update) {
 
         document.getElementById('btnHeatmap').disabled = false;
         document.getElementById('btnStackedBar').disabled = true;
-        
+
         displayTable("none");
         displayApexChart("none");
         displayChartjs("block");
-        
-        displayLegendButton("none");
+
+        displayLegendButton("inline");
         displayGroupButton("none");
         displayGeneralButton("none");
-        
+
         updateChartjs(update, "bar", dataset, optionsStackedBar);
-        
-        
+
+
     }
-    
-    
+
+
     function updateHeatmap(categories, series) {
         document.getElementById('btnHeatmap').disabled = true;
         document.getElementById('btnStackedBar').disabled = false;
         displayTable("none");
         displayApexChart("block");
         displayChartjs("none");
-        
+
         displayLegendButton("none");
         displayGroupButton("none");
         displayGeneralButton("none");
-        
+
 
         heatmapOptions.series = series;
         heatmapOptions.xaxis.categories = categories;
@@ -455,21 +467,13 @@
 
     function manageButtons(type) {
 
-        let types = {
-            grade: type == "grade" ? "inline" : "none",
-            log: type == "log" ? "inline" : "none"
-        };
 
-        document.getElementById('btnLineas').style.display = types.grade;
-        document.getElementById('btnRadar').style.display = types.grade;
-        document.getElementById('btnBoxPlot').style.display = types.grade;
-        document.getElementById('btnBoxPlotGroup').style.display = types.grade;
-        document.getElementById('btnCalificaciones').style.display = types.grade;
-
-        document.getElementById('btnStackedBar').style.display = types.log;
-        document.getElementById('btnHeatmap').style.display = types.log;
+        displayChartsButtons("grade_tabs", type == "grade" ? "inline" : "none");
+        displayChartsButtons("log_tabs", type == "log" ? "inline" : "none");
 
     }
+
+
 
     function changeYMaxStackedBar(max) {
         optionsStackedBar.scales.yAxes[0].ticks.suggestedMax = max;
@@ -481,37 +485,37 @@
 
     function changeYMaxHeatmap(max) {
         heatmapOptions.plotOptions.heatmap.colorScale.ranges = [{
-                from: -1,
-                to: 0,
-                color: "#f78880",
-                name: "0"
-            }, {
-                from: 1,
-                to: Math.max(Math.ceil(max * 0.25),1),
-                color: "#f4e3ae",
-            }, {
-                from: Math.max(Math.floor(max * 0.25),1),
-                to: Math.max(Math.ceil(max * 0.50),1),
-                color: "#fff033",
+            from: -1,
+            to: 0,
+            color: "#f78880",
+            name: "0"
+        }, {
+            from: 1,
+            to: Math.max(Math.ceil(max * 0.25), 1),
+            color: "#f4e3ae",
+        }, {
+            from: Math.max(Math.floor(max * 0.25), 1),
+            to: Math.max(Math.ceil(max * 0.50), 1),
+            color: "#fff033",
 
-            },
+        },
 
-            {
-                from: Math.max(Math.floor(max * 0.50), 1),
-                to: Math.max(Math.ceil(max * 0.75),1),
-                color: "#b5ff33",
+        {
+            from: Math.max(Math.floor(max * 0.50), 1),
+            to: Math.max(Math.ceil(max * 0.75), 1),
+            color: "#b5ff33",
 
-            }, {
-                from: Math.max(Math.floor(max * 0.75),1),
-                to: Math.max(max, Math.ceil(max * 0.75)),
-                color: "#38e330",
+        }, {
+            from: Math.max(Math.floor(max * 0.75), 1),
+            to: Math.max(max, Math.ceil(max * 0.75)),
+            color: "#38e330",
 
-            }, {
-                from: max + 1,
-                to: Number.POSITIVE_INFINITY,
-                color: "#67b92e",
-                name: "+" + (max + 1)
-            }
+        }, {
+            from: max + 1,
+            to: Number.POSITIVE_INFINITY,
+            color: "#67b92e",
+            name: "+" + (max + 1)
+        }
 
         ];
         myApexChart.updateOptions(heatmapOptions);
@@ -560,7 +564,7 @@
     // Plugin que nos permite establecer el color de fondo del gráfico
     // el color se define en opciones->chartArea->backgroundColor
     Chart.pluginService.register({
-        beforeDraw: function(chart, easing) {
+        beforeDraw: function (chart, easing) {
             if (chart.config.options.chartArea && chart.config.options.chartArea.backgroundColor) {
                 var helpers = Chart.helpers;
                 var ctx = chart.chart.ctx;

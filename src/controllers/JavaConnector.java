@@ -69,7 +69,7 @@ public class JavaConnector {
 
 	private DatePicker datePickerEnd;
 
-	private ChartType currentTypeLogs = ChartType.HEAT_MAP;
+	private ChartType currentTypeLogs = ChartType.STACKED_BAR;
 
 	private ChartType currentTypeGrades = ChartType.LINE;
 

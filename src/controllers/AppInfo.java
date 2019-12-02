@@ -25,6 +25,8 @@ public class AppInfo {
 	public static final String IMG_DIR = "/img/";
 
 	public static final String IMG_FLAGS = IMG_DIR + "countries_flags/";
+
+	public static final String PROPERTIES_PATH = "config.properties";
 	
 	// Info del usuario
 	

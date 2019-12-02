@@ -124,13 +124,14 @@ public class WelcomeController implements Initializable {
 			LOGGER.info("Cargando cursos...");
 
 			ObservableList<Course> listAll = FXCollections.observableArrayList(controller.getUser().getCourses());
-			ObservableList<Course> listFavorite = FXCollections.observableArrayList(controller.getUser().getFavoriteCourses());
-			ObservableList<Course> listRecent = FXCollections.observableArrayList(controller.getUser().getRecentCourses());
+			ObservableList<Course> listFavorite = FXCollections
+					.observableArrayList(controller.getUser().getFavoriteCourses());
+			ObservableList<Course> listRecent = FXCollections
+					.observableArrayList(controller.getUser().getRecentCourses());
 
-			listAll.sort(Comparator.comparing(Course::getFullName)
-					.thenComparing(c -> c.getCourseCategory().getName()));
-			listFavorite.sort(Comparator.comparing(Course::getFullName)
-					.thenComparing(c -> c.getCourseCategory().getName()));
+			listAll.sort(Comparator.comparing(Course::getFullName).thenComparing(c -> c.getCourseCategory().getName()));
+			listFavorite.sort(
+					Comparator.comparing(Course::getFullName).thenComparing(c -> c.getCourseCategory().getName()));
 
 			listCourses.setItems(listAll);
 			listCoursesFavorite.setItems(listFavorite);
@@ -153,16 +154,17 @@ public class WelcomeController implements Initializable {
 				chkUpdateData.setDisable(true);
 				lblDateUpdate.setText(null);
 			});
+			tabPane.getSelectionModel().select(Integer.valueOf(Config.getProperty("courseList", "0")));
 
 		} catch (Exception e) {
 			LOGGER.error("Error al cargar los cursos", e);
 		}
 
 	}
-	
+
 	private Course getSelectedCourse() {
 		@SuppressWarnings("unchecked")
-		ListView<Course> listView =  (ListView<Course>)tabPane.getSelectionModel().getSelectedItem().getContent();
+		ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem().getContent();
 		return listView.getSelectionModel().getSelectedItem();
 	}
 
@@ -195,14 +197,13 @@ public class WelcomeController implements Initializable {
 	/**
 	 * Botón entrar, accede a la siguiente ventana
 	 * 
-	 * @param event
-	 *            El evento.
+	 * @param event El evento.
 	 */
-	
+
 	public void enterCourse(ActionEvent event) {
 
 		// Guardamos en una variable el curso seleccionado por el usuario
-		
+
 		Course selectedCourse = getSelectedCourse();
 		if (selectedCourse == null) {
 			lblNoSelect.setText(I18n.get("error.nocourse"));
@@ -224,6 +225,8 @@ public class WelcomeController implements Initializable {
 			downloadData();
 		} else {
 			loadData(controller.getPassword());
+			Config.setProperty("courseList", Integer.toString(tabPane.getSelectionModel().getSelectedIndex()));
+			Config.save();
 			loadNextWindow();
 		}
 
@@ -263,12 +266,11 @@ public class WelcomeController implements Initializable {
 
 	}
 
-
 	private void loadData(String password) {
 
 		DataBase dataBase;
 		try {
-			
+
 			dataBase = (DataBase) Encryption.decrypt(password, cacheFilePath.toString());
 			copyDataBase(dataBase, getSelectedCourse());
 			controller.setDataBase(dataBase);
@@ -287,10 +289,8 @@ public class WelcomeController implements Initializable {
 		dialog.setTitle(I18n.get("title.passwordChanged"));
 
 		dialog.getDialogPane().setGraphic(new ImageView("img/error.png"));
-		dialog.setHeaderText(
-				I18n.get("header.passwordChangedMessage") + "\n"
-						+ I18n.get("header.passwordDateTime")
-						+ lblDateUpdate.getText());
+		dialog.setHeaderText(I18n.get("header.passwordChangedMessage") + "\n" + I18n.get("header.passwordDateTime")
+				+ lblDateUpdate.getText());
 
 		Image errorIcon = new Image("img/error.png");
 		Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
@@ -360,8 +360,7 @@ public class WelcomeController implements Initializable {
 
 		try {
 			// Accedemos a la siguiente ventana
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"),
-					I18n.getResourceBundle());
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"), I18n.getResourceBundle());
 			controller.getStage().close();
 			controller.setStage(new Stage());
 			Parent root = loader.load();
@@ -439,8 +438,7 @@ public class WelcomeController implements Initializable {
 	/**
 	 * Muestra una ventana de error.
 	 * 
-	 * @param mensaje
-	 *            El mensaje que se quiere mostrar.
+	 * @param mensaje El mensaje que se quiere mostrar.
 	 */
 	private void errorWindow(String mensaje) {
 		Alert alert = new Alert(AlertType.ERROR);

@@ -47,24 +47,33 @@
           <Tab text="%text.all">
                <content>
             		<ListView fx:id="listCourses" styleClass="list-view-intro" stylesheets="@/css/style.css">
+						<placeholder>
+            				<Label text="%label.never" />
+        				</placeholder>
                      <cursor>
                         <Cursor fx:constant="DEFAULT" />
                      </cursor>
                   </ListView>
                </content>
             </Tab>
-          <Tab text="text.favorite">
+          <Tab text="%text.favorite">
                <content>
                   <ListView fx:id="listCoursesFavorite" prefHeight="250.0" prefWidth="650.0" styleClass="list-view-intro" stylesheets="@/css/style.css">
+						<placeholder>
+            				<Label text="%label.never" />
+        				</placeholder>
                      <cursor>
                         <Cursor fx:constant="DEFAULT" />
                      </cursor>
                   </ListView>
                </content>
             </Tab>
-            <Tab text="text.recent">
+            <Tab text="%text.recent">
                <content>
                   <ListView fx:id="listCoursesRecent" prefHeight="250.0" prefWidth="650.0" styleClass="list-view-intro" stylesheets="@/css/style.css">
+ 						<placeholder>
+            				<Label text="%label.never" />
+        				</placeholder>
                      <cursor>
                         <Cursor fx:constant="DEFAULT" />
                      </cursor>

@@ -23,8 +23,7 @@ public class HeatmapDataSet<T> {
 
 		for (int i = selectedUsers.size() - 1; i >= 0; i--) {
 			EnrolledUser selectedUser = selectedUsers.get(i);
-			if (selectedUser == null)
-				continue;
+			
 			stringBuilder.append("{name:'" + UtilMethods.escapeJavaScriptText(selectedUser.toString()) + "',");
 
 			Map<T, List<Long>> types = userCounts.get(selectedUser);

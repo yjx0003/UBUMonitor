@@ -100,6 +100,12 @@ public class JavaConnector {
 	public void hideLegend() {
 		
 		currentTypeLogs.hideLegend();
+		//currentTypeGrades.hideLegend();
+	}
+	
+	public void clear() {
+		currentTypeLogs.clear();
+		//currentTypeGrades.clear();
 	}
 
 }

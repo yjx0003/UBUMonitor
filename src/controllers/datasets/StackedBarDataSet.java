@@ -131,7 +131,7 @@ public class StackedBarDataSet<T> {
 		Map<EnrolledUser, Map<T, List<Long>>> userTDataset = dataSet.getUserCounts(groupBy, enrolledUsers, elements, start, end);
 
 		for (EnrolledUser user : selectedUsers) {
-			if (user==null) continue;
+		
 			Map<T, List<Long>> elementDataset = userTDataset.get(user);
 			for (T element : elements) {
 

@@ -173,7 +173,7 @@ public class LoginController implements Initializable {
 		String host = chkSaveHost.isSelected() ? txtHost.getText() : "";
 		Config.setProperty("host", host);
 		Config.setProperty("saveHost", Boolean.toString(chkSaveHost.isSelected()));
-
+		Config.save();
 		
 	}
 

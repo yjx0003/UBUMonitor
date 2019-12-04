@@ -273,7 +273,7 @@ public class MainController implements Initializable {
 
 		progressBar.progressProperty().bind(webViewChartsEngine.getLoadWorker().progressProperty());
 		splitPaneLeft.disableProperty().bind(webViewChartsEngine.getLoadWorker().runningProperty());
-		;
+		
 
 		WebConsoleListener.setDefaultListener((webView, message, lineNumber, sourceId) -> {
 			LOGGER.error("{} [{} at {}] ", message, sourceId, lineNumber);
@@ -286,7 +286,8 @@ public class MainController implements Initializable {
 			window.setMember("javaConnector", javaConnector);
 			webViewChartsEngine.executeScript("setLanguage('" + I18n.getResourceBundle().getLocale() + "')");
 			webViewCharts.toFront();
-			webViewChartsEngine.executeScript("manageButtons('" + "log" + "')");
+			javaConnector.setDefaultValues();
+			
 			javaConnector.updateChart();
 		});
 		webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html").toExternalForm());
@@ -933,7 +934,7 @@ public class MainController implements Initializable {
 		if (!tabUbuLogs.isSelected()) {
 			return;
 		}
-
+		javaConnector.setCurrentType(javaConnector.getCurrentTypeLogs());
 		javaConnector.updateChart();
 		findMax();
 		webViewChartsEngine.executeScript("manageButtons('log')");
@@ -985,7 +986,7 @@ public class MainController implements Initializable {
 		if (!tabUbuGrades.isSelected()) {
 			return;
 		}
-
+		javaConnector.setCurrentType(javaConnector.getCurrentTypeGrades());
 		javaConnector.updateChart();
 		webViewChartsEngine.executeScript("manageButtons('grade')");
 

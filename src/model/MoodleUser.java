@@ -213,6 +213,15 @@ public class MoodleUser {
 	public List<Course> getCourses() {
 		return this.courses;
 	}
+	
+	
+	public Course getCourseById(int id) {
+		for(Course course: courses) {
+			if (course.getId() == id)
+				return course;
+		}
+		return null;
+	}
 
 	/**
 	 * Modifica la lista de cursos en los que está matriculado el usuario.

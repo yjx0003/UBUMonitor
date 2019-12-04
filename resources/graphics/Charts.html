@@ -16,7 +16,7 @@
 
 <div class="controles">
     <div class="pestañas" id="grade_tabs">
-        <input type="button" class="btn" id="btnLineas" onclick='javaConnector.updateCharts("LINE");'/>
+        <input type="button" class="btn" id="btnLineas" onclick='javaConnector.updateCharts("LINE");' />
         <input type="button" class="btn" id="btnRadar" onclick='javaConnector.updateCharts("RADAR");' />
         <input type="button" class="btn" id="btnBoxPlot" onclick='javaConnector.updateCharts("GENERAL_BOXPLOT");' />
         <input type="button" class="btn" id="btnBoxPlotGroup" onclick='javaConnector.updateCharts("GROUP_BOXPLOT");' />
@@ -551,6 +551,24 @@
             document.getElementById('btnLegend').style.backgroundImage = 'url(./../img/visibility.png)';
         }
     }
+
+    function exportChartjs() {
+        return myChart.toBase64Image();
+    }
+
+    function exportApexcharts() {
+
+        myApexChart.dataURI().then(function (uri) {
+            javaConnector.saveImage(uri);
+        }).catch(function (error) {
+            console.log('There has been a problem with your fetch operation: ' + error.message);
+            // ADD THIS THROW error
+            throw error;
+        })
+
+    }
+
+
     //Funcion que devuelve un color en formato 'rgba(r,g,b', a falta de la transpaerncia
     //en base a el string que se le pasa
     function colorRGB(color) {

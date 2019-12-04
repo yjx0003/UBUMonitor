@@ -2,7 +2,6 @@ package controllers;
 
 import java.awt.Desktop;
 import java.awt.Desktop.Action;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -22,9 +21,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.imageio.ImageIO;
-import javax.xml.bind.DatatypeConverter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -273,7 +269,6 @@ public class MainController implements Initializable {
 
 		progressBar.progressProperty().bind(webViewChartsEngine.getLoadWorker().progressProperty());
 		splitPaneLeft.disableProperty().bind(webViewChartsEngine.getLoadWorker().runningProperty());
-		
 
 		WebConsoleListener.setDefaultListener((webView, message, lineNumber, sourceId) -> {
 			LOGGER.error("{} [{} at {}] ", message, sourceId, lineNumber);
@@ -287,7 +282,7 @@ public class MainController implements Initializable {
 			webViewChartsEngine.executeScript("setLanguage('" + I18n.getResourceBundle().getLocale() + "')");
 			webViewCharts.toFront();
 			javaConnector.setDefaultValues();
-			
+
 			javaConnector.updateChart();
 		});
 		webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html").toExternalForm());
@@ -1020,7 +1015,7 @@ public class MainController implements Initializable {
 		// Mostramos nº participantes
 		lblCountParticipants.setText(I18n.get("label.participants") + filteredEnrolledList.size());
 		javaConnector.updateChart();
-		
+
 		findMax();
 	}
 
@@ -1116,21 +1111,21 @@ public class MainController implements Initializable {
 	 * @throws IOException excepción
 	 */
 	public void saveChart(ActionEvent actionEvent) throws IOException {
-		File file = new File("chart.png");
 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Guardar gráfico");
 
-		fileChooser.setInitialFileName("chart.png");
-		fileChooser.setInitialDirectory(file.getParentFile());
+		fileChooser.setInitialFileName(javaConnector.getCurrentType().getChartType()+".png");
+		fileChooser.setInitialDirectory(new File(Config.getProperty("imageFolderPath", "./")));
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(".png", "*.png"));
 		try {
-			file = fileChooser.showSaveDialog(controller.getStage());
+			File file = fileChooser.showSaveDialog(controller.getStage());
 			if (file != null) {
-				String str = (String) webViewChartsEngine.executeScript("exportCurrentElemet()");
-				byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
-				BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
-				ImageIO.write(bufferedImage, "png", file);
+				String str = javaConnector.export(file);
+				if (str == null)
+					return;
+				javaConnector.saveImage(str);
+				Config.setProperty("imageFolderPath", file.getParent());
 			}
 		} catch (IOException e) {
 			LOGGER.error("Error al guardar el gráfico: {}", e);

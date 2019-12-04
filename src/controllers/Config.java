@@ -49,7 +49,7 @@ public class Config {
 		File file = new File(path);
 		try (FileOutputStream out = new FileOutputStream(file)) {
 			properties.store(out, null);
-
+			LOGGER.info("config guardado");
 		} catch (IOException e) {
 			LOGGER.error("No se ha podido guardar el fichero {}", file.getAbsolutePath());
 		}

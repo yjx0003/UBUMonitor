@@ -83,5 +83,11 @@ public class Heatmap extends Chart {
 		
 	}
 
+	@Override
+	public String export() {
+		webViewChartsEngine.executeScript(String.format("exportApexcharts()"));
+		return null;
+	}
+
 	
 }

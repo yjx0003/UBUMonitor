@@ -1,7 +1,7 @@
 package controllers.charts;
 
-import controllers.MainController;
 import controllers.JavaConnector.ChartType;
+import controllers.MainController;
 import controllers.ubulogs.GroupByAbstract;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
@@ -65,7 +65,18 @@ public abstract class Chart {
 	}
 	
 	
+	public ChartType getChartType() {
+		return chartType;
+	}
+
+
+	public void setChartType(ChartType chartType) {
+		this.chartType = chartType;
+	}
+
+
 	public abstract void update();
 	public abstract void clear();
 	public abstract void hideLegend();
+	public abstract String export();
 }

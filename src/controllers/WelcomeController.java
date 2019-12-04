@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import controllers.ubugrades.CreatorGradeItems;
 import controllers.ubugrades.CreatorUBUGradesController;
 import controllers.ubulogs.LogCreator;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -48,6 +49,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -80,7 +82,8 @@ public class WelcomeController implements Initializable {
 	private Path cacheFilePath;
 	private Controller controller = Controller.getInstance();
 	private boolean isFileCacheExists;
-
+	@FXML
+	private AnchorPane anchorPane;
 	@FXML
 	private Label lblUser;
 	@FXML
@@ -107,12 +110,12 @@ public class WelcomeController implements Initializable {
 	private Label lblDateUpdate;
 	@FXML
 	private CheckBox chkUpdateData;
-
 	private boolean isBBDDLoaded;
 
 	/**
 	 * Función initialize. Muestra la lista de cursos del usuario introducido.
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
@@ -148,13 +151,23 @@ public class WelcomeController implements Initializable {
 					.addListener((ov, value, newValue) -> checkFile(newValue));
 
 			tabPane.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
-				@SuppressWarnings("unchecked")
 				ListView<Course> listView = (ListView<Course>) value.getContent();
 				listView.getSelectionModel().clearSelection();
 				chkUpdateData.setDisable(true);
 				lblDateUpdate.setText(null);
 			});
-			tabPane.getSelectionModel().select(Integer.valueOf(Config.getProperty("courseList", "0")));
+			tabPane.getSelectionModel().select(Config.getProperty("courseList", 0));
+			anchorPane.disableProperty().bind(progressBar.visibleProperty());
+
+			Platform.runLater(()->{
+				ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem().getContent();
+				Course course = controller.getUser().getCourseById(Config.getProperty("actualCourse", -1));
+				
+				listView.getSelectionModel().select(course);
+				listView.scrollTo(course);
+			});
+			
+			
 
 		} catch (Exception e) {
 			LOGGER.error("Error al cargar los cursos", e);
@@ -212,6 +225,11 @@ public class WelcomeController implements Initializable {
 
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getFullName());
 
+		Config.setProperty("courseList", Integer.toString(tabPane.getSelectionModel().getSelectedIndex()));
+		
+		Config.setProperty("actualCourse", getSelectedCourse().getId());
+		Config.save();
+		
 		if (chkUpdateData.isSelected()) {
 			if (!isFileCacheExists) {
 				loadData(controller.getPassword());
@@ -223,10 +241,8 @@ public class WelcomeController implements Initializable {
 				isBBDDLoaded = true;
 			}
 			downloadData();
-		} else {
+		} else { //if loading cache 
 			loadData(controller.getPassword());
-			Config.setProperty("courseList", Integer.toString(tabPane.getSelectionModel().getSelectedIndex()));
-			Config.save();
 			loadNextWindow();
 		}
 

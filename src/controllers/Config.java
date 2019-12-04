@@ -41,6 +41,10 @@ public class Config {
 		return properties.getProperty(key, defaultValue);
 	}
 	
+	public static int getProperty(String key, int defaultValue) {
+		return Integer.valueOf(properties.getProperty(key, Integer.toString(defaultValue)));
+	}
+	
 	public static void save(String path) {
 		File file = new File(path);
 		try (FileOutputStream out = new FileOutputStream(file)) {
@@ -54,6 +58,10 @@ public class Config {
 	public static void setProperty(String key, String value) {
 		properties.setProperty(key, value);
 		
+	}
+	
+	public static void setProperty(String key, int value) {
+		properties.setProperty(key, Integer.toString(value));
 	}
 	
 	public static void save() {

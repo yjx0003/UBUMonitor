@@ -42,46 +42,53 @@
 				<Font size="25.0" />
 			</font>
 		</Label>
-      <TabPane fx:id="tabPane" layoutX="75.0" layoutY="175.0" prefHeight="290.0" prefWidth="650.0" tabClosingPolicy="UNAVAILABLE">
-        <tabs>
-          <Tab text="%text.all">
-               <content>
-            		<ListView fx:id="listCourses" styleClass="list-view-intro" stylesheets="@/css/style.css">
-						<placeholder>
-            				<Label text="%label.never" />
-        				</placeholder>
-                     <cursor>
-                        <Cursor fx:constant="DEFAULT" />
-                     </cursor>
-                  </ListView>
-               </content>
-            </Tab>
-          <Tab text="%text.favorite">
-               <content>
-                  <ListView fx:id="listCoursesFavorite" prefHeight="250.0" prefWidth="650.0" styleClass="list-view-intro" stylesheets="@/css/style.css">
-						<placeholder>
-            				<Label text="%label.never" />
-        				</placeholder>
-                     <cursor>
-                        <Cursor fx:constant="DEFAULT" />
-                     </cursor>
-                  </ListView>
-               </content>
-            </Tab>
-            <Tab text="%text.recent">
-               <content>
-                  <ListView fx:id="listCoursesRecent" prefHeight="250.0" prefWidth="650.0" styleClass="list-view-intro" stylesheets="@/css/style.css">
- 						<placeholder>
-            				<Label text="%label.never" />
-        				</placeholder>
-                     <cursor>
-                        <Cursor fx:constant="DEFAULT" />
-                     </cursor>
-                  </ListView>
-               </content>
-            </Tab>
-        </tabs>
-      </TabPane>
+      <AnchorPane fx:id="anchorPane" layoutX="75.0" layoutY="175.0" prefHeight="350.0" prefWidth="650.0">
+         <children>
+            <TabPane fx:id="tabPane" prefHeight="290.0" prefWidth="650.0" tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                  <Tab text="%text.recent">
+                     <content>
+                        <ListView fx:id="listCoursesRecent" prefHeight="250.0" prefWidth="650.0" styleClass="list-view-intro" stylesheets="@/css/style.css">
+       						<placeholder>
+                  				<Label text="%label.never" />
+              				</placeholder>
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                        </ListView>
+                     </content>
+                  </Tab>
+                <Tab text="%text.favorite">
+                     <content>
+                        <ListView fx:id="listCoursesFavorite" prefHeight="250.0" prefWidth="650.0" styleClass="list-view-intro" stylesheets="@/css/style.css">
+      						<placeholder>
+                  				<Label text="%label.never" />
+              				</placeholder>
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                        </ListView>
+                     </content>
+                  </Tab>
+                <Tab text="%text.all">
+                     <content>
+                  		<ListView fx:id="listCourses" styleClass="list-view-intro" stylesheets="@/css/style.css">
+      						<placeholder>
+                  				<Label text="%label.never" />
+              				</placeholder>
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                        </ListView>
+                     </content>
+                  </Tab>
+              </tabs>
+            </TabPane>
+            <Label layoutX="70.0" layoutY="300.0" prefHeight="21.0" prefWidth="258.0" text="%label.lastupdate" />
+            <CheckBox fx:id="chkUpdateData" layoutX="70.0" layoutY="330.0" mnemonicParsing="false" text="%checkbox.updatedata" />
+            <Label fx:id="lblDateUpdate" layoutX="300.0" layoutY="300.0" prefHeight="21.0" prefWidth="146.0" />
+         </children>
+      </AnchorPane>
 		<Label layoutX="310.0" layoutY="145.0" text="%label.selectcourse">
 			<font>
 				<Font size="15.0" />
@@ -100,8 +107,5 @@
          <font>
             <Font name="System Bold" size="12.0" />
          </font></Label>
-      <Label layoutX="139.0" layoutY="470.0" prefHeight="21.0" prefWidth="258.0" text="%label.lastupdate" />
-      <CheckBox fx:id="chkUpdateData" layoutX="139.0" layoutY="500.0" mnemonicParsing="false" text="%checkbox.updatedata" />
-      <Label fx:id="lblDateUpdate" layoutX="406.0" layoutY="470.0" prefHeight="21.0" prefWidth="146.0" />
 	</children>
 </AnchorPane>

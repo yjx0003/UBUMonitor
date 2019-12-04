@@ -47,6 +47,7 @@ public class Loader extends Application {
 	@Override
 	public void stop() {
 		Controller.getInstance().cancelTimer();
+		Config.save();
 	}
 
 	public static void initialize() {

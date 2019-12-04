@@ -1,7 +1,14 @@
 package controllers;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
+import javax.xml.bind.DatatypeConverter;
 
 import controllers.charts.Chart;
 import controllers.charts.Heatmap;
@@ -27,6 +34,8 @@ public class JavaConnector {
 	private Chart stackedbar;
 
 	private Map<ChartType, Chart> mapChart;
+	
+	private File file;
 
 	public JavaConnector(MainController mainController) {
 		webViewChartsEngine = mainController.getWebViewChartsEngine();
@@ -43,7 +52,7 @@ public class JavaConnector {
 
 	public void updateChart(Chart chart) {
 
-		if (!currentType.equals(chart)) {
+		if (currentType.getChartType() != chart.getChartType()) {
 			currentType.clear();
 			currentType = chart;
 		}
@@ -58,6 +67,7 @@ public class JavaConnector {
 		} else if (tabGrades.isSelected()) {
 			currentTypeGrades = chart;
 		}
+		
 		updateChart(chart);
 	}
 
@@ -82,14 +92,12 @@ public class JavaConnector {
 	}
 
 	public void hideLegend() {
-
-		currentTypeLogs.hideLegend();
-		// currentTypeGrades.hideLegend();
+		currentType.hideLegend();
 	}
 
 	public void clear() {
-		currentTypeLogs.clear();
-		// currentTypeGrades.clear();
+		currentType.clear();
+		
 	}
 
 	public Chart getCurrentTypeLogs() {
@@ -127,16 +135,34 @@ public class JavaConnector {
 	}
 
 	public void setDefaultValues() {
+		setCurrentTypeLogs(ChartType.STACKED_BAR);
+		setCurrentTypeGrades(ChartType.LINE);
 		if (tabLogs.isSelected()) {
 			webViewChartsEngine.executeScript("manageButtons('" + "log" + "')");
-			setCurrentTypeLogs(ChartType.HEAT_MAP);
+			
 			setCurrentType(getCurrentTypeLogs());
 		} else if (tabGrades.isSelected()) {
 			webViewChartsEngine.executeScript("manageButtons('" + "grade" + "')");
-			setCurrentTypeGrades(ChartType.LINE);
+			
 			setCurrentType(getCurrentTypeGrades());
 		}
 
+	}
+	
+	public String export(File file) {
+		this.file = file;
+		return currentType.export();
+	}
+	
+	public void prueba() {
+		System.out.println("HOLA");
+	}
+	
+	public void saveImage(String str) throws IOException {
+		
+		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
+		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
+		ImageIO.write(bufferedImage, "png", file);
 	}
 
 }

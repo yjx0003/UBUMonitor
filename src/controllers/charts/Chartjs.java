@@ -20,5 +20,10 @@ public abstract class Chartjs extends Chart{
 		webViewChartsEngine.executeScript("hideLegendChartjs()");
 		
 	}
+	
+	@Override
+	public String export() {
+		return (String) webViewChartsEngine.executeScript("exportChartjs()");
+	}
 
 }

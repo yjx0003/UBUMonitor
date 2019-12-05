@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" styleClass="anchorpane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.WelcomeController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" styleClass="anchorpane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
 	<children>
       <Label fx:id="lblNoSelect" alignment="CENTER" layoutX="139.0" layoutY="575.0" prefHeight="21.0" prefWidth="540.0" style="-fx-text-fill: #ff5050;" textAlignment="CENTER" textFill="#e11010">
          <font>
@@ -37,14 +37,14 @@
 				<Font size="22.0" />
 			</font>
 		</Label>
-		<Label fx:id="lblUser" layoutX="310.0" layoutY="105.0" text="Nombre de usuario">
+		<Label fx:id="lblUser" layoutX="450.0" layoutY="75.0" text="Nombre de usuario">
 			<font>
-				<Font size="25.0" />
+				<Font size="22.0" />
 			</font>
 		</Label>
       <AnchorPane fx:id="anchorPane" layoutX="75.0" layoutY="175.0" prefHeight="350.0" prefWidth="650.0">
          <children>
-            <TabPane fx:id="tabPane" prefHeight="290.0" prefWidth="650.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id="tabPane" prefHeight="290.0" prefWidth="650.0" styleClass="tab-pane-class" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                   <Tab text="%text.recent">
                      <content>
@@ -79,6 +79,42 @@
                            <cursor>
                               <Cursor fx:constant="DEFAULT" />
                            </cursor>
+                        </ListView>
+                     </content>
+                  </Tab>
+                  <Tab text="%text.inprogress">
+                     <content>
+                        <ListView fx:id="listCoursesInProgress" styleClass="list-view-intro" stylesheets="@/css/style.css">
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                           <placeholder>
+                              <Label text="%label.never" />
+                           </placeholder>
+                        </ListView>
+                     </content>
+                  </Tab>
+                  <Tab text="%text.future">
+                     <content>
+                        <ListView fx:id="listCoursesFuture" styleClass="list-view-intro" stylesheets="@/css/style.css">
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                           <placeholder>
+                              <Label text="%label.never" />
+                           </placeholder>
+                        </ListView>
+                     </content>
+                  </Tab>
+                  <Tab text="%text.past">
+                     <content>
+                        <ListView fx:id="listCoursesPast" styleClass="list-view-intro" stylesheets="@/css/style.css">
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                           <placeholder>
+                              <Label text="%label.never" />
+                           </placeholder>
                         </ListView>
                      </content>
                   </Tab>

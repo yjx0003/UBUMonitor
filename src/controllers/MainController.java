@@ -29,6 +29,7 @@ import com.sun.javafx.webkit.WebConsoleListener;
 
 import controllers.ubulogs.GroupByAbstract;
 import export.CSVExport;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
@@ -36,6 +37,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -68,6 +70,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import model.Component;
@@ -83,6 +86,7 @@ import model.Role;
 import model.Section;
 import model.Stats;
 import netscape.javascript.JSObject;
+import sun.awt.windows.WLightweightFramePeer;
 
 /**
  * Clase controlador de la ventana principal
@@ -1115,7 +1119,7 @@ public class MainController implements Initializable {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Guardar gráfico");
 
-		fileChooser.setInitialFileName(javaConnector.getCurrentType().getChartType()+".png");
+		fileChooser.setInitialFileName(javaConnector.getCurrentType().getChartType() + ".png");
 		fileChooser.setInitialDirectory(new File(Config.getProperty("imageFolderPath", "./")));
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(".png", "*.png"));
 		try {
@@ -1138,8 +1142,8 @@ public class MainController implements Initializable {
 	 * 
 	 * @param actionEvent El ActionEvent.
 	 */
-	public void saveAll(ActionEvent actionEvent) {
-
+	public void updateCourse(ActionEvent actionEvent) {
+		changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController(true));
 	}
 
 	/**
@@ -1167,7 +1171,8 @@ public class MainController implements Initializable {
 	 */
 	public void changeCourse(ActionEvent actionEvent) {
 		LOGGER.info("Cambiando de asignatura...");
-		changeScene(getClass().getResource("/view/Welcome.fxml"));
+		changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController());
+
 	}
 
 	/**
@@ -1186,9 +1191,14 @@ public class MainController implements Initializable {
 	 * 
 	 * @param sceneFXML La ventanan a la que se quiere cambiar.
 	 */
-	private void changeScene(URL sceneFXML) {
+	private void changeScene(URL sceneFXML, Object controllerObject) {
 		try {
 			FXMLLoader loader = new FXMLLoader(sceneFXML, I18n.getResourceBundle());
+			
+			if (controllerObject != null) {
+				loader.setController(controllerObject);
+			}
+			
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
 			controller.getStage().close();
@@ -1198,9 +1208,14 @@ public class MainController implements Initializable {
 			controller.getStage().setTitle(AppInfo.APPLICATION_NAME);
 			controller.getStage().resizableProperty().setValue(Boolean.FALSE);
 			controller.getStage().show();
+
 		} catch (Exception e) {
 			LOGGER.error("Error al modifcar la ventana de JavaFX: {}", e);
 		}
+	}
+	
+	private void changeScene(URL sceneFXML) {
+		changeScene(sceneFXML, null);
 	}
 
 	/**
@@ -1249,7 +1264,7 @@ public class MainController implements Initializable {
 	 * @param mensaje El mensaje que se quiere mostrar.
 	 * @param exit Indica si se quiere mostar el boton de salir o no.
 	 */
-	private void errorWindow(String mensaje, boolean exit) {
+	public void errorWindow(String mensaje, boolean exit) {
 		Alert alert = new Alert(AlertType.ERROR);
 
 		alert.setTitle(AppInfo.APPLICATION_NAME);
@@ -1275,7 +1290,7 @@ public class MainController implements Initializable {
 	 * @param mensaje El mensaje que se quiere mostrar.
 	 * @param exit Indica si se quiere mostar el boton de salir o no.
 	 */
-	private void infoWindow(String mensaje, boolean exit) {
+	public void infoWindow(String mensaje, boolean exit) {
 		Alert alert = new Alert(AlertType.INFORMATION);
 
 		alert.setTitle(AppInfo.APPLICATION_NAME);

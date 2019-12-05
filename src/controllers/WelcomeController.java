@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -96,6 +97,15 @@ public class WelcomeController implements Initializable {
 	private ListView<Course> listCoursesRecent;
 
 	@FXML
+	private ListView<Course> listCoursesInProgress;
+
+	@FXML
+	private ListView<Course> listCoursesPast;
+
+	@FXML
+	private ListView<Course> listCoursesFuture;
+
+	@FXML
 	private TabPane tabPane;
 
 	@FXML
@@ -111,6 +121,16 @@ public class WelcomeController implements Initializable {
 	@FXML
 	private CheckBox chkUpdateData;
 	private boolean isBBDDLoaded;
+	
+	private boolean autoUpdate;
+	
+	public WelcomeController() {
+		this(false);
+	}
+
+	public WelcomeController(boolean autoUpdate) {
+		this.autoUpdate = autoUpdate;
+	}
 
 	/**
 	 * Función initialize. Muestra la lista de cursos del usuario introducido.
@@ -126,29 +146,10 @@ public class WelcomeController implements Initializable {
 			lblUser.setText(controller.getUser().getFullName());
 			LOGGER.info("Cargando cursos...");
 
-			ObservableList<Course> listAll = FXCollections.observableArrayList(controller.getUser().getCourses());
-			ObservableList<Course> listFavorite = FXCollections
-					.observableArrayList(controller.getUser().getFavoriteCourses());
-			ObservableList<Course> listRecent = FXCollections
-					.observableArrayList(controller.getUser().getRecentCourses());
-
-			listAll.sort(Comparator.comparing(Course::getFullName).thenComparing(c -> c.getCourseCategory().getName()));
-			listFavorite.sort(
-					Comparator.comparing(Course::getFullName).thenComparing(c -> c.getCourseCategory().getName()));
-
-			listCourses.setItems(listAll);
-			listCoursesFavorite.setItems(listFavorite);
-			listCoursesRecent.setItems(listRecent);
+			initListViews();
 
 			progressBar.setVisible(false);
 			chkUpdateData.setDisable(true);
-
-			listCourses.getSelectionModel().selectedItemProperty()
-					.addListener((ov, value, newValue) -> checkFile(newValue));
-			listCoursesFavorite.getSelectionModel().selectedItemProperty()
-					.addListener((ov, value, newValue) -> checkFile(newValue));
-			listCoursesRecent.getSelectionModel().selectedItemProperty()
-					.addListener((ov, value, newValue) -> checkFile(newValue));
 
 			tabPane.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
 				ListView<Course> listView = (ListView<Course>) value.getContent();
@@ -159,19 +160,44 @@ public class WelcomeController implements Initializable {
 			tabPane.getSelectionModel().select(Config.getProperty("courseList", 0));
 			anchorPane.disableProperty().bind(progressBar.visibleProperty());
 
-			Platform.runLater(()->{
-				ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem().getContent();
+			Platform.runLater(() -> {
+				ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem()
+						.getContent();
 				Course course = controller.getUser().getCourseById(Config.getProperty("actualCourse", -1));
-				
+
 				listView.getSelectionModel().select(course);
 				listView.scrollTo(course);
+				if (autoUpdate) {
+					chkUpdateData.setSelected(true);
+					btnEntrar.fire();
+				}
 			});
-			
-			
 
 		} catch (Exception e) {
 			LOGGER.error("Error al cargar los cursos", e);
 		}
+
+	}
+
+	private void initListViews() {
+		Comparator<Course> courseComparator = Comparator.comparing(Course::getFullName)
+				.thenComparing(c -> c.getCourseCategory().getName());
+		
+		initListView(controller.getUser().getCourses(), listCourses, courseComparator);
+		initListView(controller.getUser().getFavoriteCourses(), listCoursesFavorite, courseComparator);
+		initListView(controller.getUser().getRecentCourses(), listCoursesRecent, null);
+		initListView(controller.getUser().getInProgressCourses(), listCoursesInProgress, courseComparator);
+		initListView(controller.getUser().getPastCourses(), listCoursesPast, courseComparator);
+		initListView(controller.getUser().getFutureCourses(), listCoursesFuture, courseComparator);
+	}
+
+	private void initListView(List<Course> courseList, ListView<Course> listView, Comparator<Course> comparator) {
+		ObservableList<Course> observableList = FXCollections.observableArrayList(courseList);
+		if (comparator != null) {
+			observableList.sort(comparator);
+		}
+		listView.setItems(observableList);
+		listView.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> checkFile(newValue));
 
 	}
 
@@ -226,10 +252,10 @@ public class WelcomeController implements Initializable {
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getFullName());
 
 		Config.setProperty("courseList", Integer.toString(tabPane.getSelectionModel().getSelectedIndex()));
-		
+
 		Config.setProperty("actualCourse", getSelectedCourse().getId());
-		Config.save();
-		
+
+
 		if (chkUpdateData.isSelected()) {
 			if (!isFileCacheExists) {
 				loadData(controller.getPassword());
@@ -241,7 +267,7 @@ public class WelcomeController implements Initializable {
 				isBBDDLoaded = true;
 			}
 			downloadData();
-		} else { //if loading cache 
+		} else { // if loading cache
 			loadData(controller.getPassword());
 			loadNextWindow();
 		}
@@ -459,7 +485,7 @@ public class WelcomeController implements Initializable {
 	private void errorWindow(String mensaje) {
 		Alert alert = new Alert(AlertType.ERROR);
 
-		alert.setTitle("UBUMonitor");
+		alert.setTitle(AppInfo.APPLICATION_NAME);
 		alert.setHeaderText("Error");
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.initOwner(controller.getStage());

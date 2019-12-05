@@ -1,5 +1,10 @@
 .anchorpane {
     -fx-background-color: #f2f2f2;
+    
+}
+
+* :disabled {
+    -fx-opacity: 0.8;
 }
 
 .progress-bar .bar { 
@@ -52,10 +57,13 @@
 }
 
 
-
+.tab-pane-class{
+	-fx-border-color:black;
+	-fx-border-width:1px;
+}
 
 .list-view-intro{
-	-fx-padding: 4.0;
+
 	-fx-font-size: 15.0px;
 }
 
@@ -166,5 +174,5 @@
 }
 
 .list-cell:disabled {
-    -fx-opacity: 0.5;
+    -fx-opacity: 1.0;
 }

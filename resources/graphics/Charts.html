@@ -507,23 +507,23 @@
             name: "0"
         }, {
             from: 1,
-            to: Math.max(Math.ceil(max * 0.25), 1),
+            to: Math.max(Math.floor(max * 0.25), 1),
             color: "#f4e3ae",
         }, {
-            from: Math.max(Math.floor(max * 0.25), 1),
-            to: Math.max(Math.ceil(max * 0.50), 1),
+            from: Math.max(Math.ceil(max * 0.25), 1),
+            to: Math.max(Math.floor(max * 0.50), 1),
             color: "#fff033",
 
         },
 
         {
-            from: Math.max(Math.floor(max * 0.50), 1),
-            to: Math.max(Math.ceil(max * 0.75), 1),
+            from: Math.max(Math.ceil(max * 0.50), 1),
+            to: Math.max(Math.floor(max * 0.75), 1),
             color: "#b5ff33",
 
         }, {
-            from: Math.max(Math.floor(max * 0.75), 1),
-            to: Math.max(max, Math.ceil(max * 0.75)),
+            from: Math.max(Math.ceil(max * 0.75), 1),
+            to: Math.max(max, Math.floor(max * 0.75)),
             color: "#38e330",
 
         }, {
@@ -584,15 +584,6 @@
     //en base a el string que se le pasa
     function colorHEX(color) {
         return colorHash.hex(color);
-    }
-    // Exporta el elemento actual
-    function exportCurrentElemet() {
-        if (currentType == 'table') {
-            return document.querySelector('#table_img canvas').toDataURL();
-        } else {
-            myChart.update(); // por algun motivo si no se actualiza no cambia la grafica elegida
-            return myChart.toBase64Image();
-        }
     }
 
     // Plugin que nos permite establecer el color de fondo del gráfico

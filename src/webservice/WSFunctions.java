@@ -33,6 +33,10 @@ public enum WSFunctions {
 	CORE_COURSE_GET_RECENT_COURSES,
 	
 	/**
+	 * List of enrolled courses for the given timeline classification (past, inprogress, or future).
+	 */
+ 	CORE_COURSE_GET_ENROLLED_COURSES_BY_TIMELINE_CLASSIFICATION, 
+	/**
 	 * Devuelve información relativa al usuario
 	 */
 	CORE_USER_GET_USERS_BY_FIELD,

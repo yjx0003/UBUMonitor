@@ -28,6 +28,9 @@ public class MoodleUser {
 	private Image userPhoto;
 	private List<Course> courses;
 	private List<Course> recentCourses;
+	private List<Course> inProgressCourses;
+	private List<Course> futureCourses;
+	private List<Course> pastCourses;
 	private String timezone;
 
 	/**
@@ -36,6 +39,9 @@ public class MoodleUser {
 	public MoodleUser() {
 		this.courses = new ArrayList<>();
 		this.setRecentCourses(new ArrayList<>());
+		this.setFutureCourses(new ArrayList<>());
+		this.setInProgressCourses(new ArrayList<>());
+		this.setPastCourses(new ArrayList<>());
 	}
 
 	/**
@@ -263,5 +269,29 @@ public class MoodleUser {
 
 	public void setRecentCourses(List<Course> recentCourses) {
 		this.recentCourses = recentCourses;
+	}
+
+	public List<Course> getInProgressCourses() {
+		return inProgressCourses;
+	}
+
+	public void setInProgressCourses(List<Course> inProgressCourses) {
+		this.inProgressCourses = inProgressCourses;
+	}
+
+	public List<Course> getFutureCourses() {
+		return futureCourses;
+	}
+
+	public void setFutureCourses(List<Course> futureCourses) {
+		this.futureCourses = futureCourses;
+	}
+
+	public List<Course> getPastCourses() {
+		return pastCourses;
+	}
+
+	public void setPastCourses(List<Course> pastCourses) {
+		this.pastCourses = pastCourses;
 	}
 }

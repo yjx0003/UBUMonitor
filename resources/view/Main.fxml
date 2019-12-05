@@ -44,8 +44,8 @@
 						<Menu mnemonicParsing="false" text="%menu.file">
 							<items>
 								<MenuItem fx:id="MIChangeCourse" mnemonicParsing="false" onAction="#changeCourse" text="%menu.changesubject" />
+								<MenuItem fx:id="updateCourse" mnemonicParsing="false" onAction="#updateCourse" text="%menu.update" />
 								<MenuItem fx:id="MISaveChart" mnemonicParsing="false" onAction="#saveChart" text="%menu.savechart" />
-								<MenuItem fx:id="MISaveAll" mnemonicParsing="false" onAction="#saveAll" text="%menu.saveall" />
 								<MenuItem fx:id="MIExportCSV" mnemonicParsing="false" onAction="#exportCSV" text="%menu.exportcsv" />
 								<MenuItem fx:id="MILogOut" mnemonicParsing="false" onAction="#logOut" text="%menu.logout" />
 								<MenuItem fx:id="MIExit" mnemonicParsing="false" onAction="#closeApplication" text="%menu.exit" />

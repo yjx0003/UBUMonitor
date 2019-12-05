@@ -29,25 +29,22 @@ public class JavaConnector {
 
 	private Chart currentType;
 
-	private Chart heatmap;
-
-	private Chart stackedbar;
-
 	private Map<ChartType, Chart> mapChart;
 	
 	private File file;
+	
+	private MainController mainController;
 
 	public JavaConnector(MainController mainController) {
+		
+		this.mainController = mainController;
 		webViewChartsEngine = mainController.getWebViewChartsEngine();
 		tabLogs = mainController.getTabUbuLogs();
 		tabGrades = mainController.getTabUbuGrades();
 
-		heatmap = new Heatmap(mainController);
-		stackedbar = new Stackedbar(mainController);
-
 		mapChart = new EnumMap<>(ChartType.class);
-		mapChart.put(ChartType.HEAT_MAP, heatmap);
-		mapChart.put(ChartType.STACKED_BAR, stackedbar);
+		mapChart.put(ChartType.HEAT_MAP, new Heatmap(mainController));
+		mapChart.put(ChartType.STACKED_BAR, new Stackedbar(mainController));
 	}
 
 	public void updateChart(Chart chart) {
@@ -154,15 +151,18 @@ public class JavaConnector {
 		return currentType.export();
 	}
 	
-	public void prueba() {
-		System.out.println("HOLA");
-	}
+
 	
 	public void saveImage(String str) throws IOException {
 		
 		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
 		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
 		ImageIO.write(bufferedImage, "png", file);
+	}
+	
+	
+	public void showErrorWindow(String errorMessage) {
+		mainController.errorWindow("", false);
 	}
 
 }

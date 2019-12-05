@@ -173,7 +173,6 @@ public class LoginController implements Initializable {
 		String host = chkSaveHost.isSelected() ? txtHost.getText() : "";
 		Config.setProperty("host", host);
 		Config.setProperty("saveHost", Boolean.toString(chkSaveHost.isSelected()));
-		Config.save();
 		
 	}
 
@@ -223,6 +222,7 @@ public class LoginController implements Initializable {
 
 			// Accedemos a la siguiente ventana
 			FXMLLoader loader = new FXMLLoader(sceneFXML, I18n.getResourceBundle());
+			loader.setController(new WelcomeController());
 			controller.getStage().close();
 			Stage stage = new Stage();
 			Parent root = loader.load();

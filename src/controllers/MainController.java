@@ -29,7 +29,6 @@ import com.sun.javafx.webkit.WebConsoleListener;
 
 import controllers.ubulogs.GroupByAbstract;
 import export.CSVExport;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
@@ -37,7 +36,6 @@ import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -70,7 +68,6 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import model.Component;
@@ -86,7 +83,6 @@ import model.Role;
 import model.Section;
 import model.Stats;
 import netscape.javascript.JSObject;
-import sun.awt.windows.WLightweightFramePeer;
 
 /**
  * Clase controlador de la ventana principal
@@ -234,6 +230,7 @@ public class MainController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		
 		try {
 			LOGGER.info("Completada la carga del curso {}", controller.getActualCourse().getFullName());
 

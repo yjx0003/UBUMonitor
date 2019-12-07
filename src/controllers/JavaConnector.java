@@ -16,6 +16,7 @@ import controllers.charts.Stackedbar;
 import javafx.concurrent.Worker.State;
 import javafx.scene.control.Tab;
 import javafx.scene.web.WebEngine;
+import model.EnrolledUser;
 
 public class JavaConnector {
 
@@ -30,13 +31,13 @@ public class JavaConnector {
 	private Chart currentType;
 
 	private Map<ChartType, Chart> mapChart;
-	
+
 	private File file;
-	
+
 	private MainController mainController;
 
 	public JavaConnector(MainController mainController) {
-		
+
 		this.mainController = mainController;
 		webViewChartsEngine = mainController.getWebViewChartsEngine();
 		tabLogs = mainController.getTabUbuLogs();
@@ -64,7 +65,7 @@ public class JavaConnector {
 		} else if (tabGrades.isSelected()) {
 			currentTypeGrades = chart;
 		}
-		
+
 		updateChart(chart);
 	}
 
@@ -94,7 +95,7 @@ public class JavaConnector {
 
 	public void clear() {
 		currentType.clear();
-		
+
 	}
 
 	public Chart getCurrentTypeLogs() {
@@ -136,33 +137,39 @@ public class JavaConnector {
 		setCurrentTypeGrades(ChartType.LINE);
 		if (tabLogs.isSelected()) {
 			webViewChartsEngine.executeScript("manageButtons('" + "log" + "')");
-			
+
 			setCurrentType(getCurrentTypeLogs());
 		} else if (tabGrades.isSelected()) {
 			webViewChartsEngine.executeScript("manageButtons('" + "grade" + "')");
-			
+
 			setCurrentType(getCurrentTypeGrades());
 		}
 
 	}
-	
+
 	public String export(File file) {
 		this.file = file;
 		return currentType.export();
 	}
-	
 
-	
 	public void saveImage(String str) throws IOException {
-		
+
 		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
 		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
 		ImageIO.write(bufferedImage, "png", file);
 	}
-	
-	
+
 	public void showErrorWindow(String errorMessage) {
-		mainController.errorWindow("", false);
+		mainController.errorWindow(errorMessage, false);
+	}
+
+	public void dataPointSelection(int selectedIndex) {
+		
+		EnrolledUser selectedUser = mainController.getListParticipants().getSelectionModel().getSelectedItems().get(selectedIndex);
+		int index = mainController.getListParticipants().getItems().indexOf(selectedUser);
+		mainController.getListParticipants().scrollTo(index);
+		mainController.getListParticipants().getFocusModel().focus(index);
+
 	}
 
 }

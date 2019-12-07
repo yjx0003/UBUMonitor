@@ -50,6 +50,7 @@
     //Chart.defaults.global.defaultFontFamily= "Comic Sans MS";
     //Chart.defaults.global.defaultFontSize=14;
 
+
     // Opciones para el gráfico de lineas y el boxplot
     var optionsLineChart = {
         maintainAspectRatio: false,
@@ -316,6 +317,12 @@
             position: 'bottom'
         },
         chart: {
+            events: {
+                dataPointSelection: function (event, chartContext, config) {
+                    javaConnector.dataPointSelection(config.w.config.series.length-1-config.seriesIndex);
+                }
+            },
+        	height: "93%",
             toolbar: {
                 show: false,
             },
@@ -401,10 +408,13 @@
 
     function updateChartjs(type, dataset, options) {
         options.legend.display = legendActive;
-        if (myChart.type == type) {
+
+        if (myChart.config.type == type) {
             myChart.data = dataset;
             myChart.options = options;
+
         } else {
+
             myChart.destroy();
             myChart = new Chart(ctx, {
                 type: type,
@@ -412,9 +422,10 @@
                 options: options
             });
         }
-
-
         myChart.update();
+
+
+
 
     }
 
@@ -463,7 +474,6 @@
 
         heatmapOptions.series = series;
         heatmapOptions.xaxis.categories = categories;
-        heatmapOptions.chart.height = document.documentElement.clientHeight - 55;
         myApexChart.updateOptions(heatmapOptions);
 
     }
@@ -561,9 +571,7 @@
         myApexChart.dataURI().then(function (uri) {
             javaConnector.saveImage(uri);
         }).catch(function (error) {
-            console.log('There has been a problem with your fetch operation: ' + error.message);
-            // ADD THIS THROW error
-            throw error;
+            javaConnector.showErrorWindow("Cannot download image:"+error.message);
         })
 
     }

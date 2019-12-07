@@ -103,9 +103,9 @@
 												<TextField fx:id="tfdParticipants" layoutX="6.0" layoutY="31.0" prefHeight="25.0" prefWidth="100.0" promptText="%label.filter" />
 												<Label layoutX="115.0" layoutY="35.0" text="%label.group" />
 												<Label layoutX="135.0" layoutY="5.0" text="%label.rol" />
-												<ChoiceBox fx:id="slcRole" layoutX="160.0" layoutY="5.0" maxWidth="88.0" minHeight="25.0" prefHeight="25.0" />
-												<ChoiceBox fx:id="slcGroup" layoutX="160.0" layoutY="35.0" maxWidth="88.0" minHeight="25.0" prefHeight="25.0" />
-                                    <ChoiceBox fx:id="slcActivity" layoutX="160.0" layoutY="65.0" maxWidth="88.0" minHeight="25.0" prefHeight="25.0" />
+												<ChoiceBox fx:id="slcRole" layoutX="160.0" layoutY="5.0" maxWidth="88.0" minHeight="25.0" minWidth="88.0" prefHeight="25.0" />
+												<ChoiceBox fx:id="slcGroup" layoutX="160.0" layoutY="35.0" maxWidth="88.0" minHeight="25.0" minWidth="88.0" prefHeight="25.0" />
+                                    <ChoiceBox fx:id="slcActivity" layoutX="160.0" layoutY="65.0" maxWidth="88.0" minHeight="25.0" minWidth="88.0" prefHeight="25.0" />
                                     <Label layoutX="48.0" layoutY="67.0" text="%label.activity" />
 											</children>
 										</Pane>
@@ -259,7 +259,7 @@
 								<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
 							</rowConstraints>
 							<children>
-								<ChoiceBox fx:id="choiceBoxDate" prefWidth="150.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" />
+								<ChoiceBox fx:id="choiceBoxDate" prefWidth="100.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" />
 								<DatePicker fx:id="datePickerStart" editable="false" showWeekNumbers="true" GridPane.columnIndex="3" GridPane.rowIndex="1" />
 								<Label text="%label.startdate" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
 								<Label text="%label.enddate" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />

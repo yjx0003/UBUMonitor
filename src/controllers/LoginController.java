@@ -142,7 +142,7 @@ public class LoginController implements Initializable {
 			LOGGER.info("Idioma de la aplicación: {}", newValue);
 			LOGGER.info("Idioma cargado del resource bundle: {}", I18n.getResourceBundle().getLocale());
 			LOGGER.info("[Bienvenido a " + AppInfo.APPLICATION_NAME + "]");
-			changeScene(getClass().getResource("/view/Login.fxml"));
+			changeScene(getClass().getResource("/view/Login.fxml"), null);
 		});
 
 	}
@@ -194,7 +194,7 @@ public class LoginController implements Initializable {
 			loginTask.setOnSucceeded(s -> {
 				saveProperties();
 				controller.getStage().getScene().setCursor(Cursor.DEFAULT);
-				changeScene(getClass().getResource("/view/Welcome.fxml"));
+				changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController());
 			});
 
 			loginTask.setOnFailed(e -> {
@@ -217,12 +217,15 @@ public class LoginController implements Initializable {
 	 *
 	 * @throws IOException
 	 */
-	private void changeScene(URL sceneFXML) {
+	private void changeScene(URL sceneFXML, Object fxmlController) {
 		try {
 
 			// Accedemos a la siguiente ventana
 			FXMLLoader loader = new FXMLLoader(sceneFXML, I18n.getResourceBundle());
-			loader.setController(new WelcomeController());
+			if (controller !=null) {
+				loader.setController(fxmlController);
+			}
+			
 			controller.getStage().close();
 			Stage stage = new Stage();
 			Parent root = loader.load();

@@ -121,15 +121,10 @@
               </tabs>
             </TabPane>
             <Label layoutX="70.0" layoutY="300.0" prefHeight="21.0" prefWidth="258.0" text="%label.lastupdate" />
-            <CheckBox fx:id="chkUpdateData" layoutX="70.0" layoutY="330.0" mnemonicParsing="false" text="%checkbox.updatedata" />
+            <CheckBox fx:id="chkUpdateData" disable="true" layoutX="70.0" layoutY="330.0" mnemonicParsing="false" text="%checkbox.updatedata" />
             <Label fx:id="lblDateUpdate" layoutX="300.0" layoutY="300.0" prefHeight="21.0" prefWidth="146.0" />
          </children>
       </AnchorPane>
-		<Label layoutX="310.0" layoutY="145.0" text="%label.selectcourse">
-			<font>
-				<Font size="15.0" />
-			</font>
-		</Label>
 		<Button fx:id="btnEntrar" layoutX="368.0" layoutY="530.0" mnemonicParsing="false" onAction="#enterCourse" prefHeight="39.0" prefWidth="86.0" style="-fx-font-size: 16;" styleClass="rich-blue" stylesheets="@/css/style.css" text="%btn.enter">
 			<font>
 				<Font size="19.0" />
@@ -138,10 +133,29 @@
 				<Cursor fx:constant="HAND" />
 			</cursor>
 		</Button>
-      <ProgressBar fx:id="progressBar" layoutX="340.0" layoutY="540.0" prefHeight="18.0" prefWidth="139.0" />
+      <ProgressBar fx:id="progressBar" layoutX="340.0" layoutY="540.0" prefHeight="18.0" prefWidth="139.0" visible="false" />
       <Label fx:id="lblProgress" alignment="CENTER" layoutX="136.0" layoutY="575.0" prefHeight="17.0" prefWidth="540.0" text="Progress" textAlignment="CENTER" visible="false">
          <font>
             <Font name="System Bold" size="12.0" />
          </font></Label>
+      <GridPane layoutX="310.0" layoutY="115.0" prefHeight="55.0" prefWidth="350.0">
+        <columnConstraints>
+          <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="164.0" minWidth="10.0" prefWidth="103.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="247.0" minWidth="10.0" prefWidth="237.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label contentDisplay="BOTTOM" text="%label.loggedin" />
+            <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" text="%label.host" GridPane.rowIndex="1" />
+            <Label fx:id="labelLoggedIn" text="Label" GridPane.columnIndex="1" />
+            <Label fx:id="labelHost" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+         </children>
+         <cursor>
+            <Cursor fx:constant="DEFAULT" />
+         </cursor>
+      </GridPane>
 	</children>
 </AnchorPane>

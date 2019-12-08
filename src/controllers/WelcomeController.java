@@ -107,6 +107,11 @@ public class WelcomeController implements Initializable {
 
 	@FXML
 	private TabPane tabPane;
+	
+	@FXML
+	private Label labelLoggedIn;
+	@FXML
+	private Label labelHost;
 
 	@FXML
 	private Label lblNoSelect;
@@ -145,11 +150,16 @@ public class WelcomeController implements Initializable {
 
 			lblUser.setText(controller.getUser().getFullName());
 			LOGGER.info("Cargando cursos...");
-
+			
+			progressBar.visibleProperty().bind(btnEntrar.visibleProperty().not());
+			anchorPane.disableProperty().bind(btnEntrar.visibleProperty().not());
+			lblProgress.visibleProperty().bind(btnEntrar.visibleProperty().not());
+			
+			labelLoggedIn.setText(controller.getLoggedIn().format(Controller.DATE_TIME_FORMATTER));
+			labelHost.setText(controller.getUrlHost().toString());
+			
 			initListViews();
 
-			progressBar.setVisible(false);
-			chkUpdateData.setDisable(true);
 
 			tabPane.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
 				ListView<Course> listView = (ListView<Course>) value.getContent();
@@ -158,7 +168,7 @@ public class WelcomeController implements Initializable {
 				lblDateUpdate.setText(null);
 			});
 			tabPane.getSelectionModel().select(Config.getProperty("courseList", 0));
-			anchorPane.disableProperty().bind(progressBar.visibleProperty());
+			
 
 			Platform.runLater(() -> {
 				ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem()
@@ -380,8 +390,7 @@ public class WelcomeController implements Initializable {
 		}
 
 		btnEntrar.setVisible(false);
-		lblProgress.setVisible(true);
-		progressBar.setVisible(true);
+		
 		Task<Void> task = getUserDataWorker();
 		lblProgress.textProperty().bind(task.messageProperty());
 		task.setOnSucceeded(v -> loadNextWindow());
@@ -468,8 +477,6 @@ public class WelcomeController implements Initializable {
 					throw new IllegalStateException();
 				} finally {
 					controller.getStage().getScene().setCursor(Cursor.DEFAULT);
-					progressBar.setVisible(false);
-					lblProgress.setVisible(false);
 					btnEntrar.setVisible(true);
 				}
 				return null;

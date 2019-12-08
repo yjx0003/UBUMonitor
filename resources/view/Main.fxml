@@ -111,7 +111,7 @@
 										</Pane>
 									</top>
 									<center>
-										<ListView fx:id="listParticipants" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+										<ListView fx:id="listParticipants" prefHeight="200.0" prefWidth="200.0" styleClass="list-view-class" BorderPane.alignment="CENTER">
 											<placeholder>
 												<Label text="%text.nousers" />
 											</placeholder>

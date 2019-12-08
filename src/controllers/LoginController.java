@@ -4,6 +4,7 @@ package controllers;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.ResourceBundle;
 
@@ -194,6 +195,7 @@ public class LoginController implements Initializable {
 			loginTask.setOnSucceeded(s -> {
 				saveProperties();
 				controller.getStage().getScene().setCursor(Cursor.DEFAULT);
+				controller.setLoggedIn(LocalDateTime.now());
 				changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController());
 			});
 

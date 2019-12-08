@@ -2,6 +2,7 @@ package controllers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
@@ -39,6 +40,7 @@ public class Controller {
 	private Timer timer;
 
 	private DataBase dataBase;
+	private LocalDateTime loggedIn;
 
 	private URL host;
 	private Stage stage;
@@ -356,6 +358,14 @@ public class Controller {
 
 	public void setSesskey(String sesskey) {
 		this.sesskey = sesskey;
+	}
+
+	public LocalDateTime getLoggedIn() {
+		return loggedIn;
+	}
+
+	public void setLoggedIn(LocalDateTime loggedIn) {
+		this.loggedIn = loggedIn;
 	}
 
 }

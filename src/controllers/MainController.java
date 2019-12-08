@@ -250,10 +250,10 @@ public class MainController implements Initializable {
 			userPhoto.setImage(controller.getUser().getUserPhoto());
 
 			// Mostramos Curso actual
-			lblActualCourse.setText(I18n.get("label.course") + " " + controller.getActualCourse().getFullName());
+			lblActualCourse.setText(controller.getActualCourse().getFullName());
 
 			// Mostramos Host actual
-			lblActualHost.setText(I18n.get("label.host") + " " + controller.getUrlHost());
+			lblActualHost.setText(controller.getUrlHost().toString());
 			ZonedDateTime lastLogDateTime = controller.getActualCourse().getLogs().getLastDatetime();
 			lblLastUpdate.setText(
 					I18n.get("label.lastupdate") + " " + lastLogDateTime.format(Controller.DATE_TIME_FORMATTER));

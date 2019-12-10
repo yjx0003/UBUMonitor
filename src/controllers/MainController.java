@@ -11,7 +11,9 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
@@ -230,7 +232,7 @@ public class MainController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		
+
 		try {
 			LOGGER.info("Completada la carga del curso {}", controller.getActualCourse().getFullName());
 
@@ -1116,7 +1118,9 @@ public class MainController implements Initializable {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Guardar gráfico");
 
-		fileChooser.setInitialFileName(javaConnector.getCurrentType().getChartType() + ".png");
+		fileChooser.setInitialFileName(String.format("%s_%s_%s.png", controller.getActualCourse().getId(),
+				LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
+				javaConnector.getCurrentType().getChartType()));
 		fileChooser.setInitialDirectory(new File(Config.getProperty("imageFolderPath", "./")));
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(".png", "*.png"));
 		try {
@@ -1191,11 +1195,11 @@ public class MainController implements Initializable {
 	private void changeScene(URL sceneFXML, Object controllerObject) {
 		try {
 			FXMLLoader loader = new FXMLLoader(sceneFXML, I18n.getResourceBundle());
-			
+
 			if (controllerObject != null) {
 				loader.setController(controllerObject);
 			}
-			
+
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
 			controller.getStage().close();
@@ -1210,7 +1214,7 @@ public class MainController implements Initializable {
 			LOGGER.error("Error al modifcar la ventana de JavaFX: {}", e);
 		}
 	}
-	
+
 	private void changeScene(URL sceneFXML) {
 		changeScene(sceneFXML, null);
 	}

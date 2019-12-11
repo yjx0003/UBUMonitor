@@ -1,18 +1,29 @@
 package controllers.charts;
 
 import controllers.JavaConnector.ChartType;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import controllers.MainController;
 import controllers.ubulogs.GroupByAbstract;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.web.WebEngine;
 import model.Component;
 import model.ComponentEvent;
 import model.CourseModule;
 import model.EnrolledUser;
+import model.GradeItem;
 import model.Section;
+import model.Stats;
+import util.UtilMethods;
 
 public abstract class Chart {
 	protected WebEngine webViewChartsEngine;
@@ -42,11 +53,17 @@ public abstract class Chart {
 	protected DatePicker datePickerStart;
 
 	protected DatePicker datePickerEnd;
-	
+
+	protected TreeView<GradeItem> tvwGradeReport;
+
+	protected Stats stats;
+
 	protected ChartType chartType;
 	
+	
+
 	public Chart(MainController mainController, ChartType chartType) {
-		
+
 		this.webViewChartsEngine = mainController.getWebViewChartsEngine();
 		this.listParticipants = mainController.getListParticipants();
 		this.tabUbuLogs = mainController.getTabUbuLogs();
@@ -61,22 +78,57 @@ public abstract class Chart {
 		this.choiceBoxDate = mainController.getChoiceBoxDate();
 		this.datePickerStart = mainController.getDatePickerStart();
 		this.datePickerEnd = mainController.getDatePickerEnd();
+		this.stats = mainController.getStats();
+		this.tvwGradeReport = mainController.getTvwGradeReport();
 		this.chartType = chartType;
 	}
-	
-	
+
 	public ChartType getChartType() {
 		return chartType;
 	}
-
 
 	public void setChartType(ChartType chartType) {
 		this.chartType = chartType;
 	}
 
+	public List<EnrolledUser> getSelectedEnrolledUser() {
+		List<EnrolledUser> selectedUsers = new ArrayList<>(listParticipants.getSelectionModel().getSelectedItems());
+		selectedUsers.removeAll(Collections.singletonList(null));
+		return selectedUsers;
+	}
+
+	public int onClick(int index) {
+
+		if (listParticipants.getSelectionModel().getSelectedItems().size() < index) {
+			return -1;
+		}
+
+		EnrolledUser selectedUser = listParticipants.getSelectionModel().getSelectedItems().get(index);
+		return listParticipants.getItems().indexOf(selectedUser);
+	}
+
+	public <T> String rgba(T hash, double alpha) {
+		return "colorRGBA('" + UtilMethods.escapeJavaScriptText(hash.toString()) + "'," + alpha + ")";
+	}
+
+	public <T> String rgb(T hash) {
+		return "colorRGB('" + UtilMethods.escapeJavaScriptText(hash.toString()) + "')";
+	}
+
+	public <T> String hex(T hash) {
+		return "colorHEX('" + UtilMethods.escapeJavaScriptText(hash.toString()) + "')";
+	}
+
+	public List<GradeItem> getSelectedGradeItems() {
+		return tvwGradeReport.getSelectionModel().getSelectedItems().stream().map(TreeItem::getValue)
+				.collect(Collectors.toList());
+	}
 
 	public abstract void update();
+
 	public abstract void clear();
+
 	public abstract void hideLegend();
+
 	public abstract String export();
 }

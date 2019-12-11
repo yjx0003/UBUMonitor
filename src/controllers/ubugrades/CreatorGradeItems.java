@@ -374,10 +374,12 @@ public class CreatorGradeItems {
 		double percentage = Double.NaN;
 		if (percentageJson != null) {
 			String content = percentageJson.optString(CONTENT);
-			try {
-				percentage = decimalFormat.parse(content).doubleValue();
-			} catch (ParseException e) {
-				LOGGER.warn("No se puede parsear {} a decimal", content);
+			if (!"-".equals(content)) {
+				try {
+					percentage = decimalFormat.parse(content).doubleValue();
+				} catch (ParseException e) {
+					LOGGER.warn("No se puede parsear {} a decimal", content);
+				}
 			}
 		}
 		gradeItem.addUserPercentage(enrolledUser, percentage);

@@ -12,11 +12,14 @@ import javax.xml.bind.DatatypeConverter;
 
 import controllers.charts.Chart;
 import controllers.charts.Heatmap;
+import controllers.charts.Line;
+import controllers.charts.Radar;
 import controllers.charts.Stackedbar;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.concurrent.Worker.State;
 import javafx.scene.control.Tab;
 import javafx.scene.web.WebEngine;
-import model.EnrolledUser;
 
 public class JavaConnector {
 
@@ -35,17 +38,29 @@ public class JavaConnector {
 	private File file;
 
 	private MainController mainController;
+	
+	private BooleanProperty showMean;
+
+	private static final ChartType DEFAULT_LOG_CHART = ChartType.STACKED_BAR;
+	private static final ChartType DEFAULT_GRADE_CHART = ChartType.LINE;
 
 	public JavaConnector(MainController mainController) {
-
+		
+		showMean = new SimpleBooleanProperty(true);
 		this.mainController = mainController;
 		webViewChartsEngine = mainController.getWebViewChartsEngine();
 		tabLogs = mainController.getTabUbuLogs();
 		tabGrades = mainController.getTabUbuGrades();
 
 		mapChart = new EnumMap<>(ChartType.class);
-		mapChart.put(ChartType.HEAT_MAP, new Heatmap(mainController));
-		mapChart.put(ChartType.STACKED_BAR, new Stackedbar(mainController));
+		addChart(new Heatmap(mainController));
+		addChart(new Stackedbar(mainController));
+		addChart(new Line(mainController));
+		addChart(new Radar(mainController));
+	}
+	
+	private void addChart(Chart chart) {
+		mapChart.put(chart.getChartType(), chart);
 	}
 
 	public void updateChart(Chart chart) {
@@ -133,8 +148,8 @@ public class JavaConnector {
 	}
 
 	public void setDefaultValues() {
-		setCurrentTypeLogs(ChartType.STACKED_BAR);
-		setCurrentTypeGrades(ChartType.LINE);
+		setCurrentTypeLogs(DEFAULT_LOG_CHART);
+		setCurrentTypeGrades(DEFAULT_GRADE_CHART);
 		if (tabLogs.isSelected()) {
 			webViewChartsEngine.executeScript("manageButtons('" + "log" + "')");
 
@@ -144,6 +159,7 @@ public class JavaConnector {
 
 			setCurrentType(getCurrentTypeGrades());
 		}
+		
 
 	}
 
@@ -164,12 +180,21 @@ public class JavaConnector {
 	}
 
 	public void dataPointSelection(int selectedIndex) {
-		
-		EnrolledUser selectedUser = mainController.getListParticipants().getSelectionModel().getSelectedItems().get(selectedIndex);
-		int index = mainController.getListParticipants().getItems().indexOf(selectedUser);
-		mainController.getListParticipants().scrollTo(index);
-		mainController.getListParticipants().getFocusModel().focus(index);
 
+		int index = currentType.onClick(selectedIndex);
+		if (index >= 0) {
+			mainController.getListParticipants().scrollTo(index);
+			mainController.getListParticipants().getFocusModel().focus(index);
+		}
+
+	}
+
+	public boolean getShowMean() {
+		return showMean.getValue();
+	}
+
+	public void setShowMean(boolean showMean) {
+		this.showMean.setValue(showMean);
 	}
 
 }

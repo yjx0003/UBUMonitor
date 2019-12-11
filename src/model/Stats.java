@@ -79,12 +79,12 @@ public class Stats implements Serializable {
 			DescriptiveStatistics descriptive = new DescriptiveStatistics();
 			generalGradesStats.put(gradeItem, descriptive);
 
-			for (double grade : gradeItem.getEnrolledUserGrades()) {
+			for (double percentage : gradeItem.getEnrolledUserPercentages()) {
 
-				double gradeAdjustedTo10 = gradeItem.adjustTo10(grade);
 
-				if (!Double.isNaN(gradeAdjustedTo10)) {
-					descriptive.addValue(gradeAdjustedTo10);
+
+				if (!Double.isNaN(percentage)) {
+					descriptive.addValue(percentage);
 				}
 			}
 
@@ -112,9 +112,9 @@ public class Stats implements Serializable {
 				DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
 				mapGradeItems.put(gradeItem, descriptiveStatistics);
 				for (EnrolledUser user : group.getEnrolledUsers()) {
-					double grade = gradeItem.adjustTo10(user);
-					if (!Double.isNaN(grade)) {
-						descriptiveStatistics.addValue(grade);
+					double percentage = gradeItem.getEnrolledUserPercentage(user);
+					if (!Double.isNaN(percentage)) {
+						descriptiveStatistics.addValue(percentage);
 					}
 				}
 

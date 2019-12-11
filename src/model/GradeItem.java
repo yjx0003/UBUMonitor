@@ -321,8 +321,8 @@ public class GradeItem implements Serializable {
 	 * 
 	 * @return devuelve todas las notas de los usuario
 	 */
-	public Collection<Double> getEnrolledUserGrades() {
-		return graderaw.values();
+	public Collection<Double> getEnrolledUserPercentages() {
+		return percentages.values();
 	}
 	
 	

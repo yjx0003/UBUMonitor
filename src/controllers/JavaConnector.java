@@ -10,13 +10,12 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 
+import controllers.charts.Buttons;
 import controllers.charts.Chart;
 import controllers.charts.Heatmap;
 import controllers.charts.Line;
 import controllers.charts.Radar;
 import controllers.charts.Stackedbar;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.concurrent.Worker.State;
 import javafx.scene.control.Tab;
 import javafx.scene.web.WebEngine;
@@ -39,18 +38,20 @@ public class JavaConnector {
 
 	private MainController mainController;
 	
-	private BooleanProperty showMean;
+	private Buttons buttons;
 
 	private static final ChartType DEFAULT_LOG_CHART = ChartType.STACKED_BAR;
 	private static final ChartType DEFAULT_GRADE_CHART = ChartType.LINE;
 
 	public JavaConnector(MainController mainController) {
 		
-		showMean = new SimpleBooleanProperty(true);
+		
 		this.mainController = mainController;
 		webViewChartsEngine = mainController.getWebViewChartsEngine();
 		tabLogs = mainController.getTabUbuLogs();
 		tabGrades = mainController.getTabUbuGrades();
+		
+	    buttons = Buttons.getInstance();
 
 		mapChart = new EnumMap<>(ChartType.class);
 		addChart(new Heatmap(mainController));
@@ -159,7 +160,9 @@ public class JavaConnector {
 
 			setCurrentType(getCurrentTypeGrades());
 		}
-		
+		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnLegend", buttons.getShowLegend()));
+		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnMean", buttons.getShowMean()));
+		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnGroupMean", buttons.getShowGroupMean()));
 
 	}
 
@@ -189,12 +192,22 @@ public class JavaConnector {
 
 	}
 
-	public boolean getShowMean() {
-		return showMean.getValue();
+	public boolean swapLegend() {
+		return buttons.swapLegend();
+	}
+	
+	public boolean getShowLegend() {
+		return buttons.getShowLegend();
+	}
+	
+	public boolean swapMean() {
+		return buttons.swapMean();
+	}
+	
+	public boolean swapGroupMean() {
+		return buttons.swapGroupMean();
 	}
 
-	public void setShowMean(boolean showMean) {
-		this.showMean.setValue(showMean);
-	}
+
 
 }

@@ -64,7 +64,7 @@ public class Heatmap extends ApexCharts {
 		LOGGER.info("Dataset para el heatmap en JS: {}", heatmapdataset);
 		LOGGER.info("Categorias del heatmap en JS: {}", categories);
 
-		webViewChartsEngine.executeScript(String.format("updateHeatmap(%s,%s)", categories, heatmapdataset));
+		webViewChartsEngine.executeScript(String.format("updateApexCharts(%s,%s, %s)", heatmapdataset, categories, "heatmapOptions"));
 	}
 
 

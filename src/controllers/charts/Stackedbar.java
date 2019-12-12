@@ -7,6 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.Controller;
 import controllers.JavaConnector.ChartType;
 import controllers.MainController;
 import controllers.datasets.DataSetComponent;
@@ -27,7 +28,6 @@ public class Stackedbar extends Chartjs {
 	private StackedBarDataSet<ComponentEvent> stackedBarEvent = new StackedBarDataSet<>();
 	private StackedBarDataSet<Section> stackedBarSection = new StackedBarDataSet<>();
 	private StackedBarDataSet<CourseModule> stackedBarCourseModule = new StackedBarDataSet<>();
-	
 
 	public Stackedbar(MainController mainController) {
 		super(mainController, ChartType.STACKED_BAR);
@@ -39,7 +39,6 @@ public class Stackedbar extends Chartjs {
 		String stackedbardataset = null;
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		List<EnrolledUser> enrolledUsers = new ArrayList<>(listParticipants.getItems());
-		
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
@@ -49,17 +48,17 @@ public class Stackedbar extends Chartjs {
 			stackedbardataset = stackedBarComponent.createData(enrolledUsers, selectedUsers,
 					listViewComponents.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart,
 					dateEnd, DataSetComponent.getInstance());
-			
+
 		} else if (tabUbuLogsEvent.isSelected()) {
 			stackedbardataset = stackedBarEvent.createData(enrolledUsers, selectedUsers,
 					listViewEvents.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart, dateEnd,
 					DataSetComponentEvent.getInstance());
-			
+
 		} else if (tabUbuLogsSection.isSelected()) {
 			stackedbardataset = stackedBarSection.createData(enrolledUsers, selectedUsers,
 					listViewSection.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart,
 					dateEnd, DataSetSection.getInstance());
-			
+
 		} else if (tabUbuLogsCourseModule.isSelected()) {
 			stackedbardataset = stackedBarCourseModule.createData(enrolledUsers, selectedUsers,
 					listViewCourseModule.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart,
@@ -68,18 +67,15 @@ public class Stackedbar extends Chartjs {
 
 		LOGGER.info("Dataset para el stacked bar en JS: {}", stackedbardataset);
 
-		webViewChartsEngine.executeScript(
-				String.format("updateStackedChart(%s)", stackedbardataset));
+		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", stackedbardataset, "stackedbarOptions"));
 
 	}
-	
-	
+
 	@Override
-	public int onClick(int index) {
-		
-		return -1;
+	public int onClick(int userid) {
+
+		EnrolledUser user = Controller.getInstance().getDataBase().getUsers().getById(userid);
+		return listParticipants.getItems().indexOf(user);
 	}
-
-
 
 }

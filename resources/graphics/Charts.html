@@ -41,6 +41,7 @@
 
 <script type="text/javascript">
     //------------------------------------------Opciones para los graficos------------------------------------------------------------------
+    
     Chart.defaults.global.animation.duration = 0;
     Chart.defaults.global.elements.line.fill = false;
     Chart.defaults.global.maintainAspectRatio = false;
@@ -48,13 +49,14 @@
     Chart.defaults.global.legend.labels.usePointStyle = true;
     Chart.defaults.global.legend.position = "bottom";
     Chart.defaults.global.onClick = function (event, array) {
-        let element = myChart.getElementAtEvent(event)[0];
-        if (element) {
-
-            javaConnector.dataPointSelection(element._datasetIndex);
+        let element = myChart.getElementsAtEventForMode(event, "point", {intersect: false});
+        if (element.length>0) {
+			
+            javaConnector.dataPointSelection(element[counter % element.length]._datasetIndex);
+            counter++;
         }
     };
-
+	var counter = 0;
     var height = "93%";
 
     var stackedbarOptions = {

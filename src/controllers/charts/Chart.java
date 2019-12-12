@@ -1,12 +1,12 @@
 package controllers.charts;
 
-import controllers.JavaConnector.ChartType;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import controllers.JavaConnector.ChartType;
 import controllers.MainController;
 import controllers.ubulogs.GroupByAbstract;
 import javafx.scene.control.ChoiceBox;
@@ -59,7 +59,6 @@ public abstract class Chart {
 	protected Stats stats;
 
 	protected ChartType chartType;
-	
 	
 
 	public Chart(MainController mainController, ChartType chartType) {
@@ -120,7 +119,10 @@ public abstract class Chart {
 	}
 
 	public List<GradeItem> getSelectedGradeItems() {
-		return tvwGradeReport.getSelectionModel().getSelectedItems().stream().map(TreeItem::getValue)
+		return tvwGradeReport.getSelectionModel().getSelectedItems()
+				.stream()
+				.filter(Objects::nonNull)
+				.map(TreeItem::getValue)
 				.collect(Collectors.toList());
 	}
 

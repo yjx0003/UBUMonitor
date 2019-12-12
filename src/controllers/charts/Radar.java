@@ -1,22 +1,29 @@
 package controllers.charts;
 
-import controllers.MainController;
+import java.util.List;
+
 import controllers.JavaConnector.ChartType;
+import controllers.MainController;
+import model.GradeItem;
 
 public class Radar extends Chartjs {
 
+	private static final GradeItem DUMMY = new GradeItem("");
+
 	public Radar(MainController mainController) {
 		super(mainController, ChartType.RADAR);
-		
+
 	}
 
 	@Override
 	public void update() {
-		
-		String dataset = createDataset(getSelectedEnrolledUser(), getSelectedGradeItems(),
-				stats, false);
-		
-		webViewChartsEngine.executeScript("updateRadar("+dataset+")");
+		List<GradeItem> gradeItems = getSelectedGradeItems();
+		for (int i = gradeItems.size(); i < 3; i++) {
+			gradeItems.add(DUMMY);
+		}
+		String dataset = createDataset(getSelectedEnrolledUser(), gradeItems, stats, false);
+
+		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, "radarOptions"));
 	}
 
 }

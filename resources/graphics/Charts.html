@@ -11,6 +11,7 @@
     <script type="text/javascript" src="./lib/html2canvas.js"></script>
     <script type="text/javascript" src="./messages.js"></script>
     <script type="text/javascript" src="./lib/apexcharts.js"></script>
+    <script type="text/javascript" src="./lib/chartjs-chart-box-and-violin-plot.js"></script>
 </head>
 
 <div class="controles">
@@ -41,32 +42,39 @@
 
 <script type="text/javascript">
     //------------------------------------------Opciones para los graficos------------------------------------------------------------------
-    
+
     Chart.defaults.global.animation.duration = 0;
     Chart.defaults.global.elements.line.fill = false;
+    Chart.defaults.global.elements.line.tension = 0;
     Chart.defaults.global.maintainAspectRatio = false;
     Chart.defaults.global.hover.animationDuration = 0;
     Chart.defaults.global.legend.labels.usePointStyle = true;
-    Chart.defaults.global.legend.position = "bottom";
+    Chart.defaults.global.legend.position = "top";
     Chart.defaults.global.onClick = function (event, array) {
-        let element = myChart.getElementsAtEventForMode(event, "point", {intersect: false});
-        if (element.length>0) {
-			
+        let element = myChart.getElementsAtEventForMode(event, "point", { intersect: false });
+        if (element.length > 0) {
             javaConnector.dataPointSelection(element[counter % element.length]._datasetIndex);
             counter++;
         }
     };
-	var counter = 0;
+
+    Chart.defaults.scale.ticks.beginAtZero = true;
+    Chart.defaults.scale.ticks.stepSize = 1;
+    Chart.defaults.scale.ticks.suggestedMax = 10;
+    Chart.defaults.scale.ticks.min = 0;
+    Chart.defaults.scale.autoSkip =  true;
+
+    var counter = 0;
     var height = "93%";
 
     var stackedbarOptions = {
-    	tab: "log_tabs",
-    	button: "btnStackedBar",
-    	typeGraph: "bar",
-    	useLegend: true,
-    	useGeneralMean: false,
-    	useGroupMean: false,
-    	
+        tab: "log_tabs",
+        button: "btnStackedBar",
+        typeGraph: "bar",
+        useLegend: true,
+        useGeneralMean: false,
+        useGroupMean: false,
+
         tooltips: {
             position: 'nearest',
             mode: 'x',
@@ -85,8 +93,12 @@
             yAxes: [{
                 stacked: true,
                 ticks: {
-                    beginAtZero: true,
-                    min: 0,
+                    stepSize: 0,
+                }
+            }],
+            xAxes: [{
+                ticks: {
+                    maxTicksLimit: 20
                 }
             }]
         },
@@ -110,11 +122,11 @@
 
     heatmapOptions = {
         tab: "log_tabs",
-    	button: "btnHeatmap",
-    	typeGraph: "heatmap",
-    	useLegend: false,
-    	useGeneralMean: false,
-    	useGroupMean: false,
+        button: "btnHeatmap",
+        typeGraph: "heatmap",
+        useLegend: false,
+        useGeneralMean: false,
+        useGroupMean: false,
 
         tooltip: {
             x: {
@@ -164,7 +176,7 @@
             }
         },
         legend: {
-            position: 'bottom'
+            position: 'top'
         },
         chart: {
             type: "heatmap",
@@ -204,42 +216,55 @@
 
     var lineOptions = {
         tab: "grade_tabs",
-    	button: "btnLine",
-    	typeGraph: "line",
-    	useLegend: true,
-    	useGeneralMean: true,
-    	useGroupMean: false,
-        scales: {
-            yAxes: [{
-                ticks: {
-                    max: 10,
-                    stepSize: 1,
-                    beginAtZero: true,
-                    min: 0,
-                }
-            }]
-        }
+        button: "btnLine",
+        typeGraph: "line",
+        useLegend: true,
+        useGeneralMean: true,
+        useGroupMean: true,
+
 
 
     }
 
     var radarOptions = {
         tab: "grade_tabs",
-    	button: "btnRadar",
-    	typeGraph: "radar",
-    	useLegend: true,
-    	useGeneralMean: false,
-    	useGroupMean: false,
+        button: "btnRadar",
+        typeGraph: "radar",
+        useLegend: true,
+        useGeneralMean: true,
+        useGroupMean: true,
         scale: {
-            ticks: {
-                max: 10,
-                stepSize: 1,
-                beginAtZero: true,
-                min: 0,
-            }//ticks
-        }, //scales
+            gridLines: {
+                color: ['red', 'red', 'red', 'red', 'green', 'green', 'green', 'green', 'green', 'green']
+            }
+        }
 
     } //options
+    var boxplotOptions = {
+        tab: "grade_tabs",
+        button: "btnBoxPlot",
+        typeGraph: "boxplot",
+        useLegend: true,
+        useGeneralMean: true,
+        useGroupMean: true,
+
+        tooltipDecimals: 2
+
+
+    }
+
+    var boxplotGroupOptions = {
+        tab: "grade_tabs",
+        button: "btnBoxPlotGroup",
+        typeGraph: "boxplot",
+        useLegend: true,
+        useGeneralMean: true,
+        useGroupMean: true,
+
+        tooltipDecimals: 2
+
+
+    }
 
     //------------------------------------------Variables globales-------------------------------------------------------------
 
@@ -261,40 +286,40 @@
     var myApexChart = new ApexCharts(document.getElementById('apexchartsDiv'), heatmapOptions);
     myApexChart.render();
 
-    
+
 
 
     //------------------------------------------Funciones------------------------------------------------------------------
 
 
-	function imageButton(id, value){
-		if (value) {
+    function imageButton(id, value) {
+        if (value) {
             document.getElementById(id).style.backgroundImage = 'url(./../img/visibility.png)';
 
         } else {
             document.getElementById(id).style.backgroundImage = 'url(./../img/visibility_off.png)';
         }
-	}
+    }
 
     function displayLegendButton(value) {
-        document.getElementById('btnLegend').style.display = value ? "inline": "none";
+        document.getElementById('btnLegend').style.display = value ? "inline" : "none";
     }
 
     function displayGroupButton(value) {
-        document.getElementById('btnGroupMean').style.display = value ? "inline": "none";
+        document.getElementById('btnGroupMean').style.display = value ? "inline" : "none";
     }
 
     function displayGeneralButton(value) {
-        document.getElementById('btnMean').style.display = value ? "inline": "none";
+        document.getElementById('btnMean').style.display = value ? "inline" : "none";
     }
 
     function displayApexChart(value) {
-        document.getElementById('apexchartsDiv').style.display = value ? "block": "none";
+        document.getElementById('apexchartsDiv').style.display = value ? "block" : "none";
     }
 
 
     function displayChartjs(value) {
-        document.getElementById('chart-container').style.display = value ? "block": "none";
+        document.getElementById('chart-container').style.display = value ? "block" : "none";
     }
 
 
@@ -354,8 +379,8 @@
     function updateChartjs(dataset, options) {
         displayApexChart(false);
         displayChartjs(true);
-        
-		disableTab(options.tab, options.button);
+
+        disableTab(options.tab, options.button);
 
         displayLegendButton(options.useLegend);
         displayGroupButton(options.useGroupMean);
@@ -457,12 +482,18 @@
         legendActive = javaConnector.swapLegend();
         imageButton("btnLegend", legendActive);
     }
-    
-    function showGeneralMean(){
-		mean = javaConnector.swapMean();
-		imageButton("btnMean", mean);
-		javaConnector.updateChart();
-	}
+
+    function showGeneralMean() {
+        mean = javaConnector.swapMean();
+        imageButton("btnMean", mean);
+        javaConnector.updateChart();
+    }
+
+    function showGroupMean() {
+        mean = javaConnector.swapGroupMean();
+        imageButton("btnGroupMean", mean);
+        javaConnector.updateChart();
+    }
 
     function hideLegendChartjs() {
         hideLegend();

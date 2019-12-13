@@ -20,7 +20,7 @@ public abstract class Chartjs extends Chart{
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(Chartjs.class);
 
-	private static final double OPACITY = 0.2;
+	
 	
 	public Chartjs(MainController mainController, ChartType chartType) {
 		super(mainController, chartType);
@@ -43,9 +43,9 @@ public abstract class Chartjs extends Chart{
 		return (String) webViewChartsEngine.executeScript("exportChartjs()");
 	}
 	
-	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems, Stats stats, boolean withMean) {
+	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems, Stats stats, boolean withMean, boolean withGroupMean) {
 		StringBuilder stringBuilder = new StringBuilder();
-		Map<GradeItem, DescriptiveStatistics> descriptiveStats = stats.getGeneralStats();
+		
 
 		stringBuilder.append("{labels:[");
 		stringBuilder.append(UtilMethods.joinWithQuotes(selectedGradeItems));
@@ -69,6 +69,21 @@ public abstract class Chartjs extends Chart{
 			stringBuilder.append("backgroundColor:" + rgba(I18n.get("chartlabel.generalMean"), OPACITY) + ",");
 			stringBuilder.append("hidden: "+!Buttons.getInstance().getShowMean()+ ",");
 			stringBuilder.append("data:[");
+			Map<GradeItem, DescriptiveStatistics> descriptiveStats = stats.getGeneralStats();
+			for (GradeItem gradeItem : selectedGradeItems) {
+				double grade = descriptiveStats.get(gradeItem).getMean();
+				stringBuilder.append(adjustTo10(grade) + ",");
+			}
+			stringBuilder.append("]},");
+		}
+		
+		if (withGroupMean && slcGroup.getValue() != null) {
+			stringBuilder.append("{label:'" + UtilMethods.escapeJavaScriptText(I18n.get("chartlabel.groupMean")) + "',");
+			stringBuilder.append("borderColor:" + hex(I18n.get("chartlabel.groupMean")) + ",");
+			stringBuilder.append("backgroundColor:" + rgba(I18n.get("chartlabel.groupMean"), OPACITY) + ",");
+			stringBuilder.append("hidden: "+!Buttons.getInstance().getShowGroupMean()+ ",");
+			stringBuilder.append("data:[");
+			Map<GradeItem, DescriptiveStatistics> descriptiveStats = stats.getGroupStats(slcGroup.getValue());
 			for (GradeItem gradeItem : selectedGradeItems) {
 				double grade = descriptiveStats.get(gradeItem).getMean();
 				stringBuilder.append(adjustTo10(grade) + ",");

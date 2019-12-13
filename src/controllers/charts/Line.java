@@ -15,7 +15,7 @@ public class Line extends Chartjs {
 	public void update() {
 
 		String dataset = createDataset(getSelectedEnrolledUser(), getSelectedGradeItems(),
-				stats, true);
+				stats, true, true);
 		
 		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, "lineOptions"));
 	}

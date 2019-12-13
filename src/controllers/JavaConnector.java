@@ -12,6 +12,8 @@ import javax.xml.bind.DatatypeConverter;
 
 import controllers.charts.Buttons;
 import controllers.charts.Chart;
+import controllers.charts.GeneralBoxPlot;
+import controllers.charts.GroupBoxPlot;
 import controllers.charts.Heatmap;
 import controllers.charts.Line;
 import controllers.charts.Radar;
@@ -23,7 +25,9 @@ import javafx.scene.web.WebEngine;
 public class JavaConnector {
 
 	private WebEngine webViewChartsEngine;
+	
 	private Tab tabLogs;
+	
 	private Tab tabGrades;
 
 	private Chart currentTypeLogs;
@@ -58,6 +62,8 @@ public class JavaConnector {
 		addChart(new Stackedbar(mainController));
 		addChart(new Line(mainController));
 		addChart(new Radar(mainController));
+		addChart(new GeneralBoxPlot(mainController));
+		addChart(new GroupBoxPlot(mainController));
 	}
 	
 	private void addChart(Chart chart) {

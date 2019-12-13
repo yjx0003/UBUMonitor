@@ -21,49 +21,37 @@ import model.ComponentEvent;
 import model.CourseModule;
 import model.EnrolledUser;
 import model.GradeItem;
+import model.Group;
 import model.Section;
 import model.Stats;
 import util.UtilMethods;
 
 public abstract class Chart {
 	protected WebEngine webViewChartsEngine;
-
+	protected ChoiceBox<Group> slcGroup;
 	protected ListView<EnrolledUser> listParticipants;
-
 	protected Tab tabUbuLogs;
-
 	protected Tab tabUbuLogsComponent;
-
 	protected Tab tabUbuLogsEvent;
-
 	protected Tab tabUbuLogsSection;
-
 	protected Tab tabUbuLogsCourseModule;
-
 	protected ListView<Component> listViewComponents;
-
 	protected ListView<ComponentEvent> listViewEvents;
-
 	protected ListView<Section> listViewSection;
-
 	protected ListView<CourseModule> listViewCourseModule;
-
 	protected ChoiceBox<GroupByAbstract<?>> choiceBoxDate;
-
 	protected DatePicker datePickerStart;
-
 	protected DatePicker datePickerEnd;
-
 	protected TreeView<GradeItem> tvwGradeReport;
-
 	protected Stats stats;
-
 	protected ChartType chartType;
 	
+	protected static final double OPACITY = 0.2;
 
 	public Chart(MainController mainController, ChartType chartType) {
 
 		this.webViewChartsEngine = mainController.getWebViewChartsEngine();
+		this.slcGroup = mainController.getSlcGroup();
 		this.listParticipants = mainController.getListParticipants();
 		this.tabUbuLogs = mainController.getTabUbuLogs();
 		this.tabUbuLogsComponent = mainController.getTabUbuLogsComponent();
@@ -119,11 +107,8 @@ public abstract class Chart {
 	}
 
 	public List<GradeItem> getSelectedGradeItems() {
-		return tvwGradeReport.getSelectionModel().getSelectedItems()
-				.stream()
-				.filter(Objects::nonNull)
-				.map(TreeItem::getValue)
-				.collect(Collectors.toList());
+		return tvwGradeReport.getSelectionModel().getSelectedItems().stream().filter(Objects::nonNull)
+				.map(TreeItem::getValue).collect(Collectors.toList());
 	}
 
 	public abstract void update();

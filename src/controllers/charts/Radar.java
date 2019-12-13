@@ -21,7 +21,7 @@ public class Radar extends Chartjs {
 		for (int i = gradeItems.size(); i < 3; i++) {
 			gradeItems.add(DUMMY);
 		}
-		String dataset = createDataset(getSelectedEnrolledUser(), gradeItems, stats, false);
+		String dataset = createDataset(getSelectedEnrolledUser(), gradeItems, stats, true, true);
 
 		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, "radarOptions"));
 	}

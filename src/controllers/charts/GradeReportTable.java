@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import controllers.I18n;
 import controllers.MainController;
@@ -14,7 +16,9 @@ import model.Group;
 import util.UtilMethods;
 
 public class GradeReportTable extends Tabulator {
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(GradeReportTable.class);
+	
+	
 	public GradeReportTable(MainController mainController) {
 		super(mainController, ChartType.GRADE_REPORT_TABLE);
 		useGeneralButton = true;
@@ -29,7 +33,11 @@ public class GradeReportTable extends Tabulator {
 		List<GradeItem> gradeItems = getSelectedGradeItems();
 		String columns = createColumns(gradeItems);
 		String data = createData(enrolledUsers, gradeItems);
+		LOGGER.debug("Usuarios seleccionados:{}", enrolledUsers);
+		LOGGER.debug("Columnas:{}", columns);
+		LOGGER.debug("Datos de tabla:{}", data);
 		webViewChartsEngine.executeScript(String.format("updateTabulator(%s, %s, %s)", columns, data, optionsVar));
+		
 	}
 
 	public String createColumns(List<GradeItem> gradeItems) {

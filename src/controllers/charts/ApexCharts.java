@@ -1,14 +1,12 @@
 package controllers.charts;
 
-import controllers.JavaConnector.ChartType;
 import controllers.MainController;
 
 public abstract class ApexCharts extends Chart {
-	private String optionsVar;
+	
 
-	public ApexCharts(MainController mainController, ChartType chartType, String optionsVar) {
+	public ApexCharts(MainController mainController, ChartType chartType) {
 		super(mainController, chartType);
-		this.optionsVar = optionsVar;
 	}
 
 	@Override

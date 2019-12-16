@@ -2,7 +2,6 @@ package controllers.charts;
 
 import java.util.List;
 
-import controllers.JavaConnector.ChartType;
 import controllers.MainController;
 import model.GradeItem;
 
@@ -12,18 +11,18 @@ public class Radar extends Chartjs {
 
 	public Radar(MainController mainController) {
 		super(mainController, ChartType.RADAR);
-
+		useGeneralButton = true;
+		useGroupButton = true;
+		optionsVar = "radarOptions";
 	}
 
 	@Override
-	public void update() {
-		List<GradeItem> gradeItems = getSelectedGradeItems();
+	public List<GradeItem> getSelectedGradeItems() {
+		List<GradeItem> gradeItems = super.getSelectedGradeItems();
 		for (int i = gradeItems.size(); i < 3; i++) {
 			gradeItems.add(DUMMY);
 		}
-		String dataset = createDataset(getSelectedEnrolledUser(), gradeItems, stats, true, true);
-
-		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, "radarOptions"));
+		return gradeItems;
 	}
 
 }

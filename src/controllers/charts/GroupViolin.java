@@ -11,13 +11,13 @@ import model.GradeItem;
 import model.Group;
 import util.UtilMethods;
 
-public class GroupBoxPlot extends Chartjs {
+public class GroupViolin extends Chartjs {
 
-	public GroupBoxPlot(MainController mainController) {
-		super(mainController, ChartType.GROUP_BOXPLOT);
+	public GroupViolin(MainController mainController) {
+		super(mainController, ChartType.GROUP_VIOLIN);
 		useGeneralButton = true;
 		useGroupButton = true;
-		optionsVar = "boxplotGroupOptions";
+		optionsVar = "violinGroupOptions";
 	}
 
 	@Override
@@ -67,10 +67,17 @@ public class GroupBoxPlot extends Chartjs {
 
 		for (GradeItem gradeItem : selectedGradeItems) {
 			stringBuilder.append("[");
+			boolean hasNonNaN = false;
 			for (EnrolledUser user : selectedUser) {
 				double grade = gradeItem.getEnrolledUserPercentage(user);
-				if (!Double.isNaN(grade))
+				if (!Double.isNaN(grade)) {
 					stringBuilder.append(adjustTo10(grade) + ",");
+					hasNonNaN = true;
+				}
+			}
+
+			if (!hasNonNaN) {
+				stringBuilder.append(-1);
 			}
 			stringBuilder.append("],");
 		}
@@ -81,5 +88,4 @@ public class GroupBoxPlot extends Chartjs {
 	public int onClick(int index) {
 		return -1; // do nothing at the moment
 	}
-
 }

@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controllers.I18n;
-import controllers.JavaConnector.ChartType;
 import controllers.MainController;
 import javafx.scene.control.TreeItem;
 import model.EnrolledUser;
@@ -24,7 +23,10 @@ import util.UtilMethods;
 public class LineApexchart extends ApexCharts {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LineApexchart.class);
 	public LineApexchart(MainController mainController) {
-		super(mainController, ChartType.LINE, "lineOptions");
+		super(mainController, ChartType.LINE);
+		useGeneralButton = true;
+		useGroupButton = true;
+		optionsVar = "lineOptions";
 	}
 
 	@Override

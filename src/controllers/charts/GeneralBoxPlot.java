@@ -5,30 +5,23 @@ import java.util.List;
 
 import controllers.Controller;
 import controllers.I18n;
-import controllers.JavaConnector.ChartType;
 import controllers.MainController;
 import model.EnrolledUser;
 import model.GradeItem;
-import model.Stats;
 import util.UtilMethods;
 
 public class GeneralBoxPlot extends Chartjs {
 
 	public GeneralBoxPlot(MainController mainController) {
 		super(mainController, ChartType.GENERAL_BOXPLOT);
+		useGeneralButton = true;
+		useGroupButton = true;
+		optionsVar = "boxplotOptions";
 	}
 
-	@Override
-	public void update() {
-		String dataset = createDataset(getSelectedEnrolledUser(), getSelectedGradeItems(), stats, true, true);
-		System.out.println(String.format("updateChartjs(%s,%s)", dataset, "boxplotOptions"));
-		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, "boxplotOptions"));
-
-	}
 
 	@Override
-	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems, Stats stats,
-			boolean withMean, boolean withGroupMean) {
+	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
 		StringBuilder stringBuilder = new StringBuilder();
 
 		stringBuilder.append("{labels:[");
@@ -36,17 +29,17 @@ public class GeneralBoxPlot extends Chartjs {
 		stringBuilder.append("],datasets:[");
 
 		createData(selectedUser, selectedGradeItems, stringBuilder, I18n.get("text.selectedUsers"), false);
-		if (withMean) {
+		if (useGeneralButton) {
 			createData(Controller.getInstance().getActualCourse().getEnrolledUsers(), selectedGradeItems, stringBuilder, I18n.get("text.all"), !Buttons.getInstance().getShowMean());
 		}
-		if(withGroupMean && slcGroup.getValue() != null) {
+		if(useGroupButton && slcGroup.getValue() != null) {
 			createData(slcGroup.getValue().getEnrolledUsers(), selectedGradeItems, stringBuilder, slcGroup.getValue().getGroupName(), !Buttons.getInstance().getShowGroupMean());
 
 		}
 		
 
 		stringBuilder.append("]}");
-		System.out.println(stringBuilder.toString());
+		
 		return stringBuilder.toString();
 	}
 

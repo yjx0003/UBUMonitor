@@ -70,7 +70,7 @@ public class GradeReportTable extends Tabulator {
 		
 		for (Group group:slcGroup.getItems()) {
 			if(group!=null) {
-				array.add(addStats(gradeItems, group.getGroupName(), stats.getGroupStats(group)));
+				array.add(addStats(gradeItems, I18n.get("chartlabel.groupMean")+" "+group.getGroupName(), stats.getGroupStats(group)));
 				
 			}
 		}

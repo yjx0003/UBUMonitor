@@ -275,7 +275,7 @@ public class MainController implements Initializable {
 
 		WebConsoleListener.setDefaultListener((webView, message, lineNumber, sourceId) -> {
 			LOGGER.error("{} [{} at {}] ", message, sourceId, lineNumber);
-			errorWindow(message + "[" + sourceId + " at " + lineNumber, false);
+			//errorWindow(message + "[" + sourceId + " at " + lineNumber, false);
 		});
 		// Comprobamos cuando se carga la pagina para traducirla
 		webViewChartsEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {

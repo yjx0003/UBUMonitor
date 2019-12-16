@@ -59,7 +59,7 @@ public class GroupBoxPlot extends Chartjs {
 		stringBuilder.append("itemRadius: 2,");
 		stringBuilder.append("itemStyle: 'circle',");
 		stringBuilder.append("itemBackgroundColor:" + hex(text) + ",");
-		stringBuilder.append("outlierColor: 'blue',");
+		stringBuilder.append("outlierColor:" + hex(text) + ",");
 		stringBuilder.append("borderWidth: 1,");
 		stringBuilder.append("outlierRadius : 5,");
 		stringBuilder.append("hidden:" + hidden + ",");

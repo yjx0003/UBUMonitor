@@ -4,7 +4,9 @@
 
 <head>
     <title>Charts</title>
+    <link rel="stylesheet" type="text/css" href="../css/tabulator.css" />
     <link rel="stylesheet" type="text/css" href="../css/chart.css" />
+    
 
     <script type="text/javascript" src="./lib/Chart.js"></script>
     <script type="text/javascript" src="./lib/color-hash.js"></script>
@@ -12,6 +14,8 @@
     <script type="text/javascript" src="./messages.js"></script>
     <script type="text/javascript" src="./lib/apexcharts.js"></script>
     <script type="text/javascript" src="./lib/chartjs-chart-box-and-violin-plot.js"></script>
+    <script type="text/javascript" src="./lib/tabulator.js"></script>
+
 </head>
 
 <div id="all_tabs" class="controles">
@@ -22,7 +26,8 @@
         <input type="button" class="btn" id="btnBoxPlotGroup" onclick='javaConnector.updateCharts("GROUP_BOXPLOT");' />
         <input type="button" class="btn" id="btnViolin" onclick='javaConnector.updateCharts("GENERAL_VIOLIN");' />
         <input type="button" class="btn" id="btnViolinGroup" onclick='javaConnector.updateCharts("GROUP_VIOLIN");' />
-        <input type="button" class="btn" id="btnCalificaciones" onclick='javaConnector.updateCharts("TABLE");' />
+        <input type="button" class="btn" id="btnCalificaciones"
+            onclick='javaConnector.updateCharts("GRADE_REPORT_TABLE");' />
     </div>
     <div class="pestañas" id="log_tabs">
         <input type="button" class="btn" id="btnStackedBar" onclick='javaConnector.updateCharts("STACKED_BAR");' />
@@ -40,6 +45,7 @@
     <canvas id="myChart"></canvas>
 </div>
 <div id="apexchartsDiv"></div>
+<div id="tabulatorDiv"></div>
 
 <script type="text/javascript">
     //------------------------------------------Opciones para los graficos------------------------------------------------------------------
@@ -122,7 +128,7 @@
         tab: "log_tabs",
         button: "btnHeatmap",
         typeGraph: "heatmap",
- 
+
 
         tooltip: {
             x: {
@@ -181,7 +187,7 @@
                     javaConnector.dataPointSelection(config.w.config.series.length - 1 - config.seriesIndex);
                 }
             },
-            height: height,
+            
             toolbar: {
                 show: false,
             },
@@ -235,7 +241,7 @@
         tab: "grade_tabs",
         button: "btnBoxPlot",
         typeGraph: "boxplot",
- 
+
 
         tooltipDecimals: 2
 
@@ -257,10 +263,8 @@
         tab: "grade_tabs",
         button: "btnViolin",
         typeGraph: "violin",
- 
 
         tooltipDecimals: 2
-
 
     }
 
@@ -271,12 +275,35 @@
 
         tooltipDecimals: 2
 
+    }
 
+    var gradeReportTableOptions = {
+
+        tab: "grade_tabs",
+        button: "btnCalificaciones",
+        invalidOptionWarnings: false,
+        height: height, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+        layout: "fitColumns", //fit columns to width of table (optional)
+        rowClick: function (e, row) {
+            javaConnector.dataPointSelection(row.getPosition());
+
+        },
+    }
+
+    tabulatorProgressParams = {
+        min: 0,
+        max: 10,
+        legend: true,
+        legendAlign: "center",
+        color: function (value) {
+            if (value < 5) {
+                return "#DC143C";
+            }
+            return "#2DC214";
+        }
     }
 
     //------------------------------------------Variables globales-------------------------------------------------------------
-
-    var language = 'es';
 
     //
     var colorHash = new ColorHash();
@@ -294,7 +321,7 @@
     var myApexChart = new ApexCharts(document.getElementById('apexchartsDiv'), heatmapOptions);
     myApexChart.render();
 
-
+    var table = new Tabulator("#tabulatorDiv", gradeReportTableOptions);
 
 
     //------------------------------------------Funciones------------------------------------------------------------------
@@ -323,6 +350,9 @@
 
     function displayApexChart(value) {
         document.getElementById('apexchartsDiv').style.display = value ? "block" : "none";
+    }
+    function displayTabulator(value) {
+        document.getElementById('tabulatorDiv').style.display = value ? "block" : "none";
     }
 
 
@@ -364,6 +394,8 @@
     function updateApexCharts(series, categories, options) {
         displayApexChart(true);
         displayChartjs(false);
+        displayTabulator(false);
+
 
         disableTab(options.tab, options.button);
 
@@ -388,6 +420,8 @@
     function updateChartjs(dataset, options) {
         displayApexChart(false);
         displayChartjs(true);
+        displayTabulator(false);
+
 
         disableTab(options.tab, options.button);
 
@@ -410,11 +444,24 @@
             });
         }
 
-
-
-
-
     }
+
+    function updateTabulator(columns, tabledata, options) {
+
+        displayApexChart(false);
+        displayChartjs(false);
+        displayTabulator(true);
+        disableTab(options.tab, options.button);
+        displayLegendButton(options.useLegend);
+        displayGroupButton(options.useGroup);
+        displayGeneralButton(options.useGeneral);
+
+        disableTab(options.tab, options.button);
+
+        table.setColumns(columns);
+        table.setData(tabledata);
+    }
+
 
 
     function clearChartjs() {
@@ -535,7 +582,7 @@
 
     // Modifica el valor de los inputs segun el idioma pasado
     function getI18n(item) {
-        document.getElementById(item).value = javaConnector.getI18n("html."+item);
+        document.getElementById(item).value = javaConnector.getI18n("html." + item);
     }
 
     // Establece el idioma
@@ -546,40 +593,46 @@
         }
     }
 
+    function genericExport(id) {
+        html2canvas(document.getElementById(id)).then(function (canvas) {
+            javaConnector.saveImage(canvas.toDataURL());
+        }).catch(function (error) {
+            javaConnector.showErrorWindow("Cannot download image:" + error.message);
+        })
+    }
 
 
+    function colorRGB(color) {
+        let colors = colorHash.rgb(color);
+        return "rgb(" + colors[0] + "," + colors[1] + "," + colors[2] + ")";
+    }
 
-        function colorRGB(color) {
-            let colors = colorHash.rgb(color);
-            return "rgb(" + colors[0] + "," + colors[1] + "," + colors[2] + ")";
-        }
+    function colorRGBA(color, alpha) {
+        let colors = colorHash.rgb(color);
+        return "rgba(" + colors[0] + "," + colors[1] + "," + colors[2] + "," + alpha + ")";
+    }
+    //Funcion que devuelve un color en formato hexadecimal
+    //en base a el string que se le pasa
+    function colorHEX(color) {
+        return colorHash.hex(color);
+    }
 
-        function colorRGBA(color, alpha) {
-            let colors = colorHash.rgb(color);
-            return "rgba(" + colors[0] + "," + colors[1] + "," + colors[2] + "," + alpha + ")";
-        }
-        //Funcion que devuelve un color en formato hexadecimal
-        //en base a el string que se le pasa
-        function colorHEX(color) {
-            return colorHash.hex(color);
-        }
+    // Plugin que nos permite establecer el color de fondo del gráfico
+    // el color se define en opciones->chartArea->backgroundColor
+    Chart.pluginService.register({
+        beforeDraw: function (chart, easing) {
+            if (chart.config.options.chartArea && chart.config.options.chartArea.backgroundColor) {
+                var helpers = Chart.helpers;
+                var ctx = chart.chart.ctx;
+                var canvas = document.getElementById('myChart');
 
-        // Plugin que nos permite establecer el color de fondo del gráfico
-        // el color se define en opciones->chartArea->backgroundColor
-        Chart.pluginService.register({
-            beforeDraw: function (chart, easing) {
-                if (chart.config.options.chartArea && chart.config.options.chartArea.backgroundColor) {
-                    var helpers = Chart.helpers;
-                    var ctx = chart.chart.ctx;
-                    var canvas = document.getElementById('myChart');
-
-                    ctx.save();
-                    ctx.fillStyle = chart.config.options.chartArea.backgroundColor;
-                    ctx.fillRect(0, 0, canvas.scrollWidth, canvas.scrollHeight);
-                    ctx.restore();
-                }
+                ctx.save();
+                ctx.fillStyle = chart.config.options.chartArea.backgroundColor;
+                ctx.fillRect(0, 0, canvas.scrollWidth, canvas.scrollHeight);
+                ctx.restore();
             }
-        });
+        }
+    });
 </script>
 
 </body>

@@ -94,9 +94,7 @@ public abstract class Chartjs extends Chart{
 
 	}
 	
-	public double adjustTo10(double value) {
-		return Double.isNaN(value) ? value : Math.round(value*10)  / 100.0;
-	}
+	
 	
 	@Override
 	public void update() {

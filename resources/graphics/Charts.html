@@ -281,7 +281,10 @@
 
         tab: "grade_tabs",
         button: "btnCalificaciones",
-        invalidOptionWarnings: false,
+        invalidOptionWarnings: false,    
+        
+        groupBy: "type",
+        virtualDom:false,
         layout: "fitColumns", //fit columns to width of table (optional)
         rowClick: function (e, row) {
             javaConnector.dataPointSelection(row.getPosition());
@@ -456,9 +459,10 @@
         displayGeneralButton(options.useGeneral);
 
         disableTab(options.tab, options.button);
-
         table.setColumns(columns);
         table.setData(tabledata);
+        table.redraw();
+
     }
 
 

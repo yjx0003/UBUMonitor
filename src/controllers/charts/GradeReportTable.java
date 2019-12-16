@@ -17,8 +17,7 @@ import util.UtilMethods;
 
 public class GradeReportTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GradeReportTable.class);
-	
-	
+
 	public GradeReportTable(MainController mainController) {
 		super(mainController, ChartType.GRADE_REPORT_TABLE);
 		useGeneralButton = true;
@@ -37,16 +36,20 @@ public class GradeReportTable extends Tabulator {
 		LOGGER.debug("Columnas:{}", columns);
 		LOGGER.debug("Datos de tabla:{}", data);
 		webViewChartsEngine.executeScript(String.format("updateTabulator(%s, %s, %s)", columns, data, optionsVar));
-		
+
 	}
 
 	public String createColumns(List<GradeItem> gradeItems) {
 
 		StringJoiner array = JSArray();
 		StringJoiner jsObject = JSObject();
-
+		addKeyValue(jsObject, "title", "Type");
+		addKeyValue(jsObject, "field", "type");
+		jsObject.add("visible:false");
+		jsObject = JSObject();
 		addKeyValue(jsObject, "title", I18n.get("chartlabel.name"));
 		addKeyValue(jsObject, "field", "name");
+		addKeyValue(jsObject, "frozen", "true");
 		array.add(jsObject.toString());
 		for (GradeItem gradeItem : gradeItems) {
 			jsObject = JSObject();
@@ -64,9 +67,11 @@ public class GradeReportTable extends Tabulator {
 	public String createData(List<EnrolledUser> enrolledUsers, List<GradeItem> gradeItems) {
 		StringJoiner array = JSArray();
 		StringJoiner jsObject;
+		String stringSelectedUsers = I18n.get("text.selectedUsers");
 		for (EnrolledUser enrolledUser : enrolledUsers) {
 			jsObject = JSObject();
 			addKeyValue(jsObject, "name", enrolledUser.getFullName());
+			addKeyValue(jsObject, "type", stringSelectedUsers);
 			for (GradeItem gradeItem : gradeItems) {
 				addKeyValue(jsObject, "ID" + gradeItem.getId(),
 						adjustTo10(gradeItem.getEnrolledUserPercentage(enrolledUser)));
@@ -93,6 +98,7 @@ public class GradeReportTable extends Tabulator {
 		StringJoiner jsObject = JSObject();
 
 		addKeyValue(jsObject, "name", name);
+		addKeyValue(jsObject, "type", "Stats");
 		for (GradeItem gradeItem : gradeItems) {
 			addKeyValue(jsObject, "ID" + gradeItem.getId(), adjustTo10(stats.get(gradeItem).getMean()));
 		}

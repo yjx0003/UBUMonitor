@@ -17,8 +17,8 @@ public class GradeReportTable extends Tabulator {
 
 	public GradeReportTable(MainController mainController) {
 		super(mainController, ChartType.GRADE_REPORT_TABLE);
-		useGeneralButton = false;
-		useGroupButton = false;
+		useGeneralButton = true;
+		useGroupButton = true;
 		useLegend = false;
 		optionsVar = "gradeReportTableOptions";
 	}
@@ -29,8 +29,6 @@ public class GradeReportTable extends Tabulator {
 		List<GradeItem> gradeItems = getSelectedGradeItems();
 		String columns = createColumns(gradeItems);
 		String data = createData(enrolledUsers, gradeItems);
-		System.out.println(columns);
-		System.out.println(data);
 		webViewChartsEngine.executeScript(String.format("updateTabulator(%s, %s, %s)", columns, data, optionsVar));
 	}
 
@@ -48,7 +46,7 @@ public class GradeReportTable extends Tabulator {
 			jsObject.add("formatterParams:tabulatorProgressParams");
 			jsObject.add("sorter:'number'");
 			addKeyValue(jsObject, "title", gradeItem.getItemname());
-			addKeyValue(jsObject, "field", "ID"+gradeItem.getId());
+			addKeyValue(jsObject, "field", "ID" + gradeItem.getId());
 
 			array.add(jsObject.toString());
 		}
@@ -62,16 +60,21 @@ public class GradeReportTable extends Tabulator {
 			jsObject = JSObject();
 			addKeyValue(jsObject, "name", enrolledUser.getFullName());
 			for (GradeItem gradeItem : gradeItems) {
-				addKeyValue(jsObject, "ID"+gradeItem.getId(), adjustTo10(gradeItem.getEnrolledUserPercentage(enrolledUser)));
+				addKeyValue(jsObject, "ID" + gradeItem.getId(),
+						adjustTo10(gradeItem.getEnrolledUserPercentage(enrolledUser)));
 			}
 			array.add(jsObject.toString());
 		}
-		array.add(addStats(gradeItems, I18n.get("chartlabel.generalMean"), stats.getGeneralStats()));
-		
-		for (Group group:slcGroup.getItems()) {
-			if(group!=null) {
-				array.add(addStats(gradeItems, I18n.get("chartlabel.groupMean")+" "+group.getGroupName(), stats.getGroupStats(group)));
-				
+		if (useGeneralButton && Buttons.getInstance().getShowMean()) {
+			array.add(addStats(gradeItems, I18n.get("chartlabel.generalMean"), stats.getGeneralStats()));
+		}
+		if (useGroupButton && Buttons.getInstance().getShowGroupMean()) {
+			for (Group group : slcGroup.getItems()) {
+				if (group != null) {
+					array.add(addStats(gradeItems, I18n.get("chartlabel.groupMean") + " " + group.getGroupName(),
+							stats.getGroupStats(group)));
+
+				}
 			}
 		}
 
@@ -80,15 +83,13 @@ public class GradeReportTable extends Tabulator {
 
 	private String addStats(List<GradeItem> gradeItems, String name, Map<GradeItem, DescriptiveStatistics> stats) {
 		StringJoiner jsObject = JSObject();
-		
+
 		addKeyValue(jsObject, "name", name);
 		for (GradeItem gradeItem : gradeItems) {
-			addKeyValue(jsObject, "ID"+gradeItem.getId(), stats.get(gradeItem).getMean());
+			addKeyValue(jsObject, "ID" + gradeItem.getId(), adjustTo10(stats.get(gradeItem).getMean()));
 		}
 		return jsObject.toString();
 	}
-	
-	
 
 	public StringJoiner JSArray() {
 		return new StringJoiner(",", "[", "]");

@@ -15,6 +15,7 @@ import controllers.charts.Chart;
 import controllers.charts.ChartType;
 import controllers.charts.GeneralBoxPlot;
 import controllers.charts.GeneralViolin;
+import controllers.charts.GradeReportTable;
 import controllers.charts.GroupBoxPlot;
 import controllers.charts.GroupViolin;
 import controllers.charts.Heatmap;
@@ -68,6 +69,7 @@ public class JavaConnector {
 		addChart(new GroupBoxPlot(mainController));
 		addChart(new GeneralViolin(mainController));
 		addChart(new GroupViolin(mainController));
+		addChart(new GradeReportTable(mainController));
 	}
 
 	private void addChart(Chart chart) {

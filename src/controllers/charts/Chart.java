@@ -106,6 +106,10 @@ public abstract class Chart {
 		selectedUsers.removeAll(Collections.singletonList(null));
 		return selectedUsers;
 	}
+	
+	public double adjustTo10(double value) {
+		return Double.isNaN(value) ? value : Math.round(value*10)  / 100.0;
+	}
 
 	public int onClick(int index) {
 

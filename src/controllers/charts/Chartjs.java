@@ -1,11 +1,5 @@
 package controllers.charts;
 
-import controllers.JavaConnector.ChartType;
-import model.EnrolledUser;
-import model.GradeItem;
-import model.Stats;
-import util.UtilMethods;
-
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import controllers.I18n;
 import controllers.MainController;
+import model.EnrolledUser;
+import model.GradeItem;
+import util.UtilMethods;
 
 public abstract class Chartjs extends Chart{
 	
@@ -43,7 +40,7 @@ public abstract class Chartjs extends Chart{
 		return (String) webViewChartsEngine.executeScript("exportChartjs()");
 	}
 	
-	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems, Stats stats, boolean withMean, boolean withGroupMean) {
+	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
 		StringBuilder stringBuilder = new StringBuilder();
 		
 
@@ -63,7 +60,7 @@ public abstract class Chartjs extends Chart{
 			}
 			stringBuilder.append("]},");
 		}
-		if (withMean) {
+		if (useGeneralButton) {
 			stringBuilder.append("{label:'" + UtilMethods.escapeJavaScriptText(I18n.get("chartlabel.generalMean")) + "',");
 			stringBuilder.append("borderColor:" + hex(I18n.get("chartlabel.generalMean")) + ",");
 			stringBuilder.append("backgroundColor:" + rgba(I18n.get("chartlabel.generalMean"), OPACITY) + ",");
@@ -77,7 +74,7 @@ public abstract class Chartjs extends Chart{
 			stringBuilder.append("]},");
 		}
 		
-		if (withGroupMean && slcGroup.getValue() != null) {
+		if (useGroupButton && slcGroup.getValue() != null) {
 			stringBuilder.append("{label:'" + UtilMethods.escapeJavaScriptText(I18n.get("chartlabel.groupMean")) + "',");
 			stringBuilder.append("borderColor:" + hex(I18n.get("chartlabel.groupMean")) + ",");
 			stringBuilder.append("backgroundColor:" + rgba(I18n.get("chartlabel.groupMean"), OPACITY) + ",");
@@ -92,13 +89,21 @@ public abstract class Chartjs extends Chart{
 		}
 		
 		stringBuilder.append("]}");
-		LOGGER.debug(stringBuilder.toString());
+		
 		return stringBuilder.toString();
 
 	}
 	
 	public double adjustTo10(double value) {
 		return Double.isNaN(value) ? value : Math.round(value*10)  / 100.0;
+	}
+	
+	@Override
+	public void update() {
+		String dataset = createDataset(getSelectedEnrolledUser(), getSelectedGradeItems());
+		LOGGER.debug(dataset);
+		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, optionsVar));
+
 	}
 	
 

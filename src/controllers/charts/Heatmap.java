@@ -8,7 +8,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.JavaConnector.ChartType;
 import controllers.MainController;
 import controllers.datasets.DataSet;
 import controllers.datasets.DataSetComponent;
@@ -25,7 +24,10 @@ public class Heatmap extends ApexCharts {
 
 
 	public Heatmap(MainController mainController) {
-		super(mainController, ChartType.HEAT_MAP, "heatmapOptions");
+		super(mainController, ChartType.HEAT_MAP);
+		useGeneralButton = false;
+		useGroupButton = false;
+		this.optionsVar = "heatmapOptions";
 
 	}
 

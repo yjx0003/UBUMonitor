@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controllers.Controller;
-import controllers.JavaConnector.ChartType;
 import controllers.MainController;
 import controllers.datasets.DataSetComponent;
 import controllers.datasets.DataSetComponentEvent;
@@ -31,6 +30,9 @@ public class Stackedbar extends Chartjs {
 
 	public Stackedbar(MainController mainController) {
 		super(mainController, ChartType.STACKED_BAR);
+		useGeneralButton = false;
+		useGroupButton = false;
+		optionsVar = "stackedbarOptions";
 
 	}
 

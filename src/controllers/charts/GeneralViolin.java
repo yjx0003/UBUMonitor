@@ -8,16 +8,15 @@ import controllers.I18n;
 import controllers.MainController;
 import model.EnrolledUser;
 import model.GradeItem;
-import model.Group;
 import util.UtilMethods;
 
-public class GroupBoxPlot extends Chartjs {
+public class GeneralViolin extends Chartjs {
 
-	public GroupBoxPlot(MainController mainController) {
-		super(mainController, ChartType.GROUP_BOXPLOT);
+	public GeneralViolin(MainController mainController) {
+		super(mainController, ChartType.GENERAL_VIOLIN);
 		useGeneralButton = true;
 		useGroupButton = true;
-		optionsVar = "boxplotGroupOptions";
+		optionsVar = "violinOptions";
 	}
 
 	@Override
@@ -33,14 +32,9 @@ public class GroupBoxPlot extends Chartjs {
 			createData(Controller.getInstance().getActualCourse().getEnrolledUsers(), selectedGradeItems, stringBuilder,
 					I18n.get("text.all"), !Buttons.getInstance().getShowMean());
 		}
-		if (useGroupButton) {
-			for (Group group : slcGroup.getItems()) {
-				if (group != null) {
-					createData(group.getEnrolledUsers(), selectedGradeItems, stringBuilder, group.getGroupName(),
-							!Buttons.getInstance().getShowGroupMean());
-				}
-
-			}
+		if (useGroupButton && slcGroup.getValue() != null) {
+			createData(slcGroup.getValue().getEnrolledUsers(), selectedGradeItems, stringBuilder,
+					slcGroup.getValue().getGroupName(), !Buttons.getInstance().getShowGroupMean());
 
 		}
 
@@ -67,10 +61,17 @@ public class GroupBoxPlot extends Chartjs {
 
 		for (GradeItem gradeItem : selectedGradeItems) {
 			stringBuilder.append("[");
+			boolean hasNonNaN = false;
 			for (EnrolledUser user : selectedUser) {
 				double grade = gradeItem.getEnrolledUserPercentage(user);
-				if (!Double.isNaN(grade))
+				if (!Double.isNaN(grade)) {
 					stringBuilder.append(adjustTo10(grade) + ",");
+					hasNonNaN = true;
+				}
+			}
+			
+			if (!hasNonNaN) {
+				stringBuilder.append(-1);
 			}
 			stringBuilder.append("],");
 		}

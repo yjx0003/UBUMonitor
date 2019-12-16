@@ -275,6 +275,7 @@ public class MainController implements Initializable {
 
 		WebConsoleListener.setDefaultListener((webView, message, lineNumber, sourceId) -> {
 			LOGGER.error("{} [{} at {}] ", message, sourceId, lineNumber);
+			errorWindow(message + "[" + sourceId + " at " + lineNumber, false);
 		});
 		// Comprobamos cuando se carga la pagina para traducirla
 		webViewChartsEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
@@ -282,7 +283,7 @@ public class MainController implements Initializable {
 				return;
 			JSObject window = (JSObject) webViewChartsEngine.executeScript("window");
 			window.setMember("javaConnector", javaConnector);
-			webViewChartsEngine.executeScript("setLanguage('" + I18n.getResourceBundle().getLocale() + "')");
+			webViewChartsEngine.executeScript("setLanguage()");
 			webViewCharts.toFront();
 			javaConnector.setDefaultValues();
 

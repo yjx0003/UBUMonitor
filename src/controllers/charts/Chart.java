@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import controllers.JavaConnector.ChartType;
+import controllers.charts.ChartType;
 import controllers.MainController;
 import controllers.ubulogs.GroupByAbstract;
 import javafx.scene.control.ChoiceBox;
@@ -45,6 +45,11 @@ public abstract class Chart {
 	protected TreeView<GradeItem> tvwGradeReport;
 	protected Stats stats;
 	protected ChartType chartType;
+	protected boolean useLegend;
+	protected boolean useGeneralButton;
+	protected boolean useGroupButton;
+	protected String optionsVar;
+
 	
 	protected static final double OPACITY = 0.2;
 
@@ -68,6 +73,24 @@ public abstract class Chart {
 		this.stats = mainController.getStats();
 		this.tvwGradeReport = mainController.getTvwGradeReport();
 		this.chartType = chartType;
+		
+		this.useLegend = true;
+	}
+
+	public String getOptionsVar() {
+		return optionsVar;
+	}
+
+	public boolean isUseLegend() {
+		return useLegend;
+	}
+
+	public boolean isUseGeneralButton() {
+		return useGeneralButton;
+	}
+
+	public boolean isUseGroupButton() {
+		return useGroupButton;
 	}
 
 	public ChartType getChartType() {

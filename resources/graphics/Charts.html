@@ -14,12 +14,14 @@
     <script type="text/javascript" src="./lib/chartjs-chart-box-and-violin-plot.js"></script>
 </head>
 
-<div class="controles">
+<div id="all_tabs" class="controles">
     <div class="pestañas" id="grade_tabs">
         <input type="button" class="btn" id="btnLine" onclick='javaConnector.updateCharts("LINE");' />
         <input type="button" class="btn" id="btnRadar" onclick='javaConnector.updateCharts("RADAR");' />
         <input type="button" class="btn" id="btnBoxPlot" onclick='javaConnector.updateCharts("GENERAL_BOXPLOT");' />
         <input type="button" class="btn" id="btnBoxPlotGroup" onclick='javaConnector.updateCharts("GROUP_BOXPLOT");' />
+        <input type="button" class="btn" id="btnViolin" onclick='javaConnector.updateCharts("GENERAL_VIOLIN");' />
+        <input type="button" class="btn" id="btnViolinGroup" onclick='javaConnector.updateCharts("GROUP_VIOLIN");' />
         <input type="button" class="btn" id="btnCalificaciones" onclick='javaConnector.updateCharts("TABLE");' />
     </div>
     <div class="pestañas" id="log_tabs">
@@ -28,7 +30,6 @@
     </div>
 
     <div class="opciones">
-        <input type="button" value="." class="btn" style="visibility: hidden; width: 0px; margin: 0px; padding: 0px;" />
         <input type="button" value="Leyenda" class="btn" id="btnLegend" onclick="javaConnector.hideLegend();" />
         <input type="button" value="Media General" class="btn" id="btnMean" onclick="showGeneralMean()" />
         <input type="button" class="btn" id="btnGroupMean" onclick="showGroupMean()" />
@@ -62,7 +63,7 @@
     Chart.defaults.scale.ticks.stepSize = 1;
     Chart.defaults.scale.ticks.suggestedMax = 10;
     Chart.defaults.scale.ticks.min = 0;
-    Chart.defaults.scale.autoSkip =  true;
+    Chart.defaults.scale.autoSkip = true;
 
     var counter = 0;
     var height = "93%";
@@ -71,9 +72,6 @@
         tab: "log_tabs",
         button: "btnStackedBar",
         typeGraph: "bar",
-        useLegend: true,
-        useGeneralMean: false,
-        useGroupMean: false,
 
         tooltips: {
             position: 'nearest',
@@ -124,9 +122,7 @@
         tab: "log_tabs",
         button: "btnHeatmap",
         typeGraph: "heatmap",
-        useLegend: false,
-        useGeneralMean: false,
-        useGroupMean: false,
+ 
 
         tooltip: {
             x: {
@@ -218,9 +214,7 @@
         tab: "grade_tabs",
         button: "btnLine",
         typeGraph: "line",
-        useLegend: true,
-        useGeneralMean: true,
-        useGroupMean: true,
+
 
 
 
@@ -230,9 +224,6 @@
         tab: "grade_tabs",
         button: "btnRadar",
         typeGraph: "radar",
-        useLegend: true,
-        useGeneralMean: true,
-        useGroupMean: true,
         scale: {
             gridLines: {
                 color: ['red', 'red', 'red', 'red', 'green', 'green', 'green', 'green', 'green', 'green']
@@ -244,9 +235,7 @@
         tab: "grade_tabs",
         button: "btnBoxPlot",
         typeGraph: "boxplot",
-        useLegend: true,
-        useGeneralMean: true,
-        useGroupMean: true,
+ 
 
         tooltipDecimals: 2
 
@@ -257,9 +246,28 @@
         tab: "grade_tabs",
         button: "btnBoxPlotGroup",
         typeGraph: "boxplot",
-        useLegend: true,
-        useGeneralMean: true,
-        useGroupMean: true,
+
+        tooltipDecimals: 2
+
+
+    }
+
+
+    var violinOptions = {
+        tab: "grade_tabs",
+        button: "btnViolin",
+        typeGraph: "violin",
+ 
+
+        tooltipDecimals: 2
+
+
+    }
+
+    var violinGroupOptions = {
+        tab: "grade_tabs",
+        button: "btnViolinGroup",
+        typeGraph: "violin",
 
         tooltipDecimals: 2
 
@@ -360,11 +368,12 @@
         disableTab(options.tab, options.button);
 
         displayLegendButton(options.useLegend);
-        displayGroupButton(options.useGroupMean);
-        displayGeneralButton(options.useGeneralMean);
+        displayGroupButton(options.useGroup);
+        displayGeneralButton(options.useGeneral);
 
         options.series = series;
         options.xaxis.categories = categories;
+        options.legend.show = javaConnector.getShowLegend();
         if (myApexChart.w.config.chart.type == options.typeGraph) {
 
             myApexChart.updateOptions(options);
@@ -383,8 +392,8 @@
         disableTab(options.tab, options.button);
 
         displayLegendButton(options.useLegend);
-        displayGroupButton(options.useGroupMean);
-        displayGeneralButton(options.useGeneralMean);
+        displayGroupButton(options.useGroup);
+        displayGeneralButton(options.useGeneral);
 
         if (myChart.config.type == options.typeGraph) {
             myChart.data = dataset;
@@ -524,39 +533,53 @@
 
     }
 
-
-
-    function colorRGB(color) {
-        let colors = colorHash.rgb(color);
-        return "rgb(" + colors[0] + "," + colors[1] + "," + colors[2] + ")";
+    // Modifica el valor de los inputs segun el idioma pasado
+    function getI18n(item) {
+        document.getElementById(item).value = javaConnector.getI18n("html."+item);
     }
 
-    function colorRGBA(color, alpha) {
-        let colors = colorHash.rgb(color);
-        return "rgba(" + colors[0] + "," + colors[1] + "," + colors[2] + "," + alpha + ")";
-    }
-    //Funcion que devuelve un color en formato hexadecimal
-    //en base a el string que se le pasa
-    function colorHEX(color) {
-        return colorHash.hex(color);
-    }
-
-    // Plugin que nos permite establecer el color de fondo del gráfico
-    // el color se define en opciones->chartArea->backgroundColor
-    Chart.pluginService.register({
-        beforeDraw: function (chart, easing) {
-            if (chart.config.options.chartArea && chart.config.options.chartArea.backgroundColor) {
-                var helpers = Chart.helpers;
-                var ctx = chart.chart.ctx;
-                var canvas = document.getElementById('myChart');
-
-                ctx.save();
-                ctx.fillStyle = chart.config.options.chartArea.backgroundColor;
-                ctx.fillRect(0, 0, canvas.scrollWidth, canvas.scrollHeight);
-                ctx.restore();
-            }
+    // Establece el idioma
+    function setLanguage() {
+        let tabs = document.querySelectorAll("#all_tabs > div > input");
+        for (i = 0; i < tabs.length; i++) {
+            getI18n(tabs[i].id);
         }
-    });
+    }
+
+
+
+
+        function colorRGB(color) {
+            let colors = colorHash.rgb(color);
+            return "rgb(" + colors[0] + "," + colors[1] + "," + colors[2] + ")";
+        }
+
+        function colorRGBA(color, alpha) {
+            let colors = colorHash.rgb(color);
+            return "rgba(" + colors[0] + "," + colors[1] + "," + colors[2] + "," + alpha + ")";
+        }
+        //Funcion que devuelve un color en formato hexadecimal
+        //en base a el string que se le pasa
+        function colorHEX(color) {
+            return colorHash.hex(color);
+        }
+
+        // Plugin que nos permite establecer el color de fondo del gráfico
+        // el color se define en opciones->chartArea->backgroundColor
+        Chart.pluginService.register({
+            beforeDraw: function (chart, easing) {
+                if (chart.config.options.chartArea && chart.config.options.chartArea.backgroundColor) {
+                    var helpers = Chart.helpers;
+                    var ctx = chart.chart.ctx;
+                    var canvas = document.getElementById('myChart');
+
+                    ctx.save();
+                    ctx.fillStyle = chart.config.options.chartArea.backgroundColor;
+                    ctx.fillRect(0, 0, canvas.scrollWidth, canvas.scrollHeight);
+                    ctx.restore();
+                }
+            }
+        });
 </script>
 
 </body>

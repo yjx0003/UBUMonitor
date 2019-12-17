@@ -460,7 +460,7 @@
 
         disableTab(options.tab, options.button);
         table.setColumns(columns);
-        table.replaceData(tabledata).then(function () {
+        table.setData(tabledata).then(function () {
             table.redraw();
         })
         

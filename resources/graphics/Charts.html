@@ -6,7 +6,7 @@
     <title>Charts</title>
     <link rel="stylesheet" type="text/css" href="../css/tabulator.css" />
     <link rel="stylesheet" type="text/css" href="../css/chart.css" />
-    
+
 
     <script type="text/javascript" src="./lib/Chart.js"></script>
     <script type="text/javascript" src="./lib/color-hash.js"></script>
@@ -187,7 +187,7 @@
                     javaConnector.dataPointSelection(config.w.config.series.length - 1 - config.seriesIndex);
                 }
             },
-            
+
             toolbar: {
                 show: false,
             },
@@ -281,10 +281,10 @@
 
         tab: "grade_tabs",
         button: "btnCalificaciones",
-        invalidOptionWarnings: false,    
-        
+        invalidOptionWarnings: false,
+		
         groupBy: "type",
-        virtualDom:false,
+        virtualDom: false,
         layout: "fitColumns", //fit columns to width of table (optional)
         rowClick: function (e, row) {
             javaConnector.dataPointSelection(row.getPosition());
@@ -460,8 +460,10 @@
 
         disableTab(options.tab, options.button);
         table.setColumns(columns);
-        table.setData(tabledata);
-        table.redraw();
+        table.replaceData(tabledata).then(function () {
+            table.redraw();
+        })
+        
 
     }
 
@@ -583,12 +585,12 @@
 
     }
     function genericExport(id) {
-        html2canvas(document.getElementById(id),{logging:false}).then(function (canvas) {
+        html2canvas(document.getElementById(id), { logging: false }).then(function (canvas) {
             javaConnector.saveImage(canvas.toDataURL());
         }).catch(function (error) {
             javaConnector.showErrorWindow("Cannot download image:" + error.message);
         })
-	
+
     }
 
     // Modifica el valor de los inputs segun el idioma pasado
@@ -604,7 +606,7 @@
         }
     }
 
-    
+
 
 
     function colorRGB(color) {

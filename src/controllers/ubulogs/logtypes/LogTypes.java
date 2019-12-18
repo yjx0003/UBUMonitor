@@ -1,57 +1,10 @@
 package controllers.ubulogs.logtypes;
 
-import static model.Component.ACTIVITY_REPORT;
-import static model.Component.ASSIGNMENT;
-import static model.Component.BOOK;
-import static model.Component.BOOK_PRINTING;
-import static model.Component.CHAT;
-import static model.Component.CHOICE;
-import static model.Component.COMMENTS;
-import static model.Component.COURSE_COMPLETION;
-import static model.Component.COURSE_PARTICIPATION;
-import static model.Component.DATABASE;
-import static model.Component.EVENT_MONITOR;
-import static model.Component.EXCEL_SPREADSHEET;
-import static model.Component.EXTERNAL_TOOL;
-import static model.Component.FEEDBACK;
-import static model.Component.FILE;
-import static model.Component.FILE_SUBMISSIONS;
-import static model.Component.FOLDER;
-import static model.Component.FORUM;
-import static model.Component.GLOSSARY;
-import static model.Component.GRADER_REPORT;
-import static model.Component.GUIA_DOCENTE;
-import static model.Component.HOTPOT_MODULE;
-import static model.Component.IMS_CONTENT_PACKAGE;
-import static model.Component.JOURNAL;
-import static model.Component.LESSON;
-import static model.Component.LIVE_LOGS;
-import static model.Component.LOGS;
-import static model.Component.ONLINE_TEXT_SUBMISSIONS;
-import static model.Component.OPENDOCUMENT_SPREADSHEET;
-import static model.Component.OUTCOMES_REPORT;
-import static model.Component.OVERVIEW_REPORT;
-import static model.Component.PAGE;
-import static model.Component.PLAIN_TEXT_FILE;
-import static model.Component.QUIZ;
-import static model.Component.RECYCLE_BIN;
-import static model.Component.SCORM_PACKAGE;
-import static model.Component.SINGLE_VIEW;
-import static model.Component.STATISTICS;
-import static model.Component.SUBMISSION_COMMENTS;
-import static model.Component.SURVEY;
-import static model.Component.SYSTEM;
-import static model.Component.TURNITIN_ASSIGNMENT_2;
-import static model.Component.URL;
-import static model.Component.USER_REPORT;
-import static model.Component.USER_TOURS;
-import static model.Component.WIKI;
-import static model.Component.WORKSHOP;
-import static model.Component.XML_FILE;
-
-import static model.Event.*;
+import static model.Component.*;
 
 import static model.ComponentEvent.get;
+import static model.Event.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,8 +30,10 @@ public class LogTypes {
 		TYPES.put(get(ASSIGNMENT, ASSIGNMENT_OVERRIDE_UPDATED), UserOverrideCmidAffected.getInstance());
 		TYPES.put(get(ASSIGNMENT, COURSE_MODULE_INSTANCE_LIST_VIEWED), UserCourse.getInstance());
 		TYPES.put(get(ASSIGNMENT, COURSE_MODULE_VIEWED), UserCmid.getInstance());
+		TYPES.put(get(ASSIGNMENT, FEDBACK_VIEWED), UserAffectedCmid.getInstance());
 		TYPES.put(get(ASSIGNMENT, GRADING_FORM_VIEWED), UserAffectedCmid.getInstance());
 		TYPES.put(get(ASSIGNMENT, GRADING_TABLE_VIEWED), UserCmid.getInstance());
+		TYPES.put(get(ASSIGNMENT, REMOVE_SUBMISSION_CONFIRMATION_VIEWED), UserCmid.getInstance());
 		TYPES.put(get(ASSIGNMENT, SUBMISSION_CONFIRMATION_FORM_VIEWED), UserCmid.getInstance());
 		TYPES.put(get(ASSIGNMENT, SUBMISSION_FORM_VIEWED), UserCmid.getInstance());
 		TYPES.put(get(ASSIGNMENT, SUBMISSION_VIEWED), UserAffectedCmid.getInstance());
@@ -139,7 +94,9 @@ public class LogTypes {
 
 		TYPES.put(get(FILE_SUBMISSIONS, A_FILE_HAS_BEEN_UPLOADED), UserSubmissionCmid.getInstance());
 		TYPES.put(get(FILE_SUBMISSIONS, SUBMISSION_CREATED), UserFilesCmid.getInstance());
+		TYPES.put(get(FILE_SUBMISSIONS, SUBMISSION_CREATED_), UserFilesCmid.getInstance());
 		TYPES.put(get(FILE_SUBMISSIONS, SUBMISSION_UPDATED), UserFilesCmid.getInstance());
+		TYPES.put(get(FILE_SUBMISSIONS, SUBMISSION_UPDATED_), UserFilesCmid.getInstance());
 
 		TYPES.put(get(FOLDER, COURSE_MODULE_VIEWED), UserCmid.getInstance());
 		TYPES.put(get(FOLDER, FOLDER_UPDATED), UserCmid.getInstance());
@@ -313,6 +270,8 @@ public class LogTypes {
 		TYPES.put(get(SYSTEM, USER_PROFILE_VIEWED), UserAffectedCourse.getInstance());
 		TYPES.put(get(SYSTEM, USER_UNENROLLED_FROM_COURSE), UserAffectedCourse.getInstance());
 
+		TYPES.put(get(TAB_DISPLAY, COURSE_MODULE_VIEWED), UserCmid.getInstance());
+		
 		TYPES.put(get(TURNITIN_ASSIGNMENT_2, ADD_SUBMISSION), Ignore.getInstance());
 		TYPES.put(get(TURNITIN_ASSIGNMENT_2, LIST_SUBMISSIONS), Course.getInstance());
 

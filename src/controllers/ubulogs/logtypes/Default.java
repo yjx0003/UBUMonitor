@@ -2,6 +2,9 @@ package controllers.ubulogs.logtypes;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import model.LogLine;
 /**
  * 
@@ -11,6 +14,7 @@ import model.LogLine;
  */
 public class Default extends ReferencesLog {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(Default.class);
 		
 	/**
 	 * Instacia única de la clase Default.
@@ -39,6 +43,7 @@ public class Default extends ReferencesLog {
 	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
+		LOGGER.warn("No se ha añadido un manejador para el log {}" , log.getComponentEvent());
 		// do nothing
 
 	}

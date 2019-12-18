@@ -52,6 +52,7 @@ public enum Component {
 	SUBMISSION_COMMENTS("Submission comments"),
 	SURVEY("Survey"),
 	SYSTEM("System"),
+	TAB_DISPLAY("Tab display"),
 	TURNITIN_ASSIGNMENT_2("Turnitin Assignment 2"),
 	URL("URL"),
 	USER_REPORT("User report"),

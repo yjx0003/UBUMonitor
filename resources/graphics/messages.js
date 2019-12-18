@@ -1,7 +1,7 @@
 //------------------------------------------Traducción-----------------------------------------------------------------
 // Contiene el texto a mostrar para los distintos elementos e idiomas
 var messages = {
-	btnLineas : {
+	btnLine : {
 		en: "Lines",
 		es: "Líneas",
 		ca: "Línies",
@@ -119,7 +119,7 @@ function getI18n(item, lang) {
 
 // Establece el idioma
 function setLanguage(lang) {
-	getI18n("btnLineas", lang);
+	getI18n("btnLine", lang);
 	getI18n("btnRadar", lang);
 	getI18n("btnBoxPlot", lang);
 	getI18n("btnBoxPlotGroup", lang);
@@ -129,8 +129,7 @@ function setLanguage(lang) {
 	getI18n("btnGroupMean", lang);
 	getI18n("btnStackedBar", lang);
 	getI18n("btnHeatmap", lang);
-	document.getElementById("noradarText").innerHTML = messages["noradarText"][lang];
-	document.getElementById("noGroupText").innerHTML = messages["noGroupText"][lang];
+
 
 }
 

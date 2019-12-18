@@ -64,8 +64,7 @@ public class CreatorGradeItems {
 	/**
 	 * Constructor a partir del locale
 	 * 
-	 * @param locale
-	 *            locale
+	 * @param locale locale
 	 */
 	public CreatorGradeItems(Locale locale) {
 		decimalFormat = new DecimalFormat("###.##", new DecimalFormatSymbols(locale));
@@ -75,13 +74,10 @@ public class CreatorGradeItems {
 	 * Creamos los gradeItem a partir de la funcion
 	 * {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADES_TABLE}
 	 * 
-	 * @param courseid
-	 *            id del curso
+	 * @param courseid id del curso
 	 * @return lista de grade item
-	 * @throws JSONException
-	 *             error en el json
-	 * @throws IOException
-	 *             error de conexion con moodle
+	 * @throws JSONException error en el json
+	 * @throws IOException error de conexion con moodle
 	 */
 	public List<GradeItem> createGradeItems(int courseid) throws IOException {
 		WebService ws = new GradereportUserGetGradesTable(courseid);
@@ -99,14 +95,13 @@ public class CreatorGradeItems {
 	/**
 	 * Crea la jerarquia de padres e hijos en los grade item
 	 * 
-	 * @param jsonObject
-	 *            json
+	 * @param jsonObject json
 	 * @return lista de grade item
 	 */
 	private List<GradeItem> createHierarchyGradeItems(JSONObject jsonObject) {
 
 		JSONObject table = jsonObject.getJSONArray("tables").optJSONObject(0);
-		if (table == null) { //if there is no element in the gradereport
+		if (table == null) { // if there is no element in the gradereport
 			return Collections.emptyList();
 		}
 
@@ -176,10 +171,9 @@ public class CreatorGradeItems {
 	/**
 	 * Asigna el grade item al modulo del curso si existe
 	 * 
-	 * @param gradeItem
-	 *            grade item
-	 * @param contentString
-	 *            string con la posibilidad que contenga el id del modulo del curso
+	 * @param gradeItem grade item
+	 * @param contentString string con la posibilidad que contenga el id del modulo
+	 * del curso
 	 */
 	private void setCourseModule(GradeItem gradeItem, String contentString) {
 
@@ -222,10 +216,8 @@ public class CreatorGradeItems {
 	 * Convierte el rango de en calificacioens minimas y maximas posibles. Los que
 	 * son escala, las notas minima es 0 y maxima 100
 	 * 
-	 * @param gradeItem
-	 *            grade item
-	 * @param tabledataJsonObject
-	 *            json
+	 * @param gradeItem grade item
+	 * @param tabledataJsonObject json
 	 */
 	private void setGradeMinMax(GradeItem gradeItem, JSONObject tabledataJsonObject) {
 		if (!tabledataJsonObject.has("range")) {
@@ -258,10 +250,8 @@ public class CreatorGradeItems {
 	/**
 	 * Asigna el peso del grade item
 	 * 
-	 * @param gradeItem
-	 *            grade item
-	 * @param tabledataJsonObject
-	 *            json
+	 * @param gradeItem grade item
+	 * @param tabledataJsonObject json
 	 */
 	private void setWeight(GradeItem gradeItem, JSONObject tabledataJsonObject) {
 
@@ -289,10 +279,8 @@ public class CreatorGradeItems {
 	/**
 	 * Asigna las calificaciones a los usuarios.
 	 * 
-	 * @param jsonObject
-	 *            json
-	 * @param gradeItems
-	 *            lista de grade items
+	 * @param jsonObject json
+	 * @param gradeItems lista de grade items
 	 */
 	private void setEnrolledUserGrades(JSONObject jsonObject, List<GradeItem> gradeItems) {
 		JSONArray jsonArray = jsonObject.getJSONArray("tables");
@@ -322,12 +310,9 @@ public class CreatorGradeItems {
 	/**
 	 * Asigna la calificacion de un usario a un grade item
 	 * 
-	 * @param tabledataObject
-	 *            json
-	 * @param gradeItem
-	 *            grade item
-	 * @param enrolledUser
-	 *            usuario
+	 * @param tabledataObject json
+	 * @param gradeItem grade item
+	 * @param enrolledUser usuario
 	 */
 	private void setGrade(JSONObject tabledataObject, GradeItem gradeItem, EnrolledUser enrolledUser) {
 
@@ -361,12 +346,9 @@ public class CreatorGradeItems {
 	/**
 	 * Asigna la columna del porcentaje.
 	 * 
-	 * @param tabledataObject
-	 *            json
-	 * @param gradeItem
-	 *            gradeitem actual
-	 * @param enrolledUser
-	 *            usuario
+	 * @param tabledataObject json
+	 * @param gradeItem gradeitem actual
+	 * @param enrolledUser usuario
 	 */
 	private void setPercentage(JSONObject tabledataObject, GradeItem gradeItem, EnrolledUser enrolledUser) {
 
@@ -374,11 +356,13 @@ public class CreatorGradeItems {
 		double percentage = Double.NaN;
 		if (percentageJson != null) {
 			String content = percentageJson.optString(CONTENT);
+
 			try {
 				percentage = decimalFormat.parse(content).doubleValue();
 			} catch (ParseException e) {
 				LOGGER.warn("No se puede parsear {} a decimal", content);
 			}
+
 		}
 		gradeItem.addUserPercentage(enrolledUser, percentage);
 	}

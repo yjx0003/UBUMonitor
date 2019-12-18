@@ -8,7 +8,7 @@ package controllers;
  */
 public class AppInfo {
 
-	public static final String APPLICATION_VERSION = "v2.4.8-dev";
+	public static final String APPLICATION_VERSION = "v2.5.0-stable";
 
 	public static final String APPLICATION_NAME = "UBUMonitor " + APPLICATION_VERSION;
 
@@ -25,6 +25,8 @@ public class AppInfo {
 	public static final String IMG_DIR = "/img/";
 
 	public static final String IMG_FLAGS = IMG_DIR + "countries_flags/";
+
+	public static final String PROPERTIES_PATH = "config.properties";
 	
 	// Info del usuario
 	

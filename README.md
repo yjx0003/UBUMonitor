@@ -20,7 +20,7 @@ Esta versión es la continuación de [UBUGrades](https://github.com/huco95/UBUGr
 
 ## Dependencias:
 La aplicación requiere **Java 8**.
-Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), de **JavaScript** en [resources/graphics/lib/](resources/graphics/lib/) (excepto Google Charts) y un pack de iconos.
+Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), de **JavaScript** en [resources/graphics/lib/](resources/graphics/lib/) y un pack de iconos.
 
 ### Dependencias de Java:
 * [Apache Commons CSV](https://commons.apache.org/proper/commons-csv/)

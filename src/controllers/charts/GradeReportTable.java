@@ -84,7 +84,7 @@ public class GradeReportTable extends Tabulator {
 		if (useGroupButton && Buttons.getInstance().getShowGroupMean()) {
 			for (Group group : slcGroup.getItems()) {
 				if (group != null) {
-					array.add(addStats(gradeItems, I18n.get("chartlabel.groupMean") + " " + group.getGroupName(),
+					array.add(addStats(gradeItems, I18n.get("chart.mean") + " " + group.getGroupName(),
 							stats.getGroupStats(group)));
 
 				}

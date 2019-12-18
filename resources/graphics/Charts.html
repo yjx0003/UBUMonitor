@@ -282,9 +282,9 @@
         tab: "grade_tabs",
         button: "btnCalificaciones",
         invalidOptionWarnings: false,
-		
+		height:height,
         groupBy: "type",
-        virtualDom: false,
+        virtualDom: true,
         layout: "fitColumns", //fit columns to width of table (optional)
         rowClick: function (e, row) {
             javaConnector.dataPointSelection(row.getPosition());

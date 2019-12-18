@@ -27,7 +27,7 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 	private static final long serialVersionUID = 1L;
 
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
-
+	
 	/**
 	 * Constructor para agrupar la lineas de log en funcion de los usuarios.
 	 * 

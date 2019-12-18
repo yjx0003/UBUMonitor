@@ -2,6 +2,7 @@ package controllers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
@@ -10,6 +11,8 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.Connection.Method;
 import org.jsoup.Connection.Response;
@@ -37,11 +40,14 @@ public class Controller {
 	private Timer timer;
 
 	private DataBase dataBase;
+	private LocalDateTime loggedIn;
 
 	private URL host;
 	private Stage stage;
 	private String password;
 	private String username;
+	
+	private String sesskey;
 
 	private Map<String, String> cookies;
 
@@ -73,7 +79,7 @@ public class Controller {
 		return instance;
 	}
 
-	public void initialize() {
+	public void initialize() throws IOException {
 
 		setDataBase(new DataBase());
 		// Si no existe el recurso de idioma especificado cargamos el Español
@@ -93,6 +99,7 @@ public class Controller {
 					"No se ha podido encontrar el recurso de idioma, cargando idioma " + lang + ": {}", e);
 			setSelectedLanguage(Languages.ENGLISH_UK);
 		}
+		Config.initialize(AppInfo.PROPERTIES_PATH);
 	}
 
 	public Languages getSelectedLanguage() {
@@ -199,7 +206,10 @@ public class Controller {
 		URL hostURL = new URL(host);
 
 		WebService.initialize(hostURL.toString(), username, password);
-		cookies = loginWebScraping(hostURL.toString(), username, password);
+		Response response = loginWebScraping(hostURL.toString(), username, password);
+		cookies = response.cookies();
+		sesskey = findSesskey(response.body());
+		
 		setURLHost(hostURL);
 
 		setUsername(username);
@@ -269,7 +279,7 @@ public class Controller {
 	 * @throws IllegalStateException
 	 *             si no ha podido loguearse
 	 */
-	private Map<String, String> loginWebScraping(String host, String username, String password) {
+	private Response loginWebScraping(String host, String username, String password) {
 
 		try {
 			LOGGER.info("Logeandose para web scraping");
@@ -282,17 +292,28 @@ public class Controller {
 			Element e = loginDoc.selectFirst("input[name=logintoken]");
 			String logintoken = (e == null) ? "" : e.attr("value");
 
-			Response login = Jsoup.connect(host + "/login/index.php")
+			return Jsoup.connect(host + "/login/index.php")
 					.data("username", username, "password", password, "logintoken", logintoken)
 					.method(Method.POST)
 					.cookies(loginForm.cookies()).execute();
+			
 
-			return login.cookies();
+			
 		} catch (Exception e) {
 			LOGGER.error("Error al intentar loguearse", e);
 			throw new IllegalStateException("No se ha podido loguear al servidor");
 		}
 
+	}
+	
+	public String findSesskey(String html) {
+		Pattern pattern = Pattern.compile("sesskey=([\\w]+)");
+		Matcher m = pattern.matcher(html);
+		if (m.find()) {
+			return m.group(1);
+		}
+		LOGGER.warn("Didn't found a sesskey in principal page after login.");
+		return null;
 	}
 
 	/**
@@ -329,6 +350,22 @@ public class Controller {
 			timer.cancel();
 			LOGGER.debug("Temporizador apagado.");
 		}
+	}
+
+	public String getSesskey() {
+		return sesskey;
+	}
+
+	public void setSesskey(String sesskey) {
+		this.sesskey = sesskey;
+	}
+
+	public LocalDateTime getLoggedIn() {
+		return loggedIn;
+	}
+
+	public void setLoggedIn(LocalDateTime loggedIn) {
+		this.loggedIn = loggedIn;
 	}
 
 }

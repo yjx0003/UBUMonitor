@@ -1,4 +1,4 @@
-package controllers.datasets.stackedbar;
+package controllers.datasets;
 
 import java.awt.Color;
 import java.time.LocalDate;
@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import controllers.I18n;
-import controllers.datasets.DataSet;
 import controllers.ubulogs.GroupByAbstract;
 import model.EnrolledUser;
 import util.UtilMethods;
@@ -132,7 +131,7 @@ public class StackedBarDataSet<T> {
 		Map<EnrolledUser, Map<T, List<Long>>> userTDataset = dataSet.getUserCounts(groupBy, enrolledUsers, elements, start, end);
 
 		for (EnrolledUser user : selectedUsers) {
-			if (user==null) continue;
+		
 			Map<T, List<Long>> elementDataset = userTDataset.get(user);
 			for (T element : elements) {
 

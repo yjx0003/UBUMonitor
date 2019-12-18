@@ -2,26 +2,21 @@ package controllers;
 
 import java.awt.Desktop;
 import java.awt.Desktop.Action;
-import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -29,27 +24,18 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.imageio.ImageIO;
-import javax.xml.bind.DatatypeConverter;
-
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sun.javafx.webkit.WebConsoleListener;
 
-import controllers.datasets.DataSetComponent;
-import controllers.datasets.DataSetComponentEvent;
-import controllers.datasets.DataSetSection;
-import controllers.datasets.DatasSetCourseModule;
-import controllers.datasets.heatmap.HeatmapDataSet;
-import controllers.datasets.stackedbar.StackedBarDataSet;
 import controllers.ubulogs.GroupByAbstract;
 import export.CSVExport;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -67,6 +53,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
@@ -97,7 +84,7 @@ import model.ModuleType;
 import model.Role;
 import model.Section;
 import model.Stats;
-import netscape.javascript.JSException;
+import netscape.javascript.JSObject;
 
 /**
  * Clase controlador de la ventana principal
@@ -116,46 +103,49 @@ public class MainController implements Initializable {
 
 	private Controller controller = Controller.getInstance();
 
-	@FXML // Curso actual
+	@FXML
+	private SplitPane splitPaneLeft;
+
+	@FXML
 	private Label lblActualCourse;
-	@FXML // Usuario actual
+	@FXML
 	private Label lblActualUser;
-	@FXML // Host actual
+	@FXML
 	private Label lblActualHost;
 
 	@FXML
 	private Label lblLastUpdate;
-	@FXML // Imagen del usuario
+	@FXML
 	private ImageView userPhoto;
 
-	@FXML // Nº participantes
+	@FXML
 	private Label lblCountParticipants;
-	@FXML // lista de participantes
+	@FXML
 	private ListView<EnrolledUser> listParticipants;
-	private FilteredList<EnrolledUser> filteredEnrolledList;
+	FilteredList<EnrolledUser> filteredEnrolledList;
 
-	@FXML // Botón filtro por rol
+	@FXML
 	private ChoiceBox<Role> slcRole;
 
-	@FXML // Botón filtro por grupo
+	@FXML
 	private ChoiceBox<Group> slcGroup;
 
-	@FXML // Boton filtro por ultima conexion al curso
+	@FXML
 	private ChoiceBox<LastActivity> slcActivity;
 
-	@FXML // Entrada de filtro de usuarios por patrón
+	@FXML
 	private TextField tfdParticipants;
 
-	@FXML // Vista en árbol de actividades
+	@FXML
 	private TreeView<GradeItem> tvwGradeReport;
 
-	@FXML // Entrada de filtro de actividades por patrón
+	@FXML
 	private TextField tfdItems;
 
-	@FXML // Botón filtro por tipo de modulo
+	@FXML
 	private ChoiceBox<ModuleType> slcType;
 
-	@FXML // Gráfico de lineas
+	@FXML
 	private WebView webViewCharts;
 	private WebEngine webViewChartsEngine;
 
@@ -170,9 +160,6 @@ public class MainController implements Initializable {
 
 	@FXML
 	private Tab tabUbuLogs;
-
-	@FXML
-	private TabPane tabPaneUbuLogs;
 
 	@FXML
 	private Tab tabUbuLogsComponent;
@@ -225,26 +212,19 @@ public class MainController implements Initializable {
 
 	@FXML
 	private ChoiceBox<GroupByAbstract<?>> choiceBoxDate;
-	private GroupByAbstract<?> selectedChoiceBoxDate;
 
 	@FXML
 	private DatePicker datePickerStart;
-	private LocalDate dateStart;
+
 	@FXML
 	private DatePicker datePickerEnd;
-	private LocalDate dateEnd;
+
+	@FXML
+	private ProgressBar progressBar;
 
 	private Stats stats;
 
-	private StackedBarDataSet<Component> stackedBarComponent = new StackedBarDataSet<>();
-	private StackedBarDataSet<ComponentEvent> stackedBarEvent = new StackedBarDataSet<>();
-	private StackedBarDataSet<Section> stackedBarSection = new StackedBarDataSet<>();
-	private StackedBarDataSet<CourseModule> stackedBarCourseModule = new StackedBarDataSet<>();
-	
-	private HeatmapDataSet<Component> heatmapComponent = new HeatmapDataSet<>();
-	private HeatmapDataSet<ComponentEvent> heatmapEvent = new HeatmapDataSet<>();
-	private HeatmapDataSet<Section> heatmapSection = new HeatmapDataSet<>();
-	private HeatmapDataSet<CourseModule> heatmapCourseModule = new HeatmapDataSet<>();
+	private JavaConnector javaConnector;
 
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades de
@@ -252,26 +232,12 @@ public class MainController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+
 		try {
-			LOGGER.info(
-					"Completada la carga del curso {}", controller.getActualCourse().getFullName());
+			LOGGER.info("Completada la carga del curso {}", controller.getActualCourse().getFullName());
 
 			stats = controller.getStats();
-
-			// Cargamos el html de los graficos y calificaciones
-			webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
-			webViewChartsEngine = webViewCharts.getEngine();
-
-			webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html").toExternalForm());
-			// Comprobamos cuando se carga la pagina para traducirla
-			webViewChartsEngine.getLoadWorker().stateProperty()
-					.addListener((ov, oldState, newState) -> webViewChartsEngine.executeScript(
-							"setLanguage('" + I18n.getResourceBundle().getLocale() + "')"));
-			
-			WebConsoleListener.setDefaultListener((webView, message, lineNumber, sourceId) -> {
-			    LOGGER.error("{} [{} at {}] {}", message,sourceId,lineNumber);
-			});
-
+			initTabPaneWebView();
 			initLogOptionsFilter();
 
 			initTabGrades();
@@ -282,23 +248,49 @@ public class MainController implements Initializable {
 			initiGradeItems();
 
 			// Mostramos Usuario logeado y su imagen
-			lblActualUser.setText(
-					I18n.get("label.user") + " " + controller.getUser().getFullName());
+			lblActualUser.setText(I18n.get("label.user") + " " + controller.getUser().getFullName());
 			userPhoto.setImage(controller.getUser().getUserPhoto());
 
 			// Mostramos Curso actual
-			lblActualCourse.setText(I18n.get("label.course") + " "
-					+ controller.getActualCourse().getFullName());
+			lblActualCourse.setText(controller.getActualCourse().getFullName());
 
 			// Mostramos Host actual
-			lblActualHost.setText(I18n.get("label.host") + " " + controller.getUrlHost());
+			lblActualHost.setText(controller.getUrlHost().toString());
 			ZonedDateTime lastLogDateTime = controller.getActualCourse().getLogs().getLastDatetime();
 			lblLastUpdate.setText(
-					I18n.get("label.lastupdate") + " " +
-							lastLogDateTime.format(Controller.DATE_TIME_FORMATTER));
+					I18n.get("label.lastupdate") + " " + lastLogDateTime.format(Controller.DATE_TIME_FORMATTER));
 		} catch (Exception e) {
 			LOGGER.error("Error en la inicialización.", e);
 		}
+	}
+
+	private void initTabPaneWebView() {
+		// Cargamos el html de los graficos y calificaciones
+		webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
+		webViewChartsEngine = webViewCharts.getEngine();
+		javaConnector = new JavaConnector(this);
+
+		progressBar.progressProperty().bind(webViewChartsEngine.getLoadWorker().progressProperty());
+		splitPaneLeft.disableProperty().bind(webViewChartsEngine.getLoadWorker().runningProperty());
+
+		WebConsoleListener.setDefaultListener((webView, message, lineNumber, sourceId) -> {
+			LOGGER.error("{} [{} at {}] ", message, sourceId, lineNumber);
+			//errorWindow(message + "[" + sourceId + " at " + lineNumber, false);
+		});
+		// Comprobamos cuando se carga la pagina para traducirla
+		webViewChartsEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
+			if (Worker.State.SUCCEEDED != newState)
+				return;
+			JSObject window = (JSObject) webViewChartsEngine.executeScript("window");
+			window.setMember("javaConnector", javaConnector);
+			webViewChartsEngine.executeScript("setLanguage()");
+			webViewCharts.toFront();
+			javaConnector.setDefaultValues();
+
+			javaConnector.updateChart();
+		});
+		webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html").toExternalForm());
+
 	}
 
 	private void initiGradeItems() {
@@ -348,13 +340,13 @@ public class MainController implements Initializable {
 		// Al clickar en la lista, se recalcula el nº de elementos seleccionados
 		// Generamos el gráfico con los elementos selecionados
 		tvwGradeReport.getSelectionModel().getSelectedItems()
-				.addListener((Change<? extends TreeItem<GradeItem>> g) -> updateGradesChart());
+				.addListener((Change<? extends TreeItem<GradeItem>> g) -> javaConnector.updateChart());
 	}
 
 	private void initEnrolledUsers() {
 		// Mostramos nº participantes
-		lblCountParticipants.setText(I18n.get("label.participants")
-				+ controller.getActualCourse().getEnrolledUsersCount());
+		lblCountParticipants
+				.setText(I18n.get("label.participants") + controller.getActualCourse().getEnrolledUsersCount());
 		tfdParticipants.setOnAction(event -> filterParticipants());
 		initEnrolledUsersListView();
 
@@ -451,11 +443,7 @@ public class MainController implements Initializable {
 		listParticipants.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		listParticipants.getSelectionModel().getSelectedItems()
-				.addListener(
-						(Change<? extends EnrolledUser> usersSelected) -> {
-							updateGradesChart();
-							updateLogsChart();
-						});
+				.addListener((Change<? extends EnrolledUser> usersSelected) -> javaConnector.updateChart());
 
 		/// Mostramos la lista de participantes
 		listParticipants.setItems(filteredEnrolledList);
@@ -471,15 +459,13 @@ public class MainController implements Initializable {
 					Instant lastCourseAccess = user.getLastcourseaccess();
 					Instant lastAccess = user.getLastaccess();
 					Instant lastLogInstant = controller.getActualCourse().getLogs().getLastDatetime().toInstant();
-					setText(user + "\n"
-							+ I18n.get("label.course") + formatDates(lastCourseAccess, lastLogInstant) +
-							" | " + I18n.get("text.moodle") + formatDates(lastAccess, lastLogInstant));
+					setText(user + "\n" + I18n.get("label.course") + formatDates(lastCourseAccess, lastLogInstant)
+							+ " | " + I18n.get("text.moodle") + formatDates(lastAccess, lastLogInstant));
 
 					setTextFill(LastActivityFactory.getColorActivity(lastCourseAccess, lastLogInstant));
 
 					try {
-						Image image = new Image(new ByteArrayInputStream(user.getImageBytes()), 50, 50, false,
-								false);
+						Image image = new Image(new ByteArrayInputStream(user.getImageBytes()), 50, 50, false, false);
 						setGraphic(new ImageView(image));
 
 					} catch (Exception e) {
@@ -497,10 +483,8 @@ public class MainController implements Initializable {
 	 * segundos siempre y cuando no sean 0. Si la diferencias de dias es 0 se busca
 	 * por horas, y asi consecutivamente.
 	 * 
-	 * @param lastCourseAccess
-	 *            fecha inicio
-	 * @param lastLogInstant
-	 *            fecha fin
+	 * @param lastCourseAccess fecha inicio
+	 * @param lastLogInstant fecha fin
 	 * @return texto con el numero y el tipo de tiempo
 	 */
 	private String formatDates(Instant lastCourseAccess, Instant lastLogInstant) {
@@ -533,12 +517,9 @@ public class MainController implements Initializable {
 	 * Devuelve la difernecia absoluta entre dos instantes dependiendo de que sea el
 	 * tipo
 	 * 
-	 * @param type
-	 *            dias, horas, minutos
-	 * @param lastCourseAccess
-	 *            instante inicio
-	 * @param lastLogInstant
-	 *            instante fin
+	 * @param type dias, horas, minutos
+	 * @param lastCourseAccess instante inicio
+	 * @param lastLogInstant instante fin
 	 * @return numero de diferencia absoluta
 	 */
 	private long betweenDates(ChronoUnit type, Instant lastCourseAccess, Instant lastLogInstant) {
@@ -565,7 +546,6 @@ public class MainController implements Initializable {
 				.observableArrayList(controller.getActualCourse().getLogStats().getList());
 		choiceBoxDate.setItems(typeTimes);
 		choiceBoxDate.getSelectionModel().select(controller.getActualCourse().getLogStats().getByType());
-		selectedChoiceBoxDate = choiceBoxDate.getValue();
 
 		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> {
 			applyFilterLogs();
@@ -593,14 +573,12 @@ public class MainController implements Initializable {
 
 		datePickerStart.setOnAction(event -> applyFilterLogs());
 		datePickerEnd.setOnAction(event -> applyFilterLogs());
-		dateStart = datePickerStart.getValue();
-		dateEnd = datePickerEnd.getValue();
 
 		datePickerStart.setDayCellFactory(picker -> new DateCell() {
 			@Override
 			public void updateItem(LocalDate date, boolean empty) {
 				super.updateItem(date, empty);
-				setDisable(empty || date.isAfter(dateEnd));
+				setDisable(empty || date.isAfter(datePickerEnd.getValue()));
 			}
 		});
 
@@ -608,24 +586,23 @@ public class MainController implements Initializable {
 			@Override
 			public void updateItem(LocalDate date, boolean empty) {
 				super.updateItem(date, empty);
-				setDisable(empty || date.isBefore(dateStart) || date.isAfter(LocalDate.now()));
+				setDisable(empty || date.isBefore(datePickerStart.getValue()) || date.isAfter(LocalDate.now()));
 			}
 		});
 
-		optionsUbuLogs.setVisible(false);
-		optionsUbuLogs.setManaged(false);
+		optionsUbuLogs.visibleProperty().bind(tabUbuLogs.selectedProperty());
+		optionsUbuLogs.managedProperty().bind(tabUbuLogs.selectedProperty());
 
 	}
 
 	/**
 	 * Actualiza la escala maxima del eje y de los graficos de logs.
 	 * 
-	 * @param value
-	 *            valor de escala maxima
+	 * @param value valor de escala maxima
 	 */
 	private void updateMaxScale(long value) {
-
-		webViewChartsEngine.executeScript("changeYMax(" + value + ")");
+		if (webViewChartsEngine.getLoadWorker().getState() == Worker.State.SUCCEEDED)
+			javaConnector.updateMaxY(value);
 
 	}
 
@@ -633,6 +610,7 @@ public class MainController implements Initializable {
 	 * Inicializa la lista de componentes de la pestaña Registros
 	 */
 	public void initTabLogs() {
+		tabPane.getSelectionModel().select(tabUbuLogs);
 
 		tabUbuLogs.setOnSelectionChanged(this::setTablogs);
 
@@ -649,7 +627,7 @@ public class MainController implements Initializable {
 		for (Tab tab : tabs) {
 			tab.setOnSelectionChanged(event -> {
 				if (tab.isSelected()) {
-					updateLogsChart();
+					javaConnector.updateChart();
 					findMax();
 				}
 			});
@@ -663,11 +641,10 @@ public class MainController implements Initializable {
 	public void initListViewComponents() {
 		// cada vez que se seleccione nuevos elementos del list view actualizamos la
 		// grafica y la escala
-		listViewComponents.getSelectionModel().getSelectedItems()
-				.addListener((Change<? extends Component> c) -> {
-					updateLogsChart();
-					findMax();
-				});
+		listViewComponents.getSelectionModel().getSelectedItems().addListener((Change<? extends Component> c) -> {
+			javaConnector.updateChart();
+			findMax();
+		});
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
@@ -717,11 +694,10 @@ public class MainController implements Initializable {
 	 * Inicializa los elementos de la pestaña eventos.
 	 */
 	public void initListViewComponentsEvents() {
-		listViewEvents.getSelectionModel().getSelectedItems()
-				.addListener((Change<? extends ComponentEvent> c) -> {
-					updateLogsChart();
-					findMax();
-				});
+		listViewEvents.getSelectionModel().getSelectedItems().addListener((Change<? extends ComponentEvent> c) -> {
+			javaConnector.updateChart();
+			findMax();
+		});
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
@@ -734,8 +710,7 @@ public class MainController implements Initializable {
 					setText(null);
 					setGraphic(null);
 				} else {
-					setText(I18n.get(componentEvent.getComponent()) + " - "
-							+ I18n.get(componentEvent.getEventName()));
+					setText(I18n.get(componentEvent.getComponent()) + " - " + I18n.get(componentEvent.getEventName()));
 					try {
 						Image image = new Image(
 								AppInfo.IMG_DIR + componentEvent.getComponent().name().toLowerCase() + ".png");
@@ -750,9 +725,8 @@ public class MainController implements Initializable {
 		List<ComponentEvent> uniqueComponentsEvents = controller.getActualCourse().getUniqueComponentsEvents();
 
 		// Ordenamos los componentes segun los nombres internacionalizados
-		uniqueComponentsEvents
-				.sort(Comparator.comparing((ComponentEvent c) -> I18n.get(c.getComponent()))
-						.thenComparing((ComponentEvent c) -> I18n.get(c.getEventName())));
+		uniqueComponentsEvents.sort(Comparator.comparing((ComponentEvent c) -> I18n.get(c.getComponent()))
+				.thenComparing((ComponentEvent c) -> I18n.get(c.getEventName())));
 
 		ObservableList<ComponentEvent> observableListComponents = FXCollections
 				.observableArrayList(uniqueComponentsEvents);
@@ -778,11 +752,10 @@ public class MainController implements Initializable {
 	public void initListViewSections() {
 		// cada vez que se seleccione nuevos elementos del list view actualizamos la
 		// grafica y la escala
-		listViewSection.getSelectionModel().getSelectedItems()
-				.addListener((Change<? extends Section> section) -> {
-					updateLogsChart();
-					findMax();
-				});
+		listViewSection.getSelectionModel().getSelectedItems().addListener((Change<? extends Section> section) -> {
+			javaConnector.updateChart();
+			findMax();
+		});
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
@@ -797,17 +770,15 @@ public class MainController implements Initializable {
 
 		// ponemos un listener al cuadro de texto para que se filtre el list view en
 		// tiempo real
-		sectionTextField.textProperty()
-				.addListener((observable, oldValue, newValue) -> {
-					filterSections.setPredicate(getSectionPredicate());
-					listViewSection.setCellFactory(getListCellSection());
-				});
+		sectionTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+			filterSections.setPredicate(getSectionPredicate());
+			listViewSection.setCellFactory(getListCellSection());
+		});
 
-		checkBoxSection.selectedProperty().addListener(
-				section -> {
-					filterSections.setPredicate(getSectionPredicate());
-					listViewSection.setCellFactory(getListCellSection());
-				});
+		checkBoxSection.selectedProperty().addListener(section -> {
+			filterSections.setPredicate(getSectionPredicate());
+			listViewSection.setCellFactory(getListCellSection());
+		});
 	}
 
 	private Callback<ListView<Section>, ListCell<Section>> getListCellSection() {
@@ -818,27 +789,28 @@ public class MainController implements Initializable {
 				if (empty) {
 					setText(null);
 					setGraphic(null);
-				} else {
-					String sectionName = section.getName();
-					setText(sectionName == null || sectionName.trim().isEmpty() ? I18n.get("text.sectionplaceholder")
-							: sectionName);
+					return;
+				}
+				String sectionName = section.getName();
+				setText(sectionName == null || sectionName.trim().isEmpty() ? I18n.get("text.sectionplaceholder")
+						: sectionName);
 
-					try {
-						if (!section.isVisible()) {
-							setTextFill(Color.GRAY);
-						} else {
-							setTextFill(Color.BLACK);
-						}
-
-						String visible = section.isVisible() ? "visible" : "not_visible";
-
-						Image image = new Image(AppInfo.IMG_DIR + visible + ".png");
-						setGraphic(new ImageView(image));
-					} catch (Exception e) {
-						setGraphic(null);
+				try {
+					if (!section.isVisible()) {
+						setTextFill(Color.GRAY);
+					} else {
+						setTextFill(Color.BLACK);
 					}
+
+					String visible = section.isVisible() ? "visible" : "not_visible";
+
+					Image image = new Image(AppInfo.IMG_DIR + visible + ".png");
+					setGraphic(new ImageView(image));
+				} catch (Exception e) {
+					setGraphic(null);
 				}
 			}
+
 		};
 	}
 
@@ -856,7 +828,7 @@ public class MainController implements Initializable {
 		// grafica y la escala
 		listViewCourseModule.getSelectionModel().getSelectedItems()
 				.addListener((Change<? extends CourseModule> courseModule) -> {
-					updateLogsChart();
+					javaConnector.updateChart();
 					findMax();
 				});
 
@@ -895,22 +867,20 @@ public class MainController implements Initializable {
 
 		// ponemos un listener al cuadro de texto para que se filtre el list view en
 		// tiempo real
-		courseModuleTextField.textProperty()
-				.addListener((observable, oldValue, newValue) -> {
-					filterCourseModules.setPredicate(getCourseModulePredicate());
-					listViewCourseModule.setCellFactory(getListCellCourseModule());
-				});
+		courseModuleTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+			filterCourseModules.setPredicate(getCourseModulePredicate());
+			listViewCourseModule.setCellFactory(getListCellCourseModule());
+		});
 
 		checkBoxCourseModule.selectedProperty().addListener(c -> {
 			filterCourseModules.setPredicate(getCourseModulePredicate());
 			listViewCourseModule.setCellFactory(getListCellCourseModule());
 		});
 
-		choiceBoxCourseModule.valueProperty()
-				.addListener(c -> {
-					filterCourseModules.setPredicate(getCourseModulePredicate());
-					listViewCourseModule.setCellFactory(getListCellCourseModule());
-				});
+		choiceBoxCourseModule.valueProperty().addListener(c -> {
+			filterCourseModules.setPredicate(getCourseModulePredicate());
+			listViewCourseModule.setCellFactory(getListCellCourseModule());
+		});
 
 	}
 
@@ -941,8 +911,7 @@ public class MainController implements Initializable {
 	}
 
 	private Predicate<CourseModule> getCourseModulePredicate() {
-		return cm -> containsTextField(courseModuleTextField.getText(),
-				cm.getModuleName())
+		return cm -> containsTextField(courseModuleTextField.getText(), cm.getModuleName())
 				&& (checkBoxCourseModule.isSelected() || cm.isVisible())
 				&& (choiceBoxCourseModule.getValue() == null || choiceBoxCourseModule.getValue() == cm.getModuleType());
 	}
@@ -956,76 +925,18 @@ public class MainController implements Initializable {
 	}
 
 	/**
-	 * Actualiza los graficos de log en funcion de que subpestaña esta seleccionada
-	 */
-	private void updateLogsChart() {
-		if (!tabUbuLogs.isSelected()) {
-			return;
-		}
-
-		String stackedbardataset = null;
-		String heatmapdataset=null;
-		
-		List<EnrolledUser> selectedUsers = new ArrayList<>(listParticipants.getSelectionModel().getSelectedItems());
-		List<EnrolledUser> enrolledUsers = new ArrayList<>(listParticipants.getItems());
-		if (tabUbuLogsComponent.isSelected()) {
-
-			stackedbardataset = stackedBarComponent.createData(enrolledUsers,selectedUsers,
-					listViewComponents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart,
-					dateEnd, DataSetComponent.getInstance());
-			
-			heatmapdataset= heatmapComponent.createSeries(enrolledUsers,selectedUsers,
-					listViewComponents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart,
-					dateEnd, DataSetComponent.getInstance());
-		} else if (tabUbuLogsEvent.isSelected()) {
-			stackedbardataset = stackedBarEvent.createData(enrolledUsers,selectedUsers,
-					listViewEvents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd,
-					DataSetComponentEvent.getInstance());
-			heatmapdataset = heatmapEvent.createSeries(enrolledUsers,selectedUsers,
-					listViewEvents.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd,
-					DataSetComponentEvent.getInstance());
-		} else if (tabUbuLogsSection.isSelected()) {
-			stackedbardataset = stackedBarSection.createData(enrolledUsers,selectedUsers,
-					listViewSection.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart, dateEnd, DataSetSection.getInstance());
-			heatmapdataset= heatmapSection.createSeries(enrolledUsers,selectedUsers,
-					listViewSection.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart,
-					dateEnd, DataSetSection.getInstance());
-		} else if (tabUbuLogsCourseModule.isSelected()) {
-			stackedbardataset = stackedBarCourseModule.createData(enrolledUsers,selectedUsers,
-					listViewCourseModule.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart,
-					dateEnd, DatasSetCourseModule.getInstance());
-			heatmapdataset= heatmapCourseModule.createSeries(enrolledUsers,selectedUsers,
-					listViewCourseModule.getSelectionModel().getSelectedItems(), selectedChoiceBoxDate, dateStart,
-					dateEnd, DatasSetCourseModule.getInstance());
-		}
-		String categories = HeatmapDataSet.createCategory(selectedChoiceBoxDate, dateStart, dateEnd);
-		LOGGER.info("Dataset para el stacked bar en JS: {}", stackedbardataset);
-		LOGGER.info("Dataset para el heatmap en JS: {}", heatmapdataset);
-		
-		LOGGER.info("Categorias del heatmap en JS: {}", categories);
-		webViewChartsEngine.executeScript("updateChart('stackedBar'," + stackedbardataset + ")");
-		webViewChartsEngine.executeScript(String.format("updateHeatmap(%s,%s)", categories,heatmapdataset));
-
-	}
-
-	/**
 	 * Metodo que se activa cuando se modifica la pestaña de logs o calificaciones
 	 * 
-	 * @param event
-	 *            evento
+	 * @param event evento
 	 */
 	public void setTablogs(Event event) {
 		if (!tabUbuLogs.isSelected()) {
-			optionsUbuLogs.setVisible(false);
-			optionsUbuLogs.setManaged(false);
 			return;
 		}
-		optionsUbuLogs.setVisible(true);
-		optionsUbuLogs.setManaged(true);
-
-		updateLogsChart();
+		javaConnector.setCurrentType(javaConnector.getCurrentTypeLogs());
+		javaConnector.updateChart();
 		findMax();
-		webViewChartsEngine.executeScript("manageLogsButtons()");
+		webViewChartsEngine.executeScript("manageButtons('log')");
 	}
 
 	/**
@@ -1037,21 +948,21 @@ public class MainController implements Initializable {
 		}
 		long maxYAxis = 1L;
 		if (tabUbuLogsComponent.isSelected()) {
-			maxYAxis = selectedChoiceBoxDate.getComponents().getMaxElement(listParticipants.getItems(),
-					listViewComponents.getSelectionModel().getSelectedItems(),
-					dateStart, dateEnd);
+			maxYAxis = choiceBoxDate.getValue().getComponents().getMaxElement(listParticipants.getItems(),
+					listViewComponents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					datePickerEnd.getValue());
 		} else if (tabUbuLogsEvent.isSelected()) {
-			maxYAxis = selectedChoiceBoxDate.getComponentsEvents().getMaxElement(
-					listParticipants.getItems(),
-					listViewEvents.getSelectionModel().getSelectedItems(), dateStart, dateEnd);
+			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getMaxElement(listParticipants.getItems(),
+					listViewEvents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					datePickerEnd.getValue());
 		} else if (tabUbuLogsSection.isSelected()) {
-			maxYAxis = selectedChoiceBoxDate.getSections().getMaxElement(
-					listParticipants.getItems(),
-					listViewSection.getSelectionModel().getSelectedItems(), dateStart, dateEnd);
+			maxYAxis = choiceBoxDate.getValue().getSections().getMaxElement(listParticipants.getItems(),
+					listViewSection.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					datePickerEnd.getValue());
 		} else if (tabUbuLogsCourseModule.isSelected()) {
-			maxYAxis = selectedChoiceBoxDate.getCourseModules().getMaxElement(
-					listParticipants.getItems(),
-					listViewCourseModule.getSelectionModel().getSelectedItems(), dateStart, dateEnd);
+			maxYAxis = choiceBoxDate.getValue().getCourseModules().getMaxElement(listParticipants.getItems(),
+					listViewCourseModule.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					datePickerEnd.getValue());
 		}
 		textFieldMax.setText(Long.toString(maxYAxis));
 	}
@@ -1060,7 +971,7 @@ public class MainController implements Initializable {
 	 * Inicializa los elementos de las graficas de calificacion.
 	 */
 	public void initTabGrades() {
-		tabPane.getSelectionModel().select(tabUbuGrades);
+
 		tabUbuGrades.setOnSelectionChanged(this::setTabGrades);
 
 	}
@@ -1068,35 +979,26 @@ public class MainController implements Initializable {
 	/**
 	 * Se activa cuando se cambia de pestaña de registros o calificaciones
 	 * 
-	 * @param event
-	 *            evento
+	 * @param event evento
 	 */
 	public void setTabGrades(Event event) {
 		if (!tabUbuGrades.isSelected()) {
 			return;
 		}
-
-		updateGradesChart();
-		webViewChartsEngine.executeScript("manageGradesButtons()");
+		javaConnector.setCurrentType(javaConnector.getCurrentTypeGrades());
+		javaConnector.updateChart();
+		webViewChartsEngine.executeScript("manageButtons('grade')");
 
 	}
 
 	/**
 	 * Aplica los filtros de fecha a las graficas de log.
 	 * 
-	 * @param event
-	 *            evento
+	 * @param event evento
 	 */
 	public void applyFilterLogs() {
 
-		LocalDate start = datePickerStart.getValue();
-		LocalDate end = datePickerEnd.getValue();
-
-		selectedChoiceBoxDate = choiceBoxDate.getSelectionModel().getSelectedItem();
-		dateStart = start;
-		dateEnd = end;
-
-		updateLogsChart();
+		javaConnector.updateChart();
 		findMax();
 	}
 
@@ -1110,14 +1012,14 @@ public class MainController implements Initializable {
 		LastActivity lastActivity = slcActivity.getValue();
 		String textField = tfdParticipants.getText().toLowerCase();
 		Instant lastLogInstant = controller.getActualCourse().getLogs().getLastDatetime().toInstant();
-		filteredEnrolledList.setPredicate(
-				e -> (rol == null || rol.contains(e))
-						&& (group == null || group.contains(e))
-						&& (textField.isEmpty() || e.getFullName().toLowerCase().contains(textField))
-						&& (lastActivity == null || LastActivityFactory.getColorActivity(e.getLastcourseaccess(),
-								lastLogInstant) == lastActivity.getColor()));
+		filteredEnrolledList.setPredicate(e -> (rol == null || rol.contains(e)) && (group == null || group.contains(e))
+				&& (textField.isEmpty() || e.getFullName().toLowerCase().contains(textField))
+				&& (lastActivity == null || LastActivityFactory.getColorActivity(e.getLastcourseaccess(),
+						lastLogInstant) == lastActivity.getColor()));
 		// Mostramos nº participantes
 		lblCountParticipants.setText(I18n.get("label.participants") + filteredEnrolledList.size());
+		javaConnector.updateChart();
+
 		findMax();
 	}
 
@@ -1126,10 +1028,8 @@ public class MainController implements Initializable {
 	 * pasada por parámetro, los transforma en treeitems y los establece como hijos
 	 * del elemento treeItem equivalente de line
 	 * 
-	 * @param parent
-	 *            El padre al que añadir los elementos.
-	 * @param line
-	 *            La linea con los elementos a añadir.
+	 * @param parent El padre al que añadir los elementos.
+	 * @param line La linea con los elementos a añadir.
 	 */
 	public void setTreeview(TreeItem<GradeItem> parent, GradeItem line) {
 		for (int j = 0; j < line.getChildren().size(); j++) {
@@ -1144,8 +1044,7 @@ public class MainController implements Initializable {
 	/**
 	 * Añade un icono a cada elemento del árbol según su tipo de actividad
 	 * 
-	 * @param item
-	 *            El item al que añadir el icono.
+	 * @param item El item al que añadir el icono.
 	 */
 	public static void setIcon(TreeItem<GradeItem> item) {
 		String path = null;
@@ -1212,27 +1111,27 @@ public class MainController implements Initializable {
 	/**
 	 * Exporta el gráfico. Se exportara como imagen en formato png.
 	 * 
-	 * @param actionEvent
-	 *            El ActionEvent.
-	 * @throws IOException
-	 *             excepción
+	 * @param actionEvent El ActionEvent.
+	 * @throws IOException excepción
 	 */
 	public void saveChart(ActionEvent actionEvent) throws IOException {
-		File file = new File("chart.png");
 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Guardar gráfico");
 
-		fileChooser.setInitialFileName("chart.png");
-		fileChooser.setInitialDirectory(file.getParentFile());
+		fileChooser.setInitialFileName(String.format("%s_%s_%s.png", controller.getActualCourse().getId(),
+				LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
+				javaConnector.getCurrentType().getChartType()));
+		fileChooser.setInitialDirectory(new File(Config.getProperty("imageFolderPath", "./")));
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(".png", "*.png"));
 		try {
-			file = fileChooser.showSaveDialog(controller.getStage());
+			File file = fileChooser.showSaveDialog(controller.getStage());
 			if (file != null) {
-				String str = (String) webViewChartsEngine.executeScript("exportCurrentElemet()");
-				byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
-				BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
-				ImageIO.write(bufferedImage, "png", file);
+				String str = javaConnector.export(file);
+				if (str == null)
+					return;
+				javaConnector.saveImage(str);
+				Config.setProperty("imageFolderPath", file.getParent());
 			}
 		} catch (IOException e) {
 			LOGGER.error("Error al guardar el gráfico: {}", e);
@@ -1241,17 +1140,24 @@ public class MainController implements Initializable {
 	}
 
 	/**
+	 * Exporta todos los gráficos a un html.
+	 * 
+	 * @param actionEvent El ActionEvent.
+	 */
+	public void updateCourse(ActionEvent actionEvent) {
+		changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController(true));
+	}
+
+	/**
 	 * Exporta todos los datos actuales en formato CSV.
 	 * 
-	 * @param actionEvent
-	 *            evento
+	 * @param actionEvent evento
 	 * @since 2.4.0.0
 	 */
 	public void exportCSV(ActionEvent actionEvent) {
 		LOGGER.info("Exportando ficheros CSV");
 		try {
 			CSVExport.run();
-			// Si todo va con éxito, informamos.
 			infoWindow(I18n.get("message.export_csv_success"), false);
 		} catch (Exception e) {
 			LOGGER.error("Error al exportar ficheros CSV.", e);
@@ -1260,69 +1166,21 @@ public class MainController implements Initializable {
 	}
 
 	/**
-	 * Exporta todos los gráficos a un html.
-	 * 
-	 * @param actionEvent
-	 *            El ActionEvent.
-	 */
-	public void saveAll(ActionEvent actionEvent) {
-		LOGGER.info("Exportando los gráficos");
-		PrintWriter out = null;
-
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Guardar Todo");
-		fileChooser.setInitialFileName("Gráficos.html");
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(".html", "*.html"));
-		File file = fileChooser.showSaveDialog(controller.getStage());
-		// Copiamos la plantilla de exportacion, ExportChart.html al nuevo archivo
-		if (file != null) {
-			try (FileWriter fw = new FileWriter(file)) {
-				InputStream fr = getClass().getResourceAsStream("/graphics/ExportCharts.html");
-				int c = fr.read();
-				while (c != -1) {
-					fw.write(c);
-					c = fr.read();
-				}
-
-				// Completamos el nuevo archivo con los dataSets de los gráficos
-				out = new PrintWriter(new BufferedWriter(fw));
-				String generalDataSet = generateGradesDataSet();
-				out.println(
-						"\r\nvar userLang = \"" + I18n.getResourceBundle().getLocale().toString() + "\";\r\n");
-				out.println("\r\nvar LineDataSet = " + generalDataSet + ";\r\n");
-				out.println("var RadarDataSet = " + generalDataSet + ";\r\n");
-				out.println("var BoxPlotGeneralDataSet = " + generateBoxPlotDataSet(null) + ";\r\n");
-				out.println("var BoxPlotGroupDataSet = " + generateBoxPlotDataSet(slcGroup.getValue())
-						+ ";\r\n");
-				out.println("var TableDataSet = " + generateTableData() + ";\r\n");
-				out.println("</script>\r\n</body>\r\n</html>");
-
-				fr.close();
-				out.close();
-			} catch (IOException e) {
-				LOGGER.error("Error al exportar los gráficos.", e);
-				errorWindow(I18n.get("error.saveallcharts"), false);
-			}
-		}
-	}
-
-	/**
 	 * Cambia a la ventana de selección de asignatura.
 	 * 
-	 * @param actionEvent
-	 *            El ActionEvent.
+	 * @param actionEvent El ActionEvent.
 	 * 
 	 */
 	public void changeCourse(ActionEvent actionEvent) {
 		LOGGER.info("Cambiando de asignatura...");
-		changeScene(getClass().getResource("/view/Welcome.fxml"));
+		changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController());
+
 	}
 
 	/**
 	 * Vuelve a la ventana de login de usuario.
 	 * 
-	 * @param actionEvent
-	 *            El ActionEvent.
+	 * @param actionEvent El ActionEvent.
 	 */
 	public void logOut(ActionEvent actionEvent) {
 		LOGGER.info("Cerrando sesión de usuario");
@@ -1333,12 +1191,16 @@ public class MainController implements Initializable {
 	/**
 	 * Permite cambiar la ventana actual.
 	 * 
-	 * @param sceneFXML
-	 *            La ventanan a la que se quiere cambiar.
+	 * @param sceneFXML La ventanan a la que se quiere cambiar.
 	 */
-	private void changeScene(URL sceneFXML) {
+	private void changeScene(URL sceneFXML, Object controllerObject) {
 		try {
 			FXMLLoader loader = new FXMLLoader(sceneFXML, I18n.getResourceBundle());
+
+			if (controllerObject != null) {
+				loader.setController(controllerObject);
+			}
+
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
 			controller.getStage().close();
@@ -1348,16 +1210,20 @@ public class MainController implements Initializable {
 			controller.getStage().setTitle(AppInfo.APPLICATION_NAME);
 			controller.getStage().resizableProperty().setValue(Boolean.FALSE);
 			controller.getStage().show();
+
 		} catch (Exception e) {
 			LOGGER.error("Error al modifcar la ventana de JavaFX: {}", e);
 		}
 	}
 
+	private void changeScene(URL sceneFXML) {
+		changeScene(sceneFXML, null);
+	}
+
 	/**
 	 * Deja de seleccionar los participantes/actividades y borra el gráfico.
 	 * 
-	 * @param actionEvent
-	 *            El ActionEvent.
+	 * @param actionEvent El ActionEvent.
 	 */
 	public void clearSelection(ActionEvent actionEvent) {
 		listParticipants.getSelectionModel().clearSelection();
@@ -1371,8 +1237,7 @@ public class MainController implements Initializable {
 	/**
 	 * Abre en el navegador el repositorio del proyecto.
 	 * 
-	 * @param actionEvent
-	 *            El ActionEvent.
+	 * @param actionEvent El ActionEvent.
 	 */
 	public void aboutApp(ActionEvent actionEvent) {
 		try {
@@ -1388,8 +1253,7 @@ public class MainController implements Initializable {
 	/**
 	 * Botón "Salir". Cierra la aplicación.
 	 * 
-	 * @param actionEvent
-	 *            El ActionEvent.
+	 * @param actionEvent El ActionEvent.
 	 */
 	public void closeApplication(ActionEvent actionEvent) {
 		LOGGER.info("Cerrando aplicación");
@@ -1397,394 +1261,12 @@ public class MainController implements Initializable {
 	}
 
 	/**
-	 * Genera el dataset para la tabal de calificaciones.
-	 * 
-	 * @return El dataset.
-	 */
-	private String generateTableData() {
-		// Lista de alumnos y calificaciones seleccionadas
-		ObservableList<EnrolledUser> selectedParticipants = listParticipants.getSelectionModel().getSelectedItems();
-		ObservableList<TreeItem<GradeItem>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
-
-		StringBuilder tableData = new StringBuilder();
-		tableData.append("[['" + I18n.get("chartlabel.name") + "'");
-		Boolean firstElement = true;
-
-		// Por cada ítem seleccionado lo añadimos como label
-		for (TreeItem<GradeItem> structTree : selectedGRL) {
-			tableData.append(",'" + escapeJavaScriptText(structTree.getValue().toString()) + "'");
-		}
-		tableData.append("],");
-
-		// Por cada usuario seleccionado
-		for (EnrolledUser actualUser : selectedParticipants) {
-			// Añadimos el nombre del alumno al dataset
-			if (firstElement) {
-				firstElement = false;
-				tableData.append("['" + escapeJavaScriptText(actualUser.getFullName()) + "'");
-			} else {
-				tableData.append(",['" + escapeJavaScriptText(actualUser.getFullName()) + "'");
-			}
-			// Por cada ítem seleccionado
-			for (TreeItem<GradeItem> structTree : selectedGRL) {
-				GradeItem actualLine = structTree.getValue();
-				double grade = actualLine.getEnrolledUserGrade(actualUser);
-				// Si es numérico lo graficamos y lo mostramos en la tabla
-				if (!Double.isNaN(grade)) {
-					grade = Math.round(grade * 100.0) / 100.0;
-					// Añadimos la nota al gráfico
-					tableData.append(",{v:" + grade + ", f:'" + grade + "/" + actualLine.getGrademax() + "'}");
-				} else {
-					tableData.append(",{v:0, f:'" + grade + "'}");
-				}
-			}
-			tableData.append("]");
-		}
-		// FIX RMS
-		if (selectedParticipants.isEmpty()) {
-			// Remove last comma, if there are not students selected in screen.
-			tableData.deleteCharAt(tableData.length() - 1);
-		}
-		// Añadimos las medias
-		tableData.append(generateTableMean());
-		return tableData.toString();
-	}
-
-	/**
-	 * Genera el dataset de las medias para la tabla de calificaciones.
-	 * 
-	 * @return El dataset.
-	 */
-	private String generateTableMean() {
-		// Añadimos la media general
-		StringBuilder tableData = new StringBuilder();
-		tableData.append(",['" + I18n.get("chartlabel.tableMean") + "'");
-		for (TreeItem<GradeItem> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
-			String grade = stats.getElementMean(stats.getGeneralStats(), structTree.getValue());
-			if ("NaN".equals(grade)) {
-				tableData.append(",{v:0, f:'NaN'}");
-			} else {
-				tableData.append(",{v:" + grade + ", f:'" + grade + "/10'}");
-			}
-		}
-		tableData.append("]");
-
-		// Añadimos la media de los grupos
-		for (Group grupo : slcGroup.getItems()) {
-			if (grupo != null) {
-				tableData.append(",['" + I18n.get("chartlabel.tableGroupMean") + " "
-						+ escapeJavaScriptText(grupo.getGroupName()) + "'");
-				for (TreeItem<GradeItem> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
-					String grade = stats.getElementMean(stats.getGroupStats(grupo),
-							structTree.getValue());
-					if ("NaN".equals(grade)) {
-						tableData.append(",{v:0, f:'NaN'}");
-					} else {
-						tableData.append(",{v:" + grade + ", f:'" + grade + "/10'}");
-					}
-				}
-				tableData.append("]");
-			}
-		}
-		tableData.append("]");
-		return tableData.toString();
-	}
-
-	/**
-	 * 
-	 * Metodo que genera el data set para los gráficos.
-	 * 
-	 * @return El data set.
-	 */
-	private String generateGradesDataSet() {
-		// Lista de alumnos y calificaciones seleccionadas
-
-		List<EnrolledUser> selectedParticipants = new ArrayList<>(
-				listParticipants.getSelectionModel().getSelectedItems());
-		List<TreeItem<GradeItem>> selectedGRL = new ArrayList<>(tvwGradeReport.getSelectionModel().getSelectedItems());
-		int countA = 0;
-		boolean firstUser = true;
-		boolean firstGrade = true;
-		StringBuilder dataSet = new StringBuilder();
-		StringBuilder labels = new StringBuilder();
-
-		LOGGER.debug("Selected participant: {}", selectedParticipants.size());
-		// Por cada usuario seleccionado
-		for (EnrolledUser actualUser : selectedParticipants) {
-			if (actualUser == null) {
-				continue;
-			}
-			String actualUserFullName = actualUser.getFullName();
-			// Añadimos el nombre del alumno al dataset
-			if (firstUser) {
-				dataSet.append("{label:'" + actualUserFullName + "',data: [");
-				firstUser = false;
-			} else {
-				dataSet.append(",{label:'" + actualUserFullName + "',data: [");
-			}
-			int countB = 1;
-			firstGrade = true;
-			// Por cada ítem seleccionado
-			for (TreeItem<GradeItem> structTree : selectedGRL) {
-				countA++;
-				try {
-					if (structTree != null) {
-						GradeItem actualLine = structTree.getValue();
-						double calculatedGrade;
-						if (countA == countB) {
-							countB++;
-							// Añadidimos el nombre del elemento como label
-							if (firstGrade) {
-								labels.append("'" + escapeJavaScriptText(structTree.getValue().toString()) + "'");
-							} else {
-								labels.append(",'" + escapeJavaScriptText(structTree.getValue().toString()) + "'");
-							}
-						}
-						calculatedGrade = Math.round(actualLine.getEnrolledUserPercentage(actualUser) * 10) / 100.0;
-
-						if (firstGrade) {
-							dataSet.append(calculatedGrade);
-							firstGrade = false;
-						} else {
-							dataSet.append("," + calculatedGrade);
-						}
-					}
-				} catch (Exception e) {
-					LOGGER.error("Error en la construcción del dataset.", e);
-					errorWindow(I18n.get("error.generatedataset"), false);
-				}
-			}
-			dataSet.append("]," + "backgroundColor: 'red'," + "borderColor: 'red'," + "pointBorderColor: 'red',"
-					+ "pointBackgroundColor: 'red'," + "borderWidth: 3," + "fill: false}");
-		}
-
-		return "{ labels:[" + labels + "],datasets: [" + dataSet + "]}";
-	}
-
-	/**
-	 * Escape the commas in the text. For example 'Law D'Hont' is changed to 'Law
-	 * D\'Hont'.
-	 *
-	 * @author Raúl Marticorena
-	 * @since 1.5.3
-	 */
-	private static String escapeJavaScriptText(String input) {
-		return input.replaceAll("'", "\\\\'");
-	}
-
-	/**
-	 * Funcion que genera el DataSet para el boxplot.
-	 * 
-	 * @param group
-	 *            El grupo sobre el que generar el dataset.
-	 * 
-	 * @return BoxPlot DataSet.
-	 */
-	private String generateBoxPlotDataSet(Group group) {
-		Map<GradeItem, DescriptiveStatistics> boxPlotStats;
-		if (group == null) {
-			boxPlotStats = stats.getGeneralStats();
-		} else {
-			boxPlotStats = stats.getGroupStats(group);
-		}
-
-		StringBuilder labels = new StringBuilder();
-		StringBuilder upperLimit = new StringBuilder("{label:'" + I18n.get("chartlabel.upperlimit") + "',data: [");
-		StringBuilder median = new StringBuilder("{label:'" + I18n.get("chartlabel.median") + "',data: [");
-		StringBuilder lowerLimit = new StringBuilder("{label:'" + I18n.get("chartlabel.lowerlimit") + "',data: [");
-		StringBuilder firstQuartile = new StringBuilder(
-				"{label:'" + I18n.get("chartlabel.firstquartile") + "',data: [");
-		StringBuilder thirdQuartile = new StringBuilder(
-				"{label:'" + I18n.get("chartlabel.thirdquartile") + "',data: [");
-		boolean firstLabel = true;
-		boolean firstGrade = true;
-		GradeItem gradeItem;
-
-		ObservableList<TreeItem<GradeItem>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
-
-		for (TreeItem<GradeItem> structTree : selectedGRL) {
-			if (firstLabel) {
-				labels.append("'" + escapeJavaScriptText(structTree.getValue().toString()) + "'");
-				firstLabel = false;
-			} else {
-				labels.append(",'" + escapeJavaScriptText(structTree.getValue().toString()) + "'");
-			}
-
-			gradeItem = structTree.getValue();
-			if (firstGrade) {
-				upperLimit.append(stats.getUpperLimit(boxPlotStats, gradeItem));
-				median.append(stats.getMedian(boxPlotStats, gradeItem));
-				lowerLimit.append(stats.getLowerLimit(boxPlotStats, gradeItem));
-				firstQuartile.append(stats.getElementPercentile(boxPlotStats, gradeItem, 25));
-				thirdQuartile.append(stats.getElementPercentile(boxPlotStats, gradeItem, 75));
-				firstGrade = false;
-			} else {
-				upperLimit.append("," + stats.getUpperLimit(boxPlotStats, gradeItem));
-				median.append("," + stats.getMedian(boxPlotStats, gradeItem));
-				lowerLimit.append("," + stats.getLowerLimit(boxPlotStats, gradeItem));
-				firstQuartile.append("," + stats.getElementPercentile(boxPlotStats, gradeItem, 25));
-				thirdQuartile.append("," + stats.getElementPercentile(boxPlotStats, gradeItem, 75));
-			}
-		}
-
-		upperLimit.append("]," + "backgroundColor: 'rgba(244,67,54,1)'," + "borderColor: 'rgba(244,67,54,1)',"
-				+ "pointBorderColor: 'rgba(244,67,54,1)'," + "pointBackgroundColor: 'rgba(244,67,54,1)',"
-				+ "borderWidth: 3," + "fill: false}");
-		thirdQuartile.append("]," + "backgroundColor: 'rgba(255,152,0,0.3)" + "'," + "borderColor: 'rgba(255,152,0,1)"
-				+ "'," + "pointBorderColor: 'rgba(255,152,0,1)" + "'," + "pointBackgroundColor: 'rgba(255,152,0,1)"
-				+ "'," + "borderWidth: 3," + "fill: 3}");
-		median.append("]," + "backgroundColor: 'rgba(0,150,136,1)'," + "borderColor: 'rgba(0,150,136,1)',"
-				+ "pointBorderColor: 'rgba(0,150,136,1)'," + "pointBackgroundColor: 'rgba(0,150,136,1)',"
-				+ "borderWidth: 3," + "fill: false}");
-		firstQuartile.append("]," + "backgroundColor: 'rgba(255,152,0,0.3)'," + "borderColor: 'rgba(255,152,0,1)',"
-				+ "pointBorderColor: 'rgba(255,152,0,1)'," + "pointBackgroundColor: 'rgba(255,152,0,1)',"
-				+ "borderWidth: 3," + "fill: false}");
-		lowerLimit.append("]," + "backgroundColor: 'rgba(81,45,168,1)'," + "borderColor: 'rgba(81,45,168,1)',"
-				+ "pointBorderColor: 'rgba(81,45,168,1)'," + "pointBackgroundColor: 'rgba(81,45,168,1)',"
-				+ "borderWidth: 3," + "fill: false}");
-
-		return "{ labels:[" + labels + "]," + "datasets: [" + upperLimit + "," + thirdQuartile + "," + median + ","
-				+ firstQuartile + "," + lowerLimit + "," + generateAtypicalValuesDataSet(boxPlotStats) + "]}";
-	}
-
-	private String generateAtypicalValuesDataSet(Map<GradeItem, DescriptiveStatistics> statistics) {
-		StringBuilder dataset = new StringBuilder();
-		GradeItem gradeItem;
-
-		ObservableList<TreeItem<GradeItem>> selectedGRL = tvwGradeReport.getSelectionModel().getSelectedItems();
-
-		for (int i = 0; i < selectedGRL.size(); i++) {
-			gradeItem = selectedGRL.get(i).getValue();
-			List<String> atypicalValues = stats.getAtypicalValues(statistics, gradeItem);
-
-			if (dataset.length() != 0 && !atypicalValues.isEmpty()) {
-				dataset.append(",");
-			}
-
-			for (int j = 0; j < atypicalValues.size(); j++) {
-				if (j != 0) {
-					dataset.append(",");
-				}
-				dataset.append(
-						"{label:'" + I18n.get("chartlabel.atypicalValue")
-								+ "',data: [");
-				for (int x = 0; x < selectedGRL.size(); x++) {
-					if (x != 0) {
-						dataset.append(",");
-					}
-					if (x == i) {
-						dataset.append(atypicalValues.get(j));
-					} else {
-						dataset.append("NaN");
-					}
-				}
-				dataset.append("]," + "backgroundColor: 'rgba(0, 97, 255, 1)'," + "borderColor: 'rgba(0, 97, 255, 1)',"
-						+ "pointBorderColor: 'rgba(0, 97, 255, 1)'," + "pointBackgroundColor: 'rgba(0, 97, 255, 1)',"
-						+ "borderWidth: 3," + "fill: false}");
-			}
-		}
-		return dataset.toString();
-	}
-
-	/**
-	 * Función que genera el dataSet de la media de todos los alumnos.
-	 * 
-	 * @param group
-	 *            El grupo del que obtener la media.
-	 * 
-	 * @return Mean DataSet.
-	 */
-	private String generateMeanDataSet(Group group) {
-		Map<GradeItem, DescriptiveStatistics> meanStats;
-		Boolean firstElement = true;
-		StringBuilder meanDataset = new StringBuilder();
-		String color;
-
-		if (group == null) {
-			meanStats = stats.getGeneralStats();
-			meanDataset.append(
-					"{label:'" + I18n.get("chartlabel.generalMean") + "',data:[");
-			color = "rgba(255, 152, 0, ";
-		} else {
-			meanStats = stats.getGroupStats(group);
-			meanDataset
-					.append("{label:'" + I18n.get("chartlabel.groupMean") + "',data:[");
-			color = "rgba(0, 150, 136, ";
-		}
-
-		for (TreeItem<GradeItem> structTree : tvwGradeReport.getSelectionModel().getSelectedItems()) {
-			if (firstElement) {
-				meanDataset.append(stats.getElementMean(meanStats, structTree.getValue()));
-				firstElement = false;
-			} else {
-				meanDataset.append("," + stats.getElementMean(meanStats, structTree.getValue()));
-			}
-		}
-
-		meanDataset.append("]," + "backgroundColor:'" + color + "0.3)'," + "borderColor:'" + color + "1)',"
-				+ "pointBackgroundColor:'" + color + "1)'," + "borderWidth: 3," + "fill: true}");
-
-		return meanDataset.toString();
-	}
-
-	/**
-	 * Actualiza la media y el box plot del grupo.
-	 * 
-	 * @param group
-	 *            El grupo seleccionado.
-	 */
-	private void updateGroupData(Group group) {
-		try {
-			if (group == null) {
-				webViewChartsEngine.executeScript("saveGroupMean('')");
-			} else {
-				webViewChartsEngine.executeScript("saveGroupMean(" + generateMeanDataSet(group) + ")");
-				webViewChartsEngine.executeScript("updateChart('boxplotgroup'," + generateBoxPlotDataSet(group) + ")");
-			}
-		} catch (JSException e) {
-			LOGGER.error("Error al generar los gráficos.", e);
-			errorWindow(I18n.get("error.generateCharts"), false);
-		}
-	}
-
-	/**
-	 * Actualiza los gráficos.
-	 */
-	private void updateGradesChart() {
-		if (!tabUbuGrades.isSelected()) {
-			return;
-		}
-
-		try {
-			String data = generateGradesDataSet();
-			LOGGER.debug("Data: {}", data);
-			updateGroupData(slcGroup.getValue());
-			String tableData = generateTableData();
-			LOGGER.debug("Table data for chart: {}", tableData);
-			webViewChartsEngine.executeScript("saveTableData(" + tableData + ")");
-			webViewChartsEngine.executeScript("saveMean(" + generateMeanDataSet(null) + ")");
-			webViewChartsEngine.executeScript("updateChart('boxplot'," + generateBoxPlotDataSet(null) + ")");
-			webViewChartsEngine.executeScript("updateChart('line'," + data + ")");
-			webViewChartsEngine.executeScript("updateChart('radar'," + data + ")");
-		} catch (JSException e) {
-			LOGGER.error("Error al generar los gráficos.", e);
-			errorWindow(I18n.get("error.generateCharts"), false); // FIX RMS Review true
-																	// or false
-		} catch (Exception e) {
-			LOGGER.error("Error general al generar los gráficos.", e);
-			errorWindow(I18n.get("error.generateCharts"), false);
-		}
-	}
-
-	/**
 	 * Muestra una ventana de error.
 	 * 
-	 * @param mensaje
-	 *            El mensaje que se quiere mostrar.
-	 * @param exit
-	 *            Indica si se quiere mostar el boton de salir o no.
+	 * @param mensaje El mensaje que se quiere mostrar.
+	 * @param exit Indica si se quiere mostar el boton de salir o no.
 	 */
-	private void errorWindow(String mensaje, boolean exit) {
+	public void errorWindow(String mensaje, boolean exit) {
 		Alert alert = new Alert(AlertType.ERROR);
 
 		alert.setTitle(AppInfo.APPLICATION_NAME);
@@ -1807,12 +1289,10 @@ public class MainController implements Initializable {
 	/**
 	 * Muestra una ventana de información.
 	 * 
-	 * @param mensaje
-	 *            El mensaje que se quiere mostrar.
-	 * @param exit
-	 *            Indica si se quiere mostar el boton de salir o no.
+	 * @param mensaje El mensaje que se quiere mostrar.
+	 * @param exit Indica si se quiere mostar el boton de salir o no.
 	 */
-	private void infoWindow(String mensaje, boolean exit) {
+	public void infoWindow(String mensaje, boolean exit) {
 		Alert alert = new Alert(AlertType.INFORMATION);
 
 		alert.setTitle(AppInfo.APPLICATION_NAME);
@@ -1830,6 +1310,190 @@ public class MainController implements Initializable {
 			alert.showAndWait();
 		}
 
+	}
+
+	public Controller getController() {
+		return controller;
+	}
+
+	public SplitPane getSplitPaneLeft() {
+		return splitPaneLeft;
+	}
+
+	public Label getLblActualCourse() {
+		return lblActualCourse;
+	}
+
+	public Label getLblActualUser() {
+		return lblActualUser;
+	}
+
+	public Label getLblActualHost() {
+		return lblActualHost;
+	}
+
+	public Label getLblLastUpdate() {
+		return lblLastUpdate;
+	}
+
+	public ImageView getUserPhoto() {
+		return userPhoto;
+	}
+
+	public Label getLblCountParticipants() {
+		return lblCountParticipants;
+	}
+
+	public ListView<EnrolledUser> getListParticipants() {
+		return listParticipants;
+	}
+
+	public FilteredList<EnrolledUser> getFilteredEnrolledList() {
+		return filteredEnrolledList;
+	}
+
+	public ChoiceBox<Role> getSlcRole() {
+		return slcRole;
+	}
+
+	public ChoiceBox<Group> getSlcGroup() {
+		return slcGroup;
+	}
+
+	public ChoiceBox<LastActivity> getSlcActivity() {
+		return slcActivity;
+	}
+
+	public TextField getTfdParticipants() {
+		return tfdParticipants;
+	}
+
+	public TreeView<GradeItem> getTvwGradeReport() {
+		return tvwGradeReport;
+	}
+
+	public TextField getTfdItems() {
+		return tfdItems;
+	}
+
+	public ChoiceBox<ModuleType> getSlcType() {
+		return slcType;
+	}
+
+	public WebView getWebViewCharts() {
+		return webViewCharts;
+	}
+
+	public WebEngine getWebViewChartsEngine() {
+		return webViewChartsEngine;
+	}
+
+	public SplitPane getSplitPane() {
+		return splitPane;
+	}
+
+	public TabPane getTabPane() {
+		return tabPane;
+	}
+
+	public Tab getTabUbuGrades() {
+		return tabUbuGrades;
+	}
+
+	public Tab getTabUbuLogs() {
+		return tabUbuLogs;
+	}
+
+	public Tab getTabUbuLogsComponent() {
+		return tabUbuLogsComponent;
+	}
+
+	public Tab getTabUbuLogsEvent() {
+		return tabUbuLogsEvent;
+	}
+
+	public Tab getTabUbuLogsSection() {
+		return tabUbuLogsSection;
+	}
+
+	public Tab getTabUbuLogsCourseModule() {
+		return tabUbuLogsCourseModule;
+	}
+
+	public TextField getComponentTextField() {
+		return componentTextField;
+	}
+
+	public TextField getComponentEventTextField() {
+		return componentEventTextField;
+	}
+
+	public TextField getSectionTextField() {
+		return sectionTextField;
+	}
+
+	public TextField getCourseModuleTextField() {
+		return courseModuleTextField;
+	}
+
+	public ListView<Component> getListViewComponents() {
+		return listViewComponents;
+	}
+
+	public ListView<ComponentEvent> getListViewEvents() {
+		return listViewEvents;
+	}
+
+	public ListView<Section> getListViewSection() {
+		return listViewSection;
+	}
+
+	public ListView<CourseModule> getListViewCourseModule() {
+		return listViewCourseModule;
+	}
+
+	public ChoiceBox<ModuleType> getChoiceBoxCourseModule() {
+		return choiceBoxCourseModule;
+	}
+
+	public CheckBox getCheckBoxSection() {
+		return checkBoxSection;
+	}
+
+	public CheckBox getCheckBoxCourseModule() {
+		return checkBoxCourseModule;
+	}
+
+	public GridPane getOptionsUbuLogs() {
+		return optionsUbuLogs;
+	}
+
+	public TextField getTextFieldMax() {
+		return textFieldMax;
+	}
+
+	public ChoiceBox<GroupByAbstract<?>> getChoiceBoxDate() {
+		return choiceBoxDate;
+	}
+
+	public DatePicker getDatePickerStart() {
+		return datePickerStart;
+	}
+
+	public DatePicker getDatePickerEnd() {
+		return datePickerEnd;
+	}
+
+	public ProgressBar getProgressBar() {
+		return progressBar;
+	}
+
+	public Stats getStats() {
+		return stats;
+	}
+
+	public JavaConnector getJavaConnector() {
+		return javaConnector;
 	}
 
 }

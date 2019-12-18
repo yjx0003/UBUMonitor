@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javafx.scene.image.Image;
 
@@ -26,6 +27,10 @@ public class MoodleUser {
 	private String lang;
 	private Image userPhoto;
 	private List<Course> courses;
+	private List<Course> recentCourses;
+	private List<Course> inProgressCourses;
+	private List<Course> futureCourses;
+	private List<Course> pastCourses;
 	private String timezone;
 
 	/**
@@ -33,6 +38,10 @@ public class MoodleUser {
 	 */
 	public MoodleUser() {
 		this.courses = new ArrayList<>();
+		this.setRecentCourses(new ArrayList<>());
+		this.setFutureCourses(new ArrayList<>());
+		this.setInProgressCourses(new ArrayList<>());
+		this.setPastCourses(new ArrayList<>());
 	}
 
 	/**
@@ -210,6 +219,15 @@ public class MoodleUser {
 	public List<Course> getCourses() {
 		return this.courses;
 	}
+	
+	
+	public Course getCourseById(int id) {
+		for(Course course: courses) {
+			if (course.getId() == id)
+				return course;
+		}
+		return null;
+	}
 
 	/**
 	 * Modifica la lista de cursos en los que está matriculado el usuario.
@@ -238,4 +256,42 @@ public class MoodleUser {
 		this.lang = lang;
 	}
 
+	public List<Course> getFavoriteCourses() {
+		return courses
+				.stream()
+				.filter(Course::isFavorite)
+				.collect(Collectors.toList());
+	}
+
+	public List<Course> getRecentCourses() {
+		return recentCourses;
+	}
+
+	public void setRecentCourses(List<Course> recentCourses) {
+		this.recentCourses = recentCourses;
+	}
+
+	public List<Course> getInProgressCourses() {
+		return inProgressCourses;
+	}
+
+	public void setInProgressCourses(List<Course> inProgressCourses) {
+		this.inProgressCourses = inProgressCourses;
+	}
+
+	public List<Course> getFutureCourses() {
+		return futureCourses;
+	}
+
+	public void setFutureCourses(List<Course> futureCourses) {
+		this.futureCourses = futureCourses;
+	}
+
+	public List<Course> getPastCourses() {
+		return pastCourses;
+	}
+
+	public void setPastCourses(List<Course> pastCourses) {
+		this.pastCourses = pastCourses;
+	}
 }

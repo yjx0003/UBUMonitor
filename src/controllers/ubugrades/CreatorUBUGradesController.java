@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.Connection.Method;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -32,9 +33,11 @@ import model.ModuleType;
 import model.MoodleUser;
 import model.Role;
 import model.Section;
+import webservice.WSFunctions;
 import webservice.WebService;
 import webservice.core.CoreCourseGetCategories;
 import webservice.core.CoreCourseGetContents;
+import webservice.core.CoreCourseGetEnrolledCoursesByTimelineClassification;
 import webservice.core.CoreEnrolGetEnrolledUsers;
 import webservice.core.CoreEnrolGetUsersCourses;
 import webservice.core.CoreUserGetUsersByField;
@@ -135,8 +138,69 @@ public class CreatorUBUGradesController {
 				.collect(Collectors.toSet());
 
 		createCourseCategories(ids);
-
+		
+		
+		moodleUser.setInProgressCourses(coursesByTimeline(CoreCourseGetEnrolledCoursesByTimelineClassification.IN_PROGRESS));
+		moodleUser.setPastCourses(coursesByTimeline(CoreCourseGetEnrolledCoursesByTimelineClassification.PAST));
+		moodleUser.setFutureCourses(coursesByTimeline(CoreCourseGetEnrolledCoursesByTimelineClassification.FUTURE));
+		moodleUser.setRecentCourses(getRecentCourses(moodleUser.getId()));
+		
+		
 		return moodleUser;
+	}
+
+	private static List<Course> coursesByTimeline(String classification) {
+		try {
+			WebService webService = new CoreCourseGetEnrolledCoursesByTimelineClassification(classification);
+			String response = webService.getResponse();
+			JSONArray courses = new JSONObject(response).getJSONArray("courses");
+			return createCourses(courses, true);
+		}catch(Exception ex) {
+			return Collections.emptyList();
+		}
+	}
+
+	private static List<Course> getRecentCourses(int userid) throws IOException {
+		
+		try {
+			JSONArray jsonArray = getRecentCoursesResponse(userid);
+			return createCourses(jsonArray, true);
+		}catch(Exception ex) {
+			return Collections.emptyList();
+		}
+		
+		
+	}
+
+	private static JSONArray getRecentCoursesResponse(int userid) throws IOException {
+		JSONArray jsonArray = new JSONArray();
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("methodname", WSFunctions.CORE_COURSE_GET_RECENT_COURSES);
+
+		
+		JSONObject args = new JSONObject();
+		args.put("userid", userid);
+		args.put("limit", 8);
+		
+		jsonObject.put("args", args);
+		
+		
+		jsonArray.put(jsonObject);
+		
+		String response = Jsoup
+				.connect(CONTROLLER.getUrlHost()+"/lib/ajax/service.php")
+				.ignoreContentType(true)
+				.cookies(CONTROLLER.getCookies())
+				.data("sesskey", CONTROLLER.getSesskey())
+				.method(Method.POST)
+				.requestBody(jsonArray.toString())
+				.execute()
+				.body();
+		
+		JSONArray responseArray = new JSONArray(response);
+		return responseArray.getJSONObject(0).getJSONArray("data");
+		
+
 	}
 
 	/**
@@ -320,6 +384,7 @@ public class CreatorUBUGradesController {
 		DescriptionFormat summaryFormat = DescriptionFormat.get(jsonObject.optInt("summaryformat"));
 		Instant startDate = Instant.ofEpochSecond(jsonObject.optLong("startdate"));
 		Instant endDate = Instant.ofEpochSecond(jsonObject.optLong("enddate"));
+		boolean isFavorite = jsonObject.optBoolean("isfavourite");
 
 		int categoryId = jsonObject.optInt("category");
 		if (categoryId != 0) {
@@ -334,6 +399,7 @@ public class CreatorUBUGradesController {
 		course.setSummaryformat(summaryFormat);
 		course.setStartDate(startDate);
 		course.setEndDate(endDate);
+		course.setFavorite(isFavorite);
 
 		return course;
 

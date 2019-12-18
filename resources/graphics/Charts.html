@@ -1,857 +1,647 @@
 <!DOCTYPE html>
 <html>
 <meta charset="UTF-8">
+
 <head>
-<title>Charts</title>
-<link rel="stylesheet" type="text/css" href="../css/chart.css" />
+    <title>Charts</title>
+    <link rel="stylesheet" type="text/css" href="../css/tabulator.css" />
+    <link rel="stylesheet" type="text/css" href="../css/chart.css" />
 
 
-<script type="text/javascript" src="./lib/Chart.js"></script>
-<script type="text/javascript" src="./lib/color-hash.js"></script>
-<script type="text/javascript"
-	src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript" src="./lib/html2canvas.js"></script>
-<script type="text/javascript" src="./messages.js"></script>
-<script type="text/javascript" src="./lib/apexcharts.js"></script>
+    <script type="text/javascript" src="./lib/Chart.js"></script>
+    <script type="text/javascript" src="./lib/color-hash.js"></script>
+    <script type="text/javascript" src="./lib/html2canvas.js"></script>
+    <script type="text/javascript" src="./messages.js"></script>
+    <script type="text/javascript" src="./lib/apexcharts.js"></script>
+    <script type="text/javascript" src="./lib/chartjs-chart-box-and-violin-plot.js"></script>
+    <script type="text/javascript" src="./lib/tabulator.js"></script>
+
 </head>
 
+<div id="all_tabs" class="controles">
+    <div class="pestañas" id="grade_tabs">
+        <input type="button" class="btn" id="btnLine" onclick='javaConnector.updateCharts("LINE");' />
+        <input type="button" class="btn" id="btnRadar" onclick='javaConnector.updateCharts("RADAR");' />
+        <input type="button" class="btn" id="btnBoxPlot" onclick='javaConnector.updateCharts("GENERAL_BOXPLOT");' />
+        <input type="button" class="btn" id="btnBoxPlotGroup" onclick='javaConnector.updateCharts("GROUP_BOXPLOT");' />
+        <input type="button" class="btn" id="btnViolin" onclick='javaConnector.updateCharts("GENERAL_VIOLIN");' />
+        <input type="button" class="btn" id="btnViolinGroup" onclick='javaConnector.updateCharts("GROUP_VIOLIN");' />
+        <input type="button" class="btn" id="btnCalificaciones"
+            onclick='javaConnector.updateCharts("GRADE_REPORT_TABLE");' />
+    </div>
+    <div class="pestañas" id="log_tabs">
+        <input type="button" class="btn" id="btnStackedBar" onclick='javaConnector.updateCharts("STACKED_BAR");' />
+        <input type="button" class="btn" id="btnHeatmap" onclick='javaConnector.updateCharts("HEAT_MAP");' />
+    </div>
 
-<div class="controles">
-	<div class="pestañas">
-		<input type="button" class="btn" id="btnLineas"
-			onclick="generateChart('line')" /> <input type="button" class="btn"
-			id="btnRadar" onclick="generateChart('radar')" /> <input
-			type="button" class="btn" id="btnBoxPlot"
-			onclick="generateChart('boxplot')" /> <input type="button"
-			class="btn" id="btnBoxPlotGroup"
-			onclick="generateChart('boxplotgroup')" /> <input type="button"
-			class="btn" id="btnStackedBar" onclick="generateChart('stackedBar')" />
-		<input type="button" class="btn" id="btnHeatmap"
-			onclick="showHeatmap()" /> <input type="button" class="btn"
-			id="btnCalificaciones" onclick="drawTable()" />
-
-	</div>
-
-	<div class="opciones">
-		<input type="button" value="." class="btn"
-			style="visibility: hidden; width: 0px; margin: 0px; padding: 0px;" />
-		<input type="button" value="Leyenda" class="btn" id="btnLegend"
-			onclick="hideLegend()" /> <input type="button" value="Media General"
-			class="btn" id="btnMean" onclick="showGeneralMean()" /> <input
-			type="button" class="btn" id="btnGroupMean" onclick="showGroupMean()" />
-	</div>
-</div>
-
-<div id="inicio" class="inicio">
-	<img alt="Logo" class="imginicio" src="../img/logo.png">
-</div>
-
-<div id="noradar" class="card">
-	<div id="noradarText" class="cardText">Selecciona al menos 3
-		actividades para mostrar el gráfico</div>
-</div>
-
-<div id="noGroup" class="card">
-	<div id="noGroupText" class="cardText">Selecciona un grupo para
-		mostrar el gráfico</div>
+    <div class="opciones">
+        <input type="button" value="Leyenda" class="btn" id="btnLegend" onclick="javaConnector.hideLegend();" />
+        <input type="button" value="Media General" class="btn" id="btnMean" onclick="showGeneralMean()" />
+        <input type="button" class="btn" id="btnGroupMean" onclick="showGroupMean()" />
+    </div>
 </div>
 
 <div id="chart-container" class="chart-container">
-	<canvas id="myChart"></canvas>
+    <canvas id="myChart"></canvas>
 </div>
-<div id="apexchartsDiv" style="display: none;"></div>
-
-<div id="table_div" class="table_div"></div>
-
-<div id="table_img" style="display: none;"></div>
+<div id="apexchartsDiv"></div>
+<div id="tabulatorDiv"></div>
 
 <script type="text/javascript">
-//------------------------------------------Opciones para los graficos------------------------------------------------------------------
-// Opciones Globales
-//Chart.defaults.global.defaultFontFamily= "Comic Sans MS";
-//Chart.defaults.global.defaultFontSize=14;
+    //------------------------------------------Opciones para los graficos------------------------------------------------------------------
 
-// Opciones para el gráfico de lineas y el boxplot
-var optionsLineChart = {
-	maintainAspectRatio: false,
-	
-	responsiveAnimationDuration: 0, // animation duration after a resize, better perfomance at 0
-	showLines: true,
-	spanGaps: false, //si se quiere mostrar las lineas cuando en algun elemento no hay dato (NaN)
-	animation:{
-		 duration: 0 // better performance at 0
-	}, //animation
-	layout: {
-		padding: {
-			top: 20,
-		} //pading
-	}, //layout
-	elements: {
-		point : {
-			pointStyle: 'circle',
-			radius: 5,
-			hoverRadius: 7
-		}, //points
-		line: {
-			tension: 0 //at 0 disable bezier curves, better performance
-		}
-	}, //elements
-	legend: {
-		display: true,
-		position: 'bottom',
-		labels : {
-			padding: 20,
-			usePointStyle: true,
-			fontSize: 12,
-			fontColor: 'rgba(0, 0, 0, 1)',
-			fontFamily: 'sans-serif'
-		} //labels
-	}, //legend
-	tooltips: {
-		mode: 'index',
-		intersect: false,
-		position: 'average',
-		backgroundColor: 'rgba(0, 0, 0, 1)',
-		bodySpacing: 4,
-		cornerRadius: 0,
-		caretSize: 10,
-		itemSort: function(a, b) {return (parseFloat(a.y) - parseFloat(b.y));}	
-	}, //tooltips
-    scales: {
-        yAxes: [
-        	{
-        		id:'left-y-axis',
-        		type: 'linear',
-        		position: 'left',
-        		gridLines: {
-            		display: true,
-            		color: 'rgba(0, 0, 0, 0.4)'
-            	}, //gridLines
-                ticks: 
-                {
-                    beginAtZero:true,
-                    max: 10,
-                    stepSize: 1,
-                    fontColor: 'rgba(0, 0, 0, 1)'
-                }//ticks
-        	},
-        	{
-        		id: 'right-y-axis',
-        		type: 'linear',
-        		position: 'right',
-        		gridLines: {
-            		display: true,
-            		color: 'rgba(0, 0, 0, 0.4)'
-            	}, //gridLines
-                ticks: 
-                {
-                    beginAtZero:true,
-                    max: 10,
-                    stepSize: 1,
-                    fontColor: 'rgba(0, 0, 0, 1)'
-                }//ticks
-        	}], //yAxes
-        xAxes :[{
-        	gridLines: {
-        		display: true,
-        		color: 'rgba(0, 0, 0, 0.4)'
-        	}, //gridLines
-        	ticks: {
-        		autoSkip: false,
-        		fontColor: 'rgba(0, 0, 0, 1)'
-        	}
-        }]//xAxes
-    }, //scales
-    chartArea: {
-    	backgroundColor: 'rgba(255,255,255,1)'
-    } //chartArea
-} //options
-	
-// Opciones para el radar
-var optionsRadarChart = {
-	maintainAspectRatio: false,
-	
-	responsiveAnimationDuration: 0, // animation duration after a resize, better perfomance at 0
-	showLines: true,
-	spanGaps: false, //si se quiere mostrar las lineas cuando en algun elemento no hay dato (NaN)
-	animation:{
-		 duration: 0 // better performance at 0
-	}, //animation
-	layout: {
-		padding: {
-			top: 20,
-		} //pading
-	}, //layout
-	elements: {
-		point : {
-			pointStyle: 'circle',
-			radius: 5,
-			hoverRadius: 7
-		}, //points
-		line: {
-			tension: 0 //disable bezier curves, better performance
-		}
-	}, //elements
-	legend: {
-		display: true,
-		position: 'bottom',
-		labels : {
-			padding: 20,
-			usePointStyle: true,
-			fontSize: 12,
-			fontColor: 'rgba(0, 0, 0, 1)',
-			fontFamily: 'sans-serif'
-		} //labels
-	}, //legend
-	tooltips: {
-		mode: 'index',
-		intersect: true,
-		position: 'average',
-		backgroundColor: 'rgba(0, 0, 0, 1)',
-		bodySpacing: 4,
-		cornerRadius: 0,
-		caretSize: 10,
-		itemSort: function(a, b) {return (parseFloat(a.y) - parseFloat(b.y));}	
-	}, //tooltips
-    scale: {
-		gridLines: {
-    		display: true,
-    		color: 'rgba(0, 0, 0, 0.4)'
-    	}, //gridLines
-        ticks: 
-        {
-            beginAtZero:true,
-            suggestedMax: 10,
-            stepSize: 1,
-            fontColor: 'rgba(0, 0, 0, 1)'
-        }//ticks
-    }, //scales
-    chartArea: {
-    	backgroundColor: 'rgba(255,255,255,1)'
-    } //chartArea
-} //options
+    Chart.defaults.global.animation.duration = 0;
+    Chart.defaults.global.elements.line.fill = false;
+    Chart.defaults.global.elements.line.tension = 0;
+    Chart.defaults.global.maintainAspectRatio = false;
+    Chart.defaults.global.hover.animationDuration = 0;
+    Chart.defaults.global.legend.labels.usePointStyle = true;
+    Chart.defaults.global.legend.position = "top";
+    Chart.defaults.global.onClick = function (event, array) {
+        let element = myChart.getElementsAtEventForMode(event, "point", { intersect: false });
+        if (element.length > 0) {
+            javaConnector.dataPointSelection(element[counter % element.length]._datasetIndex);
+            counter++;
+        }
+    };
 
+    Chart.defaults.scale.ticks.beginAtZero = true;
+    Chart.defaults.scale.ticks.stepSize = 1;
+    Chart.defaults.scale.ticks.suggestedMax = 10;
+    Chart.defaults.scale.ticks.min = 0;
+    Chart.defaults.scale.autoSkip = true;
 
-var optionsStackedBar= {
-	maintainAspectRatio: false,
-	
-	animation: {
-        duration: 0, // general animation time
-    },
-	elements: {
-		line: {
-			tension: 0 //at 0 disable bezier curves, better performance
-		}
-	}, //elements
-	tooltips: {
-		position: 'nearest',
-		mode: 'x',
-		itemSort: function(a, b) {return b.yLabel - a.yLabel;},
-		callbacks: {
-			label: function(tooltipItem, data) {
-				return data.datasets[tooltipItem.datasetIndex].label + " : " + Math.round(tooltipItem.yLabel*100)/100;
-			},
-			afterTitle: function(tooltipItem, data) {
-				//Despues del titulo ponemos el nombre y apellidos del usuario
-				return data.datasets[tooltipItem[0].datasetIndex].name;
-			}
-		}
-	},
-	scales:{
-        yAxes: [{
-        	stacked:true,
-            ticks: {
-                beginAtZero:true,
-                min:0,
+    var counter = 0;
+    var height = "93%";
+
+    var stackedbarOptions = {
+        tab: "log_tabs",
+        button: "btnStackedBar",
+        typeGraph: "bar",
+
+        tooltips: {
+            position: 'nearest',
+            mode: 'x',
+            callbacks: {
+                label: function (tooltipItem, data) {
+                    return data.datasets[tooltipItem.datasetIndex].label + " : " + Math.round(tooltipItem.yLabel *
+                        100) / 100;
+                },
+                afterTitle: function (tooltipItem, data) {
+                    //Despues del titulo ponemos el nombre y apellidos del usuario
+                    return data.datasets[tooltipItem[0].datasetIndex].name;
+                }
             }
-        }]
-    },
-	legend: {
-		display: true,
-		position: 'bottom',
-		labels: {
-			padding: 20,
-			usePointStyle: true,
-			fontSize: 12,
-			fontColor: 'rgba(0, 0, 0, 1)',
-			fontFamily: 'sans-serif',
-			filter: function(legendItem, chartData) {
-				//mostramos en la leyenda los que son lineas
-				return chartData.datasets[legendItem.datasetIndex].type == "line";
-			}//filter
-		}//labels
-	} //legend
+        },
+        scales: {
+            yAxes: [{
+                stacked: true,
+                ticks: {
+                    stepSize: 0,
+                }
+            }],
+            xAxes: [{
+                ticks: {
+                    maxTicksLimit: 20
+                }
+            }]
+        },
+        legend: {
+            labels: {
+                filter: function (legendItem, chartData) {
+                    //mostramos en la leyenda los que son lineas
+                    return chartData.datasets[legendItem.datasetIndex].type == "line";
+                } //filter
+            } //labels
+        }, //legend
+        onClick: function (event, array) {
+            let element = myChart.getElementAtEvent(event)[0];
+            if (element) {
 
-}
+                javaConnector.dataPointSelection(myChart.data.datasets[element._datasetIndex].stack);
+            }
+        }
 
-heatmapOptions = {
-		  tooltip:{
-			    x:{
-			      show:true
-			    }
-			  },
-			  plotOptions: {
-			    heatmap: {
-			    	 enableShades: false,
-			      //shadeIntensity: 0.5,
-			      colorScale: {
-			        ranges: [
-			          {
-			            from: -1,
-			            to: 0,
-			            color: "#8b0000",
-			            name: "No activity"
-			          }
-			        ]
-			      }
-			    }
-			  },
-			  legend:{
-			      position: 'bottom'
-			  },
-			  chart: {
-			    toolbar: {
-			          show: false,
-			    },
-			    animations:{
-			      enabled:false
-			    },
-			    type: "heatmap"
-			  },
-			  dataLabels: {
-			  formatter: function (val, opts) {
-				  if (val == 0) {
-					  return "";
-				  }
-		            return val;
-		       },
-			    style: { colors: ["#000000"] }
-			  },
-			  colors: ["#00A100"],
-			  series: [],
-			  xaxis: {
-			    categories: []
-			  }
-			};
+    }
 
-//------------------------------------------Variables globales-------------------------------------------------------------
-// DataSets
-var GeneralMeanDataSet = '';
-var GroupMeanDataSet = '';
-var LineDataSet = '';
-var RadarDataSet = '';
-var BoxPlotGeneralDataSet = '';
-var BoxPlotGroupDataSet = '';
-var TableDataSet = '';
-var StackedBarDataSet= '';
-var HeatmapDataSet= '';
-//
-var GeneralMeanActive = false;
-var GroupMeanActive = false;
-var legendActive = true;
-var currentType = 'line';
-var currentGradeType='line';
-var currentLogType='stackedBar';
+    heatmapOptions = {
+        tab: "log_tabs",
+        button: "btnHeatmap",
+        typeGraph: "heatmap",
 
 
-var language = 'es';
+        tooltip: {
+            x: {
+                show: true
+            }
+        },
+        plotOptions: {
+            heatmap: {
+                enableShades: false,
+                //shadeIntensity: 0.5,
+                colorScale: {
+                    ranges: [{
+                        from: -1,
+                        to: 0,
+                        color: "#f78880",
+                        name: "0"
+                    }, {
+                        from: 1,
+                        to: 1,
+                        color: "#f4e3ae",
+                    }, {
+                        from: 1,
+                        to: 1,
+                        color: "#fff033",
 
+                    },
 
-//
-var colorHash = new ColorHash();
-var ctx = document.getElementById('myChart');
+                    {
+                        from: 1,
+                        to: 1,
+                        color: "#b5ff33",
 
+                    }, {
+                        from: 1,
+                        to: 1,
+                        color: "#38e330",
 
-var myChart = new Chart(ctx,{
-	type: 'line',
-	data:LineDataSet,
-	options: optionsLineChart
-});
+                    }, {
+                        from: 2,
+                        to: Number.POSITIVE_INFINITY,
+                        color: "#67b92e",
+                        name: "+" + (2)
+                    }
 
-var myApexChart= new ApexCharts(document.getElementById('apexchartsDiv'),heatmapOptions);
-myApexChart.render();
-// Cargamos la librearia de google para la tabla de calificaciones
-google.charts.load('current', {'packages':['table']});
-var table;
-// Al iniciar el boton del gráfico de lineas esta deshabilitado
-document.getElementById('btnLineas').disabled = true;
-document.getElementById('btnStackedBar').disabled = true;
-
-//Al iniciar el div de la tabla de calificaciones esta oculto
-document.getElementById('table_div').style.display = 'none';
-//ocultamos los de logs
-document.getElementById('btnStackedBar').style.display = "none";
-document.getElementById('btnHeatmap').style.display  = "none";
-
-
-document.getElementById('btnLegend').style.backgroundImage = 'url(./../img/visibility.png)';
-
-
-//------------------------------------------Funciones------------------------------------------------------------------
-// Funcion que crea la tabla de calificaciones
-function drawTable() {
-	
-	  var cssClassNames = {
-			    headerRow: 'actividades',
-			    tableRow: 'filasTabla',
-			    oddTableRow: 'filasImpares',
-			    selectedTableRow: 'filaSeleccionada',
-			    hoverTableRow: 'filaHover',
-			    headerCell: 'actividadesCelda',
-			    tableCell: 'tablaCelda'};
-	
-	currentType = 'table';
-	if(GeneralMeanActive){showGeneralMean();}
-	if(GroupMeanActive){showGroupMean();}
-	document.getElementById('btnLineas').disabled = false;
-	document.getElementById('btnRadar').disabled = false;
-	document.getElementById('btnBoxPlot').disabled = false;
-	document.getElementById('btnBoxPlotGroup').disabled = false;
-	document.getElementById('btnCalificaciones').disabled = true;
-	document.getElementById('inicio').style.display = 'none';
-	document.getElementById('noradar').style.display = 'none';
-	document.getElementById('noGroup').style.display = 'none';
-	document.getElementById('chart-container').style.display = 'none';
-	document.getElementById('table_div').style.display = 'block';
-	document.getElementById('apexchartsDiv').style.display='none';
-	document.getElementById('btnMean').style.display = 'none';
-	document.getElementById('btnGroupMean').style.display = 'none';
-	document.getElementById('btnLegend').style.display = 'none';
-	var data = google.visualization.arrayToDataTable(TableDataSet, false); // 'false' indica que la primera fila son labels, no datos.
-	table = new google.visualization.Table(document.getElementById('table_div'));
-    table.draw(data, {showRowNumber: false, allowHTML: true, width: '100%', cssClassNames: cssClassNames, frozenColumns: 1});
-    
-    // Al generar la tabla generamos la imagen para la exportación
-	html2canvas(document.getElementById('table_div'), {
-		onrendered: function(canvas) {
-			elem = document.querySelector('#table_img canvas');
-			if(elem != null) {
-				elem.parentNode.removeChild(elem);
-			}
-			document.getElementById('table_img').appendChild(canvas);
-		}	
-	});
- }
-// Funcion que genera y muestra el grafico segun el tipo que se le pase.
-function generateChart(type){
-	document.getElementById('table_div').style.display = 'none';
-	document.getElementById('apexchartsDiv').style.display='none';
-	document.getElementById('chart-container').style.display = 'block';
-	document.getElementById('inicio').style.display = 'none';
-	document.getElementById('noradar').style.display = 'none';
-	document.getElementById('noGroup').style.display = 'none';
-	document.getElementById('btnLegend').style.display = 'inline';
-	
-	document.getElementById('btnLineas').disabled = false;
-	document.getElementById('btnRadar').disabled = false;
-	document.getElementById('btnBoxPlot').disabled = false;
-	document.getElementById('btnBoxPlotGroup').disabled = false;
-	document.getElementById('btnCalificaciones').disabled = false;
-	document.getElementById('btnHeatmap').disabled = false;
-
-	myChart.destroy();
-	currentType = type;
-
-	switch (type) {
-		case 'line':
-			document.getElementById('btnLineas').disabled = true;
-
-			document.getElementById('btnMean').style.display = 'inline';
-			document.getElementById('btnGroupMean').style.display = 'inline';
-			if(GeneralMeanActive){showGeneralMean();}
-			if(GroupMeanActive){showGroupMean();}
-			
-			myChart = new Chart(ctx,{
-				type: 'line',
-				data: LineDataSet,
-				options: optionsLineChart
-			});
-			myChart.data.datasets.forEach((dataset) => {
-				color = colorRGB(dataset.label);
-				dataset.backgroundColor = color + '1)';
-				dataset.borderColor = color + '1)';
-				dataset.pointBackgroundColor = color + '1)';
-				dataset.pointBorderColor = color + '1)';
-				dataset.fill = false;
-			});
-			break;
-		case 'boxplot':
-		
-			document.getElementById('btnBoxPlot').disabled = true;
-
-			document.getElementById('btnMean').style.display = 'none';
-			document.getElementById('btnGroupMean').style.display = 'none';
-			if(GeneralMeanActive){showGeneralMean();}
-			if(GroupMeanActive){showGroupMean();}
-			myChart = new Chart(ctx,{
-				type: 'line',
-				data: BoxPlotGeneralDataSet,
-				options: optionsLineChart
-			});
-			break;
-		case 'boxplotgroup':
-			document.getElementById('btnBoxPlotGroup').disabled = true;
-			document.getElementById('btnMean').style.display = 'none';
-			document.getElementById('btnGroupMean').style.display = 'none';
-			if(GeneralMeanActive){showGeneralMean();}
-			if(GroupMeanActive){showGroupMean();}
-			myChart = new Chart(ctx,{
-				type: 'line',
-				data: BoxPlotGroupDataSet,
-				options: optionsLineChart
-			});
-			if(BoxPlotGroupDataSet == '') {
-				document.getElementById('chart-container').style.display = 'none';
-				document.getElementById('noGroup').style.display = 'block';
-			}
-			break;
-		case 'radar':
-			document.getElementById('btnRadar').disabled = true;
-			document.getElementById('btnMean').style.display = 'inline';
-			document.getElementById('btnGroupMean').style.display = 'inline';
-			if(GeneralMeanActive){showGeneralMean();}
-			if(GroupMeanActive){showGroupMean();}
-			myChart = new Chart(ctx,{
-				type: 'radar',
-				data: RadarDataSet,
-				options: optionsRadarChart
-			});
-			myChart.data.datasets.forEach((dataset) => {
-				color = colorRGB(dataset.label);
-				dataset.backgroundColor = color + '0.3)';
-				dataset.borderColor = color + '1)';
-				dataset.pointBackgroundColor = color + '1)';
-				dataset.pointBorderColor = color + '1)';
-				dataset.fill = true;
-			});
-			if(myChart.data.labels.length < 3) {
-				document.getElementById('chart-container').style.display = 'none';
-				document.getElementById('noradar').style.display = 'block';
-			}
-			break;
-		case 'stackedBar':
-			document.getElementById('btnStackedBar').disabled = true;
-			document.getElementById('btnMean').style.display = 'none';
-			document.getElementById('btnGroupMean').style.display = 'none';
-			myChart = new Chart(ctx,{
-				type: 'bar',
-				data: StackedBarDataSet,
-				options: optionsStackedBar
-			});
-			break;
-			
-			
-				
-	}
-	myChart.update();
-}
-// Funcion que recibe el tipo de grafico y su data set y lo actualiza
-function updateChart(type, dataSet){
-	if(currentType != 'table') {
-		if ( currentType != 'heatmap'){
-				document.getElementById('chart-container').style.display = 'block';
-		}
-		document.getElementById('inicio').style.display = 'none';
-		switch (type) {
-			case 'line':
-				LineDataSet = dataSet;
-				if(currentType == 'line'){				
-					myChart.data = LineDataSet;
-					myChart.data.datasets.forEach((dataset) => {
-						color = colorRGB(dataset.label);
-						dataset.backgroundColor = color + '1)';
-						dataset.borderColor = color + '1)';
-						dataset.pointBackgroundColor = color + '1)';
-						dataset.pointBorderColor = color + '1)';
-						dataset.fill = false;
-					});
-					if (GeneralMeanActive) {myChart.data.datasets.push(GeneralMeanDataSet);}
-					if (GroupMeanActive) {myChart.data.datasets.push(GroupMeanDataSet);}
-				}
-				break;
-			case 'boxplot':
-				BoxPlotGeneralDataSet = dataSet;
-				if(currentType == 'boxplot'){
-					myChart.data = BoxPlotGeneralDataSet;	
-				}
-				break;
-			case 'boxplotgroup':
-				BoxPlotGroupDataSet = dataSet;
-				if(currentType == 'boxplotgroup'){
-					myChart.data = BoxPlotGroupDataSet;	
-				}
-				if(BoxPlotGroupDataSet == '') {
-					document.getElementById('chart-container').style.display = 'none';
-					document.getElementById('noGroup').style.display = 'block';
-				} else {
-					document.getElementById('noGroup').style.display = 'none';
-				}
-				break;
-			case 'radar':
-				RadarDataSet = dataSet;
-				if(currentType == 'radar'){
-					myChart.data = RadarDataSet;
-					myChart.data.datasets.forEach((dataset) => {
-						color = colorRGB(dataset.label);
-						dataset.backgroundColor = color + '0.3)';
-						dataset.borderColor = color + '1)';
-						dataset.pointBackgroundColor = color + '1)';
-						dataset.pointBorderColor = color + '1)';
-						dataset.fill = true;
-					});
-					if (GeneralMeanActive) {myChart.data.datasets.push(GeneralMeanDataSet);}
-					if (GroupMeanActive) {myChart.data.datasets.push(GroupMeanDataSet);}
-					if(myChart.data.labels.length < 3) {
-						document.getElementById('chart-container').style.display = 'none';
-						document.getElementById('noradar').style.display = 'block';
-					} else {
-						document.getElementById('noradar').style.display = 'none';
-					}
-				}
-				break;
-			case 'stackedBar':
-				StackedBarDataSet=dataSet;
-				if(currentType == 'stackedBar'){
-		
-					myChart.data=StackedBarDataSet;
-				}
-
-		}
-		
-		myChart.update();
-	}
-}
-
-function showHeatmap(){
-	document.getElementById('btnHeatmap').disabled = true;
-	document.getElementById('btnStackedBar').disabled = false;
-	document.getElementById('table_div').style.display = 'none';
-	document.getElementById('apexchartsDiv').style.display='block';
-	document.getElementById('chart-container').style.display = 'none';
-	document.getElementById('btnLegend').style.display = 'none';
-	document.getElementById('btnGroupMean').style.display = 'none';
-	document.getElementById('btnLegend').style.display = 'none';
-	currentType='heatmap';
-	myApexChart.updateOptions(heatmapOptions);
-}
-
-
-function updateHeatmap(categories, series){
-	heatmapOptions.series=series;
-	heatmapOptions.xaxis.categories=categories;
-	heatmapOptions.chart.height=document.documentElement.clientHeight-55;
-	if (currentType=='heatmap'){
-		showHeatmap();
-	}
-}
-
-function manageGradesButtons(){
-	
-	
-	//ocultamos los botones de las graficas 
-	document.getElementById('btnLineas').style.display = "inline";
-	document.getElementById('btnRadar').style.display = "inline";
-	document.getElementById('btnBoxPlot').style.display = "inline";
-	document.getElementById('btnBoxPlotGroup').style.display = "inline";
-	document.getElementById('btnCalificaciones').style.display = "inline";
-	
-	
-	//ocultamos los de logs
-	document.getElementById('btnStackedBar').style.display = "none";
-	document.getElementById('btnHeatmap').style.display="none";
-	
-	
-	currentLogType=currentType;
-	generateChart(currentGradeType);
-}
-
-
-function manageLogsButtons(){
-	
-	
-	//ocultamos los botones de las graficas que no sean de log
-	document.getElementById('btnLineas').style.display = "none";
-	document.getElementById('btnRadar').style.display = "none";
-	document.getElementById('btnBoxPlot').style.display = "none";
-	document.getElementById('btnBoxPlotGroup').style.display = "none";
-	document.getElementById('btnCalificaciones').style.display = "none";
-	
-	//mostramos los de logs
-	document.getElementById('btnStackedBar').style.display = "inline";
-	document.getElementById('btnHeatmap').style.display="inline";
-	currentGradeType=currentType;
-	
-	if (currentLogType == 'heatmap'){
-		showHeatmap();
-	}else{
-		generateChart(currentLogType);
-	}
-
-	
-
-}
-
-function changeYMax(max){
-	optionsStackedBar.scales.yAxes[0].ticks.suggestedMax=max;
-	heatmapOptions.plotOptions.heatmap.colorScale.ranges =  [
-	      {
-	        from: -1,
-	        to: 0,
-	        color: "#f78880",
-	        name: "0"
-	      },
-	      {
-	        from: 1,
-	        to: Math.max(Math.floor(max*0.25),1),
-	        color: "#f4e3ae",
-	      },
-	                {
-	        from: Math.ceil(max*0.25),
-	        to: Math.floor(max*0.50),
-	        color: "#fff033",
-	
-	      },
-	                
-	      {
-	        from: Math.ceil(max*0.50),
-	        to: Math.floor(max*0.75),
-	        color: "#b5ff33",
-	
-		},{
-	        from:Math.ceil(max*0.75),
-	        to: Math.max(max,Math.ceil(max*0.75)),
-	        color: "#38e330",
-	   
-		},{
-	        from: max+1,
-	        to: Number.POSITIVE_INFINITY,
-	        color: "#67b92e",
-	        name: "+"+(max+1)
-		}
-			
-]
-	if (currentType=="stackedBar"){
-		myChart.options.scales.yAxes[0].ticks.suggestedMax=max;
-		myChart.update();
-	}else if (currentType == "heatmap"){
-		myApexChart.updateOptions(heatmapOptions);
-
-		}
-}
-
-//Funcion que almacena la media general.
-function saveMean(mean) {
-	GeneralMeanDataSet = mean;
-}
-//Funcion que almacena la media del grupo.
-function saveGroupMean(mean){
-	GroupMeanDataSet = mean;
-}
-//Funcion que almacena la media del grupo.
-function saveTableData(dataSet){
-	TableDataSet = dataSet;
-	if(currentType == 'table'){
-		drawTable();
-	}
-}
-//Funcion que muestra u oculta la media general del gráfico
-function showGeneralMean() {
-	if('' != GeneralMeanDataSet && GeneralMeanActive == false){
-		GeneralMeanActive = true;
-		myChart.data.datasets.push(GeneralMeanDataSet);
-		myChart.update();
-		document.getElementById('btnMean').style.backgroundImage = 'url(./../img/visibility.png)';
-	} else if(GeneralMeanActive == true){
-		GeneralMeanActive = false;
-		removeDataSet(messages['btnMean'][language]);
-		document.getElementById('btnMean').style.backgroundImage = 'url(./../img/visibility_off.png)';
-	}
-}
-//Funcion que muestra u oculta la media del grupo del gráfico
-function showGroupMean() {
-	if('' != GroupMeanDataSet && GroupMeanActive == false){
-		GroupMeanActive = true;
-		myChart.data.datasets.push(GroupMeanDataSet);
-		myChart.update();
-		document.getElementById('btnGroupMean').style.backgroundImage = 'url(./../img/visibility.png)';
-	} else if(GroupMeanActive == true){
-		GroupMeanActive = false;
-		removeDataSet(messages['btnGroupMean'][language]);
-		document.getElementById('btnGroupMean').style.backgroundImage = 'url(./../img/visibility_off.png)';
-	}
-}
-//Elimina el DataSet del gráfico que conincida con la label pasada
-function removeDataSet(DataSetLabel) {
-	var arrayLength = myChart.data.datasets.length;
-	
-	for(var i = 0; i < arrayLength; i++) {
-		if(myChart.data.datasets[i].label == DataSetLabel){
-			myChart.data.datasets.splice(i,1);
-			myChart.update();
-			i = arrayLength;
-		}
-	}
-}
-//Funcion que muestra u oculta la leyenda del gráfico
-function hideLegend(){
-	if(legendActive == true){
-		legendActive = false;
-		myChart.options.legend.display = false;
-		myChart.update();
-		document.getElementById('btnLegend').style.backgroundImage = 'url(./../img/visibility_off.png)';
-	} else {
-		legendActive = true;
-		myChart.options.legend.display = true;
-		myChart.update();
-		document.getElementById('btnLegend').style.backgroundImage = 'url(./../img/visibility.png)';
-	}
-}
-//Funcion que devuelve un color en formato 'rgba(r,g,b', a falta de la transpaerncia
-//en base a el string que se le pasa
-function colorRGB(color){
-	var rgbaColor = 'rgba(';
-	var colors = []
-	colors = colorHash.rgb(color);
-	for (i = 0; i < colors.length; i++) {
-		rgbaColor += colors[i] + ',';
-	}
-	return rgbaColor;
-}
-//Funcion que devuelve un color en formato hexadecimal
-//en base a el string que se le pasa
-function colorHEX(color){
-	return colorHash.hex(color);
-}
-// Exporta el elemento actual
-function exportCurrentElemet() {
-	if(currentType == 'table') {
-		return document.querySelector('#table_img canvas').toDataURL();
-	} else {
-		myChart.update(); // por algun motivo si no se actualiza no cambia la grafica elegida
-		return myChart.toBase64Image();
-	}
-}
+                    ]
+                }
+            }
+        },
+        legend: {
+            position: 'top'
+        },
+        chart: {
+            type: "heatmap",
+            events: {
+                dataPointSelection: function (event, chartContext, config) {
+                    javaConnector.dataPointSelection(config.w.config.series.length - 1 - config.seriesIndex);
+                }
+            },
+			height: height,
+            toolbar: {
+                show: false,
+            },
+            animations: {
+                enabled: false
+            }
+        },
+        dataLabels: {
+            formatter: function (val, opts) {
+                if (val == 0) {
+                    return "";
+                }
+                return val;
+            },
+            style: {
+                colors: ["#000000"]
+            }
+        },
+        colors: ["#00A100"],
+        series: [],
+        xaxis: {
+            categories: []
+        }
+    };
 
 
 
-// Plugin que nos permite establecer el color de fondo del gráfico
-// el color se define en opciones->chartArea->backgroundColor
-Chart.pluginService.register({
-	beforeDraw: function (chart, easing) {
-		if (chart.config.options.chartArea && chart.config.options.chartArea.backgroundColor) {
-			var helpers = Chart.helpers;
-			var ctx = chart.chart.ctx;
-			var canvas = document.getElementById('myChart');
-			
-			ctx.save();
-			ctx.fillStyle = chart.config.options.chartArea.backgroundColor;
-			ctx.fillRect(0, 0, canvas.scrollWidth, canvas.scrollHeight);
-			ctx.restore();
-		}
-	}
-});
 
+    var lineOptions = {
+        tab: "grade_tabs",
+        button: "btnLine",
+        typeGraph: "line",
+
+
+
+
+    }
+
+    var radarOptions = {
+        tab: "grade_tabs",
+        button: "btnRadar",
+        typeGraph: "radar",
+        scale: {
+            gridLines: {
+                color: ['red', 'red', 'red', 'red', 'green', 'green', 'green', 'green', 'green', 'green']
+            }
+        }
+
+    } //options
+    var boxplotOptions = {
+        tab: "grade_tabs",
+        button: "btnBoxPlot",
+        typeGraph: "boxplot",
+
+
+        tooltipDecimals: 2
+
+
+    }
+
+    var boxplotGroupOptions = {
+        tab: "grade_tabs",
+        button: "btnBoxPlotGroup",
+        typeGraph: "boxplot",
+
+        tooltipDecimals: 2
+
+
+    }
+
+
+    var violinOptions = {
+        tab: "grade_tabs",
+        button: "btnViolin",
+        typeGraph: "violin",
+
+        tooltipDecimals: 2
+
+    }
+
+    var violinGroupOptions = {
+        tab: "grade_tabs",
+        button: "btnViolinGroup",
+        typeGraph: "violin",
+
+        tooltipDecimals: 2
+
+    }
+
+    var gradeReportTableOptions = {
+
+        tab: "grade_tabs",
+        button: "btnCalificaciones",
+        invalidOptionWarnings: false,
+		height:height,
+        groupBy: "type",
+        virtualDom: true,
+        layout: "fitColumns", //fit columns to width of table (optional)
+        rowClick: function (e, row) {
+            javaConnector.dataPointSelection(row.getPosition());
+
+        },
+    }
+
+    tabulatorProgressParams = {
+        min: 0,
+        max: 10,
+        legend: true,
+        legendAlign: "center",
+        color: function (value) {
+            if (value < 5) {
+                return "#DC143C";
+            }
+            return "#2DC214";
+        }
+    }
+
+    //------------------------------------------Variables globales-------------------------------------------------------------
+
+    //
+    var colorHash = new ColorHash();
+    var ctx = document.getElementById('myChart');
+
+    var myChart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: [],
+            datasets: []
+        },
+        options: lineOptions
+    });
+
+    var myApexChart = new ApexCharts(document.getElementById('apexchartsDiv'), heatmapOptions);
+    myApexChart.render();
+
+    var table = new Tabulator("#tabulatorDiv", gradeReportTableOptions);
+
+
+    //------------------------------------------Funciones------------------------------------------------------------------
+
+
+    function imageButton(id, value) {
+        if (value) {
+            document.getElementById(id).style.backgroundImage = 'url(./../img/visibility.png)';
+
+        } else {
+            document.getElementById(id).style.backgroundImage = 'url(./../img/visibility_off.png)';
+        }
+    }
+
+    function displayLegendButton(value) {
+        document.getElementById('btnLegend').style.display = value ? "inline" : "none";
+    }
+
+    function displayGroupButton(value) {
+        document.getElementById('btnGroupMean').style.display = value ? "inline" : "none";
+    }
+
+    function displayGeneralButton(value) {
+        document.getElementById('btnMean').style.display = value ? "inline" : "none";
+    }
+
+    function displayApexChart(value) {
+        document.getElementById('apexchartsDiv').style.display = value ? "block" : "none";
+    }
+    function displayTabulator(value) {
+        document.getElementById('tabulatorDiv').style.display = value ? "block" : "none";
+    }
+
+
+    function displayChartjs(value) {
+        document.getElementById('chart-container').style.display = value ? "block" : "none";
+    }
+
+
+
+    function displayChartsButtons(div_id, type) {
+        let tabs = document.getElementById(div_id);
+        let children = tabs.children;
+        for (i = 0; i < children.length; i++) {
+            if (children[i].tagName == "INPUT") {
+                children[i].style.display = type;
+            }
+
+        }
+    }
+
+    function disableTab(div_id, noDisable) {
+
+        if (document.getElementById(noDisable).disabled == false) {
+            let tabs = document.getElementById(div_id);
+            let children = tabs.children;
+            for (i = 0; i < children.length; i++) {
+                if (children[i].tagName == "INPUT") {
+                    children[i].disabled = false;
+                }
+
+            }
+            document.getElementById(noDisable).disabled = true;
+        }
+
+
+    }
+
+
+    function updateApexCharts(series, categories, options) {
+        displayApexChart(true);
+        displayChartjs(false);
+        displayTabulator(false);
+
+
+        disableTab(options.tab, options.button);
+
+        displayLegendButton(options.useLegend);
+        displayGroupButton(options.useGroup);
+        displayGeneralButton(options.useGeneral);
+
+        options.series = series;
+        options.xaxis.categories = categories;
+        options.legend.show = javaConnector.getShowLegend();
+        if (myApexChart.w.config.chart.type == options.typeGraph) {
+
+            myApexChart.updateOptions(options);
+        } else {
+
+            myApexChart.destroy();
+            myApexChart = new ApexCharts(document.getElementById('apexchartsDiv'), options);
+            myApexChart.render();
+        }
+    }
+
+    function updateChartjs(dataset, options) {
+        displayApexChart(false);
+        displayChartjs(true);
+        displayTabulator(false);
+
+
+        disableTab(options.tab, options.button);
+
+        displayLegendButton(options.useLegend);
+        displayGroupButton(options.useGroup);
+        displayGeneralButton(options.useGeneral);
+
+        if (myChart.config.type == options.typeGraph) {
+            myChart.data = dataset;
+            myChart.options = options;
+            myChart.update();
+            myChart.options.legend.display = javaConnector.getShowLegend();
+            myChart.update();
+        } else {
+            myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: options.typeGraph,
+                data: dataset,
+                options: options
+            });
+        }
+
+    }
+
+    function updateTabulator(columns, tabledata, options) {
+
+        displayApexChart(false);
+        displayChartjs(false);
+        displayTabulator(true);
+        disableTab(options.tab, options.button);
+        displayLegendButton(options.useLegend);
+        displayGroupButton(options.useGroup);
+        displayGeneralButton(options.useGeneral);
+
+        disableTab(options.tab, options.button);
+        table.setColumns(columns);
+        table.setData(tabledata).then(function () {
+            table.redraw();
+        })
+        
+
+    }
+
+
+
+    function clearChartjs() {
+        myChart.destroy();
+        myChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: [],
+                datasets: []
+            },
+            options: stackedbarOptions
+        });
+    }
+
+
+    function manageButtons(type) {
+
+
+        displayChartsButtons("grade_tabs", type == "grade" ? "inline" : "none");
+        displayChartsButtons("log_tabs", type == "log" ? "inline" : "none");
+
+    }
+
+
+
+    function changeYMaxStackedBar(max) {
+        stackedbarOptions.scales.yAxes[0].ticks.suggestedMax = max;
+
+        myChart.options.scales.yAxes[0].ticks.suggestedMax = max;
+        myChart.update();
+
+    }
+
+    function changeYMaxHeatmap(max) {
+        heatmapOptions.plotOptions.heatmap.colorScale.ranges = [{
+            from: -1,
+            to: 0,
+            color: "#f78880",
+            name: "0"
+        }, {
+            from: 1,
+            to: Math.max(Math.floor(max * 0.25), 1),
+            color: "#f4e3ae",
+        }, {
+            from: Math.max(Math.ceil(max * 0.25), 1),
+            to: Math.max(Math.floor(max * 0.50), 1),
+            color: "#fff033",
+
+        },
+
+        {
+            from: Math.max(Math.ceil(max * 0.50), 1),
+            to: Math.max(Math.floor(max * 0.75), 1),
+            color: "#b5ff33",
+
+        }, {
+            from: Math.max(Math.ceil(max * 0.75), 1),
+            to: Math.max(max, Math.floor(max * 0.75)),
+            color: "#38e330",
+
+        }, {
+            from: max + 1,
+            to: Number.POSITIVE_INFINITY,
+            color: "#67b92e",
+            name: "+" + (max + 1)
+        }
+
+        ];
+        myApexChart.updateOptions(heatmapOptions);
+    }
+
+    //Funcion que muestra u oculta la leyenda del gráfico
+    function hideLegend() {
+        legendActive = javaConnector.swapLegend();
+        imageButton("btnLegend", legendActive);
+    }
+
+    function showGeneralMean() {
+        mean = javaConnector.swapMean();
+        imageButton("btnMean", mean);
+        javaConnector.updateChart();
+    }
+
+    function showGroupMean() {
+        mean = javaConnector.swapGroupMean();
+        imageButton("btnGroupMean", mean);
+        javaConnector.updateChart();
+    }
+
+    function hideLegendChartjs() {
+        hideLegend();
+        Chart.defaults.global.legend.display = legendActive;
+        myChart.options.legend.display = legendActive;
+        myChart.update();
+    }
+
+
+    function hideLegendApexCharts(option) {
+        hideLegend();
+        option.legend.show = legendActive;
+        myApexChart.updateOptions(option);
+    }
+
+
+    function exportChartjs() {
+        return myChart.toBase64Image();
+    }
+
+    function exportApexcharts() {
+
+        myApexChart.dataURI().then(function (uri) {
+            javaConnector.saveImage(uri);
+        }).catch(function (error) {
+            javaConnector.showErrorWindow("Cannot download image:" + error.message);
+        })
+
+    }
+    function genericExport(id) {
+        html2canvas(document.getElementById(id), { logging: false }).then(function (canvas) {
+            javaConnector.saveImage(canvas.toDataURL());
+        }).catch(function (error) {
+            javaConnector.showErrorWindow("Cannot download image:" + error.message);
+        })
+
+    }
+
+    // Modifica el valor de los inputs segun el idioma pasado
+    function getI18n(item) {
+        document.getElementById(item).value = javaConnector.getI18n("html." + item);
+    }
+
+    // Establece el idioma
+    function setLanguage() {
+        let tabs = document.querySelectorAll("#all_tabs > div > input");
+        for (i = 0; i < tabs.length; i++) {
+            getI18n(tabs[i].id);
+        }
+    }
+
+
+
+
+    function colorRGB(color) {
+        let colors = colorHash.rgb(color);
+        return "rgb(" + colors[0] + "," + colors[1] + "," + colors[2] + ")";
+    }
+
+    function colorRGBA(color, alpha) {
+        let colors = colorHash.rgb(color);
+        return "rgba(" + colors[0] + "," + colors[1] + "," + colors[2] + "," + alpha + ")";
+    }
+    //Funcion que devuelve un color en formato hexadecimal
+    //en base a el string que se le pasa
+    function colorHEX(color) {
+        return colorHash.hex(color);
+    }
+
+    // Plugin que nos permite establecer el color de fondo del gráfico
+    // el color se define en opciones->chartArea->backgroundColor
+    Chart.pluginService.register({
+        beforeDraw: function (chart, easing) {
+            if (chart.config.options.chartArea && chart.config.options.chartArea.backgroundColor) {
+                var helpers = Chart.helpers;
+                var ctx = chart.chart.ctx;
+                var canvas = document.getElementById('myChart');
+
+                ctx.save();
+                ctx.fillStyle = chart.config.options.chartArea.backgroundColor;
+                ctx.fillRect(0, 0, canvas.scrollWidth, canvas.scrollHeight);
+                ctx.restore();
+            }
+        }
+    });
 </script>
 
 </body>
+
 </html>

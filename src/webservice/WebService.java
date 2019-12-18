@@ -228,6 +228,13 @@ public abstract class WebService {
 	protected void appendToUrlCriteria(String key, String value) {
 		parameters.append("&criteria[0][key]=" + key + "&criteria[0][value]=" + value);
 	}
+	
+	
+	protected void appendToUrlClassification(String classification) {
+		if (classification != null) {
+			parameters.append("&classification=" + classification);
+		}
+	}
 
 	/**
 	 * Devueve el contenido de la funcion de moodle.

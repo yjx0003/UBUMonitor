@@ -1,5 +1,10 @@
 .anchorpane {
     -fx-background-color: #f2f2f2;
+    
+}
+
+* :disabled {
+    -fx-opacity: 0.8;
 }
 
 .progress-bar .bar { 
@@ -52,12 +57,14 @@
 }
 
 
-
+.tab-pane-class{
+	-fx-border-color:black;
+	-fx-border-width:1px;
+}
 
 .list-view-intro{
-	-fx-padding: 4.0;
+
 	-fx-font-size: 15.0px;
-	-fx-background-color: #8c8c8c;
 }
 
 .list-cell:hover {
@@ -66,6 +73,10 @@
 
 .list-cell:selected {
   -fx-background-color: #6ff9ff;
+}
+
+.list-view-class .list-cell:focused {
+  -fx-background-color: #6fe2ff;
 }
 
 .tree-cell:hover{
@@ -94,7 +105,9 @@
 	-fx-font-size: 11.0px;
 	-fx-font-weight: bold;
 	-fx-border-radius: 2px 2px 2px 2px;
+
 }
+
 
 .menu-button .label{
 	-fx-background-color: #bdbdbd;
@@ -158,14 +171,6 @@
 	-fx-font-weight: bold;
 }
 
-.choice-box {
-    -fx-pref-width: 100;
-}
-
-.choice-box .menu-item > .label {
-    -fx-pref-width: 100;
-}
-
 .list-cell:disabled {
-    -fx-opacity: 0.5;
+    -fx-opacity: 1.0;
 }

@@ -69,6 +69,10 @@ Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), d
   * Versión: **2.8.0**
   * [Github](https://github.com/chartjs/Chart.js)
   * [CDNJS Repository](https://cdnjs.com/libraries/Chart.js/)
+* [ApexCharts](https://apexcharts.com/)
+  * Versión: **3.10.1**
+  * [Github](https://github.com/apexcharts/apexcharts.js)
+  * [JSDELIVR Repository](https://www.jsdelivr.com/package/npm/apexcharts)
 * **color-hash**
   * Versión: **1.0.3**
   * [Github](https://github.com/zenozeng/color-hash)

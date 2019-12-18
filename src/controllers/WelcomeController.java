@@ -9,8 +9,8 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import controllers.ubugrades.CreatorGradeItems;
 import controllers.ubugrades.CreatorUBUGradesController;
 import controllers.ubulogs.LogCreator;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -46,8 +47,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -80,11 +83,36 @@ public class WelcomeController implements Initializable {
 	private Path cacheFilePath;
 	private Controller controller = Controller.getInstance();
 	private boolean isFileCacheExists;
-
+	@FXML
+	private AnchorPane anchorPane;
 	@FXML
 	private Label lblUser;
 	@FXML
 	private ListView<Course> listCourses;
+
+	@FXML
+	private ListView<Course> listCoursesFavorite;
+
+	@FXML
+	private ListView<Course> listCoursesRecent;
+
+	@FXML
+	private ListView<Course> listCoursesInProgress;
+
+	@FXML
+	private ListView<Course> listCoursesPast;
+
+	@FXML
+	private ListView<Course> listCoursesFuture;
+
+	@FXML
+	private TabPane tabPane;
+	
+	@FXML
+	private Label labelLoggedIn;
+	@FXML
+	private Label labelHost;
+
 	@FXML
 	private Label lblNoSelect;
 	@FXML
@@ -97,12 +125,22 @@ public class WelcomeController implements Initializable {
 	private Label lblDateUpdate;
 	@FXML
 	private CheckBox chkUpdateData;
-
 	private boolean isBBDDLoaded;
+	
+	private boolean autoUpdate;
+	
+	public WelcomeController() {
+		this(false);
+	}
+
+	public WelcomeController(boolean autoUpdate) {
+		this.autoUpdate = autoUpdate;
+	}
 
 	/**
 	 * Función initialize. Muestra la lista de cursos del usuario introducido.
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
@@ -112,35 +150,36 @@ public class WelcomeController implements Initializable {
 
 			lblUser.setText(controller.getUser().getFullName());
 			LOGGER.info("Cargando cursos...");
+			
+			progressBar.visibleProperty().bind(btnEntrar.visibleProperty().not());
+			anchorPane.disableProperty().bind(btnEntrar.visibleProperty().not());
+			lblProgress.visibleProperty().bind(btnEntrar.visibleProperty().not());
+			
+			labelLoggedIn.setText(controller.getLoggedIn().format(Controller.DATE_TIME_FORMATTER));
+			labelHost.setText(controller.getUrlHost().toString());
+			
+			initListViews();
 
-			ObservableList<Course> list = FXCollections.observableArrayList(controller.getUser().getCourses());
-			Collections.sort(list, Comparator.comparing(Course::getFullName)
-					.thenComparing(c -> c.getCourseCategory().getName()));
 
-			progressBar.setVisible(false);
-			listCourses.setItems(list);
-			chkUpdateData.setDisable(true);
-			listCourses.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
+			tabPane.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
+				ListView<Course> listView = (ListView<Course>) value.getContent();
+				listView.getSelectionModel().clearSelection();
+				chkUpdateData.setDisable(true);
+				lblDateUpdate.setText(null);
+			});
+			tabPane.getSelectionModel().select(Config.getProperty("courseList", 0));
+			
 
-				cacheFilePath = directoryCache.resolve(UtilMethods.removeReservedChar(newValue.toString()) + "-" + newValue.getId());
-				LOGGER.debug("Buscando si existe {}", cacheFilePath);
+			Platform.runLater(() -> {
+				ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem()
+						.getContent();
+				Course course = controller.getUser().getCourseById(Config.getProperty("actualCourse", -1));
 
-				File f = cacheFilePath.toFile();
-
-				if (f.exists() && f.isFile()) {
-					chkUpdateData.setSelected(false);
-					chkUpdateData.setDisable(false);
-					long lastModified = f.lastModified();
-
-					LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastModified),
-							ZoneId.systemDefault());
-					lblDateUpdate.setText(localDateTime.format(Controller.DATE_TIME_FORMATTER));
-					isFileCacheExists = false;
-				} else {
+				listView.getSelectionModel().select(course);
+				listView.scrollTo(course);
+				if (autoUpdate) {
 					chkUpdateData.setSelected(true);
-					chkUpdateData.setDisable(true);
-					lblDateUpdate.setText(I18n.get("label.never"));
-					isFileCacheExists = true;
+					btnEntrar.fire();
 				}
 			});
 
@@ -150,22 +189,82 @@ public class WelcomeController implements Initializable {
 
 	}
 
+	private void initListViews() {
+		Comparator<Course> courseComparator = Comparator.comparing(Course::getFullName)
+				.thenComparing(c -> c.getCourseCategory().getName());
+		
+		initListView(controller.getUser().getCourses(), listCourses, courseComparator);
+		initListView(controller.getUser().getFavoriteCourses(), listCoursesFavorite, courseComparator);
+		initListView(controller.getUser().getRecentCourses(), listCoursesRecent, null);
+		initListView(controller.getUser().getInProgressCourses(), listCoursesInProgress, courseComparator);
+		initListView(controller.getUser().getPastCourses(), listCoursesPast, courseComparator);
+		initListView(controller.getUser().getFutureCourses(), listCoursesFuture, courseComparator);
+	}
+
+	private void initListView(List<Course> courseList, ListView<Course> listView, Comparator<Course> comparator) {
+		ObservableList<Course> observableList = FXCollections.observableArrayList(courseList);
+		if (comparator != null) {
+			observableList.sort(comparator);
+		}
+		listView.setItems(observableList);
+		listView.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> checkFile(newValue));
+
+	}
+
+	private Course getSelectedCourse() {
+		@SuppressWarnings("unchecked")
+		ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem().getContent();
+		return listView.getSelectionModel().getSelectedItem();
+	}
+
+	private void checkFile(Course newValue) {
+		if (newValue == null)
+			return;
+		cacheFilePath = directoryCache
+				.resolve(UtilMethods.removeReservedChar(newValue.toString()) + "-" + newValue.getId());
+		LOGGER.debug("Buscando si existe {}", cacheFilePath);
+
+		File f = cacheFilePath.toFile();
+
+		if (f.exists() && f.isFile()) {
+			chkUpdateData.setSelected(false);
+			chkUpdateData.setDisable(false);
+			long lastModified = f.lastModified();
+
+			LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastModified),
+					ZoneId.systemDefault());
+			lblDateUpdate.setText(localDateTime.format(Controller.DATE_TIME_FORMATTER));
+			isFileCacheExists = false;
+		} else {
+			chkUpdateData.setSelected(true);
+			chkUpdateData.setDisable(true);
+			lblDateUpdate.setText(I18n.get("label.never"));
+			isFileCacheExists = true;
+		}
+	}
+
 	/**
 	 * Botón entrar, accede a la siguiente ventana
 	 * 
-	 * @param event
-	 *            El evento.
+	 * @param event El evento.
 	 */
+
 	public void enterCourse(ActionEvent event) {
 
 		// Guardamos en una variable el curso seleccionado por el usuario
-		Course selectedCourse = listCourses.getSelectionModel().getSelectedItem();
+
+		Course selectedCourse = getSelectedCourse();
 		if (selectedCourse == null) {
 			lblNoSelect.setText(I18n.get("error.nocourse"));
 			return;
 		}
 
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getFullName());
+
+		Config.setProperty("courseList", Integer.toString(tabPane.getSelectionModel().getSelectedIndex()));
+
+		Config.setProperty("actualCourse", getSelectedCourse().getId());
+
 
 		if (chkUpdateData.isSelected()) {
 			if (!isFileCacheExists) {
@@ -178,7 +277,7 @@ public class WelcomeController implements Initializable {
 				isBBDDLoaded = true;
 			}
 			downloadData();
-		} else {
+		} else { // if loading cache
 			loadData(controller.getPassword());
 			loadNextWindow();
 		}
@@ -223,8 +322,9 @@ public class WelcomeController implements Initializable {
 
 		DataBase dataBase;
 		try {
+
 			dataBase = (DataBase) Encryption.decrypt(password, cacheFilePath.toString());
-			copyDataBase(dataBase, listCourses.getSelectionModel().getSelectedItem());
+			copyDataBase(dataBase, getSelectedCourse());
 			controller.setDataBase(dataBase);
 			isBBDDLoaded = true;
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
@@ -241,10 +341,8 @@ public class WelcomeController implements Initializable {
 		dialog.setTitle(I18n.get("title.passwordChanged"));
 
 		dialog.getDialogPane().setGraphic(new ImageView("img/error.png"));
-		dialog.setHeaderText(
-				I18n.get("header.passwordChangedMessage") + "\n"
-						+ I18n.get("header.passwordDateTime")
-						+ lblDateUpdate.getText());
+		dialog.setHeaderText(I18n.get("header.passwordChangedMessage") + "\n" + I18n.get("header.passwordDateTime")
+				+ lblDateUpdate.getText());
 
 		Image errorIcon = new Image("img/error.png");
 		Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
@@ -292,8 +390,7 @@ public class WelcomeController implements Initializable {
 		}
 
 		btnEntrar.setVisible(false);
-		lblProgress.setVisible(true);
-		progressBar.setVisible(true);
+		
 		Task<Void> task = getUserDataWorker();
 		lblProgress.textProperty().bind(task.messageProperty());
 		task.setOnSucceeded(v -> loadNextWindow());
@@ -314,8 +411,7 @@ public class WelcomeController implements Initializable {
 
 		try {
 			// Accedemos a la siguiente ventana
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"),
-					I18n.getResourceBundle());
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"), I18n.getResourceBundle());
 			controller.getStage().close();
 			controller.setStage(new Stage());
 			Parent root = loader.load();
@@ -381,8 +477,6 @@ public class WelcomeController implements Initializable {
 					throw new IllegalStateException();
 				} finally {
 					controller.getStage().getScene().setCursor(Cursor.DEFAULT);
-					progressBar.setVisible(false);
-					lblProgress.setVisible(false);
 					btnEntrar.setVisible(true);
 				}
 				return null;
@@ -393,13 +487,12 @@ public class WelcomeController implements Initializable {
 	/**
 	 * Muestra una ventana de error.
 	 * 
-	 * @param mensaje
-	 *            El mensaje que se quiere mostrar.
+	 * @param mensaje El mensaje que se quiere mostrar.
 	 */
 	private void errorWindow(String mensaje) {
 		Alert alert = new Alert(AlertType.ERROR);
 
-		alert.setTitle("UBUMonitor");
+		alert.setTitle(AppInfo.APPLICATION_NAME);
 		alert.setHeaderText("Error");
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.initOwner(controller.getStage());

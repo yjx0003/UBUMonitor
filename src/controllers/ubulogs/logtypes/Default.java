@@ -43,7 +43,7 @@ public class Default extends ReferencesLog {
 	 */
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
-		LOGGER.warn("No se ha añadido un manejador para referenciar los atributos restantes de :{}" , log);
+		LOGGER.warn("No se ha añadido un manejador para el log {}" , log.getComponentEvent());
 		// do nothing
 
 	}

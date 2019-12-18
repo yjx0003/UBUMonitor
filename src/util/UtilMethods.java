@@ -35,10 +35,10 @@ public class UtilMethods {
 	 * @param list
 	 * @return
 	 */
-	public static String joinWithQuotes(List<String> list) {
+	public static <T> String joinWithQuotes(List<T> list) {
 		// https://stackoverflow.com/a/18229122
 		return list.stream()
-				.map(s -> "'" + s + "'")
+				.map(s -> "'" + escapeJavaScriptText(s.toString()) + "'")
 				.collect(Collectors.joining(", "));
 	}
 

@@ -17,6 +17,7 @@ Esta versión es la continuación de [UBUGrades](https://github.com/huco95/UBUGr
 
 ## Manual de usuario:
 <!--* https://ubumonitor.gitbook.io/ubumonitor/-->
+* https://ubumonitordocs.readthedocs.io/es/latest/
 
 ## Dependencias:
 La aplicación requiere **Java 8**.

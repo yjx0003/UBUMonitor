@@ -125,7 +125,7 @@
             <Label fx:id="lblDateUpdate" layoutX="300.0" layoutY="300.0" prefHeight="21.0" prefWidth="146.0" />
          </children>
       </AnchorPane>
-		<Button fx:id="btnEntrar" defaultButton="true" layoutX="368.0" layoutY="530.0" mnemonicParsing="false" onAction="#enterCourse" prefHeight="39.0" prefWidth="86.0" style="-fx-font-size: 16;" styleClass="rich-blue" stylesheets="@/css/style.css" text="%btn.enter">
+		<Button fx:id="btnEntrar" defaultButton="true" layoutX="200.0" layoutY="540.0" mnemonicParsing="false" onAction="#enterCourse" prefHeight="39.0" prefWidth="86.0" style="-fx-font-size: 16;" styleClass="rich-blue" stylesheets="@/css/style.css" text="%btn.enter">
 			<font>
 				<Font size="19.0" />
 			</font>
@@ -157,5 +157,13 @@
             <Cursor fx:constant="DEFAULT" />
          </cursor>
       </GridPane>
+      <Button fx:id="btnRemove" defaultButton="true" layoutX="500.0" layoutY="540.0" mnemonicParsing="false" onAction="#removeCourse" prefHeight="39.0" prefWidth="86.0" style="-fx-font-size: 16;" styleClass="rich-blue" stylesheets="@/css/style.css" text="%btn.remove">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <font>
+            <Font size="19.0" />
+         </font>
+      </Button>
 	</children>
 </AnchorPane>

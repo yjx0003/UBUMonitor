@@ -107,7 +107,7 @@ public class WelcomeController implements Initializable {
 
 	@FXML
 	private TabPane tabPane;
-	
+
 	@FXML
 	private Label labelLoggedIn;
 	@FXML
@@ -118,6 +118,9 @@ public class WelcomeController implements Initializable {
 	@FXML
 	private Button btnEntrar;
 	@FXML
+	private Button btnRemove;
+
+	@FXML
 	private ProgressBar progressBar;
 	@FXML
 	private Label lblProgress;
@@ -126,9 +129,9 @@ public class WelcomeController implements Initializable {
 	@FXML
 	private CheckBox chkUpdateData;
 	private boolean isBBDDLoaded;
-	
+
 	private boolean autoUpdate;
-	
+
 	public WelcomeController() {
 		this(false);
 	}
@@ -150,16 +153,17 @@ public class WelcomeController implements Initializable {
 
 			lblUser.setText(controller.getUser().getFullName());
 			LOGGER.info("Cargando cursos...");
-			
+
 			progressBar.visibleProperty().bind(btnEntrar.visibleProperty().not());
 			anchorPane.disableProperty().bind(btnEntrar.visibleProperty().not());
 			lblProgress.visibleProperty().bind(btnEntrar.visibleProperty().not());
-			
+			btnRemove.visibleProperty().bind(btnEntrar.visibleProperty());
+			btnRemove.disableProperty().bind(chkUpdateData.disabledProperty());
+
 			labelLoggedIn.setText(controller.getLoggedIn().format(Controller.DATE_TIME_FORMATTER));
 			labelHost.setText(controller.getUrlHost().toString());
-			
-			initListViews();
 
+			initListViews();
 
 			tabPane.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
 				ListView<Course> listView = (ListView<Course>) value.getContent();
@@ -168,7 +172,6 @@ public class WelcomeController implements Initializable {
 				lblDateUpdate.setText(null);
 			});
 			tabPane.getSelectionModel().select(Config.getProperty("courseList", 0));
-			
 
 			Platform.runLater(() -> {
 				ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem()
@@ -192,7 +195,7 @@ public class WelcomeController implements Initializable {
 	private void initListViews() {
 		Comparator<Course> courseComparator = Comparator.comparing(Course::getFullName)
 				.thenComparing(c -> c.getCourseCategory().getName());
-		
+
 		initListView(controller.getUser().getCourses(), listCourses, courseComparator);
 		initListView(controller.getUser().getFavoriteCourses(), listCoursesFavorite, courseComparator);
 		initListView(controller.getUser().getRecentCourses(), listCoursesRecent, null);
@@ -265,7 +268,6 @@ public class WelcomeController implements Initializable {
 
 		Config.setProperty("actualCourse", getSelectedCourse().getId());
 
-
 		if (chkUpdateData.isSelected()) {
 			if (!isFileCacheExists) {
 				loadData(controller.getPassword());
@@ -282,6 +284,23 @@ public class WelcomeController implements Initializable {
 			loadNextWindow();
 		}
 
+	}
+
+	public void removeCourse(ActionEvent event) {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle(AppInfo.APPLICATION_NAME);
+		alert.setHeaderText(I18n.get("text.confirmation"));
+		alert.setContentText(I18n.get("text.confirmationtext"));
+
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get() == ButtonType.OK) {
+			cacheFilePath.toFile().delete();
+			@SuppressWarnings("unchecked")
+			ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem().getContent();
+			int index = listView.getSelectionModel().getSelectedIndex();
+			listView.getSelectionModel().clearSelection();
+			listView.getSelectionModel().select(index);
+		}
 	}
 
 	private Course copyDataBase(DataBase copyDataBase, Course selectedCourse) {
@@ -390,7 +409,7 @@ public class WelcomeController implements Initializable {
 		}
 
 		btnEntrar.setVisible(false);
-		
+
 		Task<Void> task = getUserDataWorker();
 		lblProgress.textProperty().bind(task.messageProperty());
 		task.setOnSucceeded(v -> loadNextWindow());

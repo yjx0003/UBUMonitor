@@ -49,6 +49,7 @@ public abstract class Chart {
 	protected boolean useGeneralButton;
 	protected boolean useGroupButton;
 	protected String optionsVar;
+	protected boolean useNegativeValues;
 
 	protected static final double OPACITY = 0.2;
 
@@ -74,6 +75,7 @@ public abstract class Chart {
 		this.chartType = chartType;
 
 		this.useLegend = true;
+		this.useNegativeValues = false;
 	}
 
 	public String getOptionsVar() {
@@ -179,5 +181,13 @@ public abstract class Chart {
 
 	public String getMax() {
 		return null;
+	}
+
+	public boolean isUseNegativeValues() {
+		return useNegativeValues;
+	}
+
+	public void setUseNegativeValues(boolean useNegativeValues) {
+		this.useNegativeValues = useNegativeValues;
 	}
 }

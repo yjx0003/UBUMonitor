@@ -157,7 +157,7 @@ public class LoginController implements Initializable {
 		
 		txtHost.setText(Config.getProperty("host", null));
 		txtUsername.setText(Config.getProperty("username", null));
-		txtPassword.setText(System.getenv("pass"));
+		txtPassword.setText(System.getenv("UBUMonitorpassword"));
 		chkSaveUsername.setSelected(Boolean.parseBoolean(Config.getProperty("saveUsername")));
 		chkSaveHost.setSelected(Boolean.parseBoolean(Config.getProperty("saveHost")));
 

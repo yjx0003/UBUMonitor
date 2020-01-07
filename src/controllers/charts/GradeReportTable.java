@@ -13,7 +13,6 @@ import controllers.MainController;
 import model.EnrolledUser;
 import model.GradeItem;
 import model.Group;
-import util.UtilMethods;
 
 public class GradeReportTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GradeReportTable.class);
@@ -41,23 +40,28 @@ public class GradeReportTable extends Tabulator {
 
 	public String createColumns(List<GradeItem> gradeItems) {
 
+		//if type is selected user or stats
 		StringJoiner array = JSArray();
 		StringJoiner jsObject = JSObject();
-		addKeyValue(jsObject, "title", "Type");
-		addKeyValue(jsObject, "field", "type");
+		addKeyValueWithQuote(jsObject, "title", "Type");
+		addKeyValueWithQuote(jsObject, "field", "type");
 		jsObject.add("visible:false");
+		
+		//users columns
 		jsObject = JSObject();
-		addKeyValue(jsObject, "title", I18n.get("chartlabel.name"));
-		addKeyValue(jsObject, "field", "name");
-		addKeyValue(jsObject, "frozen", "true");
+		addKeyValueWithQuote(jsObject, "title", I18n.get("chartlabel.name"));
+		addKeyValueWithQuote(jsObject, "field", "name");
+		addKeyValueWithQuote(jsObject, "frozen", "true");
 		array.add(jsObject.toString());
+		
+		//grade items columns
 		for (GradeItem gradeItem : gradeItems) {
 			jsObject = JSObject();
 			jsObject.add("formatter:'progress'");
 			jsObject.add("formatterParams:tabulatorProgressParams");
 			jsObject.add("sorter:'number'");
-			addKeyValue(jsObject, "title", gradeItem.getItemname());
-			addKeyValue(jsObject, "field", "ID" + gradeItem.getId());
+			addKeyValueWithQuote(jsObject, "title", gradeItem.getItemname());
+			addKeyValueWithQuote(jsObject, "field", "ID" + gradeItem.getId());
 
 			array.add(jsObject.toString());
 		}
@@ -70,8 +74,8 @@ public class GradeReportTable extends Tabulator {
 		String stringSelectedUsers = I18n.get("text.selectedUsers");
 		for (EnrolledUser enrolledUser : enrolledUsers) {
 			jsObject = JSObject();
-			addKeyValue(jsObject, "name", enrolledUser.getFullName());
-			addKeyValue(jsObject, "type", stringSelectedUsers);
+			addKeyValueWithQuote(jsObject, "name", enrolledUser.getFullName());
+			addKeyValueWithQuote(jsObject, "type", stringSelectedUsers);
 			for (GradeItem gradeItem : gradeItems) {
 				addKeyValue(jsObject, "ID" + gradeItem.getId(),
 						adjustTo10(gradeItem.getEnrolledUserPercentage(enrolledUser)));
@@ -97,31 +101,13 @@ public class GradeReportTable extends Tabulator {
 	private String addStats(List<GradeItem> gradeItems, String name, Map<GradeItem, DescriptiveStatistics> stats) {
 		StringJoiner jsObject = JSObject();
 
-		addKeyValue(jsObject, "name", name);
-		addKeyValue(jsObject, "type", "Stats");
+		addKeyValueWithQuote(jsObject, "name", name);
+		addKeyValueWithQuote(jsObject, "type", I18n.get("text.stats"));
 		for (GradeItem gradeItem : gradeItems) {
 			addKeyValue(jsObject, "ID" + gradeItem.getId(), adjustTo10(stats.get(gradeItem).getMean()));
 		}
 		return jsObject.toString();
 	}
 
-	public StringJoiner JSArray() {
-		return new StringJoiner(",", "[", "]");
-	}
 
-	public StringJoiner JSObject() {
-		return new StringJoiner(",", "{", "}");
-	}
-
-	public <T> void addKeyValue(StringJoiner jsObject, T key, int value) {
-		jsObject.add(key + ":" + value);
-	}
-
-	public <T> void addKeyValue(StringJoiner jsObject, T key, double value) {
-		jsObject.add(key + ":" + value);
-	}
-
-	public <T> void addKeyValue(StringJoiner jsObject, T key, String value) {
-		jsObject.add(key + ":'" + UtilMethods.escapeJavaScriptText(value.toString()) + "'");
-	}
 }

@@ -155,8 +155,9 @@ public class LoginController implements Initializable {
 	 */
 	private void initializeProperties() throws IOException {
 		
-		txtHost.setText(Config.getProperty("host", ""));
-		txtUsername.setText(Config.getProperty("username", ""));
+		txtHost.setText(Config.getProperty("host", null));
+		txtUsername.setText(Config.getProperty("username", null));
+		txtPassword.setText(System.getenv("pass"));
 		chkSaveUsername.setSelected(Boolean.parseBoolean(Config.getProperty("saveUsername")));
 		chkSaveHost.setSelected(Boolean.parseBoolean(Config.getProperty("saveHost")));
 

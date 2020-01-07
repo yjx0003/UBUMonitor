@@ -11,7 +11,7 @@ import model.GradeItem;
 import model.Group;
 import util.UtilMethods;
 
-public class GroupBoxPlot extends Chartjs {
+public class GroupBoxPlot extends ChartjsGradeItem {
 
 	public GroupBoxPlot(MainController mainController) {
 		super(mainController, ChartType.GROUP_BOXPLOT);

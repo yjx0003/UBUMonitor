@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import controllers.charts.ChartType;
 import controllers.MainController;
 import controllers.ubulogs.GroupByAbstract;
 import javafx.scene.control.ChoiceBox;
@@ -50,7 +50,6 @@ public abstract class Chart {
 	protected boolean useGroupButton;
 	protected String optionsVar;
 
-	
 	protected static final double OPACITY = 0.2;
 
 	public Chart(MainController mainController, ChartType chartType) {
@@ -73,7 +72,7 @@ public abstract class Chart {
 		this.stats = mainController.getStats();
 		this.tvwGradeReport = mainController.getTvwGradeReport();
 		this.chartType = chartType;
-		
+
 		this.useLegend = true;
 	}
 
@@ -106,9 +105,9 @@ public abstract class Chart {
 		selectedUsers.removeAll(Collections.singletonList(null));
 		return selectedUsers;
 	}
-	
+
 	public double adjustTo10(double value) {
-		return Double.isNaN(value) ? value : Math.round(value*10)  / 100.0;
+		return Double.isNaN(value) ? value : Math.round(value * 10) / 100.0;
 	}
 
 	public int onClick(int index) {
@@ -138,6 +137,38 @@ public abstract class Chart {
 				.map(TreeItem::getValue).collect(Collectors.toList());
 	}
 
+	public StringJoiner JSArray() {
+		return new StringJoiner(",", "[", "]");
+	}
+
+	public StringJoiner JSObject() {
+		return new StringJoiner(",", "{", "}");
+	}
+
+	public <K, V> void addKeyValueWithQuote(StringJoiner jsObject, K key, V value) {
+		jsObject.add(key + ":'" + UtilMethods.escapeJavaScriptText(value.toString()) + "'");
+	}
+
+	public <T> void addKeyValue(StringJoiner jsObject, T key, int value) {
+		jsObject.add(key + ":" + value);
+	}
+
+	public <T> void addKeyValue(StringJoiner jsObject, T key, double value) {
+		jsObject.add(key + ":" + value);
+	}
+
+	public <T> void addKeyValue(StringJoiner jsObject, T key, boolean value) {
+		jsObject.add(key + ":" + value);
+	}
+
+	public <T> void addKeyValue(StringJoiner jsObject, T key, StringJoiner jsArray) {
+		jsObject.add(key + ":" + jsArray.toString());
+	}
+
+	public <T> void addKeyValue(StringJoiner jsObject, T key, String value) {
+		jsObject.add(key + ":" + value);
+	}
+
 	public abstract void update();
 
 	public abstract void clear();
@@ -145,4 +176,8 @@ public abstract class Chart {
 	public abstract void hideLegend();
 
 	public abstract String export();
+
+	public String getMax() {
+		return null;
+	}
 }

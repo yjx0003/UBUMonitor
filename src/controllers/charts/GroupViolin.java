@@ -11,7 +11,7 @@ import model.GradeItem;
 import model.Group;
 import util.UtilMethods;
 
-public class GroupViolin extends Chartjs {
+public class GroupViolin extends ChartjsGradeItem {
 
 	public GroupViolin(MainController mainController) {
 		super(mainController, ChartType.GROUP_VIOLIN);

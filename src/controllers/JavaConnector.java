@@ -13,6 +13,7 @@ import javax.xml.bind.DatatypeConverter;
 import controllers.charts.Buttons;
 import controllers.charts.Chart;
 import controllers.charts.ChartType;
+import controllers.charts.CumLine;
 import controllers.charts.GeneralBoxPlot;
 import controllers.charts.GeneralViolin;
 import controllers.charts.GradeReportTable;
@@ -70,6 +71,7 @@ public class JavaConnector {
 		addChart(new GeneralViolin(mainController));
 		addChart(new GroupViolin(mainController));
 		addChart(new GradeReportTable(mainController));
+		addChart(new CumLine(mainController));
 	}
 
 	private void addChart(Chart chart) {
@@ -102,10 +104,9 @@ public class JavaConnector {
 			return;
 		}
 		currentType.update();
+		setMax();
 
 	}
-
-
 
 	public void updateMaxY(long max) {
 
@@ -175,9 +176,12 @@ public class JavaConnector {
 		webViewChartsEngine
 				.executeScript(String.format("imageButton('%s',%s)", "btnGroupMean", buttons.getShowGroupMean()));
 		for (Chart value : mapChart.values()) {
-			webViewChartsEngine.executeScript(String.format("%s.%s=%s", value.getOptionsVar(), "useLegend", value.isUseLegend()));
-			webViewChartsEngine.executeScript(String.format("%s.%s=%s", value.getOptionsVar(), "useGeneral", value.isUseGeneralButton()));
-			webViewChartsEngine.executeScript(String.format("%s.%s=%s", value.getOptionsVar(), "useGroup", value.isUseGroupButton()));
+			webViewChartsEngine
+					.executeScript(String.format("%s.%s=%s", value.getOptionsVar(), "useLegend", value.isUseLegend()));
+			webViewChartsEngine.executeScript(
+					String.format("%s.%s=%s", value.getOptionsVar(), "useGeneral", value.isUseGeneralButton()));
+			webViewChartsEngine.executeScript(
+					String.format("%s.%s=%s", value.getOptionsVar(), "useGroup", value.isUseGroupButton()));
 		}
 
 	}
@@ -227,6 +231,17 @@ public class JavaConnector {
 	public String getI18n(String key) {
 
 		return I18n.get(key);
+	}
+
+	public void setMax() {
+		if (!mainController.getTabUbuLogs().isSelected() || currentType == null) {
+			mainController.getTextFieldMax().setText("1");
+		}else {
+			mainController.getTextFieldMax().setText(currentType.getMax());
+		}
+		
+		
+	
 	}
 
 }

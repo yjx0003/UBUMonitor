@@ -32,6 +32,7 @@
     <div class="pestañas" id="log_tabs">
         <input type="button" class="btn" id="btnStackedBar" onclick='javaConnector.updateCharts("STACKED_BAR");' />
         <input type="button" class="btn" id="btnHeatmap" onclick='javaConnector.updateCharts("HEAT_MAP");' />
+        <input type="button" class="btn" id="btnCumLine" onclick='javaConnector.updateCharts("CUM_LINE");' />
     </div>
 
     <div class="opciones">
@@ -100,11 +101,11 @@
                     stepSize: 0,
                 }
             }],
-            xAxes: [{
-                ticks: {
-                    maxTicksLimit: 20
-                }
-            }]
+            //xAxes: [{
+             //   ticks: {
+               //     maxTicksLimit: 20
+                //}
+           // }]
         },
         legend: {
             labels: {
@@ -187,7 +188,7 @@
                     javaConnector.dataPointSelection(config.w.config.series.length - 1 - config.seriesIndex);
                 }
             },
-			height: height,
+            height: height,
             toolbar: {
                 show: false,
             },
@@ -213,17 +214,36 @@
         }
     };
 
+    var cumLineOptions = {
+        tab: "log_tabs",
+        button: "btnCumLine",
+        typeGraph: "line",
+        scales: {
+            yAxes: [
+                {
+                    ticks: {
+                        stepSize: 0,
+                    }
+                }
+            ]
+        },
+        tooltips: {
+            callbacks: {
+                label: function (tooltipItem, data) {
+                    return data.datasets[tooltipItem.datasetIndex].label + " : " + Math.round(tooltipItem.yLabel *
+                        100) / 100;
+                }
+            }
+        }
+        
 
+    };
 
 
     var lineOptions = {
         tab: "grade_tabs",
         button: "btnLine",
         typeGraph: "line",
-
-
-
-
     }
 
     var radarOptions = {
@@ -282,7 +302,7 @@
         tab: "grade_tabs",
         button: "btnCalificaciones",
         invalidOptionWarnings: false,
-		height:height,
+        height: height,
         groupBy: "type",
         virtualDom: true,
         layout: "fitColumns", //fit columns to width of table (optional)
@@ -463,7 +483,7 @@
         table.setData(tabledata).then(function () {
             table.redraw();
         })
-        
+
 
     }
 
@@ -494,7 +514,7 @@
 
     function changeYMaxStackedBar(max) {
         stackedbarOptions.scales.yAxes[0].ticks.suggestedMax = max;
-
+        cumLineOptions.scales.yAxes[0].ticks.suggestedMax = max;
         myChart.options.scales.yAxes[0].ticks.suggestedMax = max;
         myChart.update();
 

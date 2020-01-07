@@ -33,6 +33,7 @@
         <input type="button" class="btn" id="btnStackedBar" onclick='javaConnector.updateCharts("STACKED_BAR");' />
         <input type="button" class="btn" id="btnHeatmap" onclick='javaConnector.updateCharts("HEAT_MAP");' />
         <input type="button" class="btn" id="btnCumLine" onclick='javaConnector.updateCharts("CUM_LINE");' />
+        <input type="button" class="btn" id="btnMeanDiff" onclick='javaConnector.updateCharts("MEAN_DIFF");' />
     </div>
 
     <div class="opciones">
@@ -69,7 +70,7 @@
     Chart.defaults.scale.ticks.beginAtZero = true;
     Chart.defaults.scale.ticks.stepSize = 1;
     Chart.defaults.scale.ticks.suggestedMax = 10;
-    Chart.defaults.scale.ticks.min = 0;
+    Chart.defaults.scale.ticks.suggestedMin = 0;
     Chart.defaults.scale.autoSkip = true;
 
     var counter = 0;
@@ -102,10 +103,10 @@
                 }
             }],
             //xAxes: [{
-             //   ticks: {
-               //     maxTicksLimit: 20
-                //}
-           // }]
+            //   ticks: {
+            //     maxTicksLimit: 20
+            //}
+            // }]
         },
         legend: {
             labels: {
@@ -235,7 +236,32 @@
                 }
             }
         }
-        
+
+
+    };
+
+    var meanDiffOptions = {
+        tab: "log_tabs",
+        button: "btnMeanDiff",
+        typeGraph: "line",
+        scales: {
+            yAxes: [
+                {
+                    ticks: {
+                        stepSize: 0
+                    }
+                }
+            ]
+        },
+        tooltips: {
+            callbacks: {
+                label: function (tooltipItem, data) {
+                    return data.datasets[tooltipItem.datasetIndex].label + " : " + Math.round(tooltipItem.yLabel *
+                        100) / 100;
+                }
+            }
+        }
+
 
     };
 
@@ -244,6 +270,7 @@
         tab: "grade_tabs",
         button: "btnLine",
         typeGraph: "line",
+    
     }
 
     var radarOptions = {
@@ -262,7 +289,6 @@
         button: "btnBoxPlot",
         typeGraph: "boxplot",
 
-
         tooltipDecimals: 2
 
 
@@ -273,9 +299,8 @@
         button: "btnBoxPlotGroup",
         typeGraph: "boxplot",
 
-        tooltipDecimals: 2
-
-
+        tooltipDecimals: 2,
+    
     }
 
 
@@ -284,7 +309,17 @@
         button: "btnViolin",
         typeGraph: "violin",
 
-        tooltipDecimals: 2
+        tooltipDecimals: 2,
+        scales: {
+            yAxes: [
+                {
+                    ticks: {
+                        min: 0
+
+                    }
+                }
+            ]
+        }
 
     }
 
@@ -293,8 +328,17 @@
         button: "btnViolinGroup",
         typeGraph: "violin",
 
-        tooltipDecimals: 2
+        tooltipDecimals: 2,
+        scales: {
+            yAxes: [
+                {
+                    ticks: {
+                        min: 0
 
+                    }
+                }
+            ]
+        }
     }
 
     var gradeReportTableOptions = {
@@ -512,15 +556,17 @@
 
 
 
-    function changeYMaxStackedBar(max) {
+    function changeYMax(max, useNegativeValues) {
         stackedbarOptions.scales.yAxes[0].ticks.suggestedMax = max;
         cumLineOptions.scales.yAxes[0].ticks.suggestedMax = max;
+        meanDiffOptions.scales.yAxes[0].ticks.suggestedMax = max;
+        meanDiffOptions.scales.yAxes[0].ticks.suggestedMin = -max;
         myChart.options.scales.yAxes[0].ticks.suggestedMax = max;
+        if(useNegativeValues){
+            myChart.options.scales.yAxes[0].ticks.suggestedMin = -max;
+        }
         myChart.update();
 
-    }
-
-    function changeYMaxHeatmap(max) {
         heatmapOptions.plotOptions.heatmap.colorScale.ranges = [{
             from: -1,
             to: 0,
@@ -556,8 +602,10 @@
 
         ];
         myApexChart.updateOptions(heatmapOptions);
+
     }
 
+  
     //Funcion que muestra u oculta la leyenda del gráfico
     function hideLegend() {
         legendActive = javaConnector.swapLegend();

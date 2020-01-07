@@ -21,6 +21,7 @@ import controllers.charts.GroupBoxPlot;
 import controllers.charts.GroupViolin;
 import controllers.charts.Heatmap;
 import controllers.charts.Line;
+import controllers.charts.MeanDiff;
 import controllers.charts.Radar;
 import controllers.charts.Stackedbar;
 import javafx.concurrent.Worker.State;
@@ -72,6 +73,7 @@ public class JavaConnector {
 		addChart(new GroupViolin(mainController));
 		addChart(new GradeReportTable(mainController));
 		addChart(new CumLine(mainController));
+		addChart(new MeanDiff(mainController));
 	}
 
 	private void addChart(Chart chart) {
@@ -97,6 +99,7 @@ public class JavaConnector {
 		}
 
 		updateChart(chart);
+		setMax();
 	}
 
 	public void updateChart() {
@@ -104,15 +107,13 @@ public class JavaConnector {
 			return;
 		}
 		currentType.update();
-		setMax();
 
 	}
 
 	public void updateMaxY(long max) {
 
-		webViewChartsEngine.executeScript("changeYMaxHeatmap(" + max + ")");
-
-		webViewChartsEngine.executeScript("changeYMaxStackedBar(" + max + ")");
+		webViewChartsEngine
+				.executeScript("changeYMax(" + max + "," + currentType.isUseNegativeValues() + ")");
 
 	}
 
@@ -236,12 +237,10 @@ public class JavaConnector {
 	public void setMax() {
 		if (!mainController.getTabUbuLogs().isSelected() || currentType == null) {
 			mainController.getTextFieldMax().setText("1");
-		}else {
+		} else {
 			mainController.getTextFieldMax().setText(currentType.getMax());
 		}
-		
-		
-	
+
 	}
 
 }

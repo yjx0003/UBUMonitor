@@ -177,7 +177,7 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 
 		List<T> range = groupByAbstract.getRange(start, end);
 		long max = 0;
-		
+
 		for (EnrolledUser enrolledUser : enrolledUsers) {
 			long cum = 0;
 			Map<E, Map<T, Long>> elementsMap = counts.computeIfAbsent(enrolledUser, k -> new HashMap<>());
@@ -192,6 +192,51 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 				max = cum;
 			}
 		}
+		return max;
+	}
+
+	public long getMeanDifferenceMax(List<EnrolledUser> enrolledUsers, List<E> logTypes, LocalDate start,
+			LocalDate end) {
+		if (logTypes.isEmpty()) {
+			return 1L;
+		}
+
+		long max = 0;
+
+		Map<E, List<Double>> means = getMeans(enrolledUsers, logTypes, start, end);
+		List<T> range = groupByAbstract.getRange(start, end);
+		List<Double> listMeans = new ArrayList<>();
+
+		for (int j = 0; j < range.size(); j++) {
+			double result = 0;
+			for (E typeLog : logTypes) {
+				List<Double> times = means.get(typeLog);
+				result += times.get(j);
+			}
+			listMeans.add(result);
+		}
+
+		for (EnrolledUser enrolledUser : enrolledUsers) {
+			
+			Map<E, Map<T, Long>> elementsMap = counts.computeIfAbsent(enrolledUser, k -> new HashMap<>());
+			for (int j = 0; j< range.size(); j++) {
+				long cum = 0;
+				for (E logType :  logTypes) {
+					Map<T, Long> groupByMap = elementsMap.computeIfAbsent(logType, k -> new HashMap<>());
+					long value = groupByMap.get(range.get(j));
+					cum+=value;
+
+				}
+				long absoluteDiff =  (long) Math.abs(Math.ceil(cum-listMeans.get(j)));
+				if ( absoluteDiff> max) {
+					max = absoluteDiff;
+				}
+			}
+			
+			
+		}
+		
+
 		return max;
 	}
 

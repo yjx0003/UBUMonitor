@@ -5,7 +5,7 @@ import java.util.List;
 import controllers.MainController;
 import model.GradeItem;
 
-public class Radar extends Chartjs {
+public class Radar extends ChartjsGradeItem {
 
 	private static final GradeItem DUMMY = new GradeItem("");
 

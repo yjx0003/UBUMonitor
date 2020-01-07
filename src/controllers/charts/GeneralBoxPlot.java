@@ -10,7 +10,7 @@ import model.EnrolledUser;
 import model.GradeItem;
 import util.UtilMethods;
 
-public class GeneralBoxPlot extends Chartjs {
+public class GeneralBoxPlot extends ChartjsGradeItem {
 
 	public GeneralBoxPlot(MainController mainController) {
 		super(mainController, ChartType.GENERAL_BOXPLOT);

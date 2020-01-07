@@ -30,7 +30,8 @@ public class Heatmap extends ApexCharts {
 		this.optionsVar = "heatmapOptions";
 
 	}
-
+	
+	@Override
 	public void update() {
 		String heatmapdataset = null;
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
@@ -66,7 +67,7 @@ public class Heatmap extends ApexCharts {
 		LOGGER.info("Dataset para el heatmap en JS: {}", heatmapdataset);
 		LOGGER.info("Categorias del heatmap en JS: {}", categories);
 
-		webViewChartsEngine.executeScript(String.format("updateApexCharts(%s,%s, %s)", heatmapdataset, categories, "heatmapOptions"));
+		webViewChartsEngine.executeScript(String.format("updateApexCharts(%s,%s, %s)", heatmapdataset, categories, optionsVar));
 	}
 
 
@@ -107,5 +108,28 @@ public class Heatmap extends ApexCharts {
 		return "[" + UtilMethods.joinWithQuotes(groupBy.getRangeString(dateStart, dateEnd)) + "]";
 	}
 
+	
+	@Override
+	public String getMax() {
+		long maxYAxis = 1L;
+		if (tabUbuLogsComponent.isSelected()) {
+			maxYAxis = choiceBoxDate.getValue().getComponents().getMaxElement(listParticipants.getItems(),
+					listViewComponents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					datePickerEnd.getValue());
+		} else if (tabUbuLogsEvent.isSelected()) {
+			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getMaxElement(listParticipants.getItems(),
+					listViewEvents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					datePickerEnd.getValue());
+		} else if (tabUbuLogsSection.isSelected()) {
+			maxYAxis = choiceBoxDate.getValue().getSections().getMaxElement(listParticipants.getItems(),
+					listViewSection.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					datePickerEnd.getValue());
+		} else if (tabUbuLogsCourseModule.isSelected()) {
+			maxYAxis = choiceBoxDate.getValue().getCourseModules().getMaxElement(listParticipants.getItems(),
+					listViewCourseModule.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					datePickerEnd.getValue());
+		}
+		return Long.toString(maxYAxis);
+	}
 	
 }

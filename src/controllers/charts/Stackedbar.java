@@ -20,7 +20,7 @@ import model.CourseModule;
 import model.EnrolledUser;
 import model.Section;
 
-public class Stackedbar extends Chartjs {
+public class Stackedbar extends ChartjsGradeItem {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Stackedbar.class);
 
 	private StackedBarDataSet<Component> stackedBarComponent = new StackedBarDataSet<>();
@@ -71,6 +71,30 @@ public class Stackedbar extends Chartjs {
 
 		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", stackedbardataset, "stackedbarOptions"));
 
+	}
+	
+
+	@Override
+	public String getMax() {
+		long maxYAxis = 1L;
+		if (tabUbuLogsComponent.isSelected()) {
+			maxYAxis = choiceBoxDate.getValue().getComponents().getMaxElement(listParticipants.getItems(),
+					listViewComponents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					datePickerEnd.getValue());
+		} else if (tabUbuLogsEvent.isSelected()) {
+			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getMaxElement(listParticipants.getItems(),
+					listViewEvents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					datePickerEnd.getValue());
+		} else if (tabUbuLogsSection.isSelected()) {
+			maxYAxis = choiceBoxDate.getValue().getSections().getMaxElement(listParticipants.getItems(),
+					listViewSection.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					datePickerEnd.getValue());
+		} else if (tabUbuLogsCourseModule.isSelected()) {
+			maxYAxis = choiceBoxDate.getValue().getCourseModules().getMaxElement(listParticipants.getItems(),
+					listViewCourseModule.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					datePickerEnd.getValue());
+		}
+		return Long.toString(maxYAxis);
 	}
 
 	@Override

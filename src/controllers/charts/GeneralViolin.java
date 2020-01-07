@@ -10,7 +10,7 @@ import model.EnrolledUser;
 import model.GradeItem;
 import util.UtilMethods;
 
-public class GeneralViolin extends Chartjs {
+public class GeneralViolin extends ChartjsGradeItem {
 
 	public GeneralViolin(MainController mainController) {
 		super(mainController, ChartType.GENERAL_VIOLIN);

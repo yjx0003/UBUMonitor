@@ -615,13 +615,13 @@
     function showGeneralMean() {
         mean = javaConnector.swapMean();
         imageButton("btnMean", mean);
-        javaConnector.updateChart();
+        javaConnector.updateChartFromJS();
     }
 
     function showGroupMean() {
         mean = javaConnector.swapGroupMean();
         imageButton("btnGroupMean", mean);
-        javaConnector.updateChart();
+        javaConnector.updateChartFromJS();
     }
 
     function hideLegendChartjs() {

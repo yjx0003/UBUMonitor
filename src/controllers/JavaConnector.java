@@ -110,6 +110,9 @@ public class JavaConnector {
 		currentType.update();
 
 	}
+	public void updateChartFromJS() {
+		updateChart();
+	}
 
 	public void updateMaxY(long max) {
 		if(tabLogs.isSelected()) {

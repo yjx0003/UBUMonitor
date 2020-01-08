@@ -287,10 +287,11 @@ public class WelcomeController implements Initializable {
 	}
 
 	public void removeCourse(ActionEvent event) {
-		Alert alert = new Alert(AlertType.CONFIRMATION);
+		Alert alert = new Alert(AlertType.WARNING, I18n.get("text.confirmationtext"), ButtonType.OK, ButtonType.CANCEL);
 		alert.setTitle(AppInfo.APPLICATION_NAME);
 		alert.setHeaderText(I18n.get("text.confirmation"));
-		alert.setContentText(I18n.get("text.confirmationtext"));
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/img/logo_min.png"));
 
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.OK) {
@@ -359,14 +360,13 @@ public class WelcomeController implements Initializable {
 		Dialog<String> dialog = new Dialog<>();
 		dialog.setTitle(I18n.get("title.passwordChanged"));
 
-		dialog.getDialogPane().setGraphic(new ImageView("img/error.png"));
+		
 		dialog.setHeaderText(I18n.get("header.passwordChangedMessage") + "\n" + I18n.get("header.passwordDateTime")
 				+ lblDateUpdate.getText());
 
-		Image errorIcon = new Image("img/error.png");
 		Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
-		dialogStage.getIcons().add(errorIcon);
-		dialog.setGraphic(new ImageView(errorIcon));
+		dialogStage.getIcons().add(new Image("img/error.png"));
+		dialog.getDialogPane().setGraphic(new ImageView("img/error.png"));
 		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
 
 		PasswordField pwd = new PasswordField();
@@ -516,7 +516,8 @@ public class WelcomeController implements Initializable {
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.initOwner(controller.getStage());
 		alert.getDialogPane().setContentText(mensaje);
-
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/img/logo_min.png"));
 		ButtonType buttonSalir = new ButtonType(I18n.get("label.close"));
 		alert.getButtonTypes().setAll(buttonSalir);
 

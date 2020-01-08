@@ -57,16 +57,16 @@ public class MeanDiff extends ChartjsLog{
 
 			Map<T, List<Long>> types = userCounts.get(selectedUser);
 			StringJoiner results = JSArray();
-		
+			long cum=0;
 			for (int j = 0; j < rangeDates.size(); j++) {
 				long result = 0;
 				for (T typeLog : typeLogs) {
 					List<Long> times = types.get(typeLog);
 					result += times.get(j);
 				}
+				cum+=result;
 				
-				
-				results.add(Double.toString(result-listMeans.get(j)));
+				results.add(Double.toString(cum-listMeans.get(j)));
 			}
 			addKeyValue(dataset, "data", results);
 			datasets.add(dataset.toString());
@@ -78,14 +78,15 @@ public class MeanDiff extends ChartjsLog{
 
 	private <T> List<Double> createMeanList(List<T> typeLogs, Map<T, List<Double>> means, List<String> rangeDates) {
 		List<Double> results = new ArrayList<>();
-		
+		double cum =0;
 		for (int j = 0; j < rangeDates.size(); j++) {
 			double result = 0;
 			for (T typeLog : typeLogs) {
 				List<Double> times = means.get(typeLog);
 				result += times.get(j);
 			}
-			results.add(result);
+			cum+=result;
+			results.add(cum);
 		}
 		return results;
 

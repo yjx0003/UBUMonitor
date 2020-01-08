@@ -106,14 +106,17 @@ public class JavaConnector {
 		if (webViewChartsEngine.getLoadWorker().getState() != State.SUCCEEDED) {
 			return;
 		}
+		
 		currentType.update();
 
 	}
 
 	public void updateMaxY(long max) {
-
-		webViewChartsEngine
-				.executeScript("changeYMax(" + max + "," + currentType.isUseNegativeValues() + ")");
+		if(tabLogs.isSelected()) {
+			webViewChartsEngine
+			.executeScript("changeYMax(" + max + "," + currentType.isUseNegativeValues() + ")");
+		}
+		
 
 	}
 
@@ -235,7 +238,7 @@ public class JavaConnector {
 	}
 
 	public void setMax() {
-		if (!mainController.getTabUbuLogs().isSelected() || currentType == null) {
+		if (!tabLogs.isSelected() || currentType == null) {
 			mainController.getTextFieldMax().setText("1");
 		} else {
 			mainController.getTextFieldMax().setText(currentType.getMax());

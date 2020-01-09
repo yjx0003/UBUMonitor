@@ -48,7 +48,7 @@ import model.MoodleUser;
 public class LoginController implements Initializable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
-	
+
 	private Controller controller = Controller.getInstance();
 
 	@FXML
@@ -78,10 +78,9 @@ public class LoginController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		txtHost.textProperty()
-		.addListener((observable, oldValue, newValue) -> insecureProtocol
-				.setVisible(newValue.startsWith("http://")));
-		
+		txtHost.textProperty().addListener(
+				(observable, oldValue, newValue) -> insecureProtocol.setVisible(newValue.startsWith("http://")));
+
 		try {
 			initializeProperties();
 		} catch (IOException e) {
@@ -95,11 +94,9 @@ public class LoginController implements Initializable {
 			}
 		});
 
-		
-
 		Tooltip.install(insecureProtocol, new Tooltip(I18n.get("tooltip.insecureprotocol")));
 		initLanguagesList();
-		
+
 	}
 
 	/**
@@ -142,7 +139,7 @@ public class LoginController implements Initializable {
 			controller.setSelectedLanguage(newValue);
 			LOGGER.info("Idioma de la aplicación: {}", newValue);
 			LOGGER.info("Idioma cargado del resource bundle: {}", I18n.getResourceBundle().getLocale());
-			LOGGER.info("[Bienvenido a " + AppInfo.APPLICATION_NAME + "]");
+			LOGGER.info("[Bienvenido a " + AppInfo.APPLICATION_NAME_WITH_VERSION + "]");
 			changeScene(getClass().getResource("/view/Login.fxml"), null);
 		});
 
@@ -154,10 +151,10 @@ public class LoginController implements Initializable {
 	 * @throws IOException
 	 */
 	private void initializeProperties() throws IOException {
-		
+
 		txtHost.setText(Config.getProperty("host", null));
 		txtUsername.setText(Config.getProperty("username", null));
-		txtPassword.setText(System.getenv("UBUMonitorpassword"));
+		txtPassword.setText(System.getProperty(AppInfo.APPLICATION_NAME+".password"));
 		chkSaveUsername.setSelected(Boolean.parseBoolean(Config.getProperty("saveUsername")));
 		chkSaveHost.setSelected(Boolean.parseBoolean(Config.getProperty("saveHost")));
 
@@ -175,15 +172,14 @@ public class LoginController implements Initializable {
 		String host = chkSaveHost.isSelected() ? txtHost.getText() : "";
 		Config.setProperty("host", host);
 		Config.setProperty("saveHost", Boolean.toString(chkSaveHost.isSelected()));
-		
+
 	}
 
 	/**
 	 * Hace el login de usuario al pulsar el botón Entrar. Si el usuario es
 	 * incorrecto, muestra un mensaje de error.
 	 * 
-	 * @param event
-	 *            El ActionEvent.
+	 * @param event El ActionEvent.
 	 */
 	public void login(ActionEvent event) {
 		if (txtHost.getText().isEmpty() || txtPassword.getText().isEmpty() || txtUsername.getText().isEmpty()) {
@@ -215,8 +211,7 @@ public class LoginController implements Initializable {
 	/**
 	 * Permite cambiar la ventana actual.
 	 * 
-	 * @param sceneFXML
-	 *            La ventanan a la que se quiere cambiar.
+	 * @param sceneFXML La ventanan a la que se quiere cambiar.
 	 *
 	 * @throws IOException
 	 */
@@ -225,17 +220,17 @@ public class LoginController implements Initializable {
 
 			// Accedemos a la siguiente ventana
 			FXMLLoader loader = new FXMLLoader(sceneFXML, I18n.getResourceBundle());
-			if (controller !=null) {
+			if (controller != null) {
 				loader.setController(fxmlController);
 			}
-			
+
 			controller.getStage().close();
 			Stage stage = new Stage();
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
 			stage.setScene(scene);
 			stage.getIcons().add(new Image("/img/logo_min.png"));
-			stage.setTitle(AppInfo.APPLICATION_NAME);
+			stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 			stage.resizableProperty().setValue(Boolean.FALSE);
 			stage.show();
 			controller.setStage(stage);
@@ -286,8 +281,7 @@ public class LoginController implements Initializable {
 	/**
 	 * Borra los parámetros introducidos en los campos
 	 * 
-	 * @param event
-	 *            El ActionEvent.
+	 * @param event El ActionEvent.
 	 */
 	public void clear(ActionEvent event) {
 		txtUsername.setText("");

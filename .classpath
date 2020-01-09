@@ -53,6 +53,7 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/UBUMonitor/lib/docs/opencsv-4.6-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/controlsfx-11.0.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

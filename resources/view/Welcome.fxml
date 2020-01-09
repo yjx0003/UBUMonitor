@@ -157,7 +157,7 @@
             <Cursor fx:constant="DEFAULT" />
          </cursor>
       </GridPane>
-      <Button fx:id="btnRemove" defaultButton="true" layoutX="500.0" layoutY="540.0" mnemonicParsing="false" onAction="#removeCourse" prefHeight="39.0" prefWidth="86.0" style="-fx-font-size: 16;" stylesheets="@/css/style.css" text="%btn.remove">
+      <Button fx:id="btnRemove" layoutX="500.0" layoutY="540.0" mnemonicParsing="false" onAction="#removeCourse" prefHeight="39.0" prefWidth="86.0" style="-fx-font-size: 16;" stylesheets="@/css/style.css" text="%btn.remove">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>

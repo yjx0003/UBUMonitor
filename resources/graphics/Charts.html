@@ -72,7 +72,8 @@
     Chart.defaults.scale.ticks.suggestedMax = 10;
     Chart.defaults.scale.ticks.suggestedMin = 0;
     Chart.defaults.scale.autoSkip = true;
-
+    var red ="#DC143C";
+    var green = "#2DC214";
     var counter = 0;
     var height = "93%";
 
@@ -244,9 +245,16 @@
         tab: "log_tabs",
         button: "btnMeanDiff",
         typeGraph: "line",
+
         scales: {
             yAxes: [
+
                 {
+                    gridLines: {
+                        zeroLineColor: red,
+                        zeroLineWidth: 3,
+                        zeroLineBorderDash: [5,10]
+                    },
                     ticks: {
                         stepSize: 0
                     }
@@ -270,7 +278,7 @@
         tab: "grade_tabs",
         button: "btnLine",
         typeGraph: "line",
-    
+
     }
 
     var radarOptions = {
@@ -279,7 +287,7 @@
         typeGraph: "radar",
         scale: {
             gridLines: {
-                color: ['red', 'red', 'red', 'red', 'green', 'green', 'green', 'green', 'green', 'green']
+                color: [red, red, red, red, green, green, green, green, green, green]
             }
         }
 
@@ -300,7 +308,7 @@
         typeGraph: "boxplot",
 
         tooltipDecimals: 2,
-    
+
     }
 
 
@@ -363,9 +371,9 @@
         legendAlign: "center",
         color: function (value) {
             if (value < 5) {
-                return "#DC143C";
+                return red;
             }
-            return "#2DC214";
+            return green;
         }
     }
 
@@ -562,7 +570,7 @@
         meanDiffOptions.scales.yAxes[0].ticks.suggestedMax = max;
         meanDiffOptions.scales.yAxes[0].ticks.suggestedMin = -max;
         myChart.options.scales.yAxes[0].ticks.suggestedMax = max;
-        if(useNegativeValues){
+        if (useNegativeValues) {
             myChart.options.scales.yAxes[0].ticks.suggestedMin = -max;
         }
         myChart.update();
@@ -605,7 +613,7 @@
 
     }
 
-  
+
     //Funcion que muestra u oculta la leyenda del gráfico
     function hideLegend() {
         legendActive = javaConnector.swapLegend();

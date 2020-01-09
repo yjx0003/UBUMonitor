@@ -22,6 +22,9 @@ import org.slf4j.LoggerFactory;
 
 import controllers.Controller;
 import javafx.scene.image.Image;
+import model.ActivityCompletion;
+import model.ActivityCompletion.State;
+import model.ActivityCompletion.Tracking;
 import model.Course;
 import model.CourseCategory;
 import model.CourseModule;
@@ -33,8 +36,10 @@ import model.ModuleType;
 import model.MoodleUser;
 import model.Role;
 import model.Section;
+import model.SubDataBase;
 import webservice.WSFunctions;
 import webservice.WebService;
+import webservice.core.CoreCompletionGetActivitiesCompletionStatus;
 import webservice.core.CoreCourseGetCategories;
 import webservice.core.CoreCourseGetContents;
 import webservice.core.CoreCourseGetEnrolledCoursesByTimelineClassification;
@@ -626,6 +631,33 @@ public class CreatorUBUGradesController {
 
 		return module;
 
+	}
+	
+	public static void createActivitiesCompletionStatus(int courseid, int userid) throws IOException{
+		WebService ws = new CoreCompletionGetActivitiesCompletionStatus(courseid, userid);
+		String response = ws.getResponse();
+		
+		SubDataBase<CourseModule> modules = CONTROLLER.getDataBase().getModules();
+		SubDataBase<EnrolledUser> enrolledUsers = CONTROLLER.getDataBase().getUsers();
+		JSONObject jsonObject = new JSONObject(response);
+		JSONArray statuses = jsonObject.getJSONArray("statuses");
+		for (int i = 0; i< statuses.length(); i++) {
+			JSONObject status = statuses.getJSONObject(i);
+			
+			CourseModule courseModule =  modules.getById(status.getInt("cmid"));
+			State state = State.getByIndex(status.getInt("state"));
+			Instant timecompleted = Instant.ofEpochSecond(status.getLong("timecompleted"));
+			Tracking tracking = Tracking.getByIndex(status.getInt("tracking"));
+			int iduser = status.optInt("overrideby", -1);
+			EnrolledUser overrideby = null;
+			if (iduser != -1) {
+				overrideby = enrolledUsers.getById(iduser);
+			}
+			boolean valueused = status.optBoolean("valueused");
+			ActivityCompletion activity = new ActivityCompletion(state, timecompleted, tracking, overrideby, valueused);
+			courseModule.getActivitiesCompletion().put(enrolledUsers.getById(userid), activity);
+			
+		}
 	}
 
 	/**

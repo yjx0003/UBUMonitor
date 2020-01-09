@@ -9,3 +9,5 @@ bin
 /.scannerwork/
 /export/
 .vscode
+/build/
+/build.fxbuild

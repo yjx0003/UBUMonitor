@@ -1,6 +1,8 @@
 package model;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Representa las actividades o recursos presentes en un curso.
@@ -82,9 +84,12 @@ public class CourseModule implements Serializable {
 	private int indent;
 
 	private Section section;
+	
+	private Map<EnrolledUser, ActivityCompletion> activitiesCompletion;
 
 	public CourseModule(int id) {
 		setCmid(id);
+		activitiesCompletion = new HashMap<>();
 	}
 
 	public String getUrl() {
@@ -233,6 +238,14 @@ public class CourseModule implements Serializable {
 		CourseModule other = (CourseModule) obj;
 		return cmid == other.cmid;
 
+	}
+
+	public Map<EnrolledUser, ActivityCompletion> getActivitiesCompletion() {
+		return activitiesCompletion;
+	}
+
+	public void setActivitiesCompletion(Map<EnrolledUser, ActivityCompletion> activitiesCompletion) {
+		this.activitiesCompletion = activitiesCompletion;
 	}
 
 }

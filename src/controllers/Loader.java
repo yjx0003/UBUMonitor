@@ -28,14 +28,14 @@ public class Loader extends Application {
 
 		try {
 			controller.initialize();
-			LOGGER.info("[Bienvenido a {}]", AppInfo.APPLICATION_NAME);
+			LOGGER.info("[Bienvenido a {}]", AppInfo.APPLICATION_NAME_WITH_VERSION);
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Login.fxml"), I18n.getResourceBundle());
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
 			Stage stage = primaryStage;
 			stage.setScene(scene);
 			stage.getIcons().add(new Image("/img/logo_min.png"));
-			stage.setTitle(AppInfo.APPLICATION_NAME);
+			stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 			stage.resizableProperty().setValue(Boolean.FALSE);
 			stage.show();
 			controller.setStage(stage);

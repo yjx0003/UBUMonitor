@@ -288,7 +288,7 @@ public class WelcomeController implements Initializable {
 
 	public void removeCourse(ActionEvent event) {
 		Alert alert = new Alert(AlertType.WARNING, I18n.get("text.confirmationtext"), ButtonType.OK, ButtonType.CANCEL);
-		alert.setTitle(AppInfo.APPLICATION_NAME);
+		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		alert.setHeaderText(I18n.get("text.confirmation"));
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 		stage.getIcons().add(new Image("/img/logo_min.png"));
@@ -437,7 +437,7 @@ public class WelcomeController implements Initializable {
 			Scene scene = new Scene(root);
 			controller.getStage().setScene(scene);
 			controller.getStage().getIcons().add(new Image("/img/logo_min.png"));
-			controller.getStage().setTitle(AppInfo.APPLICATION_NAME);
+			controller.getStage().setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 			controller.getStage().setResizable(true);
 			controller.getStage().setMinHeight(600);
 			controller.getStage().setMinWidth(800);
@@ -511,7 +511,7 @@ public class WelcomeController implements Initializable {
 	private void errorWindow(String mensaje) {
 		Alert alert = new Alert(AlertType.ERROR);
 
-		alert.setTitle(AppInfo.APPLICATION_NAME);
+		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		alert.setHeaderText("Error");
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.initOwner(controller.getStage());

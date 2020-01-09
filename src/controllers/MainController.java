@@ -1186,7 +1186,7 @@ public class MainController implements Initializable {
 			controller.setStage(new Stage());
 			controller.getStage().setScene(scene);
 			controller.getStage().getIcons().add(new Image("/img/logo_min.png"));
-			controller.getStage().setTitle(AppInfo.APPLICATION_NAME);
+			controller.getStage().setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 			controller.getStage().resizableProperty().setValue(Boolean.FALSE);
 			controller.getStage().show();
 
@@ -1248,7 +1248,7 @@ public class MainController implements Initializable {
 	public void errorWindow(String mensaje, boolean exit) {
 		Alert alert = new Alert(AlertType.ERROR);
 
-		alert.setTitle(AppInfo.APPLICATION_NAME);
+		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		alert.setHeaderText("Error");
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.initOwner(controller.getStage());
@@ -1274,7 +1274,7 @@ public class MainController implements Initializable {
 	public void infoWindow(String mensaje, boolean exit) {
 		Alert alert = new Alert(AlertType.INFORMATION);
 
-		alert.setTitle(AppInfo.APPLICATION_NAME);
+		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		alert.setHeaderText("Information");
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.initOwner(controller.getStage());

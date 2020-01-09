@@ -26,8 +26,10 @@ public class GeneralViolin extends ChartjsGradeItem {
 		stringBuilder.append("{labels:[");
 		stringBuilder.append(UtilMethods.joinWithQuotes(selectedGradeItems));
 		stringBuilder.append("],datasets:[");
+		if (selectedUser.size() > 0) {
+			createData(selectedUser, selectedGradeItems, stringBuilder, I18n.get("text.selectedUsers"), false);
 
-		createData(selectedUser, selectedGradeItems, stringBuilder, I18n.get("text.selectedUsers"), false);
+		}
 		if (useGeneralButton) {
 			createData(Controller.getInstance().getActualCourse().getEnrolledUsers(), selectedGradeItems, stringBuilder,
 					I18n.get("text.all"), !Buttons.getInstance().getShowMean());
@@ -69,7 +71,7 @@ public class GeneralViolin extends ChartjsGradeItem {
 					hasNonNaN = true;
 				}
 			}
-			
+
 			if (!hasNonNaN) {
 				stringBuilder.append(-1);
 			}

@@ -19,7 +19,6 @@ public class GeneralBoxPlot extends ChartjsGradeItem {
 		optionsVar = "boxplotOptions";
 	}
 
-
 	@Override
 	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
 		StringBuilder stringBuilder = new StringBuilder();
@@ -27,25 +26,28 @@ public class GeneralBoxPlot extends ChartjsGradeItem {
 		stringBuilder.append("{labels:[");
 		stringBuilder.append(UtilMethods.joinWithQuotes(selectedGradeItems));
 		stringBuilder.append("],datasets:[");
+		if (selectedUser.size() > 0) {
+			createData(selectedUser, selectedGradeItems, stringBuilder, I18n.get("text.selectedUsers"), false);
 
-		createData(selectedUser, selectedGradeItems, stringBuilder, I18n.get("text.selectedUsers"), false);
+		}
 		if (useGeneralButton) {
-			createData(Controller.getInstance().getActualCourse().getEnrolledUsers(), selectedGradeItems, stringBuilder, I18n.get("text.all"), !Buttons.getInstance().getShowMean());
+			createData(Controller.getInstance().getActualCourse().getEnrolledUsers(), selectedGradeItems, stringBuilder,
+					I18n.get("text.all"), !Buttons.getInstance().getShowMean());
 		}
-		if(useGroupButton && slcGroup.getValue() != null) {
-			createData(slcGroup.getValue().getEnrolledUsers(), selectedGradeItems, stringBuilder, slcGroup.getValue().getGroupName(), !Buttons.getInstance().getShowGroupMean());
+		if (useGroupButton && slcGroup.getValue() != null) {
+			createData(slcGroup.getValue().getEnrolledUsers(), selectedGradeItems, stringBuilder,
+					slcGroup.getValue().getGroupName(), !Buttons.getInstance().getShowGroupMean());
 
 		}
-		
 
 		stringBuilder.append("]}");
-		
+
 		return stringBuilder.toString();
 	}
 
 	private void createData(Collection<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems,
 			StringBuilder stringBuilder, String text, boolean hidden) {
-		stringBuilder.append("{label:'" + text+"',");
+		stringBuilder.append("{label:'" + text + "',");
 		stringBuilder.append("borderColor:" + rgba(text, 0.7) + ",");
 		stringBuilder.append("backgroundColor:" + rgba(text, OPACITY) + ",");
 
@@ -56,7 +58,7 @@ public class GeneralBoxPlot extends ChartjsGradeItem {
 		stringBuilder.append("outlierColor:" + hex(text) + ",");
 		stringBuilder.append("borderWidth: 1,");
 		stringBuilder.append("outlierRadius : 5,");
-		stringBuilder.append("hidden:"+hidden+",");
+		stringBuilder.append("hidden:" + hidden + ",");
 		stringBuilder.append("data:[");
 
 		for (GradeItem gradeItem : selectedGradeItems) {
@@ -70,10 +72,10 @@ public class GeneralBoxPlot extends ChartjsGradeItem {
 		}
 		stringBuilder.append("]},");
 	}
-	
+
 	@Override
 	public int onClick(int index) {
-		return -1; //do nothing at the moment
+		return -1; // do nothing at the moment
 	}
 
 }

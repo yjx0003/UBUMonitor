@@ -157,13 +157,17 @@
             <Cursor fx:constant="DEFAULT" />
          </cursor>
       </GridPane>
-      <Button fx:id="btnRemove" defaultButton="true" layoutX="500.0" layoutY="540.0" mnemonicParsing="false" onAction="#removeCourse" prefHeight="39.0" prefWidth="86.0" style="-fx-font-size: 16;" styleClass="rich-blue" stylesheets="@/css/style.css" text="%btn.remove">
+      <Button fx:id="btnRemove" defaultButton="true" layoutX="500.0" layoutY="540.0" mnemonicParsing="false" onAction="#removeCourse" prefHeight="39.0" prefWidth="86.0" style="-fx-font-size: 16;" stylesheets="@/css/style.css" text="%btn.remove">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
          <font>
             <Font size="19.0" />
          </font>
+         <styleClass>
+            <String fx:value="rich-blue" />
+            <String fx:value="danger_button" />
+         </styleClass>
       </Button>
 	</children>
 </AnchorPane>

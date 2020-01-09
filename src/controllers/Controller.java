@@ -46,7 +46,7 @@ public class Controller {
 	private Stage stage;
 	private String password;
 	private String username;
-	
+
 	private String sesskey;
 
 	private Map<String, String> cookies;
@@ -80,10 +80,11 @@ public class Controller {
 	}
 
 	public void initialize() throws IOException {
-
+		Config.initialize(AppInfo.PROPERTIES_PATH);
 		setDataBase(new DataBase());
 		// Si no existe el recurso de idioma especificado cargamos el Español
-		Languages lang = Languages.getLanguageByLocale(Locale.getDefault());
+		Languages lang = Languages
+				.getLanguageByTag(Config.getProperty("language", Locale.getDefault().toLanguageTag()));
 		try {
 
 			if (lang == null) {
@@ -95,11 +96,11 @@ public class Controller {
 			}
 
 		} catch (NullPointerException | MissingResourceException e) {
-			LOGGER.error(
-					"No se ha podido encontrar el recurso de idioma, cargando idioma " + lang + ": {}", e);
+			LOGGER.error("No se ha podido encontrar el recurso de idioma, cargando idioma " + lang + ": {}", e);
 			setSelectedLanguage(Languages.ENGLISH_UK);
 		}
-		Config.initialize(AppInfo.PROPERTIES_PATH);
+		
+		
 	}
 
 	public Languages getSelectedLanguage() {
@@ -112,6 +113,7 @@ public class Controller {
 		Locale a = selectedLanguage.getLocale();
 		Locale.setDefault(a);
 		I18n.setResourceBundle(ResourceBundle.getBundle(AppInfo.RESOURCE_BUNDLE_FILE_NAME));
+		Config.setProperty("language", a.toLanguageTag());
 	}
 
 	public void setDataBase(DataBase dataBase) {
@@ -131,8 +133,7 @@ public class Controller {
 	}
 
 	/**
-	 * @param host
-	 *            the host to set
+	 * @param host the host to set
 	 */
 	public void setURLHost(URL host) {
 		this.host = host;
@@ -146,8 +147,7 @@ public class Controller {
 	}
 
 	/**
-	 * @param stage
-	 *            the stage to set
+	 * @param stage the stage to set
 	 */
 	public void setStage(Stage stage) {
 		this.stage = stage;
@@ -181,8 +181,7 @@ public class Controller {
 	}
 
 	/**
-	 * @param user
-	 *            the user to set
+	 * @param user the user to set
 	 */
 	public void setUser(MoodleUser user) {
 		this.user = user;
@@ -192,14 +191,10 @@ public class Controller {
 	 * Intenta buscar el token de acceso a la REST API de moodle e iniciar sesion en
 	 * la pagina de moodle.
 	 * 
-	 * @param host
-	 *            servidor moodle
-	 * @param username
-	 *            nombre de usuario
-	 * @param password
-	 *            contraseña
-	 * @throws IOException
-	 *             si no ha podido conectarse o la contraseña es erronea
+	 * @param host servidor moodle
+	 * @param username nombre de usuario
+	 * @param password contraseña
+	 * @throws IOException si no ha podido conectarse o la contraseña es erronea
 	 */
 	public void tryLogin(String host, String username, String password) throws IOException {
 
@@ -209,7 +204,7 @@ public class Controller {
 		Response response = loginWebScraping(hostURL.toString(), username, password);
 		cookies = response.cookies();
 		sesskey = findSesskey(response.body());
-		
+
 		setURLHost(hostURL);
 
 		setUsername(username);
@@ -260,8 +255,7 @@ public class Controller {
 	/**
 	 * Selecciona el curso en la base de datos.
 	 * 
-	 * @param selectedCourse
-	 *            curso seleccionado
+	 * @param selectedCourse curso seleccionado
 	 */
 	public void setActualCourse(Course selectedCourse) {
 		dataBase.setActualCourse(selectedCourse);
@@ -270,42 +264,34 @@ public class Controller {
 	/**
 	 * Se loguea en el servidor de moodle mediante web scraping.
 	 * 
-	 * @param username
-	 *            nombre de usuario de la cuenta
-	 * @param password
-	 *            password contraseña
+	 * @param username nombre de usuario de la cuenta
+	 * @param password password contraseña
 	 * @return las cookies que se usan para navegar dentro del servidor despues de
-	 *         loguearse
-	 * @throws IllegalStateException
-	 *             si no ha podido loguearse
+	 * loguearse
+	 * @throws IllegalStateException si no ha podido loguearse
 	 */
 	private Response loginWebScraping(String host, String username, String password) {
 
 		try {
 			LOGGER.info("Logeandose para web scraping");
 
-			Response loginForm = Jsoup.connect(host + "/login/index.php")
-					.method(Method.GET)
-					.execute();
+			Response loginForm = Jsoup.connect(host + "/login/index.php").method(Method.GET).execute();
 
 			Document loginDoc = loginForm.parse();
 			Element e = loginDoc.selectFirst("input[name=logintoken]");
 			String logintoken = (e == null) ? "" : e.attr("value");
 
 			return Jsoup.connect(host + "/login/index.php")
-					.data("username", username, "password", password, "logintoken", logintoken)
-					.method(Method.POST)
+					.data("username", username, "password", password, "logintoken", logintoken).method(Method.POST)
 					.cookies(loginForm.cookies()).execute();
-			
 
-			
 		} catch (Exception e) {
 			LOGGER.error("Error al intentar loguearse", e);
 			throw new IllegalStateException("No se ha podido loguear al servidor");
 		}
 
 	}
-	
+
 	public String findSesskey(String html) {
 		Pattern pattern = Pattern.compile("sesskey=([\\w]+)");
 		Matcher m = pattern.matcher(html);
@@ -329,8 +315,7 @@ public class Controller {
 	/**
 	 * Modifica los cookies de sesion
 	 * 
-	 * @param cookies
-	 *            cookies
+	 * @param cookies cookies
 	 */
 	public void setCookies(Map<String, String> cookies) {
 		this.cookies = cookies;

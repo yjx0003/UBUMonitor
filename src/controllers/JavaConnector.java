@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 
+import controllers.charts.ActivitiesStatusTable;
 import controllers.charts.Buttons;
 import controllers.charts.Chart;
 import controllers.charts.ChartType;
@@ -74,6 +75,7 @@ public class JavaConnector {
 		addChart(new GradeReportTable(mainController));
 		addChart(new CumLine(mainController));
 		addChart(new MeanDiff(mainController));
+		addChart(new ActivitiesStatusTable(mainController));
 	}
 
 	private void addChart(Chart chart) {

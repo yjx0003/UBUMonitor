@@ -1,8 +1,13 @@
 package model;
 
+import java.io.Serializable;
 import java.time.Instant;
 
-public class ActivityCompletion {
+public class ActivityCompletion implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
+
+
 	private State state;
 	
 

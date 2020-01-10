@@ -13,6 +13,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.web.WebEngine;
@@ -30,6 +31,7 @@ public abstract class Chart {
 	protected WebEngine webViewChartsEngine;
 	protected ChoiceBox<Group> slcGroup;
 	protected ListView<EnrolledUser> listParticipants;
+	protected TabPane tabPaneUbuLogs;
 	protected Tab tabUbuLogs;
 	protected Tab tabUbuLogsComponent;
 	protected Tab tabUbuLogsEvent;
@@ -50,6 +52,7 @@ public abstract class Chart {
 	protected boolean useGroupButton;
 	protected String optionsVar;
 	protected boolean useNegativeValues;
+	protected MainController mainController;
 
 	protected static final double OPACITY = 0.2;
 
@@ -72,6 +75,9 @@ public abstract class Chart {
 		this.datePickerEnd = mainController.getDatePickerEnd();
 		this.stats = mainController.getStats();
 		this.tvwGradeReport = mainController.getTvwGradeReport();
+		this.tabPaneUbuLogs = mainController.getTabPaneUbuLogs();
+		this.mainController = mainController;
+		
 		this.chartType = chartType;
 
 		this.useLegend = true;

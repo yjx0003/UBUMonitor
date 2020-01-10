@@ -55,6 +55,7 @@ public class CumLine extends ChartjsLog {
 		addKeyValueWithQuote(dataset, "label", generalMeanTranslate);
 		addKeyValue(dataset, "borderColor", hex(generalMeanTranslate));
 		addKeyValue(dataset, "backgroundColor", rgba(generalMeanTranslate, OPACITY));
+		addKeyValue(dataset, "borderDash", "["+Buttons.getInstance().getLength()+","+Buttons.getInstance().getSpace()+"]");
 		addKeyValue(dataset, "hidden", !Buttons.getInstance().getShowMean());
 		StringJoiner results = JSArray();
 		double cumResult = 0;

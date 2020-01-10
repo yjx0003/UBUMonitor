@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="../css/tabulator.css" />
     <link rel="stylesheet" type="text/css" href="../css/chart.css" />
 
-
+    <script type="text/javascript" src="./lib/moment.js"></script>
     <script type="text/javascript" src="./lib/Chart.js"></script>
     <script type="text/javascript" src="./lib/color-hash.js"></script>
     <script type="text/javascript" src="./lib/html2canvas.js"></script>
@@ -15,6 +15,7 @@
     <script type="text/javascript" src="./lib/apexcharts.js"></script>
     <script type="text/javascript" src="./lib/chartjs-chart-box-and-violin-plot.js"></script>
     <script type="text/javascript" src="./lib/tabulator.js"></script>
+
 
 </head>
 
@@ -34,6 +35,8 @@
         <input type="button" class="btn" id="btnHeatmap" onclick='javaConnector.updateCharts("HEAT_MAP");' />
         <input type="button" class="btn" id="btnCumLine" onclick='javaConnector.updateCharts("CUM_LINE");' />
         <input type="button" class="btn" id="btnMeanDiff" onclick='javaConnector.updateCharts("MEAN_DIFF");' />
+        <input type="button" class="btn" id="btnActivitiesTable"
+            onclick='javaConnector.updateCharts("ACTIVITIES_TABLE");' />
     </div>
 
     <div class="opciones">
@@ -72,7 +75,7 @@
     Chart.defaults.scale.ticks.suggestedMax = 10;
     Chart.defaults.scale.ticks.suggestedMin = 0;
     Chart.defaults.scale.autoSkip = true;
-    var red ="#DC143C";
+    var red = "#DC143C";
     var green = "#2DC214";
     var counter = 0;
     var height = "93%";
@@ -253,7 +256,7 @@
                     gridLines: {
                         zeroLineColor: red,
                         zeroLineWidth: 3,
-                        zeroLineBorderDash: [5,10]
+                        zeroLineBorderDash: [5, 10]
                     },
                     ticks: {
                         stepSize: 0
@@ -357,6 +360,22 @@
         height: height,
         groupBy: "type",
         virtualDom: true,
+        tooltipsHeader: true,
+        layout: "fitColumns", //fit columns to width of table (optional)
+        rowClick: function (e, row) {
+            javaConnector.dataPointSelection(row.getPosition());
+
+        },
+    }
+
+    var activitiesTableOptions = {
+
+        tab: "log_tabs",
+        button: "btnActivitiesTable",
+        invalidOptionWarnings: false,
+        height: height,
+        tooltipsHeader: true,
+        virtualDom: true,
         layout: "fitColumns", //fit columns to width of table (optional)
         rowClick: function (e, row) {
             javaConnector.dataPointSelection(row.getPosition());
@@ -395,7 +414,7 @@
     var myApexChart = new ApexCharts(document.getElementById('apexchartsDiv'), heatmapOptions);
     myApexChart.render();
 
-    var table = new Tabulator("#tabulatorDiv", gradeReportTableOptions);
+    var table = new Tabulator("#tabulatorDiv", activitiesTableOptions);
 
 
     //------------------------------------------Funciones------------------------------------------------------------------
@@ -529,8 +548,9 @@
         displayLegendButton(options.useLegend);
         displayGroupButton(options.useGroup);
         displayGeneralButton(options.useGeneral);
-
         disableTab(options.tab, options.button);
+        table.destroy()
+        table = new Tabulator("#tabulatorDiv", options);
         table.setColumns(columns);
         table.setData(tabledata).then(function () {
             table.redraw();

@@ -154,6 +154,9 @@ public class MainController implements Initializable {
 
 	@FXML
 	private TabPane tabPane;
+	
+	@FXML
+	private TabPane tabPaneUbuLogs;
 
 	@FXML
 	private Tab tabUbuGrades;
@@ -532,10 +535,10 @@ public class MainController implements Initializable {
 	public void initLogOptionsFilter() {
 
 		textFieldMax.textProperty().addListener((ov, oldValue, newValue) -> {
-			if (newValue.matches("\\d+")) {
-				updateMaxScale(Long.parseLong(newValue));
-			} else if (newValue.isEmpty()) {
+			if (newValue == null || newValue.isEmpty()) {
 				updateMaxScale(1L);
+			} else if (newValue.matches("\\d+")) {
+				updateMaxScale(Long.parseLong(newValue));
 			} else { // si no es un numero volvemos al valor anterior
 				textFieldMax.setText(oldValue);
 			}
@@ -1473,6 +1476,14 @@ public class MainController implements Initializable {
 
 	public JavaConnector getJavaConnector() {
 		return javaConnector;
+	}
+
+	public TabPane getTabPaneUbuLogs() {
+		return tabPaneUbuLogs;
+	}
+
+	public void setTabPaneUbuLogs(TabPane tabPaneUbuLogs) {
+		this.tabPaneUbuLogs = tabPaneUbuLogs;
 	}
 
 }

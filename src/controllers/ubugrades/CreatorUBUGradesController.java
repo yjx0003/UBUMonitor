@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -633,6 +634,12 @@ public class CreatorUBUGradesController {
 
 	}
 	
+	public static void createActivitiesCompletionStatus(int courseid, Collection<EnrolledUser> users) throws IOException {
+		for(EnrolledUser user: users) {
+			createActivitiesCompletionStatus(courseid, user.getId());
+		}
+	}
+	
 	public static void createActivitiesCompletionStatus(int courseid, int userid) throws IOException{
 		WebService ws = new CoreCompletionGetActivitiesCompletionStatus(courseid, userid);
 		String response = ws.getResponse();
@@ -655,6 +662,7 @@ public class CreatorUBUGradesController {
 			}
 			boolean valueused = status.optBoolean("valueused");
 			ActivityCompletion activity = new ActivityCompletion(state, timecompleted, tracking, overrideby, valueused);
+			
 			courseModule.getActivitiesCompletion().put(enrolledUsers.getById(userid), activity);
 			
 		}

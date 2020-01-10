@@ -241,6 +241,9 @@ public class CourseModule implements Serializable {
 	}
 
 	public Map<EnrolledUser, ActivityCompletion> getActivitiesCompletion() {
+		if (activitiesCompletion == null) {
+			activitiesCompletion = new HashMap<>();
+		}
 		return activitiesCompletion;
 	}
 

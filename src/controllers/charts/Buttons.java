@@ -1,12 +1,16 @@
 package controllers.charts;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 
 public class Buttons {
 	private BooleanProperty showMean;
 	private BooleanProperty showLegend;
 	private BooleanProperty showGroupMean;
+	private IntegerProperty length;
+	private IntegerProperty space;
 	private static Buttons instance;
 
 
@@ -26,6 +30,8 @@ public class Buttons {
 		showMean = new SimpleBooleanProperty(true);
 		showLegend = new SimpleBooleanProperty(true);
 		showGroupMean = new SimpleBooleanProperty(true);
+		length = new SimpleIntegerProperty(5);
+		space = new SimpleIntegerProperty(10);
 	}
 
 	public boolean getShowMean() {
@@ -61,5 +67,27 @@ public class Buttons {
 	public boolean swapGroupMean() {
 		showGroupMean.setValue(!showGroupMean.getValue());
 		return showGroupMean.getValue();
+	}
+
+	public int getLength() {
+		return length.get();
+	}
+
+	public void setLength(int length) {
+		this.length.set(length);;
+	}
+
+	/**
+	 * @return the space
+	 */
+	public int getSpace() {
+		return space.get();
+	}
+
+	/**
+	 * @param space the space to set
+	 */
+	public void setSpace(int space) {
+		this.space.set(space);
 	}
 }

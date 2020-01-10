@@ -360,7 +360,6 @@ public class WelcomeController implements Initializable {
 		Dialog<String> dialog = new Dialog<>();
 		dialog.setTitle(I18n.get("title.passwordChanged"));
 
-		
 		dialog.setHeaderText(I18n.get("header.passwordChangedMessage") + "\n" + I18n.get("header.passwordDateTime")
 				+ lblDateUpdate.getText());
 
@@ -414,7 +413,7 @@ public class WelcomeController implements Initializable {
 		lblProgress.textProperty().bind(task.messageProperty());
 		task.setOnSucceeded(v -> loadNextWindow());
 		task.setOnFailed(e -> {
-			errorWindow(task.getException().getMessage());
+			errorWindow("Error al actualizar los datos del curso:" + task.getException().getCause());
 			LOGGER.error("Error al actualizar los datos del curso: {}", task.getException());
 		});
 
@@ -462,25 +461,27 @@ public class WelcomeController implements Initializable {
 			@Override
 			protected Void call() throws Exception {
 				try {
-					controller.getActualCourse().clear();
-					LOGGER.info("Cargando datos del curso: {}", controller.getActualCourse().getFullName());
+					Course actualCourse = controller.getActualCourse();
+					actualCourse.clear();
+					LOGGER.info("Cargando datos del curso: {}", actualCourse.getFullName());
 					// Establecemos los usuarios matriculados
 					updateMessage(I18n.get("label.loadingstudents"));
-					CreatorUBUGradesController.createEnrolledUsers(controller.getActualCourse().getId());
-					CreatorUBUGradesController.createSectionsAndModules(controller.getActualCourse().getId());
+					CreatorUBUGradesController.createEnrolledUsers(actualCourse.getId());
+					CreatorUBUGradesController.createSectionsAndModules(actualCourse.getId());
 					updateMessage(I18n.get("label.loadingqualifier"));
 					// Establecemos calificador del curso
 					CreatorGradeItems creatorGradeItems = new CreatorGradeItems(
 							new Locale(controller.getUser().getLang()));
 					creatorGradeItems.createGradeItems(controller.getActualCourse().getId());
-
+					CreatorUBUGradesController.createActivitiesCompletionStatus(actualCourse.getId(),
+							actualCourse.getEnrolledUsers());
 					updateMessage(I18n.get("label.updatinglog"));
 					if (isFileCacheExists) {
 						Logs logs = LogCreator.createCourseLog();
-						controller.getActualCourse().setLogs(logs);
+						actualCourse.setLogs(logs);
 
 					} else {
-						Logs logs = controller.getActualCourse().getLogs();
+						Logs logs = actualCourse.getLogs();
 						LogCreator.updateCourseLog(logs);
 
 					}
@@ -493,7 +494,7 @@ public class WelcomeController implements Initializable {
 				} catch (IOException e) {
 					LOGGER.error("Error al cargar los datos de los alumnos: {}", e);
 					updateMessage("Se produjo un error inesperado al cargar los datos.\n" + e.getMessage());
-					throw new IllegalStateException();
+					throw new IllegalStateException(e);
 				} finally {
 					controller.getStage().getScene().setCursor(Cursor.DEFAULT);
 					btnEntrar.setVisible(true);

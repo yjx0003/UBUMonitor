@@ -13,21 +13,16 @@ import model.EnrolledUser;
 import model.GradeItem;
 import util.UtilMethods;
 
-public abstract class ChartjsGradeItem extends Chartjs{
-	
+public abstract class ChartjsGradeItem extends Chartjs {
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChartjsGradeItem.class);
 
-	
-	
 	public ChartjsGradeItem(MainController mainController, ChartType chartType) {
 		super(mainController, chartType);
 	}
-	
 
-	
 	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
 		StringBuilder stringBuilder = new StringBuilder();
-		
 
 		stringBuilder.append("{labels:[");
 		stringBuilder.append(UtilMethods.joinWithQuotes(selectedGradeItems));
@@ -39,17 +34,20 @@ public abstract class ChartjsGradeItem extends Chartjs{
 			stringBuilder.append("data:[");
 			for (GradeItem gradeItem : selectedGradeItems) {
 				double grade = gradeItem.getEnrolledUserPercentage(user);
-				
+
 				stringBuilder.append(adjustTo10(grade) + ",");
 
 			}
 			stringBuilder.append("]},");
 		}
 		if (useGeneralButton) {
-			stringBuilder.append("{label:'" + UtilMethods.escapeJavaScriptText(I18n.get("chartlabel.generalMean")) + "',");
+			stringBuilder
+					.append("{label:'" + UtilMethods.escapeJavaScriptText(I18n.get("chartlabel.generalMean")) + "',");
 			stringBuilder.append("borderColor:" + hex(I18n.get("chartlabel.generalMean")) + ",");
 			stringBuilder.append("backgroundColor:" + rgba(I18n.get("chartlabel.generalMean"), OPACITY) + ",");
-			stringBuilder.append("hidden: "+!Buttons.getInstance().getShowMean()+ ",");
+			stringBuilder.append("hidden: " + !Buttons.getInstance().getShowMean() + ",");
+			stringBuilder.append(
+					"borderDash:[" + Buttons.getInstance().getLength() + "," + Buttons.getInstance().getSpace() + "],");
 			stringBuilder.append("data:[");
 			Map<GradeItem, DescriptiveStatistics> descriptiveStats = stats.getGeneralStats();
 			for (GradeItem gradeItem : selectedGradeItems) {
@@ -58,12 +56,15 @@ public abstract class ChartjsGradeItem extends Chartjs{
 			}
 			stringBuilder.append("]},");
 		}
-		
+
 		if (useGroupButton && slcGroup.getValue() != null) {
-			stringBuilder.append("{label:'" + UtilMethods.escapeJavaScriptText(I18n.get("chartlabel.groupMean")) + "',");
+			stringBuilder
+					.append("{label:'" + UtilMethods.escapeJavaScriptText(I18n.get("chartlabel.groupMean")) + "',");
 			stringBuilder.append("borderColor:" + hex(I18n.get("chartlabel.groupMean")) + ",");
 			stringBuilder.append("backgroundColor:" + rgba(I18n.get("chartlabel.groupMean"), OPACITY) + ",");
-			stringBuilder.append("hidden: "+!Buttons.getInstance().getShowGroupMean()+ ",");
+			stringBuilder.append("hidden: " + !Buttons.getInstance().getShowGroupMean() + ",");
+			stringBuilder.append(
+					"borderDash:[" + Buttons.getInstance().getLength() + "," + Buttons.getInstance().getSpace() + "],");
 			stringBuilder.append("data:[");
 			Map<GradeItem, DescriptiveStatistics> descriptiveStats = stats.getGroupStats(slcGroup.getValue());
 			for (GradeItem gradeItem : selectedGradeItems) {
@@ -72,15 +73,13 @@ public abstract class ChartjsGradeItem extends Chartjs{
 			}
 			stringBuilder.append("]}");
 		}
-		
+
 		stringBuilder.append("]}");
-		
+
 		return stringBuilder.toString();
 
 	}
-	
-	
-	
+
 	@Override
 	public void update() {
 		String dataset = createDataset(getSelectedEnrolledUser(), getSelectedGradeItems());
@@ -88,7 +87,5 @@ public abstract class ChartjsGradeItem extends Chartjs{
 		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, optionsVar));
 
 	}
-	
-
 
 }

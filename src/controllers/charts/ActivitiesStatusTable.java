@@ -82,7 +82,7 @@ public class ActivitiesStatusTable extends Tabulator {
 		StringJoiner progressParams = JSObject();
 		addKeyValue(progressParams, "min", 0);
 		addKeyValue(progressParams, "max", courseModules.size());
-		addKeyValue(progressParams, "legend", true);
+		addKeyValue(progressParams, "legend", String.format("function(value){return value+'/'+%s +' ('+Math.round(value/%s*100||0)+'%%)';}", courseModules.size(), courseModules.size()));
 		addKeyValueWithQuote(progressParams, "legendAlign", "center");
 
 		jsObject = JSObject();

@@ -203,10 +203,10 @@
 																	<top>
 																		<Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
 																			<children>
-																				<Label layoutX="6.0" layoutY="5.0" text="%label.coursemodule" />
-																				<TextField fx:id="courseModuleTextField" layoutX="6.0" layoutY="26.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+																				<TextField fx:id="courseModuleTextField" layoutX="6.0" layoutY="28.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
                                                             <CheckBox fx:id="checkBoxCourseModule" layoutX="140.0" layoutY="5.0" mnemonicParsing="false" text="%label.withhidden" />
                                                             <ChoiceBox fx:id="choiceBoxCourseModule" layoutX="140.0" layoutY="30.0" prefWidth="150.0" />
+                                                            <CheckBox fx:id="checkBoxActivityCompleted" layoutX="5.0" layoutY="5.0" mnemonicParsing="false" selected="true" text="%label.withcompletion" />
 																			</children>
 																		</Pane>
 																	</top>

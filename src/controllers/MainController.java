@@ -206,6 +206,8 @@ public class MainController implements Initializable {
 
 	@FXML
 	private CheckBox checkBoxCourseModule;
+	@FXML
+	private CheckBox checkBoxActivityCompleted;
 
 	@FXML
 	private GridPane optionsUbuLogs;
@@ -884,7 +886,11 @@ public class MainController implements Initializable {
 			filterCourseModules.setPredicate(getCourseModulePredicate());
 			listViewCourseModule.setCellFactory(getListCellCourseModule());
 		});
-
+		
+		checkBoxActivityCompleted.selectedProperty().addListener(c -> {
+			filterCourseModules.setPredicate(getCourseModulePredicate());
+			listViewCourseModule.setCellFactory(getListCellCourseModule());
+		});
 	}
 
 	private Callback<ListView<CourseModule>, ListCell<CourseModule>> getListCellCourseModule() {
@@ -916,7 +922,8 @@ public class MainController implements Initializable {
 	private Predicate<CourseModule> getCourseModulePredicate() {
 		return cm -> containsTextField(courseModuleTextField.getText(), cm.getModuleName())
 				&& (checkBoxCourseModule.isSelected() || cm.isVisible())
-				&& (choiceBoxCourseModule.getValue() == null || choiceBoxCourseModule.getValue() == cm.getModuleType());
+				&& (choiceBoxCourseModule.getValue() == null || choiceBoxCourseModule.getValue() == cm.getModuleType())
+				&& (!checkBoxActivityCompleted.isSelected() || !cm.getActivitiesCompletion().isEmpty());
 	}
 
 	private boolean containsTextField(String newValue, String element) {

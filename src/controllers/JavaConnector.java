@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.EnumMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
@@ -171,6 +172,7 @@ public class JavaConnector {
 	}
 
 	public void setDefaultValues() {
+		webViewChartsEngine.executeScript("setLocale('" + Locale.getDefault().toLanguageTag() + "')");
 		setCurrentTypeLogs(DEFAULT_LOG_CHART);
 		setCurrentTypeGrades(DEFAULT_GRADE_CHART);
 		if (tabLogs.isSelected()) {

@@ -85,7 +85,7 @@
     var green = "#2DC214";
     var counter = 0;
     var height = "93%";
-
+    var locale = 'en-UK';
     var stackedbarOptions = {
         tab: "log_tabs",
         button: "btnStackedBar",
@@ -383,17 +383,22 @@
         plugins: {
             datalabels: {
                 display: true,
+                font: {
+                    weight: 'bold',
+                },
                 formatter: function (value, context) {
-                    if (value === 0 ){
+                    if (value === 0) {
                         return "";
                     }
                     let datasets = context.chart.data.datasets;
-                    let total= 0;
-                    for (i=0;i<datasets.length;i++){
-                        total+=datasets[i].data[context.dataIndex];
+                    let total = 0;
+                    for (i = 0; i < datasets.length; i++) {
+                        total += datasets[i].data[context.dataIndex];
                     }
 
-                    return Math.round(value / total * 10000)/100 +"%";
+                    return value + "/" + total + " (" + (value / total).toLocaleString(locale, {
+                        style: 'percent', maximumFractionDigits: 2
+                    }) + ")";
                 }
             }
         }
@@ -753,7 +758,9 @@
 
 
 
-
+    function setLocale(newLocale) {
+        locale = newLocale;
+    }
     function colorRGB(color) {
         let colors = colorHash.rgb(color);
         return "rgb(" + colors[0] + "," + colors[1] + "," + colors[2] + ")";

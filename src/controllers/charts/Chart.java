@@ -1,5 +1,6 @@
 package controllers.charts;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -139,6 +140,17 @@ public abstract class Chart {
 	public <T> String hex(T hash) {
 		return "colorHEX('" + UtilMethods.escapeJavaScriptText(hash.toString()) + "')";
 	}
+	
+	public String hexToRGB(String hex) {
+		Color color = Color.decode(hex);
+		return String.format("'rgb(%s,%s,%s)'", color.getRed(), color.getGreen(), color.getBlue());
+	}
+	
+	public String hexToRGBA(String hex, double alpha) {
+		Color color = Color.decode(hex);
+		return String.format("'rgba(%s,%s,%s,%s)'", color.getRed(), color.getGreen(), color.getBlue(), alpha);
+	}
+
 
 	public List<GradeItem> getSelectedGradeItems() {
 		return tvwGradeReport.getSelectionModel().getSelectedItems().stream().filter(Objects::nonNull)

@@ -12,6 +12,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import controllers.charts.ActivitiesStatusTable;
 import controllers.charts.Buttons;
+import controllers.charts.CalificationBar;
 import controllers.charts.Chart;
 import controllers.charts.ChartType;
 import controllers.charts.CumLine;
@@ -76,6 +77,7 @@ public class JavaConnector {
 		addChart(new CumLine(mainController));
 		addChart(new MeanDiff(mainController));
 		addChart(new ActivitiesStatusTable(mainController));
+		addChart(new CalificationBar(mainController));
 	}
 
 	private void addChart(Chart chart) {

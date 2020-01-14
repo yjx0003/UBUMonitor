@@ -473,6 +473,7 @@ public class WelcomeController implements Initializable {
 					CreatorGradeItems creatorGradeItems = new CreatorGradeItems(
 							new Locale(controller.getUser().getLang()));
 					creatorGradeItems.createGradeItems(controller.getActualCourse().getId());
+					updateMessage(I18n.get("label.loadingActivitiesCompletion"));
 					CreatorUBUGradesController.createActivitiesCompletionStatus(actualCourse.getId(),
 							actualCourse.getEnrolledUsers());
 					updateMessage(I18n.get("label.updatinglog"));

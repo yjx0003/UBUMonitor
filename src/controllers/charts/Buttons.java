@@ -1,9 +1,13 @@
 package controllers.charts;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 public class Buttons {
 	private BooleanProperty showMean;
@@ -11,7 +15,11 @@ public class Buttons {
 	private BooleanProperty showGroupMean;
 	private IntegerProperty length;
 	private IntegerProperty space;
+	private DoubleProperty cutGrade;
 	private static Buttons instance;
+	private StringProperty dangerColor;
+	private StringProperty passColor;
+	private StringProperty emptyColor;
 
 
 	/**
@@ -32,10 +40,14 @@ public class Buttons {
 		showGroupMean = new SimpleBooleanProperty(true);
 		length = new SimpleIntegerProperty(5);
 		space = new SimpleIntegerProperty(10);
+		cutGrade = new SimpleDoubleProperty(5.0);
+		dangerColor = new SimpleStringProperty("#DC143C");
+		passColor = new SimpleStringProperty("#2DC214");
+		emptyColor = new SimpleStringProperty("#808080");
 	}
 
 	public boolean getShowMean() {
-		return showMean.getValue();
+		return showMean.get();
 	}
 
 	public void setShowMean(boolean showMean) {
@@ -43,12 +55,12 @@ public class Buttons {
 	}
 	
 	public boolean getShowLegend() {
-		return showLegend.getValue();
+		return showLegend.get();
 	}
 	
 	public boolean swapLegend() {
-		showLegend.setValue(!showLegend.getValue());
-		return showLegend.getValue();
+		showLegend.setValue(!showLegend.get());
+		return showLegend.get();
 	}
 
 	public void setShowLegend(boolean showLegend) {
@@ -56,17 +68,17 @@ public class Buttons {
 	}
 
 	public boolean swapMean() {
-		showMean.setValue(!showMean.getValue());
-		return showMean.getValue();
+		showMean.setValue(!showMean.get());
+		return showMean.get();
 	}
 
 	public boolean getShowGroupMean() {
-		return showGroupMean.getValue();
+		return showGroupMean.get();
 	}
 	
 	public boolean swapGroupMean() {
-		showGroupMean.setValue(!showGroupMean.getValue());
-		return showGroupMean.getValue();
+		showGroupMean.setValue(!showGroupMean.get());
+		return showGroupMean.get();
 	}
 
 	public int getLength() {
@@ -89,5 +101,61 @@ public class Buttons {
 	 */
 	public void setSpace(int space) {
 		this.space.set(space);
+	}
+
+	/**
+	 * @return the cutGrade
+	 */
+	public double getCutGrade() {
+		return cutGrade.get();
+	}
+
+	/**
+	 * @param cutGrade the cutGrade to set
+	 */
+	public void setCutGrade(double cutGrade) {
+		this.cutGrade.set(cutGrade);;
+	}
+
+	/**
+	 * @return the dangerColor
+	 */
+	public String getDangerColor() {
+		return dangerColor.get();
+	}
+
+	/**
+	 * @param dangerColor the dangerColor to set
+	 */
+	public void setDangerColor(String dangerColor) {
+		this.dangerColor.set(dangerColor);
+	}
+
+	/**
+	 * @return the passColor
+	 */
+	public String getPassColor() {
+		return passColor.get();
+	}
+
+	/**
+	 * @param passColor the passColor to set
+	 */
+	public void setPassColor(String passColor) {
+		this.passColor.set(passColor);;
+	}
+
+	/**
+	 * @return the emptyColor
+	 */
+	public String getEmptyColor() {
+		return emptyColor.get();
+	}
+
+	/**
+	 * @param emptyColor the emptyColor to set
+	 */
+	public void setEmptyColor(String emptyColor) {
+		this.emptyColor.set(emptyColor);;
 	}
 }

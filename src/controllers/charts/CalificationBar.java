@@ -49,7 +49,7 @@ public class CalificationBar extends ChartjsGradeItem {
 
 		StringJoiner datasets = JSArray();
 		datasets.add(createData(I18n.get("text.empty"), countNaN, Buttons.getInstance().getEmptyColor(), OPACITY));
-		datasets.add(createData(I18n.get("text.danger"), countLessCut, Buttons.getInstance().getDangerColor(), OPACITY));
+		datasets.add(createData(I18n.get("text.fail"), countLessCut, Buttons.getInstance().getDangerColor(), OPACITY));
 		datasets.add(createData(I18n.get("text.pass"), countGreaterCut, Buttons.getInstance().getPassColor(), OPACITY));
 		addKeyValue(data, "datasets", datasets.toString());
 		return data.toString();

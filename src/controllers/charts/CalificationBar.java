@@ -33,7 +33,7 @@ public class CalificationBar extends ChartjsGradeItem {
 			int less = 0;
 			int greater = 0;
 			for (EnrolledUser user : selectedUser) {
-				double grade = gradeItem.getEnrolledUserGrade(user);
+				double grade = adjustTo10(gradeItem.getEnrolledUserPercentage(user));
 				if (Double.isNaN(grade)) {
 					++nan;
 				} else if (grade < Buttons.getInstance().getCutGrade()) {

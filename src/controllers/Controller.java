@@ -2,6 +2,8 @@ package controllers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -28,6 +30,7 @@ import model.DataBase;
 import model.LogStats;
 import model.MoodleUser;
 import model.Stats;
+import util.UtilMethods;
 import webservice.WebService;
 
 public class Controller {
@@ -41,7 +44,7 @@ public class Controller {
 
 	private DataBase dataBase;
 	private LocalDateTime loggedIn;
-
+	private Path directoryCache;
 	private URL host;
 	private Stage stage;
 	private String password;
@@ -50,6 +53,7 @@ public class Controller {
 	private String sesskey;
 
 	private Map<String, String> cookies;
+	private boolean offlineMode;
 
 	/**
 	 * Usuario actual.
@@ -210,11 +214,11 @@ public class Controller {
 		setUsername(username);
 		setPassword(password);
 
-		initTimer();
+		
 
 	}
 
-	private void initTimer() {
+	public void initTimer() {
 		TimerTask timerTask = new TimerTask() {
 			@Override
 			public void run() {
@@ -352,5 +356,44 @@ public class Controller {
 	public void setLoggedIn(LocalDateTime loggedIn) {
 		this.loggedIn = loggedIn;
 	}
+
+	/**
+	 * @return the directoryCache
+	 */
+	public Path getDirectoryCache() {
+		return directoryCache;
+	}
+
+	/**
+	 * @param directoryCache the directoryCache to set
+	 */
+	public void setDirectoryCache(Path directoryCache) {
+		this.directoryCache = directoryCache;
+	}
+	
+	
+	public void setDirectoryCache() {
+		this.directoryCache = Paths.get(AppInfo.CACHE_DIR, UtilMethods.removeReservedChar(this.getUrlHost().getHost()),
+				UtilMethods.removeReservedChar(this.getUsername()));
+	}
+
+	/**
+	 * @return the offlineMode
+	 */
+	public boolean isOfflineMode() {
+		return offlineMode;
+	}
+
+	/**
+	 * @param offlineMode the offlineMode to set
+	 */
+	public void setOfflineMode(boolean offlineMode) {
+		this.offlineMode = offlineMode;
+	}
+
+
+	
+
+	
 
 }

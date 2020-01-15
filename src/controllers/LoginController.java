@@ -1,12 +1,15 @@
 
 package controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONException;
 import org.slf4j.Logger;
@@ -36,6 +39,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import model.Course;
 import model.MoodleUser;
 
 /**
@@ -68,6 +72,9 @@ public class LoginController implements Initializable {
 
 	@FXML
 	private CheckBox chkSaveHost;
+
+	@FXML
+	private CheckBox chkOfflineMode;
 
 	@FXML
 	private ImageView insecureProtocol;
@@ -154,9 +161,10 @@ public class LoginController implements Initializable {
 
 		txtHost.setText(Config.getProperty("host", null));
 		txtUsername.setText(Config.getProperty("username", null));
-		txtPassword.setText(System.getProperty(AppInfo.APPLICATION_NAME+".password"));
+		txtPassword.setText(System.getProperty(AppInfo.APPLICATION_NAME + ".password"));
 		chkSaveUsername.setSelected(Boolean.parseBoolean(Config.getProperty("saveUsername")));
 		chkSaveHost.setSelected(Boolean.parseBoolean(Config.getProperty("saveHost")));
+		chkOfflineMode.setSelected(Boolean.parseBoolean(Config.getProperty("offlineMode")));
 
 	}
 
@@ -172,6 +180,7 @@ public class LoginController implements Initializable {
 		String host = chkSaveHost.isSelected() ? txtHost.getText() : "";
 		Config.setProperty("host", host);
 		Config.setProperty("saveHost", Boolean.toString(chkSaveHost.isSelected()));
+		Config.setProperty("offlineMode", Boolean.toString(chkOfflineMode.isSelected()));
 
 	}
 
@@ -186,26 +195,75 @@ public class LoginController implements Initializable {
 			lblStatus.setText(I18n.get("error.fields"));
 		} else {
 			controller.getStage().getScene().setCursor(Cursor.WAIT);
+			if (chkOfflineMode.isSelected()) {
+				try {
+					offlineMode();
+					
+				} catch (MalformedURLException e) {
+					lblStatus.setText(e.getMessage());
+				}
+				changeScene(getClass().getResource("/view/WelcomeOffline.fxml"), new WelcomeOfflineController());
+			} else {
+				onlineMode();
+			}
 
-			Task<Void> loginTask = getUserDataWorker();
-
-			loginTask.setOnSucceeded(s -> {
-				saveProperties();
-				controller.getStage().getScene().setCursor(Cursor.DEFAULT);
-				controller.setLoggedIn(LocalDateTime.now());
-				changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController());
-			});
-
-			loginTask.setOnFailed(e -> {
-				LOGGER.error("Error al recuperar los datos: ", e.getSource().getException());
-				controller.getStage().getScene().setCursor(Cursor.DEFAULT);
-				txtPassword.clear();
-				lblStatus.setText(e.getSource().getException().getMessage());
-			});
-			Thread th = new Thread(loginTask, "login");
-
-			th.start();
 		}
+	}
+
+	private void findCacheCourses(MoodleUser user) {
+		Pattern pattern = Pattern.compile("(.+)-(\\d+)$");
+		for (File cache : controller.getDirectoryCache().toFile().listFiles()) {
+			Matcher matcher = pattern.matcher(cache.getName());
+			if(matcher.find()) {
+				Course course = new Course(Integer.valueOf(matcher.group(2)));
+				course.setFullName(matcher.group(1));
+				user.getCourses().add(course);
+			}
+		}
+
+	}
+
+	private void offlineMode() throws MalformedURLException {
+
+		controller.setURLHost(new URL(txtHost.getText()));
+
+		controller.setUsername(txtUsername.getText());
+		controller.setPassword(txtPassword.getText());
+		MoodleUser user = new MoodleUser();
+		user.setFullName(txtUsername.getText()); //because we have not a fullname of the user in offline mode
+		controller.setUser(user);
+		onSuccessLogin();
+		findCacheCourses(user);
+		
+		
+	}
+
+	private void onlineMode() {
+		Task<Void> loginTask = getUserDataWorker();
+
+		loginTask.setOnSucceeded(s -> {
+			onSuccessLogin();
+
+			changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController());
+		});
+
+		loginTask.setOnFailed(e -> {
+			LOGGER.error("Error al recuperar los datos: ", e.getSource().getException());
+			controller.getStage().getScene().setCursor(Cursor.DEFAULT);
+			txtPassword.clear();
+			lblStatus.setText(e.getSource().getException().getMessage());
+		});
+		Thread th = new Thread(loginTask, "login");
+
+		th.start();
+	}
+
+	private void onSuccessLogin() {
+		saveProperties();
+		controller.getStage().getScene().setCursor(Cursor.DEFAULT);
+		controller.setLoggedIn(LocalDateTime.now());
+		controller.setDirectoryCache();
+		controller.setOfflineMode(chkOfflineMode.isSelected());
 	}
 
 	/**
@@ -251,7 +309,8 @@ public class LoginController implements Initializable {
 				try {
 
 					controller.tryLogin(txtHost.getText(), txtUsername.getText(), txtPassword.getText());
-
+					controller.setDirectoryCache();
+					controller.initTimer();
 				} catch (MalformedURLException e) {
 					LOGGER.error("URL mal formada. ¿Has añadido protocolo http(s)?", e);
 					throw new IllegalArgumentException(I18n.get("error.malformedurl"));
@@ -288,4 +347,7 @@ public class LoginController implements Initializable {
 		txtPassword.setText("");
 		txtHost.setText("");
 	}
+	
+	
+
 }

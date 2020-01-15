@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InvalidClassException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -73,10 +72,7 @@ import util.UtilMethods;
 public class WelcomeController implements Initializable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WelcomeController.class);
-	/**
-	 * Path de los directorios del cache sin el fichero encriptado
-	 */
-	private Path directoryCache;
+
 	/**
 	 * path con directorios de los ficheros cache
 	 */
@@ -148,8 +144,7 @@ public class WelcomeController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		try {
-			directoryCache = Paths.get(AppInfo.CACHE_DIR, controller.getUrlHost().getHost(),
-					controller.getUser().getFullName() + "-" + controller.getUser().getId());
+			
 
 			lblUser.setText(controller.getUser().getFullName());
 			LOGGER.info("Cargando cursos...");
@@ -223,7 +218,7 @@ public class WelcomeController implements Initializable {
 	private void checkFile(Course newValue) {
 		if (newValue == null)
 			return;
-		cacheFilePath = directoryCache
+		cacheFilePath = controller.getDirectoryCache()
 				.resolve(UtilMethods.removeReservedChar(newValue.toString()) + "-" + newValue.getId());
 		LOGGER.debug("Buscando si existe {}", cacheFilePath);
 
@@ -289,9 +284,9 @@ public class WelcomeController implements Initializable {
 	public void removeCourse(ActionEvent event) {
 		Alert alert = new Alert(AlertType.WARNING, I18n.get("text.confirmationtext"), ButtonType.OK, ButtonType.CANCEL);
 		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
+		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.setHeaderText(I18n.get("text.confirmation"));
-		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(new Image("/img/logo_min.png"));
+
 
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.OK) {
@@ -328,9 +323,9 @@ public class WelcomeController implements Initializable {
 			return;
 		}
 
-		File f = directoryCache.toFile();
+		File f = controller.getDirectoryCache().toFile();
 		if (!f.isDirectory()) {
-			LOGGER.info("No existe el directorio, se va a crear: {}", directoryCache);
+			LOGGER.info("No existe el directorio, se va a crear: {}", controller.getDirectoryCache());
 			f.mkdirs();
 		}
 		LOGGER.info("Guardando los datos encriptados en: {}", f.getAbsolutePath());
@@ -359,7 +354,7 @@ public class WelcomeController implements Initializable {
 	private void previusPasswordWindow() {
 		Dialog<String> dialog = new Dialog<>();
 		dialog.setTitle(I18n.get("title.passwordChanged"));
-
+		
 		dialog.setHeaderText(I18n.get("header.passwordChangedMessage") + "\n" + I18n.get("header.passwordDateTime")
 				+ lblDateUpdate.getText());
 

@@ -286,7 +286,8 @@ public class WelcomeController implements Initializable {
 		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.setHeaderText(I18n.get("text.confirmation"));
-
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/img/logo_min.png"));
 
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.OK) {

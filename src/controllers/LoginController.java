@@ -6,7 +6,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -84,7 +87,7 @@ public class LoginController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		
+
 		txtHost.textProperty().addListener(
 				(observable, oldValue, newValue) -> insecureProtocol.setVisible(newValue.startsWith("http://")));
 
@@ -198,11 +201,11 @@ public class LoginController implements Initializable {
 			if (chkOfflineMode.isSelected()) {
 				try {
 					offlineMode();
-					
-				} catch (MalformedURLException e) {
+					changeScene(getClass().getResource("/view/WelcomeOffline.fxml"), new WelcomeOfflineController());
+				} catch (MalformedURLException | RuntimeException e) {
 					lblStatus.setText(e.getMessage());
 				}
-				changeScene(getClass().getResource("/view/WelcomeOffline.fxml"), new WelcomeOfflineController());
+				
 			} else {
 				onlineMode();
 			}
@@ -210,17 +213,24 @@ public class LoginController implements Initializable {
 		}
 	}
 
-	private void findCacheCourses(MoodleUser user) {
+	private List<Course> findCacheCourses() {
+		
+		File dir = controller.getDirectoryCache().toFile();
+		if(!dir.exists() || !dir.isDirectory()) {
+			return Collections.emptyList();
+		}
+		
 		Pattern pattern = Pattern.compile("(.+)-(\\d+)$");
-		for (File cache : controller.getDirectoryCache().toFile().listFiles()) {
+		List<Course> courses = new ArrayList<>();
+		for (File cache :dir.listFiles()) {
 			Matcher matcher = pattern.matcher(cache.getName());
-			if(matcher.find()) {
+			if (matcher.find()) {
 				Course course = new Course(Integer.valueOf(matcher.group(2)));
 				course.setFullName(matcher.group(1));
-				user.getCourses().add(course);
+				courses.add(course);
 			}
 		}
-
+		return courses;
 	}
 
 	private void offlineMode() throws MalformedURLException {
@@ -230,12 +240,16 @@ public class LoginController implements Initializable {
 		controller.setUsername(txtUsername.getText());
 		controller.setPassword(txtPassword.getText());
 		MoodleUser user = new MoodleUser();
-		user.setFullName(txtUsername.getText()); //because we have not a fullname of the user in offline mode
+		user.setFullName(txtUsername.getText()); // because we have not a fullname of the user in offline mode
 		controller.setUser(user);
 		onSuccessLogin();
-		findCacheCourses(user);
 		
-		
+		List<Course> courses = findCacheCourses();
+		if (courses.isEmpty()) {
+			throw new IllegalArgumentException(I18n.get("error.nocacheavaible"));
+		}
+		user.getCourses().addAll(courses);
+
 	}
 
 	private void onlineMode() {
@@ -243,7 +257,9 @@ public class LoginController implements Initializable {
 
 		loginTask.setOnSucceeded(s -> {
 			onSuccessLogin();
-
+			if (!controller.getDirectoryCache().toFile().exists()) {
+				controller.getDirectoryCache().toFile().mkdirs();
+			}
 			changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController());
 		});
 
@@ -263,9 +279,7 @@ public class LoginController implements Initializable {
 		controller.getStage().getScene().setCursor(Cursor.DEFAULT);
 		controller.setLoggedIn(LocalDateTime.now());
 		controller.setDirectoryCache();
-		if (!controller.getDirectoryCache().toFile().exists()) {
-			controller.getDirectoryCache().toFile().mkdirs();
-		}
+		
 		controller.setOfflineMode(chkOfflineMode.isSelected());
 	}
 
@@ -350,7 +364,5 @@ public class LoginController implements Initializable {
 		txtPassword.setText("");
 		txtHost.setText("");
 	}
-	
-	
 
 }

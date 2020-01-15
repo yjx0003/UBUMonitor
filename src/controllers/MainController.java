@@ -53,6 +53,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
@@ -226,6 +227,9 @@ public class MainController implements Initializable {
 
 	@FXML
 	private ProgressBar progressBar;
+	
+	@FXML
+	private MenuItem updateCourse;
 
 	private Stats stats;
 
@@ -240,7 +244,7 @@ public class MainController implements Initializable {
 
 		try {
 			LOGGER.info("Completada la carga del curso {}", controller.getActualCourse().getFullName());
-
+			updateCourse.setDisable(controller.isOfflineMode());
 			stats = controller.getStats();
 			initTabPaneWebView();
 			initLogOptionsFilter();
@@ -1134,7 +1138,11 @@ public class MainController implements Initializable {
 	 * @param actionEvent El ActionEvent.
 	 */
 	public void updateCourse(ActionEvent actionEvent) {
-		changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController(true));
+		if(controller.isOfflineMode()) {
+			errorWindow(I18n.get("error.updateofflinemode"), false);
+		}else {
+			changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController(true));
+		}
 	}
 
 	/**
@@ -1162,7 +1170,12 @@ public class MainController implements Initializable {
 	 */
 	public void changeCourse(ActionEvent actionEvent) {
 		LOGGER.info("Cambiando de asignatura...");
-		changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController());
+		if(controller.isOfflineMode()) {
+			changeScene(getClass().getResource("/view/WelcomeOffline.fxml"), new WelcomeOfflineController());
+		}else {
+			changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController());
+		}
+		
 
 	}
 

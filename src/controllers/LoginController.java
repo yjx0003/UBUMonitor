@@ -84,7 +84,7 @@ public class LoginController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		
 		txtHost.textProperty().addListener(
 				(observable, oldValue, newValue) -> insecureProtocol.setVisible(newValue.startsWith("http://")));
 
@@ -263,6 +263,9 @@ public class LoginController implements Initializable {
 		controller.getStage().getScene().setCursor(Cursor.DEFAULT);
 		controller.setLoggedIn(LocalDateTime.now());
 		controller.setDirectoryCache();
+		if (!controller.getDirectoryCache().toFile().exists()) {
+			controller.getDirectoryCache().toFile().mkdirs();
+		}
 		controller.setOfflineMode(chkOfflineMode.isSelected());
 	}
 

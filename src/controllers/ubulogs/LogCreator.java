@@ -208,14 +208,14 @@ public class LogCreator {
 		if (component == Component.COMPONENT_NOT_AVAILABLE) {
 			NOT_AVAIBLE_COMPONENTS.add(mapLog.get(LogCreator.COMPONENT));
 			LOGGER.warn("Registro sin clasificar, Componente no disponible:[{}] con el Evento  [{}] y con descripción [{}]", mapLog.get(LogCreator.COMPONENT), mapLog.get(LogCreator.EVENT_NAME), mapLog.get(LogCreator.DESCRIPTION));
-			return log;
+			
 		}
 
 		Event event = Event.get(mapLog.get(LogCreator.EVENT_NAME));
 		if (event == Event.EVENT_NOT_AVAILABLE) {
 			NOT_AVAIBLE_EVENTS.add(mapLog.get(LogCreator.EVENT_NAME));
 			LOGGER.warn("Registro sin clasificar, Nombre de evento no disponible:[{}] con el Componente [{}] y con descripción [{}]", mapLog.get(LogCreator.EVENT_NAME), mapLog.get(LogCreator.COMPONENT), mapLog.get(LogCreator.DESCRIPTION));
-			return log;
+			
 		}
 
 		log.setComponent(component);

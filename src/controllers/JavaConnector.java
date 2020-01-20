@@ -17,11 +17,9 @@ import controllers.charts.CalificationBar;
 import controllers.charts.Chart;
 import controllers.charts.ChartType;
 import controllers.charts.CumLine;
-import controllers.charts.GeneralBoxPlot;
-import controllers.charts.GeneralViolin;
 import controllers.charts.GradeReportTable;
-import controllers.charts.GroupBoxPlot;
-import controllers.charts.GroupViolin;
+import controllers.charts.BoxPlot;
+import controllers.charts.Violin;
 import controllers.charts.Heatmap;
 import controllers.charts.Line;
 import controllers.charts.MeanDiff;
@@ -70,10 +68,10 @@ public class JavaConnector {
 		addChart(new Stackedbar(mainController));
 		addChart(new Line(mainController));
 		addChart(new Radar(mainController));
-		addChart(new GeneralBoxPlot(mainController));
-		addChart(new GroupBoxPlot(mainController));
-		addChart(new GeneralViolin(mainController));
-		addChart(new GroupViolin(mainController));
+
+		addChart(new BoxPlot(mainController));
+
+		addChart(new Violin(mainController));
 		addChart(new GradeReportTable(mainController));
 		addChart(new CumLine(mainController));
 		addChart(new MeanDiff(mainController));
@@ -111,20 +109,19 @@ public class JavaConnector {
 		if (webViewChartsEngine.getLoadWorker().getState() != State.SUCCEEDED) {
 			return;
 		}
-		
+
 		currentType.update();
 
 	}
+
 	public void updateChartFromJS() {
 		updateChart();
 	}
 
 	public void updateMaxY(long max) {
-		if(tabLogs.isSelected()) {
-			webViewChartsEngine
-			.executeScript("changeYMax(" + max + "," + currentType.isUseNegativeValues() + ")");
+		if (tabLogs.isSelected()) {
+			webViewChartsEngine.executeScript("changeYMax(" + max + "," + currentType.isUseNegativeValues() + ")");
 		}
-		
 
 	}
 

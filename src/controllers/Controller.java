@@ -54,6 +54,8 @@ public class Controller {
 
 	private Map<String, String> cookies;
 	private boolean offlineMode;
+	
+	private MainConfiguration mainConfiguration;
 
 	/**
 	 * Usuario actual.
@@ -389,6 +391,19 @@ public class Controller {
 	 */
 	public void setOfflineMode(boolean offlineMode) {
 		this.offlineMode = offlineMode;
+	}
+
+	
+
+	public MainConfiguration getMainConfiguration() {
+		return this.mainConfiguration;
+	}
+
+	/**
+	 * @param mainConfiguration the mainConfiguration to set
+	 */
+	public void setMainConfiguration(MainConfiguration mainConfiguration) {
+		this.mainConfiguration = mainConfiguration;
 	}
 
 

@@ -57,7 +57,7 @@ import model.Course;
 import model.CourseCategory;
 import model.DataBase;
 import model.Logs;
-import persistence.Encryption;
+import persistence.Serialization;
 import util.UtilMethods;
 
 /**
@@ -330,7 +330,7 @@ public class WelcomeController implements Initializable {
 			f.mkdirs();
 		}
 		LOGGER.info("Guardando los datos encriptados en: {}", f.getAbsolutePath());
-		Encryption.encrypt(controller.getPassword(), cacheFilePath.toString(), controller.getDataBase());
+		Serialization.encrypt(controller.getPassword(), cacheFilePath.toString(), controller.getDataBase());
 
 	}
 
@@ -339,7 +339,7 @@ public class WelcomeController implements Initializable {
 		DataBase dataBase;
 		try {
 
-			dataBase = (DataBase) Encryption.decrypt(password, cacheFilePath.toString());
+			dataBase = (DataBase) Serialization.decrypt(password, cacheFilePath.toString());
 			copyDataBase(dataBase, getSelectedCourse());
 			controller.setDataBase(dataBase);
 			isBBDDLoaded = true;

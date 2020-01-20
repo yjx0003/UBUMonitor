@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -89,7 +90,7 @@ public class LoginController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		txtHost.textProperty().addListener(
-				(observable, oldValue, newValue) -> insecureProtocol.setVisible(newValue.startsWith("http://")));
+				(observable, oldValue, newValue) -> insecureProtocol.setVisible(Optional.ofNullable(newValue).orElse("").startsWith("http://")));
 
 		try {
 			initializeProperties();
@@ -98,7 +99,7 @@ public class LoginController implements Initializable {
 		}
 
 		Platform.runLater(() -> {
-			if (txtUsername != null && !txtUsername.getText().isEmpty()) {
+			if (Optional.ofNullable(txtUsername.getText()).orElse("").isEmpty()) {
 				txtPassword.requestFocus(); // si hay texto cargado del usuario cambiamos el focus al texto de
 											// password
 			}

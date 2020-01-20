@@ -28,6 +28,16 @@ public class LastActivityFactory {
 		}
 		return Color.BLACK;
 	}
+	
+	public static LastActivity getActivity(Temporal startInclusive, Temporal endInclusive) {
+		long days = Duration.between(startInclusive, endInclusive).toDays();
+		for (LastActivity lastActivity : SPAN_TIME) {
+			if (days < lastActivity.getLimitDaysConnection()) {
+				return lastActivity;
+			}
+		}
+		throw new IllegalArgumentException();
+	}
 
 	public static Set<LastActivity> getAllLastActivity() {
 		return SPAN_TIME;

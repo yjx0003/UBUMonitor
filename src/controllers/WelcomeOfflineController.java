@@ -47,7 +47,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Course;
 import model.DataBase;
-import persistence.Encryption;
+import persistence.Serialization;
 import util.UtilMethods;
 
 /**
@@ -240,7 +240,7 @@ public class WelcomeOfflineController implements Initializable {
 		DataBase dataBase;
 		try {
 
-			dataBase = (DataBase) Encryption.decrypt(password, cacheFilePath.toString());
+			dataBase = (DataBase) Serialization.decrypt(password, cacheFilePath.toString());
 			controller.setDataBase(dataBase);
 			isBBDDLoaded = true;
 		} catch (IllegalBlockSizeException | BadPaddingException e) {

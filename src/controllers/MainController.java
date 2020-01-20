@@ -24,6 +24,7 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.controlsfx.control.CheckComboBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,13 +127,13 @@ public class MainController implements Initializable {
 	FilteredList<EnrolledUser> filteredEnrolledList;
 
 	@FXML
-	private ChoiceBox<Role> slcRole;
+	private CheckComboBox<Role> checkComboBoxRole;
 
 	@FXML
-	private ChoiceBox<Group> slcGroup;
+	private CheckComboBox<Group> checkComboBoxGroup;
 
 	@FXML
-	private ChoiceBox<LastActivity> slcActivity;
+	private CheckComboBox<LastActivity> checkComboBoxActivity;
 
 	@FXML
 	private TextField tfdParticipants;
@@ -155,7 +156,7 @@ public class MainController implements Initializable {
 
 	@FXML
 	private TabPane tabPane;
-	
+
 	@FXML
 	private TabPane tabPaneUbuLogs;
 
@@ -220,6 +221,9 @@ public class MainController implements Initializable {
 	private ChoiceBox<GroupByAbstract<?>> choiceBoxDate;
 
 	@FXML
+	private GridPane dateGridPane;
+
+	@FXML
 	private DatePicker datePickerStart;
 
 	@FXML
@@ -227,7 +231,7 @@ public class MainController implements Initializable {
 
 	@FXML
 	private ProgressBar progressBar;
-	
+
 	@FXML
 	private MenuItem updateCourse;
 
@@ -284,7 +288,7 @@ public class MainController implements Initializable {
 
 		WebConsoleListener.setDefaultListener((webView, message, lineNumber, sourceId) -> {
 			LOGGER.error("{} [{} at {}] ", message, sourceId, lineNumber);
-			//errorWindow(message + "[" + sourceId + " at " + lineNumber, false);
+			// errorWindow(message + "[" + sourceId + " at " + lineNumber, false);
 		});
 		// Comprobamos cuando se carga la pagina para traducirla
 		webViewChartsEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
@@ -359,67 +363,21 @@ public class MainController implements Initializable {
 		tfdParticipants.setOnAction(event -> filterParticipants());
 		initEnrolledUsersListView();
 
-		ObservableList<Group> observableListGroups = FXCollections.observableArrayList();
-		observableListGroups.add(null); // opción por si no se filtra por grupo
-		observableListGroups.addAll(controller.getActualCourse().getGroups());
+		checkComboBoxGroup.getItems().addAll(controller.getActualCourse().getGroups());
+		checkComboBoxGroup.getCheckModel().getCheckedItems()
+				.addListener((Change<? extends Group> g) -> filterParticipants());
 
-		slcGroup.setItems(observableListGroups);
-		slcGroup.getSelectionModel().selectFirst(); // seleccionamos el nulo
-		slcGroup.valueProperty().addListener((ov, oldValue, newValue) -> filterParticipants());
+		checkComboBoxRole.getItems().addAll(controller.getActualCourse().getRoles());
+		checkComboBoxRole.getCheckModel().check(controller.getActualCourse().getStudentRole());
+		checkComboBoxRole.getCheckModel().getCheckedItems()
+				.addListener((Change<? extends Role> r) -> filterParticipants());
 
-		slcGroup.setConverter(new StringConverter<Group>() {
-			@Override
-			public Group fromString(String typeTimes) {
-				return null;// no se va a usar en un choiceBox.
-			}
+		checkComboBoxActivity.getItems().addAll(LastActivityFactory.getAllLastActivity());
+		checkComboBoxActivity.getCheckModel().checkAll();
+		checkComboBoxActivity.getCheckModel().getCheckedItems()
+				.addListener((Change<? extends LastActivity> l) -> filterParticipants());
 
-			@Override
-			public String toString(Group group) {
-				if (group == null) {
-					return I18n.get(ALL);
-				}
-				return group.getGroupName();
-			}
-		});
-
-		ObservableList<Role> observableListRoles = FXCollections.observableArrayList();
-		observableListRoles.add(null); // opción por si no se filtra por grupo
-		observableListRoles.addAll(controller.getActualCourse().getRoles());
-
-		slcRole.setItems(observableListRoles);
-
-		slcRole.valueProperty().addListener((ov, oldValue, newValue) -> filterParticipants());
-
-		Role studentRole = controller.getActualCourse().getStudentRole();
-		if (studentRole == null) {
-			slcRole.getSelectionModel().selectFirst(); // seleccionamos el nulo
-		} else {
-			slcRole.getSelectionModel().select(studentRole);
-		}
-
-		slcRole.setConverter(new StringConverter<Role>() {
-			@Override
-			public Role fromString(String role) {
-				return null;// no se va a usar en un choiceBox.
-			}
-
-			@Override
-			public String toString(Role role) {
-				if (role == null) {
-					return I18n.get(ALL);
-				}
-				return role.getRoleName().isEmpty() ? role.getRoleShortName() : role.getRoleName();
-			}
-		});
-
-		ObservableList<LastActivity> observableListActivity = FXCollections.observableArrayList();
-		observableListActivity.add(null);
-		observableListActivity.addAll(LastActivityFactory.getAllLastActivity());
-		slcActivity.setItems(observableListActivity);
-		slcActivity.getSelectionModel().selectFirst(); // seleccionamos el nulo
-		slcActivity.valueProperty().addListener((ov, oldValue, newValue) -> filterParticipants());
-
-		slcActivity.setConverter(new StringConverter<LastActivity>() {
+		checkComboBoxActivity.setConverter(new StringConverter<LastActivity>() {
 			@Override
 			public LastActivity fromString(String role) {
 				return null;// no se va a usar en un choiceBox.
@@ -427,14 +385,12 @@ public class MainController implements Initializable {
 
 			@Override
 			public String toString(LastActivity lastActivity) {
-				if (lastActivity == null) {
-					return I18n.get(ALL);
-				}
 				return MessageFormat.format(I18n.get("text.betweendates"), lastActivity.getPreviusDays(),
 						lastActivity.getLimitDaysConnection() == Integer.MAX_VALUE ? "∞"
 								: lastActivity.getLimitDaysConnection() - 1);
 			}
 		});
+		filterParticipants();
 	}
 
 	/**
@@ -559,8 +515,7 @@ public class MainController implements Initializable {
 		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> {
 			applyFilterLogs();
 			boolean useDatePicker = newValue.useDatePicker();
-			datePickerStart.setDisable(!useDatePicker);
-			datePickerEnd.setDisable(!useDatePicker);
+			dateGridPane.setVisible(useDatePicker);
 
 		});
 
@@ -890,7 +845,7 @@ public class MainController implements Initializable {
 			filterCourseModules.setPredicate(getCourseModulePredicate());
 			listViewCourseModule.setCellFactory(getListCellCourseModule());
 		});
-		
+
 		checkBoxActivityCompleted.selectedProperty().addListener(c -> {
 			filterCourseModules.setPredicate(getCourseModulePredicate());
 			listViewCourseModule.setCellFactory(getListCellCourseModule());
@@ -999,21 +954,39 @@ public class MainController implements Initializable {
 	 * Filtra los participantes según el rol, el grupo y el patrón indicados
 	 */
 	public void filterParticipants() {
-
-		Role rol = slcRole.getValue();
-		Group group = slcGroup.getValue();
-		LastActivity lastActivity = slcActivity.getValue();
+		List<Role> rol = checkComboBoxRole.getCheckModel().getCheckedItems();
+		List<Group> group = checkComboBoxGroup.getCheckModel().getCheckedItems();
+		List<LastActivity> lastActivity = checkComboBoxActivity.getCheckModel().getCheckedItems();
 		String textField = tfdParticipants.getText().toLowerCase();
 		Instant lastLogInstant = controller.getActualCourse().getLogs().getLastDatetime().toInstant();
-		filteredEnrolledList.setPredicate(e -> (rol == null || rol.contains(e)) && (group == null || group.contains(e))
+		filteredEnrolledList.setPredicate(e -> (checkUserHasRole(rol, e)) && (checkUserHasGroup(group, e))
 				&& (textField.isEmpty() || e.getFullName().toLowerCase().contains(textField))
-				&& (lastActivity == null || LastActivityFactory.getColorActivity(e.getLastcourseaccess(),
-						lastLogInstant) == lastActivity.getColor()));
+				&& (lastActivity.contains(LastActivityFactory.getActivity(e.getLastcourseaccess(), lastLogInstant))));
 		// Mostramos nº participantes
 		lblCountParticipants.setText(I18n.get("label.participants") + filteredEnrolledList.size());
 		javaConnector.updateChart();
 
 		findMax();
+	}
+
+	private boolean checkUserHasGroup(List<Group> groups, EnrolledUser user) {
+		if (groups.isEmpty())
+			return true;
+		for (Group group : groups) {
+			if (group.contains(user)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean checkUserHasRole(List<Role> roles, EnrolledUser user) {
+		for (Role rol : roles) {
+			if (rol.contains(user)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -1138,9 +1111,9 @@ public class MainController implements Initializable {
 	 * @param actionEvent El ActionEvent.
 	 */
 	public void updateCourse(ActionEvent actionEvent) {
-		if(controller.isOfflineMode()) {
+		if (controller.isOfflineMode()) {
 			errorWindow(I18n.get("error.updateofflinemode"), false);
-		}else {
+		} else {
 			changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController(true));
 		}
 	}
@@ -1170,12 +1143,11 @@ public class MainController implements Initializable {
 	 */
 	public void changeCourse(ActionEvent actionEvent) {
 		LOGGER.info("Cambiando de asignatura...");
-		if(controller.isOfflineMode()) {
+		if (controller.isOfflineMode()) {
 			changeScene(getClass().getResource("/view/WelcomeOffline.fxml"), new WelcomeOfflineController());
-		}else {
+		} else {
 			changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController());
 		}
-		
 
 	}
 
@@ -1234,6 +1206,34 @@ public class MainController implements Initializable {
 		listViewEvents.getSelectionModel().clearSelection();
 		listViewSection.getSelectionModel().clearSelection();
 		listViewCourseModule.getSelectionModel().clearSelection();
+	}
+
+	public void changeConfiguration(ActionEvent actionEvent) {
+		controller.setMainConfiguration(new MainConfiguration());
+
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Configuration.fxml"),
+				I18n.getResourceBundle());
+
+		Scene newScene;
+		try {
+			newScene = new Scene(loader.load());
+		} catch (IOException ex) {
+			LOGGER.error("Error", ex);
+			return;
+		}
+
+		ConfigurationController configurationController = loader.getController();
+		Stage stage = new Stage();
+		configurationController.setStage(stage);
+		stage.setScene(newScene);
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.initOwner(Controller.getInstance().getStage());
+
+		stage.getIcons().add(new Image("/img/logo_min.png"));
+		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
+
+		stage.showAndWait();
+
 	}
 
 	/**
@@ -1352,18 +1352,6 @@ public class MainController implements Initializable {
 
 	public FilteredList<EnrolledUser> getFilteredEnrolledList() {
 		return filteredEnrolledList;
-	}
-
-	public ChoiceBox<Role> getSlcRole() {
-		return slcRole;
-	}
-
-	public ChoiceBox<Group> getSlcGroup() {
-		return slcGroup;
-	}
-
-	public ChoiceBox<LastActivity> getSlcActivity() {
-		return slcActivity;
 	}
 
 	public TextField getTfdParticipants() {
@@ -1504,6 +1492,30 @@ public class MainController implements Initializable {
 
 	public void setTabPaneUbuLogs(TabPane tabPaneUbuLogs) {
 		this.tabPaneUbuLogs = tabPaneUbuLogs;
+	}
+
+	public CheckComboBox<Role> getCheckComboBoxRole() {
+		return checkComboBoxRole;
+	}
+
+	public void setCheckComboBoxRole(CheckComboBox<Role> checkComboBoxRole) {
+		this.checkComboBoxRole = checkComboBoxRole;
+	}
+
+	public CheckComboBox<Group> getCheckComboBoxGroup() {
+		return checkComboBoxGroup;
+	}
+
+	public void setCheckComboBoxGroup(CheckComboBox<Group> checkComboBoxGroup) {
+		this.checkComboBoxGroup = checkComboBoxGroup;
+	}
+
+	public CheckComboBox<LastActivity> getCheckComboBoxActivity() {
+		return checkComboBoxActivity;
+	}
+
+	public void setCheckComboBoxActivity(CheckComboBox<LastActivity> checkComboBoxActivity) {
+		this.checkComboBoxActivity = checkComboBoxActivity;
 	}
 
 }

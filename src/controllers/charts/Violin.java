@@ -8,12 +8,13 @@ import controllers.I18n;
 import controllers.MainController;
 import model.EnrolledUser;
 import model.GradeItem;
+import model.Group;
 import util.UtilMethods;
 
-public class GeneralViolin extends ChartjsGradeItem {
+public class Violin extends ChartjsGradeItem {
 
-	public GeneralViolin(MainController mainController) {
-		super(mainController, ChartType.GENERAL_VIOLIN);
+	public Violin(MainController mainController) {
+		super(mainController, ChartType.VIOLIN);
 		useGeneralButton = true;
 		useGroupButton = true;
 		optionsVar = "violinOptions";
@@ -34,9 +35,14 @@ public class GeneralViolin extends ChartjsGradeItem {
 			createData(Controller.getInstance().getActualCourse().getEnrolledUsers(), selectedGradeItems, stringBuilder,
 					I18n.get("text.all"), !Buttons.getInstance().getShowMean());
 		}
-		if (useGroupButton && slcGroup.getValue() != null) {
-			createData(slcGroup.getValue().getEnrolledUsers(), selectedGradeItems, stringBuilder,
-					slcGroup.getValue().getGroupName(), !Buttons.getInstance().getShowGroupMean());
+		if (useGroupButton) {
+			for (Group group :  slcGroup.getCheckModel().getCheckedItems()) {
+				if (group != null) {
+					createData(group.getEnrolledUsers(), selectedGradeItems, stringBuilder, group.getGroupName(),
+							!Buttons.getInstance().getShowGroupMean());
+				}
+
+			}
 
 		}
 
@@ -84,5 +90,4 @@ public class GeneralViolin extends ChartjsGradeItem {
 	public int onClick(int index) {
 		return -1; // do nothing at the moment
 	}
-
 }

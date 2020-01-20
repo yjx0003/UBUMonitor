@@ -29,10 +29,10 @@ import org.slf4j.LoggerFactory;
  * @author Yi Peng Ji
  *
  */
-public class Encryption {
-	private static final Logger LOGGER = LoggerFactory.getLogger(Encryption.class);
+public class Serialization {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Serialization.class);
 
-	private Encryption() {
+	private Serialization() {
 
 	}
 
@@ -99,6 +99,37 @@ public class Encryption {
 		try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(ruta))) {
 			SealedObject sealedObject = new SealedObject(object, cipher);
 			outputStream.writeObject(sealedObject);
+			LOGGER.info("Encriptación correcta en {}", ruta);
+
+		} catch (Exception e) {
+			LOGGER.error("Problemas al guardar con los outputStream el objeto {}", e);
+		}
+
+	}
+	
+	public static Object deserialize(String ruta) throws ClassNotFoundException, IllegalBlockSizeException, BadPaddingException, InvalidClassException {
+		
+		LOGGER.info("Intentando descifrar el fichero: {}",ruta);
+		try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(ruta))) {
+
+			
+			return inputStream.readObject();
+
+		} catch (InvalidClassException e) {
+			throw e;
+		} catch (IOException e) {
+			throw new IllegalStateException("No se ha podido abrir el fichero al intentar descifrar",e);
+		}
+	}
+	
+	public static <T extends Serializable> void serialize(String ruta, T object) {
+		LOGGER.info("Intendado encriptar fichero: {}", ruta);
+
+		
+
+		try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(ruta))) {
+			
+			outputStream.writeObject(object);
 			LOGGER.info("Encriptación correcta en {}", ruta);
 
 		} catch (Exception e) {

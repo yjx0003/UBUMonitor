@@ -13,6 +13,7 @@ import controllers.MainController;
 import model.EnrolledUser;
 import model.GradeItem;
 import model.Group;
+import util.UtilMethods;
 
 public class GradeReportTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GradeReportTable.class);
@@ -88,7 +89,7 @@ public class GradeReportTable extends Tabulator {
 		if (useGroupButton && Buttons.getInstance().getShowGroupMean()) {
 			for (Group group : slcGroup.getItems()) {
 				if (group != null) {
-					array.add(addStats(gradeItems, I18n.get("chart.mean") + " " + group.getGroupName(),
+					array.add(addStats(gradeItems, UtilMethods.escapeJavaScriptText(I18n.get("chart.mean")) + " " + group.getGroupName(),
 							stats.getGroupStats(group)));
 
 				}

@@ -8,6 +8,8 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import org.controlsfx.control.CheckComboBox;
+
 import controllers.MainController;
 import controllers.ubulogs.GroupByAbstract;
 import javafx.scene.control.ChoiceBox;
@@ -30,7 +32,7 @@ import util.UtilMethods;
 
 public abstract class Chart {
 	protected WebEngine webViewChartsEngine;
-	protected ChoiceBox<Group> slcGroup;
+	protected CheckComboBox<Group> slcGroup;
 	protected ListView<EnrolledUser> listParticipants;
 	protected TabPane tabPaneUbuLogs;
 	protected Tab tabUbuLogs;
@@ -60,7 +62,7 @@ public abstract class Chart {
 	public Chart(MainController mainController, ChartType chartType) {
 
 		this.webViewChartsEngine = mainController.getWebViewChartsEngine();
-		this.slcGroup = mainController.getSlcGroup();
+		this.slcGroup = mainController.getCheckComboBoxGroup();
 		this.listParticipants = mainController.getListParticipants();
 		this.tabUbuLogs = mainController.getTabUbuLogs();
 		this.tabUbuLogsComponent = mainController.getTabUbuLogsComponent();

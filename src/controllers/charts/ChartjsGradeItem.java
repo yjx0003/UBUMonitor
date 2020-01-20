@@ -11,6 +11,7 @@ import controllers.I18n;
 import controllers.MainController;
 import model.EnrolledUser;
 import model.GradeItem;
+import model.Group;
 import util.UtilMethods;
 
 public abstract class ChartjsGradeItem extends Chartjs {
@@ -57,21 +58,26 @@ public abstract class ChartjsGradeItem extends Chartjs {
 			stringBuilder.append("]},");
 		}
 
-		if (useGroupButton && slcGroup.getValue() != null) {
-			stringBuilder
-					.append("{label:'" + UtilMethods.escapeJavaScriptText(I18n.get("chartlabel.groupMean")) + "',");
-			stringBuilder.append("borderColor:" + hex(I18n.get("chartlabel.groupMean")) + ",");
-			stringBuilder.append("backgroundColor:" + rgba(I18n.get("chartlabel.groupMean"), OPACITY) + ",");
-			stringBuilder.append("hidden: " + !Buttons.getInstance().getShowGroupMean() + ",");
-			stringBuilder.append(
-					"borderDash:[" + Buttons.getInstance().getLength() + "," + Buttons.getInstance().getSpace() + "],");
-			stringBuilder.append("data:[");
-			Map<GradeItem, DescriptiveStatistics> descriptiveStats = stats.getGroupStats(slcGroup.getValue());
-			for (GradeItem gradeItem : selectedGradeItems) {
-				double grade = descriptiveStats.get(gradeItem).getMean();
-				stringBuilder.append(adjustTo10(grade) + ",");
+		if (useGroupButton) {
+			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
+				if (group == null)
+					continue;
+				stringBuilder.append("{label:'" + UtilMethods
+						.escapeJavaScriptText(I18n.get("chart.mean") + " " + group.getGroupName()) + "',");
+				stringBuilder.append("borderColor:" + hex(group.getGroupId()) + ",");
+				stringBuilder.append("backgroundColor:" + rgba(group.getGroupId(), OPACITY) + ",");
+				stringBuilder.append("hidden: " + !Buttons.getInstance().getShowGroupMean() + ",");
+				stringBuilder.append("borderDash:[" + Buttons.getInstance().getLength() + ","
+						+ Buttons.getInstance().getSpace() + "],");
+				stringBuilder.append("data:[");
+				Map<GradeItem, DescriptiveStatistics> descriptiveStats = stats.getGroupStats(group);
+				for (GradeItem gradeItem : selectedGradeItems) {
+					double grade = descriptiveStats.get(gradeItem).getMean();
+					stringBuilder.append(adjustTo10(grade) + ",");
+				}
+				stringBuilder.append("]}");
 			}
-			stringBuilder.append("]}");
+
 		}
 
 		stringBuilder.append("]}");

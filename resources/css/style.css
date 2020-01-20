@@ -74,15 +74,15 @@
 	-fx-font-size: 15.0px;
 }
 
-.list-cell:hover {
+.list-view .list-cell:hover {
   -fx-background-color:#cdfafa;
 }
 
-.list-cell:selected {
+.list-view .list-cell:selected {
   -fx-background-color: #6ff9ff;
 }
 
-.list-view-class .list-cell:focused {
+.list-view-class .list-view .list-cell:focused {
   -fx-background-color: #6fe2ff;
 }
 
@@ -178,6 +178,6 @@
 	-fx-font-weight: bold;
 }
 
-.list-cell:disabled {
+.list-view .list-cell:disabled {
     -fx-opacity: 1.0;
 }

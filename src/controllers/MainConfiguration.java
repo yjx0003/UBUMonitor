@@ -1,40 +1,50 @@
 package controllers;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.controlsfx.control.PropertySheet;
 
+import controllers.charts.ChartType;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.paint.Color;
 
-public class MainConfiguration implements Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private Map<String, Object> map = new LinkedHashMap<>();
+public class MainConfiguration {
+	private Map<String, Object> map = new HashMap<>();
 	private List<CustomPropertyItem> properties = new ArrayList<>();
+	private List<String> categoriesOrder = new ArrayList<>();
 
 	public MainConfiguration() {
-		createItem("basic", "My Text", "Same text"); // Creates a TextField in property sheet
-		createItem("basic", "My Date", LocalDate.of(2016, Month.JANUARY, 1)); // Creates a DatePicker
-		createItem("misc", "My Boolean", false); // Creates a CheckBox
-		createItem("misc", "My Number", 500); // Creates a NumericField
-		createItem("misc", "My Color", Color.ALICEBLUE); // Creates a ColorPicker
+		createItem("General", "Cutoff", 5.0);
+		createItem(ChartType.HEAT_MAP, "Calculate max", false);
+		createItem(ChartType.HEAT_MAP, "Zero Value", Color.web("#f78880")); // Creates a CheckBox
+		createItem(ChartType.HEAT_MAP, "First Interval", Color.web("#f4e3ae"));
+		createItem(ChartType.HEAT_MAP, "Second Interval", Color.web("#fff033"));
+		createItem(ChartType.HEAT_MAP, "Third Interval", Color.web("#b5ff33"));
+		createItem(ChartType.HEAT_MAP, "Fourth Interval", Color.web("#38e330"));
+		createItem(ChartType.HEAT_MAP, "More than max", Color.web("#67b92e"));
+		createItem(ChartType.BOXPLOT, "Horizontal mode", false);
+		
+		createItem(ChartType.VIOLIN, "Horizontal mode", false);
+		
 	}
 
 	private void createItem(String category, String name, Object value) {
 		String key = category + "." + name;
+		if (!categoriesOrder.contains(category)) {
+			categoriesOrder.add(category);
+		}
 		properties.add(new CustomPropertyItem(key, category, name));
 		map.put(key, value);
+
+	}
+
+	private void createItem(ChartType category, String name, Object value) {
+		createItem(I18n.get(category), name, value);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -47,7 +57,7 @@ public class MainConfiguration implements Serializable {
 		return properties;
 	}
 
-	private class CustomPropertyItem implements PropertySheet.Item, Serializable{
+	private class CustomPropertyItem implements PropertySheet.Item, Serializable {
 
 		private static final long serialVersionUID = 1L;
 		private String key;
@@ -66,7 +76,7 @@ public class MainConfiguration implements Serializable {
 
 		@Override
 		public String getCategory() {
-			return category;
+			return categoriesOrder.indexOf(category) + 1 + ". " + category;
 		}
 
 		@Override

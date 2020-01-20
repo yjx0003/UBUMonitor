@@ -22,23 +22,24 @@
 
 <div id="all_tabs" class="controles">
     <div class="pestañas" id="grade_tabs">
-        <input type="button" class="btn" id="btnLine" onclick='javaConnector.updateCharts("LINE");' />
-        <input type="button" class="btn" id="btnRadar" onclick='javaConnector.updateCharts("RADAR");' />
-        <input type="button" class="btn" id="btnCalificationBar"
-            onclick='javaConnector.updateCharts("CALIFICATION_BAR");' />
-        <input type="button" class="btn" id="btnBoxPlot" onclick='javaConnector.updateCharts("GENERAL_BOXPLOT");' />
-        <input type="button" class="btn" id="btnBoxPlotGroup" onclick='javaConnector.updateCharts("GROUP_BOXPLOT");' />
-        <input type="button" class="btn" id="btnViolin" onclick='javaConnector.updateCharts("GENERAL_VIOLIN");' />
-        <input type="button" class="btn" id="btnViolinGroup" onclick='javaConnector.updateCharts("GROUP_VIOLIN");' />
-        <input type="button" class="btn" id="btnCalificaciones"
+        <input type="button" class="btn" id="LINE" onclick='javaConnector.updateCharts("LINE");' />
+        <input type="button" class="btn" id="RADAR" onclick='javaConnector.updateCharts("RADAR");' />
+        
+
+        <input type="button" class="btn" id="BOXPLOT" onclick='javaConnector.updateCharts("BOXPLOT");' />
+       
+        <input type="button" class="btn" id="VIOLIN" onclick='javaConnector.updateCharts("VIOLIN");' />
+        <input type="button" class="btn" id="GRADE_REPORT_TABLE"
             onclick='javaConnector.updateCharts("GRADE_REPORT_TABLE");' />
+        <input type="button" class="btn" id="CALIFICATION_BAR"
+            onclick='javaConnector.updateCharts("CALIFICATION_BAR");' />
     </div>
     <div class="pestañas" id="log_tabs">
-        <input type="button" class="btn" id="btnStackedBar" onclick='javaConnector.updateCharts("STACKED_BAR");' />
-        <input type="button" class="btn" id="btnHeatmap" onclick='javaConnector.updateCharts("HEAT_MAP");' />
-        <input type="button" class="btn" id="btnCumLine" onclick='javaConnector.updateCharts("CUM_LINE");' />
-        <input type="button" class="btn" id="btnMeanDiff" onclick='javaConnector.updateCharts("MEAN_DIFF");' />
-        <input type="button" class="btn" id="btnActivitiesTable"
+        <input type="button" class="btn" id="STACKED_BAR" onclick='javaConnector.updateCharts("STACKED_BAR");' />
+        <input type="button" class="btn" id="HEAT_MAP" onclick='javaConnector.updateCharts("HEAT_MAP");' />
+        <input type="button" class="btn" id="CUM_LINE" onclick='javaConnector.updateCharts("CUM_LINE");' />
+        <input type="button" class="btn" id="MEAN_DIFF" onclick='javaConnector.updateCharts("MEAN_DIFF");' />
+        <input type="button" class="btn" id="ACTIVITIES_TABLE"
             onclick='javaConnector.updateCharts("ACTIVITIES_TABLE");' />
     </div>
 
@@ -88,7 +89,7 @@
     var locale = 'en-UK';
     var stackedbarOptions = {
         tab: "log_tabs",
-        button: "btnStackedBar",
+        button: "STACKED_BAR",
         typeGraph: "bar",
 
         tooltips: {
@@ -138,7 +139,7 @@
 
     heatmapOptions = {
         tab: "log_tabs",
-        button: "btnHeatmap",
+        button: "HEAT_MAP",
         typeGraph: "heatmap",
 
 
@@ -227,7 +228,7 @@
 
     var cumLineOptions = {
         tab: "log_tabs",
-        button: "btnCumLine",
+        button: "CUM_LINE",
         typeGraph: "line",
         scales: {
             yAxes: [
@@ -252,7 +253,7 @@
 
     var meanDiffOptions = {
         tab: "log_tabs",
-        button: "btnMeanDiff",
+        button: "MEAN_DIFF",
         typeGraph: "line",
 
         scales: {
@@ -285,14 +286,14 @@
 
     var lineOptions = {
         tab: "grade_tabs",
-        button: "btnLine",
+        button: "LINE",
         typeGraph: "line",
 
     }
 
     var radarOptions = {
         tab: "grade_tabs",
-        button: "btnRadar",
+        button: "RADAR",
         typeGraph: "radar",
         scale: {
             gridLines: {
@@ -303,7 +304,7 @@
     } //options
     var boxplotOptions = {
         tab: "grade_tabs",
-        button: "btnBoxPlot",
+        button: "BOXPLOT",
         typeGraph: "boxplot",
 
         tooltipDecimals: 2
@@ -311,19 +312,12 @@
 
     }
 
-    var boxplotGroupOptions = {
-        tab: "grade_tabs",
-        button: "btnBoxPlotGroup",
-        typeGraph: "boxplot",
-
-        tooltipDecimals: 2,
-
-    }
+   
 
 
     var violinOptions = {
         tab: "grade_tabs",
-        button: "btnViolin",
+        button: "VIOLIN",
         typeGraph: "violin",
 
         tooltipDecimals: 2,
@@ -340,28 +334,11 @@
 
     }
 
-    var violinGroupOptions = {
-        tab: "grade_tabs",
-        button: "btnViolinGroup",
-        typeGraph: "violin",
-
-        tooltipDecimals: 2,
-        scales: {
-            yAxes: [
-                {
-                    ticks: {
-                        min: 0
-
-                    }
-                }
-            ]
-        }
-    }
 
 
     var calificationBarOptions = {
         tab: "grade_tabs",
-        button: "btnCalificationBar",
+        button: "CALIFICATION_BAR",
         typeGraph: "bar",
         scales: {
             xAxes: [{
@@ -407,7 +384,7 @@
     var gradeReportTableOptions = {
 
         tab: "grade_tabs",
-        button: "btnCalificaciones",
+        button: "GRADE_REPORT_TABLE",
         invalidOptionWarnings: false,
         height: height,
         groupBy: "type",
@@ -424,7 +401,7 @@
     var activitiesTableOptions = {
 
         tab: "log_tabs",
-        button: "btnActivitiesTable",
+        button: "ACTIVITIES_TABLE",
         invalidOptionWarnings: false,
         height: height,
         //placeholder: "No data",
@@ -745,7 +722,7 @@
 
     // Modifica el valor de los inputs segun el idioma pasado
     function getI18n(item) {
-        document.getElementById(item).value = javaConnector.getI18n("html." + item);
+        document.getElementById(item).value = javaConnector.getI18n(item);
     }
 
     // Establece el idioma

@@ -11,13 +11,13 @@ import model.GradeItem;
 import model.Group;
 import util.UtilMethods;
 
-public class GroupViolin extends ChartjsGradeItem {
+public class BoxPlot extends ChartjsGradeItem {
 
-	public GroupViolin(MainController mainController) {
-		super(mainController, ChartType.GROUP_VIOLIN);
+	public BoxPlot(MainController mainController) {
+		super(mainController, ChartType.BOXPLOT);
 		useGeneralButton = true;
 		useGroupButton = true;
-		optionsVar = "violinGroupOptions";
+		optionsVar = "boxplotOptions";
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class GroupViolin extends ChartjsGradeItem {
 					I18n.get("text.all"), !Buttons.getInstance().getShowMean());
 		}
 		if (useGroupButton) {
-			for (Group group : slcGroup.getItems()) {
+			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
 				if (group != null) {
 					createData(group.getEnrolledUsers(), selectedGradeItems, stringBuilder, group.getGroupName(),
 							!Buttons.getInstance().getShowGroupMean());
@@ -69,17 +69,10 @@ public class GroupViolin extends ChartjsGradeItem {
 
 		for (GradeItem gradeItem : selectedGradeItems) {
 			stringBuilder.append("[");
-			boolean hasNonNaN = false;
 			for (EnrolledUser user : selectedUser) {
 				double grade = gradeItem.getEnrolledUserPercentage(user);
-				if (!Double.isNaN(grade)) {
+				if (!Double.isNaN(grade))
 					stringBuilder.append(adjustTo10(grade) + ",");
-					hasNonNaN = true;
-				}
-			}
-
-			if (!hasNonNaN) {
-				stringBuilder.append(-1);
 			}
 			stringBuilder.append("],");
 		}
@@ -90,4 +83,5 @@ public class GroupViolin extends ChartjsGradeItem {
 	public int onClick(int index) {
 		return -1; // do nothing at the moment
 	}
+
 }

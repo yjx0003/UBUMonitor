@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -16,8 +19,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -30,7 +33,9 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.javafx.webkit.WebConsoleListener;
 
+import controllers.charts.Tabs;
 import controllers.ubulogs.GroupByAbstract;
+import export.CSVBuilderAbstract;
 import export.CSVExport;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
@@ -44,9 +49,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DateCell;
@@ -69,6 +71,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -87,6 +90,7 @@ import model.Role;
 import model.Section;
 import model.Stats;
 import netscape.javascript.JSObject;
+import util.UtilMethods;
 
 /**
  * Clase controlador de la ventana principal
@@ -212,6 +216,21 @@ public class MainController implements Initializable {
 	private CheckBox checkBoxActivityCompleted;
 
 	@FXML
+	private Tab tabActivity;
+
+	@FXML
+	private TextField activityTextField;
+
+	@FXML
+	private CheckBox checkBoxActivity;
+
+	@FXML
+	private ListView<CourseModule> listViewActivity;
+
+	@FXML
+	private ChoiceBox<ModuleType> choiceBoxActivity;
+
+	@FXML
 	private GridPane optionsUbuLogs;
 
 	@FXML
@@ -250,11 +269,24 @@ public class MainController implements Initializable {
 			LOGGER.info("Completada la carga del curso {}", controller.getActualCourse().getFullName());
 			updateCourse.setDisable(controller.isOfflineMode());
 			stats = controller.getStats();
+
+			controller.setMainConfiguration(new MainConfiguration(this));
+			if (controller.getConfiguration(controller.getActualCourse()).toFile().exists()) {
+				controller.getMainConfiguration()
+						.fromJson(new String(
+								Files.readAllBytes(controller.getConfiguration(controller.getActualCourse())),
+								StandardCharsets.UTF_8));
+
+			}
+
+			controller.getStage().setOnHidden(event -> onCloseStage());
+
 			initTabPaneWebView();
 			initLogOptionsFilter();
 
 			initTabGrades();
 			initTabLogs();
+			initTabActivityCompletion();
 
 			initEnrolledUsers();
 
@@ -364,20 +396,38 @@ public class MainController implements Initializable {
 		initEnrolledUsersListView();
 
 		checkComboBoxGroup.getItems().addAll(controller.getActualCourse().getGroups());
+		ObservableList<Group> groups = controller.getMainConfiguration().getValue("General", "initialGroups");
+		if (groups != null) {
+			groups.forEach(checkComboBoxGroup.getCheckModel()::check);
+		}
+
 		checkComboBoxGroup.getCheckModel().getCheckedItems()
 				.addListener((Change<? extends Group> g) -> filterParticipants());
 
 		checkComboBoxRole.getItems().addAll(controller.getActualCourse().getRoles());
-		checkComboBoxRole.getCheckModel().check(controller.getActualCourse().getStudentRole());
+		ObservableList<Role> roles = controller.getMainConfiguration().getValue("General", "initialRoles");
+		if (roles != null) {
+			roles.forEach(checkComboBoxRole.getCheckModel()::check);
+		}
 		checkComboBoxRole.getCheckModel().getCheckedItems()
 				.addListener((Change<? extends Role> r) -> filterParticipants());
 
 		checkComboBoxActivity.getItems().addAll(LastActivityFactory.getAllLastActivity());
-		checkComboBoxActivity.getCheckModel().checkAll();
+		ObservableList<LastActivity> lastActivities = controller.getMainConfiguration().getValue("General",
+				"initialLastActivity");
+		if (lastActivities != null) {
+			lastActivities.forEach(checkComboBoxActivity.getCheckModel()::check);
+		}
+
 		checkComboBoxActivity.getCheckModel().getCheckedItems()
 				.addListener((Change<? extends LastActivity> l) -> filterParticipants());
 
-		checkComboBoxActivity.setConverter(new StringConverter<LastActivity>() {
+		checkComboBoxActivity.setConverter(getActivityConverter());
+		filterParticipants();
+	}
+
+	public StringConverter<LastActivity> getActivityConverter() {
+		return new StringConverter<LastActivity>() {
 			@Override
 			public LastActivity fromString(String role) {
 				return null;// no se va a usar en un choiceBox.
@@ -389,8 +439,7 @@ public class MainController implements Initializable {
 						lastActivity.getLimitDaysConnection() == Integer.MAX_VALUE ? "∞"
 								: lastActivity.getLimitDaysConnection() - 1);
 			}
-		});
-		filterParticipants();
+		};
 	}
 
 	/**
@@ -565,16 +614,104 @@ public class MainController implements Initializable {
 	 * @param value valor de escala maxima
 	 */
 	private void updateMaxScale(long value) {
-		if (webViewChartsEngine.getLoadWorker().getState() == Worker.State.SUCCEEDED)
-			javaConnector.updateMaxY(value);
+		if (webViewChartsEngine.getLoadWorker().getState() == Worker.State.SUCCEEDED && textFieldMax.isFocused())
+			javaConnector.updateChart();
 
+	}
+
+	private void initTabActivityCompletion() {
+		tabActivity.setOnSelectionChanged(this::setTabActivityCompletion);
+
+		// cada vez que se seleccione nuevos elementos del list view actualizamos la
+		// grafica y la escala
+		listViewActivity.getSelectionModel().getSelectedItems()
+				.addListener((Change<? extends CourseModule> courseModule) -> {
+					javaConnector.updateChart();
+				});
+
+		listViewActivity.setCellFactory(getListCellCourseModule());
+
+		Set<CourseModule> courseModules = controller.getActualCourse().getModules();
+		Set<CourseModule> courseModuleWithActivityCompletion = new HashSet<>();
+		for (CourseModule courseModule : courseModules) {
+			if (!courseModule.getActivitiesCompletion().isEmpty()) {
+				courseModuleWithActivityCompletion.add(courseModule);
+			}
+		}
+
+		ObservableList<CourseModule> observableListComponents = FXCollections
+				.observableArrayList(courseModuleWithActivityCompletion);
+		FilteredList<CourseModule> filterCourseModules = new FilteredList<>(observableListComponents,
+				getActivityPredicade());
+		listViewActivity.setItems(filterCourseModules);
+		listViewActivity.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+		ObservableList<ModuleType> observableListModuleTypes = FXCollections.observableArrayList();
+		observableListModuleTypes.add(null); // opción por si no se filtra por grupo
+		observableListModuleTypes.addAll(controller.getActualCourse().getUniqueCourseModulesTypes());
+		observableListModuleTypes.sort(Comparator.nullsFirst(Comparator.comparing(I18n::get)));
+
+		choiceBoxActivity.setItems(observableListModuleTypes);
+		choiceBoxActivity.getSelectionModel().selectFirst(); // seleccionamos el nulo
+
+		choiceBoxActivity.setConverter(new StringConverter<ModuleType>() {
+			@Override
+			public ModuleType fromString(String moduleType) {
+				return null;// no se va a usar en un choiceBox.
+			}
+
+			@Override
+			public String toString(ModuleType moduleType) {
+				if (moduleType == null) {
+					return I18n.get(ALL);
+				}
+				return I18n.get(moduleType);
+			}
+		});
+
+		// ponemos un listener al cuadro de texto para que se filtre el list view en
+		// tiempo real
+		activityTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+			filterCourseModules.setPredicate(getActivityPredicade());
+			listViewActivity.setCellFactory(getListCellCourseModule());
+		});
+
+		checkBoxActivity.selectedProperty().addListener(c -> {
+			filterCourseModules.setPredicate(getActivityPredicade());
+			listViewActivity.setCellFactory(getListCellCourseModule());
+		});
+
+		choiceBoxActivity.valueProperty().addListener(c -> {
+			filterCourseModules.setPredicate(getActivityPredicade());
+			listViewActivity.setCellFactory(getListCellCourseModule());
+		});
+
+		checkBoxActivity.selectedProperty().addListener(c -> {
+			filterCourseModules.setPredicate(getActivityPredicade());
+			listViewActivity.setCellFactory(getListCellCourseModule());
+		});
+
+	}
+
+	private Predicate<? super CourseModule> getActivityPredicade() {
+		return cm -> containsTextField(activityTextField.getText(), cm.getModuleName())
+				&& (checkBoxActivity.isSelected() || cm.isVisible())
+				&& (choiceBoxActivity.getValue() == null || choiceBoxActivity.getValue() == cm.getModuleType());
+	}
+
+	private void setTabActivityCompletion(Event evnet) {
+		if (!tabActivity.isSelected()) {
+			return;
+		}
+		javaConnector.setCurrentType(javaConnector.getCurrentTypeActivityCompletion());
+		javaConnector.updateChart();
+		webViewChartsEngine.executeScript("manageButtons('" + Tabs.ACTIVITY_COMPLETION + "')");
 	}
 
 	/**
 	 * Inicializa la lista de componentes de la pestaña Registros
 	 */
 	public void initTabLogs() {
-		tabPane.getSelectionModel().select(tabUbuLogs);
 
 		tabUbuLogs.setOnSelectionChanged(this::setTablogs);
 
@@ -591,8 +728,9 @@ public class MainController implements Initializable {
 		for (Tab tab : tabs) {
 			tab.setOnSelectionChanged(event -> {
 				if (tab.isSelected()) {
-					javaConnector.updateChart();
 					findMax();
+					javaConnector.updateChart();
+
 				}
 			});
 		}
@@ -606,8 +744,9 @@ public class MainController implements Initializable {
 		// cada vez que se seleccione nuevos elementos del list view actualizamos la
 		// grafica y la escala
 		listViewComponents.getSelectionModel().getSelectedItems().addListener((Change<? extends Component> c) -> {
-			javaConnector.updateChart();
 			findMax();
+			javaConnector.updateChart();
+
 		});
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
@@ -659,8 +798,9 @@ public class MainController implements Initializable {
 	 */
 	public void initListViewComponentsEvents() {
 		listViewEvents.getSelectionModel().getSelectedItems().addListener((Change<? extends ComponentEvent> c) -> {
-			javaConnector.updateChart();
 			findMax();
+			javaConnector.updateChart();
+
 		});
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
@@ -717,8 +857,9 @@ public class MainController implements Initializable {
 		// cada vez que se seleccione nuevos elementos del list view actualizamos la
 		// grafica y la escala
 		listViewSection.getSelectionModel().getSelectedItems().addListener((Change<? extends Section> section) -> {
-			javaConnector.updateChart();
 			findMax();
+			javaConnector.updateChart();
+
 		});
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
@@ -792,8 +933,9 @@ public class MainController implements Initializable {
 		// grafica y la escala
 		listViewCourseModule.getSelectionModel().getSelectedItems()
 				.addListener((Change<? extends CourseModule> courseModule) -> {
-					javaConnector.updateChart();
 					findMax();
+					javaConnector.updateChart();
+
 				});
 
 		listViewCourseModule.setCellFactory(getListCellCourseModule());
@@ -903,9 +1045,258 @@ public class MainController implements Initializable {
 			return;
 		}
 		javaConnector.setCurrentType(javaConnector.getCurrentTypeLogs());
-		javaConnector.updateChart();
 		findMax();
-		webViewChartsEngine.executeScript("manageButtons('log')");
+		javaConnector.updateChart();
+
+		webViewChartsEngine.executeScript("manageButtons('" + Tabs.LOGS + "')");
+	}
+
+	public CheckBox getCheckBoxActivityCompleted() {
+		return checkBoxActivityCompleted;
+	}
+
+	public void setCheckBoxActivityCompleted(CheckBox checkBoxActivityCompleted) {
+		this.checkBoxActivityCompleted = checkBoxActivityCompleted;
+	}
+
+	public Tab getTabActivity() {
+		return tabActivity;
+	}
+
+	public void setTabActivity(Tab tabActivity) {
+		this.tabActivity = tabActivity;
+	}
+
+	public TextField getActivityTextField() {
+		return activityTextField;
+	}
+
+	public void setActivityTextField(TextField activityTextField) {
+		this.activityTextField = activityTextField;
+	}
+
+	public CheckBox getCheckBoxActivity() {
+		return checkBoxActivity;
+	}
+
+	public void setCheckBoxActivity(CheckBox checkBoxActivity) {
+		this.checkBoxActivity = checkBoxActivity;
+	}
+
+	public ListView<CourseModule> getListViewActivity() {
+		return listViewActivity;
+	}
+
+	public void setListViewActivity(ListView<CourseModule> listViewActivity) {
+		this.listViewActivity = listViewActivity;
+	}
+
+	public ChoiceBox<ModuleType> getChoiceBoxActivity() {
+		return choiceBoxActivity;
+	}
+
+	public void setChoiceBoxActivity(ChoiceBox<ModuleType> choiceBoxActivity) {
+		this.choiceBoxActivity = choiceBoxActivity;
+	}
+
+	public GridPane getDateGridPane() {
+		return dateGridPane;
+	}
+
+	public void setDateGridPane(GridPane dateGridPane) {
+		this.dateGridPane = dateGridPane;
+	}
+
+	public MenuItem getUpdateCourse() {
+		return updateCourse;
+	}
+
+	public void setUpdateCourse(MenuItem updateCourse) {
+		this.updateCourse = updateCourse;
+	}
+
+	public static String getAll() {
+		return ALL;
+	}
+
+	public static Logger getLogger() {
+		return LOGGER;
+	}
+
+	public static Image getNoneIcon() {
+		return NONE_ICON;
+	}
+
+	public void setController(Controller controller) {
+		this.controller = controller;
+	}
+
+	public void setSplitPaneLeft(SplitPane splitPaneLeft) {
+		this.splitPaneLeft = splitPaneLeft;
+	}
+
+	public void setLblActualCourse(Label lblActualCourse) {
+		this.lblActualCourse = lblActualCourse;
+	}
+
+	public void setLblActualUser(Label lblActualUser) {
+		this.lblActualUser = lblActualUser;
+	}
+
+	public void setLblActualHost(Label lblActualHost) {
+		this.lblActualHost = lblActualHost;
+	}
+
+	public void setLblLastUpdate(Label lblLastUpdate) {
+		this.lblLastUpdate = lblLastUpdate;
+	}
+
+	public void setUserPhoto(ImageView userPhoto) {
+		this.userPhoto = userPhoto;
+	}
+
+	public void setLblCountParticipants(Label lblCountParticipants) {
+		this.lblCountParticipants = lblCountParticipants;
+	}
+
+	public void setListParticipants(ListView<EnrolledUser> listParticipants) {
+		this.listParticipants = listParticipants;
+	}
+
+	public void setFilteredEnrolledList(FilteredList<EnrolledUser> filteredEnrolledList) {
+		this.filteredEnrolledList = filteredEnrolledList;
+	}
+
+	public void setTfdParticipants(TextField tfdParticipants) {
+		this.tfdParticipants = tfdParticipants;
+	}
+
+	public void setTvwGradeReport(TreeView<GradeItem> tvwGradeReport) {
+		this.tvwGradeReport = tvwGradeReport;
+	}
+
+	public void setTfdItems(TextField tfdItems) {
+		this.tfdItems = tfdItems;
+	}
+
+	public void setSlcType(ChoiceBox<ModuleType> slcType) {
+		this.slcType = slcType;
+	}
+
+	public void setWebViewCharts(WebView webViewCharts) {
+		this.webViewCharts = webViewCharts;
+	}
+
+	public void setWebViewChartsEngine(WebEngine webViewChartsEngine) {
+		this.webViewChartsEngine = webViewChartsEngine;
+	}
+
+	public void setSplitPane(SplitPane splitPane) {
+		this.splitPane = splitPane;
+	}
+
+	public void setTabPane(TabPane tabPane) {
+		this.tabPane = tabPane;
+	}
+
+	public void setTabUbuGrades(Tab tabUbuGrades) {
+		this.tabUbuGrades = tabUbuGrades;
+	}
+
+	public void setTabUbuLogs(Tab tabUbuLogs) {
+		this.tabUbuLogs = tabUbuLogs;
+	}
+
+	public void setTabUbuLogsComponent(Tab tabUbuLogsComponent) {
+		this.tabUbuLogsComponent = tabUbuLogsComponent;
+	}
+
+	public void setTabUbuLogsEvent(Tab tabUbuLogsEvent) {
+		this.tabUbuLogsEvent = tabUbuLogsEvent;
+	}
+
+	public void setTabUbuLogsSection(Tab tabUbuLogsSection) {
+		this.tabUbuLogsSection = tabUbuLogsSection;
+	}
+
+	public void setTabUbuLogsCourseModule(Tab tabUbuLogsCourseModule) {
+		this.tabUbuLogsCourseModule = tabUbuLogsCourseModule;
+	}
+
+	public void setComponentTextField(TextField componentTextField) {
+		this.componentTextField = componentTextField;
+	}
+
+	public void setComponentEventTextField(TextField componentEventTextField) {
+		this.componentEventTextField = componentEventTextField;
+	}
+
+	public void setSectionTextField(TextField sectionTextField) {
+		this.sectionTextField = sectionTextField;
+	}
+
+	public void setCourseModuleTextField(TextField courseModuleTextField) {
+		this.courseModuleTextField = courseModuleTextField;
+	}
+
+	public void setListViewComponents(ListView<Component> listViewComponents) {
+		this.listViewComponents = listViewComponents;
+	}
+
+	public void setListViewEvents(ListView<ComponentEvent> listViewEvents) {
+		this.listViewEvents = listViewEvents;
+	}
+
+	public void setListViewSection(ListView<Section> listViewSection) {
+		this.listViewSection = listViewSection;
+	}
+
+	public void setListViewCourseModule(ListView<CourseModule> listViewCourseModule) {
+		this.listViewCourseModule = listViewCourseModule;
+	}
+
+	public void setChoiceBoxCourseModule(ChoiceBox<ModuleType> choiceBoxCourseModule) {
+		this.choiceBoxCourseModule = choiceBoxCourseModule;
+	}
+
+	public void setCheckBoxSection(CheckBox checkBoxSection) {
+		this.checkBoxSection = checkBoxSection;
+	}
+
+	public void setCheckBoxCourseModule(CheckBox checkBoxCourseModule) {
+		this.checkBoxCourseModule = checkBoxCourseModule;
+	}
+
+	public void setOptionsUbuLogs(GridPane optionsUbuLogs) {
+		this.optionsUbuLogs = optionsUbuLogs;
+	}
+
+	public void setTextFieldMax(TextField textFieldMax) {
+		this.textFieldMax = textFieldMax;
+	}
+
+	public void setChoiceBoxDate(ChoiceBox<GroupByAbstract<?>> choiceBoxDate) {
+		this.choiceBoxDate = choiceBoxDate;
+	}
+
+	public void setDatePickerStart(DatePicker datePickerStart) {
+		this.datePickerStart = datePickerStart;
+	}
+
+	public void setDatePickerEnd(DatePicker datePickerEnd) {
+		this.datePickerEnd = datePickerEnd;
+	}
+
+	public void setProgressBar(ProgressBar progressBar) {
+		this.progressBar = progressBar;
+	}
+
+	public void setStats(Stats stats) {
+		this.stats = stats;
+	}
+
+	public void setJavaConnector(JavaConnector javaConnector) {
+		this.javaConnector = javaConnector;
 	}
 
 	/**
@@ -935,8 +1326,7 @@ public class MainController implements Initializable {
 		}
 		javaConnector.setCurrentType(javaConnector.getCurrentTypeGrades());
 		javaConnector.updateChart();
-		webViewChartsEngine.executeScript("manageButtons('grade')");
-
+		webViewChartsEngine.executeScript("manageButtons('" + Tabs.GRADES + "')");
 	}
 
 	/**
@@ -945,9 +1335,9 @@ public class MainController implements Initializable {
 	 * @param event evento
 	 */
 	public void applyFilterLogs() {
-
-		javaConnector.updateChart();
 		findMax();
+		javaConnector.updateChart();
+
 	}
 
 	/**
@@ -964,9 +1354,10 @@ public class MainController implements Initializable {
 				&& (lastActivity.contains(LastActivityFactory.getActivity(e.getLastcourseaccess(), lastLogInstant))));
 		// Mostramos nº participantes
 		lblCountParticipants.setText(I18n.get("label.participants") + filteredEnrolledList.size());
-		javaConnector.updateChart();
 
 		findMax();
+		javaConnector.updateChart();
+
 	}
 
 	private boolean checkUserHasGroup(List<Group> groups, EnrolledUser user) {
@@ -1083,7 +1474,6 @@ public class MainController implements Initializable {
 	public void saveChart(ActionEvent actionEvent) throws IOException {
 
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Guardar gráfico");
 
 		fileChooser.setInitialFileName(String.format("%s_%s_%s.png", controller.getActualCourse().getId(),
 				LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
@@ -1101,7 +1491,7 @@ public class MainController implements Initializable {
 			}
 		} catch (IOException e) {
 			LOGGER.error("Error al guardar el gráfico: {}", e);
-			errorWindow(I18n.get("error.savechart"), false);
+			UtilMethods.errorWindow(controller.getStage(), I18n.get("error.savechart"));
 		}
 	}
 
@@ -1112,7 +1502,7 @@ public class MainController implements Initializable {
 	 */
 	public void updateCourse(ActionEvent actionEvent) {
 		if (controller.isOfflineMode()) {
-			errorWindow(I18n.get("error.updateofflinemode"), false);
+			UtilMethods.errorWindow(controller.getStage(), I18n.get("error.updateofflinemode"));
 		} else {
 			changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController(true));
 		}
@@ -1127,11 +1517,24 @@ public class MainController implements Initializable {
 	public void exportCSV(ActionEvent actionEvent) {
 		LOGGER.info("Exportando ficheros CSV");
 		try {
-			CSVExport.run();
-			infoWindow(I18n.get("message.export_csv_success"), false);
+			DirectoryChooser dir = new DirectoryChooser();
+			File file = new File(Config.getProperty("csvFolderPath", "./"));
+			if (file.exists() && file.isDirectory()) {
+				dir.setInitialDirectory(file);
+			}
+
+			File selectedDir = dir.showDialog(controller.getStage());
+			if (selectedDir != null) {
+				CSVBuilderAbstract.setPath(selectedDir.toPath());
+				CSVExport.run();
+				UtilMethods.infoWindow(controller.getStage(),
+						I18n.get("message.export_csv_success") + selectedDir.getAbsolutePath());
+				Config.setProperty("csvFolderPath", selectedDir.getAbsolutePath());
+			}
+
 		} catch (Exception e) {
 			LOGGER.error("Error al exportar ficheros CSV.", e);
-			errorWindow(I18n.get("error.savecsvfiles"), false);
+			UtilMethods.errorWindow(controller.getStage(), I18n.get("error.savecsvfiles"));
 		}
 	}
 
@@ -1209,7 +1612,6 @@ public class MainController implements Initializable {
 	}
 
 	public void changeConfiguration(ActionEvent actionEvent) {
-		controller.setMainConfiguration(new MainConfiguration());
 
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Configuration.fxml"),
 				I18n.getResourceBundle());
@@ -1224,16 +1626,33 @@ public class MainController implements Initializable {
 
 		ConfigurationController configurationController = loader.getController();
 		Stage stage = new Stage();
-		configurationController.setStage(stage);
+		configurationController.setMainController(this);
+		stage.setOnHidden(event -> {
+			javaConnector.updateChart();
+			javaConnector.updateButtons();
+		});
 		stage.setScene(newScene);
 		stage.initModality(Modality.APPLICATION_MODAL);
-		stage.initOwner(Controller.getInstance().getStage());
+		stage.initOwner(controller.getStage());
 
 		stage.getIcons().add(new Image("/img/logo_min.png"));
 		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 
 		stage.showAndWait();
 
+	}
+
+	public void onCloseStage() {
+
+		try {
+			Path path = Controller.getInstance().getConfiguration(Controller.getInstance().getActualCourse());
+			path.toFile().getParentFile().mkdirs();
+			Files.write(path,
+					Controller.getInstance().getMainConfiguration().toJson().getBytes(StandardCharsets.UTF_8));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -1260,58 +1679,6 @@ public class MainController implements Initializable {
 	public void closeApplication(ActionEvent actionEvent) {
 		LOGGER.info("Cerrando aplicación");
 		controller.getStage().close();
-	}
-
-	/**
-	 * Muestra una ventana de error.
-	 * 
-	 * @param mensaje El mensaje que se quiere mostrar.
-	 * @param exit Indica si se quiere mostar el boton de salir o no.
-	 */
-	public void errorWindow(String mensaje, boolean exit) {
-		Alert alert = new Alert(AlertType.ERROR);
-
-		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
-		alert.setHeaderText("Error");
-		alert.initModality(Modality.APPLICATION_MODAL);
-		alert.initOwner(controller.getStage());
-		alert.getDialogPane().setContentText(mensaje);
-
-		if (exit) {
-			alert.getButtonTypes().setAll(ButtonType.CLOSE);
-			Optional<ButtonType> result = alert.showAndWait();
-			if (result.isPresent() && result.get() == ButtonType.CLOSE)
-				controller.getStage().close();
-		} else {
-			alert.showAndWait();
-		}
-
-	}
-
-	/**
-	 * Muestra una ventana de información.
-	 * 
-	 * @param mensaje El mensaje que se quiere mostrar.
-	 * @param exit Indica si se quiere mostar el boton de salir o no.
-	 */
-	public void infoWindow(String mensaje, boolean exit) {
-		Alert alert = new Alert(AlertType.INFORMATION);
-
-		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
-		alert.setHeaderText("Information");
-		alert.initModality(Modality.APPLICATION_MODAL);
-		alert.initOwner(controller.getStage());
-		alert.getDialogPane().setContentText(mensaje);
-
-		if (exit) {
-			alert.getButtonTypes().setAll(ButtonType.CLOSE);
-			Optional<ButtonType> result = alert.showAndWait();
-			if (result.isPresent() && result.get() == ButtonType.CLOSE)
-				controller.getStage().close();
-		} else {
-			alert.showAndWait();
-		}
-
 	}
 
 	public Controller getController() {

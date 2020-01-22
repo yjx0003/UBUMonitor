@@ -12,22 +12,23 @@ import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 
 import controllers.charts.ActivitiesStatusTable;
-import controllers.charts.Buttons;
+import controllers.charts.BoxPlot;
 import controllers.charts.CalificationBar;
 import controllers.charts.Chart;
 import controllers.charts.ChartType;
 import controllers.charts.CumLine;
 import controllers.charts.GradeReportTable;
-import controllers.charts.BoxPlot;
-import controllers.charts.Violin;
 import controllers.charts.Heatmap;
 import controllers.charts.Line;
 import controllers.charts.MeanDiff;
 import controllers.charts.Radar;
 import controllers.charts.Stackedbar;
+import controllers.charts.Tabs;
+import controllers.charts.Violin;
 import javafx.concurrent.Worker.State;
 import javafx.scene.control.Tab;
 import javafx.scene.web.WebEngine;
+import util.UtilMethods;
 
 public class JavaConnector {
 
@@ -36,11 +37,12 @@ public class JavaConnector {
 	private Tab tabLogs;
 
 	private Tab tabGrades;
+	private Tab tabActivityCompletion;
 
 	private Chart currentTypeLogs;
 
 	private Chart currentTypeGrades;
-
+	private Chart currentTypeActivityCompletion;
 	private Chart currentType;
 
 	private Map<ChartType, Chart> mapChart;
@@ -49,10 +51,10 @@ public class JavaConnector {
 
 	private MainController mainController;
 
-	private Buttons buttons;
-
 	private static final ChartType DEFAULT_LOG_CHART = ChartType.STACKED_BAR;
 	private static final ChartType DEFAULT_GRADE_CHART = ChartType.LINE;
+
+	private static final ChartType DEFAULT_ACTIVITY_COMPLETION_CHART = ChartType.ACTIVITIES_TABLE;
 
 	public JavaConnector(MainController mainController) {
 
@@ -60,8 +62,7 @@ public class JavaConnector {
 		webViewChartsEngine = mainController.getWebViewChartsEngine();
 		tabLogs = mainController.getTabUbuLogs();
 		tabGrades = mainController.getTabUbuGrades();
-
-		buttons = Buttons.getInstance();
+		tabActivityCompletion = mainController.getTabActivity();
 
 		mapChart = new EnumMap<>(ChartType.class);
 		addChart(new Heatmap(mainController));
@@ -99,6 +100,8 @@ public class JavaConnector {
 			currentTypeLogs = chart;
 		} else if (tabGrades.isSelected()) {
 			currentTypeGrades = chart;
+		} else if (tabActivityCompletion.isSelected()) {
+			currentTypeActivityCompletion = chart;
 		}
 
 		updateChart(chart);
@@ -116,13 +119,6 @@ public class JavaConnector {
 
 	public void updateChartFromJS() {
 		updateChart();
-	}
-
-	public void updateMaxY(long max) {
-		if (tabLogs.isSelected()) {
-			webViewChartsEngine.executeScript("changeYMax(" + max + "," + currentType.isUseNegativeValues() + ")");
-		}
-
 	}
 
 	public void hideLegend() {
@@ -168,31 +164,40 @@ public class JavaConnector {
 
 	}
 
+	private void setCurrentTypeActivityCompletion(ChartType chartType) {
+		setCurrentTypeActivityCompletion(mapChart.get(chartType));
+
+	}
+
+	private void setCurrentTypeActivityCompletion(Chart chart) {
+		this.currentTypeActivityCompletion = chart;
+
+	}
+
 	public void setDefaultValues() {
 		webViewChartsEngine.executeScript("setLocale('" + Locale.getDefault().toLanguageTag() + "')");
 		setCurrentTypeLogs(DEFAULT_LOG_CHART);
 		setCurrentTypeGrades(DEFAULT_GRADE_CHART);
+		setCurrentTypeActivityCompletion(DEFAULT_ACTIVITY_COMPLETION_CHART);
 		if (tabLogs.isSelected()) {
-			webViewChartsEngine.executeScript("manageButtons('" + "log" + "')");
+			webViewChartsEngine.executeScript("manageButtons('" + Tabs.LOGS + "')");
 
 			setCurrentType(getCurrentTypeLogs());
 		} else if (tabGrades.isSelected()) {
-			webViewChartsEngine.executeScript("manageButtons('" + "grade" + "')");
+			webViewChartsEngine.executeScript("manageButtons('" + Tabs.GRADES + "')");
 
 			setCurrentType(getCurrentTypeGrades());
+		} else if (tabActivityCompletion.isSelected()) {
+			webViewChartsEngine.executeScript("manageButtons('" + Tabs.ACTIVITY_COMPLETION + "')");
+			setCurrentType(getCurrentTypeActivityCompletion());
 		}
-		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnLegend", buttons.getShowLegend()));
-		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnMean", buttons.getShowMean()));
-		webViewChartsEngine
-				.executeScript(String.format("imageButton('%s',%s)", "btnGroupMean", buttons.getShowGroupMean()));
-		for (Chart value : mapChart.values()) {
-			webViewChartsEngine
-					.executeScript(String.format("%s.%s=%s", value.getOptionsVar(), "useLegend", value.isUseLegend()));
-			webViewChartsEngine.executeScript(
-					String.format("%s.%s=%s", value.getOptionsVar(), "useGeneral", value.isUseGeneralButton()));
-			webViewChartsEngine.executeScript(
-					String.format("%s.%s=%s", value.getOptionsVar(), "useGroup", value.isUseGroupButton()));
-		}
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		boolean legendActive = mainConfiguration.getValue("General", "legendActive");
+		boolean generalActive = mainConfiguration.getValue("General", "generalActive");
+		boolean groupActive = mainConfiguration.getValue("General", "groupActive");
+		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnLegend", legendActive));
+		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnMean", generalActive));
+		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnGroupMean", groupActive));
 
 	}
 
@@ -209,7 +214,7 @@ public class JavaConnector {
 	}
 
 	public void showErrorWindow(String errorMessage) {
-		mainController.errorWindow(errorMessage, false);
+		UtilMethods.errorWindow(Controller.getInstance().getStage(), errorMessage);
 	}
 
 	public void dataPointSelection(int selectedIndex) {
@@ -223,19 +228,21 @@ public class JavaConnector {
 	}
 
 	public boolean swapLegend() {
-		return buttons.swapLegend();
+		return swap("General", "legendActive");
 	}
 
-	public boolean getShowLegend() {
-		return buttons.getShowLegend();
+	public boolean swapGeneral() {
+		return swap("General", "generalActive");
 	}
 
-	public boolean swapMean() {
-		return buttons.swapMean();
+	public boolean swapGroup() {
+		return swap("General", "groupActive");
 	}
 
-	public boolean swapGroupMean() {
-		return buttons.swapGroupMean();
+	private boolean swap(String category, String name) {
+		boolean active = Controller.getInstance().getMainConfiguration().getValue(category, name);
+		Controller.getInstance().getMainConfiguration().setValue(category, name, !active); // toggle;
+		return !active;
 	}
 
 	public String getI18n(String key) {
@@ -244,12 +251,34 @@ public class JavaConnector {
 	}
 
 	public void setMax() {
-		if (!tabLogs.isSelected() || currentType == null) {
+		if (!tabLogs.isSelected()) {
+			return;
+		}
+
+		if (currentType == null) {
 			mainController.getTextFieldMax().setText("1");
-		} else {
+		} else if (currentType.isCalculateMaxActivated()) {
+
 			mainController.getTextFieldMax().setText(currentType.getMax());
 		}
 
+	}
+
+	public Chart getCurrentTypeActivityCompletion() {
+		return currentTypeActivityCompletion;
+	}
+
+	public void updateButtons() {
+		updateButton("General", "legendActive", "btnLegend");
+		updateButton("General", "generalActive", "btnMean");
+		updateButton("General", "groupActive", "btnGroupMean");
+
+		
+	}
+
+	private void updateButton(String category, String name, String button) {
+		webViewChartsEngine.executeScript(String.format("imageButton('%s',  %s)", button,
+				Controller.getInstance().getMainConfiguration().getValue(category, name)));
 	}
 
 }

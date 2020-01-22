@@ -27,11 +27,8 @@ public class ActivitiesStatusTable extends Tabulator {
 	private DateTimeFormatter timeFormatter;
 
 	public ActivitiesStatusTable(MainController mainController) {
-		super(mainController, ChartType.ACTIVITIES_TABLE);
-		useGeneralButton = false;
-		useGroupButton = false;
-		useLegend = false;
-		optionsVar = "activitiesTableOptions";
+		super(mainController, ChartType.ACTIVITIES_TABLE, Tabs.ACTIVITY_COMPLETION);
+		useLegend = true;
 		datePattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(FormatStyle.SHORT, null,
 				IsoChronology.INSTANCE, Locale.getDefault());
 		timePattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(null, FormatStyle.SHORT,
@@ -142,21 +139,42 @@ public class ActivitiesStatusTable extends Tabulator {
 
 	@Override
 	public void update() {
-		if (!tabUbuLogsCourseModule.isSelected()) {
-			tabPaneUbuLogs.getSelectionModel().select(tabUbuLogsCourseModule);
-			return;
-		}
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 
-		List<CourseModule> courseModules = mainController.getListViewCourseModule().getSelectionModel()
+		List<CourseModule> courseModules = mainController.getListViewActivity().getSelectionModel()
 				.getSelectedItems();
 		String columns = createColumns(courseModules);
 		String data = createData(enrolledUsers, courseModules);
 		LOGGER.debug("Usuarios seleccionados:{}", enrolledUsers);
 		LOGGER.debug("Columnas:{}", columns);
 		LOGGER.debug("Datos de tabla:{}", data);
-		webViewChartsEngine.executeScript(String.format("updateTabulator(%s, %s, %s)", columns, data, optionsVar));
+		webViewChartsEngine.executeScript(String.format("updateTabulator(%s, %s, %s)", columns, data, getOptions()));
 
+	}
+
+	@Override
+	public String getOptions() {
+		
+//		{
+//	        invalidOptionWarnings: false,
+//	        height: height,
+//	        //placeholder: "No data",
+//	        tooltipsHeader: true,
+//	        virtualDom: true,
+//	        layout: "fitColumns", //fit columns to width of table (optional)
+//	        rowClick: function (e, row) {
+//	            javaConnector.dataPointSelection(row.getPosition());
+//
+//	        },
+//	    }
+		StringJoiner jsObject = getDefaultOptions();
+		addKeyValue(jsObject, "invalidOptionWarnings", false);
+		addKeyValue(jsObject, "height", "height");
+		addKeyValue(jsObject, "tooltipsHeader", true);
+		addKeyValue(jsObject, "virtualDom", true);
+		addKeyValueWithQuote(jsObject, "layout", "fitColumns");
+		addKeyValue(jsObject, "rowClick", "function(e,row){javaConnector.dataPointSelection(row.getPosition());}");
+		return jsObject.toString();
 	}
 
 }

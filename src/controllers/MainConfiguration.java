@@ -1,50 +1,145 @@
 package controllers;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.controlsfx.control.PropertySheet;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import controllers.charts.ChartType;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
+import model.Group;
+import model.LastActivity;
+import model.LastActivityFactory;
+import model.Role;
 
 public class MainConfiguration {
-	private Map<String, Object> map = new HashMap<>();
-	private List<CustomPropertyItem> properties = new ArrayList<>();
-	private List<String> categoriesOrder = new ArrayList<>();
 
-	public MainConfiguration() {
-		createItem("General", "Cutoff", 5.0);
-		createItem(ChartType.HEAT_MAP, "Calculate max", false);
-		createItem(ChartType.HEAT_MAP, "Zero Value", Color.web("#f78880")); // Creates a CheckBox
-		createItem(ChartType.HEAT_MAP, "First Interval", Color.web("#f4e3ae"));
-		createItem(ChartType.HEAT_MAP, "Second Interval", Color.web("#fff033"));
-		createItem(ChartType.HEAT_MAP, "Third Interval", Color.web("#b5ff33"));
-		createItem(ChartType.HEAT_MAP, "Fourth Interval", Color.web("#38e330"));
-		createItem(ChartType.HEAT_MAP, "More than max", Color.web("#67b92e"));
-		createItem(ChartType.BOXPLOT, "Horizontal mode", false);
-		
-		createItem(ChartType.VIOLIN, "Horizontal mode", false);
-		
+	private Map<String, Object> map = new LinkedHashMap<>();
+	private Map<String, CustomPropertyItem> properties = new LinkedHashMap<>();
+	private Map<String, Integer> categoriesOrder = new HashMap<>();
+
+	public MainConfiguration(MainController mainController) {
+		createItem("General", "cutGrade", 5.0);
+		createItem("General", "borderLength", 10);
+		createItem("General", "borderSpace", 5);
+		createItem("General", "legendActive", true);
+		createItem("General", "generalActive", true);
+		createItem("General", "groupActive", true);
+
+		createItem("General", "initialRoles",
+				FXCollections.observableArrayList(Controller.getInstance().getActualCourse().getStudentRole()),
+				Role.class);
+		createItem("General", "initialGroups", FXCollections.observableArrayList(new ArrayList<Group>()), Group.class);
+		createItem("General", "initialLastActivity",
+				FXCollections.observableArrayList(LastActivityFactory.getAllLastActivity()), LastActivity.class);
+		createItem(ChartType.STACKED_BAR, "calculateMax", false);
+		createItem(ChartType.HEAT_MAP, "calculateMax", false);
+		createItem(ChartType.HEAT_MAP, "zeroValue", Color.web("#f78880"));
+		createItem(ChartType.HEAT_MAP, "firstInterval", Color.web("#f4e3ae"));
+		createItem(ChartType.HEAT_MAP, "secondInterval", Color.web("#fff033"));
+		createItem(ChartType.HEAT_MAP, "thirdInterval", Color.web("#b5ff33"));
+		createItem(ChartType.HEAT_MAP, "fourthInterval", Color.web("#38e330"));
+		createItem(ChartType.HEAT_MAP, "moreMax", Color.web("#67b92e"));
+
+		createItem(ChartType.CUM_LINE, "calculateMax", false);
+
+		createItem(ChartType.MEAN_DIFF, "calculateMax", false);
+		createItem(ChartType.MEAN_DIFF, "zeroLineColor", Color.web("#DC143C"));
+		createItem(ChartType.MEAN_DIFF, "zeroLineWidth", 3);
+
+		createItem(ChartType.BOXPLOT, "horizontalMode", false);
+		createItem(ChartType.BOXPLOT, "tooltipDecimals", 2);
+		createItem(ChartType.VIOLIN, "horizontalMode", false);
+		createItem(ChartType.VIOLIN, "tooltipDecimals", 2);
+
+		createItem(ChartType.GRADE_REPORT_TABLE, "failGradeColor", Color.web("#DC143C"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "passGradeColor", Color.web("#2DC214"));
+		createItem(ChartType.CALIFICATION_BAR, "emptyGradeColor", Color.web("#D3D3D3", 0.3));
+		createItem(ChartType.CALIFICATION_BAR, "failGradeColor", Color.web("#DC143C", 0.3));
+		createItem(ChartType.CALIFICATION_BAR, "passGradeColor", Color.web("#2DC214", 0.3));
+
 	}
 
-	private void createItem(String category, String name, Object value) {
-		String key = category + "." + name;
-		if (!categoriesOrder.contains(category)) {
-			categoriesOrder.add(category);
+	@SuppressWarnings("unchecked")
+	public String toJson() {
+		JSONArray jsonArray = new JSONArray();
+		for (CustomPropertyItem property : properties.values()) {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("category", property.category);
+			jsonObject.put("name", property.name);
+			jsonObject.put("class", property.clazz);
+			if (property.getValue() instanceof ObservableList<?>) {
+				List<Integer> ids = Collections.emptyList();
+				if (property.clazz == Role.class) {
+					ObservableList<Role> roles = (ObservableList<Role>) property.getValue();
+					ids = roles.stream().map(Role::getRoleId).collect(Collectors.toList());
+				} else if (property.clazz == Group.class) {
+					ObservableList<Group> groups = (ObservableList<Group>) property.getValue();
+					ids = groups.stream().map(Group::getGroupId).collect(Collectors.toList());
+				} else if (property.clazz == LastActivity.class) {
+					ObservableList<LastActivity> lastActivity = (ObservableList<LastActivity>) property.getValue();
+					ids = lastActivity.stream().map(LastActivity::getIndex).collect(Collectors.toList());
+				}
+				jsonObject.put("value", ids);
+			} else if (property.getValue() instanceof Color) {
+
+				Color color = (Color) property.getValue();
+
+				jsonObject.put("value",
+						Arrays.asList(color.getRed(), color.getGreen(), color.getBlue(), color.getOpacity()));
+			} else {
+				jsonObject.put("value", property.getValue());
+			}
+
+			jsonArray.put(jsonObject);
 		}
-		properties.add(new CustomPropertyItem(key, category, name));
+
+		return jsonArray.toString();
+	}
+
+	public void fromJson(String properties) {
+		JSONArray jsonArray = new JSONArray(properties);
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+			ConfigurationConsumer.consume(this, jsonObject);
+
+		}
+	}
+
+	public void createItem(String category, String name, Object value, Class<?> clazz) {
+		String key = category + "." + name;
+		if (!categoriesOrder.containsKey(category)) {
+			categoriesOrder.put(category, categoriesOrder.size() + 1);
+		}
+		properties.put(key, new CustomPropertyItem(key, category, name, clazz));
 		map.put(key, value);
 
 	}
 
-	private void createItem(ChartType category, String name, Object value) {
-		createItem(I18n.get(category), name, value);
+	public void createItem(ChartType category, String name, Object value) {
+		createItem(category.name(), name, value);
+	}
+
+	public void createItem(String category, String name, Object value) {
+		createItem(category, name, value, value.getClass());
+
+	}
+
+	public <T> void setValue(String category, String name, T value) {
+		map.put(category + "." + name, value);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -53,40 +148,58 @@ public class MainConfiguration {
 
 	}
 
-	public List<CustomPropertyItem> getProperties() {
-		return properties;
+	@SuppressWarnings("unchecked")
+	public <T> T getValue(ChartType category, String name) {
+		return (T) map.get(category.name() + "." + name);
+
 	}
 
-	private class CustomPropertyItem implements PropertySheet.Item, Serializable {
+	public <T> T getValue(String category, String name, T defaultValue) {
+		if (map.containsKey(category + "." + name)) {
+			return getValue(category, name);
+		}
+		return defaultValue;
+	}
 
-		private static final long serialVersionUID = 1L;
+	public <T> T getValue(ChartType category, String name, T defaultValue) {
+		return getValue(category.name(), name, defaultValue);
+	}
+
+	public Collection<CustomPropertyItem> getProperties() {
+		return properties.values();
+	}
+
+	private class CustomPropertyItem implements PropertySheet.Item {
+
 		private String key;
 		private String category, name;
+		private Class<?> clazz;
 
-		public CustomPropertyItem(String key, String category, String name) {
+		public CustomPropertyItem(String key, String category, String name, Class<?> clazz) {
 			this.key = key;
 			this.category = category;
 			this.name = name;
+			this.clazz = clazz;
 		}
 
 		@Override
 		public Class<?> getType() {
-			return map.get(key).getClass();
+			return clazz;
 		}
 
 		@Override
 		public String getCategory() {
-			return categoriesOrder.indexOf(category) + 1 + ". " + category;
+			return categoriesOrder.get(category) + ". " + I18n.get(category);
 		}
 
 		@Override
 		public String getName() {
-			return name;
+			return I18n.get(name);
 		}
 
 		@Override
 		public String getDescription() {
-			// doesn't really fit into the map
+			// TODO
 			return null;
 		}
 
@@ -97,7 +210,9 @@ public class MainConfiguration {
 
 		@Override
 		public void setValue(Object value) {
+
 			map.put(key, value);
+
 		}
 
 		@Override
@@ -106,4 +221,9 @@ public class MainConfiguration {
 		}
 
 	}
+
+	public Map<String, Object> getMap() {
+		return map;
+	}
+
 }

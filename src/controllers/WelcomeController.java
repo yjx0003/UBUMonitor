@@ -218,8 +218,7 @@ public class WelcomeController implements Initializable {
 	private void checkFile(Course newValue) {
 		if (newValue == null)
 			return;
-		cacheFilePath = controller.getDirectoryCache()
-				.resolve(UtilMethods.removeReservedChar(newValue.toString()) + "-" + newValue.getId());
+		cacheFilePath = controller.getDirectoryCache(newValue);
 		LOGGER.debug("Buscando si existe {}", cacheFilePath);
 
 		File f = cacheFilePath.toFile();
@@ -331,7 +330,7 @@ public class WelcomeController implements Initializable {
 		}
 		LOGGER.info("Guardando los datos encriptados en: {}", f.getAbsolutePath());
 		Serialization.encrypt(controller.getPassword(), cacheFilePath.toString(), controller.getDataBase());
-
+		
 	}
 
 	private void loadData(String password) {
@@ -388,11 +387,6 @@ public class WelcomeController implements Initializable {
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
 			loadData(result.get());
-			if (!chkUpdateData.isSelected()) {
-				saveData(); // si no esta seleccionado el checkbox actualizar, volvemos a guardar en cache
-							// con la nueva contraseña, en caso contrario ya se guarda si o si en el metodo
-							// download data.
-			}
 		}
 
 	}
@@ -409,7 +403,7 @@ public class WelcomeController implements Initializable {
 		lblProgress.textProperty().bind(task.messageProperty());
 		task.setOnSucceeded(v -> loadNextWindow());
 		task.setOnFailed(e -> {
-			errorWindow("Error al actualizar los datos del curso:" + task.getException().getCause());
+			UtilMethods.errorWindow(controller.getStage(), "Error al actualizar los datos del curso:" + task.getException().getCause());
 			LOGGER.error("Error al actualizar los datos del curso: {}", task.getException());
 		});
 
@@ -442,7 +436,7 @@ public class WelcomeController implements Initializable {
 		} catch (IOException e) {
 
 			LOGGER.info("No se ha podido cargar la ventana Main.fxml: {}", e);
-			errorWindow("No se ha podido cargar la ventana Main.fxml");
+			UtilMethods.errorWindow(controller.getStage(), "No se ha podido cargar la ventana Main.fxml");
 		}
 	}
 
@@ -501,25 +495,6 @@ public class WelcomeController implements Initializable {
 		};
 	}
 
-	/**
-	 * Muestra una ventana de error.
-	 * 
-	 * @param mensaje El mensaje que se quiere mostrar.
-	 */
-	private void errorWindow(String mensaje) {
-		Alert alert = new Alert(AlertType.ERROR);
 
-		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
-		alert.setHeaderText("Error");
-		alert.initModality(Modality.APPLICATION_MODAL);
-		alert.initOwner(controller.getStage());
-		alert.getDialogPane().setContentText(mensaje);
-		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(new Image("/img/logo_min.png"));
-		ButtonType buttonSalir = new ButtonType(I18n.get("label.close"));
-		alert.getButtonTypes().setAll(buttonSalir);
-
-		alert.showAndWait();
-	}
 
 }

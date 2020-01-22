@@ -3,6 +3,8 @@ package model;
 import javafx.scene.paint.Color;
 
 public class LastActivity {
+	
+	private int index;
 
 	private int previusDays;
 
@@ -10,7 +12,8 @@ public class LastActivity {
 
 	private Color color;
 
-	public LastActivity(int previusDays, int limitDaysConnection, Color color) {
+	public LastActivity(int index, int previusDays, int limitDaysConnection, Color color) {
+		this.index = index;
 		this.previusDays = previusDays;
 		this.limitDaysConnection = limitDaysConnection;
 		this.color = color;
@@ -38,6 +41,20 @@ public class LastActivity {
 
 	public void setPreviusDays(int previusDays) {
 		this.previusDays = previusDays;
+	}
+
+	/**
+	 * @return the id
+	 */
+	public int getIndex() {
+		return index;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 }

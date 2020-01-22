@@ -279,7 +279,7 @@ public class LoginController implements Initializable {
 		saveProperties();
 		controller.getStage().getScene().setCursor(Cursor.DEFAULT);
 		controller.setLoggedIn(LocalDateTime.now());
-		controller.setDirectoryCache();
+		controller.setDirectory();
 		
 		controller.setOfflineMode(chkOfflineMode.isSelected());
 	}
@@ -327,7 +327,7 @@ public class LoginController implements Initializable {
 				try {
 
 					controller.tryLogin(txtHost.getText(), txtUsername.getText(), txtPassword.getText());
-					controller.setDirectoryCache();
+					controller.setDirectory();
 					controller.initTimer();
 				} catch (MalformedURLException e) {
 					LOGGER.error("URL mal formada. ¿Has añadido protocolo http(s)?", e);

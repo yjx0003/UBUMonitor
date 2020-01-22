@@ -21,6 +21,8 @@ public class AppInfo {
 	public static final String LOGGER_FILE_APPENDER = "./log/" + APPLICATION_NAME_WITH_VERSION + ".log";
 
 	public static final String CACHE_DIR = "cache";
+	
+	public static final String CONFIGURATION_DIR = "configuration";
 
 	public static final String EXPORT_DIR = "export";
 

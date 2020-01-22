@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
+import controllers.Controller;
 import controllers.I18n;
+import controllers.MainConfiguration;
 import controllers.MainController;
+import javafx.scene.paint.Color;
 import model.EnrolledUser;
 import model.GradeItem;
 import util.UtilMethods;
@@ -14,9 +17,7 @@ public class CalificationBar extends ChartjsGradeItem {
 
 	public CalificationBar(MainController mainController) {
 		super(mainController, ChartType.CALIFICATION_BAR);
-		useGeneralButton = false;
-		useGroupButton = false;
-		optionsVar = "calificationBarOptions";
+
 	}
 
 	@Override
@@ -28,6 +29,7 @@ public class CalificationBar extends ChartjsGradeItem {
 		List<Integer> countNaN = new ArrayList<>();
 		List<Integer> countLessCut = new ArrayList<>();
 		List<Integer> countGreaterCut = new ArrayList<>();
+		double cutGrade = Controller.getInstance().getMainConfiguration().getValue("General", "cutGrade");
 		for (GradeItem gradeItem : selectedGradeItems) {
 			int nan = 0;
 			int less = 0;
@@ -36,7 +38,7 @@ public class CalificationBar extends ChartjsGradeItem {
 				double grade = adjustTo10(gradeItem.getEnrolledUserPercentage(user));
 				if (Double.isNaN(grade)) {
 					++nan;
-				} else if (grade < Buttons.getInstance().getCutGrade()) {
+				} else if (grade < cutGrade) {
 					++less;
 				} else {
 					++greater;
@@ -46,23 +48,34 @@ public class CalificationBar extends ChartjsGradeItem {
 			countLessCut.add(less);
 			countGreaterCut.add(greater);
 		}
-
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 		StringJoiner datasets = JSArray();
-		datasets.add(createData(I18n.get("text.empty"), countNaN, Buttons.getInstance().getEmptyColor(), OPACITY));
-		datasets.add(createData(I18n.get("text.fail"), countLessCut, Buttons.getInstance().getDangerColor(), OPACITY));
-		datasets.add(createData(I18n.get("text.pass"), countGreaterCut, Buttons.getInstance().getPassColor(), OPACITY));
+		datasets.add(createData(I18n.get("text.empty"), countNaN, mainConfiguration.getValue(getChartType(), "emptyGradeColor")));
+		datasets.add(createData(I18n.get("text.fail"), countLessCut, mainConfiguration.getValue(getChartType(), "failGradeColor")));
+		datasets.add(createData(I18n.get("text.pass"), countGreaterCut, mainConfiguration.getValue(getChartType(), "passGradeColor")));
 		addKeyValue(data, "datasets", datasets.toString());
 		return data.toString();
 	}
 
-	private String createData(String label, List<Integer> data, String hexColor, double opacity) {
+	private String createData(String label, List<Integer> data, Color color) {
 		StringJoiner dataset = JSObject();
 		addKeyValueWithQuote(dataset, "label", label);
 		addKeyValue(dataset, "data", "[" + UtilMethods.join(data) + "]");
-		addKeyValue(dataset, "backgroundColor", hexToRGBA(hexColor, opacity));
+		addKeyValue(dataset, "backgroundColor", colorToRGB(color));
 		//addKeyValueWithQuote(dataset, "borderColor", hexColor);
 		//addKeyValue(dataset, "borderWidth", 2);
 		return dataset.toString();
+	}
+
+	@Override
+	public String getOptions() {
+		StringJoiner jsObject = getDefaultOptions();
+		addKeyValueWithQuote(jsObject, "typeGraph", "bar");
+		addKeyValue(jsObject, "scales", "{xAxes:[{stacked: true}],yAxes:[{stacked:true,ticks:{stepSize:0}}]}");
+		addKeyValue(jsObject, "tooltips", "{mode:'label'}");
+		addKeyValue(jsObject, "onClick", "function(event, array){}");
+		addKeyValue(jsObject, "plugins", "{datalabels:{display:!0,font:{weight:\"bold\"},formatter:function(t,a){if(0===t)return\"\";let e=a.chart.data.datasets,l=0;for(i=0;i<e.length;i++)l+=e[i].data[a.dataIndex];return t+\"/\"+l+\" (\"+(t/l).toLocaleString(locale,{style:\"percent\",maximumFractionDigits:2})+\")\"}}}");
+		return jsObject.toString();
 	}
 
 }

@@ -54,13 +54,15 @@ public class Controller {
 
 	private Map<String, String> cookies;
 	private boolean offlineMode;
-	
+
 	private MainConfiguration mainConfiguration;
 
 	/**
 	 * Usuario actual.
 	 */
 	private MoodleUser user;
+
+	private Path configuration;
 
 	/**
 	 * Instacia única de la clase Controller.
@@ -105,8 +107,7 @@ public class Controller {
 			LOGGER.error("No se ha podido encontrar el recurso de idioma, cargando idioma " + lang + ": {}", e);
 			setSelectedLanguage(Languages.ENGLISH_UK);
 		}
-		
-		
+
 	}
 
 	public Languages getSelectedLanguage() {
@@ -215,8 +216,6 @@ public class Controller {
 
 		setUsername(username);
 		setPassword(password);
-
-		
 
 	}
 
@@ -367,16 +366,30 @@ public class Controller {
 	}
 
 	/**
-	 * @param directoryCache the directoryCache to set
+	 * @return the directoryCache
 	 */
-	public void setDirectoryCache(Path directoryCache) {
-		this.directoryCache = directoryCache;
+	public Path getDirectoryCache(Course course) {
+		return directoryCache.resolve(Paths.get(UtilMethods.removeReservedChar(course.toString()) + "-" + course.getId()));
+	}
+
+	public Path getConfiguration() {
+		return configuration;
 	}
 	
-	
-	public void setDirectoryCache() {
-		this.directoryCache = Paths.get(AppInfo.CACHE_DIR, UtilMethods.removeReservedChar(this.getUrlHost().getHost()),
-				UtilMethods.removeReservedChar(this.getUsername()));
+	public Path getConfiguration(Course course) {
+		return configuration.resolve(Paths.get(UtilMethods.removeReservedChar(course.toString()) + "-" + course.getId()+".json"));
+	}
+
+	public void setConfiguration(Path configuration) {
+		this.configuration = configuration;
+	}
+
+	public void setDirectory() {
+
+		String host = UtilMethods.removeReservedChar(this.getUrlHost().getHost());
+		String username = UtilMethods.removeReservedChar(this.getUsername());
+		this.directoryCache = Paths.get(AppInfo.CACHE_DIR, host, username);
+		this.configuration = Paths.get(AppInfo.CONFIGURATION_DIR, host, username);
 	}
 
 	/**
@@ -393,8 +406,6 @@ public class Controller {
 		this.offlineMode = offlineMode;
 	}
 
-	
-
 	public MainConfiguration getMainConfiguration() {
 		return this.mainConfiguration;
 	}
@@ -405,10 +416,5 @@ public class Controller {
 	public void setMainConfiguration(MainConfiguration mainConfiguration) {
 		this.mainConfiguration = mainConfiguration;
 	}
-
-
-	
-
-	
 
 }

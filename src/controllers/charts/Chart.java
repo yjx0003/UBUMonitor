@@ -1,6 +1,5 @@
 package controllers.charts;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.controlsfx.control.CheckComboBox;
 
+import controllers.Controller;
 import controllers.MainController;
 import controllers.ubulogs.GroupByAbstract;
 import javafx.scene.control.ChoiceBox;
@@ -19,6 +19,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import model.Component;
 import model.ComponentEvent;
@@ -50,16 +51,17 @@ public abstract class Chart {
 	protected TreeView<GradeItem> tvwGradeReport;
 	protected Stats stats;
 	protected ChartType chartType;
+	private Tabs tabName;
 	protected boolean useLegend;
 	protected boolean useGeneralButton;
 	protected boolean useGroupButton;
-	protected String optionsVar;
+
 	protected boolean useNegativeValues;
 	protected MainController mainController;
 
 	protected static final double OPACITY = 0.2;
 
-	public Chart(MainController mainController, ChartType chartType) {
+	public Chart(MainController mainController, ChartType chartType, Tabs tabName) {
 
 		this.webViewChartsEngine = mainController.getWebViewChartsEngine();
 		this.slcGroup = mainController.getCheckComboBoxGroup();
@@ -80,15 +82,14 @@ public abstract class Chart {
 		this.tvwGradeReport = mainController.getTvwGradeReport();
 		this.tabPaneUbuLogs = mainController.getTabPaneUbuLogs();
 		this.mainController = mainController;
-		
+
 		this.chartType = chartType;
+		this.tabName = tabName;
 
-		this.useLegend = true;
+		this.useLegend = false;
+		this.useGeneralButton = false;
+		this.useGroupButton = false;
 		this.useNegativeValues = false;
-	}
-
-	public String getOptionsVar() {
-		return optionsVar;
 	}
 
 	public boolean isUseLegend() {
@@ -142,17 +143,12 @@ public abstract class Chart {
 	public <T> String hex(T hash) {
 		return "colorHEX('" + UtilMethods.escapeJavaScriptText(hash.toString()) + "')";
 	}
-	
-	public String hexToRGB(String hex) {
-		Color color = Color.decode(hex);
-		return String.format("'rgb(%s,%s,%s)'", color.getRed(), color.getGreen(), color.getBlue());
-	}
-	
-	public String hexToRGBA(String hex, double alpha) {
-		Color color = Color.decode(hex);
-		return String.format("'rgba(%s,%s,%s,%s)'", color.getRed(), color.getGreen(), color.getBlue(), alpha);
-	}
 
+	public String colorToRGB(Color color) {
+
+		return String.format("'rgba(%s,%s,%s,%s)'", (int) (color.getRed() * 255), (int) (color.getGreen() * 255),
+				(int) (color.getBlue() * 255), color.getOpacity());
+	}
 
 	public List<GradeItem> getSelectedGradeItems() {
 		return tvwGradeReport.getSelectionModel().getSelectedItems().stream().filter(Objects::nonNull)
@@ -191,6 +187,8 @@ public abstract class Chart {
 		jsObject.add(key + ":" + value);
 	}
 
+	public abstract String getOptions();
+
 	public abstract void update();
 
 	public abstract void clear();
@@ -199,12 +197,39 @@ public abstract class Chart {
 
 	public abstract String export();
 
+	public StringJoiner getDefaultOptions() {
+		StringJoiner jsObject = JSObject();
+		addKeyValue(jsObject, "useLegend", useLegend);
+		addKeyValue(jsObject, "useGroup", useGroupButton);
+		addKeyValue(jsObject, "useGeneral", useGeneralButton);
+		addKeyValueWithQuote(jsObject, "tab", tabName);
+		addKeyValueWithQuote(jsObject, "button", getChartType().name());
+		addKeyValue(jsObject, "legendActive", (boolean)Controller.getInstance().getMainConfiguration().getValue("General", "legendActive"));
+		return jsObject;
+
+	}
+
 	public String getMax() {
 		return null;
 	}
 
 	public boolean isUseNegativeValues() {
 		return useNegativeValues;
+	}
+
+	public boolean isCalculateMaxActivated() {
+		boolean calculateMax = Controller.getInstance().getMainConfiguration().getValue(getChartType(), "calculateMax",
+				false);
+		return calculateMax;
+	}
+
+	public long getSuggestedMax() {
+		String maxString = mainController.getTextFieldMax().getText();
+		if (maxString == null || maxString.isEmpty()) {
+			return 1;
+		}
+		return Long.valueOf(maxString);
+
 	}
 
 	public void setUseNegativeValues(boolean useNegativeValues) {

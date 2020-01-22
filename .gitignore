@@ -11,3 +11,4 @@ bin
 .vscode
 /build/
 /build.fxbuild
+/configuration/

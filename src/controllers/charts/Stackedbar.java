@@ -3,6 +3,7 @@ package controllers.charts;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ import model.CourseModule;
 import model.EnrolledUser;
 import model.Section;
 
-public class Stackedbar extends ChartjsGradeItem {
+public class Stackedbar extends Chartjs {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Stackedbar.class);
 
 	private StackedBarDataSet<Component> stackedBarComponent = new StackedBarDataSet<>();
@@ -29,10 +30,9 @@ public class Stackedbar extends ChartjsGradeItem {
 	private StackedBarDataSet<CourseModule> stackedBarCourseModule = new StackedBarDataSet<>();
 
 	public Stackedbar(MainController mainController) {
-		super(mainController, ChartType.STACKED_BAR);
-		useGeneralButton = false;
-		useGroupButton = false;
-		optionsVar = "stackedbarOptions";
+		super(mainController, ChartType.STACKED_BAR, Tabs.LOGS);
+		useLegend = true;
+		
 
 	}
 
@@ -67,15 +67,19 @@ public class Stackedbar extends ChartjsGradeItem {
 					dateEnd, DatasSetCourseModule.getInstance());
 		}
 
+		String options = getOptions();
 		LOGGER.info("Dataset para el stacked bar en JS: {}", stackedbardataset);
+		LOGGER.info("Opciones para el stacked bar en JS: {}", options);
 
-		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", stackedbardataset, "stackedbarOptions"));
+		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", stackedbardataset, options));
 
 	}
 	
 
 	@Override
 	public String getMax() {
+		
+		
 		long maxYAxis = 1L;
 		if (tabUbuLogsComponent.isSelected()) {
 			maxYAxis = choiceBoxDate.getValue().getComponents().getMaxElement(listParticipants.getItems(),
@@ -103,5 +107,22 @@ public class Stackedbar extends ChartjsGradeItem {
 		EnrolledUser user = Controller.getInstance().getDataBase().getUsers().getById(userid);
 		return listParticipants.getItems().indexOf(user);
 	}
+
+	@Override
+	public String getOptions() {
+		StringJoiner jsObject = getDefaultOptions();
+		
+		long suggestedMax = getSuggestedMax();
+		
+		addKeyValueWithQuote(jsObject, "typeGraph", "bar");
+		
+		addKeyValue(jsObject, "tooltips", "{position:\"nearest\",mode:\"x\",callbacks:{label:function(a,e){return e.datasets[a.datasetIndex].label+\" : \"+Math.round(100*a.yLabel)/100},afterTitle:function(a,e){return e.datasets[a[0].datasetIndex].name}}}");
+		addKeyValue(jsObject, "scales", "{yAxes:[{stacked:!0,ticks:{suggestedMax:"+suggestedMax+",stepSize:0}}]}");
+		addKeyValue(jsObject, "legend", "{labels:{filter:function(e,t){return\"line\"==t.datasets[e.datasetIndex].type}}}");
+		addKeyValue(jsObject, "onClick", "function(t,a){let e=myChart.getElementAtEvent(t)[0];e&&javaConnector.dataPointSelection(myChart.data.datasets[e._datasetIndex].stack)}");
+		return jsObject.toString();
+	}
+
+	
 
 }

@@ -53,6 +53,8 @@
 							<items>
 								<MenuItem fx:id="MIClearSelection" mnemonicParsing="false" onAction="#clearSelection" text="%menu.clearselection" />
                         <MenuItem fx:id="menuChangeConfig" mnemonicParsing="false" onAction="#changeConfiguration" text="%menu.changeconfig" />
+                        <MenuItem fx:id="importConfiguration" mnemonicParsing="false" onAction="#importConfiguration" text="%menu.importconfig" />
+                        <MenuItem fx:id="menuExportConfiguration" mnemonicParsing="false" onAction="#exportConfiguration" text="%menu.exportconfig" />
 							</items>
 						</Menu>
 						<Menu mnemonicParsing="false" text="%menu.help">

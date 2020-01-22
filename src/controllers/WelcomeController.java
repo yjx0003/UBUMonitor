@@ -126,6 +126,8 @@ public class WelcomeController implements Initializable {
 	private CheckBox chkUpdateData;
 	private boolean isBBDDLoaded;
 
+	@FXML
+	private Label conexionLabel;
 	private boolean autoUpdate;
 
 	public WelcomeController() {
@@ -144,8 +146,8 @@ public class WelcomeController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		try {
-			
-
+			conexionLabel.setText(controller.isOfflineMode() ? I18n.get("text.withoutconnection")
+					: I18n.get("text.withoutconnection"));
 			lblUser.setText(controller.getUser().getFullName());
 			LOGGER.info("Cargando cursos...");
 
@@ -330,7 +332,7 @@ public class WelcomeController implements Initializable {
 		}
 		LOGGER.info("Guardando los datos encriptados en: {}", f.getAbsolutePath());
 		Serialization.encrypt(controller.getPassword(), cacheFilePath.toString(), controller.getDataBase());
-		
+
 	}
 
 	private void loadData(String password) {
@@ -354,7 +356,7 @@ public class WelcomeController implements Initializable {
 	private void previusPasswordWindow() {
 		Dialog<String> dialog = new Dialog<>();
 		dialog.setTitle(I18n.get("title.passwordChanged"));
-		
+
 		dialog.setHeaderText(I18n.get("header.passwordChangedMessage") + "\n" + I18n.get("header.passwordDateTime")
 				+ lblDateUpdate.getText());
 
@@ -403,7 +405,8 @@ public class WelcomeController implements Initializable {
 		lblProgress.textProperty().bind(task.messageProperty());
 		task.setOnSucceeded(v -> loadNextWindow());
 		task.setOnFailed(e -> {
-			UtilMethods.errorWindow(controller.getStage(), "Error al actualizar los datos del curso:" + task.getException().getCause());
+			UtilMethods.errorWindow(controller.getStage(),
+					"Error al actualizar los datos del curso:" + task.getException().getCause());
 			LOGGER.error("Error al actualizar los datos del curso: {}", task.getException());
 		});
 
@@ -438,6 +441,33 @@ public class WelcomeController implements Initializable {
 			LOGGER.info("No se ha podido cargar la ventana Main.fxml: {}", e);
 			UtilMethods.errorWindow(controller.getStage(), "No se ha podido cargar la ventana Main.fxml");
 		}
+	}
+
+	/**
+	 * Vuelve a la ventana de login de usuario.
+	 * 
+	 * @param actionEvent El ActionEvent.
+	 */
+	public void logOut(ActionEvent actionEvent) {
+		LOGGER.info("Cerrando sesión de usuario");
+
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Login.fxml"), I18n.getResourceBundle());
+
+			Parent root = loader.load();
+			Scene scene = new Scene(root);
+			controller.getStage().close();
+			controller.setStage(new Stage());
+			controller.getStage().setScene(scene);
+			controller.getStage().getIcons().add(new Image("/img/logo_min.png"));
+			controller.getStage().setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
+			controller.getStage().resizableProperty().setValue(Boolean.FALSE);
+			controller.getStage().show();
+
+		} catch (Exception e) {
+			LOGGER.error("Error al modifcar la ventana de JavaFX: {}", e);
+		}
+
 	}
 
 	/**
@@ -494,7 +524,5 @@ public class WelcomeController implements Initializable {
 			}
 		};
 	}
-
-
 
 }

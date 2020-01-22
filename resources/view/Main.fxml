@@ -67,13 +67,14 @@
 						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
 						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
 					</columnConstraints>
 					<rowConstraints>
 						<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
 					</rowConstraints>
 					<children>
-						<Label id="topBarLabels" fx:id="lblActualUser" text="%label.user">
+						<Label id="topBarLabels" fx:id="lblActualUser" text="%label.user" GridPane.halignment="LEFT">
 							<padding>
 								<Insets left="30.0" />
 							</padding>
@@ -82,6 +83,7 @@
 						<Label id="topBarLabels" fx:id="lblActualHost" text="%label.host" GridPane.columnIndex="2" />
 						<ImageView fx:id="userPhoto" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" />
                   <Label id="topBarLabels" fx:id="lblLastUpdate" text="%label.lastupdate" GridPane.columnIndex="3" />
+                  <Label id="topBarLabels" fx:id="conexionLabel" layoutX="348.0" layoutY="15.0" text="Label" GridPane.columnIndex="4" GridPane.halignment="CENTER" />
 					</children>
 				</GridPane>
 			</children>

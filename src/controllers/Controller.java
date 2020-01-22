@@ -49,7 +49,7 @@ public class Controller {
 	private Stage stage;
 	private String password;
 	private String username;
-
+	
 	private String sesskey;
 
 	private Map<String, String> cookies;

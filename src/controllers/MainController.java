@@ -1641,7 +1641,7 @@ public class MainController implements Initializable {
 		fileChooser.setTitle(I18n.get("menu.importconfig"));
 		fileChooser.setInitialDirectory(new File(Config.getProperty("configurationFolderPath", "./")));
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON (*.json)","*.json"));
-		File file = fileChooser.showSaveDialog(controller.getStage());
+		File file = fileChooser.showOpenDialog(controller.getStage());
 		if (file != null) {
 			ConfigurationController.loadConfiguration(controller.getMainConfiguration(), file.toPath(),
 					controller.getStage());

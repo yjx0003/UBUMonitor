@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import controllers.Controller;
 import controllers.I18n;
 import controllers.MainController;
 import controllers.datasets.DataSet;
@@ -13,13 +14,10 @@ import model.EnrolledUser;
 
 public class CumLine extends ChartjsLog {
 
-
-
 	public CumLine(MainController mainController) {
 		super(mainController, ChartType.CUM_LINE);
-		optionsVar = "cumLineOptions";
-		useGroupButton = false;
 		useGeneralButton = true;
+		useLegend = true;
 	}
 
 	@Override
@@ -55,8 +53,10 @@ public class CumLine extends ChartjsLog {
 		addKeyValueWithQuote(dataset, "label", generalMeanTranslate);
 		addKeyValue(dataset, "borderColor", hex(generalMeanTranslate));
 		addKeyValue(dataset, "backgroundColor", rgba(generalMeanTranslate, OPACITY));
-		addKeyValue(dataset, "borderDash", "["+Buttons.getInstance().getLength()+","+Buttons.getInstance().getSpace()+"]");
-		addKeyValue(dataset, "hidden", !Buttons.getInstance().getShowMean());
+		addKeyValue(dataset, "borderDash",
+				"[" + Controller.getInstance().getMainConfiguration().getValue("General", "borderLength") + ","
+						+ Controller.getInstance().getMainConfiguration().getValue("General", "borderSpace") + "]");
+		addKeyValue(dataset, "hidden", !(boolean)Controller.getInstance().getMainConfiguration().getValue("General", "generalActive"));
 		StringJoiner results = JSArray();
 		double cumResult = 0;
 		for (int j = 0; j < rangeDates.size(); j++) {
@@ -71,13 +71,11 @@ public class CumLine extends ChartjsLog {
 		addKeyValue(dataset, "data", results);
 		datasets.add(dataset.toString());
 
-		
 	}
 
 	private <T> void createEnrolledUsersDatasets(List<EnrolledUser> selectedUsers, List<T> typeLogs,
 			Map<EnrolledUser, Map<T, List<Long>>> userCounts, List<String> rangeDates, StringJoiner datasets) {
 
-		
 		for (EnrolledUser selectedUser : selectedUsers) {
 			StringJoiner dataset = JSObject();
 			addKeyValueWithQuote(dataset, "label", selectedUser.getFullName());
@@ -94,17 +92,15 @@ public class CumLine extends ChartjsLog {
 					result += times.get(j);
 				}
 				cumResult += result;
-				
+
 				results.add(Long.toString(cumResult));
 			}
 			addKeyValue(dataset, "data", results);
 			datasets.add(dataset.toString());
 
 		}
-		
-	}
 
-	
+	}
 
 	@Override
 	public String getMax() {
@@ -127,6 +123,16 @@ public class CumLine extends ChartjsLog {
 					datePickerEnd.getValue());
 		}
 		return Long.toString(maxYAxis);
+	}
+
+	@Override
+	public String getOptions() {
+		StringJoiner jsObject = getDefaultOptions();
+		addKeyValueWithQuote(jsObject, "typeGraph", "line");
+		
+		addKeyValue(jsObject, "scales", "{yAxes:[{ticks:{suggestedMax:"+getSuggestedMax()+",stepSize:0}}]}");
+		addKeyValue(jsObject, "tooltips", "{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+' : '+Math.round(100*a.yLabel)/100}}}");
+		return jsObject.toString();
 	}
 
 }

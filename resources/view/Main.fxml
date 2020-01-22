@@ -205,7 +205,7 @@
 																				<TextField fx:id="courseModuleTextField" layoutX="6.0" layoutY="28.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
                                                             <CheckBox fx:id="checkBoxCourseModule" layoutX="140.0" layoutY="5.0" mnemonicParsing="false" text="%label.withhidden" />
                                                             <ChoiceBox fx:id="choiceBoxCourseModule" layoutX="140.0" layoutY="30.0" prefHeight="24.0" prefWidth="88.0" />
-                                                            <CheckBox fx:id="checkBoxActivityCompleted" layoutX="5.0" layoutY="5.0" mnemonicParsing="false" selected="true" text="%label.withcompletion" />
+                                                            <CheckBox fx:id="checkBoxActivityCompleted" layoutX="5.0" layoutY="5.0" mnemonicParsing="false" text="%label.withcompletion" />
 																			</children>
 																		</Pane>
 																	</top>
@@ -235,6 +235,28 @@
 												</BorderPane>
 											</content>
 										</Tab>
+										<Tab fx:id="tabActivity" closable="false" text="%tab.activityCompletion">
+															<content>
+																<BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+																	<center>
+																		<ListView fx:id="listViewActivity" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+																			<placeholder>
+																				<Label text="%text.nousers" />
+																			</placeholder>
+																		</ListView>
+																	</center>
+																	<top>
+																		<Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+																			<children>
+																				<TextField fx:id="activityTextField" layoutX="6.0" layoutY="28.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+                                                            <CheckBox fx:id="checkBoxActivity" layoutX="140.0" layoutY="5.0" mnemonicParsing="false" text="%label.withhidden" />
+                                                            <ChoiceBox fx:id="choiceBoxActivity" layoutX="140.0" layoutY="30.0" prefHeight="24.0" prefWidth="88.0" />
+																			</children>
+																		</Pane>
+																	</top>
+																</BorderPane>
+															</content>
+														</Tab>
 									</tabs>
 								</TabPane>
 							</items>
@@ -274,9 +296,9 @@
                           </rowConstraints>
                            <children>
       								<Label text="%label.startdate" GridPane.halignment="RIGHT" />
-      								<DatePicker fx:id="datePickerStart" showWeekNumbers="true" GridPane.columnIndex="1" />
+      								<DatePicker fx:id="datePickerStart" editable="false" showWeekNumbers="true" GridPane.columnIndex="1" />
       								<Label text="%label.enddate" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
-      								<DatePicker fx:id="datePickerEnd" showWeekNumbers="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      								<DatePicker fx:id="datePickerEnd" editable="false" showWeekNumbers="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                            </children>
                         </GridPane>
 							</children>

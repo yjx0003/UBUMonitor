@@ -6,25 +6,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import controllers.Controller;
+import controllers.MainConfiguration;
 import controllers.MainController;
 import controllers.datasets.DataSet;
 import controllers.ubulogs.GroupByAbstract;
 import model.EnrolledUser;
 
-public class MeanDiff extends ChartjsLog{
+public class MeanDiff extends ChartjsLog {
 
 	public MeanDiff(MainController mainController) {
 		super(mainController, ChartType.MEAN_DIFF);
-		optionsVar = "meanDiffOptions";
-		useGeneralButton = false;
-		useGroupButton = false;
+		useLegend = true;
 		useNegativeValues = true;
 	}
 
 	@Override
 	public <T> String createData(List<EnrolledUser> enrolledUsers, List<EnrolledUser> selectedUsers, List<T> typeLogs,
 			GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd, DataSet<T> dataSet) {
-		
+
 		Map<EnrolledUser, Map<T, List<Long>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
 				dateStart, dateEnd);
 
@@ -45,7 +45,6 @@ public class MeanDiff extends ChartjsLog{
 		return data.toString();
 	}
 
-
 	private <T> void createEnrolledUsersDatasets(List<EnrolledUser> selectedUsers, List<T> typeLogs,
 			Map<EnrolledUser, Map<T, List<Long>>> userCounts, List<Double> listMeans, List<String> rangeDates,
 			StringJoiner datasets) {
@@ -57,42 +56,40 @@ public class MeanDiff extends ChartjsLog{
 
 			Map<T, List<Long>> types = userCounts.get(selectedUser);
 			StringJoiner results = JSArray();
-			long cum=0;
+			long cum = 0;
 			for (int j = 0; j < rangeDates.size(); j++) {
 				long result = 0;
 				for (T typeLog : typeLogs) {
 					List<Long> times = types.get(typeLog);
 					result += times.get(j);
 				}
-				cum+=result;
-				
-				results.add(Double.toString(cum-listMeans.get(j)));
+				cum += result;
+
+				results.add(Double.toString(cum - listMeans.get(j)));
 			}
 			addKeyValue(dataset, "data", results);
 			datasets.add(dataset.toString());
 
 		}
-		
-		
+
 	}
 
 	private <T> List<Double> createMeanList(List<T> typeLogs, Map<T, List<Double>> means, List<String> rangeDates) {
 		List<Double> results = new ArrayList<>();
-		double cum =0;
+		double cum = 0;
 		for (int j = 0; j < rangeDates.size(); j++) {
 			double result = 0;
 			for (T typeLog : typeLogs) {
 				List<Double> times = means.get(typeLog);
 				result += times.get(j);
 			}
-			cum+=result;
+			cum += result;
 			results.add(cum);
 		}
 		return results;
 
-		
 	}
-	
+
 	@Override
 	public String getMax() {
 		long maxYAxis = 1L;
@@ -116,6 +113,21 @@ public class MeanDiff extends ChartjsLog{
 		return Long.toString(maxYAxis);
 	}
 
+	@Override
+	public String getOptions() {
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 
+		StringJoiner jsObject = getDefaultOptions();
+		addKeyValueWithQuote(jsObject, "typeGraph", "line");
+		addKeyValue(jsObject, "scales",
+				"{yAxes:[{gridLines:{zeroLineColor:"
+						+ colorToRGB(mainConfiguration.getValue(getChartType(), "zeroLineColor")) + ",zeroLineWidth:"
+						+ mainConfiguration.getValue(getChartType(), "zeroLineWidth") + ",zeroLineBorderDash:["
+						+ mainConfiguration.getValue("General", "borderLength") + ","
+						+ mainConfiguration.getValue("General", "borderSpace") + "]},ticks:{suggestedMax:" + getSuggestedMax() + ",suggestedMin:" + -getSuggestedMax()+",stepSize:0}}]}");
+		addKeyValue(jsObject, "tooltips",
+				"{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+\" : \"+Math.round(100*a.yLabel)/100}}}");
+		return jsObject.toString();
+	}
 
 }

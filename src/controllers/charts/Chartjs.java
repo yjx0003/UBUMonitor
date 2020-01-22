@@ -3,9 +3,11 @@ package controllers.charts;
 import controllers.MainController;
 
 public abstract class Chartjs extends Chart{
-
-	public Chartjs(MainController mainController, ChartType chartType) {
-		super(mainController, chartType);
+	
+	
+	public Chartjs(MainController mainController, ChartType chartType, Tabs tabName) {
+		super(mainController, chartType, tabName);
+		
 		
 	}
 
@@ -25,6 +27,7 @@ public abstract class Chartjs extends Chart{
 	public String export() {
 		return (String) webViewChartsEngine.executeScript("exportChartjs()");
 	}
+	
 	
 
 }

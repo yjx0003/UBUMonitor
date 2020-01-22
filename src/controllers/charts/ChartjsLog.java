@@ -18,7 +18,7 @@ import util.UtilMethods;
 public abstract class ChartjsLog extends Chartjs{
 
 	public ChartjsLog(MainController mainController, ChartType chartType) {
-		super(mainController, chartType);
+		super(mainController, chartType, Tabs.LOGS);
 		
 	}
 	
@@ -59,7 +59,7 @@ public abstract class ChartjsLog extends Chartjs{
 					dateEnd, DatasSetCourseModule.getInstance());
 		}
 
-		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, optionsVar));
+		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, getOptions()));
 		
 	}
 

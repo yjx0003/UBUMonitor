@@ -2,9 +2,11 @@ package controllers.charts;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.StringJoiner;
 
 import controllers.Controller;
 import controllers.I18n;
+import controllers.MainConfiguration;
 import controllers.MainController;
 import model.EnrolledUser;
 import model.GradeItem;
@@ -15,15 +17,12 @@ public class BoxPlot extends ChartjsGradeItem {
 
 	public BoxPlot(MainController mainController) {
 		super(mainController, ChartType.BOXPLOT);
-		useGeneralButton = true;
-		useGroupButton = true;
-		optionsVar = "boxplotOptions";
 	}
 
 	@Override
 	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
 		StringBuilder stringBuilder = new StringBuilder();
-
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 		stringBuilder.append("{labels:[");
 		stringBuilder.append(UtilMethods.joinWithQuotes(selectedGradeItems));
 		stringBuilder.append("],datasets:[");
@@ -33,13 +32,13 @@ public class BoxPlot extends ChartjsGradeItem {
 		}
 		if (useGeneralButton) {
 			createData(Controller.getInstance().getActualCourse().getEnrolledUsers(), selectedGradeItems, stringBuilder,
-					I18n.get("text.all"), !Buttons.getInstance().getShowMean());
+					I18n.get("text.all"), !(boolean) mainConfiguration.getValue("General", "generalActive"));
 		}
 		if (useGroupButton) {
 			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
 				if (group != null) {
 					createData(group.getEnrolledUsers(), selectedGradeItems, stringBuilder, group.getGroupName(),
-							!Buttons.getInstance().getShowGroupMean());
+							!(boolean) mainConfiguration.getValue("General", "groupActive"));
 				}
 
 			}
@@ -82,6 +81,17 @@ public class BoxPlot extends ChartjsGradeItem {
 	@Override
 	public int onClick(int index) {
 		return -1; // do nothing at the moment
+	}
+
+	@Override
+	public String getOptions() {
+		StringJoiner jsObject = getDefaultOptions();
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
+		int tooltipDecimals = mainConfiguration.getValue(getChartType(), "tooltipDecimals");
+		addKeyValueWithQuote(jsObject, "typeGraph", useHorizontal ? "horizontalBoxplot" : "boxplot");
+		addKeyValue(jsObject, "tooltipDecimals", tooltipDecimals);
+		return jsObject.toString();
 	}
 
 }

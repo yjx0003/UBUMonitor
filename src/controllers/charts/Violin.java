@@ -2,9 +2,11 @@ package controllers.charts;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.StringJoiner;
 
 import controllers.Controller;
 import controllers.I18n;
+import controllers.MainConfiguration;
 import controllers.MainController;
 import model.EnrolledUser;
 import model.GradeItem;
@@ -15,15 +17,12 @@ public class Violin extends ChartjsGradeItem {
 
 	public Violin(MainController mainController) {
 		super(mainController, ChartType.VIOLIN);
-		useGeneralButton = true;
-		useGroupButton = true;
-		optionsVar = "violinOptions";
 	}
 
 	@Override
 	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
 		StringBuilder stringBuilder = new StringBuilder();
-
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 		stringBuilder.append("{labels:[");
 		stringBuilder.append(UtilMethods.joinWithQuotes(selectedGradeItems));
 		stringBuilder.append("],datasets:[");
@@ -33,14 +32,13 @@ public class Violin extends ChartjsGradeItem {
 		}
 		if (useGeneralButton) {
 			createData(Controller.getInstance().getActualCourse().getEnrolledUsers(), selectedGradeItems, stringBuilder,
-					I18n.get("text.all"), !Buttons.getInstance().getShowMean());
+					I18n.get("text.all"), !(boolean) mainConfiguration.getValue("General", "generalActive"));
 		}
 		if (useGroupButton) {
-			for (Group group :  slcGroup.getCheckModel().getCheckedItems()) {
-				if (group != null) {
-					createData(group.getEnrolledUsers(), selectedGradeItems, stringBuilder, group.getGroupName(),
-							!Buttons.getInstance().getShowGroupMean());
-				}
+			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
+
+				createData(group.getEnrolledUsers(), selectedGradeItems, stringBuilder, group.getGroupName(),
+						!(boolean) mainConfiguration.getValue("General", "groupActive"));
 
 			}
 
@@ -79,7 +77,7 @@ public class Violin extends ChartjsGradeItem {
 			}
 
 			if (!hasNonNaN) {
-				stringBuilder.append(-1);
+				stringBuilder.append(-100000);
 			}
 			stringBuilder.append("],");
 		}
@@ -89,5 +87,17 @@ public class Violin extends ChartjsGradeItem {
 	@Override
 	public int onClick(int index) {
 		return -1; // do nothing at the moment
+	}
+
+	@Override
+	public String getOptions() {
+		StringJoiner jsObject = getDefaultOptions();
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
+		int tooltipDecimals = mainConfiguration.getValue(getChartType(), "tooltipDecimals");
+		addKeyValueWithQuote(jsObject, "typeGraph", useHorizontal ? "horizontalViolin" : "violin");
+		addKeyValue(jsObject, "tooltipDecimals", tooltipDecimals);
+		addKeyValue(jsObject, "scales", "{yAxes:[{ticks:{min:0}}],xAxes:[{ticks:{min:0}}]}");
+		return jsObject.toString();
 	}
 }

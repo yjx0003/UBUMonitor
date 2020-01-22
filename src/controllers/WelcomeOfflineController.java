@@ -43,7 +43,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Course;
 import model.DataBase;
@@ -166,8 +165,8 @@ public class WelcomeOfflineController implements Initializable {
 	private void checkFile(Course newValue) {
 		if (newValue == null)
 			return;
-		cacheFilePath = controller.getDirectoryCache()
-				.resolve(UtilMethods.removeReservedChar(newValue.getFullName()) + "-" + newValue.getId());
+		cacheFilePath = controller.getDirectoryCache(newValue);
+
 		LOGGER.debug("Buscando si existe {}", cacheFilePath);
 
 		File f = cacheFilePath.toFile();
@@ -247,7 +246,7 @@ public class WelcomeOfflineController implements Initializable {
 			incorrectPasswordWindow();
 		} catch (InvalidClassException | ClassNotFoundException e) {
 			LOGGER.warn("Se ha modificado una de las clases serializables", e);
-			errorWindow("Se ha modificado una de las clases serializables");
+			UtilMethods.errorWindow(controller.getStage(), "Se ha modificado una de las clases serializables");
 		}
 
 	}
@@ -317,29 +316,8 @@ public class WelcomeOfflineController implements Initializable {
 		} catch (IOException e) {
 
 			LOGGER.info("No se ha podido cargar la ventana Main.fxml: {}", e);
-			errorWindow("No se ha podido cargar la ventana Main.fxml");
+			UtilMethods.errorWindow(controller.getStage(), "No se ha podido cargar la ventana Main.fxml");
 		}
-	}
-
-	/**
-	 * Muestra una ventana de error.
-	 * 
-	 * @param mensaje El mensaje que se quiere mostrar.
-	 */
-	private void errorWindow(String mensaje) {
-		Alert alert = new Alert(AlertType.ERROR);
-
-		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
-		alert.setHeaderText("Error");
-		alert.initModality(Modality.APPLICATION_MODAL);
-		alert.initOwner(controller.getStage());
-		alert.getDialogPane().setContentText(mensaje);
-		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(new Image("/img/logo_min.png"));
-		ButtonType buttonSalir = new ButtonType(I18n.get("label.close"));
-		alert.getButtonTypes().setAll(buttonSalir);
-
-		alert.showAndWait();
 	}
 
 }

@@ -1,6 +1,7 @@
 package controllers.charts;
 
 import java.util.List;
+import java.util.StringJoiner;
 
 import controllers.MainController;
 import model.GradeItem;
@@ -11,9 +12,7 @@ public class Radar extends ChartjsGradeItem {
 
 	public Radar(MainController mainController) {
 		super(mainController, ChartType.RADAR);
-		useGeneralButton = true;
-		useGroupButton = true;
-		optionsVar = "radarOptions";
+	
 	}
 
 	@Override
@@ -23,6 +22,13 @@ public class Radar extends ChartjsGradeItem {
 			gradeItems.add(DUMMY);
 		}
 		return gradeItems;
+	}
+
+	@Override
+	public String getOptions() {
+		StringJoiner jsObject = getDefaultOptions();
+		addKeyValueWithQuote(jsObject, "typeGraph", "radar");
+		return jsObject.toString();
 	}
 
 }

@@ -5,8 +5,9 @@ import controllers.MainController;
 public abstract class ApexCharts extends Chart {
 	
 
-	public ApexCharts(MainController mainController, ChartType chartType) {
-		super(mainController, chartType);
+	public ApexCharts(MainController mainController, ChartType chartType, Tabs tabName) {
+		super(mainController, chartType, tabName);
+		useLegend = true;
 	}
 
 	@Override
@@ -17,7 +18,7 @@ public abstract class ApexCharts extends Chart {
 	
 	@Override
 	public void hideLegend() {
-		webViewChartsEngine.executeScript("hideLegendApexCharts("+optionsVar+")");
+		webViewChartsEngine.executeScript("hideLegendApexCharts("+getOptions()+")");
 		
 	}
 

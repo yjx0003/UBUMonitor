@@ -4,10 +4,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.Controller;
+import controllers.MainConfiguration;
 import controllers.MainController;
 import controllers.datasets.DataSet;
 import controllers.datasets.DataSetComponent;
@@ -22,21 +25,16 @@ public class Heatmap extends ApexCharts {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Heatmap.class);
 
-
 	public Heatmap(MainController mainController) {
-		super(mainController, ChartType.HEAT_MAP);
-		useGeneralButton = false;
-		useGroupButton = false;
-		this.optionsVar = "heatmapOptions";
+		super(mainController, ChartType.HEAT_MAP, Tabs.LOGS);
 
 	}
-	
+
 	@Override
 	public void update() {
 		String heatmapdataset = null;
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		List<EnrolledUser> enrolledUsers = new ArrayList<>(listParticipants.getItems());
-		
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
@@ -66,10 +64,11 @@ public class Heatmap extends ApexCharts {
 		String categories = createCategory(choiceBoxDate.getValue(), dateStart, dateEnd);
 		LOGGER.info("Dataset para el heatmap en JS: {}", heatmapdataset);
 		LOGGER.info("Categorias del heatmap en JS: {}", categories);
+		LOGGER.info("Opciones del heatmap ne JS: {}", getOptions());
 
-		webViewChartsEngine.executeScript(String.format("updateApexCharts(%s,%s, %s)", heatmapdataset, categories, optionsVar));
+		webViewChartsEngine
+				.executeScript(String.format("updateApexCharts(%s,%s, %s)", heatmapdataset, categories, getOptions()));
 	}
-
 
 	public static <T> String createSeries(List<EnrolledUser> enrolledUsers, List<EnrolledUser> selectedUsers,
 			List<T> selecteds, GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd, DataSet<T> dataSet) {
@@ -83,7 +82,7 @@ public class Heatmap extends ApexCharts {
 
 		for (int i = selectedUsers.size() - 1; i >= 0; i--) {
 			EnrolledUser selectedUser = selectedUsers.get(i);
-			
+
 			stringBuilder.append("{name:'" + UtilMethods.escapeJavaScriptText(selectedUser.toString()) + "',");
 
 			Map<T, List<Long>> types = userCounts.get(selectedUser);
@@ -108,9 +107,10 @@ public class Heatmap extends ApexCharts {
 		return "[" + UtilMethods.joinWithQuotes(groupBy.getRangeString(dateStart, dateEnd)) + "]";
 	}
 
-	
 	@Override
 	public String getMax() {
+		
+		
 		long maxYAxis = 1L;
 		if (tabUbuLogsComponent.isSelected()) {
 			maxYAxis = choiceBoxDate.getValue().getComponents().getMaxElement(listParticipants.getItems(),
@@ -131,5 +131,38 @@ public class Heatmap extends ApexCharts {
 		}
 		return Long.toString(maxYAxis);
 	}
-	
+
+	@Override
+	public String getOptions() {
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		String zeroValue = colorToRGB(mainConfiguration.getValue(getChartType(), "zeroValue"));
+		String firstInterval = colorToRGB(mainConfiguration.getValue(getChartType(), "firstInterval"));
+		String secondInterval = colorToRGB(mainConfiguration.getValue(getChartType(), "secondInterval"));
+		String thirdInterval = colorToRGB(mainConfiguration.getValue(getChartType(), "thirdInterval"));
+		String fourthInterval = colorToRGB(mainConfiguration.getValue(getChartType(), "fourthInterval"));
+		String moreMax = colorToRGB(mainConfiguration.getValue(getChartType(), "moreMax"));
+
+		long max = getSuggestedMax();
+
+		StringJoiner jsObject = getDefaultOptions();
+		addKeyValueWithQuote(jsObject, "typeGraph", "heatmap");
+		addKeyValue(jsObject, "tooltip", "{x:{show:!0}}");
+		addKeyValue(jsObject, "plotOptions",
+				"{heatmap:{enableShades:!1,colorScale:{ranges:[{from:-1,to:0,color:" + zeroValue
+						+ ",name:'0'},{from:1,to:" + Math.max(Math.floor(.25 * max), 1) + ",color:" + firstInterval
+						+ "},{from:" + Math.max(Math.ceil(.25 * max), 1) + ",to:" + Math.max(Math.floor(.5 * max), 1)
+						+ ",color:" + secondInterval + "},{from:" + Math.max(Math.ceil(.5 * max), 1) + ",to:"
+						+ Math.max(Math.floor(.75 * max), 1) + ",color:" + thirdInterval + "},{from:"
+						+ Math.max(Math.ceil(.75 * max), 1) + ",to:" + Math.max(max, Math.floor(.75 * max)) + ",color:"
+						+ fourthInterval + "},{from:" + (max+1)  + ",to:Number.POSITIVE_INFINITY,color:" + moreMax
+						+ ",name:'+'+(" + (max + 1) + ")}]}}}");
+		addKeyValue(jsObject, "legend", "{position:'top'}");
+		addKeyValue(jsObject, "chart", "{type:\"heatmap\",events:{dataPointSelection:function(e,t,n){javaConnector.dataPointSelection(n.w.config.series.length-1-n.seriesIndex)}},height:height,toolbar:{show:!1},animations:{enabled:!1}}");
+		addKeyValue(jsObject, "dataLabels", "{formatter:function(r,t){return 0==r?\"\":r},style:{colors:[\"#000000\"]}}");
+		addKeyValue(jsObject, "xaxis", "{}");
+		
+		return jsObject.toString();
+
+	}
+
 }

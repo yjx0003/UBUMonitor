@@ -23,10 +23,10 @@ import util.UtilMethods;
 public class LineApexchart extends ApexCharts {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LineApexchart.class);
 	public LineApexchart(MainController mainController) {
-		super(mainController, ChartType.LINE);
+		super(mainController, ChartType.LINE, Tabs.GRADES);
 		useGeneralButton = true;
 		useGroupButton = true;
-		optionsVar = "lineOptions";
+		
 	}
 
 	@Override
@@ -101,6 +101,12 @@ public class LineApexchart extends ApexCharts {
 		String names = UtilMethods.joinWithQuotes(gradeItems);
 		return "["+ names +"]";
 		
+	}
+
+	@Override
+	public String getOptions() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

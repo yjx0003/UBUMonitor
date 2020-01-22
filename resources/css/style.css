@@ -82,7 +82,7 @@
   -fx-background-color: #6ff9ff;
 }
 
-.list-view-class .list-view .list-cell:focused {
+.list-view-class .list-cell:focused {
   -fx-background-color: #6fe2ff;
 }
 

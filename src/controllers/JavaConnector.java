@@ -256,7 +256,7 @@ public class JavaConnector {
 		}
 
 		if (currentType == null) {
-			mainController.getTextFieldMax().setText("1");
+			mainController.getTextFieldMax().setText("0");
 		} else if (currentType.isCalculateMaxActivated()) {
 
 			mainController.getTextFieldMax().setText(currentType.getMax());

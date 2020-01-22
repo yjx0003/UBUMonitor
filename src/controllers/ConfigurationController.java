@@ -5,7 +5,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.controlsfx.control.PropertySheet;
@@ -20,9 +19,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import model.Group;
@@ -72,18 +68,17 @@ public class ConfigurationController implements Initializable {
 	}
 
 	public void onClose() {
-		saveConfiguration();
+		Controller controller = Controller.getInstance();
+		saveConfiguration(controller.getMainConfiguration(), controller.getConfiguration(controller.getActualCourse()), stage);
 		applyConfiguration();
 
 	}
 
-	public void saveConfiguration() {
+	public static void saveConfiguration(MainConfiguration mainConfiguration, Path path, Stage stage) {
 		try {
-			Path path = Controller.getInstance().getConfiguration(Controller.getInstance().getActualCourse());
 			path.toFile().getParentFile().mkdirs();
 			Files.write(path,
 					Controller.getInstance().getMainConfiguration().toJson().getBytes(StandardCharsets.UTF_8));
-			mainController.getJavaConnector().updateChart();
 		} catch (IOException e) {
 			LOGGER.error("Error al guardar el fichero de configuración", e);
 			UtilMethods.errorWindow(stage, I18n.get("error.saveconfiguration"));

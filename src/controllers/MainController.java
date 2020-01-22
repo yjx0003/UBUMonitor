@@ -1636,6 +1636,35 @@ public class MainController implements Initializable {
 
 	}
 
+	public void importConfiguration(ActionEvent event) {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle(I18n.get("menu.importconfig"));
+		fileChooser.setInitialDirectory(new File(Config.getProperty("configurationFolderPath", "./")));
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON (*.json)","*.json"));
+		File file = fileChooser.showSaveDialog(controller.getStage());
+		if (file != null) {
+			ConfigurationController.loadConfiguration(controller.getMainConfiguration(), file.toPath(),
+					controller.getStage());
+			Config.setProperty("configurationFolderPath", file.getParent());
+			changeConfiguration(event);
+		}
+		
+	}
+	
+	public void exportConfiguration(ActionEvent event) {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle(I18n.get("menu.exportconfig"));
+		fileChooser.setInitialFileName(UtilMethods.removeReservedChar(controller.getActualCourse().getFullName()) + ".json");
+		fileChooser.setInitialDirectory(new File(Config.getProperty("configurationFolderPath", "./")));
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
+		File file = fileChooser.showSaveDialog(controller.getStage());
+		if (file != null) {
+			ConfigurationController.saveConfiguration(controller.getMainConfiguration(), file.toPath(),
+					controller.getStage());
+			Config.setProperty("configurationFolderPath", file.getParent());
+		}
+	}
+
 	/**
 	 * Abre en el navegador el repositorio del proyecto.
 	 * 

@@ -109,8 +109,7 @@ public class Heatmap extends ApexCharts {
 
 	@Override
 	public String getMax() {
-		
-		
+
 		long maxYAxis = 1L;
 		if (tabUbuLogsComponent.isSelected()) {
 			maxYAxis = choiceBoxDate.getValue().getComponents().getMaxElement(listParticipants.getItems(),
@@ -153,14 +152,15 @@ public class Heatmap extends ApexCharts {
 						+ "},{from:" + Math.max(Math.ceil(.25 * max), 1) + ",to:" + Math.max(Math.floor(.5 * max), 1)
 						+ ",color:" + secondInterval + "},{from:" + Math.max(Math.ceil(.5 * max), 1) + ",to:"
 						+ Math.max(Math.floor(.75 * max), 1) + ",color:" + thirdInterval + "},{from:"
-						+ Math.max(Math.ceil(.75 * max), 1) + ",to:" + Math.max(max, Math.floor(.75 * max)) + ",color:"
-						+ fourthInterval + "},{from:" + (max+1)  + ",to:Number.POSITIVE_INFINITY,color:" + moreMax
-						+ ",name:'+'+(" + (max + 1) + ")}]}}}");
+						+ Math.max(Math.ceil(.75 * max), 1) + ",to:" + Math.max(Math.max(max, 1), Math.floor(.75 * max))
+						+ ",color:" + fourthInterval + "},{from:" + (max + 1) + ",to:Number.POSITIVE_INFINITY,color:"
+						+ moreMax + ",name:'+'+(" + (max + 1) + ")}]}}}");
 		addKeyValue(jsObject, "legend", "{position:'top'}");
-		addKeyValue(jsObject, "chart", "{type:\"heatmap\",events:{dataPointSelection:function(e,t,n){javaConnector.dataPointSelection(n.w.config.series.length-1-n.seriesIndex)}},height:height,toolbar:{show:!1},animations:{enabled:!1}}");
-		addKeyValue(jsObject, "dataLabels", "{formatter:function(r,t){return 0==r?\"\":r},style:{colors:[\"#000000\"]}}");
+		addKeyValue(jsObject, "chart",
+				"{type:\"heatmap\",events:{dataPointSelection:function(e,t,n){javaConnector.dataPointSelection(n.w.config.series.length-1-n.seriesIndex)}},height:height,toolbar:{show:!1},animations:{enabled:!1}}");
+		addKeyValue(jsObject, "dataLabels",
+				"{formatter:function(r,t){return 0==r?\"\":r},style:{colors:[\"#000000\"]}}");
 		addKeyValue(jsObject, "xaxis", "{}");
-		
 		return jsObject.toString();
 
 	}

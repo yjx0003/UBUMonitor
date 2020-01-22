@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import controllers.MainController;
 import controllers.datasets.DataSet;
 import controllers.datasets.DataSetComponent;
@@ -16,6 +19,7 @@ import model.EnrolledUser;
 import util.UtilMethods;
 
 public abstract class ChartjsLog extends Chartjs{
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChartjsLog.class);
 
 	public ChartjsLog(MainController mainController, ChartType chartType) {
 		super(mainController, chartType, Tabs.LOGS);
@@ -59,7 +63,10 @@ public abstract class ChartjsLog extends Chartjs{
 					dateEnd, DatasSetCourseModule.getInstance());
 		}
 
-		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, getOptions()));
+		String options = getOptions();
+		LOGGER.info("Dataset en JS: {}", dataset);
+		LOGGER.info("Opciones para el stacked bar en JS: {}", options);
+		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, options));
 		
 	}
 

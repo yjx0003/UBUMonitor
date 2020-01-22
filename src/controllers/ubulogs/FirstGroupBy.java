@@ -203,36 +203,41 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 
 		Map<E, List<Double>> means = getMeans(enrolledUsers, logTypes, start, end);
 		List<T> range = groupByAbstract.getRange(start, end);
-	
+
+		List<Double> cumMeans = new ArrayList<>();
 		double result = 0;
 		for (int j = 0; j < range.size(); j++) {
-			
+
 			for (E typeLog : logTypes) {
 				List<Double> times = means.get(typeLog);
 				result += times.get(j);
 			}
-			
+			cumMeans.add(result);
+
 		}
 
-		long max = 0;
+		double max = 0;
 
 		for (EnrolledUser enrolledUser : enrolledUsers) {
-			long cum = 0;
+
 			Map<E, Map<T, Long>> elementsMap = counts.computeIfAbsent(enrolledUser, k -> new HashMap<>());
-			for (E logType : logTypes) {
-				Map<T, Long> groupByMap = elementsMap.computeIfAbsent(logType, k -> new HashMap<>());
-				for (T groupBy : range) {
-					cum += groupByMap.getOrDefault(groupBy, 0L);
+			long cum = 0;
+			for (int i = 0; i < cumMeans.size(); i++) {
+
+				for (E logType : logTypes) {
+					Map<T, Long> groupByMap = elementsMap.computeIfAbsent(logType, k -> new HashMap<>());
+
+					cum += groupByMap.getOrDefault(range.get(i), 0L);
+
 				}
+				if (Math.abs(Math.ceil(cum - cumMeans.get(i))) > max) {
+					max = Math.abs(Math.ceil(cum - cumMeans.get(i)));
+				}
+			}
 
-			}
-			if (cum > max) {
-				max = cum;
-			}
 		}
-		
 
-		return (long)Math.abs(Math.ceil(max-result));
+		return (long) max;
 	}
 
 	/**

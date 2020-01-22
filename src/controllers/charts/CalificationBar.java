@@ -17,7 +17,8 @@ public class CalificationBar extends ChartjsGradeItem {
 
 	public CalificationBar(MainController mainController) {
 		super(mainController, ChartType.CALIFICATION_BAR);
-
+		useGeneralButton = false;
+		useGroupButton = false;
 	}
 
 	@Override

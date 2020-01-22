@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -121,10 +118,10 @@ public class MainController implements Initializable {
 
 	@FXML
 	private Label lblLastUpdate;
-	
+
 	@FXML
 	private Label conexionLabel;
-	
+
 	@FXML
 	private ImageView userPhoto;
 
@@ -275,15 +272,8 @@ public class MainController implements Initializable {
 			stats = controller.getStats();
 
 			controller.setMainConfiguration(new MainConfiguration(this));
-			if (controller.getConfiguration(controller.getActualCourse()).toFile().exists()) {
-				controller.getMainConfiguration()
-						.fromJson(new String(
-								Files.readAllBytes(controller.getConfiguration(controller.getActualCourse())),
-								StandardCharsets.UTF_8));
-
-			}
-
-			controller.getStage().setOnHidden(event -> onCloseStage());
+			ConfigurationController.loadConfiguration(controller.getMainConfiguration(),
+					controller.getConfiguration(controller.getActualCourse()), controller.getStage());
 
 			initTabPaneWebView();
 			initLogOptionsFilter();
@@ -308,8 +298,8 @@ public class MainController implements Initializable {
 			ZonedDateTime lastLogDateTime = controller.getActualCourse().getLogs().getLastDatetime();
 			lblLastUpdate.setText(
 					I18n.get("label.lastupdate") + " " + lastLogDateTime.format(Controller.DATE_TIME_FORMATTER));
-			conexionLabel.setText(controller.isOfflineMode() ? I18n.get("text.withoutconnection")
-					: I18n.get("text.withconnection"));
+			conexionLabel.setText(
+					controller.isOfflineMode() ? I18n.get("text.withoutconnection") : I18n.get("text.withconnection"));
 		} catch (Exception e) {
 			LOGGER.error("Error en la inicialización.", e);
 		}
@@ -1633,10 +1623,8 @@ public class MainController implements Initializable {
 		ConfigurationController configurationController = loader.getController();
 		Stage stage = new Stage();
 		configurationController.setMainController(this);
-		stage.setOnHidden(event -> {
-			javaConnector.updateChart();
-			javaConnector.updateButtons();
-		});
+		configurationController.setStage(stage);
+		stage.setOnHiding(event -> configurationController.onClose());
 		stage.setScene(newScene);
 		stage.initModality(Modality.APPLICATION_MODAL);
 		stage.initOwner(controller.getStage());
@@ -1644,21 +1632,8 @@ public class MainController implements Initializable {
 		stage.getIcons().add(new Image("/img/logo_min.png"));
 		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 
-		stage.showAndWait();
+		stage.show();
 
-	}
-
-	public void onCloseStage() {
-
-		try {
-			Path path = Controller.getInstance().getConfiguration(Controller.getInstance().getActualCourse());
-			path.toFile().getParentFile().mkdirs();
-			Files.write(path,
-					Controller.getInstance().getMainConfiguration().toJson().getBytes(StandardCharsets.UTF_8));
-		} catch (IOException e) {
-			LOGGER.error("Error al guardar el fichero de configuración", e);
-			UtilMethods.errorWindow(controller.getStage(), I18n.get("error.saveconfiguration"));
-		}
 	}
 
 	/**

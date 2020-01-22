@@ -92,6 +92,9 @@ public class WelcomeOfflineController implements Initializable {
 
 	@FXML
 	private Label lblDateUpdate;
+	
+	@FXML
+	private Label conexionLabel;
 
 	private boolean isBBDDLoaded;
 
@@ -103,7 +106,8 @@ public class WelcomeOfflineController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		try {
-
+			conexionLabel.setText(controller.isOfflineMode() ? I18n.get("text.withoutconnection")
+					: I18n.get("text.withoutconnection"));
 			lblUser.setText(controller.getUser().getFullName());
 			LOGGER.info("Cargando cursos...");
 
@@ -320,4 +324,31 @@ public class WelcomeOfflineController implements Initializable {
 		}
 	}
 
+	
+	/**
+	 * Vuelve a la ventana de login de usuario.
+	 * 
+	 * @param actionEvent El ActionEvent.
+	 */
+	public void logOut(ActionEvent actionEvent) {
+		LOGGER.info("Cerrando sesión de usuario");
+
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Login.fxml"), I18n.getResourceBundle());
+
+			Parent root = loader.load();
+			Scene scene = new Scene(root);
+			controller.getStage().close();
+			controller.setStage(new Stage());
+			controller.getStage().setScene(scene);
+			controller.getStage().getIcons().add(new Image("/img/logo_min.png"));
+			controller.getStage().setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
+			controller.getStage().resizableProperty().setValue(Boolean.FALSE);
+			controller.getStage().show();
+
+		} catch (Exception e) {
+			LOGGER.error("Error al modifcar la ventana de JavaFX: {}", e);
+		}
+
+	}
 }

@@ -121,6 +121,10 @@ public class MainController implements Initializable {
 
 	@FXML
 	private Label lblLastUpdate;
+	
+	@FXML
+	private Label conexionLabel;
+	
 	@FXML
 	private ImageView userPhoto;
 
@@ -304,6 +308,8 @@ public class MainController implements Initializable {
 			ZonedDateTime lastLogDateTime = controller.getActualCourse().getLogs().getLastDatetime();
 			lblLastUpdate.setText(
 					I18n.get("label.lastupdate") + " " + lastLogDateTime.format(Controller.DATE_TIME_FORMATTER));
+			conexionLabel.setText(controller.isOfflineMode() ? I18n.get("text.withoutconnection")
+					: I18n.get("text.withoutconnection"));
 		} catch (Exception e) {
 			LOGGER.error("Error en la inicialización.", e);
 		}

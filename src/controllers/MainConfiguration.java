@@ -32,6 +32,11 @@ public class MainConfiguration {
 	private Map<String, Integer> categoriesOrder = new HashMap<>();
 
 	public MainConfiguration(MainController mainController) {
+		setDefaultValues();
+
+	}
+
+	public void setDefaultValues() {
 		createItem("General", "cutGrade", 5.0);
 		createItem("General", "borderLength", 10);
 		createItem("General", "borderSpace", 5);
@@ -70,7 +75,6 @@ public class MainConfiguration {
 		createItem(ChartType.CALIFICATION_BAR, "emptyGradeColor", Color.web("#D3D3D3", 0.3));
 		createItem(ChartType.CALIFICATION_BAR, "failGradeColor", Color.web("#DC143C", 0.3));
 		createItem(ChartType.CALIFICATION_BAR, "passGradeColor", Color.web("#2DC214", 0.3));
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -127,6 +131,16 @@ public class MainConfiguration {
 		properties.put(key, new CustomPropertyItem(key, category, name, clazz));
 		map.put(key, value);
 
+	}
+
+	public void overrideItem(String category, String name, Object value) {
+		overrideItem(category, name, value, value.getClass());
+	}
+	
+	public void overrideItem(String category, String name, Object value, Class<?> clazz) {
+		if (map.containsKey(category + "." + name)) {
+			createItem(category, name, value, clazz);
+		}
 	}
 
 	public void createItem(ChartType category, String name, Object value) {

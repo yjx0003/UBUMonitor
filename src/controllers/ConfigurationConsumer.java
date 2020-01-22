@@ -43,25 +43,25 @@ public class ConfigurationConsumer {
 	}
 
 	private static void manageString(MainConfiguration mainConfiguration, JSONObject jsonObject) {
-		mainConfiguration.createItem(jsonObject.getString("category"), jsonObject.getString("name"),
+		mainConfiguration.overrideItem(jsonObject.getString("category"), jsonObject.getString("name"),
 				jsonObject.getString("value"));
 	}
 
 	private static void manageBoolean(MainConfiguration mainConfiguration, JSONObject jsonObject) {
-		mainConfiguration.createItem(jsonObject.getString("category"), jsonObject.getString("name"),
+		mainConfiguration.overrideItem(jsonObject.getString("category"), jsonObject.getString("name"),
 				jsonObject.getBoolean("value"));
 
 	}
 
 	private static void manageInteger(MainConfiguration mainConfiguration, JSONObject jsonObject) {
-		mainConfiguration.createItem(jsonObject.getString("category"), jsonObject.getString("name"),
+		mainConfiguration.overrideItem(jsonObject.getString("category"), jsonObject.getString("name"),
 				jsonObject.getInt("value"));
 
 	}
 
 	private static void manageDouble(MainConfiguration mainConfiguration, JSONObject jsonObject) {
 
-		mainConfiguration.createItem(jsonObject.getString("category"), jsonObject.getString("name"),
+		mainConfiguration.overrideItem(jsonObject.getString("category"), jsonObject.getString("name"),
 				jsonObject.getDouble("value"));
 	}
 
@@ -69,7 +69,7 @@ public class ConfigurationConsumer {
 		JSONArray colorArray = jsonObject.getJSONArray("value");
 		Color color = Color.color(colorArray.getDouble(0), colorArray.getDouble(1), colorArray.getDouble(2),
 				colorArray.getDouble(3));
-		mainConfiguration.createItem(jsonObject.getString("category"), jsonObject.getString("name"), color);
+		mainConfiguration.overrideItem(jsonObject.getString("category"), jsonObject.getString("name"), color);
 	}
 
 	private static void manageLastActivity(MainConfiguration mainConfiguration, JSONObject jsonObject) {
@@ -78,7 +78,7 @@ public class ConfigurationConsumer {
 		for (int i = 0; i < jsonArray.length(); i++) {
 			list.add(LastActivityFactory.getActivity(jsonArray.getInt(i)));
 		}
-		mainConfiguration.createItem(jsonObject.getString("category"), jsonObject.getString("name"),
+		mainConfiguration.overrideItem(jsonObject.getString("category"), jsonObject.getString("name"),
 				FXCollections.observableList(list), LastActivity.class);
 	}
 
@@ -90,7 +90,7 @@ public class ConfigurationConsumer {
 		for (int i = 0; i < groupsArray.length(); i++) {
 			groups.add(groupsDB.getById(groupsArray.getInt(i)));
 		}
-		mainConfiguration.createItem(jsonObject.getString("category"), jsonObject.getString("name"),
+		mainConfiguration.overrideItem(jsonObject.getString("category"), jsonObject.getString("name"),
 				FXCollections.observableList(groups), Group.class);
 
 	}
@@ -102,7 +102,7 @@ public class ConfigurationConsumer {
 		for (int i = 0; i < rolesArray.length(); i++) {
 			roles.add(rolesDB.getById(rolesArray.getInt(i)));
 		}
-		mainConfiguration.createItem(jsonObject.getString("category"), jsonObject.getString("name"),
+		mainConfiguration.overrideItem(jsonObject.getString("category"), jsonObject.getString("name"),
 				FXCollections.observableList(roles), Role.class);
 	}
 

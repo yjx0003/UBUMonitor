@@ -107,7 +107,7 @@ public class WelcomeOfflineController implements Initializable {
 
 		try {
 			conexionLabel.setText(controller.isOfflineMode() ? I18n.get("text.withoutconnection")
-					: I18n.get("text.withoutconnection"));
+					: I18n.get("text.withconnection"));
 			lblUser.setText(controller.getUser().getFullName());
 			LOGGER.info("Cargando cursos...");
 

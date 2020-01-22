@@ -1650,8 +1650,8 @@ public class MainController implements Initializable {
 			Files.write(path,
 					Controller.getInstance().getMainConfiguration().toJson().getBytes(StandardCharsets.UTF_8));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error("Error al guardar el fichero de configuración", e);
+			UtilMethods.errorWindow(controller.getStage(), I18n.get("error.saveconfiguration"));
 		}
 	}
 

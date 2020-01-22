@@ -309,7 +309,7 @@ public class MainController implements Initializable {
 			lblLastUpdate.setText(
 					I18n.get("label.lastupdate") + " " + lastLogDateTime.format(Controller.DATE_TIME_FORMATTER));
 			conexionLabel.setText(controller.isOfflineMode() ? I18n.get("text.withoutconnection")
-					: I18n.get("text.withoutconnection"));
+					: I18n.get("text.withconnection"));
 		} catch (Exception e) {
 			LOGGER.error("Error en la inicialización.", e);
 		}

@@ -387,7 +387,7 @@ public class MainController implements Initializable {
 	private void initEnrolledUsers() {
 		// Mostramos nº participantes
 		lblCountParticipants
-				.setText(I18n.get("label.participants") + controller.getActualCourse().getEnrolledUsersCount());
+				.setText(controller.getActualCourse().getEnrolledUsersCount()+" "+ I18n.get("label.participants"));
 		tfdParticipants.setOnAction(event -> filterParticipants());
 		initEnrolledUsersListView();
 
@@ -1349,7 +1349,7 @@ public class MainController implements Initializable {
 				&& (textField.isEmpty() || e.getFullName().toLowerCase().contains(textField))
 				&& (lastActivity.contains(LastActivityFactory.getActivity(e.getLastcourseaccess(), lastLogInstant))));
 		// Mostramos nº participantes
-		lblCountParticipants.setText(I18n.get("label.participants") + filteredEnrolledList.size());
+		lblCountParticipants.setText(filteredEnrolledList.size() + " " + I18n.get("label.participants"));
 
 		findMax();
 		javaConnector.updateChart();
@@ -1640,7 +1640,7 @@ public class MainController implements Initializable {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(I18n.get("menu.importconfig"));
 		fileChooser.setInitialDirectory(new File(Config.getProperty("configurationFolderPath", "./")));
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON (*.json)","*.json"));
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
 		File file = fileChooser.showOpenDialog(controller.getStage());
 		if (file != null) {
 			ConfigurationController.loadConfiguration(controller.getMainConfiguration(), file.toPath(),
@@ -1648,13 +1648,14 @@ public class MainController implements Initializable {
 			Config.setProperty("configurationFolderPath", file.getParent());
 			changeConfiguration(event);
 		}
-		
+
 	}
-	
+
 	public void exportConfiguration(ActionEvent event) {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(I18n.get("menu.exportconfig"));
-		fileChooser.setInitialFileName(UtilMethods.removeReservedChar(controller.getActualCourse().getFullName()) + ".json");
+		fileChooser.setInitialFileName(
+				UtilMethods.removeReservedChar(controller.getActualCourse().getFullName()) + ".json");
 		fileChooser.setInitialDirectory(new File(Config.getProperty("configurationFolderPath", "./")));
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
 		File file = fileChooser.showSaveDialog(controller.getStage());

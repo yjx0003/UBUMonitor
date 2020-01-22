@@ -16,7 +16,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -387,7 +387,7 @@ public class MainController implements Initializable {
 	private void initEnrolledUsers() {
 		// Mostramos nº participantes
 		lblCountParticipants
-				.setText(controller.getActualCourse().getEnrolledUsersCount()+" "+ I18n.get("label.participants"));
+				.setText(controller.getActualCourse().getEnrolledUsersCount() + " " + I18n.get("label.participants"));
 		tfdParticipants.setOnAction(event -> filterParticipants());
 		initEnrolledUsersListView();
 
@@ -628,7 +628,7 @@ public class MainController implements Initializable {
 		listViewActivity.setCellFactory(getListCellCourseModule());
 
 		Set<CourseModule> courseModules = controller.getActualCourse().getModules();
-		Set<CourseModule> courseModuleWithActivityCompletion = new HashSet<>();
+		Set<CourseModule> courseModuleWithActivityCompletion = new LinkedHashSet<>();
 		for (CourseModule courseModule : courseModules) {
 			if (!courseModule.getActivitiesCompletion().isEmpty()) {
 				courseModuleWithActivityCompletion.add(courseModule);

@@ -6,8 +6,8 @@ import java.util.StringJoiner;
 
 import controllers.Controller;
 import controllers.I18n;
-import controllers.MainConfiguration;
 import controllers.MainController;
+import controllers.configuration.MainConfiguration;
 import javafx.scene.paint.Color;
 import model.EnrolledUser;
 import model.GradeItem;

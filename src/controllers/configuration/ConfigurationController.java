@@ -1,4 +1,4 @@
-package controllers;
+package controllers.configuration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -14,7 +14,9 @@ import org.controlsfx.property.editor.PropertyEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.configuration.CheckComboBoxPropertyEditor;
+import controllers.Controller;
+import controllers.I18n;
+import controllers.MainController;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

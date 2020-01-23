@@ -1,4 +1,4 @@
-package controllers;
+package controllers.configuration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +9,7 @@ import java.util.function.BiConsumer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import controllers.Controller;
 import javafx.collections.FXCollections;
 import javafx.scene.paint.Color;
 import model.Group;

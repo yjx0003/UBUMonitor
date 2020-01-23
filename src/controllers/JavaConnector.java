@@ -25,6 +25,7 @@ import controllers.charts.Radar;
 import controllers.charts.Stackedbar;
 import controllers.charts.Tabs;
 import controllers.charts.Violin;
+import controllers.configuration.MainConfiguration;
 import javafx.concurrent.Worker.State;
 import javafx.scene.control.Tab;
 import javafx.scene.web.WebEngine;

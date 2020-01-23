@@ -1,4 +1,4 @@
-package controllers;
+package controllers.configuration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +15,9 @@ import org.controlsfx.control.PropertySheet;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import controllers.Controller;
+import controllers.I18n;
+import controllers.MainController;
 import controllers.charts.ChartType;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;

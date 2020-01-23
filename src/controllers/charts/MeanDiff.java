@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import controllers.Controller;
-import controllers.MainConfiguration;
 import controllers.MainController;
+import controllers.configuration.MainConfiguration;
 import controllers.datasets.DataSet;
 import controllers.ubulogs.GroupByAbstract;
 import model.EnrolledUser;

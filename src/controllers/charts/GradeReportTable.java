@@ -87,7 +87,7 @@ public class GradeReportTable extends Tabulator {
 		if (useGeneralButton && (boolean)Controller.getInstance().getMainConfiguration().getValue("General", "generalActive")) {
 			array.add(addStats(gradeItems, I18n.get("chartlabel.generalMean"), stats.getGeneralStats()));
 		}
-		if (useGroupButton && (boolean)Controller.getInstance().getMainConfiguration().getValue("General", "generalActive")) {
+		if (useGroupButton && (boolean)Controller.getInstance().getMainConfiguration().getValue("General", "groupActive")) {
 			for (Group group : slcGroup.getItems()) {
 				if (group != null) {
 					array.add(addStats(gradeItems,

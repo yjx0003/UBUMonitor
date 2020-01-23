@@ -17,6 +17,7 @@
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -46,7 +47,10 @@
 								<MenuItem fx:id="MISaveChart" mnemonicParsing="false" onAction="#saveChart" text="%menu.savechart" />
 								<MenuItem fx:id="MIExportCSV" mnemonicParsing="false" onAction="#exportCSV" text="%menu.exportcsv" />
 								<MenuItem fx:id="MILogOut" mnemonicParsing="false" onAction="#logOut" text="%menu.logout" />
-								<MenuItem fx:id="MIExit" mnemonicParsing="false" onAction="#closeApplication" text="%menu.exit" />
+								<MenuItem fx:id="MIExit" mnemonicParsing="false" onAction="#closeApplication" text="%menu.exit">
+                           <accelerator>
+                              <KeyCodeCombination alt="DOWN" code="F4" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
 							</items>
 						</Menu>
 						<Menu mnemonicParsing="false" text="%menu.edit">

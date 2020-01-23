@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.configuration.Config;
 import controllers.ubugrades.CreatorUBUGradesController;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;

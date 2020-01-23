@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import controllers.Controller;
 import controllers.I18n;
-import controllers.MainConfiguration;
 import controllers.MainController;
+import controllers.configuration.MainConfiguration;
 import model.EnrolledUser;
 import model.GradeItem;
 import model.Group;

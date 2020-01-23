@@ -20,6 +20,7 @@ import javax.crypto.IllegalBlockSizeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.configuration.Config;
 import controllers.ubugrades.CreatorGradeItems;
 import controllers.ubugrades.CreatorUBUGradesController;
 import controllers.ubulogs.LogCreator;

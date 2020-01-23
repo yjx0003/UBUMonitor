@@ -24,6 +24,8 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.configuration.Config;
+import controllers.configuration.MainConfiguration;
 import javafx.stage.Stage;
 import model.Course;
 import model.DataBase;

@@ -1,4 +1,4 @@
-package controllers;
+package controllers.configuration;
 
 import java.io.File;
 import java.io.FileInputStream;

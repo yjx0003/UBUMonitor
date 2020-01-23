@@ -31,6 +31,9 @@ import org.slf4j.LoggerFactory;
 import com.sun.javafx.webkit.WebConsoleListener;
 
 import controllers.charts.Tabs;
+import controllers.configuration.Config;
+import controllers.configuration.ConfigurationController;
+import controllers.configuration.MainConfiguration;
 import controllers.ubulogs.GroupByAbstract;
 import export.CSVBuilderAbstract;
 import export.CSVExport;

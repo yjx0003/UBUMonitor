@@ -10,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controllers.Controller;
-import controllers.MainConfiguration;
 import controllers.MainController;
+import controllers.configuration.MainConfiguration;
 import controllers.datasets.DataSet;
 import controllers.datasets.DataSetComponent;
 import controllers.datasets.DataSetComponentEvent;

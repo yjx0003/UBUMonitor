@@ -99,7 +99,7 @@ public class LoginController implements Initializable {
 
 		Platform.runLater(() -> {
 			if (!Optional.ofNullable(txtUsername.getText()).orElse("").isEmpty()) {
-				
+
 				txtPassword.requestFocus(); // si hay texto cargado del usuario cambiamos el focus al texto de
 											// password
 			}
@@ -164,13 +164,16 @@ public class LoginController implements Initializable {
 	private void initializeProperties() {
 
 		txtHost.setText(Config.getProperty("host", ""));
-		String[] hosts = Config.getProperty("hosts", Config.getProperty("host", "")).split("\t");
-		TextFields.bindAutoCompletion(txtHost, hosts);
+
 		txtUsername.setText(Config.getProperty("username", ""));
 		txtPassword.setText(System.getProperty(AppInfo.APPLICATION_NAME + ".password", ""));
 		chkSaveUsername.setSelected(Boolean.parseBoolean(Config.getProperty("saveUsername")));
 		chkSaveHost.setSelected(Boolean.parseBoolean(Config.getProperty("saveHost")));
 		chkOfflineMode.setSelected(Boolean.parseBoolean(Config.getProperty("offlineMode")));
+		String[] hosts = Config.getProperty("hosts", Config.getProperty("host", "")).split("\t");
+		String[] usernames = Config.getProperty("usernames", Config.getProperty("username", "")).split("\t");
+		TextFields.bindAutoCompletion(txtUsername, usernames);
+		TextFields.bindAutoCompletion(txtHost, hosts);
 
 	}
 
@@ -186,13 +189,19 @@ public class LoginController implements Initializable {
 		String host = chkSaveHost.isSelected() ? txtHost.getText() : "";
 		Config.setProperty("host", host);
 		Config.setProperty("saveHost", Boolean.toString(chkSaveHost.isSelected()));
-		
+
 		Config.setProperty("offlineMode", Boolean.toString(chkOfflineMode.isSelected()));
-		if(chkSaveHost.isSelected()) {
-			
+		if (chkSaveUsername.isSelected()) {
+			String[] usernames = Config.getProperty("usernames", "").split("\t");
+			if (Arrays.stream(usernames).noneMatch(username::equals)) {
+				Config.setProperty("usernames", username + "\t" + String.join("\t", usernames));
+			}
+		}
+		if (chkSaveHost.isSelected()) {
+
 			String[] hosts = Config.getProperty("hosts", "").split("\t");
-			if(Arrays.stream(hosts).noneMatch(host::equals)) {	
-				Config.setProperty("hosts", host+"\t"+ String.join("\t", hosts));
+			if (Arrays.stream(hosts).noneMatch(host::equals)) {
+				Config.setProperty("hosts", host + "\t" + String.join("\t", hosts));
 			}
 		}
 
@@ -306,7 +315,7 @@ public class LoginController implements Initializable {
 
 			// Accedemos a la siguiente ventana
 			FXMLLoader loader = new FXMLLoader(sceneFXML, I18n.getResourceBundle());
-			if (controller != null) {
+			if (fxmlController != null) {
 				loader.setController(fxmlController);
 			}
 

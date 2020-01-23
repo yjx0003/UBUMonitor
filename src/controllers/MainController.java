@@ -555,11 +555,10 @@ public class MainController implements Initializable {
 				textFieldMax.setText(oldValue);
 			}
 		});
-		LogStats logStats =controller.getActualCourse().getLogStats();
+		LogStats logStats = controller.getActualCourse().getLogStats();
 		TypeTimes typeTime = controller.getMainConfiguration().getValue("General", "initialTypeTimes");
 		// añadimos los elementos de la enumeracion en el choicebox
-		ObservableList<GroupByAbstract<?>> typeTimes = FXCollections
-				.observableArrayList(logStats.getList());
+		ObservableList<GroupByAbstract<?>> typeTimes = FXCollections.observableArrayList(logStats.getList());
 		choiceBoxDate.setItems(typeTimes);
 		choiceBoxDate.getSelectionModel().select(logStats.getByType(typeTime));
 
@@ -1633,7 +1632,6 @@ public class MainController implements Initializable {
 		stage.setOnHiding(event -> configurationController.onClose());
 		stage.setScene(newScene);
 		stage.initModality(Modality.NONE);
-		
 
 		stage.getIcons().add(new Image("/img/logo_min.png"));
 		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
@@ -1649,10 +1647,15 @@ public class MainController implements Initializable {
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
 		File file = fileChooser.showOpenDialog(controller.getStage());
 		if (file != null) {
-			ConfigurationController.loadConfiguration(controller.getMainConfiguration(), file.toPath(),
-					controller.getStage());
 			Config.setProperty("configurationFolderPath", file.getParent());
-			changeConfiguration(event);
+			try {
+				ConfigurationController.loadConfiguration(controller.getMainConfiguration(), file.toPath(),
+						controller.getStage());
+				changeConfiguration(event);
+			} catch (RuntimeException e) {
+				UtilMethods.errorWindow(controller.getStage(), I18n.get("error.filenotvalid"));
+			}
+
 		}
 
 	}

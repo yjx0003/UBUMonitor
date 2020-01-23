@@ -269,17 +269,7 @@ public class JavaConnector {
 		return currentTypeActivityCompletion;
 	}
 
-	public void updateButtons() {
-		updateButton("General", "legendActive", "btnLegend");
-		updateButton("General", "generalActive", "btnMean");
-		updateButton("General", "groupActive", "btnGroupMean");
 
-		
-	}
-
-	private void updateButton(String category, String name, String button) {
-		webViewChartsEngine.executeScript(String.format("imageButton('%s',  %s)", button,
-				Controller.getInstance().getMainConfiguration().getValue(category, name)));
-	}
+	
 
 }

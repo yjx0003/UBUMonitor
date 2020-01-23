@@ -19,6 +19,7 @@ import controllers.Controller;
 import controllers.I18n;
 import controllers.MainController;
 import controllers.charts.ChartType;
+import controllers.ubulogs.TypeTimes;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -41,6 +42,7 @@ public class MainConfiguration {
 
 	public void setDefaultValues() {
 		createItem("General", "cutGrade", 5.0);
+		
 		createItem("General", "borderLength", 10);
 		createItem("General", "borderSpace", 5);
 		createItem("General", "legendActive", true);
@@ -53,6 +55,7 @@ public class MainConfiguration {
 		createItem("General", "initialGroups", FXCollections.observableArrayList(new ArrayList<Group>()), Group.class);
 		createItem("General", "initialLastActivity",
 				FXCollections.observableArrayList(LastActivityFactory.getAllLastActivity()), LastActivity.class);
+		createItem("General", "initialTypeTimes", TypeTimes.YEAR_WEEK);
 		createItem(ChartType.STACKED_BAR, "calculateMax", false);
 		createItem(ChartType.HEAT_MAP, "calculateMax", false);
 		createItem(ChartType.HEAT_MAP, "zeroValue", Color.web("#f78880"));

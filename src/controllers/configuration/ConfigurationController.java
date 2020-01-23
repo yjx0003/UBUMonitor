@@ -88,14 +88,13 @@ public class ConfigurationController implements Initializable {
 	}
 
 	public void applyConfiguration() {
-		mainController.getJavaConnector().updateButtons();
 		mainController.getJavaConnector().updateChart();
 	}
 
 	public void restoreConfiguration(ActionEvent event) {
 		Controller.getInstance().getMainConfiguration().setDefaultValues();
-		stage.close();
-		mainController.changeConfiguration(event);
+		propertySheet.getItems().setAll(Controller.getInstance().getMainConfiguration().getProperties());
+		
 	}
 
 	public void restoreSavedConfiguration() {

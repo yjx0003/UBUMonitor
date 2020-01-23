@@ -11,6 +11,7 @@ import org.controlsfx.control.CheckComboBox;
 
 import controllers.Controller;
 import controllers.MainController;
+import controllers.configuration.MainConfiguration;
 import controllers.ubulogs.GroupByAbstract;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
@@ -198,13 +199,17 @@ public abstract class Chart {
 	public abstract String export();
 
 	public StringJoiner getDefaultOptions() {
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 		StringJoiner jsObject = JSObject();
 		addKeyValue(jsObject, "useLegend", useLegend);
 		addKeyValue(jsObject, "useGroup", useGroupButton);
 		addKeyValue(jsObject, "useGeneral", useGeneralButton);
 		addKeyValueWithQuote(jsObject, "tab", tabName);
 		addKeyValueWithQuote(jsObject, "button", getChartType().name());
-		addKeyValue(jsObject, "legendActive", (boolean)Controller.getInstance().getMainConfiguration().getValue("General", "legendActive"));
+		addKeyValue(jsObject, "legendActive", (boolean)mainConfiguration.getValue("General", "legendActive"));
+		addKeyValue(jsObject, "generalActive", (boolean)mainConfiguration.getValue("General", "generalActive"));
+		addKeyValue(jsObject, "groupActive", (boolean)mainConfiguration.getValue("General", "groupActive"));
+
 		return jsObject;
 
 	}

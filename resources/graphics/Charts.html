@@ -226,6 +226,9 @@
         displayApexChart(false);
         displayChartjs(true);
         displayTabulator(false);
+        imageButton("btnLegend", options.legendActive);
+        imageButton("btnMean", options.generalActive);
+        imageButton("btnGroupMean", options.groupActive);
 
 
         disableTab(options.tab, options.button);
@@ -240,7 +243,7 @@
             if(myChart.options.legend ==null){
             	myChart.options.legend = {};
             }
-            myChart.options.legend.display = options.useLegend && options.legendActive;
+            myChart.options.legend.display = options.legendActive;
             myChart.update();        
             
             

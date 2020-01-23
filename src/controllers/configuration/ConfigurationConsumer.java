@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import controllers.Controller;
+import controllers.ubulogs.TypeTimes;
 import javafx.collections.FXCollections;
 import javafx.scene.paint.Color;
 import model.Group;
@@ -30,6 +31,7 @@ public class ConfigurationConsumer {
 		CONSUMER_MAP.put(Integer.class.toString(), ConfigurationConsumer::manageInteger);
 		CONSUMER_MAP.put(Boolean.class.toString(), ConfigurationConsumer::manageBoolean);
 		CONSUMER_MAP.put(String.class.toString(), ConfigurationConsumer::manageString);
+		CONSUMER_MAP.put(TypeTimes.class.toString(), ConfigurationConsumer::manageTypeTimes);
 	}
 
 	public static void consume(MainConfiguration mainConfiguration, JSONObject jsonObject) {
@@ -41,6 +43,10 @@ public class ConfigurationConsumer {
 
 	private static void manageDefault(MainConfiguration mainConfiguration, JSONObject jsonObject) {
 		//do nothing
+	}
+	private static void manageTypeTimes(MainConfiguration mainConfiguration, JSONObject jsonObject) {
+		mainConfiguration.overrideItem(jsonObject.getString("category"), jsonObject.getString("name"),
+				TypeTimes.valueOf(jsonObject.getString("value")));
 	}
 
 	private static void manageString(MainConfiguration mainConfiguration, JSONObject jsonObject) {

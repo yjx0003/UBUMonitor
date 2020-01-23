@@ -35,6 +35,7 @@ import controllers.configuration.Config;
 import controllers.configuration.ConfigurationController;
 import controllers.configuration.MainConfiguration;
 import controllers.ubulogs.GroupByAbstract;
+import controllers.ubulogs.TypeTimes;
 import export.CSVBuilderAbstract;
 import export.CSVExport;
 import javafx.collections.FXCollections;
@@ -85,6 +86,7 @@ import model.GradeItem;
 import model.Group;
 import model.LastActivity;
 import model.LastActivityFactory;
+import model.LogStats;
 import model.ModuleType;
 import model.Role;
 import model.Section;
@@ -553,12 +555,13 @@ public class MainController implements Initializable {
 				textFieldMax.setText(oldValue);
 			}
 		});
-
+		LogStats logStats =controller.getActualCourse().getLogStats();
+		TypeTimes typeTime = controller.getMainConfiguration().getValue("General", "initialTypeTimes");
 		// añadimos los elementos de la enumeracion en el choicebox
 		ObservableList<GroupByAbstract<?>> typeTimes = FXCollections
-				.observableArrayList(controller.getActualCourse().getLogStats().getList());
+				.observableArrayList(logStats.getList());
 		choiceBoxDate.setItems(typeTimes);
-		choiceBoxDate.getSelectionModel().select(controller.getActualCourse().getLogStats().getByType());
+		choiceBoxDate.getSelectionModel().select(logStats.getByType(typeTime));
 
 		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> {
 			applyFilterLogs();
@@ -1629,8 +1632,8 @@ public class MainController implements Initializable {
 		configurationController.setStage(stage);
 		stage.setOnHiding(event -> configurationController.onClose());
 		stage.setScene(newScene);
-		stage.initModality(Modality.APPLICATION_MODAL);
-		stage.initOwner(controller.getStage());
+		stage.initModality(Modality.NONE);
+		
 
 		stage.getIcons().add(new Image("/img/logo_min.png"));
 		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);

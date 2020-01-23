@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.controlsfx.control.textfield.TextFields;
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,17 +92,14 @@ public class LoginController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		txtHost.textProperty().addListener(
-				(observable, oldValue, newValue) -> insecureProtocol.setVisible(Optional.ofNullable(newValue).orElse("").startsWith("http://")));
+		txtHost.textProperty().addListener((observable, oldValue, newValue) -> insecureProtocol
+				.setVisible(Optional.ofNullable(newValue).orElse("").startsWith("http://")));
 
-		try {
-			initializeProperties();
-		} catch (IOException e) {
-			LOGGER.error("No se ha podido inicializar el fichero properties");
-		}
+		initializeProperties();
 
 		Platform.runLater(() -> {
-			if (Optional.ofNullable(txtUsername.getText()).orElse("").isEmpty()) {
+			if (!Optional.ofNullable(txtUsername.getText()).orElse("").isEmpty()) {
+				
 				txtPassword.requestFocus(); // si hay texto cargado del usuario cambiamos el focus al texto de
 											// password
 			}
@@ -162,11 +161,13 @@ public class LoginController implements Initializable {
 	 * 
 	 * @throws IOException
 	 */
-	private void initializeProperties() throws IOException {
+	private void initializeProperties() {
 
-		txtHost.setText(Config.getProperty("host", null));
-		txtUsername.setText(Config.getProperty("username", null));
-		txtPassword.setText(System.getProperty(AppInfo.APPLICATION_NAME + ".password"));
+		txtHost.setText(Config.getProperty("host", ""));
+		String[] hosts = Config.getProperty("hosts", Config.getProperty("host", "")).split("\t");
+		TextFields.bindAutoCompletion(txtHost, hosts);
+		txtUsername.setText(Config.getProperty("username", ""));
+		txtPassword.setText(System.getProperty(AppInfo.APPLICATION_NAME + ".password", ""));
 		chkSaveUsername.setSelected(Boolean.parseBoolean(Config.getProperty("saveUsername")));
 		chkSaveHost.setSelected(Boolean.parseBoolean(Config.getProperty("saveHost")));
 		chkOfflineMode.setSelected(Boolean.parseBoolean(Config.getProperty("offlineMode")));
@@ -185,7 +186,15 @@ public class LoginController implements Initializable {
 		String host = chkSaveHost.isSelected() ? txtHost.getText() : "";
 		Config.setProperty("host", host);
 		Config.setProperty("saveHost", Boolean.toString(chkSaveHost.isSelected()));
+		
 		Config.setProperty("offlineMode", Boolean.toString(chkOfflineMode.isSelected()));
+		if(chkSaveHost.isSelected()) {
+			
+			String[] hosts = Config.getProperty("hosts", "").split("\t");
+			if(Arrays.stream(hosts).noneMatch(host::equals)) {	
+				Config.setProperty("hosts", host+"\t"+ String.join("\t", hosts));
+			}
+		}
 
 	}
 
@@ -207,7 +216,7 @@ public class LoginController implements Initializable {
 				} catch (MalformedURLException | RuntimeException e) {
 					lblStatus.setText(e.getMessage());
 				}
-				
+
 			} else {
 				onlineMode();
 			}
@@ -216,15 +225,15 @@ public class LoginController implements Initializable {
 	}
 
 	private List<Course> findCacheCourses() {
-		
+
 		File dir = controller.getDirectoryCache().toFile();
-		if(!dir.exists() || !dir.isDirectory()) {
+		if (!dir.exists() || !dir.isDirectory()) {
 			return Collections.emptyList();
 		}
-		
+
 		Pattern pattern = Pattern.compile("(.+)-(\\d+)$");
 		List<Course> courses = new ArrayList<>();
-		for (File cache :dir.listFiles()) {
+		for (File cache : dir.listFiles()) {
 			Matcher matcher = pattern.matcher(cache.getName());
 			if (matcher.find()) {
 				Course course = new Course(Integer.valueOf(matcher.group(2)));
@@ -245,7 +254,7 @@ public class LoginController implements Initializable {
 		user.setFullName(txtUsername.getText()); // because we have not a fullname of the user in offline mode
 		controller.setUser(user);
 		onSuccessLogin();
-		
+
 		List<Course> courses = findCacheCourses();
 		if (courses.isEmpty()) {
 			throw new IllegalArgumentException(I18n.get("error.nocacheavaible"));
@@ -281,7 +290,7 @@ public class LoginController implements Initializable {
 		controller.getStage().getScene().setCursor(Cursor.DEFAULT);
 		controller.setLoggedIn(LocalDateTime.now());
 		controller.setDirectory();
-		
+
 		controller.setOfflineMode(chkOfflineMode.isSelected());
 	}
 

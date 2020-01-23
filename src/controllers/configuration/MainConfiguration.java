@@ -41,14 +41,14 @@ public class MainConfiguration {
 	}
 
 	public void setDefaultValues() {
-		createItem("General", "cutGrade", 5.0);
 		
+		
+		createItem("General", "cutGrade", 5.0);
 		createItem("General", "borderLength", 10);
 		createItem("General", "borderSpace", 5);
 		createItem("General", "legendActive", true);
 		createItem("General", "generalActive", true);
 		createItem("General", "groupActive", true);
-
 		createItem("General", "initialRoles",
 				FXCollections.observableArrayList(Controller.getInstance().getActualCourse().getStudentRole()),
 				Role.class);
@@ -56,6 +56,8 @@ public class MainConfiguration {
 		createItem("General", "initialLastActivity",
 				FXCollections.observableArrayList(LastActivityFactory.getAllLastActivity()), LastActivity.class);
 		createItem("General", "initialTypeTimes", TypeTimes.YEAR_WEEK);
+		
+		
 		createItem(ChartType.STACKED_BAR, "calculateMax", false);
 		createItem(ChartType.HEAT_MAP, "calculateMax", false);
 		createItem(ChartType.HEAT_MAP, "zeroValue", Color.web("#f78880"));

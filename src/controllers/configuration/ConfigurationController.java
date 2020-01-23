@@ -18,7 +18,6 @@ import controllers.Controller;
 import controllers.I18n;
 import controllers.MainController;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.stage.Stage;
@@ -45,33 +44,34 @@ public class ConfigurationController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		propertySheet.getItems().addAll(Controller.getInstance().getMainConfiguration().getProperties());
-		propertySheet.setPropertyEditorFactory(new Callback<PropertySheet.Item, PropertyEditor<?>>() {
-			@Override
-			public PropertyEditor<?> call(PropertySheet.Item item) {
-				if (item.getValue() instanceof ObservableList<?>) {
-					Class<?> type = item.getType();
-					if (type == Role.class) {
-						return new CheckComboBoxPropertyEditor<>(item,
-								Controller.getInstance().getActualCourse().getRoles());
-					} else if (type == Group.class) {
-						return new CheckComboBoxPropertyEditor<>(item,
-								Controller.getInstance().getActualCourse().getGroups());
-					} else if (type == LastActivity.class) {
-						return new CheckComboBoxPropertyEditor<>(item, LastActivityFactory.getAllLastActivity(),
-								mainController.getActivityConverter());
-					}
+		propertySheet.setPropertyEditorFactory(item -> {
 
+			if (item.getValue() instanceof ObservableList<?>) {
+				Class<?> type = item.getType();
+				if (type == Role.class) {
+					return new CheckComboBoxPropertyEditor<>(item,
+							Controller.getInstance().getActualCourse().getRoles());
+				}
+				if (type == Group.class) {
+					return new CheckComboBoxPropertyEditor<>(item,
+							Controller.getInstance().getActualCourse().getGroups());
+				}
+				if (type == LastActivity.class) {
+					return new CheckComboBoxPropertyEditor<>(item, LastActivityFactory.getAllLastActivity(),
+							mainController.getActivityConverter());
 				}
 
-				return DEFAUL_PROPERTY_EDITOR_FACTORY.call(item);
 			}
+
+			return DEFAUL_PROPERTY_EDITOR_FACTORY.call(item);
 		});
 
 	}
 
 	public void onClose() {
 		Controller controller = Controller.getInstance();
-		saveConfiguration(controller.getMainConfiguration(), controller.getConfiguration(controller.getActualCourse()), stage);
+		saveConfiguration(controller.getMainConfiguration(), controller.getConfiguration(controller.getActualCourse()),
+				stage);
 		applyConfiguration();
 
 	}
@@ -79,8 +79,7 @@ public class ConfigurationController implements Initializable {
 	public static void saveConfiguration(MainConfiguration mainConfiguration, Path path, Stage stage) {
 		try {
 			path.toFile().getParentFile().mkdirs();
-			Files.write(path,
-					Controller.getInstance().getMainConfiguration().toJson().getBytes(StandardCharsets.UTF_8));
+			Files.write(path, mainConfiguration.toJson().getBytes(StandardCharsets.UTF_8));
 		} catch (IOException e) {
 			LOGGER.error("Error al guardar el fichero de configuración", e);
 			UtilMethods.errorWindow(stage, I18n.get("error.saveconfiguration"));
@@ -91,10 +90,10 @@ public class ConfigurationController implements Initializable {
 		mainController.getJavaConnector().updateChart();
 	}
 
-	public void restoreConfiguration(ActionEvent event) {
+	public void restoreConfiguration() {
 		Controller.getInstance().getMainConfiguration().setDefaultValues();
 		propertySheet.getItems().setAll(Controller.getInstance().getMainConfiguration().getProperties());
-		
+
 	}
 
 	public void restoreSavedConfiguration() {
@@ -111,6 +110,8 @@ public class ConfigurationController implements Initializable {
 
 			} catch (IOException e) {
 				UtilMethods.errorWindow(stage, I18n.get("error.chargeconfiguration"));
+			} catch (RuntimeException e) {
+				UtilMethods.errorWindow(stage, I18n.get("error.filenotvalid"));
 			}
 
 		}

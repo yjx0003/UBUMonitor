@@ -110,10 +110,7 @@ public class ConfigurationController implements Initializable {
 
 			} catch (IOException e) {
 				UtilMethods.errorWindow(stage, I18n.get("error.chargeconfiguration"));
-			} catch (RuntimeException e) {
-				UtilMethods.errorWindow(stage, I18n.get("error.filenotvalid"));
-			}
-
+			} 
 		}
 	}
 

@@ -407,7 +407,7 @@ public class WelcomeController implements Initializable {
 		task.setOnSucceeded(v -> loadNextWindow());
 		task.setOnFailed(e -> {
 			UtilMethods.errorWindow(
-					"Error al actualizar los datos del curso:" + task.getException().getCause());
+					"Error al actualizar los datos del curso:" + task.getException().getCause(), task.getException());
 			LOGGER.error("Error al actualizar los datos del curso: {}", task.getException());
 		});
 
@@ -440,7 +440,7 @@ public class WelcomeController implements Initializable {
 		} catch (IOException e) {
 
 			LOGGER.info("No se ha podido cargar la ventana Main.fxml: {}", e);
-			UtilMethods.errorWindow( "No se ha podido cargar la ventana Main.fxml");
+			UtilMethods.errorWindow( "No se ha podido cargar la ventana Main.fxml", e);
 		}
 	}
 

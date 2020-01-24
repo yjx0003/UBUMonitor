@@ -1,5 +1,7 @@
 package util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -7,7 +9,11 @@ import controllers.AppInfo;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -58,7 +64,7 @@ public class UtilMethods {
 	 * Muestra una ventana de error.
 	 * 
 	 * @param mensaje El mensaje que se quiere mostrar.
-	 * @return 
+	 * @return
 	 */
 	public static ButtonType errorWindow(String contentText) {
 		return dialogWindow(AlertType.ERROR, "Information", contentText);
@@ -69,10 +75,10 @@ public class UtilMethods {
 	 * 
 	 * @param message El mensaje que se quiere mostrar.
 	 * @param exit Indica si se quiere mostar el boton de salir o no.
-	 * @return 
+	 * @return
 	 */
 	public static ButtonType infoWindow(String contentText) {
-		
+
 		return dialogWindow(AlertType.INFORMATION, "Information", contentText);
 	}
 
@@ -80,7 +86,44 @@ public class UtilMethods {
 		return dialogWindow(AlertType.CONFIRMATION, "Confirmation", contentText);
 	}
 
+	public static ButtonType errorWindow(String contentText, Throwable ex) {
+
+		Alert alert = createAlert(AlertType.ERROR, "Error", contentText);
+
+		// Create expandable Exception.
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		ex.printStackTrace(pw);
+
+		Label label = new Label("The exception stacktrace was:");
+
+		TextArea textArea = new TextArea(sw.toString());
+		textArea.setEditable(false);
+		textArea.setWrapText(true);
+
+		textArea.setMaxWidth(Double.MAX_VALUE);
+		textArea.setMaxHeight(Double.MAX_VALUE);
+		GridPane.setVgrow(textArea, Priority.ALWAYS);
+		GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+		GridPane expContent = new GridPane();
+		expContent.setMaxWidth(Double.MAX_VALUE);
+		expContent.add(label, 0, 0);
+		expContent.add(textArea, 0, 1);
+
+		// Set expandable Exception into the dialog pane.
+		alert.getDialogPane().setExpandableContent(expContent);
+		alert.showAndWait();
+		return alert.getResult();
+	}
+
 	private static ButtonType dialogWindow(AlertType alertType, String headerText, String contentText) {
+		Alert alert = createAlert(alertType, headerText, contentText);
+		alert.showAndWait();
+		return alert.getResult();
+	}
+
+	private static Alert createAlert(AlertType alertType, String headerText, String contentText) {
 		Alert alert = new Alert(alertType);
 		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		alert.initModality(Modality.APPLICATION_MODAL);
@@ -88,8 +131,7 @@ public class UtilMethods {
 		stageAlert.getIcons().add(new Image("/img/logo_min.png"));
 		alert.setHeaderText(headerText);
 		alert.setContentText(contentText);
-		alert.showAndWait();
-		return alert.getResult();
+		return alert;
 	}
 
 }

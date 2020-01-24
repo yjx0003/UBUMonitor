@@ -82,7 +82,7 @@ public class ConfigurationController implements Initializable {
 			Files.write(path, mainConfiguration.toJson().getBytes(StandardCharsets.UTF_8));
 		} catch (IOException e) {
 			LOGGER.error("Error al guardar el fichero de configuración", e);
-			UtilMethods.errorWindow(I18n.get("error.saveconfiguration"));
+			UtilMethods.errorWindow(I18n.get("error.saveconfiguration"), e);
 		}
 	}
 
@@ -91,7 +91,7 @@ public class ConfigurationController implements Initializable {
 	}
 
 	public void restoreConfiguration() {
-		ButtonType option = UtilMethods.confirmationWindow("text.restoredefault");
+		ButtonType option = UtilMethods.confirmationWindow(I18n.get("text.restoredefault"));
 		if(option == ButtonType.OK) {
 			Controller.getInstance().getMainConfiguration().setDefaultValues();
 			propertySheet.getItems().setAll(Controller.getInstance().getMainConfiguration().getProperties());
@@ -112,7 +112,7 @@ public class ConfigurationController implements Initializable {
 				mainConfiguration.fromJson(new String(Files.readAllBytes(path), StandardCharsets.UTF_8));
 
 			} catch (IOException | RuntimeException e) {
-				UtilMethods.errorWindow(I18n.get("error.chargeconfiguration"));
+				UtilMethods.errorWindow(I18n.get("error.chargeconfiguration"), e);
 			}
 		}
 	}

@@ -276,9 +276,11 @@ public class MainController implements Initializable {
 			updateCourse.setDisable(controller.isOfflineMode());
 			stats = controller.getStats();
 
-			controller.setMainConfiguration(new MainConfiguration(this));
+			controller.setMainConfiguration(new MainConfiguration());
 			ConfigurationController.loadConfiguration(controller.getMainConfiguration(),
-					controller.getConfiguration(controller.getActualCourse()), controller.getStage());
+					controller.getConfiguration(controller.getActualCourse()));
+			
+		
 
 			initTabPaneWebView();
 			initLogOptionsFilter();
@@ -397,7 +399,7 @@ public class MainController implements Initializable {
 		initEnrolledUsersListView();
 
 		checkComboBoxGroup.getItems().addAll(controller.getActualCourse().getGroups());
-		ObservableList<Group> groups = controller.getMainConfiguration().getValue("General", "initialGroups");
+		ObservableList<Group> groups = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL, "initialGroups");
 		if (groups != null) {
 			groups.forEach(checkComboBoxGroup.getCheckModel()::check);
 		}
@@ -406,7 +408,7 @@ public class MainController implements Initializable {
 				.addListener((Change<? extends Group> g) -> filterParticipants());
 
 		checkComboBoxRole.getItems().addAll(controller.getActualCourse().getRoles());
-		ObservableList<Role> roles = controller.getMainConfiguration().getValue("General", "initialRoles");
+		ObservableList<Role> roles = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL, "initialRoles");
 		if (roles != null) {
 			roles.forEach(checkComboBoxRole.getCheckModel()::check);
 		}
@@ -414,7 +416,7 @@ public class MainController implements Initializable {
 				.addListener((Change<? extends Role> r) -> filterParticipants());
 
 		checkComboBoxActivity.getItems().addAll(LastActivityFactory.getAllLastActivity());
-		ObservableList<LastActivity> lastActivities = controller.getMainConfiguration().getValue("General",
+		ObservableList<LastActivity> lastActivities = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL,
 				"initialLastActivity");
 		if (lastActivities != null) {
 			lastActivities.forEach(checkComboBoxActivity.getCheckModel()::check);
@@ -556,7 +558,7 @@ public class MainController implements Initializable {
 			}
 		});
 		LogStats logStats = controller.getActualCourse().getLogStats();
-		TypeTimes typeTime = controller.getMainConfiguration().getValue("General", "initialTypeTimes");
+		TypeTimes typeTime = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL, "initialTypeTimes");
 		// añadimos los elementos de la enumeracion en el choicebox
 		ObservableList<GroupByAbstract<?>> typeTimes = FXCollections.observableArrayList(logStats.getList());
 		choiceBoxDate.setItems(typeTimes);
@@ -1492,7 +1494,7 @@ public class MainController implements Initializable {
 			}
 		} catch (IOException e) {
 			LOGGER.error("Error al guardar el gráfico: {}", e);
-			UtilMethods.errorWindow(controller.getStage(), I18n.get("error.savechart"));
+			UtilMethods.errorWindow(I18n.get("error.savechart"));
 		}
 	}
 
@@ -1503,7 +1505,7 @@ public class MainController implements Initializable {
 	 */
 	public void updateCourse(ActionEvent actionEvent) {
 		if (controller.isOfflineMode()) {
-			UtilMethods.errorWindow(controller.getStage(), I18n.get("error.updateofflinemode"));
+			UtilMethods.errorWindow( I18n.get("error.updateofflinemode"));
 		} else {
 			changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController(true));
 		}
@@ -1528,14 +1530,14 @@ public class MainController implements Initializable {
 			if (selectedDir != null) {
 				CSVBuilderAbstract.setPath(selectedDir.toPath());
 				CSVExport.run();
-				UtilMethods.infoWindow(controller.getStage(),
+				UtilMethods.infoWindow(
 						I18n.get("message.export_csv_success") + selectedDir.getAbsolutePath());
 				Config.setProperty("csvFolderPath", selectedDir.getAbsolutePath());
 			}
 
 		} catch (Exception e) {
 			LOGGER.error("Error al exportar ficheros CSV.", e);
-			UtilMethods.errorWindow(controller.getStage(), I18n.get("error.savecsvfiles"));
+			UtilMethods.errorWindow( I18n.get("error.savecsvfiles"));
 		}
 	}
 
@@ -1612,7 +1614,7 @@ public class MainController implements Initializable {
 		listViewCourseModule.getSelectionModel().clearSelection();
 	}
 
-	public void changeConfiguration(ActionEvent actionEvent) {
+	public void changeConfiguration() {
 
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Configuration.fxml"),
 				I18n.getResourceBundle());
@@ -1640,7 +1642,7 @@ public class MainController implements Initializable {
 
 	}
 
-	public void importConfiguration(ActionEvent event) {
+	public void importConfiguration() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(I18n.get("menu.importconfig"));
 		fileChooser.setInitialDirectory(new File(Config.getProperty("configurationFolderPath", "./")));
@@ -1649,11 +1651,10 @@ public class MainController implements Initializable {
 		if (file != null) {
 			Config.setProperty("configurationFolderPath", file.getParent());
 			try {
-				ConfigurationController.loadConfiguration(controller.getMainConfiguration(), file.toPath(),
-						controller.getStage());
-				changeConfiguration(event);
+				ConfigurationController.loadConfiguration(controller.getMainConfiguration(), file.toPath());
+				changeConfiguration();
 			} catch (RuntimeException e) {
-				UtilMethods.errorWindow(controller.getStage(), I18n.get("error.filenotvalid"));
+				UtilMethods.errorWindow( I18n.get("error.filenotvalid"));
 			}
 
 		}
@@ -1669,8 +1670,8 @@ public class MainController implements Initializable {
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
 		File file = fileChooser.showSaveDialog(controller.getStage());
 		if (file != null) {
-			ConfigurationController.saveConfiguration(controller.getMainConfiguration(), file.toPath(),
-					controller.getStage());
+			ConfigurationController.saveConfiguration(controller.getMainConfiguration(), file.toPath()
+					);
 			Config.setProperty("configurationFolderPath", file.getParent());
 		}
 	}

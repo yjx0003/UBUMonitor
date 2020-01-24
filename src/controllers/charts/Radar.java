@@ -28,6 +28,8 @@ public class Radar extends ChartjsGradeItem {
 	public String getOptions() {
 		StringJoiner jsObject = getDefaultOptions();
 		addKeyValueWithQuote(jsObject, "typeGraph", "radar");
+		//addKeyValue(jsObject, "scales", "{yAxes:[{" + getYScaleLabel() + "}],xAxes:[{" + getYScaleLabel() + "}]}");
+
 		return jsObject.toString();
 	}
 

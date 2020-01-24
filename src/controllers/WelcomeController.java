@@ -406,7 +406,7 @@ public class WelcomeController implements Initializable {
 		lblProgress.textProperty().bind(task.messageProperty());
 		task.setOnSucceeded(v -> loadNextWindow());
 		task.setOnFailed(e -> {
-			UtilMethods.errorWindow(controller.getStage(),
+			UtilMethods.errorWindow(
 					"Error al actualizar los datos del curso:" + task.getException().getCause());
 			LOGGER.error("Error al actualizar los datos del curso: {}", task.getException());
 		});
@@ -440,7 +440,7 @@ public class WelcomeController implements Initializable {
 		} catch (IOException e) {
 
 			LOGGER.info("No se ha podido cargar la ventana Main.fxml: {}", e);
-			UtilMethods.errorWindow(controller.getStage(), "No se ha podido cargar la ventana Main.fxml");
+			UtilMethods.errorWindow( "No se ha podido cargar la ventana Main.fxml");
 		}
 	}
 

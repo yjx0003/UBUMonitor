@@ -32,13 +32,14 @@ public class Violin extends ChartjsGradeItem {
 		}
 		if (useGeneralButton) {
 			createData(Controller.getInstance().getActualCourse().getEnrolledUsers(), selectedGradeItems, stringBuilder,
-					I18n.get("text.all"), !(boolean) mainConfiguration.getValue("General", "generalActive"));
+					I18n.get("text.all"),
+					!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive"));
 		}
 		if (useGroupButton) {
 			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
 
 				createData(group.getEnrolledUsers(), selectedGradeItems, stringBuilder, group.getGroupName(),
-						!(boolean) mainConfiguration.getValue("General", "groupActive"));
+						!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive"));
 
 			}
 
@@ -97,7 +98,12 @@ public class Violin extends ChartjsGradeItem {
 		int tooltipDecimals = mainConfiguration.getValue(getChartType(), "tooltipDecimals");
 		addKeyValueWithQuote(jsObject, "typeGraph", useHorizontal ? "horizontalViolin" : "violin");
 		addKeyValue(jsObject, "tooltipDecimals", tooltipDecimals);
-		addKeyValue(jsObject, "scales", "{yAxes:[{ticks:{min:0}}],xAxes:[{ticks:{min:0}}]}");
+		
+		String xLabel = useHorizontal ? getYScaleLabel() :getXScaleLabel();
+		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
+		
+		addKeyValue(jsObject, "scales",
+				"{yAxes:[{" + yLabel + ",ticks:{min:0}}],xAxes:[{" + xLabel + ",ticks:{min:0}}]}");
 		return jsObject.toString();
 	}
 }

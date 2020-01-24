@@ -8,6 +8,7 @@ import java.util.StringJoiner;
 import controllers.Controller;
 import controllers.I18n;
 import controllers.MainController;
+import controllers.configuration.MainConfiguration;
 import controllers.datasets.DataSet;
 import controllers.ubulogs.GroupByAbstract;
 import model.EnrolledUser;
@@ -54,9 +55,10 @@ public class CumLine extends ChartjsLog {
 		addKeyValue(dataset, "borderColor", hex(generalMeanTranslate));
 		addKeyValue(dataset, "backgroundColor", rgba(generalMeanTranslate, OPACITY));
 		addKeyValue(dataset, "borderDash",
-				"[" + Controller.getInstance().getMainConfiguration().getValue("General", "borderLength") + ","
-						+ Controller.getInstance().getMainConfiguration().getValue("General", "borderSpace") + "]");
-		addKeyValue(dataset, "hidden", !(boolean)Controller.getInstance().getMainConfiguration().getValue("General", "generalActive"));
+				"[" + Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL, "borderLength") + ","
+						+ Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL, "borderSpace") + "]");
+		addKeyValue(dataset, "hidden",
+				!(boolean) Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL, "generalActive"));
 		StringJoiner results = JSArray();
 		double cumResult = 0;
 		for (int j = 0; j < rangeDates.size(); j++) {
@@ -129,9 +131,11 @@ public class CumLine extends ChartjsLog {
 	public String getOptions() {
 		StringJoiner jsObject = getDefaultOptions();
 		addKeyValueWithQuote(jsObject, "typeGraph", "line");
-		
-		addKeyValue(jsObject, "scales", "{yAxes:[{ticks:{suggestedMax:"+getSuggestedMax()+",stepSize:0}}]}");
-		addKeyValue(jsObject, "tooltips", "{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+' : '+Math.round(100*a.yLabel)/100}}}");
+
+		addKeyValue(jsObject, "scales", "{yAxes:[{" + getYScaleLabel() + ",ticks:{suggestedMax:" + getSuggestedMax()
+				+ ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
+		addKeyValue(jsObject, "tooltips",
+				"{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+' : '+Math.round(100*a.yLabel)/100}}}");
 		return jsObject.toString();
 	}
 

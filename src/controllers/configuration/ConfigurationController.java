@@ -70,19 +70,18 @@ public class ConfigurationController implements Initializable {
 
 	public void onClose() {
 		Controller controller = Controller.getInstance();
-		saveConfiguration(controller.getMainConfiguration(), controller.getConfiguration(controller.getActualCourse()),
-				stage);
+		saveConfiguration(controller.getMainConfiguration(), controller.getConfiguration(controller.getActualCourse()));
 		applyConfiguration();
 
 	}
 
-	public static void saveConfiguration(MainConfiguration mainConfiguration, Path path, Stage stage) {
+	public static void saveConfiguration(MainConfiguration mainConfiguration, Path path) {
 		try {
 			path.toFile().getParentFile().mkdirs();
 			Files.write(path, mainConfiguration.toJson().getBytes(StandardCharsets.UTF_8));
 		} catch (IOException e) {
 			LOGGER.error("Error al guardar el fichero de configuración", e);
-			UtilMethods.errorWindow(stage, I18n.get("error.saveconfiguration"));
+			UtilMethods.errorWindow(I18n.get("error.saveconfiguration"));
 		}
 	}
 
@@ -98,19 +97,18 @@ public class ConfigurationController implements Initializable {
 
 	public void restoreSavedConfiguration() {
 		Controller controller = Controller.getInstance();
-		loadConfiguration(controller.getMainConfiguration(), controller.getConfiguration(controller.getActualCourse()),
-				stage);
+		loadConfiguration(controller.getMainConfiguration(), controller.getConfiguration(controller.getActualCourse()));
 
 	}
 
-	public static void loadConfiguration(MainConfiguration mainConfiguration, Path path, Stage stage) {
+	public static void loadConfiguration(MainConfiguration mainConfiguration, Path path) {
 		if (path.toFile().exists()) {
 			try {
 				mainConfiguration.fromJson(new String(Files.readAllBytes(path), StandardCharsets.UTF_8));
 
-			} catch (IOException e) {
-				UtilMethods.errorWindow(stage, I18n.get("error.chargeconfiguration"));
-			} 
+			} catch (IOException | RuntimeException e) {
+				UtilMethods.errorWindow(I18n.get("error.chargeconfiguration"));
+			}
 		}
 	}
 

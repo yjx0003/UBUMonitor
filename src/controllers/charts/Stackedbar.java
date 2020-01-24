@@ -117,7 +117,7 @@ public class Stackedbar extends Chartjs {
 		addKeyValueWithQuote(jsObject, "typeGraph", "bar");
 		
 		addKeyValue(jsObject, "tooltips", "{position:\"nearest\",mode:\"x\",callbacks:{label:function(a,e){return e.datasets[a.datasetIndex].label+\" : \"+Math.round(100*a.yLabel)/100},afterTitle:function(a,e){return e.datasets[a[0].datasetIndex].name}}}");
-		addKeyValue(jsObject, "scales", "{yAxes:[{stacked:!0,ticks:{suggestedMax:"+suggestedMax+",stepSize:0}}]}");
+		addKeyValue(jsObject, "scales", "{yAxes:[{"+getYScaleLabel()+",stacked:!0,ticks:{suggestedMax:"+suggestedMax+",stepSize:0}}],xAxes:[{"+getXScaleLabel()+"}]}");
 		addKeyValue(jsObject, "legend", "{labels:{filter:function(e,t){return\"line\"==t.datasets[e.datasetIndex].type}}}");
 		addKeyValue(jsObject, "onClick", "function(t,a){let e=myChart.getElementAtEvent(t)[0];e&&javaConnector.dataPointSelection(myChart.data.datasets[e._datasetIndex].stack)}");
 		return jsObject.toString();

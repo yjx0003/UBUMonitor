@@ -1494,7 +1494,7 @@ public class MainController implements Initializable {
 			}
 		} catch (IOException e) {
 			LOGGER.error("Error al guardar el gráfico: {}", e);
-			UtilMethods.errorWindow(I18n.get("error.savechart"));
+			UtilMethods.errorWindow(I18n.get("error.savechart"), e);
 		}
 	}
 
@@ -1537,7 +1537,7 @@ public class MainController implements Initializable {
 
 		} catch (Exception e) {
 			LOGGER.error("Error al exportar ficheros CSV.", e);
-			UtilMethods.errorWindow( I18n.get("error.savecsvfiles"));
+			UtilMethods.errorWindow( I18n.get("error.savecsvfiles"), e);
 		}
 	}
 
@@ -1654,7 +1654,7 @@ public class MainController implements Initializable {
 				ConfigurationController.loadConfiguration(controller.getMainConfiguration(), file.toPath());
 				changeConfiguration();
 			} catch (RuntimeException e) {
-				UtilMethods.errorWindow( I18n.get("error.filenotvalid"));
+				UtilMethods.errorWindow( I18n.get("error.filenotvalid"), e);
 			}
 
 		}

@@ -2,7 +2,6 @@ package controllers.charts;
 
 import java.util.StringJoiner;
 
-import controllers.I18n;
 import controllers.MainController;
 import controllers.configuration.MainConfiguration;
 

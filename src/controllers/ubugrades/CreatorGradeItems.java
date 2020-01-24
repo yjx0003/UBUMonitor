@@ -296,12 +296,14 @@ public class CreatorGradeItems {
 			for (int j = 0; j < tabledata.length(); j++) {
 				JSONObject tabledataObject = tabledata.optJSONObject(j);
 
-				if (tabledataObject != null && tabledataObject.has("grade")) {
+				if (tabledataObject != null && tabledataObject.has("percentage")) {
 
 					setGrade(tabledataObject, gradeItems.get(gradeItemCount), enrolledUser);
 					setPercentage(tabledataObject, gradeItems.get(gradeItemCount), enrolledUser);
+			
 					gradeItemCount++;
 				}
+				
 
 			}
 		}
@@ -315,7 +317,11 @@ public class CreatorGradeItems {
 	 * @param enrolledUser usuario
 	 */
 	private void setGrade(JSONObject tabledataObject, GradeItem gradeItem, EnrolledUser enrolledUser) {
-
+		if(!tabledataObject.has("grade")) {
+			gradeItem.addUserGrade(enrolledUser, Double.NaN);
+			return;
+		}
+		
 		String content = tabledataObject.getJSONObject("grade").getString(CONTENT);
 		double grade = Double.NaN;
 

@@ -58,40 +58,38 @@ public class UtilMethods {
 	 * Muestra una ventana de error.
 	 * 
 	 * @param mensaje El mensaje que se quiere mostrar.
+	 * @return 
 	 */
-	public static void errorWindow(String mensaje) {
-		Alert alert = new Alert(AlertType.ERROR);
-
-		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
-		alert.setHeaderText("Error");
-		alert.initModality(Modality.APPLICATION_MODAL);
-		
-		alert.getDialogPane().setContentText(mensaje);
-		Stage stageAlert = (Stage) alert.getDialogPane().getScene().getWindow();
-		stageAlert.getIcons().add(new Image("/img/logo_min.png"));
-		alert.getButtonTypes().setAll(ButtonType.CLOSE);
-
-		alert.showAndWait();
+	public static ButtonType errorWindow(String contentText) {
+		return dialogWindow(AlertType.ERROR, "Information", contentText);
 	}
 
 	/**
 	 * Muestra una ventana de información.
 	 * 
-	 * @param mensaje El mensaje que se quiere mostrar.
+	 * @param message El mensaje que se quiere mostrar.
 	 * @param exit Indica si se quiere mostar el boton de salir o no.
+	 * @return 
 	 */
-	public static void infoWindow(String mensaje) {
-		Alert alert = new Alert(AlertType.INFORMATION);
+	public static ButtonType infoWindow(String contentText) {
+		
+		return dialogWindow(AlertType.INFORMATION, "Information", contentText);
+	}
 
+	public static ButtonType confirmationWindow(String contentText) {
+		return dialogWindow(AlertType.CONFIRMATION, "Confirmation", contentText);
+	}
+
+	private static ButtonType dialogWindow(AlertType alertType, String headerText, String contentText) {
+		Alert alert = new Alert(alertType);
 		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
-		alert.setHeaderText("Information");
 		alert.initModality(Modality.APPLICATION_MODAL);
 		Stage stageAlert = (Stage) alert.getDialogPane().getScene().getWindow();
 		stageAlert.getIcons().add(new Image("/img/logo_min.png"));
-		alert.getDialogPane().setContentText(mensaje);
-		alert.getButtonTypes().setAll(ButtonType.OK);
+		alert.setHeaderText(headerText);
+		alert.setContentText(contentText);
 		alert.showAndWait();
-
+		return alert.getResult();
 	}
-	
+
 }

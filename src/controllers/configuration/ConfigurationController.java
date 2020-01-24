@@ -20,6 +20,7 @@ import controllers.MainController;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import model.Group;
@@ -90,8 +91,12 @@ public class ConfigurationController implements Initializable {
 	}
 
 	public void restoreConfiguration() {
-		Controller.getInstance().getMainConfiguration().setDefaultValues();
-		propertySheet.getItems().setAll(Controller.getInstance().getMainConfiguration().getProperties());
+		ButtonType option = UtilMethods.confirmationWindow("text.restoredefault");
+		if(option == ButtonType.OK) {
+			Controller.getInstance().getMainConfiguration().setDefaultValues();
+			propertySheet.getItems().setAll(Controller.getInstance().getMainConfiguration().getProperties());
+		}
+	
 
 	}
 

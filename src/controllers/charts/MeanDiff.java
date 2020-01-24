@@ -119,12 +119,12 @@ public class MeanDiff extends ChartjsLog {
 
 		StringJoiner jsObject = getDefaultOptions();
 		addKeyValueWithQuote(jsObject, "typeGraph", "line");
-		addKeyValue(jsObject, "scales",
-				"{yAxes:[{gridLines:{zeroLineColor:"
-						+ colorToRGB(mainConfiguration.getValue(getChartType(), "zeroLineColor")) + ",zeroLineWidth:"
-						+ mainConfiguration.getValue(getChartType(), "zeroLineWidth") + ",zeroLineBorderDash:["
-						+ mainConfiguration.getValue("General", "borderLength") + ","
-						+ mainConfiguration.getValue("General", "borderSpace") + "]},ticks:{suggestedMax:" + getSuggestedMax() + ",suggestedMin:" + -getSuggestedMax()+",stepSize:0}}]}");
+		addKeyValue(jsObject, "scales", "{yAxes:[{" + getYScaleLabel() + ",gridLines:{zeroLineColor:"
+				+ colorToRGB(mainConfiguration.getValue(getChartType(), "zeroLineColor")) + ",zeroLineWidth:"
+				+ mainConfiguration.getValue(getChartType(), "zeroLineWidth") + ",zeroLineBorderDash:["
+				+ mainConfiguration.getValue(MainConfiguration.GENERAL, "borderLength") + ","
+				+ mainConfiguration.getValue(MainConfiguration.GENERAL, "borderSpace") + "]},ticks:{suggestedMax:"
+				+ getSuggestedMax() + ",suggestedMin:" + -getSuggestedMax() + ",stepSize:0}}],xAxes:[{"+getXScaleLabel()+"}]}");
 		addKeyValue(jsObject, "tooltips",
 				"{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+\" : \"+Math.round(100*a.yLabel)/100}}}");
 		return jsObject.toString();

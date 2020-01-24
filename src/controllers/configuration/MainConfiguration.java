@@ -17,7 +17,6 @@ import org.json.JSONObject;
 
 import controllers.Controller;
 import controllers.I18n;
-import controllers.MainController;
 import controllers.charts.ChartType;
 import controllers.ubulogs.TypeTimes;
 import javafx.beans.value.ObservableValue;
@@ -31,11 +30,13 @@ import model.Role;
 
 public class MainConfiguration {
 
+	private static final String VALUE = "value";
+	public static final String GENERAL = "general";
 	private Map<String, Object> map = new LinkedHashMap<>();
 	private Map<String, CustomPropertyItem> properties = new LinkedHashMap<>();
 	private Map<String, Integer> categoriesOrder = new HashMap<>();
 
-	public MainConfiguration(MainController mainController) {
+	public MainConfiguration() {
 		setDefaultValues();
 
 	}
@@ -43,20 +44,24 @@ public class MainConfiguration {
 	public void setDefaultValues() {
 		
 		
-		createItem("General", "cutGrade", 5.0);
-		createItem("General", "borderLength", 10);
-		createItem("General", "borderSpace", 5);
-		createItem("General", "legendActive", true);
-		createItem("General", "generalActive", true);
-		createItem("General", "groupActive", true);
-		createItem("General", "initialRoles",
+		createItem(GENERAL, "cutGrade", 5.0);
+		createItem(GENERAL, "borderLength", 10);
+		createItem(GENERAL, "borderSpace", 5);
+		createItem(GENERAL, "legendActive", true);
+		createItem(GENERAL, "generalActive", true);
+		createItem(GENERAL, "groupActive", true);
+		createItem(GENERAL, "initialRoles",
 				FXCollections.observableArrayList(Controller.getInstance().getActualCourse().getStudentRole()),
 				Role.class);
-		createItem("General", "initialGroups", FXCollections.observableArrayList(new ArrayList<Group>()), Group.class);
-		createItem("General", "initialLastActivity",
+		createItem(GENERAL, "initialGroups", FXCollections.observableArrayList(new ArrayList<Group>()), Group.class);
+		createItem(GENERAL, "initialLastActivity",
 				FXCollections.observableArrayList(LastActivityFactory.getAllLastActivity()), LastActivity.class);
-		createItem("General", "initialTypeTimes", TypeTimes.YEAR_WEEK);
+		createItem(GENERAL, "initialTypeTimes", TypeTimes.YEAR_WEEK);
 		
+		createItem(GENERAL, "displayYScaleTitle", true);
+		createItem(GENERAL, "displayXScaleTitle", true);
+		createItem(GENERAL, "fontColorYScaleTitle", Color.BLACK);
+		createItem(GENERAL, "fontColorXScaleTitle", Color.BLACK);
 		
 		createItem(ChartType.STACKED_BAR, "calculateMax", false);
 		createItem(ChartType.HEAT_MAP, "calculateMax", false);
@@ -105,15 +110,15 @@ public class MainConfiguration {
 					ObservableList<LastActivity> lastActivity = (ObservableList<LastActivity>) property.getValue();
 					ids = lastActivity.stream().map(LastActivity::getIndex).collect(Collectors.toList());
 				}
-				jsonObject.put("value", ids);
+				jsonObject.put(VALUE, ids);
 			} else if (property.getValue() instanceof Color) {
 
 				Color color = (Color) property.getValue();
 
-				jsonObject.put("value",
+				jsonObject.put(VALUE,
 						Arrays.asList(color.getRed(), color.getGreen(), color.getBlue(), color.getOpacity()));
 			} else {
-				jsonObject.put("value", property.getValue());
+				jsonObject.put(VALUE, property.getValue());
 			}
 
 			jsonArray.put(jsonObject);
@@ -194,7 +199,8 @@ public class MainConfiguration {
 	private class CustomPropertyItem implements PropertySheet.Item {
 
 		private String key;
-		private String category, name;
+		private String category; 
+		String name;
 		private Class<?> clazz;
 
 		public CustomPropertyItem(String key, String category, String name, Class<?> clazz) {

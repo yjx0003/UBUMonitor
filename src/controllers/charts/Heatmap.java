@@ -160,7 +160,9 @@ public class Heatmap extends ApexCharts {
 				"{type:\"heatmap\",events:{dataPointSelection:function(e,t,n){javaConnector.dataPointSelection(n.w.config.series.length-1-n.seriesIndex)}},height:height,toolbar:{show:!1},animations:{enabled:!1}}");
 		addKeyValue(jsObject, "dataLabels",
 				"{formatter:function(r,t){return 0==r?\"\":r},style:{colors:[\"#000000\"]}}");
-		addKeyValue(jsObject, "xaxis", "{}");
+		
+		addKeyValue(jsObject, "xaxis", "{"+getXScaleLabel()+"}");
+		addKeyValue(jsObject, "yaxis", "{"+getYScaleLabel()+"}");
 		return jsObject.toString();
 
 	}

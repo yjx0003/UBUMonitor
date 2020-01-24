@@ -251,7 +251,7 @@ public class WelcomeOfflineController implements Initializable {
 			incorrectPasswordWindow();
 		} catch (InvalidClassException | ClassNotFoundException e) {
 			LOGGER.warn("Se ha modificado una de las clases serializables", e);
-			UtilMethods.errorWindow(controller.getStage(), "Se ha modificado una de las clases serializables");
+			UtilMethods.errorWindow("Se ha modificado una de las clases serializables");
 		}
 
 	}
@@ -321,7 +321,7 @@ public class WelcomeOfflineController implements Initializable {
 		} catch (IOException e) {
 
 			LOGGER.info("No se ha podido cargar la ventana Main.fxml: {}", e);
-			UtilMethods.errorWindow(controller.getStage(), "No se ha podido cargar la ventana Main.fxml");
+			UtilMethods.errorWindow("No se ha podido cargar la ventana Main.fxml");
 		}
 	}
 

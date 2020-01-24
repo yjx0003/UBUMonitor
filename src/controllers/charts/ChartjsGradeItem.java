@@ -30,8 +30,8 @@ public abstract class ChartjsGradeItem extends Chartjs {
 	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
 		
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
-		int borderLength =  mainConfiguration.getValue("General", "borderLength");
-		int borderSpace = mainConfiguration.getValue("General", "borderSpace");
+		int borderLength =  mainConfiguration.getValue(MainConfiguration.GENERAL, "borderLength");
+		int borderSpace = mainConfiguration.getValue(MainConfiguration.GENERAL, "borderSpace");
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("{labels:[");
 		stringBuilder.append(UtilMethods.joinWithQuotes(selectedGradeItems));
@@ -54,7 +54,7 @@ public abstract class ChartjsGradeItem extends Chartjs {
 					.append("{label:'" + UtilMethods.escapeJavaScriptText(I18n.get("chartlabel.generalMean")) + "',");
 			stringBuilder.append("borderColor:" + hex(I18n.get("chartlabel.generalMean")) + ",");
 			stringBuilder.append("backgroundColor:" + rgba(I18n.get("chartlabel.generalMean"), OPACITY) + ",");
-			stringBuilder.append("hidden: " + !(boolean)mainConfiguration.getValue("General", "generalActive") + ",");
+			stringBuilder.append("hidden: " + !(boolean)mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive") + ",");
 			stringBuilder.append(
 					"borderDash:[" + borderLength + "," + borderSpace + "],");
 			stringBuilder.append("data:[");
@@ -74,7 +74,7 @@ public abstract class ChartjsGradeItem extends Chartjs {
 						.escapeJavaScriptText(I18n.get("chart.mean") + " " + group.getGroupName()) + "',");
 				stringBuilder.append("borderColor:" + hex(group.getGroupId()) + ",");
 				stringBuilder.append("backgroundColor:" + rgba(group.getGroupId(), OPACITY) + ",");
-				stringBuilder.append("hidden: " + !(boolean)mainConfiguration.getValue("General", "groupActive") + ",");
+				stringBuilder.append("hidden: " + !(boolean)mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive") + ",");
 				stringBuilder.append("borderDash:[" + borderLength + ","
 						+ borderSpace + "],");
 				stringBuilder.append("data:[");

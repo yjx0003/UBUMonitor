@@ -193,9 +193,9 @@ public class JavaConnector {
 			setCurrentType(getCurrentTypeActivityCompletion());
 		}
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
-		boolean legendActive = mainConfiguration.getValue("General", "legendActive");
-		boolean generalActive = mainConfiguration.getValue("General", "generalActive");
-		boolean groupActive = mainConfiguration.getValue("General", "groupActive");
+		boolean legendActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "legendActive");
+		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
+		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
 		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnLegend", legendActive));
 		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnMean", generalActive));
 		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnGroupMean", groupActive));
@@ -215,7 +215,7 @@ public class JavaConnector {
 	}
 
 	public void showErrorWindow(String errorMessage) {
-		UtilMethods.errorWindow(Controller.getInstance().getStage(), errorMessage);
+		UtilMethods.errorWindow(errorMessage);
 	}
 
 	public void dataPointSelection(int selectedIndex) {
@@ -229,15 +229,15 @@ public class JavaConnector {
 	}
 
 	public boolean swapLegend() {
-		return swap("General", "legendActive");
+		return swap(MainConfiguration.GENERAL, "legendActive");
 	}
 
 	public boolean swapGeneral() {
-		return swap("General", "generalActive");
+		return swap(MainConfiguration.GENERAL, "generalActive");
 	}
 
 	public boolean swapGroup() {
-		return swap("General", "groupActive");
+		return swap(MainConfiguration.GENERAL, "groupActive");
 	}
 
 	private boolean swap(String category, String name) {

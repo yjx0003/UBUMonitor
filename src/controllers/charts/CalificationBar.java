@@ -30,7 +30,8 @@ public class CalificationBar extends ChartjsGradeItem {
 		List<Integer> countNaN = new ArrayList<>();
 		List<Integer> countLessCut = new ArrayList<>();
 		List<Integer> countGreaterCut = new ArrayList<>();
-		double cutGrade = Controller.getInstance().getMainConfiguration().getValue("General", "cutGrade");
+		double cutGrade = Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL,
+				"cutGrade");
 		for (GradeItem gradeItem : selectedGradeItems) {
 			int nan = 0;
 			int less = 0;
@@ -51,9 +52,12 @@ public class CalificationBar extends ChartjsGradeItem {
 		}
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 		StringJoiner datasets = JSArray();
-		datasets.add(createData(I18n.get("text.empty"), countNaN, mainConfiguration.getValue(getChartType(), "emptyGradeColor")));
-		datasets.add(createData(I18n.get("text.fail"), countLessCut, mainConfiguration.getValue(getChartType(), "failGradeColor")));
-		datasets.add(createData(I18n.get("text.pass"), countGreaterCut, mainConfiguration.getValue(getChartType(), "passGradeColor")));
+		datasets.add(createData(I18n.get("text.empty"), countNaN,
+				mainConfiguration.getValue(getChartType(), "emptyGradeColor")));
+		datasets.add(createData(I18n.get("text.fail"), countLessCut,
+				mainConfiguration.getValue(getChartType(), "failGradeColor")));
+		datasets.add(createData(I18n.get("text.pass"), countGreaterCut,
+				mainConfiguration.getValue(getChartType(), "passGradeColor")));
 		addKeyValue(data, "datasets", datasets.toString());
 		return data.toString();
 	}
@@ -63,8 +67,8 @@ public class CalificationBar extends ChartjsGradeItem {
 		addKeyValueWithQuote(dataset, "label", label);
 		addKeyValue(dataset, "data", "[" + UtilMethods.join(data) + "]");
 		addKeyValue(dataset, "backgroundColor", colorToRGB(color));
-		//addKeyValueWithQuote(dataset, "borderColor", hexColor);
-		//addKeyValue(dataset, "borderWidth", 2);
+		// addKeyValueWithQuote(dataset, "borderColor", hexColor);
+		// addKeyValue(dataset, "borderWidth", 2);
 		return dataset.toString();
 	}
 
@@ -72,10 +76,12 @@ public class CalificationBar extends ChartjsGradeItem {
 	public String getOptions() {
 		StringJoiner jsObject = getDefaultOptions();
 		addKeyValueWithQuote(jsObject, "typeGraph", "bar");
-		addKeyValue(jsObject, "scales", "{xAxes:[{stacked: true}],yAxes:[{stacked:true,ticks:{stepSize:0}}]}");
+		addKeyValue(jsObject, "scales", "{xAxes:[{" + getXScaleLabel() + ",stacked: true}],yAxes:[{" + getYScaleLabel()
+				+ ",stacked:true,ticks:{stepSize:0}}]}");
 		addKeyValue(jsObject, "tooltips", "{mode:'label'}");
 		addKeyValue(jsObject, "onClick", "function(event, array){}");
-		addKeyValue(jsObject, "plugins", "{datalabels:{display:!0,font:{weight:\"bold\"},formatter:function(t,a){if(0===t)return\"\";let e=a.chart.data.datasets,l=0;for(i=0;i<e.length;i++)l+=e[i].data[a.dataIndex];return t+\"/\"+l+\" (\"+(t/l).toLocaleString(locale,{style:\"percent\",maximumFractionDigits:2})+\")\"}}}");
+		addKeyValue(jsObject, "plugins",
+				"{datalabels:{display:!0,font:{weight:\"bold\"},formatter:function(t,a){if(0===t)return\"\";let e=a.chart.data.datasets,l=0;for(i=0;i<e.length;i++)l+=e[i].data[a.dataIndex];return t+\"/\"+l+\" (\"+(t/l).toLocaleString(locale,{style:\"percent\",maximumFractionDigits:2})+\")\"}}}");
 		return jsObject.toString();
 	}
 

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.controlsfx.control.CheckComboBox;
 
 import controllers.Controller;
+import controllers.I18n;
 import controllers.MainController;
 import controllers.configuration.MainConfiguration;
 import controllers.ubulogs.GroupByAbstract;
@@ -59,6 +60,7 @@ public abstract class Chart {
 
 	protected boolean useNegativeValues;
 	protected MainController mainController;
+	protected Controller controller = Controller.getInstance();
 
 	protected static final double OPACITY = 0.2;
 
@@ -206,9 +208,9 @@ public abstract class Chart {
 		addKeyValue(jsObject, "useGeneral", useGeneralButton);
 		addKeyValueWithQuote(jsObject, "tab", tabName);
 		addKeyValueWithQuote(jsObject, "button", getChartType().name());
-		addKeyValue(jsObject, "legendActive", (boolean)mainConfiguration.getValue("General", "legendActive"));
-		addKeyValue(jsObject, "generalActive", (boolean)mainConfiguration.getValue("General", "generalActive"));
-		addKeyValue(jsObject, "groupActive", (boolean)mainConfiguration.getValue("General", "groupActive"));
+		addKeyValue(jsObject, "legendActive", (boolean)mainConfiguration.getValue(MainConfiguration.GENERAL, "legendActive"));
+		addKeyValue(jsObject, "generalActive", (boolean)mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive"));
+		addKeyValue(jsObject, "groupActive", (boolean)mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive"));
 
 		return jsObject;
 
@@ -239,5 +241,16 @@ public abstract class Chart {
 
 	public void setUseNegativeValues(boolean useNegativeValues) {
 		this.useNegativeValues = useNegativeValues;
+	}
+	
+	
+	public String getYAxisTitle() {
+		return I18n.get(getChartType() + ".yAxisTitle");
+
+	}
+
+	public String getXAxisTitle() {
+		return I18n.get(getChartType() + ".xAxisTitle");
+
 	}
 }

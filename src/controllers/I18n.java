@@ -108,7 +108,7 @@ public class I18n {
 	 * @return el valor de la key o el valor por defecto
 	 */
 	private static String getOrDefault(String key, String defaultValue) {
-		if (rb.containsKey(key)) {
+		if (key !=null && rb.containsKey(key)) {
 			return rb.getString(key);
 		}
 		LOGGER.warn("No existe entrada en el resource bundle la key: {}", key);

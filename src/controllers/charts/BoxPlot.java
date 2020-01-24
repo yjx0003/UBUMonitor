@@ -26,19 +26,19 @@ public class BoxPlot extends ChartjsGradeItem {
 		stringBuilder.append("{labels:[");
 		stringBuilder.append(UtilMethods.joinWithQuotes(selectedGradeItems));
 		stringBuilder.append("],datasets:[");
-		if (selectedUser.size() > 0) {
+		if (!selectedUser.isEmpty()) {
 			createData(selectedUser, selectedGradeItems, stringBuilder, I18n.get("text.selectedUsers"), false);
 
 		}
 		if (useGeneralButton) {
 			createData(Controller.getInstance().getActualCourse().getEnrolledUsers(), selectedGradeItems, stringBuilder,
-					I18n.get("text.all"), !(boolean) mainConfiguration.getValue("General", "generalActive"));
+					I18n.get("text.all"), !(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive"));
 		}
 		if (useGroupButton) {
 			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
 				if (group != null) {
 					createData(group.getEnrolledUsers(), selectedGradeItems, stringBuilder, group.getGroupName(),
-							!(boolean) mainConfiguration.getValue("General", "groupActive"));
+							!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive"));
 				}
 
 			}
@@ -91,6 +91,9 @@ public class BoxPlot extends ChartjsGradeItem {
 		int tooltipDecimals = mainConfiguration.getValue(getChartType(), "tooltipDecimals");
 		addKeyValueWithQuote(jsObject, "typeGraph", useHorizontal ? "horizontalBoxplot" : "boxplot");
 		addKeyValue(jsObject, "tooltipDecimals", tooltipDecimals);
+		String xLabel = useHorizontal ? getYScaleLabel() :getXScaleLabel();
+		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
+		addKeyValue(jsObject, "scales", "{yAxes:[{" + yLabel + "}],xAxes:[{" + xLabel + "}]}");
 		return jsObject.toString();
 	}
 

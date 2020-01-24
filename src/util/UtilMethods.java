@@ -59,13 +59,13 @@ public class UtilMethods {
 	 * 
 	 * @param mensaje El mensaje que se quiere mostrar.
 	 */
-	public static void errorWindow(Stage stageOwner, String mensaje) {
+	public static void errorWindow(String mensaje) {
 		Alert alert = new Alert(AlertType.ERROR);
 
 		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		alert.setHeaderText("Error");
 		alert.initModality(Modality.APPLICATION_MODAL);
-		alert.initOwner(stageOwner);
+		
 		alert.getDialogPane().setContentText(mensaje);
 		Stage stageAlert = (Stage) alert.getDialogPane().getScene().getWindow();
 		stageAlert.getIcons().add(new Image("/img/logo_min.png"));
@@ -80,21 +80,18 @@ public class UtilMethods {
 	 * @param mensaje El mensaje que se quiere mostrar.
 	 * @param exit Indica si se quiere mostar el boton de salir o no.
 	 */
-	public static void infoWindow(Stage stageOwner, String mensaje) {
+	public static void infoWindow(String mensaje) {
 		Alert alert = new Alert(AlertType.INFORMATION);
 
 		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		alert.setHeaderText("Information");
 		alert.initModality(Modality.APPLICATION_MODAL);
-		alert.initOwner(stageOwner);
+		Stage stageAlert = (Stage) alert.getDialogPane().getScene().getWindow();
+		stageAlert.getIcons().add(new Image("/img/logo_min.png"));
 		alert.getDialogPane().setContentText(mensaje);
 		alert.getButtonTypes().setAll(ButtonType.OK);
 		alert.showAndWait();
 
 	}
 	
-	
-	public static void changeScene() {
-		
-	}
 }

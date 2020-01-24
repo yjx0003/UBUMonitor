@@ -84,10 +84,10 @@ public class GradeReportTable extends Tabulator {
 			}
 			array.add(jsObject.toString());
 		}
-		if (useGeneralButton && (boolean)Controller.getInstance().getMainConfiguration().getValue("General", "generalActive")) {
+		if (useGeneralButton && (boolean)Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL, "generalActive")) {
 			array.add(addStats(gradeItems, I18n.get("chartlabel.generalMean"), stats.getGeneralStats()));
 		}
-		if (useGroupButton && (boolean)Controller.getInstance().getMainConfiguration().getValue("General", "groupActive")) {
+		if (useGroupButton && (boolean)Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL, "groupActive")) {
 			for (Group group : slcGroup.getItems()) {
 				if (group != null) {
 					array.add(addStats(gradeItems,
@@ -151,7 +151,7 @@ public class GradeReportTable extends Tabulator {
 		addKeyValueWithQuote(jsObject, "legendAlign", "center");
 		
 		addKeyValue(jsObject, "color",
-				"function(e){return e<" + mainConfiguration.getValue("General", "cutGrade") + "?"
+				"function(e){return e<" + mainConfiguration.getValue(MainConfiguration.GENERAL, "cutGrade") + "?"
 						+ colorToRGB(mainConfiguration.getValue(getChartType(), "failGradeColor")) + ":"
 						+ colorToRGB(mainConfiguration.getValue(getChartType(), "passGradeColor")) + "}");
 		return jsObject.toString();

@@ -51,16 +51,17 @@ public class JavaConnector {
 	private File file;
 
 	private MainController mainController;
+	private VisualizationController visualizationController;
 
 	private static final ChartType DEFAULT_LOG_CHART = ChartType.STACKED_BAR;
 	private static final ChartType DEFAULT_GRADE_CHART = ChartType.LINE;
 
 	private static final ChartType DEFAULT_ACTIVITY_COMPLETION_CHART = ChartType.ACTIVITIES_TABLE;
 
-	public JavaConnector(MainController mainController) {
-
-		this.mainController = mainController;
-		webViewChartsEngine = mainController.getWebViewChartsEngine();
+	public JavaConnector(VisualizationController visualizationController) {
+		this.visualizationController = visualizationController;
+		this.mainController = visualizationController.getMainController();
+		webViewChartsEngine = visualizationController.getWebViewChartsEngine();
 		tabLogs = mainController.getTabUbuLogs();
 		tabGrades = mainController.getTabUbuGrades();
 		tabActivityCompletion = mainController.getTabActivity();
@@ -85,27 +86,27 @@ public class JavaConnector {
 		mapChart.put(chart.getChartType(), chart);
 	}
 
-	public void updateChart(Chart chart) {
-
-		if (currentType.getChartType() != chart.getChartType()) {
-			currentType.clear();
-			currentType = chart;
-		}
-		updateChart();
-
-	}
-
 	public void updateCharts(String typeChart) {
 		Chart chart = mapChart.get(ChartType.valueOf(typeChart));
 		if (tabLogs.isSelected()) {
+			currentTypeLogs.setMax(visualizationController.getTextFieldMax().getText());
 			currentTypeLogs = chart;
+
 		} else if (tabGrades.isSelected()) {
 			currentTypeGrades = chart;
 		} else if (tabActivityCompletion.isSelected()) {
 			currentTypeActivityCompletion = chart;
 		}
 
-		updateChart(chart);
+		if (currentType.getChartType() != chart.getChartType()) {
+			currentType.clear();
+			currentType = chart;
+		}
+		
+		if (tabLogs.isSelected()) {
+			visualizationController.getTextFieldMax().setText(currentType.getMax());
+		}
+		currentType.update();
 		
 	}
 
@@ -119,7 +120,8 @@ public class JavaConnector {
 	}
 
 	public void updateChartFromJS() {
-		updateChart();
+
+		currentType.update();
 	}
 
 	public void hideLegend() {
@@ -242,7 +244,7 @@ public class JavaConnector {
 
 	private boolean swap(String category, String name) {
 		boolean active = Controller.getInstance().getMainConfiguration().getValue(category, name);
-		Controller.getInstance().getMainConfiguration().setValue(category, name, !active); // toggle;
+		Controller.getInstance().getMainConfiguration().setValue(category, name, !active);
 		return !active;
 	}
 
@@ -257,10 +259,10 @@ public class JavaConnector {
 		}
 
 		if (currentType == null) {
-			mainController.getTextFieldMax().setText("0");
+			visualizationController.getTextFieldMax().setText(null);
 		} else if (currentType.isCalculateMaxActivated()) {
 
-			mainController.getTextFieldMax().setText(currentType.getMax());
+			visualizationController.getTextFieldMax().setText(currentType.calculateMax());
 		}
 
 	}
@@ -268,8 +270,5 @@ public class JavaConnector {
 	public Chart getCurrentTypeActivityCompletion() {
 		return currentTypeActivityCompletion;
 	}
-
-
-	
 
 }

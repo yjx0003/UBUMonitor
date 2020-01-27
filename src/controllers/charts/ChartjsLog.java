@@ -18,14 +18,16 @@ import controllers.ubulogs.GroupByAbstract;
 import model.EnrolledUser;
 import util.UtilMethods;
 
-public abstract class ChartjsLog extends Chartjs{
+public abstract class ChartjsLog extends Chartjs {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChartjsLog.class);
+
+	private String max;
 
 	public ChartjsLog(MainController mainController, ChartType chartType) {
 		super(mainController, chartType, Tabs.LOGS);
-		
+
 	}
-	
+
 	public StringJoiner createLabels(List<String> rangeDates) {
 		StringJoiner labels = JSArray();
 		for (String date : rangeDates) {
@@ -33,7 +35,7 @@ public abstract class ChartjsLog extends Chartjs{
 		}
 		return labels;
 	}
-	
+
 	@Override
 	public void update() {
 		String dataset = null;
@@ -67,9 +69,18 @@ public abstract class ChartjsLog extends Chartjs{
 		LOGGER.info("Dataset en JS: {}", dataset);
 		LOGGER.info("Opciones para el stacked bar en JS: {}", options);
 		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, options));
-		
+
 	}
 
-	public abstract <T> String createData(List<EnrolledUser> enrolledUsers, List<EnrolledUser> selectedUsers, List<T> typeLogs,
-			GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd, DataSet<T> dataSet);
+	public String getMax() {
+		return max;
+	}
+
+	public void setMax(String max) {
+		this.max = max;
+	}
+
+	public abstract <T> String createData(List<EnrolledUser> enrolledUsers, List<EnrolledUser> selectedUsers,
+			List<T> typeLogs, GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd, DataSet<T> dataSet);
+
 }

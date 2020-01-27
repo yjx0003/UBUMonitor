@@ -1,5 +1,6 @@
 package controllers.charts;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import controllers.Controller;
+import controllers.I18n;
 import controllers.MainController;
 import controllers.configuration.MainConfiguration;
 import controllers.datasets.DataSet;
@@ -91,7 +93,7 @@ public class MeanDiff extends ChartjsLog {
 	}
 
 	@Override
-	public String getMax() {
+	public String calculateMax() {
 		long maxYAxis = 1L;
 		if (tabUbuLogsComponent.isSelected()) {
 			maxYAxis = choiceBoxDate.getValue().getComponents().getMeanDifferenceMax(listParticipants.getItems(),
@@ -129,5 +131,9 @@ public class MeanDiff extends ChartjsLog {
 				"{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+\" : \"+Math.round(100*a.yLabel)/100}}}");
 		return jsObject.toString();
 	}
-
+	@Override
+	public String getXAxisTitle() {
+		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"),
+				I18n.get(choiceBoxDate.getValue().getTypeTime()));
+	}
 }

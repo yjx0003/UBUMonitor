@@ -10,14 +10,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -28,21 +27,16 @@ import org.controlsfx.control.CheckComboBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.javafx.webkit.WebConsoleListener;
-
-import controllers.charts.Tabs;
 import controllers.configuration.Config;
 import controllers.configuration.ConfigurationController;
 import controllers.configuration.MainConfiguration;
-import controllers.ubulogs.GroupByAbstract;
-import controllers.ubulogs.TypeTimes;
 import export.CSVBuilderAbstract;
 import export.CSVExport;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -52,13 +46,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.DateCell;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
@@ -68,10 +59,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -86,12 +74,10 @@ import model.GradeItem;
 import model.Group;
 import model.LastActivity;
 import model.LastActivityFactory;
-import model.LogStats;
 import model.ModuleType;
 import model.Role;
 import model.Section;
 import model.Stats;
-import netscape.javascript.JSObject;
 import util.UtilMethods;
 
 /**
@@ -110,6 +96,8 @@ public class MainController implements Initializable {
 	private static final Image NONE_ICON = new Image("/img/manual.png");
 
 	private Controller controller = Controller.getInstance();
+
+	
 
 	@FXML
 	private SplitPane splitPaneLeft;
@@ -156,10 +144,6 @@ public class MainController implements Initializable {
 
 	@FXML
 	private ChoiceBox<ModuleType> slcType;
-
-	@FXML
-	private WebView webViewCharts;
-	private WebEngine webViewChartsEngine;
 
 	@FXML
 	private SplitPane splitPane;
@@ -211,7 +195,7 @@ public class MainController implements Initializable {
 	private ListView<CourseModule> listViewCourseModule;
 
 	@FXML
-	private ChoiceBox<ModuleType> choiceBoxCourseModule;
+	private CheckComboBox<ModuleType> checkComboBoxCourseModule;
 
 	@FXML
 	private CheckBox checkBoxSection;
@@ -234,36 +218,23 @@ public class MainController implements Initializable {
 	private ListView<CourseModule> listViewActivity;
 
 	@FXML
-	private ChoiceBox<ModuleType> choiceBoxActivity;
-
-	@FXML
-	private GridPane optionsUbuLogs;
-
-	@FXML
-	private TextField textFieldMax;
-
-	@FXML
-	private ChoiceBox<GroupByAbstract<?>> choiceBoxDate;
-
-	@FXML
-	private GridPane dateGridPane;
-
-	@FXML
-	private DatePicker datePickerStart;
-
-	@FXML
-	private DatePicker datePickerEnd;
-
-	@FXML
-	private ProgressBar progressBar;
+	private CheckComboBox<ModuleType> checkComboBoxModuleType;
 
 	@FXML
 	private MenuItem updateCourse;
 
 	private Stats stats;
+	
+	@FXML
+	private TabPane webViewTabPane;
+	
+	@FXML
+	private Tab visualizationTab;
 
-	private JavaConnector javaConnector;
-
+	@FXML
+	private VisualizationController visualizationController;
+	private Map<Tab, Actions> tabMap = new HashMap<>();
+	
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades de
 	 * las que se compone.
@@ -273,17 +244,18 @@ public class MainController implements Initializable {
 
 		try {
 			LOGGER.info("Completada la carga del curso {}", controller.getActualCourse().getFullName());
+	
+			
+			
+			
 			updateCourse.setDisable(controller.isOfflineMode());
 			stats = controller.getStats();
 
 			controller.setMainConfiguration(new MainConfiguration());
 			ConfigurationController.loadConfiguration(controller.getMainConfiguration(),
 					controller.getConfiguration(controller.getActualCourse()));
+			initWebViewTabs();
 			
-		
-
-			initTabPaneWebView();
-			initLogOptionsFilter();
 
 			initTabGrades();
 			initTabLogs();
@@ -312,33 +284,67 @@ public class MainController implements Initializable {
 		}
 	}
 
-	private void initTabPaneWebView() {
-		// Cargamos el html de los graficos y calificaciones
-		webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
-		webViewChartsEngine = webViewCharts.getEngine();
-		javaConnector = new JavaConnector(this);
+	private void initWebViewTabs() {
+		visualizationController.init(this);
+		
+		tabMap.put(visualizationTab, visualizationController);
+		
+	}
 
-		progressBar.progressProperty().bind(webViewChartsEngine.getLoadWorker().progressProperty());
-		splitPaneLeft.disableProperty().bind(webViewChartsEngine.getLoadWorker().runningProperty());
+	public VisualizationController getVisualizationTabPageController() {
+		return visualizationController;
+	}
 
-		WebConsoleListener.setDefaultListener((webView, message, lineNumber, sourceId) -> {
-			LOGGER.error("{} [{} at {}] ", message, sourceId, lineNumber);
-			// errorWindow(message + "[" + sourceId + " at " + lineNumber, false);
-		});
-		// Comprobamos cuando se carga la pagina para traducirla
-		webViewChartsEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
-			if (Worker.State.SUCCEEDED != newState)
-				return;
-			JSObject window = (JSObject) webViewChartsEngine.executeScript("window");
-			window.setMember("javaConnector", javaConnector);
-			webViewChartsEngine.executeScript("setLanguage()");
-			webViewCharts.toFront();
-			javaConnector.setDefaultValues();
+	public void setVisualizationTabPageController(VisualizationController visualizationTabPageController) {
+		this.visualizationController = visualizationTabPageController;
+	}
 
-			javaConnector.updateChart();
-		});
-		webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html").toExternalForm());
+	public Label getConexionLabel() {
+		return conexionLabel;
+	}
 
+	public void setConexionLabel(Label conexionLabel) {
+		this.conexionLabel = conexionLabel;
+	}
+
+	public CheckComboBox<ModuleType> getCheckComboBoxCourseModule() {
+		return checkComboBoxCourseModule;
+	}
+
+	public void setCheckComboBoxCourseModule(CheckComboBox<ModuleType> checkComboBoxCourseModule) {
+		this.checkComboBoxCourseModule = checkComboBoxCourseModule;
+	}
+
+	public CheckComboBox<ModuleType> getCheckComboBoxModuleType() {
+		return checkComboBoxModuleType;
+	}
+
+	public void setCheckComboBoxModuleType(CheckComboBox<ModuleType> checkComboBoxModuleType) {
+		this.checkComboBoxModuleType = checkComboBoxModuleType;
+	}
+
+	public TabPane getWebViewTabPane() {
+		return webViewTabPane;
+	}
+
+	public void setWebViewTabPane(TabPane webViewTabPane) {
+		this.webViewTabPane = webViewTabPane;
+	}
+
+	public Tab getVisualizationTab() {
+		return visualizationTab;
+	}
+
+	public void setVisualizationTab(Tab visualizationTab) {
+		this.visualizationTab = visualizationTab;
+	}
+
+	public Map<Tab, Actions> getTabMap() {
+		return tabMap;
+	}
+
+	public void setTabMap(Map<Tab, Actions> tabMap) {
+		this.tabMap = tabMap;
 	}
 
 	private void initiGradeItems() {
@@ -388,18 +394,18 @@ public class MainController implements Initializable {
 		// Al clickar en la lista, se recalcula el nº de elementos seleccionados
 		// Generamos el gráfico con los elementos selecionados
 		tvwGradeReport.getSelectionModel().getSelectedItems()
-				.addListener((Change<? extends TreeItem<GradeItem>> g) -> javaConnector.updateChart());
+				.addListener((Change<? extends TreeItem<GradeItem>> g) -> updateTreeViewGradeItem());
 	}
 
 	private void initEnrolledUsers() {
 		// Mostramos nº participantes
-		lblCountParticipants
-				.setText(controller.getActualCourse().getEnrolledUsersCount() + " " + I18n.get("label.participants"));
+		
 		tfdParticipants.setOnAction(event -> filterParticipants());
 		initEnrolledUsersListView();
 
 		checkComboBoxGroup.getItems().addAll(controller.getActualCourse().getGroups());
-		ObservableList<Group> groups = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL, "initialGroups");
+		ObservableList<Group> groups = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL,
+				"initialGroups");
 		if (groups != null) {
 			groups.forEach(checkComboBoxGroup.getCheckModel()::check);
 		}
@@ -408,7 +414,8 @@ public class MainController implements Initializable {
 				.addListener((Change<? extends Group> g) -> filterParticipants());
 
 		checkComboBoxRole.getItems().addAll(controller.getActualCourse().getRoles());
-		ObservableList<Role> roles = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL, "initialRoles");
+		ObservableList<Role> roles = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL,
+				"initialRoles");
 		if (roles != null) {
 			roles.forEach(checkComboBoxRole.getCheckModel()::check);
 		}
@@ -416,8 +423,8 @@ public class MainController implements Initializable {
 				.addListener((Change<? extends Role> r) -> filterParticipants());
 
 		checkComboBoxActivity.getItems().addAll(LastActivityFactory.getAllLastActivity());
-		ObservableList<LastActivity> lastActivities = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL,
-				"initialLastActivity");
+		ObservableList<LastActivity> lastActivities = controller.getMainConfiguration()
+				.getValue(MainConfiguration.GENERAL, "initialLastActivity");
 		if (lastActivities != null) {
 			lastActivities.forEach(checkComboBoxActivity.getCheckModel()::check);
 		}
@@ -426,6 +433,7 @@ public class MainController implements Initializable {
 				.addListener((Change<? extends LastActivity> l) -> filterParticipants());
 
 		checkComboBoxActivity.setConverter(getActivityConverter());
+		lblCountParticipants.textProperty().bind(Bindings.size(filteredEnrolledList).asString());
 		filterParticipants();
 	}
 
@@ -455,12 +463,12 @@ public class MainController implements Initializable {
 		ObservableList<EnrolledUser> observableUsers = FXCollections.observableArrayList(users);
 		observableUsers.sort(EnrolledUser.NAME_COMPARATOR);
 		filteredEnrolledList = new FilteredList<>(observableUsers);
-
+		filteredEnrolledList.predicateProperty().addListener(p-> updatePredicadeEnrolledList());
 		// Activamos la selección múltiple en la lista de participantes
 		listParticipants.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		listParticipants.getSelectionModel().getSelectedItems()
-				.addListener((Change<? extends EnrolledUser> usersSelected) -> javaConnector.updateChart());
+				.addListener((Change<? extends EnrolledUser> usersSelected) -> updateListViewEnrolledUser());
 
 		/// Mostramos la lista de participantes
 		listParticipants.setItems(filteredEnrolledList);
@@ -494,6 +502,7 @@ public class MainController implements Initializable {
 
 		});
 	}
+
 
 	/**
 	 * Devuelve la diferencia entre dos instantes, por dias, hora, minutos o
@@ -543,93 +552,14 @@ public class MainController implements Initializable {
 		return type.between(lastCourseAccess, lastLogInstant);
 	}
 
-	/**
-	 * Inicializa los elementos de las opciones de logs.
-	 */
-	public void initLogOptionsFilter() {
-
-		textFieldMax.textProperty().addListener((ov, oldValue, newValue) -> {
-			if (newValue == null || newValue.isEmpty()) {
-				updateMaxScale(1L);
-			} else if (newValue.matches("\\d+")) {
-				updateMaxScale(Long.parseLong(newValue));
-			} else { // si no es un numero volvemos al valor anterior
-				textFieldMax.setText(oldValue);
-			}
-		});
-		LogStats logStats = controller.getActualCourse().getLogStats();
-		TypeTimes typeTime = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL, "initialTypeTimes");
-		// añadimos los elementos de la enumeracion en el choicebox
-		ObservableList<GroupByAbstract<?>> typeTimes = FXCollections.observableArrayList(logStats.getList());
-		choiceBoxDate.setItems(typeTimes);
-		choiceBoxDate.getSelectionModel().select(logStats.getByType(typeTime));
-
-		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> {
-			applyFilterLogs();
-			boolean useDatePicker = newValue.useDatePicker();
-			dateGridPane.setVisible(useDatePicker);
-
-		});
-
-		// traduccion de los elementos del choicebox
-		choiceBoxDate.setConverter(new StringConverter<GroupByAbstract<?>>() {
-			@Override
-			public GroupByAbstract<?> fromString(String typeTimes) {
-				return null;// no se va a usar en un choiceBox.
-			}
-
-			@Override
-			public String toString(GroupByAbstract<?> typeTimes) {
-				return I18n.get(typeTimes.getTypeTime());
-			}
-		});
-
-		datePickerStart.setValue(controller.getActualCourse().getStart());
-		datePickerEnd.setValue(controller.getActualCourse().getEnd());
-
-		datePickerStart.setOnAction(event -> applyFilterLogs());
-		datePickerEnd.setOnAction(event -> applyFilterLogs());
-
-		datePickerStart.setDayCellFactory(picker -> new DateCell() {
-			@Override
-			public void updateItem(LocalDate date, boolean empty) {
-				super.updateItem(date, empty);
-				setDisable(empty || date.isAfter(datePickerEnd.getValue()));
-			}
-		});
-
-		datePickerEnd.setDayCellFactory(picker -> new DateCell() {
-			@Override
-			public void updateItem(LocalDate date, boolean empty) {
-				super.updateItem(date, empty);
-				setDisable(empty || date.isBefore(datePickerStart.getValue()) || date.isAfter(LocalDate.now()));
-			}
-		});
-
-		optionsUbuLogs.visibleProperty().bind(tabUbuLogs.selectedProperty());
-		optionsUbuLogs.managedProperty().bind(tabUbuLogs.selectedProperty());
-
-	}
-
-	/**
-	 * Actualiza la escala maxima del eje y de los graficos de logs.
-	 * 
-	 * @param value valor de escala maxima
-	 */
-	private void updateMaxScale(long value) {
-		if (webViewChartsEngine.getLoadWorker().getState() == Worker.State.SUCCEEDED && textFieldMax.isFocused())
-			javaConnector.updateChart();
-
-	}
-
 	private void initTabActivityCompletion() {
-		tabActivity.setOnSelectionChanged(this::setTabActivityCompletion);
+		tabActivity.setOnSelectionChanged(this::onSetTabActivityCompletion);
 
 		// cada vez que se seleccione nuevos elementos del list view actualizamos la
 		// grafica y la escala
 		listViewActivity.getSelectionModel().getSelectedItems()
 				.addListener((Change<? extends CourseModule> courseModule) -> {
-					javaConnector.updateChart();
+					updateListViewActivity();
 				});
 
 		listViewActivity.setCellFactory(getListCellCourseModule());
@@ -644,20 +574,18 @@ public class MainController implements Initializable {
 
 		ObservableList<CourseModule> observableListComponents = FXCollections
 				.observableArrayList(courseModuleWithActivityCompletion);
-		FilteredList<CourseModule> filterCourseModules = new FilteredList<>(observableListComponents,
-				getActivityPredicade());
+		FilteredList<CourseModule> filterCourseModules = new FilteredList<>(observableListComponents);
 		listViewActivity.setItems(filterCourseModules);
 		listViewActivity.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		ObservableList<ModuleType> observableListModuleTypes = FXCollections.observableArrayList();
-		observableListModuleTypes.add(null); // opción por si no se filtra por grupo
 		observableListModuleTypes.addAll(controller.getActualCourse().getUniqueCourseModulesTypes());
 		observableListModuleTypes.sort(Comparator.nullsFirst(Comparator.comparing(I18n::get)));
 
-		choiceBoxActivity.setItems(observableListModuleTypes);
-		choiceBoxActivity.getSelectionModel().selectFirst(); // seleccionamos el nulo
+		checkComboBoxModuleType.getItems().addAll(observableListModuleTypes);
+		checkComboBoxModuleType.getCheckModel().checkAll();
 
-		choiceBoxActivity.setConverter(new StringConverter<ModuleType>() {
+		checkComboBoxModuleType.setConverter(new StringConverter<ModuleType>() {
 			@Override
 			public ModuleType fromString(String moduleType) {
 				return null;// no se va a usar en un choiceBox.
@@ -684,7 +612,7 @@ public class MainController implements Initializable {
 			listViewActivity.setCellFactory(getListCellCourseModule());
 		});
 
-		choiceBoxActivity.valueProperty().addListener(c -> {
+		checkComboBoxModuleType.getCheckModel().getCheckedItems().addListener((Change<? extends ModuleType> c) -> {
 			filterCourseModules.setPredicate(getActivityPredicade());
 			listViewActivity.setCellFactory(getListCellCourseModule());
 		});
@@ -693,24 +621,17 @@ public class MainController implements Initializable {
 			filterCourseModules.setPredicate(getActivityPredicade());
 			listViewActivity.setCellFactory(getListCellCourseModule());
 		});
-
+		filterCourseModules.setPredicate(getActivityPredicade());
 	}
 
+	
 	private Predicate<? super CourseModule> getActivityPredicade() {
 		return cm -> containsTextField(activityTextField.getText(), cm.getModuleName())
 				&& (checkBoxActivity.isSelected() || cm.isVisible())
-				&& (choiceBoxActivity.getValue() == null || choiceBoxActivity.getValue() == cm.getModuleType());
+				&& (checkComboBoxModuleType.getCheckModel().getCheckedItems().contains(cm.getModuleType()));
 	}
 
-	private void setTabActivityCompletion(Event evnet) {
-		if (!tabActivity.isSelected()) {
-			return;
-		}
-		javaConnector.setCurrentType(javaConnector.getCurrentTypeActivityCompletion());
-		javaConnector.updateChart();
-		webViewChartsEngine.executeScript("manageButtons('" + Tabs.ACTIVITY_COMPLETION + "')");
-	}
-
+	
 	/**
 	 * Inicializa la lista de componentes de la pestaña Registros
 	 */
@@ -731,8 +652,7 @@ public class MainController implements Initializable {
 		for (Tab tab : tabs) {
 			tab.setOnSelectionChanged(event -> {
 				if (tab.isSelected()) {
-					findMax();
-					javaConnector.updateChart();
+					onSetSubTabLogs();
 
 				}
 			});
@@ -740,6 +660,7 @@ public class MainController implements Initializable {
 
 	}
 
+	
 	/**
 	 * Inicializa el listado de componentes de la pestaña Componentes en
 	 */
@@ -747,8 +668,7 @@ public class MainController implements Initializable {
 		// cada vez que se seleccione nuevos elementos del list view actualizamos la
 		// grafica y la escala
 		listViewComponents.getSelectionModel().getSelectedItems().addListener((Change<? extends Component> c) -> {
-			findMax();
-			javaConnector.updateChart();
+			updateListViewComponents();
 
 		});
 
@@ -796,15 +716,13 @@ public class MainController implements Initializable {
 
 	}
 
+
+
 	/**
 	 * Inicializa los elementos de la pestaña eventos.
 	 */
 	public void initListViewComponentsEvents() {
-		listViewEvents.getSelectionModel().getSelectedItems().addListener((Change<? extends ComponentEvent> c) -> {
-			findMax();
-			javaConnector.updateChart();
-
-		});
+		listViewEvents.getSelectionModel().getSelectedItems().addListener((Change<? extends ComponentEvent> c) -> updateListViewEvents());
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
@@ -853,17 +771,14 @@ public class MainController implements Initializable {
 
 	}
 
+
 	/**
 	 * Inicializa el listado de componentes de la pestaña Componentes en
 	 */
 	public void initListViewSections() {
 		// cada vez que se seleccione nuevos elementos del list view actualizamos la
 		// grafica y la escala
-		listViewSection.getSelectionModel().getSelectedItems().addListener((Change<? extends Section> section) -> {
-			findMax();
-			javaConnector.updateChart();
-
-		});
+		listViewSection.getSelectionModel().getSelectedItems().addListener((Change<? extends Section> section) -> updateListViewSection());
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
@@ -888,6 +803,8 @@ public class MainController implements Initializable {
 			listViewSection.setCellFactory(getListCellSection());
 		});
 	}
+
+
 
 	private Callback<ListView<Section>, ListCell<Section>> getListCellSection() {
 		return callback -> new ListCell<Section>() {
@@ -935,31 +852,27 @@ public class MainController implements Initializable {
 		// cada vez que se seleccione nuevos elementos del list view actualizamos la
 		// grafica y la escala
 		listViewCourseModule.getSelectionModel().getSelectedItems()
-				.addListener((Change<? extends CourseModule> courseModule) -> {
-					findMax();
-					javaConnector.updateChart();
-
-				});
+				.addListener((Change<? extends CourseModule> courseModule) -> updateListViewCourseModule());
 
 		listViewCourseModule.setCellFactory(getListCellCourseModule());
 
 		Set<CourseModule> courseModules = controller.getActualCourse().getModules();
 
 		ObservableList<CourseModule> observableListComponents = FXCollections.observableArrayList(courseModules);
-		FilteredList<CourseModule> filterCourseModules = new FilteredList<>(observableListComponents,
-				getCourseModulePredicate());
+
+		FilteredList<CourseModule> filterCourseModules = new FilteredList<>(observableListComponents);
 		listViewCourseModule.setItems(filterCourseModules);
 		listViewCourseModule.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		ObservableList<ModuleType> observableListModuleTypes = FXCollections.observableArrayList();
-		observableListModuleTypes.add(null); // opción por si no se filtra por grupo
+
 		observableListModuleTypes.addAll(controller.getActualCourse().getUniqueCourseModulesTypes());
 		observableListModuleTypes.sort(Comparator.nullsFirst(Comparator.comparing(I18n::get)));
 
-		choiceBoxCourseModule.setItems(observableListModuleTypes);
-		choiceBoxCourseModule.getSelectionModel().selectFirst(); // seleccionamos el nulo
+		checkComboBoxCourseModule.getItems().addAll(observableListModuleTypes);
+		checkComboBoxCourseModule.getCheckModel().checkAll();
 
-		choiceBoxCourseModule.setConverter(new StringConverter<ModuleType>() {
+		checkComboBoxCourseModule.setConverter(new StringConverter<ModuleType>() {
 			@Override
 			public ModuleType fromString(String moduleType) {
 				return null;// no se va a usar en un choiceBox.
@@ -986,7 +899,7 @@ public class MainController implements Initializable {
 			listViewCourseModule.setCellFactory(getListCellCourseModule());
 		});
 
-		choiceBoxCourseModule.valueProperty().addListener(c -> {
+		checkComboBoxCourseModule.getCheckModel().getCheckedItems().addListener((Change<? extends ModuleType> c) -> {
 			filterCourseModules.setPredicate(getCourseModulePredicate());
 			listViewCourseModule.setCellFactory(getListCellCourseModule());
 		});
@@ -995,7 +908,10 @@ public class MainController implements Initializable {
 			filterCourseModules.setPredicate(getCourseModulePredicate());
 			listViewCourseModule.setCellFactory(getListCellCourseModule());
 		});
+		filterCourseModules.setPredicate(getCourseModulePredicate());
 	}
+
+	
 
 	private Callback<ListView<CourseModule>, ListCell<CourseModule>> getListCellCourseModule() {
 		return callback -> new ListCell<CourseModule>() {
@@ -1026,7 +942,7 @@ public class MainController implements Initializable {
 	private Predicate<CourseModule> getCourseModulePredicate() {
 		return cm -> containsTextField(courseModuleTextField.getText(), cm.getModuleName())
 				&& (checkBoxCourseModule.isSelected() || cm.isVisible())
-				&& (choiceBoxCourseModule.getValue() == null || choiceBoxCourseModule.getValue() == cm.getModuleType())
+				&& (checkComboBoxCourseModule.getCheckModel().getCheckedItems().contains(cm.getModuleType()))
 				&& (!checkBoxActivityCompleted.isSelected() || !cm.getActivitiesCompletion().isEmpty());
 	}
 
@@ -1047,12 +963,10 @@ public class MainController implements Initializable {
 		if (!tabUbuLogs.isSelected()) {
 			return;
 		}
-		javaConnector.setCurrentType(javaConnector.getCurrentTypeLogs());
-		findMax();
-		javaConnector.updateChart();
-
-		webViewChartsEngine.executeScript("manageButtons('" + Tabs.LOGS + "')");
+		onSetTabLogs();
 	}
+
+	
 
 	public CheckBox getCheckBoxActivityCompleted() {
 		return checkBoxActivityCompleted;
@@ -1094,21 +1008,7 @@ public class MainController implements Initializable {
 		this.listViewActivity = listViewActivity;
 	}
 
-	public ChoiceBox<ModuleType> getChoiceBoxActivity() {
-		return choiceBoxActivity;
-	}
-
-	public void setChoiceBoxActivity(ChoiceBox<ModuleType> choiceBoxActivity) {
-		this.choiceBoxActivity = choiceBoxActivity;
-	}
-
-	public GridPane getDateGridPane() {
-		return dateGridPane;
-	}
-
-	public void setDateGridPane(GridPane dateGridPane) {
-		this.dateGridPane = dateGridPane;
-	}
+	
 
 	public MenuItem getUpdateCourse() {
 		return updateCourse;
@@ -1186,14 +1086,6 @@ public class MainController implements Initializable {
 		this.slcType = slcType;
 	}
 
-	public void setWebViewCharts(WebView webViewCharts) {
-		this.webViewCharts = webViewCharts;
-	}
-
-	public void setWebViewChartsEngine(WebEngine webViewChartsEngine) {
-		this.webViewChartsEngine = webViewChartsEngine;
-	}
-
 	public void setSplitPane(SplitPane splitPane) {
 		this.splitPane = splitPane;
 	}
@@ -1258,10 +1150,6 @@ public class MainController implements Initializable {
 		this.listViewCourseModule = listViewCourseModule;
 	}
 
-	public void setChoiceBoxCourseModule(ChoiceBox<ModuleType> choiceBoxCourseModule) {
-		this.choiceBoxCourseModule = choiceBoxCourseModule;
-	}
-
 	public void setCheckBoxSection(CheckBox checkBoxSection) {
 		this.checkBoxSection = checkBoxSection;
 	}
@@ -1270,43 +1158,8 @@ public class MainController implements Initializable {
 		this.checkBoxCourseModule = checkBoxCourseModule;
 	}
 
-	public void setOptionsUbuLogs(GridPane optionsUbuLogs) {
-		this.optionsUbuLogs = optionsUbuLogs;
-	}
-
-	public void setTextFieldMax(TextField textFieldMax) {
-		this.textFieldMax = textFieldMax;
-	}
-
-	public void setChoiceBoxDate(ChoiceBox<GroupByAbstract<?>> choiceBoxDate) {
-		this.choiceBoxDate = choiceBoxDate;
-	}
-
-	public void setDatePickerStart(DatePicker datePickerStart) {
-		this.datePickerStart = datePickerStart;
-	}
-
-	public void setDatePickerEnd(DatePicker datePickerEnd) {
-		this.datePickerEnd = datePickerEnd;
-	}
-
-	public void setProgressBar(ProgressBar progressBar) {
-		this.progressBar = progressBar;
-	}
-
 	public void setStats(Stats stats) {
 		this.stats = stats;
-	}
-
-	public void setJavaConnector(JavaConnector javaConnector) {
-		this.javaConnector = javaConnector;
-	}
-
-	/**
-	 * Busca el maximo de la escala Y y lo modifica.
-	 */
-	private void findMax() {
-		javaConnector.setMax();
 	}
 
 	/**
@@ -1327,21 +1180,10 @@ public class MainController implements Initializable {
 		if (!tabUbuGrades.isSelected()) {
 			return;
 		}
-		javaConnector.setCurrentType(javaConnector.getCurrentTypeGrades());
-		javaConnector.updateChart();
-		webViewChartsEngine.executeScript("manageButtons('" + Tabs.GRADES + "')");
+		onSetTabGrades();
 	}
 
-	/**
-	 * Aplica los filtros de fecha a las graficas de log.
-	 * 
-	 * @param event evento
-	 */
-	public void applyFilterLogs() {
-		findMax();
-		javaConnector.updateChart();
-
-	}
+	
 
 	/**
 	 * Filtra los participantes según el rol, el grupo y el patrón indicados
@@ -1355,11 +1197,8 @@ public class MainController implements Initializable {
 		filteredEnrolledList.setPredicate(e -> (checkUserHasRole(rol, e)) && (checkUserHasGroup(group, e))
 				&& (textField.isEmpty() || e.getFullName().toLowerCase().contains(textField))
 				&& (lastActivity.contains(LastActivityFactory.getActivity(e.getLastcourseaccess(), lastLogInstant))));
-		// Mostramos nº participantes
-		lblCountParticipants.setText(filteredEnrolledList.size() + " " + I18n.get("label.participants"));
-
-		findMax();
-		javaConnector.updateChart();
+		
+		
 
 	}
 
@@ -1476,26 +1315,7 @@ public class MainController implements Initializable {
 	 */
 	public void saveChart(ActionEvent actionEvent) throws IOException {
 
-		FileChooser fileChooser = new FileChooser();
-
-		fileChooser.setInitialFileName(String.format("%s_%s_%s.png", controller.getActualCourse().getId(),
-				LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
-				javaConnector.getCurrentType().getChartType()));
-		fileChooser.setInitialDirectory(new File(Config.getProperty("imageFolderPath", "./")));
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(".png", "*.png"));
-		try {
-			File file = fileChooser.showSaveDialog(controller.getStage());
-			if (file != null) {
-				String str = javaConnector.export(file);
-				if (str == null)
-					return;
-				javaConnector.saveImage(str);
-				Config.setProperty("imageFolderPath", file.getParent());
-			}
-		} catch (IOException e) {
-			LOGGER.error("Error al guardar el gráfico: {}", e);
-			UtilMethods.errorWindow(I18n.get("error.savechart"), e);
-		}
+		getActions().save();
 	}
 
 	/**
@@ -1505,7 +1325,7 @@ public class MainController implements Initializable {
 	 */
 	public void updateCourse(ActionEvent actionEvent) {
 		if (controller.isOfflineMode()) {
-			UtilMethods.errorWindow( I18n.get("error.updateofflinemode"));
+			UtilMethods.errorWindow(I18n.get("error.updateofflinemode"));
 		} else {
 			changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController(true));
 		}
@@ -1530,14 +1350,13 @@ public class MainController implements Initializable {
 			if (selectedDir != null) {
 				CSVBuilderAbstract.setPath(selectedDir.toPath());
 				CSVExport.run();
-				UtilMethods.infoWindow(
-						I18n.get("message.export_csv_success") + selectedDir.getAbsolutePath());
+				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + selectedDir.getAbsolutePath());
 				Config.setProperty("csvFolderPath", selectedDir.getAbsolutePath());
 			}
 
 		} catch (Exception e) {
 			LOGGER.error("Error al exportar ficheros CSV.", e);
-			UtilMethods.errorWindow( I18n.get("error.savecsvfiles"), e);
+			UtilMethods.errorWindow(I18n.get("error.savecsvfiles"), e);
 		}
 	}
 
@@ -1654,7 +1473,7 @@ public class MainController implements Initializable {
 				ConfigurationController.loadConfiguration(controller.getMainConfiguration(), file.toPath());
 				changeConfiguration();
 			} catch (RuntimeException e) {
-				UtilMethods.errorWindow( I18n.get("error.filenotvalid"), e);
+				UtilMethods.errorWindow(I18n.get("error.filenotvalid"), e);
 			}
 
 		}
@@ -1670,8 +1489,7 @@ public class MainController implements Initializable {
 		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
 		File file = fileChooser.showSaveDialog(controller.getStage());
 		if (file != null) {
-			ConfigurationController.saveConfiguration(controller.getMainConfiguration(), file.toPath()
-					);
+			ConfigurationController.saveConfiguration(controller.getMainConfiguration(), file.toPath());
 			Config.setProperty("configurationFolderPath", file.getParent());
 		}
 	}
@@ -1700,6 +1518,14 @@ public class MainController implements Initializable {
 	public void closeApplication(ActionEvent actionEvent) {
 		LOGGER.info("Cerrando aplicación");
 		controller.getStage().close();
+	}
+	
+	private void onSetTabActivityCompletion(Event event) {
+		if (!tabActivity.isSelected()) {
+			return;
+		}
+		onSetTabActivityCompletion();
+		
 	}
 
 	public Controller getController() {
@@ -1756,14 +1582,6 @@ public class MainController implements Initializable {
 
 	public ChoiceBox<ModuleType> getSlcType() {
 		return slcType;
-	}
-
-	public WebView getWebViewCharts() {
-		return webViewCharts;
-	}
-
-	public WebEngine getWebViewChartsEngine() {
-		return webViewChartsEngine;
 	}
 
 	public SplitPane getSplitPane() {
@@ -1830,10 +1648,6 @@ public class MainController implements Initializable {
 		return listViewCourseModule;
 	}
 
-	public ChoiceBox<ModuleType> getChoiceBoxCourseModule() {
-		return choiceBoxCourseModule;
-	}
-
 	public CheckBox getCheckBoxSection() {
 		return checkBoxSection;
 	}
@@ -1842,36 +1656,10 @@ public class MainController implements Initializable {
 		return checkBoxCourseModule;
 	}
 
-	public GridPane getOptionsUbuLogs() {
-		return optionsUbuLogs;
-	}
 
-	public TextField getTextFieldMax() {
-		return textFieldMax;
-	}
-
-	public ChoiceBox<GroupByAbstract<?>> getChoiceBoxDate() {
-		return choiceBoxDate;
-	}
-
-	public DatePicker getDatePickerStart() {
-		return datePickerStart;
-	}
-
-	public DatePicker getDatePickerEnd() {
-		return datePickerEnd;
-	}
-
-	public ProgressBar getProgressBar() {
-		return progressBar;
-	}
 
 	public Stats getStats() {
 		return stats;
-	}
-
-	public JavaConnector getJavaConnector() {
-		return javaConnector;
 	}
 
 	public TabPane getTabPaneUbuLogs() {
@@ -1905,5 +1693,64 @@ public class MainController implements Initializable {
 	public void setCheckComboBoxActivity(CheckComboBox<LastActivity> checkComboBoxActivity) {
 		this.checkComboBoxActivity = checkComboBoxActivity;
 	}
+
+	private Actions getActions() {
+		return tabMap.get(webViewTabPane.getSelectionModel().getSelectedItem());
+	}
+	
+	private void updateTreeViewGradeItem() {
+		getActions().updateTreeViewGradeItem();
+	}
+
+	private void updateListViewEnrolledUser() {
+		getActions().updateListViewEnrolledUser();
+	}
+	private void updatePredicadeEnrolledList() {
+		getActions().updatePredicadeEnrolledList();
+	}
+	
+	private void updateListViewActivity() {
+		getActions().updateListViewActivity();
+		
+	}
+	
+	private void onSetTabLogs() {
+		getActions().onSetTabLogs();
+		
+	}
+	private void onSetTabGrades() {
+		getActions().onSetTabGrades();
+	}
+	
+
+	private void onSetTabActivityCompletion() {
+		getActions().onSetTabActivityCompletion();
+	}
+	
+	private void onSetSubTabLogs() {
+		getActions().onSetSubTabLogs();
+	}
+	private void updateListViewComponents() {
+		getActions().updateListViewComponents();
+	}
+	private void updateListViewEvents() {
+		getActions().updateListViewEvents();
+	}
+	
+	private void updateListViewSection() {
+		getActions().updateListViewSection();
+	}
+	private void updateListViewCourseModule() {
+		getActions().updateListViewCourseModule();
+	}
+
+	public void applyConfiguration() {
+		getActions().applyConfiguration();
+		
+	}
+
+
+
+
 
 }

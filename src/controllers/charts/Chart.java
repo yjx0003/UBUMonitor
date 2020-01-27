@@ -12,6 +12,7 @@ import org.controlsfx.control.CheckComboBox;
 import controllers.Controller;
 import controllers.I18n;
 import controllers.MainController;
+import controllers.VisualizationController;
 import controllers.configuration.MainConfiguration;
 import controllers.ubulogs.GroupByAbstract;
 import javafx.scene.control.ChoiceBox;
@@ -34,6 +35,7 @@ import model.Stats;
 import util.UtilMethods;
 
 public abstract class Chart {
+
 	protected WebEngine webViewChartsEngine;
 	protected CheckComboBox<Group> slcGroup;
 	protected ListView<EnrolledUser> listParticipants;
@@ -59,14 +61,14 @@ public abstract class Chart {
 	protected boolean useGroupButton;
 
 	protected boolean useNegativeValues;
-	protected MainController mainController;
+	protected VisualizationController visualizationController;
 	protected Controller controller = Controller.getInstance();
-
+	protected MainController mainController;
 	protected static final double OPACITY = 0.2;
 
 	public Chart(MainController mainController, ChartType chartType, Tabs tabName) {
+		this.visualizationController = mainController.getVisualizationTabPageController();
 
-		this.webViewChartsEngine = mainController.getWebViewChartsEngine();
 		this.slcGroup = mainController.getCheckComboBoxGroup();
 		this.listParticipants = mainController.getListParticipants();
 		this.tabUbuLogs = mainController.getTabUbuLogs();
@@ -78,14 +80,15 @@ public abstract class Chart {
 		this.listViewEvents = mainController.getListViewEvents();
 		this.listViewSection = mainController.getListViewSection();
 		this.listViewCourseModule = mainController.getListViewCourseModule();
-		this.choiceBoxDate = mainController.getChoiceBoxDate();
-		this.datePickerStart = mainController.getDatePickerStart();
-		this.datePickerEnd = mainController.getDatePickerEnd();
+		this.choiceBoxDate = visualizationController.getChoiceBoxDate();
+		this.datePickerStart = visualizationController.getDatePickerStart();
+		this.datePickerEnd = visualizationController.getDatePickerEnd();
 		this.stats = mainController.getStats();
 		this.tvwGradeReport = mainController.getTvwGradeReport();
 		this.tabPaneUbuLogs = mainController.getTabPaneUbuLogs();
-		this.mainController = mainController;
+		this.webViewChartsEngine = visualizationController.getWebViewChartsEngine();
 
+		this.mainController = mainController;
 		this.chartType = chartType;
 		this.tabName = tabName;
 
@@ -208,15 +211,18 @@ public abstract class Chart {
 		addKeyValue(jsObject, "useGeneral", useGeneralButton);
 		addKeyValueWithQuote(jsObject, "tab", tabName);
 		addKeyValueWithQuote(jsObject, "button", getChartType().name());
-		addKeyValue(jsObject, "legendActive", (boolean)mainConfiguration.getValue(MainConfiguration.GENERAL, "legendActive"));
-		addKeyValue(jsObject, "generalActive", (boolean)mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive"));
-		addKeyValue(jsObject, "groupActive", (boolean)mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive"));
+		addKeyValue(jsObject, "legendActive",
+				(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "legendActive"));
+		addKeyValue(jsObject, "generalActive",
+				(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive"));
+		addKeyValue(jsObject, "groupActive",
+				(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive"));
 
 		return jsObject;
 
 	}
 
-	public String getMax() {
+	public String calculateMax() {
 		return null;
 	}
 
@@ -231,7 +237,7 @@ public abstract class Chart {
 	}
 
 	public long getSuggestedMax() {
-		String maxString = mainController.getTextFieldMax().getText();
+		String maxString = visualizationController.getTextFieldMax().getText();
 		if (maxString == null || maxString.isEmpty()) {
 			return 1;
 		}
@@ -242,8 +248,7 @@ public abstract class Chart {
 	public void setUseNegativeValues(boolean useNegativeValues) {
 		this.useNegativeValues = useNegativeValues;
 	}
-	
-	
+
 	public String getYAxisTitle() {
 		return I18n.get(getChartType() + ".yAxisTitle");
 
@@ -251,6 +256,15 @@ public abstract class Chart {
 
 	public String getXAxisTitle() {
 		return I18n.get(getChartType() + ".xAxisTitle");
+
+	}
+
+	public String getMax() {
+		return null;
+	}
+
+	public void setMax(String max) {
+		// TODO Auto-generated method stub
 
 	}
 }

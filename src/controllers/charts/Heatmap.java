@@ -1,5 +1,6 @@
 package controllers.charts;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controllers.Controller;
+import controllers.I18n;
 import controllers.MainController;
 import controllers.configuration.MainConfiguration;
 import controllers.datasets.DataSet;
@@ -24,7 +26,7 @@ import util.UtilMethods;
 public class Heatmap extends ApexCharts {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Heatmap.class);
-
+	private String max;
 	public Heatmap(MainController mainController) {
 		super(mainController, ChartType.HEAT_MAP, Tabs.LOGS);
 
@@ -108,7 +110,7 @@ public class Heatmap extends ApexCharts {
 	}
 
 	@Override
-	public String getMax() {
+	public String calculateMax() {
 
 		long maxYAxis = 1L;
 		if (tabUbuLogsComponent.isSelected()) {
@@ -162,9 +164,22 @@ public class Heatmap extends ApexCharts {
 				"{formatter:function(r,t){return 0==r?\"\":r},style:{colors:[\"#000000\"]}}");
 		
 		addKeyValue(jsObject, "xaxis", "{"+getXScaleLabel()+"}");
-		addKeyValue(jsObject, "yaxis", "{"+getYScaleLabel()+"}");
+	
 		return jsObject.toString();
 
+	}
+	@Override
+	public String getMax() {
+		return max;
+	}
+	@Override
+	public void setMax(String max) {
+		this.max = max;
+	}
+	@Override
+	public String getXAxisTitle() {
+		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"),
+				I18n.get(choiceBoxDate.getValue().getTypeTime()));
 	}
 
 }

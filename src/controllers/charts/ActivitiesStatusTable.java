@@ -28,7 +28,7 @@ public class ActivitiesStatusTable extends Tabulator {
 
 	public ActivitiesStatusTable(MainController mainController) {
 		super(mainController, ChartType.ACTIVITIES_TABLE, Tabs.ACTIVITY_COMPLETION);
-		useLegend = true;
+		
 		datePattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(FormatStyle.SHORT, null,
 				IsoChronology.INSTANCE, Locale.getDefault());
 		timePattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(null, FormatStyle.SHORT,

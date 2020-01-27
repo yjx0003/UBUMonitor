@@ -44,7 +44,9 @@ public abstract class ApexCharts extends Chart {
 		addKeyValueWithQuote(style, "fontSize", 14);
 		addKeyValue(style, "color",
 				colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorXScaleTitle")));
+		addKeyValueWithQuote(style, "cssClass", "apexcharts");
 		addKeyValue(jsObject, "style", style.toString());
+		
 		return "title:" + jsObject.toString();
 
 	}

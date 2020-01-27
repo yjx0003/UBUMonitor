@@ -16,7 +16,7 @@ public class Line extends ChartjsGradeItem {
 	public String getOptions() {
 		StringJoiner jsObject = getDefaultOptions();
 		addKeyValueWithQuote(jsObject, "typeGraph", "line");
-		addKeyValue(jsObject, "scales", "{yAxes:[{" + getYScaleLabel() + "}],xAxes:[{" + getYScaleLabel() + "}]}");
+		addKeyValue(jsObject, "scales", "{yAxes:[{" + getYScaleLabel() + "}],xAxes:[{" + getXScaleLabel() + "}]}");
 		return jsObject.toString();
 	}
 	

@@ -39,7 +39,7 @@ public abstract class ApexCharts extends Chart {
 		if (!display) {
 			return "title:{}";
 		}
-		addKeyValueWithQuote(jsObject, "text", getYAxisTitle());
+		addKeyValueWithQuote(jsObject, "text", getXAxisTitle());
 		StringJoiner style= JSObject();
 		addKeyValueWithQuote(style, "fontSize", 14);
 		addKeyValue(style, "color",

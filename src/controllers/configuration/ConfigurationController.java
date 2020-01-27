@@ -87,7 +87,7 @@ public class ConfigurationController implements Initializable {
 	}
 
 	public void applyConfiguration() {
-		mainController.getJavaConnector().updateChart();
+		mainController.applyConfiguration();
 	}
 
 	public void restoreConfiguration() {

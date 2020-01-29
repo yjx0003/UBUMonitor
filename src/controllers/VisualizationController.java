@@ -34,7 +34,7 @@ import model.LogStats;
 import netscape.javascript.JSObject;
 import util.UtilMethods;
 
-public class VisualizationController implements Actions {
+public class VisualizationController implements MainAction {
 	private static final Logger LOGGER = LoggerFactory.getLogger(VisualizationController.class);
 
 	private Controller controller = Controller.getInstance();

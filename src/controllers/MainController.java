@@ -97,8 +97,6 @@ public class MainController implements Initializable {
 
 	private Controller controller = Controller.getInstance();
 
-	
-
 	@FXML
 	private SplitPane splitPaneLeft;
 
@@ -224,17 +222,17 @@ public class MainController implements Initializable {
 	private MenuItem updateCourse;
 
 	private Stats stats;
-	
+
 	@FXML
 	private TabPane webViewTabPane;
-	
+
 	@FXML
 	private Tab visualizationTab;
 
 	@FXML
 	private VisualizationController visualizationController;
-	private Map<Tab, Actions> tabMap = new HashMap<>();
-	
+	private Map<Tab, MainAction> tabMap = new HashMap<>();
+
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades de
 	 * las que se compone.
@@ -244,10 +242,9 @@ public class MainController implements Initializable {
 
 		try {
 			LOGGER.info("Completada la carga del curso {}", controller.getActualCourse().getFullName());
-	
-			
-			
-			
+
+			controller.getStage().setOnHiding(event -> onClose());
+
 			updateCourse.setDisable(controller.isOfflineMode());
 			stats = controller.getStats();
 
@@ -255,7 +252,6 @@ public class MainController implements Initializable {
 			ConfigurationController.loadConfiguration(controller.getMainConfiguration(),
 					controller.getConfiguration(controller.getActualCourse()));
 			initWebViewTabs();
-			
 
 			initTabGrades();
 			initTabLogs();
@@ -285,10 +281,14 @@ public class MainController implements Initializable {
 	}
 
 	private void initWebViewTabs() {
+
+		webViewTabPane.getSelectionModel()
+				.select(Config.getProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex()));
+
 		visualizationController.init(this);
-		
+
 		tabMap.put(visualizationTab, visualizationController);
-		
+
 	}
 
 	public VisualizationController getVisualizationTabPageController() {
@@ -339,11 +339,11 @@ public class MainController implements Initializable {
 		this.visualizationTab = visualizationTab;
 	}
 
-	public Map<Tab, Actions> getTabMap() {
+	public Map<Tab, MainAction> getTabMap() {
 		return tabMap;
 	}
 
-	public void setTabMap(Map<Tab, Actions> tabMap) {
+	public void setTabMap(Map<Tab, MainAction> tabMap) {
 		this.tabMap = tabMap;
 	}
 
@@ -399,7 +399,7 @@ public class MainController implements Initializable {
 
 	private void initEnrolledUsers() {
 		// Mostramos nº participantes
-		
+
 		tfdParticipants.setOnAction(event -> filterParticipants());
 		initEnrolledUsersListView();
 
@@ -463,7 +463,7 @@ public class MainController implements Initializable {
 		ObservableList<EnrolledUser> observableUsers = FXCollections.observableArrayList(users);
 		observableUsers.sort(EnrolledUser.NAME_COMPARATOR);
 		filteredEnrolledList = new FilteredList<>(observableUsers);
-		filteredEnrolledList.predicateProperty().addListener(p-> updatePredicadeEnrolledList());
+		filteredEnrolledList.predicateProperty().addListener(p -> updatePredicadeEnrolledList());
 		// Activamos la selección múltiple en la lista de participantes
 		listParticipants.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
@@ -502,7 +502,6 @@ public class MainController implements Initializable {
 
 		});
 	}
-
 
 	/**
 	 * Devuelve la diferencia entre dos instantes, por dias, hora, minutos o
@@ -624,14 +623,12 @@ public class MainController implements Initializable {
 		filterCourseModules.setPredicate(getActivityPredicade());
 	}
 
-	
 	private Predicate<? super CourseModule> getActivityPredicade() {
 		return cm -> containsTextField(activityTextField.getText(), cm.getModuleName())
 				&& (checkBoxActivity.isSelected() || cm.isVisible())
 				&& (checkComboBoxModuleType.getCheckModel().getCheckedItems().contains(cm.getModuleType()));
 	}
 
-	
 	/**
 	 * Inicializa la lista de componentes de la pestaña Registros
 	 */
@@ -660,7 +657,6 @@ public class MainController implements Initializable {
 
 	}
 
-	
 	/**
 	 * Inicializa el listado de componentes de la pestaña Componentes en
 	 */
@@ -716,13 +712,12 @@ public class MainController implements Initializable {
 
 	}
 
-
-
 	/**
 	 * Inicializa los elementos de la pestaña eventos.
 	 */
 	public void initListViewComponentsEvents() {
-		listViewEvents.getSelectionModel().getSelectedItems().addListener((Change<? extends ComponentEvent> c) -> updateListViewEvents());
+		listViewEvents.getSelectionModel().getSelectedItems()
+				.addListener((Change<? extends ComponentEvent> c) -> updateListViewEvents());
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
@@ -771,14 +766,14 @@ public class MainController implements Initializable {
 
 	}
 
-
 	/**
 	 * Inicializa el listado de componentes de la pestaña Componentes en
 	 */
 	public void initListViewSections() {
 		// cada vez que se seleccione nuevos elementos del list view actualizamos la
 		// grafica y la escala
-		listViewSection.getSelectionModel().getSelectedItems().addListener((Change<? extends Section> section) -> updateListViewSection());
+		listViewSection.getSelectionModel().getSelectedItems()
+				.addListener((Change<? extends Section> section) -> updateListViewSection());
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
@@ -803,8 +798,6 @@ public class MainController implements Initializable {
 			listViewSection.setCellFactory(getListCellSection());
 		});
 	}
-
-
 
 	private Callback<ListView<Section>, ListCell<Section>> getListCellSection() {
 		return callback -> new ListCell<Section>() {
@@ -911,8 +904,6 @@ public class MainController implements Initializable {
 		filterCourseModules.setPredicate(getCourseModulePredicate());
 	}
 
-	
-
 	private Callback<ListView<CourseModule>, ListCell<CourseModule>> getListCellCourseModule() {
 		return callback -> new ListCell<CourseModule>() {
 			@Override
@@ -966,8 +957,6 @@ public class MainController implements Initializable {
 		onSetTabLogs();
 	}
 
-	
-
 	public CheckBox getCheckBoxActivityCompleted() {
 		return checkBoxActivityCompleted;
 	}
@@ -1007,8 +996,6 @@ public class MainController implements Initializable {
 	public void setListViewActivity(ListView<CourseModule> listViewActivity) {
 		this.listViewActivity = listViewActivity;
 	}
-
-	
 
 	public MenuItem getUpdateCourse() {
 		return updateCourse;
@@ -1183,8 +1170,6 @@ public class MainController implements Initializable {
 		onSetTabGrades();
 	}
 
-	
-
 	/**
 	 * Filtra los participantes según el rol, el grupo y el patrón indicados
 	 */
@@ -1197,8 +1182,6 @@ public class MainController implements Initializable {
 		filteredEnrolledList.setPredicate(e -> (checkUserHasRole(rol, e)) && (checkUserHasGroup(group, e))
 				&& (textField.isEmpty() || e.getFullName().toLowerCase().contains(textField))
 				&& (lastActivity.contains(LastActivityFactory.getActivity(e.getLastcourseaccess(), lastLogInstant))));
-		
-		
 
 	}
 
@@ -1519,13 +1502,13 @@ public class MainController implements Initializable {
 		LOGGER.info("Cerrando aplicación");
 		controller.getStage().close();
 	}
-	
+
 	private void onSetTabActivityCompletion(Event event) {
 		if (!tabActivity.isSelected()) {
 			return;
 		}
 		onSetTabActivityCompletion();
-		
+
 	}
 
 	public Controller getController() {
@@ -1656,8 +1639,6 @@ public class MainController implements Initializable {
 		return checkBoxCourseModule;
 	}
 
-
-
 	public Stats getStats() {
 		return stats;
 	}
@@ -1694,10 +1675,10 @@ public class MainController implements Initializable {
 		this.checkComboBoxActivity = checkComboBoxActivity;
 	}
 
-	private Actions getActions() {
-		return tabMap.get(webViewTabPane.getSelectionModel().getSelectedItem());
+	private MainAction getActions() {
+		return tabMap.getOrDefault(webViewTabPane.getSelectionModel().getSelectedItem(), NullMainAction.getInstance());
 	}
-	
+
 	private void updateTreeViewGradeItem() {
 		getActions().updateTreeViewGradeItem();
 	}
@@ -1705,52 +1686,56 @@ public class MainController implements Initializable {
 	private void updateListViewEnrolledUser() {
 		getActions().updateListViewEnrolledUser();
 	}
+
 	private void updatePredicadeEnrolledList() {
 		getActions().updatePredicadeEnrolledList();
 	}
-	
+
 	private void updateListViewActivity() {
 		getActions().updateListViewActivity();
-		
+
 	}
-	
+
 	private void onSetTabLogs() {
 		getActions().onSetTabLogs();
-		
+
 	}
+
 	private void onSetTabGrades() {
 		getActions().onSetTabGrades();
 	}
-	
 
 	private void onSetTabActivityCompletion() {
 		getActions().onSetTabActivityCompletion();
 	}
-	
+
 	private void onSetSubTabLogs() {
 		getActions().onSetSubTabLogs();
 	}
+
 	private void updateListViewComponents() {
 		getActions().updateListViewComponents();
 	}
+
 	private void updateListViewEvents() {
 		getActions().updateListViewEvents();
 	}
-	
+
 	private void updateListViewSection() {
 		getActions().updateListViewSection();
 	}
+
 	private void updateListViewCourseModule() {
 		getActions().updateListViewCourseModule();
 	}
 
 	public void applyConfiguration() {
 		getActions().applyConfiguration();
-		
+
 	}
 
-
-
-
+	private void onClose() {
+		Config.setProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex());
+	}
 
 }

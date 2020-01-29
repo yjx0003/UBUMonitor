@@ -168,6 +168,8 @@ public class LogTypes {
 		TYPES.put(get(ONLINE_TEXT_SUBMISSIONS, AN_ONLINE_TEXT_HAS_BEEN_UPLOADED), UserSubmissionCmid.getInstance());
 		TYPES.put(get(ONLINE_TEXT_SUBMISSIONS, SUBMISSION_CREATED), UserWordsCmid.getInstance());
 		TYPES.put(get(ONLINE_TEXT_SUBMISSIONS, SUBMISSION_UPDATED), UserWordsCmid.getInstance());
+		TYPES.put(get(ONLINE_TEXT_SUBMISSIONS, SUBMISSION_CREATED_), UserWordsCmid.getInstance());
+		TYPES.put(get(ONLINE_TEXT_SUBMISSIONS, SUBMISSION_UPDATED_), UserWordsCmid.getInstance());
 
 		TYPES.put(get(OPENDOCUMENT_SPREADSHEET, OPENDOCUMENT_GRADE_EXPORTED), User.getInstance());
 
@@ -194,6 +196,7 @@ public class LogTypes {
 		TYPES.put(get(QUIZ, QUIZ_EDIT_PAGE_VIEWED), UserCmid.getInstance());
 		TYPES.put(get(QUIZ, QUIZ_OVERRIDE_CREATED), UserOverrideCmidGroup.getInstance());
 		TYPES.put(get(QUIZ, QUIZ_OVERRIDE_DELETED), UserOverrideCmidGroup.getInstance());
+		TYPES.put(get(QUIZ, QUIZ_OVERRIDE_UPDATED), UserOverrideCmidAffected.getInstance());
 		TYPES.put(get(QUIZ, QUIZ_REPORT_VIEWED), UserCmid.getInstance());
 
 		TYPES.put(get(RECYCLE_BIN, ITEM_CREATED), Item.getInstance());
@@ -256,6 +259,9 @@ public class LogTypes {
 		TYPES.put(get(SYSTEM, NOTE_CREATED), UserNoteAffected.getInstance());
 		TYPES.put(get(SYSTEM, NOTES_VIEWED), UserCourse.getInstance());
 		TYPES.put(get(SYSTEM, QUESTION_CATEGORY_CREATED), UserQuestioncategory.getInstance());
+		TYPES.put(get(SYSTEM, QUESTION_CATEGORY_VIEWED), UserQuestioncategory.getInstance());
+		TYPES.put(get(SYSTEM, QUESTION_UPDATED), UserQuestion.getInstance());
+		TYPES.put(get(SYSTEM, QUESTION_VIEWED), UserQuestion.getInstance());
 		TYPES.put(get(SYSTEM, RECENT_ACTIVITY_VIEWED), UserCourse.getInstance());
 		TYPES.put(get(SYSTEM, ROLE_ASSIGNED), UserRoleAffected.getInstance());
 		TYPES.put(get(SYSTEM, ROLE_CAPABILITIES_UPDATED), UserRole.getInstance());

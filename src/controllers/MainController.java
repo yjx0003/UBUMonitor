@@ -1432,7 +1432,6 @@ public class MainController implements Initializable {
 		ConfigurationController configurationController = loader.getController();
 		Stage stage = new Stage();
 		configurationController.setMainController(this);
-		configurationController.setStage(stage);
 		stage.setOnHiding(event -> configurationController.onClose());
 		stage.setScene(newScene);
 		stage.initModality(Modality.NONE);

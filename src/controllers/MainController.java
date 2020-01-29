@@ -252,7 +252,7 @@ public class MainController implements Initializable {
 			ConfigurationController.loadConfiguration(controller.getMainConfiguration(),
 					controller.getConfiguration(controller.getActualCourse()));
 			initWebViewTabs();
-
+			tabPane.getSelectionModel().select(Config.getProperty("tabPane", tabPane.getSelectionModel().getSelectedIndex()));
 			initTabGrades();
 			initTabLogs();
 			initTabActivityCompletion();
@@ -289,62 +289,6 @@ public class MainController implements Initializable {
 
 		tabMap.put(visualizationTab, visualizationController);
 
-	}
-
-	public VisualizationController getVisualizationTabPageController() {
-		return visualizationController;
-	}
-
-	public void setVisualizationTabPageController(VisualizationController visualizationTabPageController) {
-		this.visualizationController = visualizationTabPageController;
-	}
-
-	public Label getConexionLabel() {
-		return conexionLabel;
-	}
-
-	public void setConexionLabel(Label conexionLabel) {
-		this.conexionLabel = conexionLabel;
-	}
-
-	public CheckComboBox<ModuleType> getCheckComboBoxCourseModule() {
-		return checkComboBoxCourseModule;
-	}
-
-	public void setCheckComboBoxCourseModule(CheckComboBox<ModuleType> checkComboBoxCourseModule) {
-		this.checkComboBoxCourseModule = checkComboBoxCourseModule;
-	}
-
-	public CheckComboBox<ModuleType> getCheckComboBoxModuleType() {
-		return checkComboBoxModuleType;
-	}
-
-	public void setCheckComboBoxModuleType(CheckComboBox<ModuleType> checkComboBoxModuleType) {
-		this.checkComboBoxModuleType = checkComboBoxModuleType;
-	}
-
-	public TabPane getWebViewTabPane() {
-		return webViewTabPane;
-	}
-
-	public void setWebViewTabPane(TabPane webViewTabPane) {
-		this.webViewTabPane = webViewTabPane;
-	}
-
-	public Tab getVisualizationTab() {
-		return visualizationTab;
-	}
-
-	public void setVisualizationTab(Tab visualizationTab) {
-		this.visualizationTab = visualizationTab;
-	}
-
-	public Map<Tab, MainAction> getTabMap() {
-		return tabMap;
-	}
-
-	public void setTabMap(Map<Tab, MainAction> tabMap) {
-		this.tabMap = tabMap;
 	}
 
 	private void initiGradeItems() {
@@ -1674,6 +1618,62 @@ public class MainController implements Initializable {
 		this.checkComboBoxActivity = checkComboBoxActivity;
 	}
 
+	public VisualizationController getVisualizationTabPageController() {
+		return visualizationController;
+	}
+
+	public void setVisualizationTabPageController(VisualizationController visualizationTabPageController) {
+		this.visualizationController = visualizationTabPageController;
+	}
+
+	public Label getConexionLabel() {
+		return conexionLabel;
+	}
+
+	public void setConexionLabel(Label conexionLabel) {
+		this.conexionLabel = conexionLabel;
+	}
+
+	public CheckComboBox<ModuleType> getCheckComboBoxCourseModule() {
+		return checkComboBoxCourseModule;
+	}
+
+	public void setCheckComboBoxCourseModule(CheckComboBox<ModuleType> checkComboBoxCourseModule) {
+		this.checkComboBoxCourseModule = checkComboBoxCourseModule;
+	}
+
+	public CheckComboBox<ModuleType> getCheckComboBoxModuleType() {
+		return checkComboBoxModuleType;
+	}
+
+	public void setCheckComboBoxModuleType(CheckComboBox<ModuleType> checkComboBoxModuleType) {
+		this.checkComboBoxModuleType = checkComboBoxModuleType;
+	}
+
+	public TabPane getWebViewTabPane() {
+		return webViewTabPane;
+	}
+
+	public void setWebViewTabPane(TabPane webViewTabPane) {
+		this.webViewTabPane = webViewTabPane;
+	}
+
+	public Tab getVisualizationTab() {
+		return visualizationTab;
+	}
+
+	public void setVisualizationTab(Tab visualizationTab) {
+		this.visualizationTab = visualizationTab;
+	}
+
+	public Map<Tab, MainAction> getTabMap() {
+		return tabMap;
+	}
+
+	public void setTabMap(Map<Tab, MainAction> tabMap) {
+		this.tabMap = tabMap;
+	}
+
 	private MainAction getActions() {
 		return tabMap.getOrDefault(webViewTabPane.getSelectionModel().getSelectedItem(), NullMainAction.getInstance());
 	}
@@ -1735,6 +1735,7 @@ public class MainController implements Initializable {
 
 	private void onClose() {
 		Config.setProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex());
+		Config.setProperty("tabPane", tabPane.getSelectionModel().getSelectedIndex());
 	}
 
 }

@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.controlsfx.control.PropertySheet;
@@ -32,9 +33,8 @@ public class MainConfiguration {
 
 	private static final String VALUE = "value";
 	public static final String GENERAL = "general";
-	private Map<String, Object> map = new LinkedHashMap<>();
 	private Map<String, CustomPropertyItem> properties = new LinkedHashMap<>();
-	private Map<String, Integer> categoriesOrder = new HashMap<>();
+	private Set<String> categories = new HashSet<>();
 
 	public MainConfiguration() {
 		setDefaultValues();
@@ -42,8 +42,8 @@ public class MainConfiguration {
 	}
 
 	public void setDefaultValues() {
-		
-		
+		properties.clear();
+		categories.clear();
 		createItem(GENERAL, "cutGrade", 5.0);
 		createItem(GENERAL, "borderLength", 10);
 		createItem(GENERAL, "borderSpace", 5);
@@ -57,12 +57,12 @@ public class MainConfiguration {
 		createItem(GENERAL, "initialLastActivity",
 				FXCollections.observableArrayList(LastActivityFactory.getAllLastActivity()), LastActivity.class);
 		createItem(GENERAL, "initialTypeTimes", TypeTimes.YEAR_WEEK);
-		
+
 		createItem(GENERAL, "displayYScaleTitle", true);
 		createItem(GENERAL, "displayXScaleTitle", true);
 		createItem(GENERAL, "fontColorYScaleTitle", Color.BLACK);
 		createItem(GENERAL, "fontColorXScaleTitle", Color.BLACK);
-		
+
 		createItem(ChartType.STACKED_BAR, "calculateMax", false);
 		createItem(ChartType.HEAT_MAP, "calculateMax", true);
 		createItem(ChartType.HEAT_MAP, "zeroValue", Color.web("#f78880"));
@@ -137,22 +137,24 @@ public class MainConfiguration {
 	}
 
 	public void createItem(String category, String name, Object value, Class<?> clazz) {
-		String key = category + "." + name;
-		if (!categoriesOrder.containsKey(category)) {
-			categoriesOrder.put(category, categoriesOrder.size() + 1);
+		String key = convertToKey(category, name);
+		if (!categories.contains(category)) {
+			categories.add(category);
 		}
-		properties.put(key, new CustomPropertyItem(key, category, name, clazz));
-		map.put(key, value);
+
+		properties.put(key, new CustomPropertyItem(categories.size(), category, name, value, clazz));
 
 	}
 
 	public void overrideItem(String category, String name, Object value) {
 		overrideItem(category, name, value, value.getClass());
 	}
-	
+
 	public void overrideItem(String category, String name, Object value, Class<?> clazz) {
-		if (map.containsKey(category + "." + name)) {
-			createItem(category, name, value, clazz);
+		if (properties.containsKey(convertToKey(category, name))) {
+			CustomPropertyItem property = properties.get(convertToKey(category, name));
+			property.setValue(value);
+			property.setClass(clazz);
 		}
 	}
 
@@ -166,23 +168,27 @@ public class MainConfiguration {
 	}
 
 	public <T> void setValue(String category, String name, T value) {
-		map.put(category + "." + name, value);
+		properties.get(convertToKey(category, name)).setValue(value);
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T getValue(String category, String name) {
-		return (T) map.get(category + "." + name);
+		return (T) properties.get(convertToKey(category, name)).getValue();
 
+	}
+
+	private String convertToKey(String category, String name) {
+		return category + "." + name;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T getValue(ChartType category, String name) {
-		return (T) map.get(category.name() + "." + name);
+		return (T) properties.get(category.name() + "." + name).getValue();
 
 	}
 
 	public <T> T getValue(String category, String name, T defaultValue) {
-		if (map.containsKey(category + "." + name)) {
+		if (properties.containsKey(convertToKey(category, name))) {
 			return getValue(category, name);
 		}
 		return defaultValue;
@@ -198,16 +204,24 @@ public class MainConfiguration {
 
 	private class CustomPropertyItem implements PropertySheet.Item {
 
-		private String key;
-		private String category; 
-		String name;
-		private Class<?> clazz;
 
-		public CustomPropertyItem(String key, String category, String name, Class<?> clazz) {
-			this.key = key;
+		private int order;
+		private String name;
+		private Object value;
+		private Class<?> clazz;
+		private String category;
+
+		public CustomPropertyItem(int order,  String category, String name, Object value, Class<?> clazz) {
+			this.order = order;
 			this.category = category;
 			this.name = name;
+			this.value = value;
 			this.clazz = clazz;
+		}
+
+		public void setClass(Class<?> clazz) {
+			this.clazz = clazz;
+
 		}
 
 		@Override
@@ -217,7 +231,7 @@ public class MainConfiguration {
 
 		@Override
 		public String getCategory() {
-			return categoriesOrder.get(category) + ". " + I18n.get(category);
+			return order + ". " + I18n.get(category);
 		}
 
 		@Override
@@ -233,13 +247,13 @@ public class MainConfiguration {
 
 		@Override
 		public Object getValue() {
-			return map.get(key);
+			return value;
 		}
 
 		@Override
 		public void setValue(Object value) {
 
-			map.put(key, value);
+			this.value = value;
 
 		}
 
@@ -248,10 +262,6 @@ public class MainConfiguration {
 			return Optional.empty();
 		}
 
-	}
-
-	public Map<String, Object> getMap() {
-		return map;
 	}
 
 }

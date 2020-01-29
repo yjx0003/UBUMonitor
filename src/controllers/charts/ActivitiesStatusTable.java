@@ -108,16 +108,14 @@ public class ActivitiesStatusTable extends Tabulator {
 				} else {
 					switch (activity.getState()) {
 					case COMPLETE:
+					case COMPLETE_PASS:
 						progress++;
 						addKeyValueWithQuote(jsObject, field, dateFormatter.format(activity.getTimecompleted())+", "+timeFormatter.format(activity.getTimecompleted()));
 						break;
 					case COMPLETE_FAIL:
 						addKeyValue(jsObject, field, false);
 						break;
-					case COMPLETE_PASS:
-						progress++;
-						addKeyValueWithQuote(jsObject, field, dateFormatter.format(activity.getTimecompleted())+", "+timeFormatter.format(activity.getTimecompleted()));
-						break;
+					
 					case INCOMPLETE:
 						addKeyValueWithQuote(jsObject, field, "");
 						break;

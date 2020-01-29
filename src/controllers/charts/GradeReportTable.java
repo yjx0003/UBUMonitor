@@ -114,22 +114,6 @@ public class GradeReportTable extends Tabulator {
 
 	@Override
 	public String getOptions() {
-//		 var gradeReportTableOptions = {
-//
-//			        tab: "grade_tabs",
-//			        button: "GRADE_REPORT_TABLE",
-//			        invalidOptionWarnings: false,
-//			        height: height,
-//			        groupBy: "type",
-//			        //placeholder: "No data",
-//			        virtualDom: true,
-//			        tooltipsHeader: true,
-//			        layout: "fitColumns", //fit columns to width of table (optional)
-//			        rowClick: function (e, row) {
-//			            javaConnector.dataPointSelection(row.getPosition());
-//
-//			        },
-//			    }
 
 		StringJoiner jsObject = getDefaultOptions();
 		addKeyValue(jsObject, "invalidOptionWarnings", false);

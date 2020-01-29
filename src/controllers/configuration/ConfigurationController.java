@@ -22,7 +22,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ButtonType;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 import model.Group;
 import model.LastActivity;
@@ -35,8 +34,6 @@ public class ConfigurationController implements Initializable {
 
 	private MainController mainController;
 
-	private Stage stage;
-
 	@FXML
 	PropertySheet propertySheet;
 
@@ -44,6 +41,7 @@ public class ConfigurationController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		
 		propertySheet.setCategoryComparator(Comparator.naturalOrder());
 		propertySheet.getItems().addAll(Controller.getInstance().getMainConfiguration().getProperties());
 		propertySheet.setPropertyEditorFactory(item -> {
@@ -132,18 +130,5 @@ public class ConfigurationController implements Initializable {
 		this.mainController = mainController;
 	}
 
-	/**
-	 * @return the stage
-	 */
-	public Stage getStage() {
-		return stage;
-	}
-
-	/**
-	 * @param stage the stage to set
-	 */
-	public void setStage(Stage stage) {
-		this.stage = stage;
-	}
 
 }

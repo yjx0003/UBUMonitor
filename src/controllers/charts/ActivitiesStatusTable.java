@@ -12,8 +12,10 @@ import java.util.StringJoiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.Controller;
 import controllers.I18n;
 import controllers.MainController;
+import controllers.configuration.MainConfiguration;
 import model.ActivityCompletion;
 import model.CourseModule;
 import model.EnrolledUser;
@@ -28,15 +30,13 @@ public class ActivitiesStatusTable extends Tabulator {
 
 	public ActivitiesStatusTable(MainController mainController) {
 		super(mainController, ChartType.ACTIVITIES_TABLE, Tabs.ACTIVITY_COMPLETION);
-		
+
 		datePattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(FormatStyle.SHORT, null,
 				IsoChronology.INSTANCE, Locale.getDefault());
 		timePattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(null, FormatStyle.SHORT,
 				IsoChronology.INSTANCE, Locale.getDefault());
-		dateFormatter = DateTimeFormatter.ofLocalizedDate( FormatStyle.SHORT)
-				.withZone(ZoneId.systemDefault());
-		timeFormatter = DateTimeFormatter.ofLocalizedTime( FormatStyle.SHORT)
-				.withZone(ZoneId.systemDefault());
+		dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
+		timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
 
 	}
 
@@ -56,7 +56,7 @@ public class ActivitiesStatusTable extends Tabulator {
 		String stringFormatterParams = formatterParams.toString();
 
 		StringJoiner sorterParams = JSObject();
-		addKeyValueWithQuote(sorterParams, "format", datePattern.toUpperCase()+", "+timePattern);
+		addKeyValueWithQuote(sorterParams, "format", datePattern.toUpperCase() + ", " + timePattern);
 		addKeyValueWithQuote(sorterParams, "alignEmptyValues", "bottom");
 		String stringsorterParams = sorterParams.toString();
 
@@ -76,20 +76,35 @@ public class ActivitiesStatusTable extends Tabulator {
 			array.add(jsObject.toString());
 		}
 
-		StringJoiner progressParams = JSObject();
-		addKeyValue(progressParams, "min", 0);
-		addKeyValue(progressParams, "max", courseModules.size());
-		addKeyValue(progressParams, "legend", String.format("function(value){return value+'/'+%s +' ('+Math.round(value/%s*100||0)+'%%)';}", courseModules.size(), courseModules.size()));
-		addKeyValueWithQuote(progressParams, "legendAlign", "center");
-
 		jsObject = JSObject();
 		addKeyValueWithQuote(jsObject, "title", I18n.get("chartlabel.progress"));
 		addKeyValueWithQuote(jsObject, "field", "progress");
 		addKeyValueWithQuote(jsObject, "formatter", "progress");
 		addKeyValueWithQuote(jsObject, "frozen", true);
-		addKeyValue(jsObject, "formatterParams", progressParams.toString());
+		addKeyValue(jsObject, "formatterParams", getProgressParam(courseModules.size()));
 		array.add(jsObject.toString());
 		return array.toString();
+	}
+
+	private String getProgressParam(int max) {
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		StringJoiner jsObject = JSObject();
+		addKeyValue(jsObject, "min", 0);
+		addKeyValue(jsObject, "max", max);
+
+		addKeyValue(jsObject, "legend", String
+				.format("function(value){return value+'/'+%s +' ('+Math.round(value/%s*100||0)+'%%)';}", max, max));
+
+		addKeyValueWithQuote(jsObject, "legendAlign", "center");
+		StringJoiner jsArray = JSArray();
+
+		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "firstInterval")));
+		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "secondInterval")));
+		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "thirdInterval")));
+		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "fourthInterval")));
+		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "moreMax")));
+		addKeyValue(jsObject, "color", String.format(Locale.ROOT, "function(e){return %s[e/%f|0]}", jsArray.toString(), max / 4.0));
+		return jsObject.toString();
 	}
 
 	public String createData(List<EnrolledUser> enrolledUsers, List<CourseModule> courseModules) {
@@ -110,12 +125,13 @@ public class ActivitiesStatusTable extends Tabulator {
 					case COMPLETE:
 					case COMPLETE_PASS:
 						progress++;
-						addKeyValueWithQuote(jsObject, field, dateFormatter.format(activity.getTimecompleted())+", "+timeFormatter.format(activity.getTimecompleted()));
+						addKeyValueWithQuote(jsObject, field, dateFormatter.format(activity.getTimecompleted()) + ", "
+								+ timeFormatter.format(activity.getTimecompleted()));
 						break;
 					case COMPLETE_FAIL:
 						addKeyValue(jsObject, field, false);
 						break;
-					
+
 					case INCOMPLETE:
 						addKeyValueWithQuote(jsObject, field, "");
 						break;
@@ -139,8 +155,7 @@ public class ActivitiesStatusTable extends Tabulator {
 	public void update() {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 
-		List<CourseModule> courseModules = mainController.getListViewActivity().getSelectionModel()
-				.getSelectedItems();
+		List<CourseModule> courseModules = mainController.getListViewActivity().getSelectionModel().getSelectedItems();
 		String columns = createColumns(courseModules);
 		String data = createData(enrolledUsers, courseModules);
 		LOGGER.debug("Usuarios seleccionados:{}", enrolledUsers);
@@ -152,7 +167,7 @@ public class ActivitiesStatusTable extends Tabulator {
 
 	@Override
 	public String getOptions() {
-		
+
 //		{
 //	        invalidOptionWarnings: false,
 //	        height: height,

@@ -88,6 +88,12 @@ public class MainConfiguration {
 		createItem(ChartType.CALIFICATION_BAR, "emptyGradeColor", Color.web("#D3D3D3", 0.3));
 		createItem(ChartType.CALIFICATION_BAR, "failGradeColor", Color.web("#DC143C", 0.3));
 		createItem(ChartType.CALIFICATION_BAR, "passGradeColor", Color.web("#2DC214", 0.3));
+		
+		createItem(ChartType.ACTIVITIES_TABLE, "firstInterval",  Color.web("#f78880"));
+		createItem(ChartType.ACTIVITIES_TABLE, "secondInterval", Color.web("#f4e3ae"));
+		createItem(ChartType.ACTIVITIES_TABLE, "thirdInterval", Color.web("#fff033"));
+		createItem(ChartType.ACTIVITIES_TABLE, "fourthInterval",  Color.web("#b5ff33"));
+		createItem(ChartType.ACTIVITIES_TABLE, "moreMax", Color.web("#38e330"));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -231,7 +237,7 @@ public class MainConfiguration {
 
 		@Override
 		public String getCategory() {
-			return order + ". " + I18n.get(category);
+			return String.format("%2d. %s", order, I18n.get(category));
 		}
 
 		@Override

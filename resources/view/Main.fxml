@@ -112,7 +112,7 @@
                               <GridPane BorderPane.alignment="CENTER">
                                 <columnConstraints>
                                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="100.0" />
-                                  <ColumnConstraints hgrow="NEVER" maxWidth="100.0" minWidth="10.0" prefWidth="100.0" />
+                                  <ColumnConstraints hgrow="NEVER" maxWidth="100.0" minWidth="10.0" prefWidth="30.0" />
                                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
                                 </columnConstraints>
                                 <rowConstraints>
@@ -125,7 +125,7 @@
                                        <graphic>
                                           <ImageView pickOnBounds="true" preserveRatio="true">
                                              <image>
-                                                <Image url="@../img/groups.png" />
+                                                <Image url="@../img/participants.png" />
                                              </image>
                                           </ImageView>
                                        </graphic>
@@ -136,9 +136,39 @@
                                           <Tooltip text="%label.participants" />
                                        </tooltip></Label>
 												<TextField fx:id="tfdParticipants" promptText="%label.filter" GridPane.hgrow="NEVER" GridPane.rowIndex="1" />
-												<Label text="%label.group" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-												<Label text="%label.rol" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
-                                    <Label text="%label.activity" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.rowIndex="2" />
+												<Label GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+                                       <graphic>
+                                          <ImageView pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../img/groups.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                       <tooltip>
+                                          <Tooltip text="%tooltip.groups" />
+                                       </tooltip></Label>
+												<Label GridPane.columnIndex="1" GridPane.halignment="CENTER">
+                                       <graphic>
+                                          <ImageView pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../img/rol.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                       <tooltip>
+                                          <Tooltip text="%tooltip.rol" />
+                                       </tooltip></Label>
+                                    <Label GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.rowIndex="2">
+                                       <tooltip>
+                                          <Tooltip text="%tooltip.lastconnection" />
+                                       </tooltip>
+                                       <graphic>
+                                          <ImageView pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../img/lastconnection.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic></Label>
                                     <CheckComboBox fx:id="checkComboBoxRole" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" />
                                     <CheckComboBox fx:id="checkComboBoxGroup" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
                                     <CheckComboBox fx:id="checkComboBoxActivity" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />

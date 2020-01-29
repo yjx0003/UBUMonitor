@@ -1,6 +1,6 @@
 package controllers;
 
-public interface Actions {
+public interface MainAction {
 
 	public void updateTreeViewGradeItem();
 

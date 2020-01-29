@@ -110,12 +110,18 @@ public class JavaConnector {
 		
 	}
 
-	public void updateChart() {
+	public void updateChart(boolean calculateMax) {
 		if (webViewChartsEngine.getLoadWorker().getState() != State.SUCCEEDED) {
 			return;
 		}
-		setMax();
+		if(calculateMax) {
+			setMax();
+		}
 		currentType.update();
+
+	}
+	public void updateChart() {
+		updateChart(true);
 
 	}
 

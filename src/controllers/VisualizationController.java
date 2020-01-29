@@ -170,7 +170,7 @@ public class VisualizationController implements MainAction {
 	 */
 	private void updateMaxScale() {
 		if (webViewChartsEngine.getLoadWorker().getState() == Worker.State.SUCCEEDED && textFieldMax.isFocused())
-			javaConnector.updateChart();
+			javaConnector.updateChart(false);
 
 	}
 

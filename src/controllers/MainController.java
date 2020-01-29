@@ -1480,7 +1480,7 @@ public class MainController implements Initializable {
 
 	}
 
-	public void exportConfiguration(ActionEvent event) {
+	public void exportConfiguration() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(I18n.get("menu.exportconfig"));
 		fileChooser.setInitialFileName(

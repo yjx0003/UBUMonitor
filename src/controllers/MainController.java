@@ -24,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.controlsfx.control.CheckComboBox;
+import org.controlsfx.control.StatusBar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Orientation;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
@@ -51,6 +53,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Separator;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -101,20 +104,7 @@ public class MainController implements Initializable {
 	private SplitPane splitPaneLeft;
 
 	@FXML
-	private Label lblActualCourse;
-	@FXML
-	private Label lblActualUser;
-	@FXML
-	private Label lblActualHost;
-
-	@FXML
-	private Label lblLastUpdate;
-
-	@FXML
-	private Label conexionLabel;
-
-	@FXML
-	private ImageView userPhoto;
+	private StatusBar statusBar;
 
 	@FXML
 	private Label lblCountParticipants;
@@ -252,7 +242,8 @@ public class MainController implements Initializable {
 			ConfigurationController.loadConfiguration(controller.getMainConfiguration(),
 					controller.getConfiguration(controller.getActualCourse()));
 			initWebViewTabs();
-			tabPane.getSelectionModel().select(Config.getProperty("tabPane", tabPane.getSelectionModel().getSelectedIndex()));
+			tabPane.getSelectionModel()
+					.select(Config.getProperty("tabPane", tabPane.getSelectionModel().getSelectedIndex()));
 			initTabGrades();
 			initTabLogs();
 			initTabActivityCompletion();
@@ -261,23 +252,31 @@ public class MainController implements Initializable {
 
 			initiGradeItems();
 
-			// Mostramos Usuario logeado y su imagen
-			lblActualUser.setText(I18n.get("label.user") + " " + controller.getUser().getFullName());
-			userPhoto.setImage(controller.getUser().getUserPhoto());
-
-			// Mostramos Curso actual
-			lblActualCourse.setText(controller.getActualCourse().getFullName());
-
-			// Mostramos Host actual
-			lblActualHost.setText(controller.getUrlHost().toString());
-			ZonedDateTime lastLogDateTime = controller.getActualCourse().getLogs().getLastDatetime();
-			lblLastUpdate.setText(
-					I18n.get("label.lastupdate") + " " + lastLogDateTime.format(Controller.DATE_TIME_FORMATTER));
-			conexionLabel.setText(
-					controller.isOfflineMode() ? I18n.get("text.withoutconnection") : I18n.get("text.withconnection"));
+			initStatusBar();
 		} catch (Exception e) {
 			LOGGER.error("Error en la inicialización.", e);
 		}
+	}
+
+	private void initStatusBar() {
+		// Mostramos Usuario logeado y su imagen
+		Label lblActualUser = new Label(controller.getUser().getFullName());
+		// Mostramos Curso actual
+		Label lblActualCourse = new Label(controller.getActualCourse().getFullName());
+
+		// Mostramos Host actual
+		Label lblActualHost = new Label(controller.getUrlHost().toString());
+
+		ZonedDateTime lastLogDateTime = controller.getActualCourse().getLogs().getLastDatetime();
+		Label lblLastUpdate = new Label(
+				I18n.get("label.lastupdate") + " " + lastLogDateTime.format(Controller.DATE_TIME_FORMATTER));
+		Label conexionLabel = new Label(
+				controller.isOfflineMode() ? I18n.get("text.withoutconnection") : I18n.get("text.withconnection"));
+		
+		statusBar.getLeftItems().addAll(lblActualUser, new Separator(Orientation.VERTICAL), lblActualCourse,
+				new Separator(Orientation.VERTICAL), lblActualHost);
+		statusBar.getRightItems().addAll(lblLastUpdate, new Separator(Orientation.VERTICAL), conexionLabel);
+
 	}
 
 	private void initWebViewTabs() {
@@ -969,26 +968,6 @@ public class MainController implements Initializable {
 		this.splitPaneLeft = splitPaneLeft;
 	}
 
-	public void setLblActualCourse(Label lblActualCourse) {
-		this.lblActualCourse = lblActualCourse;
-	}
-
-	public void setLblActualUser(Label lblActualUser) {
-		this.lblActualUser = lblActualUser;
-	}
-
-	public void setLblActualHost(Label lblActualHost) {
-		this.lblActualHost = lblActualHost;
-	}
-
-	public void setLblLastUpdate(Label lblLastUpdate) {
-		this.lblLastUpdate = lblLastUpdate;
-	}
-
-	public void setUserPhoto(ImageView userPhoto) {
-		this.userPhoto = userPhoto;
-	}
-
 	public void setLblCountParticipants(Label lblCountParticipants) {
 		this.lblCountParticipants = lblCountParticipants;
 	}
@@ -1462,26 +1441,6 @@ public class MainController implements Initializable {
 		return splitPaneLeft;
 	}
 
-	public Label getLblActualCourse() {
-		return lblActualCourse;
-	}
-
-	public Label getLblActualUser() {
-		return lblActualUser;
-	}
-
-	public Label getLblActualHost() {
-		return lblActualHost;
-	}
-
-	public Label getLblLastUpdate() {
-		return lblLastUpdate;
-	}
-
-	public ImageView getUserPhoto() {
-		return userPhoto;
-	}
-
 	public Label getLblCountParticipants() {
 		return lblCountParticipants;
 	}
@@ -1624,14 +1583,6 @@ public class MainController implements Initializable {
 
 	public void setVisualizationTabPageController(VisualizationController visualizationTabPageController) {
 		this.visualizationController = visualizationTabPageController;
-	}
-
-	public Label getConexionLabel() {
-		return conexionLabel;
-	}
-
-	public void setConexionLabel(Label conexionLabel) {
-		this.conexionLabel = conexionLabel;
 	}
 
 	public CheckComboBox<ModuleType> getCheckComboBoxCourseModule() {

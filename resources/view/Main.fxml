@@ -23,75 +23,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import org.controlsfx.control.CheckComboBox?>
+<?import org.controlsfx.control.StatusBar?>
 
 <BorderPane fx:id="canvas" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="500.0" minWidth="750.0" prefHeight="500.0" prefWidth="750.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
-	<top>
-		<GridPane id="topBar" BorderPane.alignment="CENTER">
-			<columnConstraints>
-				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
-				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="75.0" prefWidth="100.0" />
-			</columnConstraints>
-			<rowConstraints>
-				<RowConstraints minHeight="0.0" prefHeight="30.0" vgrow="SOMETIMES" />
-			</rowConstraints>
-			<children>
-				<MenuBar minWidth="162.0" prefHeight="24.0" prefWidth="162.0">
-					<menus>
-						<Menu text="%menu.file">
-							<items>
-								<MenuItem fx:id="MIChangeCourse" onAction="#changeCourse" text="%menu.changesubject" />
-								<MenuItem fx:id="updateCourse" onAction="#updateCourse" text="%menu.update" />
-								<MenuItem fx:id="MISaveChart" onAction="#saveChart" text="%menu.savechart" />
-								<MenuItem fx:id="MIExportCSV" onAction="#exportCSV" text="%menu.exportcsv" />
-								<MenuItem fx:id="MILogOut" onAction="#logOut" text="%menu.logout" />
-								<MenuItem fx:id="MIExit" onAction="#closeApplication" text="%menu.exit">
-                           <accelerator>
-                              <KeyCodeCombination alt="DOWN" code="F4" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                           </accelerator></MenuItem>
-							</items>
-						</Menu>
-						<Menu text="%menu.edit">
-							<items>
-								<MenuItem fx:id="MIClearSelection" onAction="#clearSelection" text="%menu.clearselection" />
-                        <MenuItem fx:id="menuChangeConfig" onAction="#changeConfiguration" text="%menu.changeconfig" />
-                        <MenuItem fx:id="importConfiguration" onAction="#importConfiguration" text="%menu.importconfig" />
-                        <MenuItem fx:id="menuExportConfiguration" onAction="#exportConfiguration" text="%menu.exportconfig" />
-							</items>
-						</Menu>
-						<Menu mnemonicParsing="false" text="%menu.help">
-							<items>
-								<MenuItem fx:id="MIAboutUBUGrades" onAction="#aboutApp" text="%menu.about" />
-							</items>
-						</Menu>
-					</menus>
-				</MenuBar>
-				<GridPane GridPane.columnIndex="1">
-					<columnConstraints>
-						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-					</columnConstraints>
-					<rowConstraints>
-						<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-					</rowConstraints>
-					<children>
-						<Label id="topBarLabels" fx:id="lblActualUser" text="%label.user" GridPane.halignment="LEFT">
-							<padding>
-								<Insets left="30.0" />
-							</padding>
-						</Label>
-						<Label id="topBarLabels" fx:id="lblActualCourse" text="%label.course" GridPane.columnIndex="1" />
-						<Label id="topBarLabels" fx:id="lblActualHost" text="%label.host" GridPane.columnIndex="2" />
-						<ImageView fx:id="userPhoto" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" />
-                  <Label id="topBarLabels" fx:id="lblLastUpdate" text="%label.lastupdate" GridPane.columnIndex="3" />
-                  <Label id="topBarLabels" fx:id="conexionLabel" layoutX="348.0" layoutY="15.0" text="Label" GridPane.columnIndex="4" GridPane.halignment="CENTER" />
-					</children>
-				</GridPane>
-			</children>
-		</GridPane>
-	</top>
 	<center>
 		<SplitPane fx:id="splitPane" dividerPositions="0.3422459893048128" BorderPane.alignment="CENTER">
 			<items>
@@ -338,4 +272,40 @@
 			</items>
 		</SplitPane>
 	</center>
+   <bottom>
+      <StatusBar fx:id="statusBar" text="" BorderPane.alignment="CENTER" />
+   </bottom>
+   <top>
+				<MenuBar minWidth="162.0" prefHeight="24.0" prefWidth="162.0" BorderPane.alignment="CENTER">
+					<menus>
+						<Menu text="%menu.file">
+							<items>
+								<MenuItem fx:id="MIChangeCourse" onAction="#changeCourse" text="%menu.changesubject" />
+								<MenuItem fx:id="updateCourse" onAction="#updateCourse" text="%menu.update" />
+								<MenuItem fx:id="MISaveChart" onAction="#saveChart" text="%menu.savechart" />
+								<MenuItem fx:id="MIExportCSV" onAction="#exportCSV" text="%menu.exportcsv" />
+								<MenuItem fx:id="MILogOut" onAction="#logOut" text="%menu.logout" />
+								<MenuItem fx:id="MIExit" onAction="#closeApplication" text="%menu.exit">
+                     <accelerator>
+                        <KeyCodeCombination alt="DOWN" code="F4" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+							</items>
+						</Menu>
+						<Menu text="%menu.edit">
+							<items>
+								<MenuItem fx:id="MIClearSelection" onAction="#clearSelection" text="%menu.clearselection" />
+                  <MenuItem fx:id="menuChangeConfig" onAction="#changeConfiguration" text="%menu.changeconfig" />
+                  <MenuItem fx:id="importConfiguration" onAction="#importConfiguration" text="%menu.importconfig" />
+                  <MenuItem fx:id="menuExportConfiguration" onAction="#exportConfiguration" text="%menu.exportconfig" />
+							</items>
+						</Menu>
+						<Menu mnemonicParsing="false" text="%menu.help">
+							<items>
+								<MenuItem fx:id="MIAboutUBUGrades" onAction="#aboutApp" text="%menu.about" />
+							</items>
+						</Menu>
+					</menus>
+				</MenuBar>
+   </top>
 </BorderPane>

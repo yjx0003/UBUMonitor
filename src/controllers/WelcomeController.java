@@ -147,8 +147,8 @@ public class WelcomeController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		try {
-			conexionLabel.setText(controller.isOfflineMode() ? I18n.get("text.withoutconnection")
-					: I18n.get("text.withconnection"));
+			conexionLabel.setText(
+					controller.isOfflineMode() ? I18n.get("text.withoutconnection") : I18n.get("text.withconnection"));
 			lblUser.setText(controller.getUser().getFullName());
 			LOGGER.info("Cargando cursos...");
 
@@ -292,7 +292,7 @@ public class WelcomeController implements Initializable {
 		stage.getIcons().add(new Image("/img/logo_min.png"));
 
 		Optional<ButtonType> result = alert.showAndWait();
-		if (result.get() == ButtonType.OK) {
+		if (result.isPresent() && result.get() == ButtonType.OK) {
 			cacheFilePath.toFile().delete();
 			@SuppressWarnings("unchecked")
 			ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem().getContent();
@@ -406,8 +406,8 @@ public class WelcomeController implements Initializable {
 		lblProgress.textProperty().bind(task.messageProperty());
 		task.setOnSucceeded(v -> loadNextWindow());
 		task.setOnFailed(e -> {
-			UtilMethods.errorWindow(
-					"Error al actualizar los datos del curso:" + task.getException().getCause(), task.getException());
+			UtilMethods.errorWindow("Error al actualizar los datos del curso:" + task.getException().getCause(),
+					task.getException());
 			LOGGER.error("Error al actualizar los datos del curso: {}", task.getException());
 		});
 
@@ -440,7 +440,7 @@ public class WelcomeController implements Initializable {
 		} catch (IOException e) {
 
 			LOGGER.info("No se ha podido cargar la ventana Main.fxml: {}", e);
-			UtilMethods.errorWindow( "No se ha podido cargar la ventana Main.fxml", e);
+			UtilMethods.errorWindow("No se ha podido cargar la ventana Main.fxml", e);
 		}
 	}
 

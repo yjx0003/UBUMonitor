@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,9 +28,11 @@ public class Heatmap extends ApexCharts {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Heatmap.class);
 	private String max;
+	private DescriptiveStatistics descriptiveStatistics;
+
 	public Heatmap(MainController mainController) {
 		super(mainController, ChartType.HEAT_MAP, Tabs.LOGS);
-
+		descriptiveStatistics = new DescriptiveStatistics();
 	}
 
 	@Override
@@ -72,7 +75,7 @@ public class Heatmap extends ApexCharts {
 				.executeScript(String.format("updateApexCharts(%s,%s, %s)", heatmapdataset, categories, getOptions()));
 	}
 
-	public static <T> String createSeries(List<EnrolledUser> enrolledUsers, List<EnrolledUser> selectedUsers,
+	public <T> String createSeries(List<EnrolledUser> enrolledUsers, List<EnrolledUser> selectedUsers,
 			List<T> selecteds, GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd, DataSet<T> dataSet) {
 
 		StringBuilder stringBuilder = new StringBuilder();
@@ -81,6 +84,13 @@ public class Heatmap extends ApexCharts {
 		Map<EnrolledUser, Map<T, List<Long>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
 		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
+
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		boolean useQuartile = mainConfiguration.getValue(getChartType(), "useQuartile");
+
+		if (useQuartile) {
+			descriptiveStatistics.clear();
+		}
 
 		for (int i = selectedUsers.size() - 1; i >= 0; i--) {
 			EnrolledUser selectedUser = selectedUsers.get(i);
@@ -95,8 +105,13 @@ public class Heatmap extends ApexCharts {
 					List<Long> times = types.get(type);
 					result += times.get(j);
 				}
+				if (useQuartile && result != 0) {
+					descriptiveStatistics.addValue(result);
+				}
 				results.add(result);
+
 			}
+
 			stringBuilder.append("data: [" + UtilMethods.join(results) + "]},");
 
 		}
@@ -143,39 +158,66 @@ public class Heatmap extends ApexCharts {
 		String fourthInterval = colorToRGB(mainConfiguration.getValue(getChartType(), "fourthInterval"));
 		String moreMax = colorToRGB(mainConfiguration.getValue(getChartType(), "moreMax"));
 
-		long max = getSuggestedMax();
-
 		StringJoiner jsObject = getDefaultOptions();
 		addKeyValueWithQuote(jsObject, "typeGraph", "heatmap");
 		addKeyValue(jsObject, "tooltip", "{x:{show:!0}}");
-		addKeyValue(jsObject, "plotOptions",
-				"{heatmap:{enableShades:!1,colorScale:{ranges:[{from:-1,to:0,color:" + zeroValue
-						+ ",name:'0'},{from:1,to:" + Math.max(Math.floor(.25 * max), 1) + ",color:" + firstInterval
-						+ "},{from:" + Math.max(Math.ceil(.25 * max), 1) + ",to:" + Math.max(Math.floor(.5 * max), 1)
-						+ ",color:" + secondInterval + "},{from:" + Math.max(Math.ceil(.5 * max), 1) + ",to:"
-						+ Math.max(Math.floor(.75 * max), 1) + ",color:" + thirdInterval + "},{from:"
-						+ Math.max(Math.ceil(.75 * max), 1) + ",to:" + Math.max(Math.max(max, 1), Math.floor(.75 * max))
-						+ ",color:" + fourthInterval + "},{from:" + (max + 1) + ",to:Number.POSITIVE_INFINITY,color:"
-						+ moreMax + ",name:'+'+(" + (max + 1) + ")}]}}}");
+
 		addKeyValue(jsObject, "legend", "{position:'top'}");
 		addKeyValue(jsObject, "chart",
 				"{type:\"heatmap\",events:{dataPointSelection:function(e,t,n){javaConnector.dataPointSelection(n.w.config.series.length-1-n.seriesIndex)}},height:height,toolbar:{show:!1},animations:{enabled:!1}}");
 		addKeyValue(jsObject, "dataLabels",
 				"{formatter:function(r,t){return 0==r?\"\":r},style:{colors:[\"#000000\"]}}");
-		
-		addKeyValue(jsObject, "xaxis", "{"+getXScaleLabel()+"}");
-	
+
+		addKeyValue(jsObject, "xaxis", "{" + getXScaleLabel() + "}");
+
+		if ((boolean) mainConfiguration.getValue(getChartType(), "useQuartile")) {
+			quartileColor(zeroValue, firstInterval, secondInterval, thirdInterval, fourthInterval, jsObject);
+		} else {
+			intervalColor(zeroValue, firstInterval, secondInterval, thirdInterval, fourthInterval, moreMax,
+					getSuggestedMax(), jsObject);
+		}
+
 		return jsObject.toString();
 
 	}
+
+	private void intervalColor(String zeroValue, String firstInterval, String secondInterval, String thirdInterval,
+			String fourthInterval, String moreMax, long maxValue, StringJoiner jsObject) {
+		addKeyValue(jsObject, "plotOptions",
+				"{heatmap:{enableShades:!1,colorScale:{ranges:[{from:-1,to:0,color:" + zeroValue
+						+ ",name:'0'},{from:1,to:" + Math.max(Math.floor(.25 * maxValue), 1) + ",color:" + firstInterval
+						+ "},{from:" + Math.max(Math.ceil(.25 * maxValue), 1) + ",to:"
+						+ Math.max(Math.floor(.5 * maxValue), 1) + ",color:" + secondInterval + "},{from:"
+						+ Math.max(Math.ceil(.5 * maxValue), 1) + ",to:" + Math.max(Math.floor(.75 * maxValue), 1)
+						+ ",color:" + thirdInterval + "},{from:" + Math.max(Math.ceil(.75 * maxValue), 1) + ",to:"
+						+ Math.max(Math.max(maxValue, 1), Math.floor(.75 * maxValue)) + ",color:" + fourthInterval
+						+ "},{from:" + (maxValue + 1) + ",to:Number.POSITIVE_INFINITY,color:" + moreMax + ",name:'+'+("
+						+ (maxValue + 1) + ")}]}}}");
+	}
+
+	private void quartileColor(String zeroValue, String firstInterval, String secondInterval, String thirdInterval,
+			String fourthInterval, StringJoiner jsObject) {
+		long first = Math.max(1, Math.round(descriptiveStatistics.getPercentile(25)));
+		long second = Math.max(1, Math.round(descriptiveStatistics.getPercentile(50)));
+		long third = Math.max(1, Math.round(descriptiveStatistics.getPercentile(75)));
+		long fourth = Math.max(1, Math.round(descriptiveStatistics.getPercentile(100)));
+		addKeyValue(jsObject, "plotOptions",
+				"{heatmap:{enableShades:!1,colorScale:{ranges:[{from:-1,to:0,color:" + zeroValue
+						+ ",name:'0'},{from:1,to:" + first + ",color:" + firstInterval + "},{from:" + first + ",to:"
+						+ second + ",color:" + secondInterval + "},{from:" + second + ",to:" + third + ",color:"
+						+ thirdInterval + "},{from:" + third + ",to:" + fourth + ",color:" + fourthInterval + "}]}}}");
+	}
+
 	@Override
 	public String getMax() {
 		return max;
 	}
+
 	@Override
 	public void setMax(String max) {
 		this.max = max;
 	}
+
 	@Override
 	public String getXAxisTitle() {
 		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"),

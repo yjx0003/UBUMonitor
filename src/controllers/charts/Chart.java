@@ -239,7 +239,7 @@ public abstract class Chart {
 	public long getSuggestedMax() {
 		String maxString = visualizationController.getTextFieldMax().getText();
 		if (maxString == null || maxString.isEmpty()) {
-			return 1;
+			return 0;
 		}
 		return Long.valueOf(maxString);
 

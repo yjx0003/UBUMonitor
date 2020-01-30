@@ -65,6 +65,7 @@ public class MainConfiguration {
 
 		createItem(ChartType.STACKED_BAR, "calculateMax", false);
 		createItem(ChartType.HEAT_MAP, "calculateMax", true);
+		createItem(ChartType.HEAT_MAP, "useQuartile", false);
 		createItem(ChartType.HEAT_MAP, "zeroValue", Color.web("#f78880"));
 		createItem(ChartType.HEAT_MAP, "firstInterval", Color.web("#f4e3ae"));
 		createItem(ChartType.HEAT_MAP, "secondInterval", Color.web("#fff033"));

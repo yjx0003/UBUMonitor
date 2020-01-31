@@ -1,23 +1,10 @@
-.anchorpane {
-    -fx-background-color: #f2f2f2;
-    
-}
 
-* :disabled {
-    -fx-opacity: 0.8;
-}
-
-.progress-bar .bar { 
-    -fx-padding: 1px; 
-    -fx-background-insets: 0; 
-    -fx-background-color: #0095a8;
-}
 
 .text-field-login {
 	-fx-background-color:transparent;
-    -fx-padding:0 0 8 2;
-    -fx-background-insets: 0;
-    -fx-border-width:0 0 2 0;
+    -fx-padding:0.0 0.0 8.0 2.0;
+    -fx-background-insets: 0.0;
+    -fx-border-width:0.0 0.0 2.0 0.0;
     -fx-border-color: #26c6da;
 }
 
@@ -31,8 +18,8 @@
 	-fx-background-color: #26c6da;
 	-fx-font-size: 13.0px;
 	-fx-font-weight: bold;
-	-fx-background-radius: 2px;
-	-fx-effect: dropshadow( gaussian , rgba(0,0,0,0.4) , 10,0,2,2 ); 
+	-fx-background-radius: 2.0px;
+	-fx-effect: dropshadow( gaussian , rgba(0.0,0.0,0.0,0.4) , 10.0,0.0,2.0,2.0 ); 
 }
 .danger_button{
 	-fx-background-color: #DC143C;
@@ -66,7 +53,7 @@
 
 .tab-pane-class{
 	-fx-border-color:black;
-	-fx-border-width:1px;
+	-fx-border-width:1.0px;
 }
 
 .list-view-intro{
@@ -93,91 +80,4 @@
 .tree-cell:selected{
 	-fx-background-color: #6ff9ff;
   
-}
-
-.tree-cell .tree-disclosure-node .arrow {
-    -fx-background-image: url("/img/arrow_collapsed.png");
-}
-
-.tree-cell:expanded .tree-disclosure-node .arrow {
-    -fx-background-image: url("/img/arrow_expanded.png");
-}
-
-.pane{
-	-fx-background-color:#f2f2f2;
-}
-
-.choice-box {
-	-fx-background-color: #bdbdbd;
-	-fx-font-size: 11.0px;
-	-fx-font-weight: bold;
-	-fx-border-radius: 2px 2px 2px 2px;
-
-}
-
-
-.menu-button .label{
-	-fx-background-color: #bdbdbd;
-	-fx-font-size: 11.0px;
-}
-
-.menu-button{
-	-fx-background-color: #bdbdbd;
-	-fx-font-size: 11.0px;
-	-fx-font-weight: bold;
-	-fx-border-radius: 2px 2px 2px 2px;
-}
-
-.menu-button .arrow-button {
-	-fx-mark-color: #000000;
-}
-
-.context-menu {
-	-fx-background-color: #bdbdbd;
-	-fx-padding: 0em 0em 0em 0em;
-}
-
-.menu-item{
-	-fx-background-color: #bdbdbd;
-}
-
-.menu-item .label{
-	-fx-background-color: #bdbdbd;
-	-fx-font-weight: bold;
-}
-
-.menu-item:hover{
-	-fx-background-color: #eeeeee;
-}
-
-.menu-item:hover .label{
-	-fx-background-color: #eeeeee;
-}
-
-.menu-bar {
-	-fx-background-color: #bdbdbd;
-}
-
-.menu-bar .menu {
-	-fx-background-color: #bdbdbd;
-}
-
-.menu-bar .label {
-	-fx-background-color: #bdbdbd;
-}
-
-#topBar{
-	-fx-background-color: #bdbdbd;
-}
-
-#topBarLabels{
-	-fx-font-weight: bold;
-}
-
-#loginLabels {
-	-fx-font-weight: bold;
-}
-
-.list-view .list-cell:disabled {
-    -fx-opacity: 1.0;
 }

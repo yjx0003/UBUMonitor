@@ -30,13 +30,10 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -421,27 +418,11 @@ public class WelcomeController implements Initializable {
 			return;
 		}
 
-		try {
-			// Accedemos a la siguiente ventana
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"), I18n.getResourceBundle());
-			controller.getStage().close();
-			controller.setStage(new Stage());
-			Parent root = loader.load();
-			Scene scene = new Scene(root);
-			controller.getStage().setScene(scene);
-			controller.getStage().getIcons().add(new Image("/img/logo_min.png"));
-			controller.getStage().setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
-			controller.getStage().setResizable(true);
-			controller.getStage().setMinHeight(600);
-			controller.getStage().setMinWidth(800);
-			controller.getStage().setMaximized(true);
-			controller.getStage().show();
-			lblNoSelect.setText("");
-		} catch (IOException e) {
+		UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), false);
+		controller.getStage().setMaximized(true);
+		controller.getStage().setResizable(true);
+		controller.getStage().show();
 
-			LOGGER.info("No se ha podido cargar la ventana Main.fxml: {}", e);
-			UtilMethods.errorWindow("No se ha podido cargar la ventana Main.fxml", e);
-		}
 	}
 
 	/**
@@ -452,22 +433,7 @@ public class WelcomeController implements Initializable {
 	public void logOut(ActionEvent actionEvent) {
 		LOGGER.info("Cerrando sesión de usuario");
 
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Login.fxml"), I18n.getResourceBundle());
-
-			Parent root = loader.load();
-			Scene scene = new Scene(root);
-			controller.getStage().close();
-			controller.setStage(new Stage());
-			controller.getStage().setScene(scene);
-			controller.getStage().getIcons().add(new Image("/img/logo_min.png"));
-			controller.getStage().setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
-			controller.getStage().resizableProperty().setValue(Boolean.FALSE);
-			controller.getStage().show();
-
-		} catch (Exception e) {
-			LOGGER.error("Error al modifcar la ventana de JavaFX: {}", e);
-		}
+		UtilMethods.changeScene(getClass().getResource("/view/Login.fxml"), controller.getStage());
 
 	}
 

@@ -29,11 +29,8 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -44,10 +41,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 import model.Course;
 import model.MoodleUser;
+import util.UtilMethods;
 
 /**
  * Clase controlador de la ventana de Login
@@ -151,7 +148,7 @@ public class LoginController implements Initializable {
 			LOGGER.info("Idioma de la aplicación: {}", newValue);
 			LOGGER.info("Idioma cargado del resource bundle: {}", I18n.getResourceBundle().getLocale());
 			LOGGER.info("[Bienvenido a " + AppInfo.APPLICATION_NAME_WITH_VERSION + "]");
-			changeScene(getClass().getResource("/view/Login.fxml"), null);
+			UtilMethods.changeScene(getClass().getResource("/view/Login.fxml"), controller.getStage());
 		});
 
 	}
@@ -221,7 +218,8 @@ public class LoginController implements Initializable {
 			if (chkOfflineMode.isSelected()) {
 				try {
 					offlineMode();
-					changeScene(getClass().getResource("/view/WelcomeOffline.fxml"), new WelcomeOfflineController());
+					UtilMethods.changeScene(getClass().getResource("/view/WelcomeOffline.fxml"), controller.getStage(),
+							new WelcomeOfflineController());
 				} catch (MalformedURLException | RuntimeException e) {
 					lblStatus.setText(e.getMessage());
 				}
@@ -280,7 +278,8 @@ public class LoginController implements Initializable {
 			if (!controller.getDirectoryCache().toFile().exists()) {
 				controller.getDirectoryCache().toFile().mkdirs();
 			}
-			changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController());
+			UtilMethods.changeScene(getClass().getResource("/view/Welcome.fxml"), controller.getStage(),
+					new WelcomeController());
 		});
 
 		loginTask.setOnFailed(e -> {
@@ -301,37 +300,6 @@ public class LoginController implements Initializable {
 		controller.setDirectory();
 
 		controller.setOfflineMode(chkOfflineMode.isSelected());
-	}
-
-	/**
-	 * Permite cambiar la ventana actual.
-	 * 
-	 * @param sceneFXML La ventanan a la que se quiere cambiar.
-	 *
-	 * @throws IOException
-	 */
-	private void changeScene(URL sceneFXML, Object fxmlController) {
-		try {
-
-			// Accedemos a la siguiente ventana
-			FXMLLoader loader = new FXMLLoader(sceneFXML, I18n.getResourceBundle());
-			if (fxmlController != null) {
-				loader.setController(fxmlController);
-			}
-
-			controller.getStage().close();
-			Stage stage = new Stage();
-			Parent root = loader.load();
-			Scene scene = new Scene(root);
-			stage.setScene(scene);
-			stage.getIcons().add(new Image("/img/logo_min.png"));
-			stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
-			stage.resizableProperty().setValue(Boolean.FALSE);
-			stage.show();
-			controller.setStage(stage);
-		} catch (IOException e) {
-			LOGGER.info("No se ha podido cargar la ventana de bienvenida: {}", e);
-		}
 	}
 
 	/**

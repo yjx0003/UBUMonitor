@@ -35,7 +35,7 @@
       </StackPane>
    </center>
    <bottom>
-      <GridPane fx:id="optionsUbuLogs" prefHeight="98.0" prefWidth="490.0" BorderPane.alignment="CENTER">
+      <GridPane fx:id="optionsUbuLogs" prefWidth="490.0" BorderPane.alignment="CENTER">
          <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="262.0" minWidth="10.0" prefWidth="227.0" />

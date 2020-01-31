@@ -1,7 +1,6 @@
 package controllers;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InvalidClassException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -398,14 +397,16 @@ public class WelcomeController implements Initializable {
 		}
 
 		btnEntrar.setVisible(false);
-
 		Task<Void> task = getUserDataWorker();
 		lblProgress.textProperty().bind(task.messageProperty());
 		task.setOnSucceeded(v -> loadNextWindow());
 		task.setOnFailed(e -> {
-			UtilMethods.errorWindow("Error al actualizar los datos del curso:" + task.getException().getCause(),
+			controller.getStage().getScene().setCursor(Cursor.DEFAULT);
+			btnEntrar.setVisible(true);
+			UtilMethods.errorWindow("Error al actualizar los datos del curso: " + task.getException().getMessage(),
 					task.getException());
 			LOGGER.error("Error al actualizar los datos del curso: {}", task.getException());
+			
 		});
 
 		Thread thread = new Thread(task, "datos");
@@ -447,46 +448,38 @@ public class WelcomeController implements Initializable {
 		return new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
-				try {
-					Course actualCourse = controller.getActualCourse();
-					actualCourse.clear();
-					LOGGER.info("Cargando datos del curso: {}", actualCourse.getFullName());
-					// Establecemos los usuarios matriculados
-					updateMessage(I18n.get("label.loadingstudents"));
-					CreatorUBUGradesController.createEnrolledUsers(actualCourse.getId());
-					CreatorUBUGradesController.createSectionsAndModules(actualCourse.getId());
-					updateMessage(I18n.get("label.loadingqualifier"));
-					// Establecemos calificador del curso
-					CreatorGradeItems creatorGradeItems = new CreatorGradeItems(
-							new Locale(controller.getUser().getLang()));
-					creatorGradeItems.createGradeItems(controller.getActualCourse().getId());
-					updateMessage(I18n.get("label.loadingActivitiesCompletion"));
-					CreatorUBUGradesController.createActivitiesCompletionStatus(actualCourse.getId(),
-							actualCourse.getEnrolledUsers());
-					updateMessage(I18n.get("label.updatinglog"));
-					if (isFileCacheExists) {
-						Logs logs = LogCreator.createCourseLog();
-						actualCourse.setLogs(logs);
 
-					} else {
-						Logs logs = actualCourse.getLogs();
-						LogCreator.updateCourseLog(logs);
+				Course actualCourse = controller.getActualCourse();
+				actualCourse.clear();
+				LOGGER.info("Cargando datos del curso: {}", actualCourse.getFullName());
+				// Establecemos los usuarios matriculados
+				updateMessage(I18n.get("label.loadingstudents"));
+				CreatorUBUGradesController.createEnrolledUsers(actualCourse.getId());
+				CreatorUBUGradesController.createSectionsAndModules(actualCourse.getId());
+				updateMessage(I18n.get("label.loadingqualifier"));
+				// Establecemos calificador del curso
+				CreatorGradeItems creatorGradeItems = new CreatorGradeItems(new Locale(controller.getUser().getLang()));
+				creatorGradeItems.createGradeItems(controller.getActualCourse().getId());
+				updateMessage(I18n.get("label.loadingActivitiesCompletion"));
+				CreatorUBUGradesController.createActivitiesCompletionStatus(actualCourse.getId(),
+						actualCourse.getEnrolledUsers());
+				updateMessage(I18n.get("label.updatinglog"));
+				if (isFileCacheExists) {
+					Logs logs = LogCreator.createCourseLog();
+					actualCourse.setLogs(logs);
 
-					}
-					updateMessage(I18n.get("label.loadingstats"));
-					// Establecemos las estadisticas
-					controller.createStats();
+				} else {
+					Logs logs = actualCourse.getLogs();
+					LogCreator.updateCourseLog(logs);
 
-					updateMessage(I18n.get("label.savelocal"));
-					saveData();
-				} catch (IOException e) {
-					LOGGER.error("Error al cargar los datos de los alumnos: {}", e);
-					updateMessage("Se produjo un error inesperado al cargar los datos.\n" + e.getMessage());
-					throw new IllegalStateException(e);
-				} finally {
-					controller.getStage().getScene().setCursor(Cursor.DEFAULT);
-					btnEntrar.setVisible(true);
 				}
+				updateMessage(I18n.get("label.loadingstats"));
+				// Establecemos las estadisticas
+				controller.createStats();
+
+				updateMessage(I18n.get("label.savelocal"));
+				saveData();
+
 				return null;
 			}
 		};

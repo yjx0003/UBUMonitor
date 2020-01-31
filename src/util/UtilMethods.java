@@ -1,11 +1,17 @@
 package util;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import controllers.AppInfo;
+import controllers.I18n;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -25,7 +31,7 @@ public class UtilMethods {
 	 * @return texto escapado
 	 */
 	public static String escapeJavaScriptText(String input) {
-		return input.replaceAll("'", "\\\\'");
+		return input.replace("'", "\\\\'");
 	}
 
 	/**
@@ -134,4 +140,49 @@ public class UtilMethods {
 		return alert;
 	}
 
+	public static void changeScene(URL url, Stage stage) {
+		changeScene(url, stage, null, true);
+	}
+	
+	public static void changeScene(URL url, Stage stage, Object fxmlController) {
+		changeScene(url, stage, fxmlController, true);
+	}
+	public static void changeScene(URL url, Stage stage, boolean showStage) {
+		changeScene(url, stage, null, showStage);
+	}
+
+	/**
+	 * Permite cambiar la ventana actual.
+	 * 
+	 * @param sceneFXML La ventanan a la que se quiere cambiar.
+	 *
+	 * @throws IOException
+	 */
+	public static void changeScene(URL sceneFXML, Stage stage, Object fxmlController, boolean showStage) {
+
+		// Accedemos a la siguiente ventana
+		FXMLLoader loader = new FXMLLoader(sceneFXML, I18n.getResourceBundle());
+		if (fxmlController != null) {
+			loader.setController(fxmlController);
+		}
+
+		try {
+
+			Parent root = loader.load();
+
+			if (stage.getScene() == null) {
+				stage.setScene(new Scene(root));
+			} else {
+				stage.getScene().setRoot(root);
+
+			}
+			stage.close();
+			if(showStage) {
+				stage.show();
+			}
+		} catch (IOException e) {
+			errorWindow("error loading fxml: " + sceneFXML, e);
+		}
+
+	}
 }

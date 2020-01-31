@@ -44,7 +44,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -272,7 +271,7 @@ public class MainController implements Initializable {
 				I18n.get("label.lastupdate") + " " + lastLogDateTime.format(Controller.DATE_TIME_FORMATTER));
 		Label conexionLabel = new Label(
 				controller.isOfflineMode() ? I18n.get("text.withoutconnection") : I18n.get("text.withconnection"));
-		
+
 		statusBar.getLeftItems().addAll(lblActualUser, new Separator(Orientation.VERTICAL), lblActualCourse,
 				new Separator(Orientation.VERTICAL), lblActualHost);
 		statusBar.getRightItems().addAll(lblLastUpdate, new Separator(Orientation.VERTICAL), conexionLabel);
@@ -1300,21 +1299,9 @@ public class MainController implements Initializable {
 	 */
 	private void changeScene(URL sceneFXML, Object controllerObject) {
 		try {
-			FXMLLoader loader = new FXMLLoader(sceneFXML, I18n.getResourceBundle());
-
-			if (controllerObject != null) {
-				loader.setController(controllerObject);
-			}
-
-			Parent root = loader.load();
-			Scene scene = new Scene(root);
-			controller.getStage().close();
-			controller.setStage(new Stage());
-			controller.getStage().setScene(scene);
-			controller.getStage().getIcons().add(new Image("/img/logo_min.png"));
-			controller.getStage().setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
-			controller.getStage().resizableProperty().setValue(Boolean.FALSE);
-			controller.getStage().show();
+			UtilMethods.changeScene(sceneFXML, controller.getStage(), controllerObject);
+			controller.getStage().setResizable(false);
+			controller.getStage().setMaximized(false);
 
 		} catch (Exception e) {
 			LOGGER.error("Error al modifcar la ventana de JavaFX: {}", e);
@@ -1358,7 +1345,6 @@ public class MainController implements Initializable {
 		stage.setOnHiding(event -> configurationController.onClose());
 		stage.setScene(newScene);
 		stage.initModality(Modality.NONE);
-
 		stage.getIcons().add(new Image("/img/logo_min.png"));
 		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 

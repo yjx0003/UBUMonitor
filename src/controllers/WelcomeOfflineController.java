@@ -1,7 +1,6 @@
 package controllers;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InvalidClassException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -93,7 +92,7 @@ public class WelcomeOfflineController implements Initializable {
 
 	@FXML
 	private Label lblDateUpdate;
-	
+
 	@FXML
 	private Label conexionLabel;
 
@@ -107,8 +106,8 @@ public class WelcomeOfflineController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		try {
-			conexionLabel.setText(controller.isOfflineMode() ? I18n.get("text.withoutconnection")
-					: I18n.get("text.withconnection"));
+			conexionLabel.setText(
+					controller.isOfflineMode() ? I18n.get("text.withoutconnection") : I18n.get("text.withconnection"));
 			lblUser.setText(controller.getUser().getFullName());
 			LOGGER.info("Cargando cursos...");
 
@@ -301,31 +300,14 @@ public class WelcomeOfflineController implements Initializable {
 		if (!isBBDDLoaded) {
 			return;
 		}
+		
+		UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), false);
+		controller.getStage().setResizable(true);
+		controller.getStage().setMaximized(true);
+		controller.getStage().show();
 
-		try {
-			// Accedemos a la siguiente ventana
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"), I18n.getResourceBundle());
-			controller.getStage().close();
-			controller.setStage(new Stage());
-			Parent root = loader.load();
-			Scene scene = new Scene(root);
-			controller.getStage().setScene(scene);
-			controller.getStage().getIcons().add(new Image("/img/logo_min.png"));
-			controller.getStage().setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
-			controller.getStage().setResizable(true);
-			controller.getStage().setMinHeight(600);
-			controller.getStage().setMinWidth(800);
-			controller.getStage().setMaximized(true);
-			controller.getStage().show();
-			lblNoSelect.setText("");
-		} catch (IOException e) {
-
-			LOGGER.info("No se ha podido cargar la ventana Main.fxml: {}", e);
-			UtilMethods.errorWindow("No se ha podido cargar la ventana Main.fxml", e);
-		}
 	}
 
-	
 	/**
 	 * Vuelve a la ventana de login de usuario.
 	 * 

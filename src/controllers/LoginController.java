@@ -259,6 +259,7 @@ public class LoginController implements Initializable {
 		controller.setPassword(txtPassword.getText());
 		MoodleUser user = new MoodleUser();
 		user.setFullName(txtUsername.getText()); // because we have not a fullname of the user in offline mode
+		user.setUserPhoto(new Image("/img/default_user.png"));
 		controller.setUser(user);
 		onSuccessLogin();
 
@@ -315,7 +316,7 @@ public class LoginController implements Initializable {
 
 					controller.tryLogin(txtHost.getText(), txtUsername.getText(), txtPassword.getText());
 					controller.setDirectory();
-					controller.initTimer();
+			
 				} catch (MalformedURLException e) {
 					LOGGER.error("URL mal formada. ¿Has añadido protocolo http(s)?", e);
 					throw new IllegalArgumentException(I18n.get("error.malformedurl"));

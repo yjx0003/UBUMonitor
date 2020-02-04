@@ -30,7 +30,6 @@
 }
 
 .danger_button:hover{
-	-fx-background-color: #eb1f48;
 	-fx-scale-y: 1.1;
 }
 
@@ -80,4 +79,8 @@
 .tree-cell:selected{
 	-fx-background-color: #6ff9ff;
   
+}
+
+.left-items .right-items {
+    -fx-alignment: center;
 }

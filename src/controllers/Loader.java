@@ -27,12 +27,15 @@ public class Loader extends Application {
 
 		try {
 			controller.initialize();
+			controller.setHostServices(this.getHostServices());
 			LOGGER.info("[Bienvenido a {}]", AppInfo.APPLICATION_NAME_WITH_VERSION);
 			primaryStage.getIcons().add(new Image("/img/logo_min.png"));
 			primaryStage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 			primaryStage.setResizable(false);
 			UtilMethods.changeScene(getClass().getResource("/view/Login.fxml"), primaryStage);
+			Style.addStyle(Config.getProperty("style"), primaryStage.getScene().getStylesheets());
 			controller.setStage(primaryStage);
+			
 		} catch (Exception e) {
 			LOGGER.error("Error al iniciar controller: {}", e);
 		}
@@ -40,7 +43,7 @@ public class Loader extends Application {
 
 	@Override
 	public void stop() {
-		Controller.getInstance().cancelTimer();
+
 		Config.save();
 	}
 

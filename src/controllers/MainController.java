@@ -1,12 +1,8 @@
 package controllers;
 
-import java.awt.Desktop;
-import java.awt.Desktop.Action;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.time.Instant;
@@ -17,6 +13,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -44,27 +41,36 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
+import javafx.stage.PopupWindow.AnchorLocation;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
@@ -222,6 +228,12 @@ public class MainController implements Initializable {
 	private VisualizationController visualizationController;
 	private Map<Tab, MainAction> tabMap = new HashMap<>();
 
+	@FXML
+	private ImageView userPhoto;
+
+	@FXML
+	private Menu menuTheme;
+
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades de
 	 * las que se compone.
@@ -252,29 +264,88 @@ public class MainController implements Initializable {
 			initiGradeItems();
 
 			initStatusBar();
+			initMenuBar();
+			initUserPhoto();
 		} catch (Exception e) {
 			LOGGER.error("Error en la inicialización.", e);
 		}
 	}
 
+	private void initMenuBar() {
+		ToggleGroup group = new ToggleGroup();
+		for (Entry<String, String> entry : Style.STYLES.entrySet()) {
+			String key = entry.getKey();
+			String path = entry.getValue();
+			RadioMenuItem menuItem = new RadioMenuItem();
+			menuItem.setText(key);
+			menuItem.setToggleGroup(group);
+
+			if (key.equals(Config.getProperty("style", "Modena"))) {
+				menuItem.setSelected(true);
+			}
+			menuItem.setOnAction(event -> {
+
+				controller.getStage().getScene().getStylesheets().clear();
+				if (path != null) {
+					controller.getStage().getScene().getStylesheets().add(path);
+				}
+				Config.setProperty("style", key);
+			});
+			menuTheme.getItems().add(menuItem);
+		}
+	}
+
+	private void initUserPhoto() {
+
+		userPhoto.setImage(controller.getUser().getUserPhoto());
+
+		ContextMenu menu = new ContextMenu();
+		MenuItem user = new MenuItem(controller.getUser().getFullName(),
+				new ImageView(controller.getUser().getUserPhoto()));
+		MenuItem logout = new MenuItem(I18n.get("menu.logout"));
+		MenuItem exit = new MenuItem(I18n.get("menu.exit"));
+
+		logout.setOnAction(this::logOut);
+		exit.setOnAction(this::closeApplication);
+		menu.getItems().addAll(user, logout, exit);
+		menu.setAnchorLocation(AnchorLocation.CONTENT_TOP_LEFT);
+		menu.setAutoHide(true);
+
+		userPhoto.setOnMouseClicked(e -> menu.show(userPhoto, e.getScreenX(), e.getScreenY()));
+
+	}
+
 	private void initStatusBar() {
-		// Mostramos Usuario logeado y su imagen
-		Label lblActualUser = new Label(controller.getUser().getFullName());
+
+		// Mostramos Host actual
+		Hyperlink actualHost = new Hyperlink(controller.getUrlHost().toString());
+		ImageView linkImage = new ImageView("/img/link.png");
+		linkImage.setFitHeight(20);
+		linkImage.setFitWidth(20);
+		actualHost.setGraphic(linkImage);
+		actualHost.setOnAction(event -> controller.getHostServices().showDocument(actualHost.getText()));
 		// Mostramos Curso actual
 		Label lblActualCourse = new Label(controller.getActualCourse().getFullName());
 
-		// Mostramos Host actual
-		Label lblActualHost = new Label(controller.getUrlHost().toString());
+		ImageView online = new ImageView(
+				controller.isOfflineMode() ? "/img/circle_offline.png" : "/img/circle_online.png");
+		online.setFitHeight(20);
+		online.setFitWidth(20);
+		Tooltip.install(online, new Tooltip(I18n.get("text.online_" + !controller.isOfflineMode())));
+		HBox left = new HBox();
+		left.setAlignment(Pos.CENTER);
+		left.getChildren().addAll(online, new Separator(Orientation.VERTICAL), lblActualCourse,
+				new Separator(Orientation.VERTICAL), actualHost);
 
+		statusBar.getLeftItems().add(left);
+
+		HBox right = new HBox();
+		right.setAlignment(Pos.CENTER);
 		ZonedDateTime lastLogDateTime = controller.getActualCourse().getLogs().getLastDatetime();
 		Label lblLastUpdate = new Label(
 				I18n.get("label.lastupdate") + " " + lastLogDateTime.format(Controller.DATE_TIME_FORMATTER));
-		Label conexionLabel = new Label(
-				controller.isOfflineMode() ? I18n.get("text.withoutconnection") : I18n.get("text.withconnection"));
-
-		statusBar.getLeftItems().addAll(lblActualUser, new Separator(Orientation.VERTICAL), lblActualCourse,
-				new Separator(Orientation.VERTICAL), lblActualHost);
-		statusBar.getRightItems().addAll(lblLastUpdate, new Separator(Orientation.VERTICAL), conexionLabel);
+		right.getChildren().addAll(lblLastUpdate);
+		statusBar.getRightItems().add(right);
 
 	}
 
@@ -520,8 +591,12 @@ public class MainController implements Initializable {
 		listViewActivity.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		ObservableList<ModuleType> observableListModuleTypes = FXCollections.observableArrayList();
+
 		observableListModuleTypes.addAll(controller.getActualCourse().getUniqueCourseModulesTypes());
 		observableListModuleTypes.sort(Comparator.nullsFirst(Comparator.comparing(I18n::get)));
+		if (!observableListModuleTypes.isEmpty()) {
+			observableListModuleTypes.add(0, ModuleType.DUMMY);
+		}
 
 		checkComboBoxModuleType.getItems().addAll(observableListModuleTypes);
 		checkComboBoxModuleType.getCheckModel().checkAll();
@@ -534,7 +609,7 @@ public class MainController implements Initializable {
 
 			@Override
 			public String toString(ModuleType moduleType) {
-				if (moduleType == null) {
+				if (moduleType == null || moduleType == ModuleType.DUMMY) {
 					return I18n.get(ALL);
 				}
 				return I18n.get(moduleType);
@@ -552,10 +627,21 @@ public class MainController implements Initializable {
 			filterCourseModules.setPredicate(getActivityPredicade());
 			listViewActivity.setCellFactory(getListCellCourseModule());
 		});
+		checkComboBoxModuleType.getItemBooleanProperty(0).addListener((observable, oldValue, newValue) -> {
 
+			if (newValue.booleanValue()) {
+				checkComboBoxModuleType.getCheckModel().checkAll();
+			} else {
+				checkComboBoxModuleType.getCheckModel().clearChecks();
+
+			}
+
+		});
 		checkComboBoxModuleType.getCheckModel().getCheckedItems().addListener((Change<? extends ModuleType> c) -> {
+
 			filterCourseModules.setPredicate(getActivityPredicade());
 			listViewActivity.setCellFactory(getListCellCourseModule());
+
 		});
 
 		checkBoxActivity.selectedProperty().addListener(c -> {
@@ -799,14 +885,25 @@ public class MainController implements Initializable {
 		listViewCourseModule.setItems(filterCourseModules);
 		listViewCourseModule.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-		ObservableList<ModuleType> observableListModuleTypes = FXCollections.observableArrayList();
-
-		observableListModuleTypes.addAll(controller.getActualCourse().getUniqueCourseModulesTypes());
+		ObservableList<ModuleType> observableListModuleTypes = FXCollections
+				.observableArrayList(controller.getActualCourse().getUniqueCourseModulesTypes());
 		observableListModuleTypes.sort(Comparator.nullsFirst(Comparator.comparing(I18n::get)));
+		if (!observableListModuleTypes.isEmpty()) {
+			observableListModuleTypes.add(0, ModuleType.DUMMY);
+		}
 
 		checkComboBoxCourseModule.getItems().addAll(observableListModuleTypes);
 		checkComboBoxCourseModule.getCheckModel().checkAll();
+		checkComboBoxCourseModule.getItemBooleanProperty(0).addListener((observable, oldValue, newValue) -> {
 
+			if (newValue.booleanValue()) {
+				checkComboBoxCourseModule.getCheckModel().checkAll();
+			} else {
+				checkComboBoxCourseModule.getCheckModel().clearChecks();
+
+			}
+
+		});
 		checkComboBoxCourseModule.setConverter(new StringConverter<ModuleType>() {
 			@Override
 			public ModuleType fromString(String moduleType) {
@@ -815,7 +912,7 @@ public class MainController implements Initializable {
 
 			@Override
 			public String toString(ModuleType moduleType) {
-				if (moduleType == null) {
+				if (moduleType == null || moduleType == ModuleType.DUMMY) {
 					return I18n.get(ALL);
 				}
 				return I18n.get(moduleType);
@@ -835,8 +932,21 @@ public class MainController implements Initializable {
 		});
 
 		checkComboBoxCourseModule.getCheckModel().getCheckedItems().addListener((Change<? extends ModuleType> c) -> {
-			filterCourseModules.setPredicate(getCourseModulePredicate());
-			listViewCourseModule.setCellFactory(getListCellCourseModule());
+			c.next();
+			if (c.wasAdded() && c.getAddedSubList().get(0) == null) {
+				for (int i = 1; i < checkComboBoxCourseModule.getItems().size(); i++) {
+					checkComboBoxCourseModule.getCheckModel().check(i);
+				}
+
+			} else if (c.wasRemoved() && c.getRemoved().get(0) == null) {
+				for (int i = 1; i < checkComboBoxCourseModule.getItems().size(); i++) {
+					checkComboBoxCourseModule.getCheckModel().clearCheck(i);
+				}
+			} else {
+				filterCourseModules.setPredicate(getCourseModulePredicate());
+				listViewCourseModule.setCellFactory(getListCellCourseModule());
+			}
+
 		});
 
 		checkBoxActivityCompleted.selectedProperty().addListener(c -> {
@@ -873,6 +983,7 @@ public class MainController implements Initializable {
 	}
 
 	private Predicate<CourseModule> getCourseModulePredicate() {
+
 		return cm -> containsTextField(courseModuleTextField.getText(), cm.getModuleName())
 				&& (checkBoxCourseModule.isSelected() || cm.isVisible())
 				&& (checkComboBoxCourseModule.getCheckModel().getCheckedItems().contains(cm.getModuleType()))
@@ -1288,7 +1399,7 @@ public class MainController implements Initializable {
 	 */
 	public void logOut(ActionEvent actionEvent) {
 		LOGGER.info("Cerrando sesión de usuario");
-		controller.cancelTimer();
+
 		changeScene(getClass().getResource("/view/Login.fxml"));
 	}
 
@@ -1338,7 +1449,7 @@ public class MainController implements Initializable {
 			LOGGER.error("Error", ex);
 			return;
 		}
-
+		Style.addStyle(Config.getProperty("style"), newScene.getStylesheets());
 		ConfigurationController configurationController = loader.getController();
 		Stage stage = new Stage();
 		configurationController.setMainController(this);
@@ -1391,14 +1502,27 @@ public class MainController implements Initializable {
 	 * @param actionEvent El ActionEvent.
 	 */
 	public void aboutApp(ActionEvent actionEvent) {
+	
+		
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AboutApp.fxml"),
+				I18n.getResourceBundle());
+		
+		Scene newScene;
 		try {
-			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Action.BROWSE)) {
-				LOGGER.info("El sistema operativo soporta la API de desktop.");
-				Desktop.getDesktop().browse(new URI(AppInfo.GITHUB));
-			}
-		} catch (IOException | URISyntaxException e) {
-			LOGGER.error("Error al abir la pagina aboutApp: {}", e);
+			newScene = new Scene(loader.load());
+		} catch (IOException ex) {
+			LOGGER.error("Error", ex);
+			return;
 		}
+		Style.addStyle(Config.getProperty("style"), newScene.getStylesheets());
+		
+		Stage stage = new Stage();
+		stage.setScene(newScene);
+		stage.getIcons().add(new Image("/img/logo_min.png"));
+		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
+
+		stage.show();
+
 	}
 
 	/**

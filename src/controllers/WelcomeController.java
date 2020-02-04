@@ -143,8 +143,7 @@ public class WelcomeController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		try {
-			conexionLabel.setText(
-					controller.isOfflineMode() ? I18n.get("text.withoutconnection") : I18n.get("text.withconnection"));
+			conexionLabel.setText(I18n.get("text.online_" + !controller.isOfflineMode()));
 			lblUser.setText(controller.getUser().getFullName());
 			LOGGER.info("Cargando cursos...");
 
@@ -230,12 +229,12 @@ public class WelcomeController implements Initializable {
 			LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastModified),
 					ZoneId.systemDefault());
 			lblDateUpdate.setText(localDateTime.format(Controller.DATE_TIME_FORMATTER));
-			isFileCacheExists = false;
+			isFileCacheExists = true;
 		} else {
 			chkUpdateData.setSelected(true);
 			chkUpdateData.setDisable(true);
 			lblDateUpdate.setText(I18n.get("label.never"));
-			isFileCacheExists = true;
+			isFileCacheExists = false;
 		}
 	}
 
@@ -262,11 +261,11 @@ public class WelcomeController implements Initializable {
 		Config.setProperty("actualCourse", getSelectedCourse().getId());
 
 		if (chkUpdateData.isSelected()) {
-			if (!isFileCacheExists) {
+			if (isFileCacheExists) {
 				loadData(controller.getPassword());
 			} else {
 				DataBase copyDataBase = new DataBase();
-				Course copyCourse = copyDataBase(copyDataBase, selectedCourse);
+				Course copyCourse = copyCourse(copyDataBase, selectedCourse);
 				controller.setDataBase(copyDataBase);
 				controller.setActualCourse(copyCourse);
 				isBBDDLoaded = true;
@@ -298,7 +297,7 @@ public class WelcomeController implements Initializable {
 		}
 	}
 
-	private Course copyDataBase(DataBase copyDataBase, Course selectedCourse) {
+	private Course copyCourse(DataBase copyDataBase, Course selectedCourse) {
 
 		Course copyCourse = copyDataBase.getCourses().getById(selectedCourse.getId());
 		copyCourse.setStartDate(selectedCourse.getStartDate());
@@ -338,14 +337,14 @@ public class WelcomeController implements Initializable {
 		try {
 
 			dataBase = (DataBase) Serialization.decrypt(password, cacheFilePath.toString());
-			copyDataBase(dataBase, getSelectedCourse());
+			copyCourse(dataBase, getSelectedCourse());
 			controller.setDataBase(dataBase);
 			isBBDDLoaded = true;
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			previusPasswordWindow();
 		} catch (InvalidClassException | ClassNotFoundException e) {
 			LOGGER.warn("Se ha modificado una de las clases serializables", e);
-			// TODO eliminar fichero y descargar de nuevo
+			UtilMethods.errorWindow("Se ha modificado una de las clases serializables", e);
 		}
 
 	}
@@ -406,7 +405,7 @@ public class WelcomeController implements Initializable {
 			UtilMethods.errorWindow("Error al actualizar los datos del curso: " + task.getException().getMessage(),
 					task.getException());
 			LOGGER.error("Error al actualizar los datos del curso: {}", task.getException());
-			
+
 		});
 
 		Thread thread = new Thread(task, "datos");
@@ -464,14 +463,30 @@ public class WelcomeController implements Initializable {
 				CreatorUBUGradesController.createActivitiesCompletionStatus(actualCourse.getId(),
 						actualCourse.getEnrolledUsers());
 				updateMessage(I18n.get("label.updatinglog"));
-				if (isFileCacheExists) {
-					Logs logs = LogCreator.createCourseLog();
-					actualCourse.setLogs(logs);
+				int tries = 0;
+				int limitRelogin = 3;
+				while (tries < limitRelogin) {
+					try {
+						if (!isFileCacheExists) {
 
-				} else {
-					Logs logs = actualCourse.getLogs();
-					LogCreator.updateCourseLog(logs);
+							Logs logs = LogCreator.createCourseLog();
+							actualCourse.setLogs(logs);
 
+						} else {
+
+							Logs logs = actualCourse.getLogs();
+							LogCreator.updateCourseLog(logs);
+
+						}
+						tries = limitRelogin;
+					} catch (IllegalStateException e) {
+						tries++;
+						if (tries == limitRelogin) {
+							throw new IllegalStateException("Cannot download log");
+						}
+						controller.reLogin();
+
+					}
 				}
 				updateMessage(I18n.get("label.loadingstats"));
 				// Establecemos las estadisticas

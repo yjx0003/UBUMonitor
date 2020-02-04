@@ -276,36 +276,65 @@
       <StatusBar fx:id="statusBar" text="" BorderPane.alignment="CENTER" />
    </bottom>
    <top>
-				<MenuBar minWidth="162.0" prefHeight="24.0" prefWidth="162.0" BorderPane.alignment="CENTER">
-					<menus>
-						<Menu text="%menu.file">
-							<items>
-								<MenuItem fx:id="MIChangeCourse" onAction="#changeCourse" text="%menu.changesubject" />
-								<MenuItem fx:id="updateCourse" onAction="#updateCourse" text="%menu.update" />
-								<MenuItem fx:id="MISaveChart" onAction="#saveChart" text="%menu.savechart" />
-								<MenuItem fx:id="MIExportCSV" onAction="#exportCSV" text="%menu.exportcsv" />
-								<MenuItem fx:id="MILogOut" onAction="#logOut" text="%menu.logout" />
-								<MenuItem fx:id="MIExit" onAction="#closeApplication" text="%menu.exit">
-                     <accelerator>
-                        <KeyCodeCombination alt="DOWN" code="F4" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                     </accelerator>
-                  </MenuItem>
-							</items>
-						</Menu>
-						<Menu text="%menu.edit">
-							<items>
-								<MenuItem fx:id="MIClearSelection" onAction="#clearSelection" text="%menu.clearselection" />
-                  <MenuItem fx:id="menuChangeConfig" onAction="#changeConfiguration" text="%menu.changeconfig" />
-                  <MenuItem fx:id="importConfiguration" onAction="#importConfiguration" text="%menu.importconfig" />
-                  <MenuItem fx:id="menuExportConfiguration" onAction="#exportConfiguration" text="%menu.exportconfig" />
-							</items>
-						</Menu>
-						<Menu mnemonicParsing="false" text="%menu.help">
-							<items>
-								<MenuItem fx:id="MIAboutUBUGrades" onAction="#aboutApp" text="%menu.about" />
-							</items>
-						</Menu>
-					</menus>
-				</MenuBar>
+      <GridPane BorderPane.alignment="CENTER">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" />
+            <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" valignment="TOP" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+      				<MenuBar prefWidth="700.0">
+      					<menus>
+      						<Menu text="%menu.file">
+      							<items>
+      								<MenuItem fx:id="MIChangeCourse" onAction="#changeCourse" text="%menu.changesubject" />
+      								<MenuItem fx:id="updateCourse" onAction="#updateCourse" text="%menu.update" />
+      								<MenuItem fx:id="MISaveChart" onAction="#saveChart" text="%menu.savechart" />
+      								<MenuItem fx:id="MIExportCSV" onAction="#exportCSV" text="%menu.exportcsv" />
+      								<MenuItem fx:id="MILogOut" onAction="#logOut" text="%menu.logout" />
+      								<MenuItem fx:id="MIExit" onAction="#closeApplication" text="%menu.exit">
+                           <accelerator>
+                              <KeyCodeCombination alt="DOWN" code="F4" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+      							</items>
+      						</Menu>
+      						<Menu text="%menu.edit">
+      							<items>
+      								<MenuItem fx:id="MIClearSelection" onAction="#clearSelection" text="%menu.clearselection" />
+      							</items>
+      						</Menu>
+                  <Menu text="%menu.view">
+                     <items>
+                        <Menu fx:id="menuTheme" text="%menu.theme" />
+                     </items>
+                  </Menu>
+                  
+                  <Menu text="%menu.tools">
+                     <items>
+                        <MenuItem fx:id="menuChangeConfig" onAction="#changeConfiguration" text="%menu.changeconfig" />
+                        <MenuItem fx:id="importConfiguration" onAction="#importConfiguration" text="%menu.importconfig" />
+                        <MenuItem fx:id="menuExportConfiguration" onAction="#exportConfiguration" text="%menu.exportconfig" />
+                     </items>
+                  </Menu>
+      						<Menu mnemonicParsing="false" text="%menu.help">
+      							<items>
+      								<MenuItem fx:id="MIAboutUBUGrades" onAction="#aboutApp" text="%menu.about" />
+      							</items>
+      						</Menu>
+      					</menus>
+      				</MenuBar>
+            <ImageView fx:id="userPhoto" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.vgrow="NEVER">
+               <GridPane.margin>
+                  <Insets right="10.0" />
+               </GridPane.margin>
+               <image>
+                  <Image url="@../img/default_user.png" />
+               </image>
+            </ImageView>
+         </children>
+      </GridPane>
    </top>
 </BorderPane>

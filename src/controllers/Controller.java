@@ -11,8 +11,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import controllers.configuration.Config;
 import controllers.configuration.MainConfiguration;
+import javafx.application.HostServices;
 import javafx.stage.Stage;
 import model.Course;
 import model.DataBase;
@@ -42,7 +41,7 @@ public class Controller {
 			.ofLocalizedDateTime(FormatStyle.SHORT);
 
 	private Languages selectedLanguage;
-	private Timer timer;
+
 
 	private DataBase dataBase;
 	private LocalDateTime loggedIn;
@@ -51,7 +50,7 @@ public class Controller {
 	private Stage stage;
 	private String password;
 	private String username;
-	
+	private HostServices hostServices;
 	private String sesskey;
 
 	private Map<String, String> cookies;
@@ -220,23 +219,14 @@ public class Controller {
 		setPassword(password);
 
 	}
-
-	public void initTimer() {
-		TimerTask timerTask = new TimerTask() {
-			@Override
-			public void run() {
-				try {
-					Jsoup.connect(host.toString()).cookies(getCookies()).execute();
-					LOGGER.info("Ejecutado el temporizador yendo a la pagina principal.");
-				} catch (IOException e) {
-					LOGGER.error("Fallo en la conexion del temporizador con Moodle", e);
-				}
-			}
-
-		};
-		setTimer(new Timer());
-		timer.schedule(timerTask, 1800000, 1800000); // Cada 30 minutos se ejecuta
+	
+	public void reLogin() {
+		Response response = loginWebScraping(host.toString(), username, password);
+		cookies = response.cookies();
+		sesskey = findSesskey(response.body());
 	}
+
+
 
 	/**
 	 * Devuelve las estadisticas de calificaciones del curso.
@@ -328,21 +318,6 @@ public class Controller {
 		this.cookies = cookies;
 	}
 
-	public Timer getTimer() {
-		return timer;
-	}
-
-	public void setTimer(Timer timer) {
-		cancelTimer();
-		this.timer = timer;
-	}
-
-	public void cancelTimer() {
-		if (timer != null) {
-			timer.cancel();
-			LOGGER.debug("Temporizador apagado.");
-		}
-	}
 
 	public String getSesskey() {
 		return sesskey;
@@ -418,5 +393,15 @@ public class Controller {
 	public void setMainConfiguration(MainConfiguration mainConfiguration) {
 		this.mainConfiguration = mainConfiguration;
 	}
+
+	public HostServices getHostServices() {
+		return hostServices;
+	}
+
+	public void setHostServices(HostServices hostServices) {
+		this.hostServices = hostServices;
+	}
+
+	
 
 }

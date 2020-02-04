@@ -3,7 +3,7 @@ package model;
 import java.io.Serializable;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -46,7 +46,7 @@ public class Logs implements Serializable {
 	 */
 	public Logs(ZoneId zoneId, List<LogLine> logLines) {
 		this.zoneId = zoneId;
-		this.logLines = new LinkedList<>();
+		this.logLines = new ArrayList<>();
 		this.addAll(logLines);
 	}
 

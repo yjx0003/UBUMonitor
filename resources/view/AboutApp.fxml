@@ -19,10 +19,10 @@
   <rowConstraints>
     <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <ImageView fitHeight="150.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2">
+      <ImageView fitHeight="188.0" fitWidth="264.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2">
          <image>
             <Image url="@../img/Escudo%20Color%20TC.png" />
          </image>
@@ -97,5 +97,20 @@
             </GridPane>
          </children>
       </GridPane>
+      <ImageView fitHeight="200.0" fitWidth="200.0" layoutX="577.0" layoutY="435.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="2">
+         <image>
+            <Image url="@../img/Logotipo_de_la_Junta_de_Castilla_y_León.svg.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="200.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="2">
+         <image>
+            <Image url="@../img/JCYL_impulsa.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="200.0" fitWidth="280.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="2">
+         <image>
+            <Image url="@../img/logofeder.png" />
+         </image>
+      </ImageView>
    </children>
 </GridPane>

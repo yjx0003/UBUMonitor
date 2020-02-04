@@ -40,7 +40,8 @@ public enum ModuleType {
 	TURNITIN_TOOL_2("turnitintooltwo"),
 	URL("url"),
 	WIKI("wiki"),
-	WORKSHOP("workshop");
+	WORKSHOP("workshop"),
+	DUMMY("Not avaible");
 
 	private String modname;
 	private static Map<String, ModuleType> modTypes;

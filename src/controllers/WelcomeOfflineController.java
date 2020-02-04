@@ -24,12 +24,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -106,9 +103,7 @@ public class WelcomeOfflineController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		try {
-			conexionLabel.setText(
-					controller.isOfflineMode() ? I18n.get("text.withoutconnection") : I18n.get("text.withconnection"));
-			lblUser.setText(controller.getUser().getFullName());
+			conexionLabel.setText(I18n.get("text.online_" + !controller.isOfflineMode()));
 			LOGGER.info("Cargando cursos...");
 
 			anchorPane.disableProperty().bind(btnEntrar.visibleProperty().not());
@@ -300,7 +295,7 @@ public class WelcomeOfflineController implements Initializable {
 		if (!isBBDDLoaded) {
 			return;
 		}
-		
+
 		UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), false);
 		controller.getStage().setResizable(true);
 		controller.getStage().setMaximized(true);
@@ -316,22 +311,7 @@ public class WelcomeOfflineController implements Initializable {
 	public void logOut(ActionEvent actionEvent) {
 		LOGGER.info("Cerrando sesión de usuario");
 
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Login.fxml"), I18n.getResourceBundle());
-
-			Parent root = loader.load();
-			Scene scene = new Scene(root);
-			controller.getStage().close();
-			controller.setStage(new Stage());
-			controller.getStage().setScene(scene);
-			controller.getStage().getIcons().add(new Image("/img/logo_min.png"));
-			controller.getStage().setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
-			controller.getStage().resizableProperty().setValue(Boolean.FALSE);
-			controller.getStage().show();
-
-		} catch (Exception e) {
-			LOGGER.error("Error al modifcar la ventana de JavaFX: {}", e);
-		}
+		UtilMethods.changeScene(getClass().getResource("/view/Login.fxml"), controller.getStage());
 
 	}
 }

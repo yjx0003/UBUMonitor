@@ -182,6 +182,7 @@ public class UtilMethods {
 			}
 		} catch (IOException e) {
 			errorWindow("error loading fxml: " + sceneFXML, e);
+			throw new IllegalArgumentException("Invalid fxml");
 		}
 
 	}

@@ -1,8 +1,9 @@
 package model;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
+
+import gnu.trove.set.hash.THashSet;
 
 /**
  * Clase Group para distinguir los grupos que hay en un curso, así como los
@@ -25,7 +26,7 @@ public class Group implements Serializable {
 	private Set<EnrolledUser> enrolledUsers;
 
 	public Group() {
-		this.enrolledUsers = new HashSet<>();
+		this.enrolledUsers = new THashSet<>();
 	}
 
 	public Group(int id) {

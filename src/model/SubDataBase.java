@@ -1,28 +1,34 @@
 package model;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 public class SubDataBase<E extends Serializable> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private Map<Integer, E> map;
+	private TIntObjectMap<E> map;
 	private SerializableFunction<Integer, E> creatorFunction;
 	
 
 	public SubDataBase(SerializableFunction<Integer, E> creator) {
-		map = new HashMap<>();
+		map = new TIntObjectHashMap<>();
 		this.creatorFunction= creator;
 	}
 
-	public Map<Integer, E> getMap() {
+	public TIntObjectMap<E> getMap() {
 		return map;
 	}
 
 	public E getById(int id) {
-		return map.computeIfAbsent(id, creatorFunction );
+		if(map.containsKey(id)) {
+			return map.get(id);
+		}
+		E value = creatorFunction.apply(id);
+		map.put(id, value);
+		return value;
 	}
 
 	public boolean containsId(int id) {

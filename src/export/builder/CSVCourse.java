@@ -27,7 +27,7 @@ public class CSVCourse extends CSVBuilderAbstract {
 
 	@Override
 	public void buildBody() {
-		Collection<Course> courses = getDataBase().getCourses().getMap().values();
+		Collection<Course> courses = getDataBase().getCourses().getMap().valueCollection();
 
 		for (Course course : courses) {
 			List<EnrolledUser> enrolledUsers = course.getEnrolledUsers().stream()

@@ -37,7 +37,7 @@ public class CSVGroup extends CSVBuilderAbstract {
 
 	@Override
 	public void buildBody() {
-		Collection<Group> groups = getDataBase().getGroups().getMap().values();
+		Collection<Group> groups = getDataBase().getGroups().getMap().valueCollection();
 		// Load data
 		for (Group group : groups) {
 			Stream<EnrolledUser> users = group.getEnrolledUsers().stream()

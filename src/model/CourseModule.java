@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import gnu.trove.map.hash.THashMap;
+
 /**
  * Representa las actividades o recursos presentes en un curso.
  * 
@@ -89,7 +91,7 @@ public class CourseModule implements Serializable {
 
 	public CourseModule(int id) {
 		setCmid(id);
-		activitiesCompletion = new HashMap<>();
+		activitiesCompletion = new THashMap<>();
 	}
 
 	public String getUrl() {

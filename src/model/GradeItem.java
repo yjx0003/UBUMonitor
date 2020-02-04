@@ -2,10 +2,10 @@ package model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import gnu.trove.map.TObjectDoubleMap;
+import gnu.trove.map.hash.TObjectDoubleHashMap;
 
 /**
  * Clase que indica item de calificación.
@@ -31,8 +31,8 @@ public class GradeItem implements Serializable {
 	private ModuleType itemModule;
 	private CourseModule module;
 	private double weightraw;
-	private Map<EnrolledUser, Double> graderaw;
-	private Map<EnrolledUser, Double> percentages;
+	private TObjectDoubleMap<EnrolledUser> graderaw;
+	private TObjectDoubleMap<EnrolledUser> percentages;
 	private double grademin;
 	private double grademax;
 
@@ -46,15 +46,14 @@ public class GradeItem implements Serializable {
 	 */
 	public GradeItem() {
 		children = new ArrayList<>();
-		graderaw = new HashMap<>();
-		percentages= new HashMap<>();
+		graderaw = new TObjectDoubleHashMap<>();
+		percentages = new TObjectDoubleHashMap<>();
 	}
 
 	/**
 	 * Constructor inicializando con el id de grade item.
 	 * 
-	 * @param id
-	 *            id de grade item
+	 * @param id id de grade item
 	 */
 	public GradeItem(int id) {
 		this();
@@ -64,8 +63,7 @@ public class GradeItem implements Serializable {
 	/**
 	 * Contructor inicializado con el nombre del grade item.
 	 * 
-	 * @param name
-	 *            el nombre del grade item
+	 * @param name el nombre del grade item
 	 */
 	public GradeItem(String name) {
 		this();
@@ -84,8 +82,7 @@ public class GradeItem implements Serializable {
 	/**
 	 * Modifica la id del grade item.
 	 * 
-	 * @param id
-	 *            nueva id del grade item
+	 * @param id nueva id del grade item
 	 */
 	public void setId(int id) {
 		this.id = id;
@@ -103,8 +100,7 @@ public class GradeItem implements Serializable {
 	/**
 	 * Modifica el nombre del grade item.
 	 * 
-	 * @param itemname
-	 *            nuevo nombre
+	 * @param itemname nuevo nombre
 	 */
 	public void setItemname(String itemname) {
 		this.itemname = itemname;
@@ -122,8 +118,7 @@ public class GradeItem implements Serializable {
 	/**
 	 * Modifica el modulo del curso asociado.
 	 * 
-	 * @param module
-	 *            el nuevo modulo
+	 * @param module el nuevo modulo
 	 */
 	public void setModule(CourseModule module) {
 		this.module = module;
@@ -141,30 +136,10 @@ public class GradeItem implements Serializable {
 	/**
 	 * Modifica el peso calculado.
 	 * 
-	 * @param weightraw
-	 *            nuevo peso calculado
+	 * @param weightraw nuevo peso calculado
 	 */
 	public void setWeightraw(double weightraw) {
 		this.weightraw = weightraw;
-	}
-
-	/**
-	 * Devuelve mapa con clave usuario matriculado y value su nota.
-	 * 
-	 * @return mapa con clave usuario matriculado y value su nota
-	 */
-	public Map<EnrolledUser, Double> getGraderaw() {
-		return graderaw;
-	}
-
-	/**
-	 * Modifica el mapa de notas de los alumnos.
-	 * 
-	 * @param graderaw
-	 *            nuevo mapa
-	 */
-	public void setGraderaw(Map<EnrolledUser, Double> graderaw) {
-		this.graderaw = graderaw;
 	}
 
 	/**
@@ -179,8 +154,7 @@ public class GradeItem implements Serializable {
 	/**
 	 * Modifica la calificación mínima posible.
 	 * 
-	 * @param grademin
-	 *            calificación mínima
+	 * @param grademin calificación mínima
 	 */
 	public void setGrademin(double grademin) {
 		this.grademin = grademin;
@@ -198,8 +172,7 @@ public class GradeItem implements Serializable {
 	/**
 	 * Modifica el grado máximo posible.
 	 * 
-	 * @param grademax
-	 *            el nuevo grado maximo posible
+	 * @param grademax el nuevo grado maximo posible
 	 */
 	public void setGrademax(double grademax) {
 		this.grademax = grademax;
@@ -217,8 +190,7 @@ public class GradeItem implements Serializable {
 	/**
 	 * Modifica el padre del grade item.
 	 * 
-	 * @param father
-	 *            el nuevo padre
+	 * @param father el nuevo padre
 	 */
 	public void setFather(GradeItem father) {
 		this.father = father;
@@ -236,8 +208,7 @@ public class GradeItem implements Serializable {
 	/**
 	 * Modifica los hijos del grade item.
 	 * 
-	 * @param children
-	 *            los nuevos hijos
+	 * @param children los nuevos hijos
 	 */
 	public void setChildren(List<GradeItem> children) {
 		this.children = children;
@@ -246,8 +217,7 @@ public class GradeItem implements Serializable {
 	/**
 	 * Añade un hijo del grade item.
 	 * 
-	 * @param children
-	 *            nuevo hijo
+	 * @param children nuevo hijo
 	 */
 	public void addChildren(GradeItem children) {
 		this.children.add(children);
@@ -272,8 +242,7 @@ public class GradeItem implements Serializable {
 	/**
 	 * Modifica el nivel de la jerarquía.
 	 * 
-	 * @param level
-	 *            nivel de jearquía
+	 * @param level nivel de jearquía
 	 */
 	public void setLevel(int level) {
 		this.level = level;
@@ -282,16 +251,13 @@ public class GradeItem implements Serializable {
 	/**
 	 * Añade una nota de un usuario.
 	 * 
-	 * @param enrolledUser
-	 *            el usuario
-	 * @param grade
-	 *            nota del usuario
+	 * @param enrolledUser el usuario
+	 * @param grade nota del usuario
 	 */
 	public void addUserGrade(EnrolledUser enrolledUser, double grade) {
 		graderaw.put(enrolledUser, grade);
 
 	}
-	
 
 	public void addUserPercentage(EnrolledUser enrolledUser, double percentage) {
 		percentages.put(enrolledUser, percentage);
@@ -309,8 +275,7 @@ public class GradeItem implements Serializable {
 	/**
 	 * Modifica el tipo de modulo.
 	 * 
-	 * @param itemModule
-	 *            el nuevo tipo de modulo
+	 * @param itemModule el nuevo tipo de modulo
 	 */
 	public void setItemModule(ModuleType itemModule) {
 		this.itemModule = itemModule;
@@ -321,37 +286,34 @@ public class GradeItem implements Serializable {
 	 * 
 	 * @return devuelve todas las notas de los usuario
 	 */
-	public Collection<Double> getEnrolledUserPercentages() {
+	public double[] getEnrolledUserPercentages() {
 		return percentages.values();
 	}
-	
-	
 
 	/**
 	 * Devuelve la nota de un usuaro o NaN si no existe
 	 * 
-	 * @param user
-	 *            usuario que se busca la nota
+	 * @param user usuario que se busca la nota
 	 * @return la nota o NaN si no existe
 	 */
 	public double getEnrolledUserGrade(EnrolledUser user) {
-		return graderaw.getOrDefault(user, Double.NaN);
+		return graderaw.containsKey(user) ? graderaw.get(user) : Double.NaN;
 	}
-	
+
 	/**
 	 * Devuelve el porcentaje del usuario
+	 * 
 	 * @param user usuario
 	 * @return el porcentaje o NaN si no existe.
 	 */
 	public double getEnrolledUserPercentage(EnrolledUser user) {
-		return percentages.getOrDefault(user, Double.NaN);
+		return percentages.containsKey(user) ? percentages.get(user) : Double.NaN;
 	}
 
 	/**
 	 * Normaliza la nota de 0 a 10.
 	 * 
-	 * @param user
-	 *            la nota de un usuario
+	 * @param user la nota de un usuario
 	 * @return nota normalizada de 0 a 10 o NaN si grade es NaN
 	 */
 	public double adjustTo10(EnrolledUser user) {
@@ -363,8 +325,7 @@ public class GradeItem implements Serializable {
 	/**
 	 * Normalizar la nota de 0 a 10.
 	 * 
-	 * @param grade
-	 *            nota
+	 * @param grade nota
 	 * @return nota normalizada de 0 a 10 o NaN si grade es NaN
 	 */
 	public double adjustTo10(double grade) {
@@ -375,6 +336,22 @@ public class GradeItem implements Serializable {
 		}
 
 		return grade;
+	}
+
+	public TObjectDoubleMap<EnrolledUser> getGraderaw() {
+		return graderaw;
+	}
+
+	public void setGraderaw(TObjectDoubleMap<EnrolledUser> graderaw) {
+		this.graderaw = graderaw;
+	}
+
+	public TObjectDoubleMap<EnrolledUser> getPercentages() {
+		return percentages;
+	}
+
+	public void setPercentages(TObjectDoubleMap<EnrolledUser> percentages) {
+		this.percentages = percentages;
 	}
 
 	@Override
@@ -397,6 +374,5 @@ public class GradeItem implements Serializable {
 	public String toString() {
 		return this.itemname;
 	}
-
 
 }

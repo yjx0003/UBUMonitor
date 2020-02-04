@@ -1,8 +1,9 @@
 package model;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
+
+import gnu.trove.set.hash.THashSet;
 
 /**
  * Clase Role para distinguir el rol de los usuarios matriculados en un curso.
@@ -14,16 +15,15 @@ import java.util.Set;
 public class Role implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private int roleId;
 	private String roleName;
 	private String roleShortName;
 	private Set<EnrolledUser> enrolledUsers;
-	
+
 	public Role() {
-		this.enrolledUsers=new HashSet<>();
+		this.enrolledUsers = new THashSet<>();
 	}
-	
 
 	public Role(int id) {
 		this();
@@ -42,8 +42,7 @@ public class Role implements Serializable {
 	/**
 	 * Modifica el id del rol
 	 * 
-	 * @param id
-	 *            El id.
+	 * @param id El id.
 	 */
 	public void setRoleId(int id) {
 		this.roleId = id;
@@ -61,8 +60,7 @@ public class Role implements Serializable {
 	/**
 	 * Modifica el nombre del rol.
 	 * 
-	 * @param name
-	 *            El nombre.
+	 * @param name El nombre.
 	 */
 	public void setRoleName(String name) {
 		this.roleName = name;
@@ -80,8 +78,7 @@ public class Role implements Serializable {
 	/**
 	 * Modifica el nombre corto del rol
 	 * 
-	 * @param shortName
-	 *            El nombre corto.
+	 * @param shortName El nombre corto.
 	 */
 	public void setRoleShortName(String shortName) {
 		this.roleShortName = shortName;
@@ -89,6 +86,7 @@ public class Role implements Serializable {
 
 	/**
 	 * Devuelve los usuarios matriculados.
+	 * 
 	 * @return los usuarios matriculados
 	 */
 	public Set<EnrolledUser> getEnrolledUsers() {
@@ -97,6 +95,7 @@ public class Role implements Serializable {
 
 	/**
 	 * Modifica los usuarios que tiene este rol.
+	 * 
 	 * @param enrolledUsers los nuevos usarios de este rol
 	 */
 	public void setEnrolledUsers(Set<EnrolledUser> enrolledUsers) {
@@ -105,16 +104,17 @@ public class Role implements Serializable {
 
 	/**
 	 * Añade un usuario a este rol.
+	 * 
 	 * @param user nuevo usuario a añadir
 	 */
 	public void addEnrolledUser(EnrolledUser user) {
 		enrolledUsers.add(user);
 	}
-	
+
 	public void removeEnrolledUser(EnrolledUser user) {
 		enrolledUsers.remove(user);
 	}
-	
+
 	public boolean contains(EnrolledUser e) {
 		return enrolledUsers.contains(e);
 	}
@@ -141,10 +141,7 @@ public class Role implements Serializable {
 			return false;
 		Role other = (Role) obj;
 		return roleId == other.roleId;
-		
+
 	}
-
-
-
 
 }

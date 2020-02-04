@@ -1,7 +1,6 @@
 package export.builder;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -29,10 +28,8 @@ public class CSVEnrolledUser extends CSVBuilderAbstract {
 	/**
 	 * Constructor.
 	 * 
-	 * @param name
-	 *            name
-	 * @param dataBase
-	 *            dataBase
+	 * @param name name
+	 * @param dataBase dataBase
 	 */
 	public CSVEnrolledUser(String name, DataBase dataBase) {
 		super(name, dataBase, HEADER);
@@ -41,8 +38,8 @@ public class CSVEnrolledUser extends CSVBuilderAbstract {
 	@Override
 	public void buildBody() {
 		// Gets users
-		Map<Integer, EnrolledUser> enrolledUsers = getDataBase().getUsers().getMap();
-		Collection<EnrolledUser> studentsCollection = enrolledUsers.values();
+		Collection<EnrolledUser> studentsCollection = getDataBase().getUsers().getMap().valueCollection();
+
 		// Remove nulls and sort
 		Stream<EnrolledUser> sortedUsers = studentsCollection.stream()
 				.sorted(EnrolledUser.NAME_COMPARATOR.thenComparing(EnrolledUser::getId));
@@ -50,13 +47,9 @@ public class CSVEnrolledUser extends CSVBuilderAbstract {
 		sortedUsers.forEach(eu -> {
 			LOGGER.debug("Data line: {}, {}, {}, {}, {}, {}", eu.getId(), eu.getLastname(), eu.getFirstname(),
 					eu.getFullName(), eu.getEmail(), eu.getLastaccess());
-			getData().add(new String[] {
-					Integer.toString(eu.getId()),
-					eu.getLastname(),
-					eu.getFirstname(),
-					eu.getFullName(),
-					eu.getEmail(),
-					eu.getLastaccess() == null ? null : eu.getLastaccess().toString() });
+			getData().add(
+					new String[] { Integer.toString(eu.getId()), eu.getLastname(), eu.getFirstname(), eu.getFullName(),
+							eu.getEmail(), eu.getLastaccess() == null ? null : eu.getLastaccess().toString() });
 		});
 	}
 

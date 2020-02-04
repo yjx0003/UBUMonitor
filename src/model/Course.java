@@ -5,8 +5,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -15,6 +13,9 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import gnu.trove.set.hash.THashSet;
+import gnu.trove.set.hash.TLinkedHashSet;
 
 /**
  * Clase curso (asignatura). Guarda información de los roles, usuarios
@@ -53,12 +54,12 @@ public class Course implements Serializable {
 	private LogStats logStats;
 
 	public Course() {
-		this.enrolledUsers = new HashSet<>();
-		this.roles = new HashSet<>();
-		this.groups = new HashSet<>();
-		this.gradeItems = new HashSet<>();
-		this.modules = new LinkedHashSet<>();
-		this.sections = new LinkedHashSet<>();
+		this.enrolledUsers = new THashSet<>();
+		this.roles = new THashSet<>();
+		this.groups = new THashSet<>();
+		this.gradeItems = new THashSet<>();
+		this.modules = new TLinkedHashSet<>();
+		this.sections =  new TLinkedHashSet<>();
 	}
 
 	public Course(int id) {

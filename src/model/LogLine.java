@@ -33,6 +33,7 @@ public class LogLine implements Serializable {
 	private EnrolledUser affectedUser;
 	private CourseModule courseModule;
 
+
 	/**
 	 * Devuelve el modulo del curso asociado al log, null si el log no tiene el
 	 * modulo del curso.
@@ -331,9 +332,5 @@ public class LogLine implements Serializable {
 				+ ", IPAdress=" + ipAdress + ", user=" + user + ", affectedUser=" + affectedUser + ", courseModule="
 				+ courseModule + "]";
 	}
-
-	
-
-
 
 }

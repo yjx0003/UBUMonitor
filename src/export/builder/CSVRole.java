@@ -39,7 +39,7 @@ public class CSVRole extends CSVBuilderAbstract {
 
 	@Override
 	public void buildBody() {
-		Collection<Role> roles = getDataBase().getRoles().getMap().values();
+		Collection<Role> roles = getDataBase().getRoles().getMap().valueCollection();
 		// Load data rows for roles
 		for (Role role : roles) {
 			// Filter nulls and sort

@@ -53,6 +53,11 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/UBUMonitor/lib/docs/controlsfx-8.40.16-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/trove4j-3.0.3.jar" sourcepath="lib/src/trove4j-3.0.3-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/UBUMonitor/lib/docs/trove4j-3.0.3-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

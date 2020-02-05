@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
+import gnu.trove.map.hash.THashMap;
 import model.EnrolledUser;
 import model.LogLine;
 
@@ -31,8 +32,9 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 	public void setCounts(List<LogLine> logLines, Predicate<LogLine> filter, Function<LogLine, E> getEFunction,
 			Function<LogLine, T> getTFunction) {
 
-		counts = logLines.stream().filter(filter).collect(Collectors.groupingBy(LogLine::getUser,
-				Collectors.groupingBy(getEFunction, Collectors.groupingBy(getTFunction, Collectors.counting()))));
+		counts = logLines.stream().filter(filter)
+				.collect(Collectors.groupingBy(LogLine::getUser, THashMap::new, Collectors.groupingBy(getEFunction,
+						THashMap::new, Collectors.groupingBy(getTFunction, THashMap::new, Collectors.counting()))));
 	}
 
 	/**

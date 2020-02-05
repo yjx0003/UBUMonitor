@@ -3,7 +3,6 @@ package controllers.ubulogs;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -45,7 +44,7 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 	 * @param groupByRange rango de un tipo de agrupacion
 	 */
 	public void generateStatistics(List<EnrolledUser> enrolledUsers, List<E> elements, List<T> groupByRange) {
-		statistics = new HashMap<>();
+		statistics = new THashMap<>();
 		if (enrolledUsers.isEmpty() || elements.isEmpty() || groupByRange.isEmpty()) {
 			return;
 		}
@@ -54,11 +53,11 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 		// se crea y devuelve el valor nuevo.
 		for (EnrolledUser user : enrolledUsers) {
 
-			Map<E, Map<T, Long>> userCounts = counts.computeIfAbsent(user, k -> new HashMap<>());
+			Map<E, Map<T, Long>> userCounts = counts.computeIfAbsent(user, k -> new THashMap<>());
 			for (E element : elements) {
 
-				Map<T, Long> userComponentsCounts = userCounts.computeIfAbsent(element, k -> new HashMap<>());
-				Map<T, DescriptiveStatistics> statisticsMap = statistics.computeIfAbsent(element, k -> new HashMap<>());
+				Map<T, Long> userComponentsCounts = userCounts.computeIfAbsent(element, k -> new THashMap<>());
+				Map<T, DescriptiveStatistics> statisticsMap = statistics.computeIfAbsent(element, k -> new THashMap<>());
 
 				for (T groupBy : groupByRange) {
 
@@ -87,10 +86,10 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 		List<T> range = groupByAbstract.getRange(start, end);
 		generateStatistics(enrolledUsers, elements, range);
 
-		Map<E, List<Double>> results = new HashMap<>();
+		Map<E, List<Double>> results = new THashMap<>();
 		for (E element : elements) {
 			List<Double> means = new ArrayList<>();
-			Map<T, DescriptiveStatistics> statisticsMap = statistics.computeIfAbsent(element, k -> new HashMap<>());
+			Map<T, DescriptiveStatistics> statisticsMap = statistics.computeIfAbsent(element, k -> new THashMap<>());
 			for (T typeTime : range) {
 				DescriptiveStatistics descriptiveStatistics = statisticsMap.computeIfAbsent(typeTime,
 						k -> new DescriptiveStatistics());
@@ -118,15 +117,15 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 
 		List<T> groupByRange = groupByAbstract.getRange(start, end);
 
-		Map<EnrolledUser, Map<E, List<Long>>> result = new HashMap<>();
+		Map<EnrolledUser, Map<E, List<Long>>> result = new THashMap<>();
 
 		for (EnrolledUser user : users) {
-			Map<E, List<Long>> elementsCount = result.computeIfAbsent(user, k -> new HashMap<>());
-			Map<E, Map<T, Long>> userCounts = counts.computeIfAbsent(user, k -> new HashMap<>());
+			Map<E, List<Long>> elementsCount = result.computeIfAbsent(user, k -> new THashMap<>());
+			Map<E, Map<T, Long>> userCounts = counts.computeIfAbsent(user, k -> new THashMap<>());
 
 			for (E element : elements) {
 				List<Long> userComponentCounts = elementsCount.computeIfAbsent(element, k -> new ArrayList<>());
-				Map<T, Long> countsMap = userCounts.computeIfAbsent(element, k -> new HashMap<>());
+				Map<T, Long> countsMap = userCounts.computeIfAbsent(element, k -> new THashMap<>());
 
 				for (T groupBy : groupByRange) {
 					long count = countsMap.computeIfAbsent(groupBy, k -> 0L);
@@ -154,13 +153,13 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 
 		List<T> range = groupByAbstract.getRange(start, end);
 
-		Map<EnrolledUser, Map<T, Long>> sumComponentsMap = new HashMap<>();
+		Map<EnrolledUser, Map<T, Long>> sumComponentsMap = new THashMap<>();
 
 		for (EnrolledUser enrolledUser : enrolledUsers) {
-			Map<E, Map<T, Long>> elementsMap = counts.computeIfAbsent(enrolledUser, k -> new HashMap<>());
-			Map<T, Long> sumComponents = sumComponentsMap.computeIfAbsent(enrolledUser, k -> new HashMap<>());
+			Map<E, Map<T, Long>> elementsMap = counts.computeIfAbsent(enrolledUser, k -> new THashMap<>());
+			Map<T, Long> sumComponents = sumComponentsMap.computeIfAbsent(enrolledUser, k -> new THashMap<>());
 			for (E element : elements) {
-				Map<T, Long> groupByMap = elementsMap.computeIfAbsent(element, k -> new HashMap<>());
+				Map<T, Long> groupByMap = elementsMap.computeIfAbsent(element, k -> new THashMap<>());
 				for (T groupBy : range) {
 					sumComponents.merge(groupBy, groupByMap.getOrDefault(groupBy, 0L), Long::sum);
 				}
@@ -182,9 +181,9 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 
 		for (EnrolledUser enrolledUser : enrolledUsers) {
 			long cum = 0;
-			Map<E, Map<T, Long>> elementsMap = counts.computeIfAbsent(enrolledUser, k -> new HashMap<>());
+			Map<E, Map<T, Long>> elementsMap = counts.computeIfAbsent(enrolledUser, k -> new THashMap<>());
 			for (E element : elements) {
-				Map<T, Long> groupByMap = elementsMap.computeIfAbsent(element, k -> new HashMap<>());
+				Map<T, Long> groupByMap = elementsMap.computeIfAbsent(element, k -> new THashMap<>());
 				for (T groupBy : range) {
 					cum += groupByMap.getOrDefault(groupBy, 0L);
 				}
@@ -222,12 +221,12 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 
 		for (EnrolledUser enrolledUser : enrolledUsers) {
 
-			Map<E, Map<T, Long>> elementsMap = counts.computeIfAbsent(enrolledUser, k -> new HashMap<>());
+			Map<E, Map<T, Long>> elementsMap = counts.computeIfAbsent(enrolledUser, k -> new THashMap<>());
 			long cum = 0;
 			for (int i = 0; i < cumMeans.size(); i++) {
 
 				for (E logType : logTypes) {
-					Map<T, Long> groupByMap = elementsMap.computeIfAbsent(logType, k -> new HashMap<>());
+					Map<T, Long> groupByMap = elementsMap.computeIfAbsent(logType, k -> new THashMap<>());
 
 					cum += groupByMap.getOrDefault(range.get(i), 0L);
 

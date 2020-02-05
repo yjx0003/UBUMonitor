@@ -27,7 +27,7 @@ public class Loader extends Application {
 
 		try {
 			controller.initialize();
-			controller.setHostServices(this.getHostServices());
+			
 			LOGGER.info("[Bienvenido a {}]", AppInfo.APPLICATION_NAME_WITH_VERSION);
 			primaryStage.getIcons().add(new Image("/img/logo_min.png"));
 			primaryStage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);

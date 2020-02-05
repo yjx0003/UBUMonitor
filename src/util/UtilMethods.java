@@ -1,8 +1,10 @@
 package util;
 
+import java.awt.Desktop;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -143,10 +145,11 @@ public class UtilMethods {
 	public static void changeScene(URL url, Stage stage) {
 		changeScene(url, stage, null, true);
 	}
-	
+
 	public static void changeScene(URL url, Stage stage, Object fxmlController) {
 		changeScene(url, stage, fxmlController, true);
 	}
+
 	public static void changeScene(URL url, Stage stage, boolean showStage) {
 		changeScene(url, stage, null, showStage);
 	}
@@ -177,7 +180,7 @@ public class UtilMethods {
 
 			}
 			stage.close();
-			if(showStage) {
+			if (showStage) {
 				stage.show();
 			}
 		} catch (IOException e) {
@@ -185,5 +188,25 @@ public class UtilMethods {
 			throw new IllegalArgumentException("Invalid fxml");
 		}
 
+	}
+
+	public static void openURL(String url) {
+		try {
+			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+				Desktop.getDesktop().browse(new URI(url));
+			}
+		} catch (Exception e) {
+			errorWindow("Cannot open " + url + " in the navigator");
+		}
+	}
+
+	public static void mailTo(String mail) {
+		try {
+			if (Desktop.isDesktopSupported() && (Desktop.getDesktop()).isSupported(Desktop.Action.MAIL)) {
+				Desktop.getDesktop().mail(new URI("mailto:" + mail));
+			}
+		} catch (Exception e) {
+			errorWindow("Cannot open " + mail + " in the default mail client.");
+		}
 	}
 }

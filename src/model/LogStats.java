@@ -9,7 +9,6 @@ import controllers.ubulogs.GroupByAll;
 import controllers.ubulogs.GroupByDay;
 import controllers.ubulogs.GroupByDayOfWeek;
 import controllers.ubulogs.GroupByHour;
-import controllers.ubulogs.GroupByYear;
 import controllers.ubulogs.GroupByYearMonth;
 import controllers.ubulogs.GroupByYearWeek;
 import controllers.ubulogs.TypeTimes;
@@ -41,8 +40,6 @@ public class LogStats implements Serializable {
 		stastistics.add(new GroupByDayOfWeek(logLines));
 		stastistics.add(new GroupByYearWeek(logLines));
 		stastistics.add(new GroupByYearMonth(logLines));
-
-		stastistics.add(new GroupByYear(logLines));
 		stastistics.add(new GroupByAll(logLines));
 
 	}

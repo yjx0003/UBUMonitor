@@ -342,7 +342,7 @@ public class WelcomeController implements Initializable {
 			isBBDDLoaded = true;
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			previusPasswordWindow();
-		} catch (InvalidClassException | ClassNotFoundException e) {
+		} catch (InvalidClassException | ClassNotFoundException | ClassCastException e) {
 			LOGGER.warn("Se ha modificado una de las clases serializables", e);
 			UtilMethods.errorWindow("Se ha modificado una de las clases serializables", e);
 		}

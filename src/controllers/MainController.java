@@ -323,7 +323,7 @@ public class MainController implements Initializable {
 		linkImage.setFitHeight(20);
 		linkImage.setFitWidth(20);
 		actualHost.setGraphic(linkImage);
-		actualHost.setOnAction(event -> controller.getHostServices().showDocument(actualHost.getText()));
+		actualHost.setOnAction(event -> UtilMethods.openURL(actualHost.getText()));
 		// Mostramos Curso actual
 		Label lblActualCourse = new Label(controller.getActualCourse().getFullName());
 
@@ -1518,11 +1518,18 @@ public class MainController implements Initializable {
 		
 		Stage stage = new Stage();
 		stage.setScene(newScene);
+		stage.setResizable(false);
+		stage.initModality(Modality.APPLICATION_MODAL);
+		
 		stage.getIcons().add(new Image("/img/logo_min.png"));
 		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 
 		stage.show();
 
+	}
+	
+	public void moreInfo() {
+		UtilMethods.openURL(AppInfo.GITHUB);
 	}
 
 	/**

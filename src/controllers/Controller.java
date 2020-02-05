@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import controllers.configuration.Config;
 import controllers.configuration.MainConfiguration;
-import javafx.application.HostServices;
 import javafx.stage.Stage;
 import model.Course;
 import model.DataBase;
@@ -50,7 +49,6 @@ public class Controller {
 	private Stage stage;
 	private String password;
 	private String username;
-	private HostServices hostServices;
 	private String sesskey;
 
 	private Map<String, String> cookies;
@@ -392,14 +390,6 @@ public class Controller {
 	 */
 	public void setMainConfiguration(MainConfiguration mainConfiguration) {
 		this.mainConfiguration = mainConfiguration;
-	}
-
-	public HostServices getHostServices() {
-		return hostServices;
-	}
-
-	public void setHostServices(HostServices hostServices) {
-		this.hostServices = hostServices;
 	}
 
 	

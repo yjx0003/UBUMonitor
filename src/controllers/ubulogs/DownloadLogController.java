@@ -220,13 +220,16 @@ public class DownloadLogController {
 					.connect(url)
 					.cookies(cookies)
 					.ignoreContentType(true)
+					.followRedirects(true)
 					.timeout(0)
 					.maxBodySize(0)
 					.execute();
-
+			if(!response.url().getPath().equals("/report/log/index.php")) {
+				throw new IllegalStateException("Cookies session expired, please login again");
+			}
 			return response.body();
 
-		} catch (Exception e) {
+		} catch (IOException e) {
 			LOGGER.error("Error al descargar el log a partir de los segundos: " + dateSeconds, e);
 		}
 		return null;

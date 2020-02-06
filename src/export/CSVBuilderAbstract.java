@@ -1,12 +1,10 @@
 package export;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,10 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVWriter;
 
-import controllers.AppInfo;
-import controllers.Controller;
 import model.DataBase;
-import util.UtilMethods;
 
 /**
  * Abstract builder.
@@ -32,9 +27,6 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 
 	/** File extensio. */
 	private static final String EXTENSION = ".csv";
-
-	private static final Controller CONTROLLER = Controller.getInstance();
-
 	
 
 	/** Logger. */
@@ -53,14 +45,9 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	private DataBase dataBase;
 	
 	
-	public static void setPath() {
-		path = Paths.get(AppInfo.EXPORT_DIR, CONTROLLER.getUrlHost().getHost(),
-				CONTROLLER.getUser().getFullName() + "-" + CONTROLLER.getUser().getId(),
-				UtilMethods.removeReservedChar(CONTROLLER.getActualCourse().toString()) + "-" + CONTROLLER.getActualCourse().getId());
-		File directory = path.toFile();
-		if (!directory.isDirectory()) {
-			directory.mkdirs();
-		}
+	public static void setPath(Path path) {
+		CSVBuilderAbstract.path = path;
+		
 	}
 	
 
@@ -168,7 +155,7 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	@Override
 	public void writeCSV() {
 		final CSVWriter writer;
-		setPath();
+		
 		try (FileOutputStream fos = new FileOutputStream(path.resolve(getFileName()).toFile());
 				OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
 			writer = new CSVWriter(osw);

@@ -1,15 +1,24 @@
 package controllers.charts;
 
+import java.util.StringJoiner;
+
 import controllers.MainController;
 
-public class Line extends Chartjs {
+public class Line extends ChartjsGradeItem {
 
 	public Line(MainController mainController) {
 		super(mainController, ChartType.LINE);
-		useGeneralButton = true;
-		useGroupButton = true;
-		optionsVar = "lineOptions";
+		
 
 	}
+
+	@Override
+	public String getOptions() {
+		StringJoiner jsObject = getDefaultOptions();
+		addKeyValueWithQuote(jsObject, "typeGraph", "line");
+		addKeyValue(jsObject, "scales", "{yAxes:[{" + getYScaleLabel() + "}],xAxes:[{" + getXScaleLabel() + "}]}");
+		return jsObject.toString();
+	}
+	
 
 }

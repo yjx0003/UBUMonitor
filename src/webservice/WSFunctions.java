@@ -1,10 +1,17 @@
 package webservice;
+
 /**
  * Enumeración de las funciones de moodle en upper case.
+ * 
  * @author Yi Peng Ji
  *
  */
 public enum WSFunctions {
+	
+	/**
+	 * Return the activities completion status for a user in a course.
+	 */
+	CORE_COMPLETION_GET_ACTIVITIES_COMPLETION_STATUS,
 	
 	/**
 	 * Devuelve las categorías de los cursos.
@@ -71,8 +78,6 @@ public enum WSFunctions {
 	 * Devuelve token de usuario
 	 */
 	MOODLE_MOBILE_APP;
-	
-
 
 	@Override
 	public String toString() {

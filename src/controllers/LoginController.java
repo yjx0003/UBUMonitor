@@ -1,17 +1,27 @@
 
 package controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.controlsfx.control.textfield.TextFields;
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.configuration.Config;
 import controllers.ubugrades.CreatorUBUGradesController;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -19,11 +29,8 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -34,9 +41,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
 import javafx.util.Callback;
+import model.Course;
 import model.MoodleUser;
+import util.UtilMethods;
 
 /**
  * Clase controlador de la ventana de Login
@@ -48,7 +56,7 @@ import model.MoodleUser;
 public class LoginController implements Initializable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
-	
+
 	private Controller controller = Controller.getInstance();
 
 	@FXML
@@ -70,6 +78,9 @@ public class LoginController implements Initializable {
 	private CheckBox chkSaveHost;
 
 	@FXML
+	private CheckBox chkOfflineMode;
+
+	@FXML
 	private ImageView insecureProtocol;
 
 	/**
@@ -78,28 +89,22 @@ public class LoginController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		txtHost.textProperty()
-		.addListener((observable, oldValue, newValue) -> insecureProtocol
-				.setVisible(newValue.startsWith("http://")));
-		
-		try {
-			initializeProperties();
-		} catch (IOException e) {
-			LOGGER.error("No se ha podido inicializar el fichero properties");
-		}
+		txtHost.textProperty().addListener((observable, oldValue, newValue) -> insecureProtocol
+				.setVisible(Optional.ofNullable(newValue).orElse("").startsWith("http://")));
+
+		initializeProperties();
 
 		Platform.runLater(() -> {
-			if (txtUsername != null && !txtUsername.getText().isEmpty()) {
+			if (!Optional.ofNullable(txtUsername.getText()).orElse("").isEmpty()) {
+
 				txtPassword.requestFocus(); // si hay texto cargado del usuario cambiamos el focus al texto de
 											// password
 			}
 		});
 
-		
-
 		Tooltip.install(insecureProtocol, new Tooltip(I18n.get("tooltip.insecureprotocol")));
 		initLanguagesList();
-		
+
 	}
 
 	/**
@@ -142,8 +147,8 @@ public class LoginController implements Initializable {
 			controller.setSelectedLanguage(newValue);
 			LOGGER.info("Idioma de la aplicación: {}", newValue);
 			LOGGER.info("Idioma cargado del resource bundle: {}", I18n.getResourceBundle().getLocale());
-			LOGGER.info("[Bienvenido a " + AppInfo.APPLICATION_NAME + "]");
-			changeScene(getClass().getResource("/view/Login.fxml"), null);
+			LOGGER.info("[Bienvenido a " + AppInfo.APPLICATION_NAME_WITH_VERSION + "]");
+			UtilMethods.changeScene(getClass().getResource("/view/Login.fxml"), controller.getStage());
 		});
 
 	}
@@ -153,12 +158,19 @@ public class LoginController implements Initializable {
 	 * 
 	 * @throws IOException
 	 */
-	private void initializeProperties() throws IOException {
-		
+	private void initializeProperties() {
+
 		txtHost.setText(Config.getProperty("host", ""));
+
 		txtUsername.setText(Config.getProperty("username", ""));
+		txtPassword.setText(System.getProperty(AppInfo.APPLICATION_NAME + ".password", ""));
 		chkSaveUsername.setSelected(Boolean.parseBoolean(Config.getProperty("saveUsername")));
 		chkSaveHost.setSelected(Boolean.parseBoolean(Config.getProperty("saveHost")));
+		chkOfflineMode.setSelected(Boolean.parseBoolean(Config.getProperty("offlineMode")));
+		String[] hosts = Config.getProperty("hosts", Config.getProperty("host", "")).split("\t");
+		String[] usernames = Config.getProperty("usernames", Config.getProperty("username", "")).split("\t");
+		TextFields.bindAutoCompletion(txtUsername, usernames);
+		TextFields.bindAutoCompletion(txtHost, hosts);
 
 	}
 
@@ -174,73 +186,121 @@ public class LoginController implements Initializable {
 		String host = chkSaveHost.isSelected() ? txtHost.getText() : "";
 		Config.setProperty("host", host);
 		Config.setProperty("saveHost", Boolean.toString(chkSaveHost.isSelected()));
-		
+
+		Config.setProperty("offlineMode", Boolean.toString(chkOfflineMode.isSelected()));
+		if (chkSaveUsername.isSelected()) {
+			String[] usernames = Config.getProperty("usernames", "").split("\t");
+			if (Arrays.stream(usernames).noneMatch(username::equals)) {
+				Config.setProperty("usernames", username + "\t" + String.join("\t", usernames));
+			}
+		}
+		if (chkSaveHost.isSelected()) {
+
+			String[] hosts = Config.getProperty("hosts", "").split("\t");
+			if (Arrays.stream(hosts).noneMatch(host::equals)) {
+				Config.setProperty("hosts", host + "\t" + String.join("\t", hosts));
+			}
+		}
+
 	}
 
 	/**
 	 * Hace el login de usuario al pulsar el botón Entrar. Si el usuario es
 	 * incorrecto, muestra un mensaje de error.
 	 * 
-	 * @param event
-	 *            El ActionEvent.
+	 * @param event El ActionEvent.
 	 */
 	public void login(ActionEvent event) {
 		if (txtHost.getText().isEmpty() || txtPassword.getText().isEmpty() || txtUsername.getText().isEmpty()) {
 			lblStatus.setText(I18n.get("error.fields"));
 		} else {
 			controller.getStage().getScene().setCursor(Cursor.WAIT);
+			if (chkOfflineMode.isSelected()) {
+				try {
+					offlineMode();
+					UtilMethods.changeScene(getClass().getResource("/view/WelcomeOffline.fxml"), controller.getStage(),
+							new WelcomeOfflineController());
+				} catch (MalformedURLException | RuntimeException e) {
+					lblStatus.setText(e.getMessage());
+				}
 
-			Task<Void> loginTask = getUserDataWorker();
+			} else {
+				onlineMode();
+			}
 
-			loginTask.setOnSucceeded(s -> {
-				saveProperties();
-				controller.getStage().getScene().setCursor(Cursor.DEFAULT);
-				controller.setLoggedIn(LocalDateTime.now());
-				changeScene(getClass().getResource("/view/Welcome.fxml"), new WelcomeController());
-			});
-
-			loginTask.setOnFailed(e -> {
-				LOGGER.error("Error al recuperar los datos: ", e.getSource().getException());
-				controller.getStage().getScene().setCursor(Cursor.DEFAULT);
-				txtPassword.clear();
-				lblStatus.setText(e.getSource().getException().getMessage());
-			});
-			Thread th = new Thread(loginTask, "login");
-
-			th.start();
 		}
 	}
 
-	/**
-	 * Permite cambiar la ventana actual.
-	 * 
-	 * @param sceneFXML
-	 *            La ventanan a la que se quiere cambiar.
-	 *
-	 * @throws IOException
-	 */
-	private void changeScene(URL sceneFXML, Object fxmlController) {
-		try {
+	private List<Course> findCacheCourses() {
 
-			// Accedemos a la siguiente ventana
-			FXMLLoader loader = new FXMLLoader(sceneFXML, I18n.getResourceBundle());
-			if (controller !=null) {
-				loader.setController(fxmlController);
-			}
-			
-			controller.getStage().close();
-			Stage stage = new Stage();
-			Parent root = loader.load();
-			Scene scene = new Scene(root);
-			stage.setScene(scene);
-			stage.getIcons().add(new Image("/img/logo_min.png"));
-			stage.setTitle(AppInfo.APPLICATION_NAME);
-			stage.resizableProperty().setValue(Boolean.FALSE);
-			stage.show();
-			controller.setStage(stage);
-		} catch (IOException e) {
-			LOGGER.info("No se ha podido cargar la ventana de bienvenida: {}", e);
+		File dir = controller.getDirectoryCache().toFile();
+		if (!dir.exists() || !dir.isDirectory()) {
+			return Collections.emptyList();
 		}
+
+		Pattern pattern = Pattern.compile("(.+)-(\\d+)$");
+		List<Course> courses = new ArrayList<>();
+		for (File cache : dir.listFiles()) {
+			Matcher matcher = pattern.matcher(cache.getName());
+			if (matcher.find()) {
+				Course course = new Course(Integer.valueOf(matcher.group(2)));
+				course.setFullName(matcher.group(1));
+				courses.add(course);
+			}
+		}
+		return courses;
+	}
+
+	private void offlineMode() throws MalformedURLException {
+
+		controller.setURLHost(new URL(txtHost.getText()));
+
+		controller.setUsername(txtUsername.getText());
+		controller.setPassword(txtPassword.getText());
+		MoodleUser user = new MoodleUser();
+		user.setFullName(txtUsername.getText()); // because we have not a fullname of the user in offline mode
+		user.setUserPhoto(new Image("/img/default_user.png"));
+		controller.setUser(user);
+		onSuccessLogin();
+
+		List<Course> courses = findCacheCourses();
+		if (courses.isEmpty()) {
+			throw new IllegalArgumentException(I18n.get("error.nocacheavaible"));
+		}
+		user.getCourses().addAll(courses);
+
+	}
+
+	private void onlineMode() {
+		Task<Void> loginTask = getUserDataWorker();
+
+		loginTask.setOnSucceeded(s -> {
+			onSuccessLogin();
+			if (!controller.getDirectoryCache().toFile().exists()) {
+				controller.getDirectoryCache().toFile().mkdirs();
+			}
+			UtilMethods.changeScene(getClass().getResource("/view/Welcome.fxml"), controller.getStage(),
+					new WelcomeController());
+		});
+
+		loginTask.setOnFailed(e -> {
+			LOGGER.error("Error al recuperar los datos: ", e.getSource().getException());
+			controller.getStage().getScene().setCursor(Cursor.DEFAULT);
+			txtPassword.clear();
+			lblStatus.setText(e.getSource().getException().getMessage());
+		});
+		Thread th = new Thread(loginTask, "login");
+
+		th.start();
+	}
+
+	private void onSuccessLogin() {
+		saveProperties();
+		controller.getStage().getScene().setCursor(Cursor.DEFAULT);
+		controller.setLoggedIn(LocalDateTime.now());
+		controller.setDirectory();
+
+		controller.setOfflineMode(chkOfflineMode.isSelected());
 	}
 
 	/**
@@ -255,7 +315,8 @@ public class LoginController implements Initializable {
 				try {
 
 					controller.tryLogin(txtHost.getText(), txtUsername.getText(), txtPassword.getText());
-
+					controller.setDirectory();
+			
 				} catch (MalformedURLException e) {
 					LOGGER.error("URL mal formada. ¿Has añadido protocolo http(s)?", e);
 					throw new IllegalArgumentException(I18n.get("error.malformedurl"));
@@ -285,12 +346,12 @@ public class LoginController implements Initializable {
 	/**
 	 * Borra los parámetros introducidos en los campos
 	 * 
-	 * @param event
-	 *            El ActionEvent.
+	 * @param event El ActionEvent.
 	 */
 	public void clear(ActionEvent event) {
 		txtUsername.setText("");
 		txtPassword.setText("");
 		txtHost.setText("");
 	}
+
 }

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="1024.0" maxWidth="728.0" minHeight="500.0" minWidth="400.0" prefHeight="520.0" prefWidth="400.0" styleClass="anchorpane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.controllers.LoginController">
+	<!-- TODO Add Nodes -->
+
+      	<children>
+		<Group id="Group" layoutX="43.0" layoutY="250.0">
+			<children>
+				<Label id="loginLabels" layoutX="20.0" layoutY="30.0" text="%label.user" textAlignment="CENTER">
+					<font>
+						<Font size="13.0" fx:id="x1" />
+					</font>
+				</Label>
+				<Label id="loginLabels" font="$x1" layoutX="20.0" layoutY="68.0" text="%label.pass" textAlignment="CENTER" />
+				<Label id="loginLabels" font="$x1" layoutX="20.0" layoutY="105.0" text="%label.host" textAlignment="CENTER" />
+			</children>
+		</Group>
+		<Group id="Group" layoutX="145.0" layoutY="250.0">
+			<children>
+      				<TextField id="txtUname" fx:id="txtUsername" layoutY="27.0" prefWidth="173.0" styleClass="text-field-login" stylesheets="@/css/style.css" />
+				<PasswordField id="yxyPassword" fx:id="txtPassword" layoutY="63.0" prefWidth="173.00009999999747" styleClass="text-field-login" stylesheets="@/css/style.css" />
+				<TextField fx:id="txtHost" layoutY="100.0" prefWidth="173.0" promptText="https://demo.moodle.net" styleClass="text-field-login" stylesheets="@/css/style.css" />
+			</children>
+		</Group>
+		<Button id="Entrar" fx:id="btnLogin" cancelButton="false" defaultButton="true" disable="false" focusTraversable="true" graphicTextGap="5.0" layoutX="99.0" layoutY="460.0" mnemonicParsing="false" onAction="#login" prefWidth="70.0" text="%btn.enter" textOverrun="ELLIPSIS" underline="false" visible="true">
+			<font>
+				<Font size="14.0" fx:id="x2" />
+			</font>
+		</Button>
+		<Button fx:id="btnDelete" font="$x2" layoutX="232.0" layoutY="460.0" mnemonicParsing="false" onAction="#clear" prefWidth="70.0" stylesheets="@/css/style.css" text="%btn.clear" />
+		<ImageView fitHeight="271.0" fitWidth="276.0" layoutX="70.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true">
+			<image>
+				<Image url="@../img/logo.png" />
+			</image>
+		</ImageView>
+		<Label fx:id="lblStatus" alignment="CENTER" layoutX="13.0" layoutY="493.0" minHeight="27.0" minWidth="375.0" prefHeight="27.0" prefWidth="375.0" style="-fx-text-fill: #ff5050;" textFill="#cd0909">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <GridPane layoutX="60.0" layoutY="390.0" prefHeight="60.0" prefWidth="350.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <CheckBox fx:id="chkSaveUsername" mnemonicParsing="false" text="%chk.saveusername" />
+            <CheckBox fx:id="chkSaveHost" mnemonicParsing="false" text="%chk.savehost" GridPane.columnIndex="1" />
+            <CheckBox fx:id="chkOfflineMode" mnemonicParsing="false" text="%chk.offlinemode" GridPane.rowIndex="1" />
+         </children>
+      </GridPane>
+      <ComboBox fx:id="languageSelector" layoutX="264.0" layoutY="14.0" prefHeight="30.0" prefWidth="135.0" />
+      <ImageView fx:id="insecureProtocol" fitHeight="24.0" fitWidth="24.0" layoutX="325.0" layoutY="350.0" pickOnBounds="true" preserveRatio="true" visible="false">
+         <image>
+            <Image url="@../img/insecure_protocol.png" />
+         </image>
+      </ImageView>
+      
+      	</children>
+</AnchorPane>

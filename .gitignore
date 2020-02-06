@@ -13,3 +13,6 @@ bin
 /build.fxbuild
 /configuration/
 /target/
+/.settings/
+/.project
+/.classpath

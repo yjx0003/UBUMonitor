@@ -22,7 +22,7 @@ public class AboutAppController implements Initializable {
 	}
 
 	public void openLicense() {
-		UtilMethods.openURL("https://github.com/yjx0003/UBUMonitor/blob/master/LICENSE");
+		UtilMethods.openURL(AppInfo.GITHUB + "/blob/master/LICENSE");
 	}
 
 	public void openGithub() {

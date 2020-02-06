@@ -334,6 +334,7 @@ public class MainController implements Initializable {
 		Tooltip.install(online, new Tooltip(I18n.get("text.online_" + !controller.isOfflineMode())));
 		HBox left = new HBox();
 		left.setAlignment(Pos.CENTER);
+		left.setSpacing(5);
 		left.getChildren().addAll(online, new Separator(Orientation.VERTICAL), lblActualCourse,
 				new Separator(Orientation.VERTICAL), actualHost);
 
@@ -341,6 +342,7 @@ public class MainController implements Initializable {
 
 		HBox right = new HBox();
 		right.setAlignment(Pos.CENTER);
+		right.setSpacing(5);
 		ZonedDateTime lastLogDateTime = controller.getActualCourse().getLogs().getLastDatetime();
 		Label lblLastUpdate = new Label(
 				I18n.get("label.lastupdate") + " " + lastLogDateTime.format(Controller.DATE_TIME_FORMATTER));

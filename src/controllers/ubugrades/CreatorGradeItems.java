@@ -67,7 +67,7 @@ public class CreatorGradeItems {
 	 * @param locale locale
 	 */
 	public CreatorGradeItems(Locale locale) {
-		decimalFormat = new DecimalFormat("###.##", new DecimalFormatSymbols(locale));
+		decimalFormat = new DecimalFormat("###.#####", new DecimalFormatSymbols(locale));
 	}
 
 	/**
@@ -296,12 +296,14 @@ public class CreatorGradeItems {
 			for (int j = 0; j < tabledata.length(); j++) {
 				JSONObject tabledataObject = tabledata.optJSONObject(j);
 
-				if (tabledataObject != null && tabledataObject.has("grade")) {
+				if (tabledataObject != null && tabledataObject.has("percentage")) {
 
 					setGrade(tabledataObject, gradeItems.get(gradeItemCount), enrolledUser);
 					setPercentage(tabledataObject, gradeItems.get(gradeItemCount), enrolledUser);
+			
 					gradeItemCount++;
 				}
+				
 
 			}
 		}
@@ -315,7 +317,11 @@ public class CreatorGradeItems {
 	 * @param enrolledUser usuario
 	 */
 	private void setGrade(JSONObject tabledataObject, GradeItem gradeItem, EnrolledUser enrolledUser) {
-
+		if(!tabledataObject.has("grade")) {
+			gradeItem.addUserGrade(enrolledUser, Double.NaN);
+			return;
+		}
+		
 		String content = tabledataObject.getJSONObject("grade").getString(CONTENT);
 		double grade = Double.NaN;
 
@@ -356,12 +362,14 @@ public class CreatorGradeItems {
 		double percentage = Double.NaN;
 		if (percentageJson != null) {
 			String content = percentageJson.optString(CONTENT);
-
-			try {
-				percentage = decimalFormat.parse(content).doubleValue();
-			} catch (ParseException e) {
-				LOGGER.warn("No se puede parsear {} a decimal", content);
+			if (!"-".equals(content)) {
+				try {
+					percentage = decimalFormat.parse(content).doubleValue();
+				} catch (ParseException e) {
+					LOGGER.warn("No se puede parsear {} a decimal", content);
+				}
 			}
+			
 
 		}
 		gradeItem.addUserPercentage(enrolledUser, percentage);

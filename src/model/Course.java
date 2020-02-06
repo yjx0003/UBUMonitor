@@ -78,8 +78,7 @@ public class Course implements Serializable {
 	/**
 	 * Modifica el id del curso.
 	 * 
-	 * @param id
-	 *            El id.
+	 * @param id El id.
 	 */
 	public void setId(int id) {
 		this.id = id;
@@ -97,8 +96,7 @@ public class Course implements Serializable {
 	/**
 	 * Modifica el nombre corto del curso.
 	 * 
-	 * @param shortName
-	 *            El nombre corto.
+	 * @param shortName El nombre corto.
 	 */
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
@@ -116,8 +114,7 @@ public class Course implements Serializable {
 	/**
 	 * Modifica el nombre del curso.
 	 * 
-	 * @param fullName
-	 *            El nombre completo-
+	 * @param fullName El nombre completo-
 	 */
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
@@ -144,8 +141,7 @@ public class Course implements Serializable {
 	/**
 	 * Modifica el idNumber del curso.
 	 * 
-	 * @param idNumber
-	 *            El id del curso.
+	 * @param idNumber El id del curso.
 	 */
 	public void setIdNumber(String idNumber) {
 		this.idNumber = idNumber;
@@ -163,8 +159,7 @@ public class Course implements Serializable {
 	/**
 	 * Modifica el resumen del curso.
 	 * 
-	 * @param summary
-	 *            El resumen.
+	 * @param summary El resumen.
 	 */
 	public void setSummary(String summary) {
 		this.summary = summary;
@@ -204,8 +199,7 @@ public class Course implements Serializable {
 	/**
 	 * Modifica los grade item
 	 * 
-	 * @param gradeItems
-	 *            grade items
+	 * @param gradeItems grade items
 	 */
 	public void setGradeItems(Set<GradeItem> gradeItems) {
 		this.gradeItems = gradeItems;
@@ -223,8 +217,7 @@ public class Course implements Serializable {
 	/**
 	 * Modifica el tiempo
 	 * 
-	 * @param startDate
-	 *            fecha de inicio
+	 * @param startDate fecha de inicio
 	 */
 	public void setStartDate(Instant startDate) {
 		this.startDate = startDate;
@@ -242,8 +235,7 @@ public class Course implements Serializable {
 	/**
 	 * Modifica la finalización del curso
 	 * 
-	 * @param endDate
-	 *            nuevo instante de finalización
+	 * @param endDate nuevo instante de finalización
 	 */
 	public void setEndDate(Instant endDate) {
 		this.endDate = endDate;
@@ -261,8 +253,7 @@ public class Course implements Serializable {
 	/**
 	 * Modifiaca las estadísticas de curso.
 	 * 
-	 * @param stats
-	 *            nuevas estadísticas del curso
+	 * @param stats nuevas estadísticas del curso
 	 */
 	public void setStats(Stats stats) {
 		this.stats = stats;
@@ -280,8 +271,7 @@ public class Course implements Serializable {
 	/**
 	 * Modifica los logs del curso.
 	 * 
-	 * @param logs
-	 *            logs completos
+	 * @param logs logs completos
 	 */
 	public void setLogs(Logs logs) {
 		this.logs = logs;
@@ -299,8 +289,7 @@ public class Course implements Serializable {
 	/**
 	 * Modifica los roles del curso.
 	 * 
-	 * @param roles
-	 *            nuevos roles
+	 * @param roles nuevos roles
 	 */
 	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
@@ -318,8 +307,7 @@ public class Course implements Serializable {
 	/**
 	 * Modificar los grupos del curso.
 	 * 
-	 * @param groups
-	 *            nuevos grupos del curso
+	 * @param groups nuevos grupos del curso
 	 */
 	public void setGroups(Set<Group> groups) {
 		this.groups = groups;
@@ -337,8 +325,7 @@ public class Course implements Serializable {
 	/**
 	 * Modifica los módulos del curso.
 	 * 
-	 * @param modules
-	 *            modulos del curso
+	 * @param modules modulos del curso
 	 */
 	public void setModules(Set<CourseModule> modules) {
 		this.modules = modules;
@@ -347,8 +334,7 @@ public class Course implements Serializable {
 	/**
 	 * Añade un modulo al curso.
 	 * 
-	 * @param module
-	 *            nuevo modulo
+	 * @param module nuevo modulo
 	 */
 	public void addModule(CourseModule module) {
 		modules.add(module);
@@ -367,8 +353,7 @@ public class Course implements Serializable {
 	/**
 	 * Modifica los usuarios del curso.
 	 * 
-	 * @param enrolledUsers
-	 *            nuevos usuarios del curso
+	 * @param enrolledUsers nuevos usuarios del curso
 	 */
 	public void setEnrolledUsers(Set<EnrolledUser> enrolledUsers) {
 		this.enrolledUsers = enrolledUsers;
@@ -385,8 +370,7 @@ public class Course implements Serializable {
 	/**
 	 * Añade un usuario al curso.
 	 * 
-	 * @param user
-	 *            nuevo usuario
+	 * @param user nuevo usuario
 	 */
 	public void addEnrolledUser(EnrolledUser user) {
 		enrolledUsers.add(user);
@@ -395,8 +379,7 @@ public class Course implements Serializable {
 	/**
 	 * Añade un rol nuevo rol al curso.
 	 * 
-	 * @param role
-	 *            nuevo rol
+	 * @param role nuevo rol
 	 */
 	public void addRole(Role role) {
 		roles.add(role);
@@ -405,8 +388,7 @@ public class Course implements Serializable {
 	/**
 	 * Añade un grupo al curso.
 	 * 
-	 * @param group
-	 *            nuevo grupo
+	 * @param group nuevo grupo
 	 */
 	public void addGroup(Group group) {
 		groups.add(group);
@@ -416,8 +398,7 @@ public class Course implements Serializable {
 	/**
 	 * Add section to this course.
 	 * 
-	 * @param section
-	 *            section
+	 * @param section section
 	 */
 	public void addSection(Section section) {
 		sections.add(section);
@@ -426,8 +407,7 @@ public class Course implements Serializable {
 	/**
 	 * Añade un item de calificacion nuevo.
 	 * 
-	 * @param gradeItem
-	 *            nuevo item de calificación
+	 * @param gradeItem nuevo item de calificación
 	 */
 	public void addGradeItem(GradeItem gradeItem) {
 		gradeItems.add(gradeItem);
@@ -470,9 +450,7 @@ public class Course implements Serializable {
 	 * @return los tipos de modulo sin repetición
 	 */
 	public Set<ModuleType> getUniqueGradeModuleTypes() {
-		return gradeItems.stream()
-				.map(GradeItem::getItemModule)
-				.filter(Objects::nonNull)
+		return gradeItems.stream().map(GradeItem::getItemModule).filter(Objects::nonNull)
 				.collect(Collectors.toCollection(TreeSet::new));
 
 	}
@@ -483,13 +461,10 @@ public class Course implements Serializable {
 	 * @return componentes de logs realizados por usuario actuales del curso
 	 */
 	public List<Component> getUniqueComponents() {
-		return logs.getList()
-				.stream()
+		return logs.getList().stream()
 				// cogemos las lineas de log de los usuarios que pertenecen al curso actual
 				.filter(logLine -> logLine.getUser() != null && enrolledUsers.contains(logLine.getUser()))
-				.map(LogLine::getComponent)
-				.distinct()
-				.collect(Collectors.toList());
+				.map(LogLine::getComponent).distinct().collect(Collectors.toList());
 	}
 
 	/**
@@ -499,20 +474,15 @@ public class Course implements Serializable {
 	 * @return componente-evento unicos de los logs de usuarios actuales del curso
 	 */
 	public List<ComponentEvent> getUniqueComponentsEvents() {
-		return logs.getList()
-				.stream()
+		return logs.getList().stream()
 				// cogemos las lineas de log de los usuarios que pertenecen al curso actual
 				.filter(logLine -> logLine.getUser() != null && enrolledUsers.contains(logLine.getUser()))
-				.map(l -> ComponentEvent.get(l.getComponent(), l.getEventName()))
-				.distinct()
+				.map(l -> ComponentEvent.get(l.getComponent(), l.getEventName())).distinct()
 				.collect(Collectors.toList());
 	}
 
 	public List<ModuleType> getUniqueCourseModulesTypes() {
-		return modules.stream()
-				.map(CourseModule::getModuleType)
-				.distinct()
-				.collect(Collectors.toList());
+		return modules.stream().map(CourseModule::getModuleType).distinct().collect(Collectors.toList());
 	}
 
 	public LocalDate getStart() {
@@ -543,15 +513,16 @@ public class Course implements Serializable {
 	 * @return student role or null
 	 */
 	public Role getStudentRole() {
-		return roles.stream()
-				.filter(r -> "student".equals(r.getRoleShortName()))
-				.max(Comparator.comparingInt(r -> r.getEnrolledUsers().size()))
-				.orElse(null);
+		return roles.stream().filter(r -> "student".equals(r.getRoleShortName()))
+				.max(Comparator.comparingInt(r -> r.getEnrolledUsers().size())).orElse(null);
 
 	}
 
 	@Override
 	public String toString() {
+		if (this.courseCategory == null) {
+			return this.fullName;
+		}
 		return this.fullName + " (" + this.courseCategory + ")";
 	}
 

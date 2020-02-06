@@ -4,8 +4,8 @@ import controllers.MainController;
 
 public abstract class Tabulator extends Chart{
 
-	public Tabulator(MainController mainController, ChartType chartType) {
-		super(mainController, chartType);
+	public Tabulator(MainController mainController, ChartType chartType, Tabs tabName) {
+		super(mainController, chartType, tabName);
 	}
 
 	@Override

@@ -19,7 +19,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane maxHeight="1024.0" maxWidth="728.0" minHeight="500.0" minWidth="400.0" prefHeight="520.0" prefWidth="400.0" styleClass="anchorpane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.LoginController">
 	<!-- TODO Add Nodes -->
 
@@ -58,8 +57,21 @@
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
-      <CheckBox fx:id="chkSaveUsername" layoutX="65.0" layoutY="392.0" mnemonicParsing="false" text="%chk.saveusername" />
-      <CheckBox fx:id="chkSaveHost" layoutX="65.0" layoutY="426.0" mnemonicParsing="false" text="%chk.savehost" />
+      <GridPane layoutX="60.0" layoutY="390.0" prefHeight="60.0" prefWidth="350.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <CheckBox fx:id="chkSaveUsername" mnemonicParsing="false" text="%chk.saveusername" />
+            <CheckBox fx:id="chkSaveHost" mnemonicParsing="false" text="%chk.savehost" GridPane.columnIndex="1" />
+            <CheckBox fx:id="chkOfflineMode" mnemonicParsing="false" text="%chk.offlinemode" GridPane.rowIndex="1" />
+         </children>
+      </GridPane>
       <ComboBox fx:id="languageSelector" layoutX="264.0" layoutY="14.0" prefHeight="30.0" prefWidth="135.0" />
       <ImageView fx:id="insecureProtocol" fitHeight="24.0" fitWidth="24.0" layoutX="325.0" layoutY="350.0" pickOnBounds="true" preserveRatio="true" visible="false">
          <image>

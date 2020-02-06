@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.charts.ChartType;
 import controllers.ubulogs.TypeTimes;
 import model.Component;
 import model.Event;
@@ -107,7 +108,7 @@ public class I18n {
 	 * @return el valor de la key o el valor por defecto
 	 */
 	private static String getOrDefault(String key, String defaultValue) {
-		if (rb.containsKey(key)) {
+		if (key !=null && rb.containsKey(key)) {
 			return rb.getString(key);
 		}
 		LOGGER.warn("No existe entrada en el resource bundle la key: {}", key);
@@ -117,6 +118,10 @@ public class I18n {
 
 	private I18n() {
 		throw new UnsupportedOperationException();
+	}
+
+	public static String get(ChartType category) {
+		return getOrDefault(category.name(), category.name());
 	}
 
 

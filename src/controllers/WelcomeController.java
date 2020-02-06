@@ -1,11 +1,9 @@
 package controllers;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InvalidClassException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -21,6 +19,7 @@ import javax.crypto.IllegalBlockSizeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.configuration.Config;
 import controllers.ubugrades.CreatorGradeItems;
 import controllers.ubugrades.CreatorUBUGradesController;
 import controllers.ubulogs.LogCreator;
@@ -30,13 +29,10 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -58,7 +54,7 @@ import model.Course;
 import model.CourseCategory;
 import model.DataBase;
 import model.Logs;
-import persistence.Encryption;
+import persistence.Serialization;
 import util.UtilMethods;
 
 /**
@@ -73,10 +69,7 @@ import util.UtilMethods;
 public class WelcomeController implements Initializable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WelcomeController.class);
-	/**
-	 * Path de los directorios del cache sin el fichero encriptado
-	 */
-	private Path directoryCache;
+
 	/**
 	 * path con directorios de los ficheros cache
 	 */
@@ -107,7 +100,7 @@ public class WelcomeController implements Initializable {
 
 	@FXML
 	private TabPane tabPane;
-	
+
 	@FXML
 	private Label labelLoggedIn;
 	@FXML
@@ -118,6 +111,9 @@ public class WelcomeController implements Initializable {
 	@FXML
 	private Button btnEntrar;
 	@FXML
+	private Button btnRemove;
+
+	@FXML
 	private ProgressBar progressBar;
 	@FXML
 	private Label lblProgress;
@@ -126,9 +122,11 @@ public class WelcomeController implements Initializable {
 	@FXML
 	private CheckBox chkUpdateData;
 	private boolean isBBDDLoaded;
-	
+
+	@FXML
+	private Label conexionLabel;
 	private boolean autoUpdate;
-	
+
 	public WelcomeController() {
 		this(false);
 	}
@@ -145,21 +143,20 @@ public class WelcomeController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		try {
-			directoryCache = Paths.get(AppInfo.CACHE_DIR, controller.getUrlHost().getHost(),
-					controller.getUser().getFullName() + "-" + controller.getUser().getId());
-
+			conexionLabel.setText(I18n.get("text.online_" + !controller.isOfflineMode()));
 			lblUser.setText(controller.getUser().getFullName());
 			LOGGER.info("Cargando cursos...");
-			
+
 			progressBar.visibleProperty().bind(btnEntrar.visibleProperty().not());
 			anchorPane.disableProperty().bind(btnEntrar.visibleProperty().not());
 			lblProgress.visibleProperty().bind(btnEntrar.visibleProperty().not());
-			
+			btnRemove.visibleProperty().bind(btnEntrar.visibleProperty());
+			btnRemove.disableProperty().bind(chkUpdateData.disabledProperty());
+
 			labelLoggedIn.setText(controller.getLoggedIn().format(Controller.DATE_TIME_FORMATTER));
 			labelHost.setText(controller.getUrlHost().toString());
-			
-			initListViews();
 
+			initListViews();
 
 			tabPane.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
 				ListView<Course> listView = (ListView<Course>) value.getContent();
@@ -168,7 +165,6 @@ public class WelcomeController implements Initializable {
 				lblDateUpdate.setText(null);
 			});
 			tabPane.getSelectionModel().select(Config.getProperty("courseList", 0));
-			
 
 			Platform.runLater(() -> {
 				ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem()
@@ -192,7 +188,7 @@ public class WelcomeController implements Initializable {
 	private void initListViews() {
 		Comparator<Course> courseComparator = Comparator.comparing(Course::getFullName)
 				.thenComparing(c -> c.getCourseCategory().getName());
-		
+
 		initListView(controller.getUser().getCourses(), listCourses, courseComparator);
 		initListView(controller.getUser().getFavoriteCourses(), listCoursesFavorite, courseComparator);
 		initListView(controller.getUser().getRecentCourses(), listCoursesRecent, null);
@@ -220,8 +216,7 @@ public class WelcomeController implements Initializable {
 	private void checkFile(Course newValue) {
 		if (newValue == null)
 			return;
-		cacheFilePath = directoryCache
-				.resolve(UtilMethods.removeReservedChar(newValue.toString()) + "-" + newValue.getId());
+		cacheFilePath = controller.getDirectoryCache(newValue);
 		LOGGER.debug("Buscando si existe {}", cacheFilePath);
 
 		File f = cacheFilePath.toFile();
@@ -234,12 +229,12 @@ public class WelcomeController implements Initializable {
 			LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastModified),
 					ZoneId.systemDefault());
 			lblDateUpdate.setText(localDateTime.format(Controller.DATE_TIME_FORMATTER));
-			isFileCacheExists = false;
+			isFileCacheExists = true;
 		} else {
 			chkUpdateData.setSelected(true);
 			chkUpdateData.setDisable(true);
 			lblDateUpdate.setText(I18n.get("label.never"));
-			isFileCacheExists = true;
+			isFileCacheExists = false;
 		}
 	}
 
@@ -265,13 +260,12 @@ public class WelcomeController implements Initializable {
 
 		Config.setProperty("actualCourse", getSelectedCourse().getId());
 
-
 		if (chkUpdateData.isSelected()) {
-			if (!isFileCacheExists) {
+			if (isFileCacheExists) {
 				loadData(controller.getPassword());
 			} else {
 				DataBase copyDataBase = new DataBase();
-				Course copyCourse = copyDataBase(copyDataBase, selectedCourse);
+				Course copyCourse = copyCourse(copyDataBase, selectedCourse);
 				controller.setDataBase(copyDataBase);
 				controller.setActualCourse(copyCourse);
 				isBBDDLoaded = true;
@@ -284,7 +278,26 @@ public class WelcomeController implements Initializable {
 
 	}
 
-	private Course copyDataBase(DataBase copyDataBase, Course selectedCourse) {
+	public void removeCourse(ActionEvent event) {
+		Alert alert = new Alert(AlertType.WARNING, I18n.get("text.confirmationtext"), ButtonType.OK, ButtonType.CANCEL);
+		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
+		alert.initModality(Modality.APPLICATION_MODAL);
+		alert.setHeaderText(I18n.get("text.confirmation"));
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("/img/logo_min.png"));
+
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.isPresent() && result.get() == ButtonType.OK) {
+			cacheFilePath.toFile().delete();
+			@SuppressWarnings("unchecked")
+			ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem().getContent();
+			int index = listView.getSelectionModel().getSelectedIndex();
+			listView.getSelectionModel().clearSelection();
+			listView.getSelectionModel().select(index);
+		}
+	}
+
+	private Course copyCourse(DataBase copyDataBase, Course selectedCourse) {
 
 		Course copyCourse = copyDataBase.getCourses().getById(selectedCourse.getId());
 		copyCourse.setStartDate(selectedCourse.getStartDate());
@@ -308,13 +321,13 @@ public class WelcomeController implements Initializable {
 			return;
 		}
 
-		File f = directoryCache.toFile();
+		File f = controller.getDirectoryCache().toFile();
 		if (!f.isDirectory()) {
-			LOGGER.info("No existe el directorio, se va a crear: {}", directoryCache);
+			LOGGER.info("No existe el directorio, se va a crear: {}", controller.getDirectoryCache());
 			f.mkdirs();
 		}
 		LOGGER.info("Guardando los datos encriptados en: {}", f.getAbsolutePath());
-		Encryption.encrypt(controller.getPassword(), cacheFilePath.toString(), controller.getDataBase());
+		Serialization.encrypt(controller.getPassword(), cacheFilePath.toString(), controller.getDataBase());
 
 	}
 
@@ -323,15 +336,15 @@ public class WelcomeController implements Initializable {
 		DataBase dataBase;
 		try {
 
-			dataBase = (DataBase) Encryption.decrypt(password, cacheFilePath.toString());
-			copyDataBase(dataBase, getSelectedCourse());
+			dataBase = (DataBase) Serialization.decrypt(password, cacheFilePath.toString());
+			copyCourse(dataBase, getSelectedCourse());
 			controller.setDataBase(dataBase);
 			isBBDDLoaded = true;
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			previusPasswordWindow();
-		} catch (InvalidClassException | ClassNotFoundException e) {
+		} catch (InvalidClassException | ClassNotFoundException | ClassCastException e) {
 			LOGGER.warn("Se ha modificado una de las clases serializables", e);
-			// TODO eliminar fichero y descargar de nuevo
+			UtilMethods.errorWindow("Se ha modificado una de las clases serializables", e);
 		}
 
 	}
@@ -340,14 +353,12 @@ public class WelcomeController implements Initializable {
 		Dialog<String> dialog = new Dialog<>();
 		dialog.setTitle(I18n.get("title.passwordChanged"));
 
-		dialog.getDialogPane().setGraphic(new ImageView("img/error.png"));
 		dialog.setHeaderText(I18n.get("header.passwordChangedMessage") + "\n" + I18n.get("header.passwordDateTime")
 				+ lblDateUpdate.getText());
 
-		Image errorIcon = new Image("img/error.png");
 		Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
-		dialogStage.getIcons().add(errorIcon);
-		dialog.setGraphic(new ImageView(errorIcon));
+		dialogStage.getIcons().add(new Image("img/error.png"));
+		dialog.getDialogPane().setGraphic(new ImageView("img/error.png"));
 		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
 
 		PasswordField pwd = new PasswordField();
@@ -374,11 +385,6 @@ public class WelcomeController implements Initializable {
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
 			loadData(result.get());
-			if (!chkUpdateData.isSelected()) {
-				saveData(); // si no esta seleccionado el checkbox actualizar, volvemos a guardar en cache
-							// con la nueva contraseña, en caso contrario ya se guarda si o si en el metodo
-							// download data.
-			}
 		}
 
 	}
@@ -390,13 +396,16 @@ public class WelcomeController implements Initializable {
 		}
 
 		btnEntrar.setVisible(false);
-		
 		Task<Void> task = getUserDataWorker();
 		lblProgress.textProperty().bind(task.messageProperty());
 		task.setOnSucceeded(v -> loadNextWindow());
 		task.setOnFailed(e -> {
-			errorWindow(task.getException().getMessage());
+			controller.getStage().getScene().setCursor(Cursor.DEFAULT);
+			btnEntrar.setVisible(true);
+			UtilMethods.errorWindow("Error al actualizar los datos del curso: " + task.getException().getMessage(),
+					task.getException());
 			LOGGER.error("Error al actualizar los datos del curso: {}", task.getException());
+
 		});
 
 		Thread thread = new Thread(task, "datos");
@@ -409,27 +418,23 @@ public class WelcomeController implements Initializable {
 			return;
 		}
 
-		try {
-			// Accedemos a la siguiente ventana
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Main.fxml"), I18n.getResourceBundle());
-			controller.getStage().close();
-			controller.setStage(new Stage());
-			Parent root = loader.load();
-			Scene scene = new Scene(root);
-			controller.getStage().setScene(scene);
-			controller.getStage().getIcons().add(new Image("/img/logo_min.png"));
-			controller.getStage().setTitle(AppInfo.APPLICATION_NAME);
-			controller.getStage().setResizable(true);
-			controller.getStage().setMinHeight(600);
-			controller.getStage().setMinWidth(800);
-			controller.getStage().setMaximized(true);
-			controller.getStage().show();
-			lblNoSelect.setText("");
-		} catch (IOException e) {
+		UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), false);
+		controller.getStage().setMaximized(true);
+		controller.getStage().setResizable(true);
+		controller.getStage().show();
 
-			LOGGER.info("No se ha podido cargar la ventana Main.fxml: {}", e);
-			errorWindow("No se ha podido cargar la ventana Main.fxml");
-		}
+	}
+
+	/**
+	 * Vuelve a la ventana de login de usuario.
+	 * 
+	 * @param actionEvent El ActionEvent.
+	 */
+	public void logOut(ActionEvent actionEvent) {
+		LOGGER.info("Cerrando sesión de usuario");
+
+		UtilMethods.changeScene(getClass().getResource("/view/Login.fxml"), controller.getStage());
+
 	}
 
 	/**
@@ -442,66 +447,57 @@ public class WelcomeController implements Initializable {
 		return new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
-				try {
-					controller.getActualCourse().clear();
-					LOGGER.info("Cargando datos del curso: {}", controller.getActualCourse().getFullName());
-					// Establecemos los usuarios matriculados
-					updateMessage(I18n.get("label.loadingstudents"));
-					CreatorUBUGradesController.createEnrolledUsers(controller.getActualCourse().getId());
-					CreatorUBUGradesController.createSectionsAndModules(controller.getActualCourse().getId());
-					updateMessage(I18n.get("label.loadingqualifier"));
-					// Establecemos calificador del curso
-					CreatorGradeItems creatorGradeItems = new CreatorGradeItems(
-							new Locale(controller.getUser().getLang()));
-					creatorGradeItems.createGradeItems(controller.getActualCourse().getId());
 
-					updateMessage(I18n.get("label.updatinglog"));
-					if (isFileCacheExists) {
-						Logs logs = LogCreator.createCourseLog();
-						controller.getActualCourse().setLogs(logs);
+				Course actualCourse = controller.getActualCourse();
+				actualCourse.clear();
+				LOGGER.info("Cargando datos del curso: {}", actualCourse.getFullName());
+				// Establecemos los usuarios matriculados
+				updateMessage(I18n.get("label.loadingstudents"));
+				CreatorUBUGradesController.createEnrolledUsers(actualCourse.getId());
+				CreatorUBUGradesController.createSectionsAndModules(actualCourse.getId());
+				updateMessage(I18n.get("label.loadingqualifier"));
+				// Establecemos calificador del curso
+				CreatorGradeItems creatorGradeItems = new CreatorGradeItems(new Locale(controller.getUser().getLang()));
+				creatorGradeItems.createGradeItems(controller.getActualCourse().getId());
+				updateMessage(I18n.get("label.loadingActivitiesCompletion"));
+				CreatorUBUGradesController.createActivitiesCompletionStatus(actualCourse.getId(),
+						actualCourse.getEnrolledUsers());
+				updateMessage(I18n.get("label.updatinglog"));
+				int tries = 0;
+				int limitRelogin = 3;
+				while (tries < limitRelogin) {
+					try {
+						if (!isFileCacheExists) {
 
-					} else {
-						Logs logs = controller.getActualCourse().getLogs();
-						LogCreator.updateCourseLog(logs);
+							Logs logs = LogCreator.createCourseLog();
+							actualCourse.setLogs(logs);
+
+						} else {
+
+							Logs logs = actualCourse.getLogs();
+							LogCreator.updateCourseLog(logs);
+
+						}
+						tries = limitRelogin;
+					} catch (IllegalStateException e) {
+						tries++;
+						if (tries == limitRelogin) {
+							throw new IllegalStateException("Cannot download log");
+						}
+						controller.reLogin();
 
 					}
-					updateMessage(I18n.get("label.loadingstats"));
-					// Establecemos las estadisticas
-					controller.createStats();
-
-					updateMessage(I18n.get("label.savelocal"));
-					saveData();
-				} catch (IOException e) {
-					LOGGER.error("Error al cargar los datos de los alumnos: {}", e);
-					updateMessage("Se produjo un error inesperado al cargar los datos.\n" + e.getMessage());
-					throw new IllegalStateException();
-				} finally {
-					controller.getStage().getScene().setCursor(Cursor.DEFAULT);
-					btnEntrar.setVisible(true);
 				}
+				updateMessage(I18n.get("label.loadingstats"));
+				// Establecemos las estadisticas
+				controller.createStats();
+
+				updateMessage(I18n.get("label.savelocal"));
+				saveData();
+
 				return null;
 			}
 		};
-	}
-
-	/**
-	 * Muestra una ventana de error.
-	 * 
-	 * @param mensaje El mensaje que se quiere mostrar.
-	 */
-	private void errorWindow(String mensaje) {
-		Alert alert = new Alert(AlertType.ERROR);
-
-		alert.setTitle(AppInfo.APPLICATION_NAME);
-		alert.setHeaderText("Error");
-		alert.initModality(Modality.APPLICATION_MODAL);
-		alert.initOwner(controller.getStage());
-		alert.getDialogPane().setContentText(mensaje);
-
-		ButtonType buttonSalir = new ButtonType(I18n.get("label.close"));
-		alert.getButtonTypes().setAll(buttonSalir);
-
-		alert.showAndWait();
 	}
 
 }

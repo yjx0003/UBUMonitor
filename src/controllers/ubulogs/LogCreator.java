@@ -1,16 +1,13 @@
 package controllers.ubulogs;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -65,8 +62,7 @@ public class LogCreator {
 	/**
 	 * Cambia la zona horia del formateador de tiempo
 	 * 
-	 * @param zoneId
-	 *            zona horaria
+	 * @param zoneId zona horaria
 	 */
 	public static void setDateTimeFormatter(ZoneId zoneId) {
 		dateTimeFormatter = dateTimeFormatter.withZone(zoneId);
@@ -75,18 +71,17 @@ public class LogCreator {
 	/**
 	 * Actualiza el log del curso descargando diariamente.
 	 * 
-	 * @param logs
-	 *            los logs que se van a actualizar
+	 * @param logs los logs que se van a actualizar
+	 * @throws IOException 
 	 */
-	public static void updateCourseLog(Logs logs) {
+	public static void updateCourseLog(Logs logs) throws IOException {
 
 		ZoneId userZoneDateTime = "99".equals(CONTROLLER.getUser().getTimezone()) ? logs.getZoneId()
 				: ZoneId.of(CONTROLLER.getUser().getTimezone());
-		LOGGER.info("Zona horaria del usuario: {}",userZoneDateTime);
-		
+		LOGGER.info("Zona horaria del usuario: {}", userZoneDateTime);
+
 		DownloadLogController download = new DownloadLogController(CONTROLLER.getUrlHost().toString(),
-				CONTROLLER.getActualCourse().getId(), userZoneDateTime,
-				CONTROLLER.getCookies());
+				CONTROLLER.getActualCourse().getId(), userZoneDateTime, CONTROLLER.getCookies());
 
 		setDateTimeFormatter(download.getUserTimeZone());
 
@@ -98,10 +93,12 @@ public class LogCreator {
 				ZonedDateTime.now().withZoneSameInstant(lastDateTime.getZone()));
 
 		for (String dailyLog : dailyLogs) {
-			List<Map<String, String>> parsedLog = LogCreator.parse(new StringReader(dailyLog));
-			List<LogLine> logList = LogCreator.createLogs(parsedLog);
-			Collections.reverse(logList);
-			logs.addAll(logList);
+			try(CSVParser csvParser = new CSVParser(new StringReader(dailyLog),
+					CSVFormat.DEFAULT.withFirstRecordAsHeader())){
+				List<LogLine> logList = LogCreator.createLogs(csvParser);
+				logs.addAll(logList);
+			} 
+			
 
 		}
 
@@ -111,76 +108,33 @@ public class LogCreator {
 	 * Crea el log del curso con zona horaria del servidor
 	 * 
 	 * @return el log del server
-	 * @throws IOException
-	 *             si ha habido un problema al crearlo
+	 * @throws IOException si ha habido un problema al crearlo
 	 */
 	public static Logs createCourseLog() throws IOException {
 		DownloadLogController download = new DownloadLogController(CONTROLLER.getUrlHost().toString(),
-				CONTROLLER.getActualCourse().getId(), CONTROLLER.getUser().getTimezone(),
-				CONTROLLER.getCookies());
+				CONTROLLER.getActualCourse().getId(), CONTROLLER.getUser().getTimezone(), CONTROLLER.getCookies());
 
 		setDateTimeFormatter(download.getUserTimeZone());
-
-		List<Map<String, String>> parsedLog = LogCreator.parse(new StringReader(download.downloadLog()));
-		List<LogLine> logList = LogCreator.createLogs(parsedLog);
-		Collections.reverse(logList);
-		return new Logs(download.getServerTimeZone(), logList); // lo guardamos con la zona horaria del servidor.
-
-	}
-
-	/**
-	 * Parsea el contenido del CSV y convirtiendolo en una lista de mapas
-	 * 
-	 * @param reader
-	 *            reader con el csv
-	 * @return lista de mapas con clave de mapa los nombres de las columnas
-	 */
-	public static List<Map<String, String>> parse(Reader reader) {
-
-		try (CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
-
-			List<Map<String, String>> logs = new ArrayList<>();
-			Set<String> headers = csvParser.getHeaderMap().keySet();
-
-			LOGGER.info("Los nombres de las columnas del csv son: {}", headers);
-
-			for (CSVRecord csvRecord : csvParser) {
-
-				Map<String, String> log = new HashMap<>();
-				logs.add(log);
-
-				for (String header : headers) {
-					log.put(header, csvRecord.get(header));
-				}
-
-			}
-
-			return logs;
-		} catch (IOException e) {
-			LOGGER.error("No se ha podido parsear el contenido", e);
-			throw new IllegalStateException();
+		try (CSVParser csvParser = new CSVParser(new StringReader(download.downloadLog()),
+				CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
+			List<LogLine> logList = LogCreator.createLogs(csvParser);
+			return new Logs(download.getServerTimeZone(), logList); // lo guardamos con la zona horaria del servidor.
 		}
+
 	}
 
 	/**
 	 * Crea todos los logs la lista
 	 * 
-	 * @param allLogs
-	 *            los logs listados en mapas con clave la columna del logline
+	 * @param allLogs los logs listados en mapas con clave la columna del logline
 	 * @return los logs creados
 	 */
-	public static List<LogLine> createLogs(List<Map<String, String>> allLogs) {
-		List<LogLine> logs = new ArrayList<>();
-		for (Map<String, String> log : allLogs) {
-			logs.add(createLog(log));
-		}
-		if (!NOT_AVAIBLE_COMPONENTS.isEmpty()) {
-			LOGGER.warn("No disponible el componenente en " + Component.class.getName() + ": "
-					+ NOT_AVAIBLE_COMPONENTS);
-		}
-		if (!NOT_AVAIBLE_EVENTS.isEmpty()) {
-			LOGGER.warn("No disponible los siguientes eventos en " + Event.class.getName() + ": "
-					+ NOT_AVAIBLE_EVENTS);
+	public static List<LogLine> createLogs(CSVParser csvParser) {
+		LinkedList<LogLine> logs = new LinkedList<>();
+		Set<String> headers = csvParser.getHeaderMap().keySet();
+		LOGGER.info("Los nombres de las columnas del csv son: {}", headers);
+		for (CSVRecord csvRecord : csvParser) {
+			logs.addFirst(createLog(headers, csvRecord));
 		}
 
 		return logs;
@@ -190,46 +144,52 @@ public class LogCreator {
 	 * Crea un log y añade los atributos de las columnas y a que van asociado
 	 * (usuario, course module etc)
 	 * 
-	 * @param mapLog
-	 *            mapa con clave las columnas de la linea de log
+	 * @param mapLog mapa con clave las columnas de la linea de log
 	 * @return logline con atributos
 	 */
-	public static LogLine createLog(Map<String, String> mapLog) {
-
-		String description = mapLog.get(DESCRIPTION);
-		List<Integer> ids = getIdsInDescription(description);
+	public static LogLine createLog(Set<String> headers, CSVRecord csvRecord) {
 
 		LogLine log = new LogLine();
-		String time = mapLog.get(LogCreator.TIME);
-		ZonedDateTime zdt = ZonedDateTime.parse(time, dateTimeFormatter);
-		log.setTime(zdt);
-
-		Component component = Component.get(mapLog.get(LogCreator.COMPONENT));
-		if (component == Component.COMPONENT_NOT_AVAILABLE) {
-			NOT_AVAIBLE_COMPONENTS.add(mapLog.get(LogCreator.COMPONENT));
-			LOGGER.warn("Registro sin clasificar, Componente no disponible:[{}] con el Evento  [{}] y con descripción [{}]", mapLog.get(LogCreator.COMPONENT), mapLog.get(LogCreator.EVENT_NAME), mapLog.get(LogCreator.DESCRIPTION));
-			return log;
+		Component component;
+		if (headers.contains(LogCreator.COMPONENT)) {
+			component = Component.get(csvRecord.get(LogCreator.COMPONENT));
+		} else {
+			component = Component.COMPONENT_NOT_AVAILABLE;
 		}
-
-		Event event = Event.get(mapLog.get(LogCreator.EVENT_NAME));
-		if (event == Event.EVENT_NOT_AVAILABLE) {
-			NOT_AVAIBLE_EVENTS.add(mapLog.get(LogCreator.EVENT_NAME));
-			LOGGER.warn("Registro sin clasificar, Nombre de evento no disponible:[{}] con el Componente [{}] y con descripción [{}]", mapLog.get(LogCreator.EVENT_NAME), mapLog.get(LogCreator.COMPONENT), mapLog.get(LogCreator.DESCRIPTION));
-			return log;
-		}
-
 		log.setComponent(component);
+
+		Event event;
+		if (headers.contains(LogCreator.EVENT_NAME)) {
+			event = Event.get(csvRecord.get(LogCreator.EVENT_NAME));
+		} else {
+			event = Event.EVENT_NOT_AVAILABLE;
+		}
 		log.setEventName(event);
-		log.setOrigin(Origin.get(mapLog.get(LogCreator.ORIGIN)));
-		log.setIPAdress(mapLog.get(LogCreator.IP_ADRESS));
 
-		ReferencesLog referencesLog = LogTypes.getReferenceLog(component, event);
+		if (headers.contains(LogCreator.DESCRIPTION)) {
+			String description = csvRecord.get(LogCreator.DESCRIPTION);
+			List<Integer> ids = getIdsInDescription(description);
+			try {
+				ReferencesLog referencesLog = LogTypes.getReferenceLog(component, event);
+				referencesLog.setLogReferencesAttributes(log, ids);
+			} catch (Exception e) {
+				LOGGER.error("Problema en linea de log: " + csvRecord + " usando el gestor: con los ids:" + ids, e);
+			}
+		}
 
-		try {
-			referencesLog.setLogReferencesAttributes(log, ids);
-		} catch (Exception e) {
-			LOGGER.error("Problema en linea de log: " + mapLog + " usando el gestor: " + referencesLog + " con los ids:"
-					+ ids, e);
+		if (headers.contains(LogCreator.TIME)) {
+			String time = csvRecord.get(LogCreator.TIME);
+			ZonedDateTime zdt = ZonedDateTime.parse(time, dateTimeFormatter);
+			log.setTime(zdt);
+		}
+
+		if (headers.contains(LogCreator.ORIGIN)) {
+			log.setOrigin(Origin.get(csvRecord.get(LogCreator.ORIGIN)));
+
+		}
+
+		if (headers.contains(LogCreator.IP_ADRESS)) {
+			log.setIPAdress(csvRecord.get(LogCreator.IP_ADRESS));
 		}
 
 		return log;
@@ -258,8 +218,7 @@ public class LogCreator {
 	/**
 	 * Busca los integer de la Descripción de una linea de log
 	 * 
-	 * @param description
-	 *            de la columna decripción
+	 * @param description de la columna decripción
 	 * @return lista de integer encontrado en la descripción
 	 */
 	private static List<Integer> getIdsInDescription(String description) {

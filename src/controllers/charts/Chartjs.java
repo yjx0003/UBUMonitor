@@ -1,28 +1,17 @@
 package controllers.charts;
 
-import java.util.List;
-import java.util.Map;
+import java.util.StringJoiner;
 
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import controllers.I18n;
 import controllers.MainController;
-import model.EnrolledUser;
-import model.GradeItem;
-import util.UtilMethods;
+import controllers.configuration.MainConfiguration;
 
-public abstract class Chartjs extends Chart{
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(Chartjs.class);
+public abstract class Chartjs extends Chart {
 
-	
-	
-	public Chartjs(MainController mainController, ChartType chartType) {
-		super(mainController, chartType);
+	public Chartjs(MainController mainController, ChartType chartType, Tabs tabName) {
+		super(mainController, chartType, tabName);
+
 	}
-	
+
 	@Override
 	public void clear() {
 		webViewChartsEngine.executeScript("clearChartjs()");
@@ -32,78 +21,41 @@ public abstract class Chartjs extends Chart{
 	@Override
 	public void hideLegend() {
 		webViewChartsEngine.executeScript("hideLegendChartjs()");
-		
+
 	}
-	
+
 	@Override
 	public String export() {
 		return (String) webViewChartsEngine.executeScript("exportChartjs()");
 	}
-	
-	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
-		StringBuilder stringBuilder = new StringBuilder();
-		
 
-		stringBuilder.append("{labels:[");
-		stringBuilder.append(UtilMethods.joinWithQuotes(selectedGradeItems));
-		stringBuilder.append("],datasets:[");
-		for (EnrolledUser user : selectedUser) {
-			stringBuilder.append("{label:'" + UtilMethods.escapeJavaScriptText(user.getFullName()) + "',");
-			stringBuilder.append("borderColor:" + hex(user.getId()) + ",");
-			stringBuilder.append("backgroundColor:" + rgba(user.getId(), OPACITY) + ",");
-			stringBuilder.append("data:[");
-			for (GradeItem gradeItem : selectedGradeItems) {
-				double grade = gradeItem.getEnrolledUserPercentage(user);
-				
-				stringBuilder.append(adjustTo10(grade) + ",");
+	public String getXScaleLabel() {
+		MainConfiguration mainConfiguration = controller.getMainConfiguration();
+		StringJoiner jsObject = JSObject();
+		addKeyValue(jsObject, "display", (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "displayXScaleTitle"));
+		addKeyValueWithQuote(jsObject, "labelString", getXAxisTitle());
+		addKeyValue(jsObject, "fontColor", colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorXScaleTitle")));
+		addKeyValueWithQuote(jsObject, "fontStyle", "bold");
 
-			}
-			stringBuilder.append("]},");
-		}
-		if (useGeneralButton) {
-			stringBuilder.append("{label:'" + UtilMethods.escapeJavaScriptText(I18n.get("chartlabel.generalMean")) + "',");
-			stringBuilder.append("borderColor:" + hex(I18n.get("chartlabel.generalMean")) + ",");
-			stringBuilder.append("backgroundColor:" + rgba(I18n.get("chartlabel.generalMean"), OPACITY) + ",");
-			stringBuilder.append("hidden: "+!Buttons.getInstance().getShowMean()+ ",");
-			stringBuilder.append("data:[");
-			Map<GradeItem, DescriptiveStatistics> descriptiveStats = stats.getGeneralStats();
-			for (GradeItem gradeItem : selectedGradeItems) {
-				double grade = descriptiveStats.get(gradeItem).getMean();
-				stringBuilder.append(adjustTo10(grade) + ",");
-			}
-			stringBuilder.append("]},");
-		}
-		
-		if (useGroupButton && slcGroup.getValue() != null) {
-			stringBuilder.append("{label:'" + UtilMethods.escapeJavaScriptText(I18n.get("chartlabel.groupMean")) + "',");
-			stringBuilder.append("borderColor:" + hex(I18n.get("chartlabel.groupMean")) + ",");
-			stringBuilder.append("backgroundColor:" + rgba(I18n.get("chartlabel.groupMean"), OPACITY) + ",");
-			stringBuilder.append("hidden: "+!Buttons.getInstance().getShowGroupMean()+ ",");
-			stringBuilder.append("data:[");
-			Map<GradeItem, DescriptiveStatistics> descriptiveStats = stats.getGroupStats(slcGroup.getValue());
-			for (GradeItem gradeItem : selectedGradeItems) {
-				double grade = descriptiveStats.get(gradeItem).getMean();
-				stringBuilder.append(adjustTo10(grade) + ",");
-			}
-			stringBuilder.append("]}");
-		}
-		
-		stringBuilder.append("]}");
-		
-		return stringBuilder.toString();
+		return  "scaleLabel:" +jsObject.toString();
 
 	}
-	
-	
-	
-	@Override
-	public void update() {
-		String dataset = createDataset(getSelectedEnrolledUser(), getSelectedGradeItems());
-		LOGGER.debug(dataset);
-		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, optionsVar));
+
+	public String getYScaleLabel() {
+		MainConfiguration mainConfiguration = controller.getMainConfiguration();
+		StringJoiner jsObject = JSObject();
+		addKeyValue(jsObject, "display",
+				(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "displayYScaleTitle"));
+		addKeyValueWithQuote(jsObject, "labelString", getYAxisTitle());
+		addKeyValueWithQuote(jsObject, "fontSize", 14);
+		addKeyValue(jsObject, "fontColor",
+				colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorYScaleTitle")));
+		addKeyValueWithQuote(jsObject, "fontStyle", "bold");
+
+		return "scaleLabel:" + jsObject.toString();
 
 	}
-	
 
+	
 
 }

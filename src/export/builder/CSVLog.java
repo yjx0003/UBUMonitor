@@ -52,13 +52,27 @@ public class CSVLog extends CSVBuilderAbstract {
 			courseModule = log.getCourseModule() != null ? Integer.toString(log.getCourseModule().getCmid()) : "";
 			ip = log.getIPAdress() != null ? log.getIPAdress() : "";
 			// Add data
+			System.out.println(log);
 			LOGGER.debug("Data line: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}",
-					log.getTime().toLocalDateTime(), log.getComponent().getName(),
-					log.getEventName().getName(), userId, affectedUserId, courseModule, log.getOrigin(), ip,
-					log.getHour(), log.getAmPm(), log.getDayOfWeek().getValue(), log.getDayOfWeek(),
-					log.getDayOfMonth(), log.getDayOfYear(),
-					log.getWeekOfYear(), log.getMonth().getValue(), log.getMonth(), log.getYearQuarter(),
-					log.getYearMonth(), log.getYearWeek(), log.getYear());
+					log.getTime().toLocalDateTime(),
+					log.getComponent().getName(),
+					log.getEventName().getName(), 
+					userId, affectedUserId, courseModule,
+					log.getOrigin(),
+					ip,
+					log.getHour(),
+					log.getAmPm(), 
+					log.getDayOfWeek().getValue(),
+					log.getDayOfWeek(),
+					log.getDayOfMonth(),
+					log.getDayOfYear(),
+					log.getWeekOfYear(),
+					log.getMonth().getValue(),
+					log.getMonth(),
+					log.getYearQuarter(),
+					log.getYearMonth(),
+					log.getYearWeek(),
+					log.getYear());
 
 			getData().add(new String[] { log.getTime().toLocalDateTime().toString(),
 					log.getComponent().getName(),

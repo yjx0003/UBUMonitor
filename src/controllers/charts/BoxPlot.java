@@ -2,42 +2,43 @@ package controllers.charts;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.StringJoiner;
 
 import controllers.Controller;
 import controllers.I18n;
 import controllers.MainController;
+import controllers.configuration.MainConfiguration;
 import model.EnrolledUser;
 import model.GradeItem;
 import model.Group;
 import util.UtilMethods;
 
-public class GroupViolin extends Chartjs {
+public class BoxPlot extends ChartjsGradeItem {
 
-	public GroupViolin(MainController mainController) {
-		super(mainController, ChartType.GROUP_VIOLIN);
-		useGeneralButton = true;
-		useGroupButton = true;
-		optionsVar = "violinGroupOptions";
+	public BoxPlot(MainController mainController) {
+		super(mainController, ChartType.BOXPLOT);
 	}
 
 	@Override
 	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
 		StringBuilder stringBuilder = new StringBuilder();
-
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 		stringBuilder.append("{labels:[");
 		stringBuilder.append(UtilMethods.joinWithQuotes(selectedGradeItems));
 		stringBuilder.append("],datasets:[");
+		if (!selectedUser.isEmpty()) {
+			createData(selectedUser, selectedGradeItems, stringBuilder, I18n.get("text.selectedUsers"), false);
 
-		createData(selectedUser, selectedGradeItems, stringBuilder, I18n.get("text.selectedUsers"), false);
+		}
 		if (useGeneralButton) {
 			createData(Controller.getInstance().getActualCourse().getEnrolledUsers(), selectedGradeItems, stringBuilder,
-					I18n.get("text.all"), !Buttons.getInstance().getShowMean());
+					I18n.get("text.all"), !(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive"));
 		}
 		if (useGroupButton) {
-			for (Group group : slcGroup.getItems()) {
+			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
 				if (group != null) {
 					createData(group.getEnrolledUsers(), selectedGradeItems, stringBuilder, group.getGroupName(),
-							!Buttons.getInstance().getShowGroupMean());
+							!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive"));
 				}
 
 			}
@@ -67,17 +68,10 @@ public class GroupViolin extends Chartjs {
 
 		for (GradeItem gradeItem : selectedGradeItems) {
 			stringBuilder.append("[");
-			boolean hasNonNaN = false;
 			for (EnrolledUser user : selectedUser) {
 				double grade = gradeItem.getEnrolledUserPercentage(user);
-				if (!Double.isNaN(grade)) {
+				if (!Double.isNaN(grade))
 					stringBuilder.append(adjustTo10(grade) + ",");
-					hasNonNaN = true;
-				}
-			}
-
-			if (!hasNonNaN) {
-				stringBuilder.append(-1);
 			}
 			stringBuilder.append("],");
 		}
@@ -88,4 +82,19 @@ public class GroupViolin extends Chartjs {
 	public int onClick(int index) {
 		return -1; // do nothing at the moment
 	}
+
+	@Override
+	public String getOptions() {
+		StringJoiner jsObject = getDefaultOptions();
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
+		int tooltipDecimals = mainConfiguration.getValue(getChartType(), "tooltipDecimals");
+		addKeyValueWithQuote(jsObject, "typeGraph", useHorizontal ? "horizontalBoxplot" : "boxplot");
+		addKeyValue(jsObject, "tooltipDecimals", tooltipDecimals);
+		String xLabel = useHorizontal ? getYScaleLabel() :getXScaleLabel();
+		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
+		addKeyValue(jsObject, "scales", "{yAxes:[{" + yLabel + "}],xAxes:[{" + xLabel + "}]}");
+		return jsObject.toString();
+	}
+
 }

@@ -3,12 +3,11 @@ package controllers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.configuration.Config;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import util.UtilMethods;
 
 /**
  * Clase Loader. Inicializa la ventana de login
@@ -28,25 +27,23 @@ public class Loader extends Application {
 
 		try {
 			controller.initialize();
-			LOGGER.info("[Bienvenido a {}]", AppInfo.APPLICATION_NAME);
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Login.fxml"), I18n.getResourceBundle());
-			Parent root = loader.load();
-			Scene scene = new Scene(root);
-			Stage stage = primaryStage;
-			stage.setScene(scene);
-			stage.getIcons().add(new Image("/img/logo_min.png"));
-			stage.setTitle(AppInfo.APPLICATION_NAME);
-			stage.resizableProperty().setValue(Boolean.FALSE);
-			stage.show();
-			controller.setStage(stage);
+			
+			LOGGER.info("[Bienvenido a {}]", AppInfo.APPLICATION_NAME_WITH_VERSION);
+			primaryStage.getIcons().add(new Image("/img/logo_min.png"));
+			primaryStage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
+			primaryStage.setResizable(false);
+			UtilMethods.changeScene(getClass().getResource("/view/Login.fxml"), primaryStage);
+			Style.addStyle(Config.getProperty("style"), primaryStage.getScene().getStylesheets());
+			controller.setStage(primaryStage);
+			
 		} catch (Exception e) {
 			LOGGER.error("Error al iniciar controller: {}", e);
 		}
 	}
-	
+
 	@Override
 	public void stop() {
-		Controller.getInstance().cancelTimer();
+
 		Config.save();
 	}
 

@@ -1,13 +1,16 @@
 package controllers.charts;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controllers.Controller;
+import controllers.I18n;
 import controllers.MainController;
 import controllers.datasets.DataSetComponent;
 import controllers.datasets.DataSetComponentEvent;
@@ -27,12 +30,11 @@ public class Stackedbar extends Chartjs {
 	private StackedBarDataSet<ComponentEvent> stackedBarEvent = new StackedBarDataSet<>();
 	private StackedBarDataSet<Section> stackedBarSection = new StackedBarDataSet<>();
 	private StackedBarDataSet<CourseModule> stackedBarCourseModule = new StackedBarDataSet<>();
+	private String max;
 
 	public Stackedbar(MainController mainController) {
-		super(mainController, ChartType.STACKED_BAR);
-		useGeneralButton = false;
-		useGroupButton = false;
-		optionsVar = "stackedbarOptions";
+		super(mainController, ChartType.STACKED_BAR, Tabs.LOGS);
+		useLegend = true;
 
 	}
 
@@ -67,10 +69,36 @@ public class Stackedbar extends Chartjs {
 					dateEnd, DatasSetCourseModule.getInstance());
 		}
 
+		String options = getOptions();
 		LOGGER.info("Dataset para el stacked bar en JS: {}", stackedbardataset);
+		LOGGER.info("Opciones para el stacked bar en JS: {}", options);
 
-		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", stackedbardataset, "stackedbarOptions"));
+		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", stackedbardataset, options));
 
+	}
+
+	@Override
+	public String calculateMax() {
+
+		long maxYAxis = 1L;
+		if (tabUbuLogsComponent.isSelected()) {
+			maxYAxis = choiceBoxDate.getValue().getComponents().getMaxElement(listParticipants.getItems(),
+					listViewComponents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					datePickerEnd.getValue());
+		} else if (tabUbuLogsEvent.isSelected()) {
+			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getMaxElement(listParticipants.getItems(),
+					listViewEvents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					datePickerEnd.getValue());
+		} else if (tabUbuLogsSection.isSelected()) {
+			maxYAxis = choiceBoxDate.getValue().getSections().getMaxElement(listParticipants.getItems(),
+					listViewSection.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					datePickerEnd.getValue());
+		} else if (tabUbuLogsCourseModule.isSelected()) {
+			maxYAxis = choiceBoxDate.getValue().getCourseModules().getMaxElement(listParticipants.getItems(),
+					listViewCourseModule.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					datePickerEnd.getValue());
+		}
+		return Long.toString(maxYAxis);
 	}
 
 	@Override
@@ -78,6 +106,41 @@ public class Stackedbar extends Chartjs {
 
 		EnrolledUser user = Controller.getInstance().getDataBase().getUsers().getById(userid);
 		return listParticipants.getItems().indexOf(user);
+	}
+
+	@Override
+	public String getOptions() {
+		StringJoiner jsObject = getDefaultOptions();
+
+		long suggestedMax = getSuggestedMax();
+
+		addKeyValueWithQuote(jsObject, "typeGraph", "bar");
+
+		addKeyValue(jsObject, "tooltips",
+				"{position:\"nearest\",mode:\"x\",callbacks:{label:function(a,e){return e.datasets[a.datasetIndex].label+\" : \"+Math.round(100*a.yLabel)/100},afterTitle:function(a,e){return e.datasets[a[0].datasetIndex].name}}}");
+		addKeyValue(jsObject, "scales", "{yAxes:[{" + getYScaleLabel() + ",stacked:!0,ticks:{suggestedMax:"
+				+ suggestedMax + ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
+		addKeyValue(jsObject, "legend",
+				"{labels:{filter:function(e,t){return\"line\"==t.datasets[e.datasetIndex].type}}}");
+		addKeyValue(jsObject, "onClick",
+				"function(t,a){let e=myChart.getElementAtEvent(t)[0];e&&javaConnector.dataPointSelection(myChart.data.datasets[e._datasetIndex].stack)}");
+		return jsObject.toString();
+	}
+
+	@Override
+	public String getMax() {
+		return max;
+	}
+
+	@Override
+	public void setMax(String max) {
+		this.max = max;
+	}
+
+	@Override
+	public String getXAxisTitle() {
+		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"),
+				I18n.get(choiceBoxDate.getValue().getTypeTime()));
 	}
 
 }

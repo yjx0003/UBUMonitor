@@ -5,26 +5,31 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.EnumMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 
-import controllers.charts.Buttons;
+import controllers.charts.ActivitiesStatusTable;
+import controllers.charts.BoxPlot;
+import controllers.charts.CalificationBar;
 import controllers.charts.Chart;
 import controllers.charts.ChartType;
-import controllers.charts.GeneralBoxPlot;
-import controllers.charts.GeneralViolin;
+import controllers.charts.CumLine;
 import controllers.charts.GradeReportTable;
-import controllers.charts.GroupBoxPlot;
-import controllers.charts.GroupViolin;
 import controllers.charts.Heatmap;
 import controllers.charts.Line;
+import controllers.charts.MeanDiff;
 import controllers.charts.Radar;
 import controllers.charts.Stackedbar;
+import controllers.charts.Tabs;
+import controllers.charts.Violin;
+import controllers.configuration.MainConfiguration;
 import javafx.concurrent.Worker.State;
 import javafx.scene.control.Tab;
 import javafx.scene.web.WebEngine;
+import util.UtilMethods;
 
 public class JavaConnector {
 
@@ -33,11 +38,12 @@ public class JavaConnector {
 	private Tab tabLogs;
 
 	private Tab tabGrades;
+	private Tab tabActivityCompletion;
 
 	private Chart currentTypeLogs;
 
 	private Chart currentTypeGrades;
-
+	private Chart currentTypeActivityCompletion;
 	private Chart currentType;
 
 	private Map<ChartType, Chart> mapChart;
@@ -45,74 +51,83 @@ public class JavaConnector {
 	private File file;
 
 	private MainController mainController;
-
-	private Buttons buttons;
+	private VisualizationController visualizationController;
 
 	private static final ChartType DEFAULT_LOG_CHART = ChartType.STACKED_BAR;
 	private static final ChartType DEFAULT_GRADE_CHART = ChartType.LINE;
 
-	public JavaConnector(MainController mainController) {
+	private static final ChartType DEFAULT_ACTIVITY_COMPLETION_CHART = ChartType.ACTIVITIES_TABLE;
 
-		this.mainController = mainController;
-		webViewChartsEngine = mainController.getWebViewChartsEngine();
+	public JavaConnector(VisualizationController visualizationController) {
+		this.visualizationController = visualizationController;
+		this.mainController = visualizationController.getMainController();
+		webViewChartsEngine = visualizationController.getWebViewChartsEngine();
 		tabLogs = mainController.getTabUbuLogs();
 		tabGrades = mainController.getTabUbuGrades();
-
-		buttons = Buttons.getInstance();
+		tabActivityCompletion = mainController.getTabActivity();
 
 		mapChart = new EnumMap<>(ChartType.class);
 		addChart(new Heatmap(mainController));
 		addChart(new Stackedbar(mainController));
 		addChart(new Line(mainController));
 		addChart(new Radar(mainController));
-		addChart(new GeneralBoxPlot(mainController));
-		addChart(new GroupBoxPlot(mainController));
-		addChart(new GeneralViolin(mainController));
-		addChart(new GroupViolin(mainController));
+
+		addChart(new BoxPlot(mainController));
+
+		addChart(new Violin(mainController));
 		addChart(new GradeReportTable(mainController));
+		addChart(new CumLine(mainController));
+		addChart(new MeanDiff(mainController));
+		addChart(new ActivitiesStatusTable(mainController));
+		addChart(new CalificationBar(mainController));
 	}
 
 	private void addChart(Chart chart) {
 		mapChart.put(chart.getChartType(), chart);
 	}
 
-	public void updateChart(Chart chart) {
+	public void updateCharts(String typeChart) {
+		Chart chart = mapChart.get(ChartType.valueOf(typeChart));
+		if (tabLogs.isSelected()) {
+			currentTypeLogs.setMax(visualizationController.getTextFieldMax().getText());
+			currentTypeLogs = chart;
+
+		} else if (tabGrades.isSelected()) {
+			currentTypeGrades = chart;
+		} else if (tabActivityCompletion.isSelected()) {
+			currentTypeActivityCompletion = chart;
+		}
 
 		if (currentType.getChartType() != chart.getChartType()) {
 			currentType.clear();
 			currentType = chart;
 		}
-		updateChart();
-
-	}
-
-	public void updateCharts(String typeChart) {
-		Chart chart = mapChart.get(ChartType.valueOf(typeChart));
+		
 		if (tabLogs.isSelected()) {
-			currentTypeLogs = chart;
-		} else if (tabGrades.isSelected()) {
-			currentTypeGrades = chart;
+			visualizationController.getTextFieldMax().setText(currentType.getMax());
 		}
-
-		updateChart(chart);
+		currentType.update();
+		
 	}
 
-	public void updateChart() {
+	public void updateChart(boolean calculateMax) {
 		if (webViewChartsEngine.getLoadWorker().getState() != State.SUCCEEDED) {
 			return;
+		}
+		if(calculateMax) {
+			setMax();
 		}
 		currentType.update();
 
 	}
+	public void updateChart() {
+		updateChart(true);
 
+	}
 
+	public void updateChartFromJS() {
 
-	public void updateMaxY(long max) {
-
-		webViewChartsEngine.executeScript("changeYMaxHeatmap(" + max + ")");
-
-		webViewChartsEngine.executeScript("changeYMaxStackedBar(" + max + ")");
-
+		currentType.update();
 	}
 
 	public void hideLegend() {
@@ -158,27 +173,40 @@ public class JavaConnector {
 
 	}
 
+	private void setCurrentTypeActivityCompletion(ChartType chartType) {
+		setCurrentTypeActivityCompletion(mapChart.get(chartType));
+
+	}
+
+	private void setCurrentTypeActivityCompletion(Chart chart) {
+		this.currentTypeActivityCompletion = chart;
+
+	}
+
 	public void setDefaultValues() {
+		webViewChartsEngine.executeScript("setLocale('" + Locale.getDefault().toLanguageTag() + "')");
 		setCurrentTypeLogs(DEFAULT_LOG_CHART);
 		setCurrentTypeGrades(DEFAULT_GRADE_CHART);
+		setCurrentTypeActivityCompletion(DEFAULT_ACTIVITY_COMPLETION_CHART);
 		if (tabLogs.isSelected()) {
-			webViewChartsEngine.executeScript("manageButtons('" + "log" + "')");
+			webViewChartsEngine.executeScript("manageButtons('" + Tabs.LOGS + "')");
 
 			setCurrentType(getCurrentTypeLogs());
 		} else if (tabGrades.isSelected()) {
-			webViewChartsEngine.executeScript("manageButtons('" + "grade" + "')");
+			webViewChartsEngine.executeScript("manageButtons('" + Tabs.GRADES + "')");
 
 			setCurrentType(getCurrentTypeGrades());
+		} else if (tabActivityCompletion.isSelected()) {
+			webViewChartsEngine.executeScript("manageButtons('" + Tabs.ACTIVITY_COMPLETION + "')");
+			setCurrentType(getCurrentTypeActivityCompletion());
 		}
-		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnLegend", buttons.getShowLegend()));
-		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnMean", buttons.getShowMean()));
-		webViewChartsEngine
-				.executeScript(String.format("imageButton('%s',%s)", "btnGroupMean", buttons.getShowGroupMean()));
-		for (Chart value : mapChart.values()) {
-			webViewChartsEngine.executeScript(String.format("%s.%s=%s", value.getOptionsVar(), "useLegend", value.isUseLegend()));
-			webViewChartsEngine.executeScript(String.format("%s.%s=%s", value.getOptionsVar(), "useGeneral", value.isUseGeneralButton()));
-			webViewChartsEngine.executeScript(String.format("%s.%s=%s", value.getOptionsVar(), "useGroup", value.isUseGroupButton()));
-		}
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		boolean legendActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "legendActive");
+		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
+		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
+		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnLegend", legendActive));
+		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnMean", generalActive));
+		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnGroupMean", groupActive));
 
 	}
 
@@ -195,7 +223,7 @@ public class JavaConnector {
 	}
 
 	public void showErrorWindow(String errorMessage) {
-		mainController.errorWindow(errorMessage, false);
+		UtilMethods.errorWindow(errorMessage);
 	}
 
 	public void dataPointSelection(int selectedIndex) {
@@ -209,24 +237,44 @@ public class JavaConnector {
 	}
 
 	public boolean swapLegend() {
-		return buttons.swapLegend();
+		return swap(MainConfiguration.GENERAL, "legendActive");
 	}
 
-	public boolean getShowLegend() {
-		return buttons.getShowLegend();
+	public boolean swapGeneral() {
+		return swap(MainConfiguration.GENERAL, "generalActive");
 	}
 
-	public boolean swapMean() {
-		return buttons.swapMean();
+	public boolean swapGroup() {
+		return swap(MainConfiguration.GENERAL, "groupActive");
 	}
 
-	public boolean swapGroupMean() {
-		return buttons.swapGroupMean();
+	private boolean swap(String category, String name) {
+		boolean active = Controller.getInstance().getMainConfiguration().getValue(category, name);
+		Controller.getInstance().getMainConfiguration().setValue(category, name, !active);
+		return !active;
 	}
 
 	public String getI18n(String key) {
 
 		return I18n.get(key);
+	}
+
+	public void setMax() {
+		if (!tabLogs.isSelected()) {
+			return;
+		}
+
+		if (currentType == null) {
+			visualizationController.getTextFieldMax().setText(null);
+		} else if (currentType.isCalculateMaxActivated()) {
+
+			visualizationController.getTextFieldMax().setText(currentType.calculateMax());
+		}
+
+	}
+
+	public Chart getCurrentTypeActivityCompletion() {
+		return currentTypeActivityCompletion;
 	}
 
 }

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.web.WebView?>
+<?import org.controlsfx.control.PropertySheet?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clustering.controller.ClusteringController">
+   <top>
+      <GridPane BorderPane.alignment="CENTER">
+        <columnConstraints>
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="20.0" prefHeight="40.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="20.0" prefHeight="40.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="20.0" prefHeight="40.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="20.0" prefHeight="40.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+
+            <PropertySheet fx:id="propertySheet" modeSwitcherVisible="false" prefHeight="59.0" prefWidth="137.0" searchBoxVisible="false" GridPane.columnIndex="1" GridPane.rowSpan="4" />
+            <Button fx:id="executeBtn" mnemonicParsing="false" text="Button" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            <CheckBox mnemonicParsing="false" text="%tab.grades" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <CheckBox mnemonicParsing="false" text="%tab.logs" GridPane.columnIndex="2" />
+            <CheckBox mnemonicParsing="false" text="%tab.activityCompletion" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <ListView fx:id="algorithmList" prefHeight="200.0" prefWidth="200.0" GridPane.rowSpan="4" />
+         </children>
+      </GridPane>
+   </top>
+   <center>
+      <GridPane BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <WebView fx:id="webView" prefHeight="200.0" prefWidth="200.0" />
+         </children>
+      </GridPane>
+   </center>
+</BorderPane>

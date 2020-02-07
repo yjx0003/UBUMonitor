@@ -25,6 +25,7 @@ import org.controlsfx.control.StatusBar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import clustering.controller.ClusteringController;
 import controllers.configuration.Config;
 import controllers.configuration.ConfigurationController;
 import controllers.configuration.MainConfiguration;
@@ -227,6 +228,9 @@ public class MainController implements Initializable {
 	@FXML
 	private VisualizationController visualizationController;
 	private Map<Tab, MainAction> tabMap = new HashMap<>();
+	
+	@FXML
+	private ClusteringController clusteringController;
 
 	@FXML
 	private ImageView userPhoto;
@@ -357,6 +361,7 @@ public class MainController implements Initializable {
 				.select(Config.getProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex()));
 
 		visualizationController.init(this);
+		clusteringController.init(this);
 
 		tabMap.put(visualizationTab, visualizationController);
 

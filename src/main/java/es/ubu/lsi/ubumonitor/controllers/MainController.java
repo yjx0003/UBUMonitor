@@ -612,7 +612,7 @@ public class MainController implements Initializable {
 			@Override
 			public String toString(ModuleType moduleType) {
 				if (moduleType == null || moduleType == ModuleType.DUMMY) {
-					return I18n.get(ALL);
+					return I18n.get("text.selectall");
 				}
 				return I18n.get(moduleType);
 			}
@@ -915,7 +915,7 @@ public class MainController implements Initializable {
 			@Override
 			public String toString(ModuleType moduleType) {
 				if (moduleType == null || moduleType == ModuleType.DUMMY) {
-					return I18n.get(ALL);
+					return I18n.get("text.selectall");
 				}
 				return I18n.get(moduleType);
 			}

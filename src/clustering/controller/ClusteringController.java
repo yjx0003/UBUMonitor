@@ -1,5 +1,10 @@
 package clustering.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.math3.ml.clustering.Cluster;
+import org.apache.commons.math3.ml.clustering.Clusterer;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.controlsfx.control.PropertySheet;
 import org.controlsfx.control.PropertySheet.Item;
@@ -12,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import clustering.algorithm.Algorithm;
 import clustering.algorithm.Algorithms;
+import clustering.data.UserData;
 import controllers.I18n;
 import controllers.MainController;
 import javafx.collections.FXCollections;
@@ -19,9 +25,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TreeItem;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+import model.ActivityCompletion;
+import model.CourseModule;
+import model.EnrolledUser;
+import model.GradeItem;
 
 public class ClusteringController {
 
@@ -72,9 +83,40 @@ public class ClusteringController {
 			}
 			return DEFAULT_PROPERTY_EDITOR_FACTORY.call(item);
 		});
+		executeBtn.setOnAction(e -> execute());
 	}
 
 	private void changeAlgorithm(Algorithm algorithm) {
 		propertySheet.getItems().setAll(algorithm.getParameters().getPropertyItems());
+	}
+	
+	private void execute() {
+		List<EnrolledUser> users = mainController.getListParticipants().getSelectionModel().getSelectedItems();
+		List<TreeItem<GradeItem>> items = mainController.getTvwGradeReport().getSelectionModel().getSelectedItems();
+		Algorithm algorithm = algorithmList.getSelectionModel().getSelectedItem();
+		Clusterer<UserData> clusterer = algorithm.getClusterer();
+		List<CourseModule> courseModules = mainController.getListViewActivity().getSelectionModel().getSelectedItems();
+		List<UserData> list = new ArrayList<>();
+		for (EnrolledUser user : users) {
+			UserData data = new UserData(user);
+			for (TreeItem<GradeItem> item : items) {
+				data.addDatum(item.getValue().getEnrolledUserPercentage(user));
+			}
+			for (CourseModule courseModule : courseModules) {
+				ActivityCompletion activity = courseModule.getActivitiesCompletion().get(user);
+				if (activity.getState() == ActivityCompletion.State.COMPLETE
+						|| activity.getState() == ActivityCompletion.State.COMPLETE_PASS) {
+					data.addDatum(100);
+				} else {
+					data.addDatum(0);
+				}
+			}
+			list.add(data);
+		}
+		LOGGER.debug("Parametros: {}", algorithm.getParameters().getPropertyItems());
+		List<? extends Cluster<UserData>> clusterList = clusterer.cluster(list);
+		for (Cluster<UserData> c : clusterList) {
+			LOGGER.debug("Cluster: {}", c.getPoints());
+		}
 	}
 }

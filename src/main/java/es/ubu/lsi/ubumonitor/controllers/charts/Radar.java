@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers.charts;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -31,6 +32,12 @@ public class Radar extends ChartjsGradeItem {
 		//addKeyValue(jsObject, "scales", "{yAxes:[{" + getYScaleLabel() + "}],xAxes:[{" + getYScaleLabel() + "}]}");
 
 		return jsObject.toString();
+	}
+
+	@Override
+	public void exportCSV(String path) throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

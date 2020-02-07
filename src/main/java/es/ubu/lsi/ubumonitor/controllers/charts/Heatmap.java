@@ -1,5 +1,7 @@
 package es.ubu.lsi.ubumonitor.controllers.charts;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -7,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,27 +47,27 @@ public class Heatmap extends ApexCharts {
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-
+		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		if (tabUbuLogsComponent.isSelected()) {
 
 			heatmapdataset = createSeries(enrolledUsers, selectedUsers,
-					listViewComponents.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart,
-					dateEnd, DataSetComponent.getInstance());
+					listViewComponents.getSelectionModel().getSelectedItems(), groupBy, dateStart, dateEnd,
+					DataSetComponent.getInstance());
 		} else if (tabUbuLogsEvent.isSelected()) {
 
 			heatmapdataset = createSeries(enrolledUsers, selectedUsers,
-					listViewEvents.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart, dateEnd,
+					listViewEvents.getSelectionModel().getSelectedItems(), groupBy, dateStart, dateEnd,
 					DataSetComponentEvent.getInstance());
 		} else if (tabUbuLogsSection.isSelected()) {
 
 			heatmapdataset = createSeries(enrolledUsers, selectedUsers,
-					listViewSection.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart,
-					dateEnd, DataSetSection.getInstance());
+					listViewSection.getSelectionModel().getSelectedItems(), groupBy, dateStart, dateEnd,
+					DataSetSection.getInstance());
 		} else if (tabUbuLogsCourseModule.isSelected()) {
 
 			heatmapdataset = createSeries(enrolledUsers, selectedUsers,
-					listViewCourseModule.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart,
-					dateEnd, DatasSetCourseModule.getInstance());
+					listViewCourseModule.getSelectionModel().getSelectedItems(), groupBy, dateStart, dateEnd,
+					DatasSetCourseModule.getInstance());
 		}
 
 		String categories = createCategory(choiceBoxDate.getValue(), dateStart, dateEnd);
@@ -222,6 +226,59 @@ public class Heatmap extends ApexCharts {
 	public String getXAxisTitle() {
 		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"),
 				I18n.get(choiceBoxDate.getValue().getTypeTime()));
+	}
+
+	public void exportCSV(String path) throws IOException {
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
+		List<String> range = groupBy.getRangeString(dateStart, dateEnd);
+		range.add(0, "userid");
+		range.add(1, "fullname");
+
+		FileWriter out = new FileWriter(path);
+		try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT.withHeader(range.toArray(new String[0])))) {
+			if (tabUbuLogsComponent.isSelected()) {
+				exportCSV(printer, DataSetComponent.getInstance(),
+						listViewComponents.getSelectionModel().getSelectedItems());
+			} else if (tabUbuLogsEvent.isSelected()) {
+				exportCSV(printer, DataSetComponentEvent.getInstance(),
+						listViewEvents.getSelectionModel().getSelectedItems());
+			} else if (tabUbuLogsSection.isSelected()) {
+				exportCSV(printer, DataSetSection.getInstance(),
+						listViewSection.getSelectionModel().getSelectedItems());
+			} else if (tabUbuLogsCourseModule.isSelected()) {
+				exportCSV(printer, DatasSetCourseModule.getInstance(),
+						listViewCourseModule.getSelectionModel().getSelectedItems());
+			}
+		}
+	}
+
+	private <T> void exportCSV(CSVPrinter printer, DataSet<T> dataSet, List<T> selecteds) throws IOException {
+
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
+		List<?> rangeDates = groupBy.getRange(dateStart, dateEnd);
+		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
+		Map<EnrolledUser, Map<T, List<Long>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+				dateStart, dateEnd);
+		for (EnrolledUser selectedUser : enrolledUsers) {
+			Map<T, List<Long>> types = userCounts.get(selectedUser);
+			List<Long> results = new ArrayList<>();
+			for (int j = 0; j < rangeDates.size(); j++) {
+				long result = 0;
+				for (T type : selecteds) {
+					List<Long> times = types.get(type);
+					result += times.get(j);
+				}
+				results.add(result);
+
+			}
+			printer.print(selectedUser.getId());
+			printer.print(selectedUser.getFullName());
+			printer.printRecord(results);
+		}
 	}
 
 }

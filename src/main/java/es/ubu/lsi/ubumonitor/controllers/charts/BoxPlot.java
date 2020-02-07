@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers.charts;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringJoiner;
@@ -95,6 +96,12 @@ public class BoxPlot extends ChartjsGradeItem {
 		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
 		addKeyValue(jsObject, "scales", "{yAxes:[{" + yLabel + "}],xAxes:[{" + xLabel + "}]}");
 		return jsObject.toString();
+	}
+
+	@Override
+	public void exportCSV(String path) throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -91,7 +91,7 @@ public class JavaConnector {
 		if (tabLogs.isSelected()) {
 			currentTypeLogs.setMax(visualizationController.getTextFieldMax().getText());
 			currentTypeLogs = chart;
-
+			
 		} else if (tabGrades.isSelected()) {
 			currentTypeGrades = chart;
 		} else if (tabActivityCompletion.isSelected()) {
@@ -104,8 +104,14 @@ public class JavaConnector {
 		}
 		
 		if (tabLogs.isSelected()) {
-			visualizationController.getTextFieldMax().setText(currentType.getMax());
+			if(currentType.isCalculateMaxActivated()) {
+				visualizationController.getTextFieldMax().setText(currentType.calculateMax());
+			}else {
+				visualizationController.getTextFieldMax().setText(currentType.getMax());
+			}
+			
 		}
+		
 		currentType.update();
 		
 	}
@@ -267,7 +273,6 @@ public class JavaConnector {
 		if (currentType == null) {
 			visualizationController.getTextFieldMax().setText(null);
 		} else if (currentType.isCalculateMaxActivated()) {
-
 			visualizationController.getTextFieldMax().setText(currentType.calculateMax());
 		}
 

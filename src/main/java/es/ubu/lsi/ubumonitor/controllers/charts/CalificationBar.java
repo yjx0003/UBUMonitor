@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers.charts;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
@@ -83,6 +84,12 @@ public class CalificationBar extends ChartjsGradeItem {
 		addKeyValue(jsObject, "plugins",
 				"{datalabels:{display:!0,font:{weight:\"bold\"},formatter:function(t,a){if(0===t)return\"\";let e=a.chart.data.datasets,l=0;for(i=0;i<e.length;i++)l+=e[i].data[a.dataIndex];return t+\"/\"+l+\" (\"+(t/l).toLocaleString(locale,{style:\"percent\",maximumFractionDigits:2})+\")\"}}}");
 		return jsObject.toString();
+	}
+
+	@Override
+	public void exportCSV(String path) throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

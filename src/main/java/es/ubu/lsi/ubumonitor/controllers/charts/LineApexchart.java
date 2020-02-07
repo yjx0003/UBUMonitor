@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers.charts;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -107,6 +108,12 @@ public class LineApexchart extends ApexCharts {
 	public String getOptions() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void exportCSV(String path) throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

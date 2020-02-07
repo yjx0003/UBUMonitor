@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers.charts;
 
+import java.io.IOException;
 import java.time.ZoneId;
 import java.time.chrono.IsoChronology;
 import java.time.format.DateTimeFormatter;
@@ -188,6 +189,12 @@ public class ActivitiesStatusTable extends Tabulator {
 		addKeyValueWithQuote(jsObject, "layout", "fitColumns");
 		addKeyValue(jsObject, "rowClick", "function(e,row){javaConnector.dataPointSelection(row.getPosition());}");
 		return jsObject.toString();
+	}
+
+	@Override
+	public void exportCSV(String path) throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

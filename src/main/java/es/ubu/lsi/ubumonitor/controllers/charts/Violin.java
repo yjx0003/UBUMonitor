@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers.charts;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringJoiner;
@@ -26,7 +27,7 @@ public class Violin extends ChartjsGradeItem {
 		stringBuilder.append("{labels:[");
 		stringBuilder.append(UtilMethods.joinWithQuotes(selectedGradeItems));
 		stringBuilder.append("],datasets:[");
-		if (selectedUser.size() > 0) {
+		if (!selectedUser.isEmpty()) {
 			createData(selectedUser, selectedGradeItems, stringBuilder, I18n.get("text.selectedUsers"), false);
 
 		}
@@ -98,12 +99,18 @@ public class Violin extends ChartjsGradeItem {
 		int tooltipDecimals = mainConfiguration.getValue(getChartType(), "tooltipDecimals");
 		addKeyValueWithQuote(jsObject, "typeGraph", useHorizontal ? "horizontalViolin" : "violin");
 		addKeyValue(jsObject, "tooltipDecimals", tooltipDecimals);
-		
-		String xLabel = useHorizontal ? getYScaleLabel() :getXScaleLabel();
+
+		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
 		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
-		
+
 		addKeyValue(jsObject, "scales",
 				"{yAxes:[{" + yLabel + ",ticks:{min:0}}],xAxes:[{" + xLabel + ",ticks:{min:0}}]}");
 		return jsObject.toString();
+	}
+
+	@Override
+	public void exportCSV(String path) throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 }

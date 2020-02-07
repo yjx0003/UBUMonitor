@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers.charts;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -141,6 +142,12 @@ public class Stackedbar extends Chartjs {
 	public String getXAxisTitle() {
 		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"),
 				I18n.get(choiceBoxDate.getValue().getTypeTime()));
+	}
+
+	@Override
+	public void exportCSV(String path) throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

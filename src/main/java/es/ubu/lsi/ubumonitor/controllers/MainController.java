@@ -1331,9 +1331,10 @@ public class MainController implements Initializable {
 	 * @param actionEvent El ActionEvent.
 	 * @throws IOException excepción
 	 */
-	public void saveChart(ActionEvent actionEvent) throws IOException {
+	public void saveChart(ActionEvent actionEvent) {
 
 		getActions().save();
+
 	}
 
 	/**
@@ -1504,11 +1505,9 @@ public class MainController implements Initializable {
 	 * @param actionEvent El ActionEvent.
 	 */
 	public void aboutApp(ActionEvent actionEvent) {
-	
-		
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AboutApp.fxml"),
-				I18n.getResourceBundle());
-		
+
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AboutApp.fxml"), I18n.getResourceBundle());
+
 		Scene newScene;
 		try {
 			newScene = new Scene(loader.load());
@@ -1517,19 +1516,19 @@ public class MainController implements Initializable {
 			return;
 		}
 		Style.addStyle(Config.getProperty("style"), newScene.getStylesheets());
-		
+
 		Stage stage = new Stage();
 		stage.setScene(newScene);
 		stage.setResizable(false);
 		stage.initModality(Modality.APPLICATION_MODAL);
-		
+
 		stage.getIcons().add(new Image("/img/logo_min.png"));
 		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 
 		stage.show();
 
 	}
-	
+
 	public void moreInfo() {
 		UtilMethods.openURL(AppInfo.GITHUB);
 	}

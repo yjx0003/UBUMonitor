@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers.charts;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -203,6 +204,8 @@ public abstract class Chart {
 
 	public abstract String export();
 
+	public abstract void exportCSV(String path) throws IOException;
+
 	public StringJoiner getDefaultOptions() {
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 		StringJoiner jsObject = JSObject();
@@ -231,9 +234,8 @@ public abstract class Chart {
 	}
 
 	public boolean isCalculateMaxActivated() {
-		boolean calculateMax = Controller.getInstance().getMainConfiguration().getValue(getChartType(), "calculateMax",
-				false);
-		return calculateMax;
+		return Controller.getInstance().getMainConfiguration().getValue(getChartType(), "calculateMax", false);
+
 	}
 
 	public long getSuggestedMax() {
@@ -267,4 +269,5 @@ public abstract class Chart {
 		// TODO Auto-generated method stub
 
 	}
+
 }

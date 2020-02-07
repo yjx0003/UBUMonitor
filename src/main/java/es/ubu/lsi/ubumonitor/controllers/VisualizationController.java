@@ -23,10 +23,13 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -66,15 +69,16 @@ public class VisualizationController implements MainAction {
 		this.mainController = mainController;
 		initLogOptionsFilter();
 		initTabPaneWebView();
-		
+
 	}
 
 	private void initTabPaneWebView() {
 		// Cargamos el html de los graficos y calificaciones
 		webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
+
 		webViewChartsEngine = webViewCharts.getEngine();
 		javaConnector = new JavaConnector(this);
-
+		initContextMenu();
 		progressBar.progressProperty().bind(webViewChartsEngine.getLoadWorker().progressProperty());
 
 		WebConsoleListener.setDefaultListener((webView, message, lineNumber, sourceId) -> {
@@ -95,6 +99,42 @@ public class VisualizationController implements MainAction {
 		});
 		webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html").toExternalForm());
 
+	}
+
+	private void initContextMenu() {
+		ContextMenu contextMenu = new ContextMenu();
+		contextMenu.setAutoHide(true);
+		MenuItem exportCSV = new MenuItem("Export CSV");
+		exportCSV.setOnAction(e -> exportCSV());
+		MenuItem exportPNG = new MenuItem("Export PNG");
+		exportPNG.setOnAction(e -> save());
+		contextMenu.getItems().addAll(exportCSV, exportPNG);
+		webViewCharts.setOnMouseClicked(e -> {
+			if (e.getButton() == MouseButton.SECONDARY) {
+				contextMenu.show(webViewCharts, e.getScreenX(), e.getScreenY());
+			} else {
+				contextMenu.hide();
+			}
+		});
+
+	}
+
+	public void exportCSV() {
+
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Export CSV");
+		fileChooser.setInitialDirectory(new File(Config.getProperty("csvFolderPath", "./")));
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
+		File file = fileChooser.showSaveDialog(controller.getStage());
+		if (file != null) {
+			Config.setProperty("csvFolderPath", file.getParent());
+			try {
+				javaConnector.getCurrentType().exportCSV(file.getAbsolutePath());
+			} catch (IOException e) {
+				UtilMethods.errorWindow("Cannot save file", e);
+			}
+
+		}
 	}
 
 	/**
@@ -198,7 +238,7 @@ public class VisualizationController implements MainAction {
 
 	@Override
 	public void updateListViewEnrolledUser() {
-		javaConnector.updateChart();
+		javaConnector.updateChart(false);
 	}
 
 	@Override

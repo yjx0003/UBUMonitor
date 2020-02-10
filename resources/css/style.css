@@ -84,3 +84,7 @@
 .left-items .right-items {
     -fx-alignment: center;
 }
+
+#tableView .table-column {
+	-fx-alignment: center;
+}

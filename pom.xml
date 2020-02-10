@@ -24,7 +24,6 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
-			<version>4.1.1</version>
 		</dependency>
 
 		<dependency>
@@ -141,6 +140,12 @@
 				<artifactId>controlsfx</artifactId>
 				<version>8.40.16</version>
 			</dependency>
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml</artifactId>
+				<version>4.1.1</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 	<build>

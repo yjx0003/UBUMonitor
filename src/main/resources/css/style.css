@@ -39,8 +39,7 @@
 }
 
 .root {
-    -fx-accent: #bcbcbc;
-    -fx-focus-color: #bcbcbc;
+    -fx-focus-color: transparent;
 }
 
 .label-info{

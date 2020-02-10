@@ -355,7 +355,15 @@ public class MainController implements Initializable {
 
 		webViewTabPane.getSelectionModel()
 				.select(Config.getProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex()));
-
+		webViewTabPane.getSelectionModel().selectedItemProperty().addListener((ob, old, newValue) -> {
+            if (tabUbuLogs.isSelected()) {
+                getActions().onSetTabLogs();
+            } else if (tabUbuGrades.isSelected()) {
+                getActions().onSetTabGrades();
+            } else if (tabActivity.isSelected()) {
+                getActions().onSetTabActivityCompletion();
+            }
+        });
 		visualizationController.init(this);
 
 		tabMap.put(visualizationTab, visualizationController);

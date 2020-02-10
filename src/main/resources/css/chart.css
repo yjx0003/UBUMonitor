@@ -8,14 +8,7 @@ html,body
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 }
-.imginicio
-{
-	height: 350.0px;
-	width: 350.0px;
-	display: block;
-	margin: auto;
-	padding: 10.0% 0.0;
-}
+
 #tabulatorDiv{
 	padding-top:20.0px;
     background-color:transparent;
@@ -40,9 +33,7 @@ html,body
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 } 
-.actividades
-{
-}
+
 .actividadesCelda
 {
 	cursor: pointer;

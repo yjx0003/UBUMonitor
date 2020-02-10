@@ -31,6 +31,11 @@ public class AlgorithmParameters {
 	public <V> V getValue(String name) {
 		return (V) parameters.get(name).getValue();
 	}
+	
+	@Override
+	public String toString() {
+		return parameters.toString();
+	}
 
 	private static class ParameterItem implements PropertySheet.Item {
 

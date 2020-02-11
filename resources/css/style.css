@@ -60,6 +60,14 @@
 	-fx-font-size: 15.0px;
 }
 
+.list-view .list-cell{
+	-fx-accent: #ffffff;
+}
+.tree-view .tree-cell{
+	-fx-accent: #ffffff;
+}
+
+
 .list-view .list-cell:hover {
   -fx-background-color:#cdfafa;
 }

@@ -12,3 +12,4 @@ bin
 /build/
 /build.fxbuild
 /configuration/
+/target/

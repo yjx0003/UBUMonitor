@@ -66,8 +66,7 @@ public class ActivitiesStatusTable extends Tabulator {
 			addKeyValue(jsObject, "tooltip", true);
 
 			addKeyValueWithQuote(jsObject, "formatter", "tickCross");
-			addKeyValue(jsObject, "topCalc", "function(n,r,c){var f=0;return n.forEach(function(n){n&&f++}),f+'/'+n.length+' ('+(f/n.length).toLocaleString(locale,{style:'percent',maximumFractionDigits:2})+')'}");
-			addKeyValue(jsObject, "formatterParams", stringFormatterParams);
+			addKeyValue(jsObject, "topCalc", "function(n,r,c){var f=0;return n.forEach(function(n){n&&f++}),f+'/'+n.length+' ('+(f/n.length||0).toLocaleString(locale,{style:'percent',maximumFractionDigits:2})+')'}");			addKeyValue(jsObject, "formatterParams", stringFormatterParams);
 			addKeyValueWithQuote(jsObject, "sorter", "datetime");
 			addKeyValue(jsObject, "sorterParams", stringsorterParams);
 			addKeyValueWithQuote(jsObject, "title", courseModule.getModuleName());

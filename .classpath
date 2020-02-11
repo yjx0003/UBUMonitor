@@ -1,58 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
-	<classpathentry kind="lib" path="lib/commons-csv-1.6.jar" sourcepath="lib/src/commons-csv-1.6-sources.jar">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/UBUMonitor/lib/docs/commons-csv-1.6-javadoc.jar!/"/>
+			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/commons-math3-3.6.1.jar" sourcepath="lib/src/commons-math3-3.6.1-sources.jar">
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/UBUMonitor/lib/docs/commons-math3-3.6.1-javadoc.jar!/"/>
+			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/json-20180813.jar" sourcepath="lib/src/json-20180813-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/UBUMonitor/lib/docs/json-20180813-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/jsoup-1.11.3.jar" sourcepath="lib/src/jsoup-1.11.3-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/UBUMonitor/lib/docs/jsoup-1.11.3-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar" sourcepath="lib/src/log4j-1.2.17-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/UBUMonitor/lib/docs/log4j-1.2.17-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/slf4j-api-1.7.26.jar" sourcepath="lib/src/slf4j-api-1.7.26-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/UBUMonitor/lib/docs/slf4j-api-1.7.26-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/slf4j-log4j12-1.7.26.jar" sourcepath="lib/slf4j-log4j12-1.7.26.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/UBUMonitor/lib/docs/slf4j-log4j12-1.7.26-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/threeten-extra-1.5.0.jar" sourcepath="lib/src/threeten-extra-1.5.0-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/UBUMonitor/lib/docs/threeten-extra-1.5.0-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/opencsv-4.6.jar" sourcepath="lib/src/opencsv-4.6-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/UBUMonitor/lib/docs/opencsv-4.6-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/controlsfx-8.40.16.jar" sourcepath="lib/src/controlsfx-8.40.16-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/UBUMonitor/lib/docs/controlsfx-8.40.16-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>

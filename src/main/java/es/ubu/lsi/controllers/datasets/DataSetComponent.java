@@ -1,13 +1,13 @@
-package controllers.datasets;
+package es.ubu.lsi.controllers.datasets;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-import controllers.I18n;
-import controllers.ubulogs.GroupByAbstract;
-import model.Component;
-import model.EnrolledUser;
+import es.ubu.lsi.controllers.I18n;
+import es.ubu.lsi.controllers.ubulogs.GroupByAbstract;
+import es.ubu.lsi.model.Component;
+import es.ubu.lsi.model.EnrolledUser;
 
 /**
  * Clase que sobrescribe los metodos restantes para completar el equeleto de

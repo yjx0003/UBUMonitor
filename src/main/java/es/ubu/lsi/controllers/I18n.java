@@ -1,15 +1,15 @@
-package controllers;
+package es.ubu.lsi.controllers;
 
 import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.charts.ChartType;
-import controllers.ubulogs.TypeTimes;
-import model.Component;
-import model.Event;
-import model.ModuleType;
+import es.ubu.lsi.controllers.charts.ChartType;
+import es.ubu.lsi.controllers.ubulogs.TypeTimes;
+import es.ubu.lsi.model.Component;
+import es.ubu.lsi.model.Event;
+import es.ubu.lsi.model.ModuleType;
 
 /**
  * Clase encargada de traducir los elementos del resource bundle.

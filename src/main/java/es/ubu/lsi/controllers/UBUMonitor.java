@@ -1,4 +1,4 @@
-package controllers;
+package es.ubu.lsi.controllers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package controllers.ubulogs;
+package es.ubu.lsi.controllers.ubulogs;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import model.LogLine;
+import es.ubu.lsi.model.LogLine;
 
 /**
  * Agrupa los logs por horas-

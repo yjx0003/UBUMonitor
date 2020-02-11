@@ -1,9 +1,9 @@
-package controllers.charts;
+package es.ubu.lsi.controllers.charts;
 
 import java.util.StringJoiner;
 
-import controllers.MainController;
-import controllers.configuration.MainConfiguration;
+import es.ubu.lsi.controllers.MainController;
+import es.ubu.lsi.controllers.configuration.MainConfiguration;
 
 public abstract class ApexCharts extends Chart {
 	

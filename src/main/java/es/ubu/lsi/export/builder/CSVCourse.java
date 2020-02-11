@@ -1,4 +1,4 @@
-package export.builder;
+package es.ubu.lsi.export.builder;
 
 import java.util.Collection;
 import java.util.List;
@@ -7,10 +7,10 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import export.CSVBuilderAbstract;
-import model.Course;
-import model.DataBase;
-import model.EnrolledUser;
+import es.ubu.lsi.export.CSVBuilderAbstract;
+import es.ubu.lsi.model.Course;
+import es.ubu.lsi.model.DataBase;
+import es.ubu.lsi.model.EnrolledUser;
 
 public class CSVCourse extends CSVBuilderAbstract {
 

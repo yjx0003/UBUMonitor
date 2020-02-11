@@ -1,4 +1,4 @@
-package controllers.ubulogs;
+package es.ubu.lsi.controllers.ubulogs;
 
 import java.io.IOException;
 import java.time.LocalDateTime;

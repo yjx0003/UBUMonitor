@@ -1,4 +1,4 @@
-package controllers;
+package es.ubu.lsi.controllers;
 
 import java.io.File;
 import java.io.InvalidClassException;
@@ -19,10 +19,16 @@ import javax.crypto.IllegalBlockSizeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.configuration.Config;
-import controllers.ubugrades.CreatorGradeItems;
-import controllers.ubugrades.CreatorUBUGradesController;
-import controllers.ubulogs.LogCreator;
+import es.ubu.lsi.controllers.configuration.Config;
+import es.ubu.lsi.controllers.ubugrades.CreatorGradeItems;
+import es.ubu.lsi.controllers.ubugrades.CreatorUBUGradesController;
+import es.ubu.lsi.controllers.ubulogs.LogCreator;
+import es.ubu.lsi.model.Course;
+import es.ubu.lsi.model.CourseCategory;
+import es.ubu.lsi.model.DataBase;
+import es.ubu.lsi.model.Logs;
+import es.ubu.lsi.persistence.Serialization;
+import es.ubu.lsi.util.UtilMethods;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -50,12 +56,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import model.Course;
-import model.CourseCategory;
-import model.DataBase;
-import model.Logs;
-import persistence.Serialization;
-import util.UtilMethods;
 
 /**
  * Clase controlador de la pantalla de bienvenida en la que se muestran los

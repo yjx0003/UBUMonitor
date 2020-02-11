@@ -1,4 +1,4 @@
-package controllers;
+package es.ubu.lsi.controllers;
 
 import java.util.LinkedHashMap;
 import java.util.List;

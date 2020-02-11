@@ -1,4 +1,4 @@
-package util;
+package es.ubu.lsi.util;
 
 import java.awt.Desktop;
 import java.io.IOException;
@@ -9,8 +9,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import controllers.AppInfo;
-import controllers.I18n;
+import es.ubu.lsi.controllers.AppInfo;
+import es.ubu.lsi.controllers.I18n;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;

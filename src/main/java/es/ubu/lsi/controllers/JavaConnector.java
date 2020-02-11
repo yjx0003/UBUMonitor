@@ -1,4 +1,4 @@
-package controllers;
+package es.ubu.lsi.controllers;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -11,25 +11,25 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 
-import controllers.charts.ActivitiesStatusTable;
-import controllers.charts.BoxPlot;
-import controllers.charts.CalificationBar;
-import controllers.charts.Chart;
-import controllers.charts.ChartType;
-import controllers.charts.CumLine;
-import controllers.charts.GradeReportTable;
-import controllers.charts.Heatmap;
-import controllers.charts.Line;
-import controllers.charts.MeanDiff;
-import controllers.charts.Radar;
-import controllers.charts.Stackedbar;
-import controllers.charts.Tabs;
-import controllers.charts.Violin;
-import controllers.configuration.MainConfiguration;
+import es.ubu.lsi.controllers.charts.ActivitiesStatusTable;
+import es.ubu.lsi.controllers.charts.BoxPlot;
+import es.ubu.lsi.controllers.charts.CalificationBar;
+import es.ubu.lsi.controllers.charts.Chart;
+import es.ubu.lsi.controllers.charts.ChartType;
+import es.ubu.lsi.controllers.charts.CumLine;
+import es.ubu.lsi.controllers.charts.GradeReportTable;
+import es.ubu.lsi.controllers.charts.Heatmap;
+import es.ubu.lsi.controllers.charts.Line;
+import es.ubu.lsi.controllers.charts.MeanDiff;
+import es.ubu.lsi.controllers.charts.Radar;
+import es.ubu.lsi.controllers.charts.Stackedbar;
+import es.ubu.lsi.controllers.charts.Tabs;
+import es.ubu.lsi.controllers.charts.Violin;
+import es.ubu.lsi.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.util.UtilMethods;
 import javafx.concurrent.Worker.State;
 import javafx.scene.control.Tab;
 import javafx.scene.web.WebEngine;
-import util.UtilMethods;
 
 public class JavaConnector {
 

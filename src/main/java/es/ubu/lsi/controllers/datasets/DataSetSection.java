@@ -1,12 +1,12 @@
-package controllers.datasets;
+package es.ubu.lsi.controllers.datasets;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-import controllers.ubulogs.GroupByAbstract;
-import model.EnrolledUser;
-import model.Section;
+import es.ubu.lsi.controllers.ubulogs.GroupByAbstract;
+import es.ubu.lsi.model.EnrolledUser;
+import es.ubu.lsi.model.Section;
 
 public class DataSetSection implements DataSet<Section> {
 	

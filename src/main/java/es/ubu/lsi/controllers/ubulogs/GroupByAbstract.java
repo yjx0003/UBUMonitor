@@ -1,4 +1,4 @@
-package controllers.ubulogs;
+package es.ubu.lsi.controllers.ubulogs;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import model.Component;
-import model.ComponentEvent;
-import model.CourseModule;
-import model.LogLine;
-import model.Section;
+import es.ubu.lsi.model.Component;
+import es.ubu.lsi.model.ComponentEvent;
+import es.ubu.lsi.model.CourseModule;
+import es.ubu.lsi.model.LogLine;
+import es.ubu.lsi.model.Section;
 
 /**
  * Clase abstracta con metodos de creacion de agrupamiento de los logs.

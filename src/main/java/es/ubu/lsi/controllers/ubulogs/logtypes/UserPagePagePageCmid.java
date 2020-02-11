@@ -1,8 +1,8 @@
-package controllers.ubulogs.logtypes;
+package es.ubu.lsi.controllers.ubulogs.logtypes;
 
 import java.util.List;
 
-import model.LogLine;
+import es.ubu.lsi.model.LogLine;
 
 /**
  * The user with id '' has moved a Content page with the id '' to the slot after the page with the id '' and before the page with the id '' in the lesson activity with course module id ''.

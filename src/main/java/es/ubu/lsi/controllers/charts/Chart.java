@@ -1,4 +1,4 @@
-package controllers.charts;
+package es.ubu.lsi.controllers.charts;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,12 +9,21 @@ import java.util.stream.Collectors;
 
 import org.controlsfx.control.CheckComboBox;
 
-import controllers.Controller;
-import controllers.I18n;
-import controllers.MainController;
-import controllers.VisualizationController;
-import controllers.configuration.MainConfiguration;
-import controllers.ubulogs.GroupByAbstract;
+import es.ubu.lsi.controllers.Controller;
+import es.ubu.lsi.controllers.I18n;
+import es.ubu.lsi.controllers.MainController;
+import es.ubu.lsi.controllers.VisualizationController;
+import es.ubu.lsi.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.controllers.ubulogs.GroupByAbstract;
+import es.ubu.lsi.model.Component;
+import es.ubu.lsi.model.ComponentEvent;
+import es.ubu.lsi.model.CourseModule;
+import es.ubu.lsi.model.EnrolledUser;
+import es.ubu.lsi.model.GradeItem;
+import es.ubu.lsi.model.Group;
+import es.ubu.lsi.model.Section;
+import es.ubu.lsi.model.Stats;
+import es.ubu.lsi.util.UtilMethods;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
@@ -24,15 +33,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
-import model.Component;
-import model.ComponentEvent;
-import model.CourseModule;
-import model.EnrolledUser;
-import model.GradeItem;
-import model.Group;
-import model.Section;
-import model.Stats;
-import util.UtilMethods;
 
 public abstract class Chart {
 

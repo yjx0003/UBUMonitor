@@ -1,4 +1,4 @@
-package controllers;
+package es.ubu.lsi.controllers;
 
 /**
  * Clase de utilidad que devuelve la información de la aplicación.

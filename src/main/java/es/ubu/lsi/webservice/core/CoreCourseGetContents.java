@@ -1,7 +1,7 @@
-package webservice.core;
+package es.ubu.lsi.webservice.core;
 
-import webservice.ParametersCourseid;
-import webservice.WSFunctions;
+import es.ubu.lsi.webservice.ParametersCourseid;
+import es.ubu.lsi.webservice.WSFunctions;
 
 /**
  * Función de moodle que devuelve los contenidos del curso.

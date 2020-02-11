@@ -1,8 +1,8 @@
-package controllers.ubulogs.logtypes;
+package es.ubu.lsi.controllers.ubulogs.logtypes;
 
 import java.util.List;
 
-import model.LogLine;
+import es.ubu.lsi.model.LogLine;
 /**
  * The user with id '' created the event '' with id ''.
  * The user with id '' deleted the event '' with id ''.

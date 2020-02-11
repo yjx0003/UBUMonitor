@@ -1,4 +1,4 @@
-package webservice;
+package es.ubu.lsi.webservice;
 
 import java.io.IOException;
 import java.util.Set;
@@ -9,7 +9,7 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import webservice.core.CoreUserGetUsersByField.Field;
+import es.ubu.lsi.webservice.core.CoreUserGetUsersByField.Field;
 
 /**
  * Clase principal encargada de buscar el token del servicio rest API de moodle. 

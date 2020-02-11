@@ -1,8 +1,8 @@
-package controllers.ubulogs.logtypes;
+package es.ubu.lsi.controllers.ubulogs.logtypes;
 
 import java.util.List;
 
-import model.LogLine;
+import es.ubu.lsi.model.LogLine;
 /**
  * 
  * Ignora los logs para añadir atributos adicionales, usado para las descripciones que no aparecen ningun integer.

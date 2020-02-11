@@ -1,7 +1,7 @@
-package webservice.gradereport;
+package es.ubu.lsi.webservice.gradereport;
 
-import webservice.ParametersCourseidUseridGroupid;
-import webservice.WSFunctions;
+import es.ubu.lsi.webservice.ParametersCourseidUseridGroupid;
+import es.ubu.lsi.webservice.WSFunctions;
 
 /**
  * Función de Moodle que devuelve el calificador de un usuario, grupo o de todos los usuarios del curso.

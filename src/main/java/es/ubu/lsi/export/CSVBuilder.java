@@ -1,6 +1,6 @@
-package export;
+package es.ubu.lsi.export;
 
-import model.DataBase;
+import es.ubu.lsi.model.DataBase;
 
 /**
  * CSV Builder.

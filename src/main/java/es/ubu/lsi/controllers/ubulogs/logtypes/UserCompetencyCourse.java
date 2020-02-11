@@ -1,8 +1,8 @@
-package controllers.ubulogs.logtypes;
+package es.ubu.lsi.controllers.ubulogs.logtypes;
 
 import java.util.List;
 
-import model.LogLine;
+import es.ubu.lsi.model.LogLine;
 /**
  * The user with id '' viewed the user course competency with id '' in course with id ''
  * @author Yi Peng Ji

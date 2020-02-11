@@ -1,13 +1,13 @@
-package controllers;
+package es.ubu.lsi.controllers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.configuration.Config;
+import es.ubu.lsi.controllers.configuration.Config;
+import es.ubu.lsi.util.UtilMethods;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import util.UtilMethods;
 
 /**
  * Clase Loader. Inicializa la ventana de login

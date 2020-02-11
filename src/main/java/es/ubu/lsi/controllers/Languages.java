@@ -1,4 +1,4 @@
-package controllers;
+package es.ubu.lsi.controllers;
 
 import java.util.HashMap;
 import java.util.Locale;

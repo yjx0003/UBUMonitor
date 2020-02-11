@@ -1,4 +1,4 @@
-package controllers.charts;
+package es.ubu.lsi.controllers.charts;
 
 import java.util.List;
 import java.util.Map;
@@ -8,13 +8,13 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.I18n;
-import controllers.MainController;
+import es.ubu.lsi.controllers.I18n;
+import es.ubu.lsi.controllers.MainController;
+import es.ubu.lsi.model.EnrolledUser;
+import es.ubu.lsi.model.GradeItem;
+import es.ubu.lsi.model.Stats;
+import es.ubu.lsi.util.UtilMethods;
 import javafx.scene.control.TreeItem;
-import model.EnrolledUser;
-import model.GradeItem;
-import model.Stats;
-import util.UtilMethods;
 /**
  * Bugged, apexchartd has bugs in line
  * @author Yi Peng Ji

@@ -1,8 +1,8 @@
-package controllers.ubulogs.logtypes;
+package es.ubu.lsi.controllers.ubulogs.logtypes;
 
 import java.util.List;
 
-import model.LogLine;
+import es.ubu.lsi.model.LogLine;
 
 /**
  * The user with id '' launched the sco with id '' for the scorm with course module id ''.

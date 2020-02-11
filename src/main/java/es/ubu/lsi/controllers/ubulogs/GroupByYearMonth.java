@@ -1,4 +1,4 @@
-package controllers.ubulogs;
+package es.ubu.lsi.controllers.ubulogs;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import model.LogLine;
+import es.ubu.lsi.model.LogLine;
 
 /**
  * Agrupa los logs por mes y año

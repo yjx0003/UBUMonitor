@@ -1,4 +1,4 @@
-package export.builder;
+package es.ubu.lsi.export.builder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,10 +9,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.Controller;
-import export.CSVBuilderAbstract;
-import model.DataBase;
-import model.CourseModule;
+import es.ubu.lsi.controllers.Controller;
+import es.ubu.lsi.export.CSVBuilderAbstract;
+import es.ubu.lsi.model.CourseModule;
+import es.ubu.lsi.model.DataBase;
 
 /**
  * Builds the course module file.

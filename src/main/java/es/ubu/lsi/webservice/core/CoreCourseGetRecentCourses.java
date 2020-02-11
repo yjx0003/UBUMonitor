@@ -1,7 +1,7 @@
-package webservice.core;
+package es.ubu.lsi.webservice.core;
 
-import webservice.ParametersUserid;
-import webservice.WSFunctions;
+import es.ubu.lsi.webservice.ParametersUserid;
+import es.ubu.lsi.webservice.WSFunctions;
 
 public class CoreCourseGetRecentCourses extends ParametersUserid{
 

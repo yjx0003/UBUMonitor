@@ -1,4 +1,4 @@
-package controllers;
+package es.ubu.lsi.controllers;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,11 +11,13 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.javafx.webkit.WebConsoleListener;
 
-import controllers.charts.Tabs;
-import controllers.configuration.Config;
-import controllers.configuration.MainConfiguration;
-import controllers.ubulogs.GroupByAbstract;
-import controllers.ubulogs.TypeTimes;
+import es.ubu.lsi.controllers.charts.Tabs;
+import es.ubu.lsi.controllers.configuration.Config;
+import es.ubu.lsi.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.controllers.ubulogs.GroupByAbstract;
+import es.ubu.lsi.controllers.ubulogs.TypeTimes;
+import es.ubu.lsi.model.LogStats;
+import es.ubu.lsi.util.UtilMethods;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
@@ -30,9 +32,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
-import model.LogStats;
 import netscape.javascript.JSObject;
-import util.UtilMethods;
 
 public class VisualizationController implements MainAction {
 	private static final Logger LOGGER = LoggerFactory.getLogger(VisualizationController.class);

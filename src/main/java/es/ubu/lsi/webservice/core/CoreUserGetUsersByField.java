@@ -1,11 +1,11 @@
-package webservice.core;
+package es.ubu.lsi.webservice.core;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import webservice.WSFunctions;
-import webservice.WebService;
+import es.ubu.lsi.webservice.WSFunctions;
+import es.ubu.lsi.webservice.WebService;
 
 /**
  * Devuelve los usuarios de Moodle en función del campo (id,username,email,etc).

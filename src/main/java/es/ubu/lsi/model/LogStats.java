@@ -1,20 +1,20 @@
-package model;
+package es.ubu.lsi.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import controllers.ubulogs.GroupByAbstract;
-import controllers.ubulogs.GroupByAll;
-import controllers.ubulogs.GroupByAmPm;
-import controllers.ubulogs.GroupByDay;
-import controllers.ubulogs.GroupByDayOfWeek;
-import controllers.ubulogs.GroupByHour;
-import controllers.ubulogs.GroupByYear;
-import controllers.ubulogs.GroupByYearMonth;
-import controllers.ubulogs.GroupByYearQuarter;
-import controllers.ubulogs.GroupByYearWeek;
-import controllers.ubulogs.TypeTimes;
+import es.ubu.lsi.controllers.ubulogs.GroupByAbstract;
+import es.ubu.lsi.controllers.ubulogs.GroupByAll;
+import es.ubu.lsi.controllers.ubulogs.GroupByAmPm;
+import es.ubu.lsi.controllers.ubulogs.GroupByDay;
+import es.ubu.lsi.controllers.ubulogs.GroupByDayOfWeek;
+import es.ubu.lsi.controllers.ubulogs.GroupByHour;
+import es.ubu.lsi.controllers.ubulogs.GroupByYear;
+import es.ubu.lsi.controllers.ubulogs.GroupByYearMonth;
+import es.ubu.lsi.controllers.ubulogs.GroupByYearQuarter;
+import es.ubu.lsi.controllers.ubulogs.GroupByYearWeek;
+import es.ubu.lsi.controllers.ubulogs.TypeTimes;
 
 /**
  * Clase contenedora que crea las instancias de las distintas agrupaciónes por

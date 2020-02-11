@@ -1,4 +1,4 @@
-package controllers.configuration;
+package es.ubu.lsi.controllers.configuration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,15 +9,15 @@ import java.util.function.BiConsumer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import controllers.Controller;
-import controllers.ubulogs.TypeTimes;
+import es.ubu.lsi.controllers.Controller;
+import es.ubu.lsi.controllers.ubulogs.TypeTimes;
+import es.ubu.lsi.model.Group;
+import es.ubu.lsi.model.LastActivity;
+import es.ubu.lsi.model.LastActivityFactory;
+import es.ubu.lsi.model.Role;
+import es.ubu.lsi.model.SubDataBase;
 import javafx.collections.FXCollections;
 import javafx.scene.paint.Color;
-import model.Group;
-import model.LastActivity;
-import model.LastActivityFactory;
-import model.Role;
-import model.SubDataBase;
 
 public class ConfigurationConsumer {
 

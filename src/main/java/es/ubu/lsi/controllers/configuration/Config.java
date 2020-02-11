@@ -1,4 +1,4 @@
-package controllers.configuration;
+package es.ubu.lsi.controllers.configuration;
 
 import java.io.File;
 import java.io.FileInputStream;

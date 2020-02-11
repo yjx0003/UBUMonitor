@@ -1,4 +1,4 @@
-package controllers.charts;
+package es.ubu.lsi.controllers.charts;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -9,19 +9,19 @@ import java.util.StringJoiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.Controller;
-import controllers.I18n;
-import controllers.MainController;
-import controllers.datasets.DataSetComponent;
-import controllers.datasets.DataSetComponentEvent;
-import controllers.datasets.DataSetSection;
-import controllers.datasets.DatasSetCourseModule;
-import controllers.datasets.StackedBarDataSet;
-import model.Component;
-import model.ComponentEvent;
-import model.CourseModule;
-import model.EnrolledUser;
-import model.Section;
+import es.ubu.lsi.controllers.Controller;
+import es.ubu.lsi.controllers.I18n;
+import es.ubu.lsi.controllers.MainController;
+import es.ubu.lsi.controllers.datasets.DataSetComponent;
+import es.ubu.lsi.controllers.datasets.DataSetComponentEvent;
+import es.ubu.lsi.controllers.datasets.DataSetSection;
+import es.ubu.lsi.controllers.datasets.DatasSetCourseModule;
+import es.ubu.lsi.controllers.datasets.StackedBarDataSet;
+import es.ubu.lsi.model.Component;
+import es.ubu.lsi.model.ComponentEvent;
+import es.ubu.lsi.model.CourseModule;
+import es.ubu.lsi.model.EnrolledUser;
+import es.ubu.lsi.model.Section;
 
 public class Stackedbar extends Chartjs {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Stackedbar.class);

@@ -1,4 +1,4 @@
-package controllers.configuration;
+package es.ubu.lsi.controllers.configuration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -15,19 +15,19 @@ import org.controlsfx.property.editor.PropertyEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.Controller;
-import controllers.I18n;
-import controllers.MainController;
+import es.ubu.lsi.controllers.Controller;
+import es.ubu.lsi.controllers.I18n;
+import es.ubu.lsi.controllers.MainController;
+import es.ubu.lsi.model.Group;
+import es.ubu.lsi.model.LastActivity;
+import es.ubu.lsi.model.LastActivityFactory;
+import es.ubu.lsi.model.Role;
+import es.ubu.lsi.util.UtilMethods;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ButtonType;
 import javafx.util.Callback;
-import model.Group;
-import model.LastActivity;
-import model.LastActivityFactory;
-import model.Role;
-import util.UtilMethods;
 
 public class ConfigurationController implements Initializable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationController.class);

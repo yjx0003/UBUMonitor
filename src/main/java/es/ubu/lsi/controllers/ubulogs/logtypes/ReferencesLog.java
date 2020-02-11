@@ -1,11 +1,11 @@
-package controllers.ubulogs.logtypes;
+package es.ubu.lsi.controllers.ubulogs.logtypes;
 
 import java.util.List;
 
-import controllers.Controller;
-import model.EnrolledUser;
-import model.LogLine;
-import model.CourseModule;
+import es.ubu.lsi.controllers.Controller;
+import es.ubu.lsi.model.CourseModule;
+import es.ubu.lsi.model.EnrolledUser;
+import es.ubu.lsi.model.LogLine;
 
 public abstract class ReferencesLog {
 

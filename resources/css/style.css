@@ -39,8 +39,8 @@
 }
 
 .root {
-    -fx-accent: #bcbcbc;
-    -fx-focus-color: #bcbcbc;
+    -fx-faint-focus-color: transparent;
+    -fx-focus-color: transparent;
 }
 
 .label-info{
@@ -59,6 +59,14 @@
 
 	-fx-font-size: 15.0px;
 }
+
+.list-view .list-cell{
+	-fx-accent: #ffffff;
+}
+.tree-view .tree-cell{
+	-fx-accent: #ffffff;
+}
+
 
 .list-view .list-cell:hover {
   -fx-background-color:#cdfafa;

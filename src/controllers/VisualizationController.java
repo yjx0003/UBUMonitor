@@ -198,7 +198,7 @@ public class VisualizationController implements MainAction {
 
 	@Override
 	public void updateListViewEnrolledUser() {
-		javaConnector.updateChart();
+		javaConnector.updateChart(false);
 	}
 
 	@Override

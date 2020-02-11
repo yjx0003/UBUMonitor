@@ -231,9 +231,7 @@ public abstract class Chart {
 	}
 
 	public boolean isCalculateMaxActivated() {
-		boolean calculateMax = Controller.getInstance().getMainConfiguration().getValue(getChartType(), "calculateMax",
-				false);
-		return calculateMax;
+		return Controller.getInstance().getMainConfiguration().getValue(getChartType(), "calculateMax", false);
 	}
 
 	public long getSuggestedMax() {

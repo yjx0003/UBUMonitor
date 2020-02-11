@@ -76,6 +76,21 @@ public class LogCreator {
 	 */
 	public static void updateCourseLog(Logs logs) throws IOException {
 
+		List<String> dailyLogs = downloadMultipleDays(logs);
+
+		for (String dailyLog : dailyLogs) {
+			try(CSVParser csvParser = new CSVParser(new StringReader(dailyLog),
+					CSVFormat.DEFAULT.withFirstRecordAsHeader())){
+				List<LogLine> logList = LogCreator.createLogs(csvParser);
+				logs.addAll(logList);
+			} 
+			
+
+		}
+
+	}
+
+	private static List<String> downloadMultipleDays(Logs logs) {
 		ZoneId userZoneDateTime = "99".equals(CONTROLLER.getUser().getTimezone()) ? logs.getZoneId()
 				: ZoneId.of(CONTROLLER.getUser().getTimezone());
 		LOGGER.info("Zona horaria del usuario: {}", userZoneDateTime);
@@ -91,17 +106,7 @@ public class LogCreator {
 
 		List<String> dailyLogs = download.downloadLog(lastDateTime,
 				ZonedDateTime.now().withZoneSameInstant(lastDateTime.getZone()));
-
-		for (String dailyLog : dailyLogs) {
-			try(CSVParser csvParser = new CSVParser(new StringReader(dailyLog),
-					CSVFormat.DEFAULT.withFirstRecordAsHeader())){
-				List<LogLine> logList = LogCreator.createLogs(csvParser);
-				logs.addAll(logList);
-			} 
-			
-
-		}
-
+		return dailyLogs;
 	}
 
 	/**

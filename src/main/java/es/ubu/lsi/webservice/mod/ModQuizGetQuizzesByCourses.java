@@ -1,9 +1,9 @@
-package webservice.mod;
+package es.ubu.lsi.webservice.mod;
 
 import java.util.Set;
 
-import webservice.ParametersCoursesids;
-import webservice.WSFunctions;
+import es.ubu.lsi.webservice.ParametersCoursesids;
+import es.ubu.lsi.webservice.WSFunctions;
 
 
 /**

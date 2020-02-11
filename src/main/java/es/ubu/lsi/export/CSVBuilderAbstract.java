@@ -1,4 +1,4 @@
-package export;
+package es.ubu.lsi.export;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVWriter;
 
-import model.DataBase;
+import es.ubu.lsi.model.DataBase;
 
 /**
  * Abstract builder.

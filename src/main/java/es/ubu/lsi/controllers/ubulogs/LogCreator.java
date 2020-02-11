@@ -1,4 +1,4 @@
-package controllers.ubulogs;
+package es.ubu.lsi.controllers.ubulogs;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -19,14 +19,14 @@ import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.Controller;
-import controllers.ubulogs.logtypes.LogTypes;
-import controllers.ubulogs.logtypes.ReferencesLog;
-import model.Component;
-import model.Event;
-import model.LogLine;
-import model.Logs;
-import model.Origin;
+import es.ubu.lsi.controllers.Controller;
+import es.ubu.lsi.controllers.ubulogs.logtypes.LogTypes;
+import es.ubu.lsi.controllers.ubulogs.logtypes.ReferencesLog;
+import es.ubu.lsi.model.Component;
+import es.ubu.lsi.model.Event;
+import es.ubu.lsi.model.LogLine;
+import es.ubu.lsi.model.Logs;
+import es.ubu.lsi.model.Origin;
 
 /**
  * Clase encargada de los logs, con metodos encargados de descargar los logs y

@@ -1,8 +1,8 @@
-package controllers.charts;
+package es.ubu.lsi.controllers.charts;
 
 import java.util.StringJoiner;
 
-import controllers.MainController;
+import es.ubu.lsi.controllers.MainController;
 
 public class Line extends ChartjsGradeItem {
 

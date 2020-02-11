@@ -1,4 +1,4 @@
-package controllers.ubulogs;
+package es.ubu.lsi.controllers.ubulogs;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import model.EnrolledUser;
-import model.LogLine;
+import es.ubu.lsi.model.EnrolledUser;
+import es.ubu.lsi.model.LogLine;
 
 public class FirstGroupBy<E extends Serializable, T extends Serializable> implements Serializable {
 

@@ -1,4 +1,4 @@
-package controllers;
+package es.ubu.lsi.controllers;
 
 import java.io.IOException;
 import java.net.URL;
@@ -22,16 +22,16 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.configuration.Config;
-import controllers.configuration.MainConfiguration;
+import es.ubu.lsi.controllers.configuration.Config;
+import es.ubu.lsi.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.model.Course;
+import es.ubu.lsi.model.DataBase;
+import es.ubu.lsi.model.LogStats;
+import es.ubu.lsi.model.MoodleUser;
+import es.ubu.lsi.model.Stats;
+import es.ubu.lsi.util.UtilMethods;
+import es.ubu.lsi.webservice.WebService;
 import javafx.stage.Stage;
-import model.Course;
-import model.DataBase;
-import model.LogStats;
-import model.MoodleUser;
-import model.Stats;
-import util.UtilMethods;
-import webservice.WebService;
 
 public class Controller {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Controller.class);

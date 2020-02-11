@@ -1,7 +1,7 @@
-package webservice.gradereport;
+package es.ubu.lsi.webservice.gradereport;
 
-import webservice.ParametersCourseidUseridGroupid;
-import webservice.WSFunctions;
+import es.ubu.lsi.webservice.ParametersCourseidUseridGroupid;
+import es.ubu.lsi.webservice.WSFunctions;
 
 
 /**

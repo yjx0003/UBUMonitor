@@ -1,4 +1,4 @@
-package model;
+package es.ubu.lsi.model;
 
 import java.io.Serializable;
 import java.time.DayOfWeek;

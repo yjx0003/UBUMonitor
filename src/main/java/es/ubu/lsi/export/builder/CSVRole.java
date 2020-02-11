@@ -1,4 +1,4 @@
-package export.builder;
+package es.ubu.lsi.export.builder;
 
 import java.util.Collection;
 import java.util.stream.Stream;
@@ -6,10 +6,10 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import export.CSVBuilderAbstract;
-import model.DataBase;
-import model.EnrolledUser;
-import model.Role;
+import es.ubu.lsi.export.CSVBuilderAbstract;
+import es.ubu.lsi.model.DataBase;
+import es.ubu.lsi.model.EnrolledUser;
+import es.ubu.lsi.model.Role;
 
 /**
  * Builds the role file.

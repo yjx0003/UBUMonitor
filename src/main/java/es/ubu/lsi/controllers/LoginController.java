@@ -1,5 +1,5 @@
 
-package controllers;
+package es.ubu.lsi.controllers;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,8 +21,11 @@ import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.configuration.Config;
-import controllers.ubugrades.CreatorUBUGradesController;
+import es.ubu.lsi.controllers.configuration.Config;
+import es.ubu.lsi.controllers.ubugrades.CreatorUBUGradesController;
+import es.ubu.lsi.model.Course;
+import es.ubu.lsi.model.MoodleUser;
+import es.ubu.lsi.util.UtilMethods;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -42,9 +45,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
-import model.Course;
-import model.MoodleUser;
-import util.UtilMethods;
 
 /**
  * Clase controlador de la ventana de Login

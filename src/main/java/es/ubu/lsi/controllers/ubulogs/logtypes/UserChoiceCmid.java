@@ -1,8 +1,8 @@
-package controllers.ubulogs.logtypes;
+package es.ubu.lsi.controllers.ubulogs.logtypes;
 
 import java.util.List;
 
-import model.LogLine;
+import es.ubu.lsi.model.LogLine;
 
 /**
  * The user with id 'INTEGER' made the choice with id 'INTEGER' in the choice activity\n            with course module id 'INTEGER'.

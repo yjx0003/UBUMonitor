@@ -1,4 +1,4 @@
-package export.builder;
+package es.ubu.lsi.export.builder;
 
 import java.util.Collection;
 import java.util.Map;
@@ -7,9 +7,9 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import export.CSVBuilderAbstract;
-import model.DataBase;
-import model.EnrolledUser;
+import es.ubu.lsi.export.CSVBuilderAbstract;
+import es.ubu.lsi.model.DataBase;
+import es.ubu.lsi.model.EnrolledUser;
 
 /**
  * Builds the enrolled user file.

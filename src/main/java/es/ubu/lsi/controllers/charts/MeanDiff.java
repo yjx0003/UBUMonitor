@@ -1,4 +1,4 @@
-package controllers.charts;
+package es.ubu.lsi.controllers.charts;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
-import controllers.Controller;
-import controllers.I18n;
-import controllers.MainController;
-import controllers.configuration.MainConfiguration;
-import controllers.datasets.DataSet;
-import controllers.ubulogs.GroupByAbstract;
-import model.EnrolledUser;
+import es.ubu.lsi.controllers.Controller;
+import es.ubu.lsi.controllers.I18n;
+import es.ubu.lsi.controllers.MainController;
+import es.ubu.lsi.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.controllers.datasets.DataSet;
+import es.ubu.lsi.controllers.ubulogs.GroupByAbstract;
+import es.ubu.lsi.model.EnrolledUser;
 
 public class MeanDiff extends ChartjsLog {
 

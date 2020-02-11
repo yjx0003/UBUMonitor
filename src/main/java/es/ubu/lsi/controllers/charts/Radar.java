@@ -1,10 +1,10 @@
-package controllers.charts;
+package es.ubu.lsi.controllers.charts;
 
 import java.util.List;
 import java.util.StringJoiner;
 
-import controllers.MainController;
-import model.GradeItem;
+import es.ubu.lsi.controllers.MainController;
+import es.ubu.lsi.model.GradeItem;
 
 public class Radar extends ChartjsGradeItem {
 

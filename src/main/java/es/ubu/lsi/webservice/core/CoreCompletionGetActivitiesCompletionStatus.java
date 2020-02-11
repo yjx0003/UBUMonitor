@@ -1,7 +1,7 @@
-package webservice.core;
+package es.ubu.lsi.webservice.core;
 
-import webservice.WSFunctions;
-import webservice.WebService;
+import es.ubu.lsi.webservice.WSFunctions;
+import es.ubu.lsi.webservice.WebService;
 
 public class CoreCompletionGetActivitiesCompletionStatus extends WebService {
 	private int courseid;

@@ -1,4 +1,4 @@
-package controllers;
+package es.ubu.lsi.controllers;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -25,11 +25,24 @@ import org.controlsfx.control.StatusBar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.configuration.Config;
-import controllers.configuration.ConfigurationController;
-import controllers.configuration.MainConfiguration;
-import export.CSVBuilderAbstract;
-import export.CSVExport;
+import es.ubu.lsi.controllers.configuration.Config;
+import es.ubu.lsi.controllers.configuration.ConfigurationController;
+import es.ubu.lsi.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.export.CSVBuilderAbstract;
+import es.ubu.lsi.export.CSVExport;
+import es.ubu.lsi.model.Component;
+import es.ubu.lsi.model.ComponentEvent;
+import es.ubu.lsi.model.CourseModule;
+import es.ubu.lsi.model.EnrolledUser;
+import es.ubu.lsi.model.GradeItem;
+import es.ubu.lsi.model.Group;
+import es.ubu.lsi.model.LastActivity;
+import es.ubu.lsi.model.LastActivityFactory;
+import es.ubu.lsi.model.ModuleType;
+import es.ubu.lsi.model.Role;
+import es.ubu.lsi.model.Section;
+import es.ubu.lsi.model.Stats;
+import es.ubu.lsi.util.UtilMethods;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
@@ -74,19 +87,6 @@ import javafx.stage.PopupWindow.AnchorLocation;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
-import model.Component;
-import model.ComponentEvent;
-import model.CourseModule;
-import model.EnrolledUser;
-import model.GradeItem;
-import model.Group;
-import model.LastActivity;
-import model.LastActivityFactory;
-import model.ModuleType;
-import model.Role;
-import model.Section;
-import model.Stats;
-import util.UtilMethods;
 
 /**
  * Clase controlador de la ventana principal

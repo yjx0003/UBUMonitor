@@ -1,4 +1,4 @@
-package controllers.ubulogs;
+package es.ubu.lsi.controllers.ubulogs;
 
 /**
  * Las diferentes formas de medir el tiempo al agrupar los logs.

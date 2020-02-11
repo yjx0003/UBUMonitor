@@ -1,16 +1,15 @@
-package controllers.ubulogs.logtypes;
+package es.ubu.lsi.controllers.ubulogs.logtypes;
 
-import static model.Component.*;
-
-import static model.ComponentEvent.get;
-import static model.Event.*;
+import static es.ubu.lsi.model.Component.*;
+import static es.ubu.lsi.model.ComponentEvent.get;
+import static es.ubu.lsi.model.Event.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import model.Component;
-import model.ComponentEvent;
-import model.Event;
+import es.ubu.lsi.model.Component;
+import es.ubu.lsi.model.ComponentEvent;
+import es.ubu.lsi.model.Event;
 
 public class LogTypes {
 	

@@ -1,8 +1,8 @@
-package controllers.ubulogs.logtypes;
+package es.ubu.lsi.controllers.ubulogs.logtypes;
 
 import java.util.List;
 
-import model.LogLine;
+import es.ubu.lsi.model.LogLine;
 /**
  * The user with id '' deleted the grade with id '' for the user with id '' for the grade item with id ''.
  * @author Yi Peng Ji

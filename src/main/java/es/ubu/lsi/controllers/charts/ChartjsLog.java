@@ -1,4 +1,4 @@
-package controllers.charts;
+package es.ubu.lsi.controllers.charts;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -8,15 +8,15 @@ import java.util.StringJoiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.MainController;
-import controllers.datasets.DataSet;
-import controllers.datasets.DataSetComponent;
-import controllers.datasets.DataSetComponentEvent;
-import controllers.datasets.DataSetSection;
-import controllers.datasets.DatasSetCourseModule;
-import controllers.ubulogs.GroupByAbstract;
-import model.EnrolledUser;
-import util.UtilMethods;
+import es.ubu.lsi.controllers.MainController;
+import es.ubu.lsi.controllers.datasets.DataSet;
+import es.ubu.lsi.controllers.datasets.DataSetComponent;
+import es.ubu.lsi.controllers.datasets.DataSetComponentEvent;
+import es.ubu.lsi.controllers.datasets.DataSetSection;
+import es.ubu.lsi.controllers.datasets.DatasSetCourseModule;
+import es.ubu.lsi.controllers.ubulogs.GroupByAbstract;
+import es.ubu.lsi.model.EnrolledUser;
+import es.ubu.lsi.util.UtilMethods;
 
 public abstract class ChartjsLog extends Chartjs {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChartjsLog.class);

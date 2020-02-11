@@ -1,8 +1,8 @@
-package controllers.ubulogs.logtypes;
+package es.ubu.lsi.controllers.ubulogs.logtypes;
 
 import java.util.List;
 
-import model.LogLine;
+import es.ubu.lsi.model.LogLine;
 /**
  * The user with id '' updated section number '' for the course with id ''
  * The user with id '' viewed the section number '' of the course with id ''.

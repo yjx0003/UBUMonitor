@@ -1,4 +1,4 @@
-package webservice;
+package es.ubu.lsi.webservice;
 
 /**
  * Clase abstracta que añade el id del curso y adicionalmente id del grupo o

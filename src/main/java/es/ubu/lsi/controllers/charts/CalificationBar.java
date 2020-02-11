@@ -1,17 +1,17 @@
-package controllers.charts;
+package es.ubu.lsi.controllers.charts;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
-import controllers.Controller;
-import controllers.I18n;
-import controllers.MainController;
-import controllers.configuration.MainConfiguration;
+import es.ubu.lsi.controllers.Controller;
+import es.ubu.lsi.controllers.I18n;
+import es.ubu.lsi.controllers.MainController;
+import es.ubu.lsi.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.model.EnrolledUser;
+import es.ubu.lsi.model.GradeItem;
+import es.ubu.lsi.util.UtilMethods;
 import javafx.scene.paint.Color;
-import model.EnrolledUser;
-import model.GradeItem;
-import util.UtilMethods;
 
 public class CalificationBar extends ChartjsGradeItem {
 

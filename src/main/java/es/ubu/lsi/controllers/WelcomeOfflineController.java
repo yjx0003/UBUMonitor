@@ -1,4 +1,4 @@
-package controllers;
+package es.ubu.lsi.controllers;
 
 import java.io.File;
 import java.io.InvalidClassException;
@@ -18,7 +18,11 @@ import javax.crypto.IllegalBlockSizeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.configuration.Config;
+import es.ubu.lsi.controllers.configuration.Config;
+import es.ubu.lsi.model.Course;
+import es.ubu.lsi.model.DataBase;
+import es.ubu.lsi.persistence.Serialization;
+import es.ubu.lsi.util.UtilMethods;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -41,10 +45,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import model.Course;
-import model.DataBase;
-import persistence.Serialization;
-import util.UtilMethods;
 
 /**
  * Clase controlador de la pantalla de bienvenida en la que se muestran los

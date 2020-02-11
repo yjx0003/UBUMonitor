@@ -1,4 +1,4 @@
-package controllers.charts;
+package es.ubu.lsi.controllers.charts;
 
 import java.time.ZoneId;
 import java.time.chrono.IsoChronology;
@@ -12,13 +12,13 @@ import java.util.StringJoiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.Controller;
-import controllers.I18n;
-import controllers.MainController;
-import controllers.configuration.MainConfiguration;
-import model.ActivityCompletion;
-import model.CourseModule;
-import model.EnrolledUser;
+import es.ubu.lsi.controllers.Controller;
+import es.ubu.lsi.controllers.I18n;
+import es.ubu.lsi.controllers.MainController;
+import es.ubu.lsi.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.model.ActivityCompletion;
+import es.ubu.lsi.model.CourseModule;
+import es.ubu.lsi.model.EnrolledUser;
 
 public class ActivitiesStatusTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActivitiesStatusTable.class);

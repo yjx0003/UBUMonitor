@@ -1,4 +1,4 @@
-package controllers;
+package es.ubu.lsi.controllers;
 
 public interface MainAction {
 

@@ -39,8 +39,8 @@
 }
 
 .root {
-    -fx-accent: #bcbcbc;
-    -fx-focus-color: #bcbcbc;
+    -fx-faint-focus-color: transparent;
+    -fx-focus-color: transparent;
 }
 
 .label-info{

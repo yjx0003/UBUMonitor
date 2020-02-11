@@ -321,8 +321,8 @@
                   </Menu>
       						<Menu mnemonicParsing="false" text="%menu.help">
       							<items>
-      								<MenuItem fx:id="MIAboutUBUGrades" onAction="#aboutApp" text="%menu.about" />
                         <MenuItem onAction="#moreInfo" text="%menu.moreinfo" />
+      								<MenuItem fx:id="MIAboutUBUGrades" onAction="#aboutApp" text="%menu.about" />
       							</items>
       						</Menu>
       					</menus>

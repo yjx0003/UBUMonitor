@@ -104,7 +104,13 @@ public class JavaConnector {
 		}
 		
 		if (tabLogs.isSelected()) {
-			visualizationController.getTextFieldMax().setText(currentType.getMax());
+			if(currentType.isCalculateMaxActivated()) {
+				visualizationController.getTextFieldMax().setText(currentType.calculateMax());
+			}else {
+				visualizationController.getTextFieldMax().setText(currentType.getMax());
+			}
+
+		
 		}
 		currentType.update();
 		

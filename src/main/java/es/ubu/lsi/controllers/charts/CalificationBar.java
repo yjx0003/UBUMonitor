@@ -1,8 +1,13 @@
 package es.ubu.lsi.controllers.charts;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 
 import es.ubu.lsi.controllers.Controller;
 import es.ubu.lsi.controllers.I18n;
@@ -83,6 +88,65 @@ public class CalificationBar extends ChartjsGradeItem {
 		addKeyValue(jsObject, "plugins",
 				"{datalabels:{display:!0,font:{weight:\"bold\"},formatter:function(t,a){if(0===t)return\"\";let e=a.chart.data.datasets,l=0;for(i=0;i<e.length;i++)l+=e[i].data[a.dataIndex];return t+\"/\"+l+\" (\"+(t/l).toLocaleString(locale,{style:\"percent\",maximumFractionDigits:2})+\")\"}}}");
 		return jsObject.toString();
+	}
+
+	@Override
+	public void exportCSV(String path) throws IOException {
+		List<String> header = new ArrayList<>();
+		header.add("stats");
+		List<GradeItem> gradeItems = getSelectedGradeItems();
+		for (GradeItem gradeItem : gradeItems) {
+			header.add(gradeItem.getItemname());
+		}
+		FileWriter out = new FileWriter(path);
+		try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
+			double cutGrade = Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL,
+					"cutGrade");
+			List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
+			List<Integer> countNaN = new ArrayList<>(gradeItems.size());
+			List<Integer> countLessCut = new ArrayList<>(gradeItems.size());
+			List<Integer> countGreaterCut = new ArrayList<>(gradeItems.size());
+			List<Double> percentageNaN = new ArrayList<>(gradeItems.size());
+			List<Double> percentageLess = new ArrayList<>(gradeItems.size());
+			List<Double> percentageGreater = new ArrayList<>(gradeItems.size());
+
+			for (GradeItem gradeItem : gradeItems) {
+				int nan = 0;
+				int less = 0;
+				int greater = 0;
+				for (EnrolledUser user : enrolledUsers) {
+					double grade = adjustTo10(gradeItem.getEnrolledUserPercentage(user));
+					if (Double.isNaN(grade)) {
+						++nan;
+					} else if (grade < cutGrade) {
+						++less;
+					} else {
+						++greater;
+					}
+				}
+				countNaN.add(nan);
+				countLessCut.add(less);
+				countGreaterCut.add(greater);
+				percentageNaN.add(nan / (double) enrolledUsers.size());
+				percentageLess.add(less / (double) enrolledUsers.size());
+				percentageGreater.add(greater / (double) enrolledUsers.size());
+			}
+			printer.print("text.empty");
+			printer.printRecord(countNaN);
+			printer.print("text.fail");
+			printer.printRecord(countLessCut);
+
+			printer.print("text.pass");
+			printer.printRecord(countGreaterCut);
+			printer.print("text.empty" + " %");
+			printer.printRecord(percentageNaN);
+			printer.print("text.fail" + " %");
+			printer.printRecord(percentageLess);
+			printer.print("text.pass" + " %");
+			printer.printRecord(percentageGreater);
+
+		}
+
 	}
 
 }

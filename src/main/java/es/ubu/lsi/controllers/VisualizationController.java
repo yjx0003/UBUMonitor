@@ -23,10 +23,14 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -66,7 +70,8 @@ public class VisualizationController implements MainAction {
 		this.mainController = mainController;
 		initLogOptionsFilter();
 		initTabPaneWebView();
-		
+		initContextMenu();
+
 	}
 
 	private void initTabPaneWebView() {
@@ -161,6 +166,72 @@ public class VisualizationController implements MainAction {
 
 		optionsUbuLogs.visibleProperty().bind(mainController.getTabUbuLogs().selectedProperty());
 		optionsUbuLogs.managedProperty().bind(mainController.getTabUbuLogs().selectedProperty());
+	}
+
+	private void initContextMenu() {
+		ContextMenu contextMenu = new ContextMenu();
+		contextMenu.setAutoHide(true);
+
+		MenuItem exportCSV = new MenuItem("Export CSV");
+		MenuItem exportCSVDesglosed = new MenuItem("Export breakdown CSV");
+		exportCSV.setOnAction(e -> exportCSV());
+		exportCSVDesglosed.setOnAction(e -> exportCSVDesglosed());
+		exportCSVDesglosed.visibleProperty().bind(mainController.getTabUbuLogs().selectedProperty());
+
+		MenuItem exportPNG = new MenuItem("Export PNG");
+		exportPNG.setOnAction(e -> save());
+
+		contextMenu.getItems().addAll(exportPNG, exportCSV, exportCSVDesglosed);
+		webViewCharts.setOnMouseClicked(e -> {
+			if (e.getButton() == MouseButton.SECONDARY) {
+				contextMenu.show(webViewCharts, e.getScreenX(), e.getScreenY());
+			} else {
+				contextMenu.hide();
+			}
+		});
+
+	}
+
+	public void exportCSV() {
+
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Export CSV");
+		fileChooser.setInitialFileName(String.format("%s_%s_%s.csv", controller.getActualCourse().getId(),
+				LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
+				javaConnector.getCurrentType().getChartType()));
+		fileChooser.setInitialDirectory(new File(Config.getProperty("csvFolderPath", "./")));
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
+		File file = fileChooser.showSaveDialog(controller.getStage());
+		if (file != null) {
+			Config.setProperty("csvFolderPath", file.getParent());
+			try {
+				javaConnector.getCurrentType().exportCSV(file.getAbsolutePath());
+			} catch (IOException e) {
+				UtilMethods.errorWindow("Cannot save file", e);
+			}
+
+		}
+	}
+
+	public void exportCSVDesglosed() {
+
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Export CSV");
+		fileChooser.setInitialFileName(String.format("%s_%s_%s_breakdown.csv", controller.getActualCourse().getId(),
+				LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
+				javaConnector.getCurrentType().getChartType()));
+		fileChooser.setInitialDirectory(new File(Config.getProperty("csvFolderPath", "./")));
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
+		File file = fileChooser.showSaveDialog(controller.getStage());
+		if (file != null) {
+			Config.setProperty("csvFolderPath", file.getParent());
+			try {
+				javaConnector.getCurrentType().exportCSVDesglosed(file.getAbsolutePath());
+			} catch (IOException e) {
+				UtilMethods.errorWindow("Cannot save file", e);
+			}
+
+		}
 	}
 
 	/**

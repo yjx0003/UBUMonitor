@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.controlsfx.control.CheckComboBox;
 
 import es.ubu.lsi.controllers.Controller;
+import es.ubu.lsi.controllers.Exportable;
 import es.ubu.lsi.controllers.I18n;
 import es.ubu.lsi.controllers.MainController;
 import es.ubu.lsi.controllers.VisualizationController;
@@ -34,7 +35,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 
-public abstract class Chart {
+public abstract class Chart implements Exportable{
 
 	protected WebEngine webViewChartsEngine;
 	protected CheckComboBox<Group> slcGroup;
@@ -265,4 +266,6 @@ public abstract class Chart {
 		// TODO Auto-generated method stub
 
 	}
+
+	
 }

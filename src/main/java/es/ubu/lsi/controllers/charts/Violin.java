@@ -1,8 +1,15 @@
 package es.ubu.lsi.controllers.charts;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringJoiner;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import es.ubu.lsi.controllers.Controller;
 import es.ubu.lsi.controllers.I18n;
@@ -26,7 +33,7 @@ public class Violin extends ChartjsGradeItem {
 		stringBuilder.append("{labels:[");
 		stringBuilder.append(UtilMethods.joinWithQuotes(selectedGradeItems));
 		stringBuilder.append("],datasets:[");
-		if (selectedUser.size() > 0) {
+		if (!selectedUser.isEmpty()) {
 			createData(selectedUser, selectedGradeItems, stringBuilder, I18n.get("text.selectedUsers"), false);
 
 		}
@@ -106,4 +113,77 @@ public class Violin extends ChartjsGradeItem {
 				"{yAxes:[{" + yLabel + ",ticks:{min:0}}],xAxes:[{" + xLabel + ",ticks:{min:0}}]}");
 		return jsObject.toString();
 	}
+
+	@Override
+	public void exportCSV(String path) throws IOException {
+		List<String> header = new ArrayList<>();
+		header.add("boxplot");
+		header.add("stats");
+		List<GradeItem> gradeItems = getSelectedGradeItems();
+		for (GradeItem gradeItem : gradeItems) {
+			header.add(gradeItem.getItemname());
+		}
+		FileWriter out = new FileWriter(path);
+		try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
+			List<EnrolledUser> enrolledUser = getSelectedEnrolledUser();
+			if (enrolledUser != null && !enrolledUser.isEmpty()) {
+				exportCSV(printer, enrolledUser, gradeItems, I18n.get("text.selectedUsers"));
+
+			}
+			exportCSV(printer, controller.getActualCourse().getEnrolledUsers(), gradeItems, I18n.get("text.all"));
+			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
+				exportCSV(printer, group.getEnrolledUsers(), gradeItems, group.getGroupName());
+			}
+		}
+
+	}
+
+	public void exportCSV(CSVPrinter printer, Collection<EnrolledUser> enrolledUsers, List<GradeItem> gradeItems,
+			String boxplot) throws IOException {
+		List<Long> count = new ArrayList<>(gradeItems.size());
+		List<Integer> sc = new ArrayList<>(gradeItems.size());
+		List<Double> avg = new ArrayList<>(gradeItems.size());
+		List<Double> min = new ArrayList<>(gradeItems.size());
+		List<Double> q1 = new ArrayList<>(gradeItems.size());
+		List<Double> q2 = new ArrayList<>(gradeItems.size());
+		List<Double> q3 = new ArrayList<>(gradeItems.size());
+		List<Double> max = new ArrayList<>(gradeItems.size());
+		for (GradeItem gradeItem : gradeItems) {
+			DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
+			int scCount = 0;
+			for (EnrolledUser enrolledUser : enrolledUsers) {
+				double grade = gradeItem.getEnrolledUserPercentage(enrolledUser);
+				if (Double.isNaN(grade)) {
+					scCount++;
+				} else {
+
+					descriptiveStatistics.addValue(grade / 10);
+				}
+			}
+			count.add(descriptiveStatistics.getN());
+			sc.add(scCount);
+			min.add(descriptiveStatistics.getMin());
+			q1.add(descriptiveStatistics.getPercentile(25));
+			q2.add(descriptiveStatistics.getPercentile(50));
+			q3.add(descriptiveStatistics.getPercentile(75));
+			max.add(descriptiveStatistics.getMax());
+			avg.add(descriptiveStatistics.getMean());
+		}
+		exportCSV(printer, boxplot, "graded", count);
+		exportCSV(printer, boxplot, "not graded", sc);
+		exportCSV(printer, boxplot, "mean", avg);
+		exportCSV(printer, boxplot, "min", min);
+		exportCSV(printer, boxplot, "q1", q1);
+		exportCSV(printer, boxplot, "q2", q2);
+		exportCSV(printer, boxplot, "q3", q3);
+		exportCSV(printer, boxplot, "max", max);
+
+	}
+
+	public <T> void exportCSV(CSVPrinter printer, String boxplot, String stat, List<T> count) throws IOException {
+		printer.print(boxplot);
+		printer.print(stat);
+		printer.printRecord(count);
+	}
+
 }

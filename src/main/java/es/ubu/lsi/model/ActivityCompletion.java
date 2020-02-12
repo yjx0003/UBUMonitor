@@ -3,20 +3,17 @@ package es.ubu.lsi.model;
 import java.io.Serializable;
 import java.time.Instant;
 
-public class ActivityCompletion implements Serializable{
-	
+public class ActivityCompletion implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
-
 	private State state;
-	
 
 	private Instant timecompleted;
 	private Tracking tracking;
 	private EnrolledUser overrideby;
-	private boolean valueused; 
-	
-	
+	private boolean valueused;
+
 	public ActivityCompletion(State state, Instant timecompleted, Tracking tracking, EnrolledUser overrideby,
 			boolean valueused) {
 		this.state = state;
@@ -58,8 +55,6 @@ public class ActivityCompletion implements Serializable{
 		this.overrideby = overrideby;
 	}
 
-	
-	
 	public boolean isValueused() {
 		return valueused;
 	}
@@ -68,12 +63,10 @@ public class ActivityCompletion implements Serializable{
 		this.valueused = valueused;
 	}
 
-
-
 	public enum State {
 		INCOMPLETE, COMPLETE, COMPLETE_PASS, COMPLETE_FAIL;
 
-		private final static State[] ALL_STATUS = State.values();
+		private static final State[] ALL_STATUS = State.values();
 
 		public static State getByIndex(int index) {
 			return ALL_STATUS[index];
@@ -82,8 +75,9 @@ public class ActivityCompletion implements Serializable{
 
 	public enum Tracking {
 		NONE, MANUAL, AUTOMATIC;
-		
+
 		private final static Tracking[] ALL_TRACKINGS = Tracking.values();
+
 		public static Tracking getByIndex(int index) {
 			return ALL_TRACKINGS[index];
 		}

@@ -1,14 +1,19 @@
 package es.ubu.lsi.controllers.charts;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.ZoneId;
 import java.time.chrono.IsoChronology;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringJoiner;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +71,9 @@ public class ActivitiesStatusTable extends Tabulator {
 			addKeyValue(jsObject, "tooltip", true);
 
 			addKeyValueWithQuote(jsObject, "formatter", "tickCross");
-			addKeyValue(jsObject, "topCalc", "function(n,r,c){var f=0;return n.forEach(function(n){n&&f++}),f+'/'+n.length+' ('+(f/n.length||0).toLocaleString(locale,{style:'percent',maximumFractionDigits:2})+')'}");			addKeyValue(jsObject, "formatterParams", stringFormatterParams);
+			addKeyValue(jsObject, "topCalc",
+					"function(n,r,c){var f=0;return n.forEach(function(n){n&&f++}),f+'/'+n.length+' ('+(f/n.length||0).toLocaleString(locale,{style:'percent',maximumFractionDigits:2})+')'}");
+			addKeyValue(jsObject, "formatterParams", stringFormatterParams);
 			addKeyValueWithQuote(jsObject, "sorter", "datetime");
 			addKeyValue(jsObject, "sorterParams", stringsorterParams);
 			addKeyValueWithQuote(jsObject, "title", courseModule.getModuleName());
@@ -102,7 +109,8 @@ public class ActivitiesStatusTable extends Tabulator {
 		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "thirdInterval")));
 		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "fourthInterval")));
 		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "moreMax")));
-		addKeyValue(jsObject, "color", String.format(Locale.ROOT, "function(e){return %s[e/%f|0]}", jsArray.toString(), max / 4.0));
+		addKeyValue(jsObject, "color",
+				String.format(Locale.ROOT, "function(e){return %s[e/%f|0]}", jsArray.toString(), max / 4.0));
 		return jsObject.toString();
 	}
 
@@ -187,6 +195,36 @@ public class ActivitiesStatusTable extends Tabulator {
 		addKeyValueWithQuote(jsObject, "layout", "fitColumns");
 		addKeyValue(jsObject, "rowClick", "function(e,row){javaConnector.dataPointSelection(row.getPosition());}");
 		return jsObject.toString();
+	}
+
+	@Override
+	public void exportCSV(String path) throws IOException {
+		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
+		List<CourseModule> courseModules = mainController.getListViewActivity().getSelectionModel().getSelectedItems();
+		List<String> header = new ArrayList<>();
+		header.add("userid");
+		header.add("fullname");
+		for (CourseModule courseModule : courseModules) {
+			header.add(courseModule.getModuleName());
+			header.add("end date "+ courseModule.getModuleName());
+		}
+		FileWriter out = new FileWriter(path);
+		try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
+			for (EnrolledUser enrolledUser : enrolledUsers) {
+				printer.print(enrolledUser.getId());
+				printer.print(enrolledUser.getFullName());
+				for (CourseModule courseModule : courseModules) {
+
+					ActivityCompletion activity = courseModule.getActivitiesCompletion().get(enrolledUser);
+					printer.print(activity.getState().ordinal());
+					printer.print(dateFormatter.format(activity.getTimecompleted()) + ", "
+							+ timeFormatter.format(activity.getTimecompleted()));
+				}
+				printer.println();
+
+			}
+		}
+
 	}
 
 }

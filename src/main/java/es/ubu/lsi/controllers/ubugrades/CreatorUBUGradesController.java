@@ -1,6 +1,5 @@
 package es.ubu.lsi.controllers.ubugrades;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -49,7 +48,6 @@ import es.ubu.lsi.webservice.core.CoreUserGetUsersByField;
 import es.ubu.lsi.webservice.core.CoreUserGetUsersByField.Field;
 import es.ubu.lsi.webservice.gradereport.GradereportUserGetGradeItems;
 import es.ubu.lsi.webservice.gradereport.GradereportUserGetGradesTable;
-import javafx.scene.image.Image;
 
 /**
  * Clase encargada de usar las funciones de la REST API de Moodle para conseguir
@@ -129,7 +127,7 @@ public class CreatorUBUGradesController {
 
 		byte[] imageBytes = downloadImage(jsonObject.optString("profileimageurlsmall", null));
 
-		moodleUser.setUserPhoto(new Image(new ByteArrayInputStream(imageBytes)));
+		moodleUser.setUserPhoto(imageBytes);
 
 		moodleUser.setLang(jsonObject.optString("lang"));
 

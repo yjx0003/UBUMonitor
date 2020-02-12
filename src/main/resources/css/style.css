@@ -38,10 +38,7 @@
     -fx-scale-x: 0.9;
 }
 
-.root {
-    -fx-faint-focus-color: transparent;
-    -fx-focus-color: transparent;
-}
+
 
 .label-info{
 	-fx-font-size: 11.0;

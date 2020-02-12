@@ -94,11 +94,6 @@
                   <Font size="24.0" />
                </font>
             </Label>
-            <GridPane GridPane.columnIndex="1">
-              <rowConstraints>
-                <RowConstraints maxHeight="57.0" minHeight="10.0" prefHeight="28.0" valignment="TOP" vgrow="SOMETIMES" />
-              </rowConstraints>
-            </GridPane>
             <Hyperlink onAction="#openLicense" text="%text.license" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets right="20.0" />

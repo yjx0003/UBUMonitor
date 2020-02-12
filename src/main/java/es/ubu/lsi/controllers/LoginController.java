@@ -259,7 +259,6 @@ public class LoginController implements Initializable {
 		controller.setPassword(txtPassword.getText());
 		MoodleUser user = new MoodleUser();
 		user.setFullName(txtUsername.getText()); // because we have not a fullname of the user in offline mode
-		user.setUserPhoto(new Image("/img/default_user.png"));
 		controller.setUser(user);
 		onSuccessLogin();
 

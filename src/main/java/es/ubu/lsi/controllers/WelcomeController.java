@@ -266,6 +266,7 @@ public class WelcomeController implements Initializable {
 				loadData(controller.getPassword());
 			} else {
 				DataBase copyDataBase = new DataBase();
+				copyDataBase.setMoodleUser(controller.getUser());
 				Course copyCourse = copyCourse(copyDataBase, selectedCourse);
 				controller.setDataBase(copyDataBase);
 				controller.setActualCourse(copyCourse);
@@ -469,9 +470,9 @@ public class WelcomeController implements Initializable {
 				while (tries < limitRelogin) {
 					try {
 						if (!isFileCacheExists) {
-
-							DownloadLogController downloadLogController = LogCreator.download();
 							updateMessage(I18n.get("label.downloadinglog"));
+							DownloadLogController downloadLogController = LogCreator.download();
+							
 							String downloadedData = downloadLogController.downloadLog();
 							updateMessage(I18n.get("labe.parselog"));
 							Logs logs = LogCreator.parseLog(downloadedData, downloadLogController.getServerTimeZone()); 

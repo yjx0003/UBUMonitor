@@ -296,12 +296,11 @@ public class MainController implements Initializable {
 	}
 
 	private void initUserPhoto() {
-
-		userPhoto.setImage(controller.getUser().getUserPhoto());
+		Image image = new Image(new ByteArrayInputStream(controller.getDataBase().getMoodleUser().getUserPhoto()));
+		userPhoto.setImage(image);
 
 		ContextMenu menu = new ContextMenu();
-		MenuItem user = new MenuItem(controller.getUser().getFullName(),
-				new ImageView(controller.getUser().getUserPhoto()));
+		MenuItem user = new MenuItem(controller.getDataBase().getMoodleUser().getFullName(), new ImageView(image));
 		MenuItem logout = new MenuItem(I18n.get("menu.logout"));
 		MenuItem exit = new MenuItem(I18n.get("menu.exit"));
 
@@ -356,14 +355,14 @@ public class MainController implements Initializable {
 		webViewTabPane.getSelectionModel()
 				.select(Config.getProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex()));
 		webViewTabPane.getSelectionModel().selectedItemProperty().addListener((ob, old, newValue) -> {
-            if (tabUbuLogs.isSelected()) {
-                getActions().onSetTabLogs();
-            } else if (tabUbuGrades.isSelected()) {
-                getActions().onSetTabGrades();
-            } else if (tabActivity.isSelected()) {
-                getActions().onSetTabActivityCompletion();
-            }
-        });
+			if (tabUbuLogs.isSelected()) {
+				getActions().onSetTabLogs();
+			} else if (tabUbuGrades.isSelected()) {
+				getActions().onSetTabGrades();
+			} else if (tabActivity.isSelected()) {
+				getActions().onSetTabActivityCompletion();
+			}
+		});
 		visualizationController.init(this);
 
 		tabMap.put(visualizationTab, visualizationController);
@@ -1512,11 +1511,9 @@ public class MainController implements Initializable {
 	 * @param actionEvent El ActionEvent.
 	 */
 	public void aboutApp(ActionEvent actionEvent) {
-	
-		
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AboutApp.fxml"),
-				I18n.getResourceBundle());
-		
+
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AboutApp.fxml"), I18n.getResourceBundle());
+
 		Scene newScene;
 		try {
 			newScene = new Scene(loader.load());
@@ -1525,19 +1522,19 @@ public class MainController implements Initializable {
 			return;
 		}
 		Style.addStyle(Config.getProperty("style"), newScene.getStylesheets());
-		
+
 		Stage stage = new Stage();
 		stage.setScene(newScene);
 		stage.setResizable(false);
 		stage.initModality(Modality.APPLICATION_MODAL);
-		
+
 		stage.getIcons().add(new Image("/img/logo_min.png"));
 		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 
 		stage.show();
 
 	}
-	
+
 	public void moreInfo() {
 		UtilMethods.openURL(AppInfo.GITHUB);
 	}

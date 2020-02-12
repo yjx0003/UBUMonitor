@@ -1,11 +1,10 @@
 package es.ubu.lsi.model;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javafx.scene.image.Image;
 
 /**
  * Clase para el usuario logeado en la aplicación
@@ -14,7 +13,11 @@ import javafx.scene.image.Image;
  * @version 1.0
  *
  */
-public class MoodleUser {
+public class MoodleUser implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int id;
 	private String userName;
 	private String fullName;
@@ -24,7 +27,7 @@ public class MoodleUser {
 	private String city;
 	private String country;
 	private String lang;
-	private Image userPhoto;
+	private byte[] userPhoto;
 	private List<Course> courses;
 	private List<Course> recentCourses;
 	private List<Course> inProgressCourses;
@@ -198,7 +201,7 @@ public class MoodleUser {
 	/**
 	 * @return the userPhoto
 	 */
-	public Image getUserPhoto() {
+	public byte[] getUserPhoto() {
 		return userPhoto;
 	}
 
@@ -206,7 +209,7 @@ public class MoodleUser {
 	 * @param userPhoto
 	 *            the userPhoto to set
 	 */
-	public void setUserPhoto(Image userPhoto) {
+	public void setUserPhoto(byte[] userPhoto) {
 		this.userPhoto = userPhoto;
 	}
 

@@ -17,6 +17,8 @@ import java.io.Serializable;
 public class DataBase implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
+	private MoodleUser moodleUser;
 	private SubDataBase<Role> roles;
 	private SubDataBase<Group> groups;
 	private SubDataBase<EnrolledUser> users;
@@ -91,6 +93,20 @@ public class DataBase implements Serializable {
 
 	public SubDataBase<Section> getSections() {
 		return sections;
+	}
+
+	/**
+	 * @return the moodleUser
+	 */
+	public MoodleUser getMoodleUser() {
+		return moodleUser;
+	}
+
+	/**
+	 * @param moodleUser the moodleUser to set
+	 */
+	public void setMoodleUser(MoodleUser moodleUser) {
+		this.moodleUser = moodleUser;
 	}
 
 	

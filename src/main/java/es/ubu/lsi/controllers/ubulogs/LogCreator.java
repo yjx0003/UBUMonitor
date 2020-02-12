@@ -68,16 +68,9 @@ public class LogCreator {
 		dateTimeFormatter = dateTimeFormatter.withZone(zoneId);
 	}
 
-	/**
-	 * Actualiza el log del curso descargando diariamente.
-	 * 
-	 * @param logs los logs que se van a actualizar
-	 * @throws IOException 
-	 */
-	public static void updateCourseLog(Logs logs) throws IOException {
 
-		List<String> dailyLogs = downloadMultipleDays(logs);
 
+	public static void parseMultipledays(Logs logs, List<String> dailyLogs) throws IOException {
 		for (String dailyLog : dailyLogs) {
 			try(CSVParser csvParser = new CSVParser(new StringReader(dailyLog),
 					CSVFormat.DEFAULT.withFirstRecordAsHeader())){
@@ -87,10 +80,9 @@ public class LogCreator {
 			
 
 		}
-
 	}
 
-	private static List<String> downloadMultipleDays(Logs logs) {
+	public static List<String> downloadMultipleDays(Logs logs) {
 		ZoneId userZoneDateTime = "99".equals(CONTROLLER.getUser().getTimezone()) ? logs.getZoneId()
 				: ZoneId.of(CONTROLLER.getUser().getTimezone());
 		LOGGER.info("Zona horaria del usuario: {}", userZoneDateTime);
@@ -109,23 +101,24 @@ public class LogCreator {
 		return dailyLogs;
 	}
 
-	/**
-	 * Crea el log del curso con zona horaria del servidor
-	 * 
-	 * @return el log del server
-	 * @throws IOException si ha habido un problema al crearlo
-	 */
-	public static Logs createCourseLog() throws IOException {
+
+
+	public static Logs parseLog(String log, ZoneId serverTimeZone) throws IOException {
+		try (CSVParser csvParser = new CSVParser(new StringReader(log),
+				CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
+			List<LogLine> logList = LogCreator.createLogs(csvParser);
+			return new Logs(serverTimeZone, logList); // lo guardamos con la zona horaria del servidor.
+		}
+	}
+
+
+
+	public static DownloadLogController download() throws IOException {
 		DownloadLogController download = new DownloadLogController(CONTROLLER.getUrlHost().toString(),
 				CONTROLLER.getActualCourse().getId(), CONTROLLER.getUser().getTimezone(), CONTROLLER.getCookies());
 
 		setDateTimeFormatter(download.getUserTimeZone());
-		try (CSVParser csvParser = new CSVParser(new StringReader(download.downloadLog()),
-				CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
-			List<LogLine> logList = LogCreator.createLogs(csvParser);
-			return new Logs(download.getServerTimeZone(), logList); // lo guardamos con la zona horaria del servidor.
-		}
-
+		return download;
 	}
 
 	/**

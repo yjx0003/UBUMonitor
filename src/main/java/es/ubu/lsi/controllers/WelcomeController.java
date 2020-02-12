@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import es.ubu.lsi.controllers.configuration.Config;
 import es.ubu.lsi.controllers.ubugrades.CreatorGradeItems;
 import es.ubu.lsi.controllers.ubugrades.CreatorUBUGradesController;
+import es.ubu.lsi.controllers.ubulogs.DownloadLogController;
 import es.ubu.lsi.controllers.ubulogs.LogCreator;
 import es.ubu.lsi.model.Course;
 import es.ubu.lsi.model.CourseCategory;
@@ -462,20 +463,27 @@ public class WelcomeController implements Initializable {
 				updateMessage(I18n.get("label.loadingActivitiesCompletion"));
 				CreatorUBUGradesController.createActivitiesCompletionStatus(actualCourse.getId(),
 						actualCourse.getEnrolledUsers());
-				updateMessage(I18n.get("label.updatinglog"));
+				
 				int tries = 0;
 				int limitRelogin = 3;
 				while (tries < limitRelogin) {
 					try {
 						if (!isFileCacheExists) {
 
-							Logs logs = LogCreator.createCourseLog();
+							DownloadLogController downloadLogController = LogCreator.download();
+							updateMessage(I18n.get("label.downloadinglog"));
+							String downloadedData = downloadLogController.downloadLog();
+							updateMessage(I18n.get("labe.parselog"));
+							Logs logs = LogCreator.parseLog(downloadedData, downloadLogController.getServerTimeZone()); 
 							actualCourse.setLogs(logs);
 
 						} else {
 
 							Logs logs = actualCourse.getLogs();
-							LogCreator.updateCourseLog(logs);
+							updateMessage(I18n.get("label.downloadinglog"));
+							List<String> dailyLogs = LogCreator.downloadMultipleDays(logs);
+							updateMessage(I18n.get("labe.parselog"));
+							LogCreator.parseMultipledays(logs, dailyLogs);
 
 						}
 						tries = limitRelogin;

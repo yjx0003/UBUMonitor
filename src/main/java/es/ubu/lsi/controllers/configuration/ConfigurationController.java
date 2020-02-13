@@ -110,7 +110,7 @@ public class ConfigurationController implements Initializable {
 			try {
 				mainConfiguration.fromJson(new String(Files.readAllBytes(path), StandardCharsets.UTF_8));
 
-			} catch (IOException | RuntimeException e) {
+			} catch (IOException e) {
 				UtilMethods.errorWindow(I18n.get("error.chargeconfiguration"), e);
 			}
 		}

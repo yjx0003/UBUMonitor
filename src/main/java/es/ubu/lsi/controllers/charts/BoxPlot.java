@@ -118,10 +118,10 @@ public class BoxPlot extends ChartjsGradeItem {
 		try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
 			List<EnrolledUser> enrolledUser = getSelectedEnrolledUser();
 			if (enrolledUser != null && !enrolledUser.isEmpty()) {
-				exportCSV(printer, enrolledUser, gradeItems, I18n.get("text.selectedUsers"));
+				exportCSV(printer, enrolledUser, gradeItems,"selected users");
 
 			}
-			exportCSV(printer, controller.getActualCourse().getEnrolledUsers(), gradeItems, I18n.get("text.all"));
+			exportCSV(printer, controller.getActualCourse().getEnrolledUsers(), gradeItems, "all");
 			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
 				exportCSV(printer, group.getEnrolledUsers(), gradeItems, group.getGroupName());
 			}

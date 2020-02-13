@@ -131,18 +131,17 @@ public class CalificationBar extends ChartjsGradeItem {
 				percentageLess.add(less / (double) enrolledUsers.size());
 				percentageGreater.add(greater / (double) enrolledUsers.size());
 			}
-			printer.print("text.empty");
+			printer.print("empty");
 			printer.printRecord(countNaN);
-			printer.print("text.fail");
+			printer.print("fail");
 			printer.printRecord(countLessCut);
-
-			printer.print("text.pass");
+			printer.print("pass");
 			printer.printRecord(countGreaterCut);
-			printer.print("text.empty" + " %");
+			printer.print("empty %");
 			printer.printRecord(percentageNaN);
-			printer.print("text.fail" + " %");
+			printer.print("fail %");
 			printer.printRecord(percentageLess);
-			printer.print("text.pass" + " %");
+			printer.print("pass %");
 			printer.printRecord(percentageGreater);
 
 		}

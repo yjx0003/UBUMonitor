@@ -16,7 +16,8 @@ Esta versión es la continuación de [UBUGrades](https://github.com/huco95/UBUGr
 <p align="center"><img src="/latex/img/ejemplo_barras_apiladas.png" />
 
 ## Manual de usuario:
-* https://ubumonitor.gitbook.io/ubumonitor/
+<!--* https://ubumonitor.gitbook.io/ubumonitor/-->
+* https://ubumonitordocs.readthedocs.io/es/latest/
 
 ## Dependencias:
 La aplicación requiere **Java 8**.

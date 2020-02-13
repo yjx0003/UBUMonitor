@@ -1526,7 +1526,8 @@ public class MainController implements Initializable {
 		Stage stage = new Stage();
 		stage.setScene(newScene);
 		stage.setResizable(false);
-		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.initOwner(controller.getStage());
+		stage.initModality(Modality.WINDOW_MODAL);
 
 		stage.getIcons().add(new Image("/img/logo_min.png"));
 		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);

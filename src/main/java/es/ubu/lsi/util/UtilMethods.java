@@ -1,6 +1,7 @@
 package es.ubu.lsi.util;
 
 import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -22,6 +23,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -208,5 +210,15 @@ public class UtilMethods {
 		} catch (Exception e) {
 			errorWindow("Cannot open " + mail + " in the default mail client.");
 		}
+	}
+
+	public static FileChooser createFileChooser(String title, String initialFileName, String initialDirectory,
+			FileChooser.ExtensionFilter... extensionFilters) {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle(title);
+		fileChooser.setInitialFileName(initialFileName);
+		fileChooser.setInitialDirectory(new File(initialDirectory));
+		fileChooser.getExtensionFilters().addAll(extensionFilters);
+		return fileChooser;
 	}
 }

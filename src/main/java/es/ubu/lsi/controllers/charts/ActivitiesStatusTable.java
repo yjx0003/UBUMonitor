@@ -175,18 +175,6 @@ public class ActivitiesStatusTable extends Tabulator {
 	@Override
 	public String getOptions() {
 
-//		{
-//	        invalidOptionWarnings: false,
-//	        height: height,
-//	        //placeholder: "No data",
-//	        tooltipsHeader: true,
-//	        virtualDom: true,
-//	        layout: "fitColumns", //fit columns to width of table (optional)
-//	        rowClick: function (e, row) {
-//	            javaConnector.dataPointSelection(row.getPosition());
-//
-//	        },
-//	    }
 		StringJoiner jsObject = getDefaultOptions();
 		addKeyValue(jsObject, "invalidOptionWarnings", false);
 		addKeyValue(jsObject, "height", "height");

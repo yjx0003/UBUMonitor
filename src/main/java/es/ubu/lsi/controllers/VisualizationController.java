@@ -26,7 +26,6 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
@@ -172,13 +171,13 @@ public class VisualizationController implements MainAction {
 		ContextMenu contextMenu = new ContextMenu();
 		contextMenu.setAutoHide(true);
 
-		MenuItem exportCSV = new MenuItem("Export CSV");
-		MenuItem exportCSVDesglosed = new MenuItem("Export breakdown CSV");
+		MenuItem exportCSV = new MenuItem(I18n.get("text.exportcsv"));
+		MenuItem exportCSVDesglosed = new MenuItem(I18n.get("text.exportcsvdesglosed"));
 		exportCSV.setOnAction(e -> exportCSV());
 		exportCSVDesglosed.setOnAction(e -> exportCSVDesglosed());
 		exportCSVDesglosed.visibleProperty().bind(mainController.getTabUbuLogs().selectedProperty());
 
-		MenuItem exportPNG = new MenuItem("Export PNG");
+		MenuItem exportPNG = new MenuItem(I18n.get("text.exportpng"));
 		exportPNG.setOnAction(e -> save());
 
 		contextMenu.getItems().addAll(exportPNG, exportCSV, exportCSVDesglosed);
@@ -194,13 +193,12 @@ public class VisualizationController implements MainAction {
 
 	public void exportCSV() {
 
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Export CSV");
-		fileChooser.setInitialFileName(String.format("%s_%s_%s.csv", controller.getActualCourse().getId(),
-				LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
-				javaConnector.getCurrentType().getChartType()));
-		fileChooser.setInitialDirectory(new File(Config.getProperty("csvFolderPath", "./")));
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
+		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportcsv"),
+				String.format("%s_%s_%s.csv", controller.getActualCourse().getId(),
+						LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
+						javaConnector.getCurrentType().getChartType()),
+				Config.getProperty("csvFolderPath", "./"), new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
+
 		File file = fileChooser.showSaveDialog(controller.getStage());
 		if (file != null) {
 			Config.setProperty("csvFolderPath", file.getParent());
@@ -215,13 +213,12 @@ public class VisualizationController implements MainAction {
 
 	public void exportCSVDesglosed() {
 
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Export CSV");
-		fileChooser.setInitialFileName(String.format("%s_%s_%s_breakdown.csv", controller.getActualCourse().getId(),
-				LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
-				javaConnector.getCurrentType().getChartType()));
-		fileChooser.setInitialDirectory(new File(Config.getProperty("csvFolderPath", "./")));
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
+		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportcsvdesglosed"),
+				String.format("%s_%s_%s_breakdown.csv", controller.getActualCourse().getId(),
+						LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
+						javaConnector.getCurrentType().getChartType()),
+				Config.getProperty("csvFolderPath", "./"), new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
+
 		File file = fileChooser.showSaveDialog(controller.getStage());
 		if (file != null) {
 			Config.setProperty("csvFolderPath", file.getParent());
@@ -343,13 +340,12 @@ public class VisualizationController implements MainAction {
 
 	@Override
 	public void save() {
-		FileChooser fileChooser = new FileChooser();
+		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportpng"),
+				String.format("%s_%s_%s.png", controller.getActualCourse().getId(),
+						LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
+						javaConnector.getCurrentType().getChartType()),
+				Config.getProperty("imageFolderPath", "./"), new FileChooser.ExtensionFilter(".png", "*.png"));
 
-		fileChooser.setInitialFileName(String.format("%s_%s_%s.png", controller.getActualCourse().getId(),
-				LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
-				javaConnector.getCurrentType().getChartType()));
-		fileChooser.setInitialDirectory(new File(Config.getProperty("imageFolderPath", "./")));
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(".png", "*.png"));
 		try {
 			File file = fileChooser.showSaveDialog(controller.getStage());
 			if (file != null) {

@@ -1473,10 +1473,11 @@ public class MainController implements Initializable {
 	}
 
 	public void importConfiguration() {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle(I18n.get("menu.importconfig"));
-		fileChooser.setInitialDirectory(new File(Config.getProperty("configurationFolderPath", "./")));
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
+		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("menu.importconfig"),
+				null,
+				Config.getProperty("configurationFolderPath", "./"),
+				new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
+	
 		File file = fileChooser.showOpenDialog(controller.getStage());
 		if (file != null) {
 			Config.setProperty("configurationFolderPath", file.getParent());
@@ -1492,12 +1493,11 @@ public class MainController implements Initializable {
 	}
 
 	public void exportConfiguration() {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle(I18n.get("menu.exportconfig"));
-		fileChooser.setInitialFileName(
-				UtilMethods.removeReservedChar(controller.getActualCourse().getFullName()) + ".json");
-		fileChooser.setInitialDirectory(new File(Config.getProperty("configurationFolderPath", "./")));
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
+		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("menu.exportconfig"),
+				UtilMethods.removeReservedChar(controller.getActualCourse().getFullName()) + ".json",
+				Config.getProperty("configurationFolderPath", "./"),
+				new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
+	
 		File file = fileChooser.showSaveDialog(controller.getStage());
 		if (file != null) {
 			ConfigurationController.saveConfiguration(controller.getMainConfiguration(), file.toPath());

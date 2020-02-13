@@ -5,8 +5,8 @@
 
 	<groupId>es.ubu.lsi</groupId>
 	<artifactId>ubumonitor</artifactId>
-	<version>2.6.3-dev</version>
-	<packaging>jar</packaging>
+	<version>2.6.1-stable</version>
+
 
 	<name>UBUMonitor</name>
 	<url>http://maven.apache.org</url>
@@ -150,24 +150,18 @@
 	</dependencyManagement>
 	<build>
 		<plugins>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.2.0</version>
-				<configuration>
-
-
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-					<archive>
-						<manifest>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-						</manifest>
-					</archive>
-
-				</configuration>
-
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<id>default-jar</id>
+						<phase />
+					</execution>
+				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -177,6 +171,37 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+
+
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>es.ubu.lsi.controllers.UBUMonitor</mainClass>
+						</manifest>
+					</archive>
+
+					<finalName>${project.name}-${project.version}</finalName>
+
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<appendAssemblyId>false</appendAssemblyId>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
+						<phase>package</phase> <!-- bind to the packaging phase -->
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+
 		</plugins>
 	</build>
 </project>

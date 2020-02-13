@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8"> 
+<head>
+<title>ExportCharts</title>
+<style type="text/css">
+	body
+	{
+		background: #ffffff;
+		padding: 0px;
+		margin: 0px;
+	}
+	
+	.table_div
+	{
+		padding-left: 10px;
+		padding-right: 10px;
+		padding-top: 10px;
+		padding-bottom: 20px;
+		width: 98%;
+	}
+	.actividades
+	{
+	}
+	.actividadesCelda
+	{
+		cursor: pointer;
+		color: white;
+		font-weight: bold;
+	    background-color: #ab263c;
+	}
+	.filasTabla
+	{
+	    background-color: #ffffff;
+	}
+	
+	.filasImpares
+	{
+		background-color: #f0f0f0f0;
+	}
+	.filasTabla td:first-child
+	{
+		background-color: #ffffff;
+		color: #000000;
+    	font-weight: bold;
+	}
+	/*Primera columna de cada fila(la de los nombres de los alumnos)*/
+	.filasImpares td:first-child
+	{
+		background-color: #f0f0f0f0;
+		color: #000000;
+    	font-weight: bold;
+	}
+		
+	.chart-container
+	{
+		position: relative;
+		margin: auto;
+		height: 90vh;
+		width: 90vw;
+	}	
+	.titulos
+	{
+		padding-top: 5px;
+		padding-bottom: 5px;
+		text-align: center;
+		font-size: 25px;
+		background-color: #f2f2f2;
+		box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+	}
+</style>
+		
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.js"></script>
+<script type="text/javascript" src="https://cdn.rawgit.com/zenozeng/color-hash/70a23253/dist/color-hash.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+</head>
+
+<body>
+
+<div class="titulos" id="lines">Gráfico de lineas</div>
+<div id="lineas" class="chart-container">
+	<canvas id="LineChart"></canvas>
+</div>
+
+<br>
+<br>
+<br>
+<div class="titulos" id="radar">Radar</div>
+<div id="radar" class="chart-container">
+	<canvas id="RadarChart"></canvas>
+</div>
+
+<br>
+<br>
+<br>
+<div class="titulos" id="boxplot">BoxPlot</div>
+<div id="boxplot" class="chart-container">
+	<canvas id="BoxPlotChart"></canvas>
+</div>
+
+<br>
+<br>
+<br>
+<div class="titulos" id="groupboxplot">BoxPlot del grupo</div>
+<div id="boxplotgroup" class="chart-container">
+	<canvas id="BoxPlotGroupChart"></canvas>
+</div>
+
+<br>
+<br>
+<br>
+<div class="titulos" id="table">Tabla de notas</div>
+<div id="table_div" class="table_div"></div>
+
+<script>
+//------------------------------------------Opciones para los graficos------------------------------------------------------------------
+// Opciones para el gráfico de lineas y el boxplot
+var optionsLineChart = {
+	maintainAspectRatio: false,
+	responsive: true,
+	responsiveAnimationDuration: 0, // animation duration after a resize, better perfomance at 0
+	showLines: true,
+	spanGaps: false, //si se quiere mostrar las lineas cuando en algun elemento no hay dato (NaN)
+	animation:{
+		 duration: 0 // better performance at 0
+	}, //animation
+	layout: {
+		padding: {
+			top: 20,
+		} //pading
+	}, //layout
+	elements: {
+		point : {
+			pointStyle: 'circle',
+			radius: 5,
+			hoverRadius: 7
+		}, //points
+		line: {
+			tension: 0 //disable bezier curves, better performance
+		}
+	}, //elements
+	legend: {
+		display: true,
+		position: 'bottom',
+		labels : {
+			padding: 20,
+			usePointStyle: true,
+			fontSize: 12,
+			fontColor: 'rgba(0, 0, 0, 1)',
+			fontFamily: 'sans-serif'
+		} //labels
+	}, //legend
+	tooltips: {
+		mode: 'index',
+		intersect: false,
+		position: 'average',
+		backgroundColor: 'rgba(0, 0, 0, 1)',
+		bodySpacing: 4,
+		cornerRadius: 0,
+		caretSize: 10,
+		itemSort: function(a, b) {return (parseFloat(a.y) - parseFloat(b.y));}	
+	}, //tooltips
+    scales: {
+        yAxes: [
+        	{
+        		id:'left-y-axis',
+        		type: 'linear',
+        		position: 'left',
+        		gridLines: {
+            		display: true,
+            		color: 'rgba(0, 0, 0, 0.4)'
+            	}, //gridLines
+                ticks: 
+                {
+                    beginAtZero:true,
+                    max: 10,
+                    stepSize: 1,
+                    fontColor: 'rgba(0, 0, 0, 1)'
+                }//ticks
+        	},
+        	{
+        		id: 'right-y-axis',
+        		type: 'linear',
+        		position: 'right',
+        		gridLines: {
+            		display: true,
+            		color: 'rgba(0, 0, 0, 0.4)'
+            	}, //gridLines
+                ticks: 
+                {
+                    beginAtZero:true,
+                    max: 10,
+                    stepSize: 1,
+                    fontColor: 'rgba(0, 0, 0, 1)'
+                }//ticks
+        	}], //yAxes
+        xAxes :[{
+        	gridLines: {
+        		display: true,
+        		color: 'rgba(0, 0, 0, 0.4)'
+        	}, //gridLines
+        	ticks: {
+        		autoSkip: false,
+        		fontColor: 'rgba(0, 0, 0, 1)'
+        	}
+        }]//xAxes
+    }, //scales
+    chartArea: {
+    	backgroundColor: 'rgba(255,255,255,1)'
+    } //chartArea
+} //options
+	
+// Opciones para el radar
+var optionsRadarChart = {
+	maintainAspectRatio: false,
+	responsive: true,
+	responsiveAnimationDuration: 0, // animation duration after a resize, better perfomance at 0
+	showLines: true,
+	spanGaps: false, //si se quiere mostrar las lineas cuando en algun elemento no hay dato (NaN)
+	animation:{
+		 duration: 0 // better performance at 0
+	}, //animation
+	layout: {
+		padding: {
+			top: 20,
+		} //pading
+	}, //layout
+	elements: {
+		point : {
+			pointStyle: 'circle',
+			radius: 5,
+			hoverRadius: 7
+		}, //points
+		line: {
+			tension: 0 //disable bezier curves, better performance
+		}
+	}, //elements
+	legend: {
+		display: true,
+		position: 'bottom',
+		labels : {
+			padding: 20,
+			usePointStyle: true,
+			fontSize: 12,
+			fontColor: 'rgba(0, 0, 0, 1)',
+			fontFamily: 'sans-serif'
+		} //labels
+	}, //legend
+	tooltips: {
+		mode: 'index',
+		intersect: true,
+		position: 'average',
+		backgroundColor: 'rgba(0, 0, 0, 1)',
+		bodySpacing: 4,
+		cornerRadius: 0,
+		caretSize: 10,
+		itemSort: function(a, b) {return (parseFloat(a.y) - parseFloat(b.y));}	
+	}, //tooltips
+    scale: {
+		gridLines: {
+    		display: true,
+    		color: 'rgba(0, 0, 0, 0.4)'
+    	}, //gridLines
+        ticks: 
+        {
+            beginAtZero:true,
+            max: 10,
+            stepSize: 1,
+            fontColor: 'rgba(0, 0, 0, 1)'
+        }//ticks
+    }, //scales
+    chartArea: {
+    	backgroundColor: 'rgba(255,255,255,1)'
+    } //chartArea
+} //options
+//------------------------------------------Variables globales-------------------------------------------------------------
+//
+var colorHash = new ColorHash();
+// Cargamos la librearia de google para la tabla de calificaciones
+var table;
+google.charts.load('current', {'packages':['table']});
+google.charts.setOnLoadCallback(drawTable);
+function drawTable() {
+	var cssClassNames = {
+	    headerRow: 'actividades',
+	    tableRow: 'filasTabla',
+	    oddTableRow: 'filasImpares',
+	    selectedTableRow: 'filaSeleccionada',
+	    hoverTableRow: 'filaHover',
+	    headerCell: 'actividadesCelda',
+	    tableCell: 'tablaCelda'};
+	var data = google.visualization.arrayToDataTable(TableDataSet, false); // 'false' indica que la primera fila son labels, no datos.
+	table = new google.visualization.Table(document.getElementById('table_div'));
+   	table.draw(data, {showRowNumber: false, allowHTML: true, width: '100%',  cssClassNames: cssClassNames, frozenColumns: 1});
+}
+//------------------------------------------Funciones------------------------------------------------------------------
+function generateChart(){
+	
+		var linectx = document.getElementById('LineChart');
+		LineChart = new Chart(linectx,{
+			type: 'line',
+			data: LineDataSet,
+			options: optionsLineChart
+		});
+		LineChart.data.datasets.forEach((dataset) => {
+			color = colorRGB(dataset.label);
+			dataset.backgroundColor = color + '1)';
+			dataset.borderColor = color + '1)';
+			dataset.pointBackgroundColor = color + '1)';
+			dataset.pointBorderColor = color + '1)';
+			dataset.fill = false;
+		});
+		LineChart.update();
+		var radarctx = document.getElementById('RadarChart');
+		var RadarChart = new Chart(radarctx,{
+			type: 'radar',
+			data: RadarDataSet,
+			options: optionsRadarChart
+		});
+		RadarChart.data.datasets.forEach((dataset) => {
+			color = colorRGB(dataset.label);
+			dataset.backgroundColor = color + '0.3)';
+			dataset.borderColor = color + '1)';
+			dataset.pointBackgroundColor = color + '1)';
+			dataset.pointBorderColor = color + '1)';
+			dataset.fill = true;
+		});
+		RadarChart.update();
+		
+		var BoxPlotctx = document.getElementById('BoxPlotChart');
+		BoxPlotChart = new Chart(BoxPlotctx,{
+			type: 'line',
+			data: BoxPlotGeneralDataSet,
+			options: optionsLineChart
+		});
+		BoxPlotChart.update();
+		var BoxPlotGroupctx = document.getElementById('BoxPlotGroupChart');
+		BoxPlotGroupChart = new Chart(BoxPlotGroupctx,{
+			type: 'line',
+			data: BoxPlotGroupDataSet,
+			options: optionsLineChart
+		});
+		BoxPlotGroupChart.update();
+}
+//Funcion que devuelve un color en formato 'rgba(r,g,b', a falta de la transpaerncia
+//en base a el string que se le pasa
+function colorRGB(color){
+	var rgbaColor = 'rgba(';
+	var colors = []
+	colors = colorHash.rgb(color);
+	for (i = 0; i < colors.length; i++) {
+		rgbaColor += colors[i] + ',';
+	}
+	return rgbaColor;
+}
+//Funcion que devuelve un color en formato hexadecimal
+//en base a el string que se le pasa
+function colorHEX(color){
+	return colorHash.hex(color);
+}
+window.onload = function() {
+  generateChart(); 
+  setLanguage(userLang);
+}
+//------------------------------------------Traducción-----------------------------------------------------------------
+//Contiene el texto a mostrar para los distintos elementos e idiomas
+var messages = {
+	lines: {
+		es: "Gr&aacute;fico de lineas",
+		en: "Lines chart"
+	},
+	radar: {
+		es: "Radar",
+		en: "Radar"
+	},
+	boxplot: {
+		es: "BoxPlot",
+		en: "BoxPlot"
+	},
+	groupboxplot: {
+		es: "BoxPlot del Grupo",
+		en: "Group BoxPlot"
+	},
+	table: {
+		es: "Tabla de notas",
+		en: "Grades"
+	}
+}
+//Establece el idioma
+function setLanguage(lang) {
+	get_i18n('lines', lang);
+	get_i18n('radar', lang);
+	get_i18n('boxplot', lang);
+	get_i18n('groupboxplot', lang);
+	get_i18n('table', lang);
+}
+//Modifica el valor de los inputs segun el idioma pasado
+function get_i18n(item, lang) {
+	document.getElementById(item).innerHTML = messages[item][lang];
+}
+// Aqui se añaden los datos de los gráficos y la tabla de calificaciones

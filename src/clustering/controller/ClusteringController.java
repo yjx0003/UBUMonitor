@@ -3,7 +3,6 @@ package clustering.controller;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -31,7 +30,6 @@ import clustering.controller.collector.LogSectionCollector;
 import clustering.data.UserData;
 import controllers.I18n;
 import controllers.MainController;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -51,6 +49,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+import javafx.util.converter.IntegerStringConverter;
 import model.EnrolledUser;
 
 public class ClusteringController {
@@ -107,7 +106,6 @@ public class ClusteringController {
 	@SuppressWarnings("unchecked")
 	public void init(MainController controller) {
 		mainController = controller;
-		gradesCollector = new GradesCollector(mainController);
 		checkComboBoxLogs.disableProperty().bind(checkBoxLogs.selectedProperty().not());
 		algorithmList.getItems().setAll(Algorithms.getAlgorithms());
 		algorithmList.getSelectionModel().selectedItemProperty()
@@ -173,8 +171,24 @@ public class ClusteringController {
 		List<UserData> clusters = executer.execute(collectors);
 		LOGGER.debug("Parametros: {}", algorithm.getParameters());
 		updateTable(new FilteredList<UserData>(FXCollections.observableList(clusters)));
+		checkComboBoxCluster.setConverter(new IntegerStringConverter() {
+			@Override
+			public String toString(Integer value) {
+				if (value.equals(-1))
+					return I18n.get("text.all");
+				return super.toString(value);
+			}
+		});
+		checkComboBoxCluster.getItems().setAll(-1);
 		checkComboBoxCluster.getItems()
-				.setAll(IntStream.range(0, executer.getNumClusters()).boxed().collect(Collectors.toList()));
+				.addAll(IntStream.range(0, executer.getNumClusters()).boxed().collect(Collectors.toList()));
+		checkComboBoxCluster.getItemBooleanProperty(0).addListener((obs, oldValue, newValue) -> {
+			if (newValue.booleanValue()) {
+				checkComboBoxCluster.getCheckModel().checkAll();
+			} else {
+				checkComboBoxCluster.getCheckModel().clearChecks();
+			}
+		});
 		checkComboBoxCluster.getCheckModel().checkAll();
 	}
 
@@ -188,13 +202,6 @@ public class ClusteringController {
 		columnName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEnrolledUser().getFullName()));
 
 		columnCluster.setCellValueFactory(c -> new SimpleIntegerProperty(c.getValue().getCluster()));
-
-//		Set<String> keys = clusters.get(0).getKeys();
-//		for (String key : keys) {
-//			TableColumn<UserData, Number> column = new TableColumn<>(key);
-//			column.setCellValueFactory(c -> new SimpleDoubleProperty(c.getValue().getValue(key)));
-//			tableView.getColumns().add(column);
-//		}
 
 		checkComboBoxCluster.getCheckModel().getCheckedItems()
 				.addListener((ListChangeListener.Change<? extends Integer> c) -> clusters.setPredicate(

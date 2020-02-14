@@ -1,14 +1,14 @@
-package es.ubu.lsi.export.builder;
+package es.ubu.lsi.ubumonitor.export.builder;
 
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.controllers.Controller;
-import es.ubu.lsi.export.CSVBuilderAbstract;
-import es.ubu.lsi.model.DataBase;
-import es.ubu.lsi.model.LogLine;
+import es.ubu.lsi.ubumonitor.controllers.Controller;
+import es.ubu.lsi.ubumonitor.export.CSVBuilderAbstract;
+import es.ubu.lsi.ubumonitor.model.DataBase;
+import es.ubu.lsi.ubumonitor.model.LogLine;
 
 /**
  * Builds the log file.

@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers.ubugrades;
+package es.ubu.lsi.ubumonitor.controllers.ubugrades;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -20,34 +20,34 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.controllers.Controller;
-import es.ubu.lsi.model.ActivityCompletion;
-import es.ubu.lsi.model.ActivityCompletion.State;
-import es.ubu.lsi.model.ActivityCompletion.Tracking;
-import es.ubu.lsi.model.Course;
-import es.ubu.lsi.model.CourseCategory;
-import es.ubu.lsi.model.CourseModule;
-import es.ubu.lsi.model.DescriptionFormat;
-import es.ubu.lsi.model.EnrolledUser;
-import es.ubu.lsi.model.GradeItem;
-import es.ubu.lsi.model.Group;
-import es.ubu.lsi.model.ModuleType;
-import es.ubu.lsi.model.MoodleUser;
-import es.ubu.lsi.model.Role;
-import es.ubu.lsi.model.Section;
-import es.ubu.lsi.model.SubDataBase;
-import es.ubu.lsi.webservice.WSFunctions;
-import es.ubu.lsi.webservice.WebService;
-import es.ubu.lsi.webservice.core.CoreCompletionGetActivitiesCompletionStatus;
-import es.ubu.lsi.webservice.core.CoreCourseGetCategories;
-import es.ubu.lsi.webservice.core.CoreCourseGetContents;
-import es.ubu.lsi.webservice.core.CoreCourseGetEnrolledCoursesByTimelineClassification;
-import es.ubu.lsi.webservice.core.CoreEnrolGetEnrolledUsers;
-import es.ubu.lsi.webservice.core.CoreEnrolGetUsersCourses;
-import es.ubu.lsi.webservice.core.CoreUserGetUsersByField;
-import es.ubu.lsi.webservice.core.CoreUserGetUsersByField.Field;
-import es.ubu.lsi.webservice.gradereport.GradereportUserGetGradeItems;
-import es.ubu.lsi.webservice.gradereport.GradereportUserGetGradesTable;
+import es.ubu.lsi.ubumonitor.controllers.Controller;
+import es.ubu.lsi.ubumonitor.model.ActivityCompletion;
+import es.ubu.lsi.ubumonitor.model.ActivityCompletion.State;
+import es.ubu.lsi.ubumonitor.model.ActivityCompletion.Tracking;
+import es.ubu.lsi.ubumonitor.model.Course;
+import es.ubu.lsi.ubumonitor.model.CourseCategory;
+import es.ubu.lsi.ubumonitor.model.CourseModule;
+import es.ubu.lsi.ubumonitor.model.DescriptionFormat;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.model.Group;
+import es.ubu.lsi.ubumonitor.model.ModuleType;
+import es.ubu.lsi.ubumonitor.model.MoodleUser;
+import es.ubu.lsi.ubumonitor.model.Role;
+import es.ubu.lsi.ubumonitor.model.Section;
+import es.ubu.lsi.ubumonitor.model.SubDataBase;
+import es.ubu.lsi.ubumonitor.webservice.WSFunctions;
+import es.ubu.lsi.ubumonitor.webservice.WebService;
+import es.ubu.lsi.ubumonitor.webservice.core.CoreCompletionGetActivitiesCompletionStatus;
+import es.ubu.lsi.ubumonitor.webservice.core.CoreCourseGetCategories;
+import es.ubu.lsi.ubumonitor.webservice.core.CoreCourseGetContents;
+import es.ubu.lsi.ubumonitor.webservice.core.CoreCourseGetEnrolledCoursesByTimelineClassification;
+import es.ubu.lsi.ubumonitor.webservice.core.CoreEnrolGetEnrolledUsers;
+import es.ubu.lsi.ubumonitor.webservice.core.CoreEnrolGetUsersCourses;
+import es.ubu.lsi.ubumonitor.webservice.core.CoreUserGetUsersByField;
+import es.ubu.lsi.ubumonitor.webservice.core.CoreUserGetUsersByField.Field;
+import es.ubu.lsi.ubumonitor.webservice.gradereport.GradereportUserGetGradeItems;
+import es.ubu.lsi.ubumonitor.webservice.gradereport.GradereportUserGetGradesTable;
 
 /**
  * Clase encargada de usar las funciones de la REST API de Moodle para conseguir

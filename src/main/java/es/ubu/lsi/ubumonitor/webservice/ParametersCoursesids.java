@@ -1,4 +1,4 @@
-package es.ubu.lsi.webservice;
+package es.ubu.lsi.ubumonitor.webservice;
 
 import java.util.HashSet;
 import java.util.Set;

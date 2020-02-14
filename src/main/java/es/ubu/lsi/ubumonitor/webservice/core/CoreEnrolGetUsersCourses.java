@@ -1,7 +1,7 @@
-package es.ubu.lsi.webservice.core;
+package es.ubu.lsi.ubumonitor.webservice.core;
 
-import es.ubu.lsi.webservice.ParametersUserid;
-import es.ubu.lsi.webservice.WSFunctions;
+import es.ubu.lsi.ubumonitor.webservice.ParametersUserid;
+import es.ubu.lsi.ubumonitor.webservice.WSFunctions;
 
 /**
  * Función de Moodle que devuelve la información de los cursos matriculados del usuario.

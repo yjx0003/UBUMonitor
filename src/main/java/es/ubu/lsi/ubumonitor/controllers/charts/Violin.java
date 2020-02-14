@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers.charts;
+package es.ubu.lsi.ubumonitor.controllers.charts;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,14 +11,14 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import es.ubu.lsi.controllers.Controller;
-import es.ubu.lsi.controllers.I18n;
-import es.ubu.lsi.controllers.MainController;
-import es.ubu.lsi.controllers.configuration.MainConfiguration;
-import es.ubu.lsi.model.EnrolledUser;
-import es.ubu.lsi.model.GradeItem;
-import es.ubu.lsi.model.Group;
-import es.ubu.lsi.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.controllers.Controller;
+import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.model.Group;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
 public class Violin extends ChartjsGradeItem {
 

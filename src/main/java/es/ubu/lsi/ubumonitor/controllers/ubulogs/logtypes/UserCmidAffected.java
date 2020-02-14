@@ -1,8 +1,8 @@
-package es.ubu.lsi.controllers.ubulogs.logtypes;
+package es.ubu.lsi.ubumonitor.controllers.ubulogs.logtypes;
 
 import java.util.List;
 
-import es.ubu.lsi.model.LogLine;
+import es.ubu.lsi.ubumonitor.model.LogLine;
 /**
  * The user with id '' updated the completion state for the course module with id '' for the user with id ''.
  * @author Yi Peng Ji

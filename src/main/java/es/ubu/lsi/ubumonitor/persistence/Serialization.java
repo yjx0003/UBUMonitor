@@ -1,4 +1,4 @@
-package es.ubu.lsi.persistence;
+package es.ubu.lsi.ubumonitor.persistence;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

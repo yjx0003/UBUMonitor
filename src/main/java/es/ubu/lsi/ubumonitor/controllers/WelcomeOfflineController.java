@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers;
+package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.File;
 import java.io.InvalidClassException;
@@ -18,11 +18,11 @@ import javax.crypto.IllegalBlockSizeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.controllers.configuration.Config;
-import es.ubu.lsi.model.Course;
-import es.ubu.lsi.model.DataBase;
-import es.ubu.lsi.persistence.Serialization;
-import es.ubu.lsi.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.controllers.configuration.Config;
+import es.ubu.lsi.ubumonitor.model.Course;
+import es.ubu.lsi.ubumonitor.model.DataBase;
+import es.ubu.lsi.ubumonitor.persistence.Serialization;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

@@ -1,8 +1,8 @@
-package es.ubu.lsi.controllers.ubulogs.logtypes;
+package es.ubu.lsi.ubumonitor.controllers.ubulogs.logtypes;
 
 import java.util.List;
 
-import es.ubu.lsi.model.LogLine;
+import es.ubu.lsi.ubumonitor.model.LogLine;
 
 /**
  * The user with id '' created an evidence with id ''.

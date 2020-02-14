@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers;
+package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.IOException;
 import java.net.URL;
@@ -22,15 +22,15 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.controllers.configuration.Config;
-import es.ubu.lsi.controllers.configuration.MainConfiguration;
-import es.ubu.lsi.model.Course;
-import es.ubu.lsi.model.DataBase;
-import es.ubu.lsi.model.LogStats;
-import es.ubu.lsi.model.MoodleUser;
-import es.ubu.lsi.model.Stats;
-import es.ubu.lsi.util.UtilMethods;
-import es.ubu.lsi.webservice.WebService;
+import es.ubu.lsi.ubumonitor.controllers.configuration.Config;
+import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.model.Course;
+import es.ubu.lsi.ubumonitor.model.DataBase;
+import es.ubu.lsi.ubumonitor.model.LogStats;
+import es.ubu.lsi.ubumonitor.model.MoodleUser;
+import es.ubu.lsi.ubumonitor.model.Stats;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.webservice.WebService;
 import javafx.stage.Stage;
 
 public class Controller {

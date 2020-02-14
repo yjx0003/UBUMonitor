@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers.configuration;
+package es.ubu.lsi.ubumonitor.controllers.configuration;
 
 import java.util.Collection;
 

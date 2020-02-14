@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers;
+package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.File;
 import java.io.InvalidClassException;
@@ -16,20 +16,23 @@ import java.util.ResourceBundle;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
+import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.controllers.configuration.Config;
-import es.ubu.lsi.controllers.ubugrades.CreatorGradeItems;
-import es.ubu.lsi.controllers.ubugrades.CreatorUBUGradesController;
-import es.ubu.lsi.controllers.ubulogs.DownloadLogController;
-import es.ubu.lsi.controllers.ubulogs.LogCreator;
-import es.ubu.lsi.model.Course;
-import es.ubu.lsi.model.CourseCategory;
-import es.ubu.lsi.model.DataBase;
-import es.ubu.lsi.model.Logs;
-import es.ubu.lsi.persistence.Serialization;
-import es.ubu.lsi.util.UtilMethods;
+import com.opencsv.exceptions.CsvException;
+
+import es.ubu.lsi.ubumonitor.controllers.configuration.Config;
+import es.ubu.lsi.ubumonitor.controllers.ubugrades.CreatorGradeItems;
+import es.ubu.lsi.ubumonitor.controllers.ubugrades.CreatorUBUGradesController;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.DownloadLogController;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.LogCreator;
+import es.ubu.lsi.ubumonitor.model.Course;
+import es.ubu.lsi.ubumonitor.model.CourseCategory;
+import es.ubu.lsi.ubumonitor.model.DataBase;
+import es.ubu.lsi.ubumonitor.model.Logs;
+import es.ubu.lsi.ubumonitor.persistence.Serialization;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -474,6 +477,7 @@ public class WelcomeController implements Initializable {
 							DownloadLogController downloadLogController = LogCreator.download();
 							
 							String downloadedData = downloadLogController.downloadLog();
+							
 							updateMessage(I18n.get("labe.parselog"));
 							Logs logs = LogCreator.parseLog(downloadedData, downloadLogController.getServerTimeZone()); 
 							actualCourse.setLogs(logs);
@@ -488,10 +492,10 @@ public class WelcomeController implements Initializable {
 
 						}
 						tries = limitRelogin;
-					} catch (IllegalStateException e) {
+					} catch (RuntimeException e) {
 						tries++;
 						if (tries == limitRelogin) {
-							throw new IllegalStateException("Cannot download log");
+							throw new IllegalStateException("Cannot download or parse logs", e);
 						}
 						controller.reLogin();
 

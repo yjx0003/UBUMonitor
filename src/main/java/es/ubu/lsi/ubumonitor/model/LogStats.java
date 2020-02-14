@@ -1,20 +1,20 @@
-package es.ubu.lsi.model;
+package es.ubu.lsi.ubumonitor.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.ubu.lsi.controllers.ubulogs.GroupByAbstract;
-import es.ubu.lsi.controllers.ubulogs.GroupByAll;
-import es.ubu.lsi.controllers.ubulogs.GroupByAmPm;
-import es.ubu.lsi.controllers.ubulogs.GroupByDay;
-import es.ubu.lsi.controllers.ubulogs.GroupByDayOfWeek;
-import es.ubu.lsi.controllers.ubulogs.GroupByHour;
-import es.ubu.lsi.controllers.ubulogs.GroupByYear;
-import es.ubu.lsi.controllers.ubulogs.GroupByYearMonth;
-import es.ubu.lsi.controllers.ubulogs.GroupByYearQuarter;
-import es.ubu.lsi.controllers.ubulogs.GroupByYearWeek;
-import es.ubu.lsi.controllers.ubulogs.TypeTimes;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAll;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAmPm;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByDay;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByDayOfWeek;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByHour;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByYear;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByYearMonth;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByYearQuarter;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByYearWeek;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.TypeTimes;
 
 /**
  * Clase contenedora que crea las instancias de las distintas agrupaciónes por

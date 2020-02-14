@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers.configuration;
+package es.ubu.lsi.ubumonitor.controllers.configuration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,13 +9,13 @@ import java.util.function.BiConsumer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import es.ubu.lsi.controllers.Controller;
-import es.ubu.lsi.controllers.ubulogs.TypeTimes;
-import es.ubu.lsi.model.Group;
-import es.ubu.lsi.model.LastActivity;
-import es.ubu.lsi.model.LastActivityFactory;
-import es.ubu.lsi.model.Role;
-import es.ubu.lsi.model.SubDataBase;
+import es.ubu.lsi.ubumonitor.controllers.Controller;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.TypeTimes;
+import es.ubu.lsi.ubumonitor.model.Group;
+import es.ubu.lsi.ubumonitor.model.LastActivity;
+import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
+import es.ubu.lsi.ubumonitor.model.Role;
+import es.ubu.lsi.ubumonitor.model.SubDataBase;
 import javafx.collections.FXCollections;
 import javafx.scene.paint.Color;
 

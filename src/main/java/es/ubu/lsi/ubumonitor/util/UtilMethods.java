@@ -1,4 +1,4 @@
-package es.ubu.lsi.util;
+package es.ubu.lsi.ubumonitor.util;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -10,8 +10,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import es.ubu.lsi.controllers.AppInfo;
-import es.ubu.lsi.controllers.I18n;
+import es.ubu.lsi.ubumonitor.controllers.AppInfo;
+import es.ubu.lsi.ubumonitor.controllers.I18n;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;

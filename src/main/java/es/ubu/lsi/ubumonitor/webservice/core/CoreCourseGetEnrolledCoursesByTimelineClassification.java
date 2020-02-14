@@ -1,7 +1,7 @@
-package es.ubu.lsi.webservice.core;
+package es.ubu.lsi.ubumonitor.webservice.core;
 
-import es.ubu.lsi.webservice.WSFunctions;
-import es.ubu.lsi.webservice.WebService;
+import es.ubu.lsi.ubumonitor.webservice.WSFunctions;
+import es.ubu.lsi.ubumonitor.webservice.WebService;
 
 public class CoreCourseGetEnrolledCoursesByTimelineClassification extends WebService{
 

@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers.charts;
+package es.ubu.lsi.ubumonitor.controllers.charts;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,13 +17,13 @@ import org.apache.commons.csv.CSVPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.controllers.Controller;
-import es.ubu.lsi.controllers.I18n;
-import es.ubu.lsi.controllers.MainController;
-import es.ubu.lsi.controllers.configuration.MainConfiguration;
-import es.ubu.lsi.model.ActivityCompletion;
-import es.ubu.lsi.model.CourseModule;
-import es.ubu.lsi.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.controllers.Controller;
+import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.model.ActivityCompletion;
+import es.ubu.lsi.ubumonitor.model.CourseModule;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 
 public class ActivitiesStatusTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActivitiesStatusTable.class);

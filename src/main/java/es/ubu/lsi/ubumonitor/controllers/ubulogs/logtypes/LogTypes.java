@@ -1,15 +1,65 @@
-package es.ubu.lsi.controllers.ubulogs.logtypes;
+package es.ubu.lsi.ubumonitor.controllers.ubulogs.logtypes;
 
-import static es.ubu.lsi.model.Component.*;
-import static es.ubu.lsi.model.ComponentEvent.get;
-import static es.ubu.lsi.model.Event.*;
+
+
+import static es.ubu.lsi.ubumonitor.model.Component.ACTIVITY_REPORT;
+import static es.ubu.lsi.ubumonitor.model.Component.ASSIGNMENT;
+import static es.ubu.lsi.ubumonitor.model.Component.BOOK;
+import static es.ubu.lsi.ubumonitor.model.Component.BOOK_PRINTING;
+import static es.ubu.lsi.ubumonitor.model.Component.CHAT;
+import static es.ubu.lsi.ubumonitor.model.Component.CHOICE;
+import static es.ubu.lsi.ubumonitor.model.Component.COMMENTS;
+import static es.ubu.lsi.ubumonitor.model.Component.COURSE_COMPLETION;
+import static es.ubu.lsi.ubumonitor.model.Component.COURSE_PARTICIPATION;
+import static es.ubu.lsi.ubumonitor.model.Component.DATABASE;
+import static es.ubu.lsi.ubumonitor.model.Component.EVENT_MONITOR;
+import static es.ubu.lsi.ubumonitor.model.Component.EXCEL_SPREADSHEET;
+import static es.ubu.lsi.ubumonitor.model.Component.EXTERNAL_TOOL;
+import static es.ubu.lsi.ubumonitor.model.Component.FEEDBACK;
+import static es.ubu.lsi.ubumonitor.model.Component.FILE;
+import static es.ubu.lsi.ubumonitor.model.Component.FILE_SUBMISSIONS;
+import static es.ubu.lsi.ubumonitor.model.Component.FOLDER;
+import static es.ubu.lsi.ubumonitor.model.Component.FORUM;
+import static es.ubu.lsi.ubumonitor.model.Component.GLOSSARY;
+import static es.ubu.lsi.ubumonitor.model.Component.GRADER_REPORT;
+import static es.ubu.lsi.ubumonitor.model.Component.GUIA_DOCENTE;
+import static es.ubu.lsi.ubumonitor.model.Component.HOTPOT_MODULE;
+import static es.ubu.lsi.ubumonitor.model.Component.IMS_CONTENT_PACKAGE;
+import static es.ubu.lsi.ubumonitor.model.Component.JOURNAL;
+import static es.ubu.lsi.ubumonitor.model.Component.LESSON;
+import static es.ubu.lsi.ubumonitor.model.Component.LIVE_LOGS;
+import static es.ubu.lsi.ubumonitor.model.Component.LOGS;
+import static es.ubu.lsi.ubumonitor.model.Component.ONLINE_TEXT_SUBMISSIONS;
+import static es.ubu.lsi.ubumonitor.model.Component.OPENDOCUMENT_SPREADSHEET;
+import static es.ubu.lsi.ubumonitor.model.Component.OUTCOMES_REPORT;
+import static es.ubu.lsi.ubumonitor.model.Component.OVERVIEW_REPORT;
+import static es.ubu.lsi.ubumonitor.model.Component.PAGE;
+import static es.ubu.lsi.ubumonitor.model.Component.PLAIN_TEXT_FILE;
+import static es.ubu.lsi.ubumonitor.model.Component.QUIZ;
+import static es.ubu.lsi.ubumonitor.model.Component.RECYCLE_BIN;
+import static es.ubu.lsi.ubumonitor.model.Component.SCORM_PACKAGE;
+import static es.ubu.lsi.ubumonitor.model.Component.SINGLE_VIEW;
+import static es.ubu.lsi.ubumonitor.model.Component.STATISTICS;
+import static es.ubu.lsi.ubumonitor.model.Component.SUBMISSION_COMMENTS;
+import static es.ubu.lsi.ubumonitor.model.Component.SURVEY;
+import static es.ubu.lsi.ubumonitor.model.Component.SYSTEM;
+import static es.ubu.lsi.ubumonitor.model.Component.TAB_DISPLAY;
+import static es.ubu.lsi.ubumonitor.model.Component.TURNITIN_ASSIGNMENT_2;
+import static es.ubu.lsi.ubumonitor.model.Component.URL;
+import static es.ubu.lsi.ubumonitor.model.Component.USER_REPORT;
+import static es.ubu.lsi.ubumonitor.model.Component.USER_TOURS;
+import static es.ubu.lsi.ubumonitor.model.Component.WIKI;
+import static es.ubu.lsi.ubumonitor.model.Component.WORKSHOP;
+import static es.ubu.lsi.ubumonitor.model.Component.XML_FILE;
+import static es.ubu.lsi.ubumonitor.model.ComponentEvent.get;
+import static es.ubu.lsi.ubumonitor.model.Event.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import es.ubu.lsi.model.Component;
-import es.ubu.lsi.model.ComponentEvent;
-import es.ubu.lsi.model.Event;
+import es.ubu.lsi.ubumonitor.model.Component;
+import es.ubu.lsi.ubumonitor.model.ComponentEvent;
+import es.ubu.lsi.ubumonitor.model.Event;
 
 public class LogTypes {
 	

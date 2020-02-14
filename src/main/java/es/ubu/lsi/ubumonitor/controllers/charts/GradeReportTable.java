@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers.charts;
+package es.ubu.lsi.ubumonitor.controllers.charts;
 
 import java.io.IOException;
 import java.util.List;
@@ -9,14 +9,14 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.controllers.Controller;
-import es.ubu.lsi.controllers.I18n;
-import es.ubu.lsi.controllers.MainController;
-import es.ubu.lsi.controllers.configuration.MainConfiguration;
-import es.ubu.lsi.model.EnrolledUser;
-import es.ubu.lsi.model.GradeItem;
-import es.ubu.lsi.model.Group;
-import es.ubu.lsi.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.controllers.Controller;
+import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.model.Group;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
 public class GradeReportTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GradeReportTable.class);

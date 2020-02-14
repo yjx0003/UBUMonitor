@@ -1,8 +1,8 @@
-package es.ubu.lsi.controllers.ubulogs.logtypes;
+package es.ubu.lsi.ubumonitor.controllers.ubulogs.logtypes;
 
 import java.util.List;
 
-import es.ubu.lsi.model.LogLine;
+import es.ubu.lsi.ubumonitor.model.LogLine;
 /**
  * The user with id '' has had their attempt with id '' reviewed by the user with id '' for the quiz with course module id ''.
  * The user with id '' has viewed the summary for the attempt with id '' belonging to the user with id '' for the quiz with course module id ''.

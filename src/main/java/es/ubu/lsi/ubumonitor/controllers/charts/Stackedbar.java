@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers.charts;
+package es.ubu.lsi.ubumonitor.controllers.charts;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,21 +14,21 @@ import org.apache.commons.csv.CSVPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.controllers.Controller;
-import es.ubu.lsi.controllers.I18n;
-import es.ubu.lsi.controllers.MainController;
-import es.ubu.lsi.controllers.datasets.DataSet;
-import es.ubu.lsi.controllers.datasets.DataSetComponent;
-import es.ubu.lsi.controllers.datasets.DataSetComponentEvent;
-import es.ubu.lsi.controllers.datasets.DataSetSection;
-import es.ubu.lsi.controllers.datasets.DatasSetCourseModule;
-import es.ubu.lsi.controllers.datasets.StackedBarDataSet;
-import es.ubu.lsi.controllers.ubulogs.GroupByAbstract;
-import es.ubu.lsi.model.Component;
-import es.ubu.lsi.model.ComponentEvent;
-import es.ubu.lsi.model.CourseModule;
-import es.ubu.lsi.model.EnrolledUser;
-import es.ubu.lsi.model.Section;
+import es.ubu.lsi.ubumonitor.controllers.Controller;
+import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.controllers.datasets.DataSet;
+import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponent;
+import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;
+import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
+import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
+import es.ubu.lsi.ubumonitor.controllers.datasets.StackedBarDataSet;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
+import es.ubu.lsi.ubumonitor.model.Component;
+import es.ubu.lsi.ubumonitor.model.ComponentEvent;
+import es.ubu.lsi.ubumonitor.model.CourseModule;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.Section;
 
 public class Stackedbar extends Chartjs {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Stackedbar.class);

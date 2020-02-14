@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers;
+package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,13 +11,13 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.javafx.webkit.WebConsoleListener;
 
-import es.ubu.lsi.controllers.charts.Tabs;
-import es.ubu.lsi.controllers.configuration.Config;
-import es.ubu.lsi.controllers.configuration.MainConfiguration;
-import es.ubu.lsi.controllers.ubulogs.GroupByAbstract;
-import es.ubu.lsi.controllers.ubulogs.TypeTimes;
-import es.ubu.lsi.model.LogStats;
-import es.ubu.lsi.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.controllers.charts.Tabs;
+import es.ubu.lsi.ubumonitor.controllers.configuration.Config;
+import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.TypeTimes;
+import es.ubu.lsi.ubumonitor.model.LogStats;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;

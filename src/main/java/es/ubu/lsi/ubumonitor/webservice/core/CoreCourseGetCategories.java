@@ -1,10 +1,10 @@
-package es.ubu.lsi.webservice.core;
+package es.ubu.lsi.ubumonitor.webservice.core;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import es.ubu.lsi.webservice.WSFunctions;
-import es.ubu.lsi.webservice.WebService;
+import es.ubu.lsi.ubumonitor.webservice.WSFunctions;
+import es.ubu.lsi.ubumonitor.webservice.WebService;
 /**
  * Función que devuelve la información de las categorias de los cursos.
  * De momento solo funciona con parametros ids.

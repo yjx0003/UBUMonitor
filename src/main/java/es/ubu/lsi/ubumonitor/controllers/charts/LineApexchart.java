@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers.charts;
+package es.ubu.lsi.ubumonitor.controllers.charts;
 
 import java.io.IOException;
 import java.util.List;
@@ -9,12 +9,12 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.controllers.I18n;
-import es.ubu.lsi.controllers.MainController;
-import es.ubu.lsi.model.EnrolledUser;
-import es.ubu.lsi.model.GradeItem;
-import es.ubu.lsi.model.Stats;
-import es.ubu.lsi.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.model.Stats;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.scene.control.TreeItem;
 /**
  * Bugged, apexchartd has bugs in line

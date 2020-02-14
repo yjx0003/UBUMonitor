@@ -1,4 +1,4 @@
-package es.ubu.lsi.webservice;
+package es.ubu.lsi.ubumonitor.webservice;
 
 /**
  * Clase abstracta que recoge el id del usuario.

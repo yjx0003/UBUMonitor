@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers.charts;
+package es.ubu.lsi.ubumonitor.controllers.charts;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,22 +9,22 @@ import java.util.stream.Collectors;
 
 import org.controlsfx.control.CheckComboBox;
 
-import es.ubu.lsi.controllers.Controller;
-import es.ubu.lsi.controllers.Exportable;
-import es.ubu.lsi.controllers.I18n;
-import es.ubu.lsi.controllers.MainController;
-import es.ubu.lsi.controllers.VisualizationController;
-import es.ubu.lsi.controllers.configuration.MainConfiguration;
-import es.ubu.lsi.controllers.ubulogs.GroupByAbstract;
-import es.ubu.lsi.model.Component;
-import es.ubu.lsi.model.ComponentEvent;
-import es.ubu.lsi.model.CourseModule;
-import es.ubu.lsi.model.EnrolledUser;
-import es.ubu.lsi.model.GradeItem;
-import es.ubu.lsi.model.Group;
-import es.ubu.lsi.model.Section;
-import es.ubu.lsi.model.Stats;
-import es.ubu.lsi.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.controllers.Controller;
+import es.ubu.lsi.ubumonitor.controllers.Exportable;
+import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.controllers.VisualizationController;
+import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
+import es.ubu.lsi.ubumonitor.model.Component;
+import es.ubu.lsi.ubumonitor.model.ComponentEvent;
+import es.ubu.lsi.ubumonitor.model.CourseModule;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.model.Group;
+import es.ubu.lsi.ubumonitor.model.Section;
+import es.ubu.lsi.ubumonitor.model.Stats;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;

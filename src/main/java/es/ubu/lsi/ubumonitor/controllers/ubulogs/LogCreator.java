@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers.ubulogs;
+package es.ubu.lsi.ubumonitor.controllers.ubulogs;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -19,14 +19,14 @@ import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.controllers.Controller;
-import es.ubu.lsi.controllers.ubulogs.logtypes.LogTypes;
-import es.ubu.lsi.controllers.ubulogs.logtypes.ReferencesLog;
-import es.ubu.lsi.model.Component;
-import es.ubu.lsi.model.Event;
-import es.ubu.lsi.model.LogLine;
-import es.ubu.lsi.model.Logs;
-import es.ubu.lsi.model.Origin;
+import es.ubu.lsi.ubumonitor.controllers.Controller;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.logtypes.LogTypes;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.logtypes.ReferencesLog;
+import es.ubu.lsi.ubumonitor.model.Component;
+import es.ubu.lsi.ubumonitor.model.Event;
+import es.ubu.lsi.ubumonitor.model.LogLine;
+import es.ubu.lsi.ubumonitor.model.Logs;
+import es.ubu.lsi.ubumonitor.model.Origin;
 
 /**
  * Clase encargada de los logs, con metodos encargados de descargar los logs y
@@ -96,9 +96,9 @@ public class LogCreator {
 
 		LOGGER.info("La fecha del ultimo log antes de actualizar es {}", lastDateTime);
 
-		List<String> dailyLogs = download.downloadLog(lastDateTime,
+		return download.downloadLog(lastDateTime,
 				ZonedDateTime.now().withZoneSameInstant(lastDateTime.getZone()));
-		return dailyLogs;
+
 	}
 
 

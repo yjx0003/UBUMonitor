@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers.configuration;
+package es.ubu.lsi.ubumonitor.controllers.configuration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -15,14 +15,14 @@ import org.controlsfx.property.editor.PropertyEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.controllers.Controller;
-import es.ubu.lsi.controllers.I18n;
-import es.ubu.lsi.controllers.MainController;
-import es.ubu.lsi.model.Group;
-import es.ubu.lsi.model.LastActivity;
-import es.ubu.lsi.model.LastActivityFactory;
-import es.ubu.lsi.model.Role;
-import es.ubu.lsi.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.controllers.Controller;
+import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.model.Group;
+import es.ubu.lsi.ubumonitor.model.LastActivity;
+import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
+import es.ubu.lsi.ubumonitor.model.Role;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

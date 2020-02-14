@@ -1,6 +1,6 @@
-package es.ubu.lsi.controllers.charts;
+package es.ubu.lsi.ubumonitor.controllers.charts;
 
-import es.ubu.lsi.controllers.MainController;
+import es.ubu.lsi.ubumonitor.controllers.MainController;
 
 public abstract class Tabulator extends Chart{
 

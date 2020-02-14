@@ -1,4 +1,4 @@
-package es.ubu.lsi.export.builder;
+package es.ubu.lsi.ubumonitor.export.builder;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -9,10 +9,10 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.export.CSVBuilderAbstract;
-import es.ubu.lsi.model.DataBase;
-import es.ubu.lsi.model.EnrolledUser;
-import es.ubu.lsi.model.GradeItem;
+import es.ubu.lsi.ubumonitor.export.CSVBuilderAbstract;
+import es.ubu.lsi.ubumonitor.model.DataBase;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
 
 /**
  * Builds the grades file.

@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers.ubulogs;
+package es.ubu.lsi.ubumonitor.controllers.ubulogs;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
 
-import es.ubu.lsi.model.LogLine;
+import es.ubu.lsi.ubumonitor.model.LogLine;
 
 /**
  * Agrupa los logs por dia de la semana.

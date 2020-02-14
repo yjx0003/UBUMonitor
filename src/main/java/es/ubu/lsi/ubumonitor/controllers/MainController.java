@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers;
+package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -22,27 +22,29 @@ import java.util.regex.Pattern;
 
 import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.StatusBar;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.TextFields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.controllers.configuration.Config;
-import es.ubu.lsi.controllers.configuration.ConfigurationController;
-import es.ubu.lsi.controllers.configuration.MainConfiguration;
-import es.ubu.lsi.export.CSVBuilderAbstract;
-import es.ubu.lsi.export.CSVExport;
-import es.ubu.lsi.model.Component;
-import es.ubu.lsi.model.ComponentEvent;
-import es.ubu.lsi.model.CourseModule;
-import es.ubu.lsi.model.EnrolledUser;
-import es.ubu.lsi.model.GradeItem;
-import es.ubu.lsi.model.Group;
-import es.ubu.lsi.model.LastActivity;
-import es.ubu.lsi.model.LastActivityFactory;
-import es.ubu.lsi.model.ModuleType;
-import es.ubu.lsi.model.Role;
-import es.ubu.lsi.model.Section;
-import es.ubu.lsi.model.Stats;
-import es.ubu.lsi.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.controllers.configuration.Config;
+import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigurationController;
+import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.export.CSVBuilderAbstract;
+import es.ubu.lsi.ubumonitor.export.CSVExport;
+import es.ubu.lsi.ubumonitor.model.Component;
+import es.ubu.lsi.ubumonitor.model.ComponentEvent;
+import es.ubu.lsi.ubumonitor.model.CourseModule;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.model.Group;
+import es.ubu.lsi.ubumonitor.model.LastActivity;
+import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
+import es.ubu.lsi.ubumonitor.model.ModuleType;
+import es.ubu.lsi.ubumonitor.model.Role;
+import es.ubu.lsi.ubumonitor.model.Section;
+import es.ubu.lsi.ubumonitor.model.Stats;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
@@ -234,6 +236,8 @@ public class MainController implements Initializable {
 	@FXML
 	private Menu menuTheme;
 
+	private AutoCompletionBinding<EnrolledUser> autoCompletionBinding;
+
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades de
 	 * las que se compone.
@@ -423,8 +427,9 @@ public class MainController implements Initializable {
 		// Mostramos nº participantes
 
 		tfdParticipants.setOnAction(event -> filterParticipants());
+		
 		initEnrolledUsersListView();
-
+		autoCompletionBinding =  TextFields.bindAutoCompletion(tfdParticipants, filteredEnrolledList);
 		checkComboBoxGroup.getItems().addAll(controller.getActualCourse().getGroups());
 		ObservableList<Group> groups = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL,
 				"initialGroups");
@@ -1224,7 +1229,8 @@ public class MainController implements Initializable {
 		filteredEnrolledList.setPredicate(e -> (checkUserHasRole(rol, e)) && (checkUserHasGroup(group, e))
 				&& (textField.isEmpty() || e.getFullName().toLowerCase().contains(textField))
 				&& (lastActivity.contains(LastActivityFactory.getActivity(e.getLastcourseaccess(), lastLogInstant))));
-
+		autoCompletionBinding.dispose();
+		autoCompletionBinding  = TextFields.bindAutoCompletion(tfdParticipants, filteredEnrolledList);
 	}
 
 	private boolean checkUserHasGroup(List<Group> groups, EnrolledUser user) {

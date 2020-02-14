@@ -1,4 +1,4 @@
-package es.ubu.lsi.webservice;
+package es.ubu.lsi.ubumonitor.webservice;
 
 /**
  * Clase abstracta que añade el id del curso a los parametros de la URL.

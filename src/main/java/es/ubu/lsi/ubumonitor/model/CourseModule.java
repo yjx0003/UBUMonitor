@@ -1,4 +1,4 @@
-package es.ubu.lsi.model;
+package es.ubu.lsi.ubumonitor.model;
 
 import java.io.Serializable;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package es.ubu.lsi.webservice;
+package es.ubu.lsi.ubumonitor.webservice;
 
 /**
  * Enumeración de las funciones de moodle en upper case.

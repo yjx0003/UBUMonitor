@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers.ubulogs;
+package es.ubu.lsi.ubumonitor.controllers.ubulogs;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -7,7 +7,7 @@ import java.util.function.Function;
 
 import org.threeten.extra.AmPm;
 
-import es.ubu.lsi.model.LogLine;
+import es.ubu.lsi.ubumonitor.model.LogLine;
 
 /**
  * Agrupa los logs en AM o PM

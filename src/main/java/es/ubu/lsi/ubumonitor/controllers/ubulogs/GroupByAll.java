@@ -1,12 +1,12 @@
-package es.ubu.lsi.controllers.ubulogs;
+package es.ubu.lsi.ubumonitor.controllers.ubulogs;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
-import es.ubu.lsi.controllers.I18n;
-import es.ubu.lsi.model.LogLine;
+import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.model.LogLine;
 
 /**
  * Agrupa todos logs en solo uno.

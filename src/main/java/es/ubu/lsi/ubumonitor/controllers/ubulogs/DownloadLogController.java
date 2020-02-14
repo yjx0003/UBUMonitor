@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers.ubulogs;
+package es.ubu.lsi.ubumonitor.controllers.ubulogs;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -224,9 +224,7 @@ public class DownloadLogController {
 					.timeout(0)
 					.maxBodySize(0)
 					.execute();
-			if(!response.url().getPath().equals("/report/log/index.php")) {
-				throw new IllegalStateException("Cookies session expired, please login again");
-			}
+			
 			return response.body();
 
 		} catch (IOException e) {

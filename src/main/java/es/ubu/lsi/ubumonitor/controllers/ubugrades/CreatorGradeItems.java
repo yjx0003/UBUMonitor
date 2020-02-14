@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers.ubugrades;
+package es.ubu.lsi.ubumonitor.controllers.ubugrades;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -21,13 +21,13 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.controllers.Controller;
-import es.ubu.lsi.model.CourseModule;
-import es.ubu.lsi.model.EnrolledUser;
-import es.ubu.lsi.model.GradeItem;
-import es.ubu.lsi.model.ModuleType;
-import es.ubu.lsi.webservice.WebService;
-import es.ubu.lsi.webservice.gradereport.GradereportUserGetGradesTable;
+import es.ubu.lsi.ubumonitor.controllers.Controller;
+import es.ubu.lsi.ubumonitor.model.CourseModule;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.model.ModuleType;
+import es.ubu.lsi.ubumonitor.webservice.WebService;
+import es.ubu.lsi.ubumonitor.webservice.gradereport.GradereportUserGetGradesTable;
 
 /**
  * Metodo alternativo de busqueda grade item al no funcionar la funcion

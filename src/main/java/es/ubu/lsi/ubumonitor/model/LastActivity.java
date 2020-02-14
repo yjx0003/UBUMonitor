@@ -1,4 +1,4 @@
-package es.ubu.lsi.model;
+package es.ubu.lsi.ubumonitor.model;
 
 import javafx.scene.paint.Color;
 

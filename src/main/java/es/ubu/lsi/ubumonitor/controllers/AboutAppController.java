@@ -1,14 +1,14 @@
-package es.ubu.lsi.controllers;
+package es.ubu.lsi.ubumonitor.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import es.ubu.lsi.util.UtilMethods;
 
 public class AboutAppController implements Initializable {
 

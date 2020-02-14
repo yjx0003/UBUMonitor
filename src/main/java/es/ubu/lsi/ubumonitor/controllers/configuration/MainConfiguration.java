@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers.configuration;
+package es.ubu.lsi.ubumonitor.controllers.configuration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,14 +16,14 @@ import org.controlsfx.control.PropertySheet;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import es.ubu.lsi.controllers.Controller;
-import es.ubu.lsi.controllers.I18n;
-import es.ubu.lsi.controllers.charts.ChartType;
-import es.ubu.lsi.controllers.ubulogs.TypeTimes;
-import es.ubu.lsi.model.Group;
-import es.ubu.lsi.model.LastActivity;
-import es.ubu.lsi.model.LastActivityFactory;
-import es.ubu.lsi.model.Role;
+import es.ubu.lsi.ubumonitor.controllers.Controller;
+import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.controllers.charts.ChartType;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.TypeTimes;
+import es.ubu.lsi.ubumonitor.model.Group;
+import es.ubu.lsi.ubumonitor.model.LastActivity;
+import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
+import es.ubu.lsi.ubumonitor.model.Role;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

@@ -1,10 +1,10 @@
-package es.ubu.lsi.webservice.core;
+package es.ubu.lsi.ubumonitor.webservice.core;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import es.ubu.lsi.webservice.ParametersCourseid;
-import es.ubu.lsi.webservice.WSFunctions;
+import es.ubu.lsi.ubumonitor.webservice.ParametersCourseid;
+import es.ubu.lsi.ubumonitor.webservice.WSFunctions;
 
 /**
  * Devuelve los usuarios matriculados en un curso.

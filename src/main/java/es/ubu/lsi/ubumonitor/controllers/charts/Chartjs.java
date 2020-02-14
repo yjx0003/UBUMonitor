@@ -1,9 +1,9 @@
-package es.ubu.lsi.controllers.charts;
+package es.ubu.lsi.ubumonitor.controllers.charts;
 
 import java.util.StringJoiner;
 
-import es.ubu.lsi.controllers.MainController;
-import es.ubu.lsi.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 
 public abstract class Chartjs extends Chart {
 

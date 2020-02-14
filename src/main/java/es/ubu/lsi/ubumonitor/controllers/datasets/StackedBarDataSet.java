@@ -1,4 +1,4 @@
-package es.ubu.lsi.controllers.datasets;
+package es.ubu.lsi.ubumonitor.controllers.datasets;
 
 import java.awt.Color;
 import java.time.LocalDate;
@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import es.ubu.lsi.controllers.I18n;
-import es.ubu.lsi.controllers.ubulogs.GroupByAbstract;
-import es.ubu.lsi.model.EnrolledUser;
-import es.ubu.lsi.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
 public class StackedBarDataSet<T> {
 

@@ -293,7 +293,9 @@ public class Controller {
 			cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
 			
 			
-			client = new OkHttpClient.Builder().cookieJar(new JavaNetCookieJar(cookieManager)).readTimeout(Duration.ZERO).build();
+			client = new OkHttpClient.Builder().cookieJar(new JavaNetCookieJar(cookieManager))
+					.readTimeout(Duration.ZERO)
+					.build();
 			try (Response response = client.newCall(new Request.Builder().url(host + "/login/index.php").post(formBody).build()).execute()) {
 				return response.body().string();
 			}

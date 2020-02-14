@@ -16,11 +16,8 @@ import java.util.ResourceBundle;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
-import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.opencsv.exceptions.CsvException;
 
 import es.ubu.lsi.ubumonitor.controllers.configuration.Config;
 import es.ubu.lsi.ubumonitor.controllers.ubugrades.CreatorGradeItems;
@@ -478,7 +475,8 @@ public class WelcomeController implements Initializable {
 							
 							String downloadedData = downloadLogController.downloadLog();
 							
-							updateMessage(I18n.get("labe.parselog"));
+							updateMessage(I18n.get("label.parselog"));
+							
 							Logs logs = LogCreator.parseLog(downloadedData, downloadLogController.getServerTimeZone()); 
 							actualCourse.setLogs(logs);
 
@@ -487,7 +485,7 @@ public class WelcomeController implements Initializable {
 							Logs logs = actualCourse.getLogs();
 							updateMessage(I18n.get("label.downloadinglog"));
 							List<String> dailyLogs = LogCreator.downloadMultipleDays(logs);
-							updateMessage(I18n.get("labe.parselog"));
+							updateMessage(I18n.get("label.parselog"));
 							LogCreator.parseMultipledays(logs, dailyLogs);
 
 						}
@@ -497,6 +495,7 @@ public class WelcomeController implements Initializable {
 						if (tries == limitRelogin) {
 							throw new IllegalStateException("Cannot download or parse logs", e);
 						}
+						updateMessage(I18n.get("label.relogin"));
 						controller.reLogin();
 
 					}

@@ -49,7 +49,7 @@ public class LogCreator {
 	private static final Pattern INTEGER_PATTERN = Pattern
 			.compile("(['\"])(?<idQuote>-?\\d+)\\1|[^'\"](?<idNoQuote>\\d+)[^'\"]");
 
-	public static final String TIME = "﻿Time";
+	public static final String TIME = "Time";
 	public static final String USER_FULL_NAME = "User full name";
 	public static final String AFFECTED_USER = "Affected user";
 	public static final String EVENT_CONTEXT = "Event context";
@@ -88,7 +88,7 @@ public class LogCreator {
 		LOGGER.info("Zona horaria del usuario: {}", userZoneDateTime);
 
 		DownloadLogController download = new DownloadLogController(CONTROLLER.getUrlHost().toString(),
-				CONTROLLER.getActualCourse().getId(), userZoneDateTime, CONTROLLER.getCookies());
+				CONTROLLER.getActualCourse().getId(), userZoneDateTime);
 
 		setDateTimeFormatter(download.getUserTimeZone());
 
@@ -115,7 +115,7 @@ public class LogCreator {
 
 	public static DownloadLogController download() throws IOException {
 		DownloadLogController download = new DownloadLogController(CONTROLLER.getUrlHost().toString(),
-				CONTROLLER.getActualCourse().getId(), CONTROLLER.getUser().getTimezone(), CONTROLLER.getCookies());
+				CONTROLLER.getActualCourse().getId(), CONTROLLER.getUser().getTimezone());
 
 		setDateTimeFormatter(download.getUserTimeZone());
 		return download;

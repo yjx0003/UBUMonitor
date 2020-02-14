@@ -6,6 +6,7 @@ import java.net.CookiePolicy;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -292,7 +293,7 @@ public class Controller {
 			cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
 			
 			
-			client = new OkHttpClient.Builder().cookieJar(new JavaNetCookieJar(cookieManager)).build();
+			client = new OkHttpClient.Builder().cookieJar(new JavaNetCookieJar(cookieManager)).readTimeout(Duration.ZERO).build();
 			try (Response response = client.newCall(new Request.Builder().url(host + "/login/index.php").post(formBody).build()).execute()) {
 				return response.body().string();
 			}

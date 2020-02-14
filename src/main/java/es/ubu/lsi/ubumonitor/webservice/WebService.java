@@ -20,7 +20,7 @@ import es.ubu.lsi.ubumonitor.webservice.core.CoreUserGetUsersByField.Field;
 public abstract class WebService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebService.class);
-
+	
 	private static String token;
 	private static String urlWithToken;
 	private static final  String REST_FORMAT = "json";

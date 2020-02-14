@@ -6,13 +6,14 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import es.ubu.lsi.ubumonitor.controllers.Controller;
+import okhttp3.Request;
 
 /**
  * Clase encargada de descargar el log de un curso mediante web scraping.
@@ -28,10 +29,7 @@ public class DownloadLogController {
 	 */
 	private String host;
 
-	/**
-	 * Cookies que se usan para navegar despues de loguearse
-	 */
-	private Map<String, String> cookies;
+
 
 	/**
 	 * id del curso que se quiere descargar el log
@@ -50,58 +48,46 @@ public class DownloadLogController {
 	 * Constructor privado que solo asigna atributos basicos. Evita la repeticion de
 	 * codigo en los otros constructores.
 	 * 
-	 * @param host
-	 *            host moodle
-	 * @param idCourse
-	 *            id del curso que se quiere descargar el log
+	 * @param host host moodle
+	 * @param idCourse id del curso que se quiere descargar el log
 	 * 
 	 */
-	private DownloadLogController(String host, int idCourse,
-			Map<String, String> cookies) {
+	private DownloadLogController(String host, int idCourse) {
 		this.host = host;
 		this.idCourse = idCourse;
-		this.cookies = cookies;
+
 	}
 
 	/**
 	 * Contructror
 	 * 
-	 * @param host
-	 *            host moodle
-	 * @param idCourse
-	 *            id del curso que se quiere descargar el log
-	 * @param timezone
-	 *            zona horaria usada como referencia al descargar el log
-	 * @param cookies
-	 *            cookies
+	 * @param host host moodle
+	 * @param idCourse id del curso que se quiere descargar el log
+	 * @param timezone zona horaria usada como referencia al descargar el log
+	 * @param cookies cookies
 	 * 
 	 */
-	public DownloadLogController(String host, int idCourse, ZoneId timezone,
-			Map<String, String> cookies) {
-		this(host, idCourse, cookies);
+	public DownloadLogController(String host, int idCourse, ZoneId timezone) {
+		this(host, idCourse);
 		this.userTimeZone = timezone;
 	}
 
 	/**
 	 * Contructror
 	 * 
-	 * @param host
-	 *            host moodle
-	 * @param idCourse
-	 *            id del curso que se quiere descargar el log
-	 * @param timezone
-	 *            zona horaria usada como referencia al descargar el log, un valor
-	 *            de 99 si es la hora del servidor o la nomenclatura IANA de tiempo.
-	 *            Por ejemplo Europe/Madrid.
-	 * @param cookies
-	 *            cookies
-	 * @throws IOException
-	 *             si no ha encontrado la zona horaria del servidor de moodle
+	 * @param host host moodle
+	 * @param idCourse id del curso que se quiere descargar el log
+	 * @param timezone zona horaria usada como referencia al descargar el log, un
+	 * valor de 99 si es la hora del servidor o la nomenclatura IANA de tiempo. Por
+	 * ejemplo Europe/Madrid.
+	 * @param cookies cookies
+	 * @throws IOException si no ha encontrado la zona horaria del servidor de
+	 * moodle
 	 */
-	public DownloadLogController(String host, int idCourse, String timezone,
-			Map<String, String> cookies) throws IOException {
+	public DownloadLogController(String host, int idCourse, String timezone)
+			throws IOException {
 
-		this(host, idCourse, cookies);
+		this(host, idCourse);
 		// 99 significa que el usuario esta usando la zona horaria del servidor
 		this.userTimeZone = ("99".equals(timezone)) ? findServerTimezone() : ZoneId.of(timezone);
 	}
@@ -114,15 +100,22 @@ public class DownloadLogController {
 	 * Busca la zona horaria del servidor a partir del perfil del usuario.
 	 * 
 	 * @return zona horaria del servidor.
-	 * @throws IOException
-	 *             si no puede conectarse con el servidor
+	 * @throws IOException si no puede conectarse con el servidor
 	 */
 	public ZoneId findServerTimezone() throws IOException {
 
 		LOGGER.info("Buscando el tiempo del servidor desde el perfil del usuario.");
 		// vamos a la edicion del perfil de usuario para ver la zona horaria del
 		// servidor
-		Document d = Jsoup.connect(host + "/user/edit.php?lang=en").cookies(cookies).get();
+		Document d;
+		try (okhttp3.Response response = Controller.getInstance().getClient()
+				.newCall(new Request.Builder().url(host + "/user/edit.php?lang=en").build()).execute()) {
+			
+				
+			d = Jsoup.parse(response.body().string());
+		}
+		
+	
 
 		// timezone tendra una estructuctura parecida a: Server timezone (Europe/Madrid)
 		// lo unico que nos interesa es lo que hay dentro de los parentesis:
@@ -149,10 +142,8 @@ public class DownloadLogController {
 	/**
 	 * Convierte un zonedDateTime a otro zonedDateTime con diferente zona horaria
 	 * 
-	 * @param zonedDateTime
-	 *            zonedDateTime
-	 * @param zoneId
-	 *            zoneId, zona horaria
+	 * @param zonedDateTime zonedDateTime
+	 * @param zoneId zoneId, zona horaria
 	 * @return otro zonedDateTime segun el zoneId
 	 */
 	public static ZonedDateTime convertTimezone(ZonedDateTime zonedDateTime, ZoneId zoneId) {
@@ -161,6 +152,7 @@ public class DownloadLogController {
 
 	/**
 	 * Descarga el log completo.
+	 * 
 	 * @return csv del log
 	 */
 	public String downloadLog() {
@@ -170,8 +162,7 @@ public class DownloadLogController {
 	/**
 	 * Descarga un dia del log a partir del zonedDateTime
 	 * 
-	 * @param zonedDateTime
-	 *            zona horaria
+	 * @param zonedDateTime zona horaria
 	 * @return csv del log diario
 	 */
 	public String downloadLog(ZonedDateTime zonedDateTime) {
@@ -183,8 +174,7 @@ public class DownloadLogController {
 	 * Descarga un dia del log a partir de los segundos transcurridos desde 1 de
 	 * enero de 1970.
 	 * 
-	 * @param dateSeconds
-	 *            segundos desde 1 de enero de 1970
+	 * @param dateSeconds segundos desde 1 de enero de 1970
 	 * @return csv del log diario
 	 */
 	public String downloadLog(long dateSeconds) {
@@ -195,8 +185,7 @@ public class DownloadLogController {
 	 * Descarga un dia del log a partir del localDateTime usando la zona horaria del
 	 * atributo timezone
 	 * 
-	 * @param localDateTime
-	 *            localDateTime usando el timezone
+	 * @param localDateTime localDateTime usando el timezone
 	 * @return csv del log diario
 	 */
 	public String downloadLog(LocalDateTime localDateTime) {
@@ -207,8 +196,7 @@ public class DownloadLogController {
 	/**
 	 * Descarga un dia del log a partir de los segundos desde 1 de enero de 1970
 	 * 
-	 * @param dateSeconds
-	 *            los segundos
+	 * @param dateSeconds los segundos
 	 * @return csv del log diario
 	 */
 	public String downloadLog(String dateSeconds) {
@@ -216,16 +204,10 @@ public class DownloadLogController {
 			String url = host + "/report/log/index.php?lang=en&download=csv&id=" + idCourse + "&date=" + dateSeconds
 					+ "&modid=&chooselog=1&logreader=logstore_standard";
 			LOGGER.info("Descargando log con la URL {}: ", url);
-			Response response = Jsoup
-					.connect(url)
-					.cookies(cookies)
-					.ignoreContentType(true)
-					.followRedirects(true)
-					.timeout(0)
-					.maxBodySize(0)
-					.execute();
-			
-			return response.body();
+			try (okhttp3.Response response = Controller.getInstance().getClient()
+					.newCall(new Request.Builder().url(url).build()).execute()) {
+				return response.body().string();
+			}
 
 		} catch (IOException e) {
 			LOGGER.error("Error al descargar el log a partir de los segundos: " + dateSeconds, e);
@@ -236,17 +218,15 @@ public class DownloadLogController {
 	/**
 	 * Descarga los logs diarios a partir de zonedInicio hasta zonedFin
 	 * 
-	 * @param zonedInicio
-	 *            fecha de inicio apartir de la descarga
-	 * @param zonedFin
-	 *            hasta fecha fin
+	 * @param zonedInicio fecha de inicio apartir de la descarga
+	 * @param zonedFin hasta fecha fin
 	 * @return lista de log diarios de fecha inicio hasta fin
 	 */
 	public List<String> downloadLog(ZonedDateTime zonedInicio, ZonedDateTime zonedFin) {
 
 		ZonedDateTime newzonedInicio = convertTimezone(zonedInicio, userTimeZone);
 		ZonedDateTime newzonedFin = convertTimezone(zonedFin, userTimeZone);
-		LOGGER.info("Descargando los logs desde {} hasta {}",newzonedInicio,newzonedFin);
+		LOGGER.info("Descargando los logs desde {} hasta {}", newzonedInicio, newzonedFin);
 		List<String> logs = new ArrayList<>();
 		// mientras la fecha de inicio sea menor que la fecha de fin
 		while (newzonedInicio.isBefore(newzonedFin)) {
@@ -260,10 +240,8 @@ public class DownloadLogController {
 	/**
 	 * Descarga los logs diarios a partir de inicio hasta fin
 	 * 
-	 * @param inicio
-	 *            fecha de inicio apartir de la descarga
-	 * @param fin
-	 *            hasta fecha fin
+	 * @param inicio fecha de inicio apartir de la descarga
+	 * @param fin hasta fecha fin
 	 * @return lista de log diarios de fecha inicio hasta fin
 	 */
 	public List<String> downloadLog(LocalDateTime inicio, LocalDateTime fin) {
@@ -271,19 +249,9 @@ public class DownloadLogController {
 	}
 
 	/**
-	 * Devuelve los cookies
-	 * 
-	 * @return cookies
-	 */
-	public Map<String, String> getCookies() {
-		return cookies;
-	}
-
-	/**
 	 * Cambia el id del curso para descargar otros logs.
 	 * 
-	 * @param idCourse
-	 *            idCourse
+	 * @param idCourse idCourse
 	 */
 	public void setIdCourse(int idCourse) {
 		this.idCourse = idCourse;

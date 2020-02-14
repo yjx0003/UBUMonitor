@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.jsoup.Connection.Method;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -48,6 +47,10 @@ import es.ubu.lsi.ubumonitor.webservice.core.CoreUserGetUsersByField;
 import es.ubu.lsi.ubumonitor.webservice.core.CoreUserGetUsersByField.Field;
 import es.ubu.lsi.ubumonitor.webservice.gradereport.GradereportUserGetGradeItems;
 import es.ubu.lsi.ubumonitor.webservice.gradereport.GradereportUserGetGradesTable;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Clase encargada de usar las funciones de la REST API de Moodle para conseguir
@@ -83,11 +86,9 @@ public class CreatorUBUGradesController {
 	/**
 	 * Busca los cursos matriculados del alumno.
 	 * 
-	 * @param userid
-	 *            id del usuario
+	 * @param userid id del usuario
 	 * @return lista de cursos matriculados por el usuario
-	 * @throws IOException
-	 *             error de conexion moodle
+	 * @throws IOException error de conexion moodle
 	 */
 	public static List<Course> getUserCourses(int userid) throws IOException {
 		WebService ws = new CoreEnrolGetUsersCourses(userid);
@@ -100,11 +101,9 @@ public class CreatorUBUGradesController {
 	/**
 	 * Crea un usuario moodle del que se loguea en la aplicación
 	 * 
-	 * @param username
-	 *            nombre de usuario
+	 * @param username nombre de usuario
 	 * @return el usuario moodle
-	 * @throws IOException
-	 *             si no ha podido conectarse al servidor moodle
+	 * @throws IOException si no ha podido conectarse al servidor moodle
 	 */
 	public static MoodleUser createMoodleUser(String username) throws IOException {
 		WebService ws = new CoreUserGetUsersByField(Field.USERNAME, username);
@@ -136,20 +135,19 @@ public class CreatorUBUGradesController {
 		List<Course> courses = getUserCourses(moodleUser.getId());
 		moodleUser.setCourses(courses);
 
-		Set<Integer> ids = courses.stream()
-				.mapToInt(c -> c.getCourseCategory().getId()) // cogemos los ids de cada curso
+		Set<Integer> ids = courses.stream().mapToInt(c -> c.getCourseCategory().getId()) // cogemos los ids de cada
+																							// curso
 				.boxed() // convertimos a Integer
 				.collect(Collectors.toSet());
 
 		createCourseCategories(ids);
-		
-		
-		moodleUser.setInProgressCourses(coursesByTimeline(CoreCourseGetEnrolledCoursesByTimelineClassification.IN_PROGRESS));
+
+		moodleUser.setInProgressCourses(
+				coursesByTimeline(CoreCourseGetEnrolledCoursesByTimelineClassification.IN_PROGRESS));
 		moodleUser.setPastCourses(coursesByTimeline(CoreCourseGetEnrolledCoursesByTimelineClassification.PAST));
 		moodleUser.setFutureCourses(coursesByTimeline(CoreCourseGetEnrolledCoursesByTimelineClassification.FUTURE));
 		moodleUser.setRecentCourses(getRecentCourses(moodleUser.getId()));
-		
-		
+
 		return moodleUser;
 	}
 
@@ -159,21 +157,20 @@ public class CreatorUBUGradesController {
 			String response = webService.getResponse();
 			JSONArray courses = new JSONObject(response).getJSONArray("courses");
 			return createCourses(courses, true);
-		}catch(Exception ex) {
+		} catch (Exception ex) {
 			return Collections.emptyList();
 		}
 	}
 
 	private static List<Course> getRecentCourses(int userid) throws IOException {
-		
+
 		try {
 			JSONArray jsonArray = getRecentCoursesResponse(userid);
 			return createCourses(jsonArray, true);
-		}catch(Exception ex) {
+		} catch (Exception ex) {
 			return Collections.emptyList();
 		}
-		
-		
+
 	}
 
 	private static JSONArray getRecentCoursesResponse(int userid) throws IOException {
@@ -181,29 +178,21 @@ public class CreatorUBUGradesController {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("methodname", WSFunctions.CORE_COURSE_GET_RECENT_COURSES);
 
-		
 		JSONObject args = new JSONObject();
 		args.put("userid", userid);
 		args.put("limit", 8);
-		
+
 		jsonObject.put("args", args);
-		
-		
+
 		jsonArray.put(jsonObject);
-		
-		String response = Jsoup
-				.connect(CONTROLLER.getUrlHost()+"/lib/ajax/service.php")
-				.ignoreContentType(true)
-				.cookies(CONTROLLER.getCookies())
-				.data("sesskey", CONTROLLER.getSesskey())
-				.method(Method.POST)
-				.requestBody(jsonArray.toString())
-				.execute()
-				.body();
-		
-		JSONArray responseArray = new JSONArray(response);
-		return responseArray.getJSONObject(0).getJSONArray("data");
-		
+
+		try (Response response = CONTROLLER.getClient().newCall(new Request.Builder()
+				.url(CONTROLLER.getUrlHost() + "/lib/ajax/service.php?sesskey=" + CONTROLLER.getSesskey())
+				.post(RequestBody.create(jsonArray.toString(), MediaType.parse("application/json; charset=utf-8")))
+				.build()).execute()) {
+			JSONArray responseArray = new JSONArray(response.body().string());
+			return responseArray.getJSONObject(0).getJSONArray("data");
+		}
 
 	}
 
@@ -211,33 +200,27 @@ public class CreatorUBUGradesController {
 	 * Descarga una imagen de moodle, necesario usar los cookies en versiones
 	 * posteriores al 3.5
 	 * 
-	 * @param url
-	 *            url de la image
+	 * @param url url de la image
 	 * @return array de bytes de la imagen o un array de byte vacío si la url es
-	 *         null
-	 * @throws IOException
-	 *             si hay algun problema al descargar la imagen
+	 * null
+	 * @throws IOException si hay algun problema al descargar la imagen
 	 */
 	private static byte[] downloadImage(String url) throws IOException {
 		if (url == null) {
 			return new byte[0];
 		}
 
-		return Jsoup.connect(url)
-				.ignoreContentType(true)
-				.cookies(CONTROLLER.getCookies())
-				.execute()
-				.bodyAsBytes();
+		try (Response response = CONTROLLER.getClient().newCall(new Request.Builder().url(url).build()).execute()) {
+			return response.body().bytes();
+		}
 
 	}
 
 	/**
 	 * Crea las categorias de curso.
 	 * 
-	 * @param ids
-	 *            ids de las categorias
-	 * @throws IOException
-	 *             si hay algun problema conectarse a moodle
+	 * @param ids ids de las categorias
+	 * @throws IOException si hay algun problema conectarse a moodle
 	 */
 	public static void createCourseCategories(Set<Integer> ids) throws IOException {
 
@@ -263,11 +246,9 @@ public class CreatorUBUGradesController {
 	/**
 	 * Crea e inicializa los usuarios matriculados de un curso.
 	 * 
-	 * @param courseid
-	 *            id del curso
+	 * @param courseid id del curso
 	 * @return lista de usuarios matriculados en el curso
-	 * @throws IOException
-	 *             si no ha podido conectarse
+	 * @throws IOException si no ha podido conectarse
 	 */
 	public static List<EnrolledUser> createEnrolledUsers(int courseid) throws IOException {
 
@@ -291,12 +272,10 @@ public class CreatorUBUGradesController {
 	 * Crea el usuario matriculado a partir del json parcial de la respuesta de
 	 * moodle
 	 * 
-	 * @param user
-	 *            json parcial del usuario
-	 *            {@link webservice.WSFunctions#CORE_ENROL_GET_ENROLLED_USERS}
+	 * @param user json parcial del usuario
+	 * {@link webservice.WSFunctions#CORE_ENROL_GET_ENROLLED_USERS}
 	 * @return usuario matriculado
-	 * @throws IOException
-	 *             si hay un problema de conexion con moodle
+	 * @throws IOException si hay un problema de conexion con moodle
 	 */
 	public static EnrolledUser createEnrolledUser(JSONObject user) throws IOException {
 
@@ -346,10 +325,9 @@ public class CreatorUBUGradesController {
 	 * usuarios matriculados del curso y de la funcion cursos matriculados de un
 	 * usuario.
 	 * 
-	 * @param jsonArray
-	 *            json parcial
-	 *            {@link webservice.WSFunctions#CORE_ENROL_GET_ENROLLED_USERS} o
-	 *            {@link webservice.WSFunctions#CORE_ENROL_GET_USERS_COURSES}
+	 * @param jsonArray json parcial
+	 * {@link webservice.WSFunctions#CORE_ENROL_GET_ENROLLED_USERS} o
+	 * {@link webservice.WSFunctions#CORE_ENROL_GET_USERS_COURSES}
 	 * @return lista de cursos
 	 */
 	public static List<Course> createCourses(JSONArray jsonArray, boolean userCourses) {
@@ -368,9 +346,8 @@ public class CreatorUBUGradesController {
 	/**
 	 * Crea un curso e inicializa sus atributos
 	 * 
-	 * @param jsonObject
-	 *            json parcial
-	 *            {@link webservice.WSFunctions#CORE_ENROL_GET_USERS_COURSES}
+	 * @param jsonObject json parcial
+	 * {@link webservice.WSFunctions#CORE_ENROL_GET_USERS_COURSES}
 	 * @return curso creado
 	 */
 	public static Course createUserCourse(JSONObject jsonObject) {
@@ -412,9 +389,8 @@ public class CreatorUBUGradesController {
 	/**
 	 * Crea un curso e inicializa sus atributos
 	 * 
-	 * @param jsonObject
-	 *            json parcial
-	 *            {@link webservice.WSFunctions#CORE_ENROL_GET_ENROLLED_USERS}
+	 * @param jsonObject json parcial
+	 * {@link webservice.WSFunctions#CORE_ENROL_GET_ENROLLED_USERS}
 	 * @return curso creado
 	 */
 	public static Course createEnrolleduCourse(JSONObject jsonObject) {
@@ -437,9 +413,8 @@ public class CreatorUBUGradesController {
 	/**
 	 * Crea los roles que tiene el usuario dentro del curso.
 	 * 
-	 * @param jsonArray
-	 *            json parcial
-	 *            {@link webservice.WSFunctions#CORE_ENROL_GET_ENROLLED_USERS}
+	 * @param jsonArray json parcial
+	 * {@link webservice.WSFunctions#CORE_ENROL_GET_ENROLLED_USERS}
 	 * @return lista de roles
 	 */
 	public static List<Role> createRoles(JSONArray jsonArray) {
@@ -458,9 +433,8 @@ public class CreatorUBUGradesController {
 	/**
 	 * Crea un rol
 	 * 
-	 * @param jsonObject
-	 *            json parcial de la funcion
-	 *            {@link webservice.WSFunctions#CORE_ENROL_GET_ENROLLED_USERS}
+	 * @param jsonObject json parcial de la funcion
+	 * {@link webservice.WSFunctions#CORE_ENROL_GET_ENROLLED_USERS}
 	 * @return el rol creado
 	 */
 	public static Role createRole(JSONObject jsonObject) {
@@ -487,9 +461,8 @@ public class CreatorUBUGradesController {
 	/**
 	 * Crea los grupos del curso
 	 * 
-	 * @param jsonArray
-	 *            json parcial de
-	 *            {@link webservice.WSFunctions#CORE_ENROL_GET_ENROLLED_USERS}
+	 * @param jsonArray json parcial de
+	 * {@link webservice.WSFunctions#CORE_ENROL_GET_ENROLLED_USERS}
 	 * @return listado de grupos
 	 */
 	public static List<Group> createGroups(JSONArray jsonArray) {
@@ -509,7 +482,7 @@ public class CreatorUBUGradesController {
 	 * Crea un grupo a partir del json
 	 * 
 	 * @param jsonObject
-	 *            {@link webservice.WSFunctions#CORE_ENROL_GET_ENROLLED_USERS}
+	 * {@link webservice.WSFunctions#CORE_ENROL_GET_ENROLLED_USERS}
 	 * @return el grupo
 	 */
 	public static Group createGroup(JSONObject jsonObject) {
@@ -538,16 +511,13 @@ public class CreatorUBUGradesController {
 	 * Crea los modulos del curso a partir de la funcion de moodle
 	 * {@link webservice.WSFunctions#CORE_COURSE_GET_CONTENTS}
 	 * 
-	 * @param courseid
-	 *            id del curso
+	 * @param courseid id del curso
 	 * @return lista de modulos del curso
-	 * @throws IOException
-	 *             error de conexion con moodle
+	 * @throws IOException error de conexion con moodle
 	 */
 	public static List<CourseModule> createSectionsAndModules(int courseid) throws IOException {
 
-		WebService ws = CoreCourseGetContents.newBuilder(courseid)
-				.setExcludecontents(true) // ignoramos el contenido
+		WebService ws = CoreCourseGetContents.newBuilder(courseid).setExcludecontents(true) // ignoramos el contenido
 				.build();
 		String response = ws.getResponse();
 
@@ -599,8 +569,7 @@ public class CreatorUBUGradesController {
 	 * Crea los modulos del curso a partir del json de
 	 * {@link webservice.WSFunctions#CORE_COURSE_GET_CONTENTS}
 	 * 
-	 * @param jsonObject
-	 *            de {@link webservice.WSFunctions#CORE_COURSE_GET_CONTENTS}
+	 * @param jsonObject de {@link webservice.WSFunctions#CORE_COURSE_GET_CONTENTS}
 	 * @return modulo del curso
 	 */
 	public static CourseModule createModule(JSONObject jsonObject) {
@@ -631,25 +600,26 @@ public class CreatorUBUGradesController {
 		return module;
 
 	}
-	
-	public static void createActivitiesCompletionStatus(int courseid, Collection<EnrolledUser> users) throws IOException {
-		for(EnrolledUser user: users) {
+
+	public static void createActivitiesCompletionStatus(int courseid, Collection<EnrolledUser> users)
+			throws IOException {
+		for (EnrolledUser user : users) {
 			createActivitiesCompletionStatus(courseid, user.getId());
 		}
 	}
-	
-	public static void createActivitiesCompletionStatus(int courseid, int userid) throws IOException{
+
+	public static void createActivitiesCompletionStatus(int courseid, int userid) throws IOException {
 		WebService ws = new CoreCompletionGetActivitiesCompletionStatus(courseid, userid);
 		String response = ws.getResponse();
-		
+
 		SubDataBase<CourseModule> modules = CONTROLLER.getDataBase().getModules();
 		SubDataBase<EnrolledUser> enrolledUsers = CONTROLLER.getDataBase().getUsers();
 		JSONObject jsonObject = new JSONObject(response);
 		JSONArray statuses = jsonObject.getJSONArray("statuses");
-		for (int i = 0; i< statuses.length(); i++) {
+		for (int i = 0; i < statuses.length(); i++) {
 			JSONObject status = statuses.getJSONObject(i);
-			
-			CourseModule courseModule =  modules.getById(status.getInt("cmid"));
+
+			CourseModule courseModule = modules.getById(status.getInt("cmid"));
 			State state = State.getByIndex(status.getInt("state"));
 			Instant timecompleted = Instant.ofEpochSecond(status.getLong("timecompleted"));
 			Tracking tracking = Tracking.getByIndex(status.getInt("tracking"));
@@ -660,9 +630,9 @@ public class CreatorUBUGradesController {
 			}
 			boolean valueused = status.optBoolean("valueused");
 			ActivityCompletion activity = new ActivityCompletion(state, timecompleted, tracking, overrideby, valueused);
-			
+
 			courseModule.getActivitiesCompletion().put(enrolledUsers.getById(userid), activity);
-			
+
 		}
 	}
 
@@ -671,11 +641,9 @@ public class CreatorUBUGradesController {
 	 * {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADES_TABLE} y
 	 * {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADE_ITEMS}
 	 * 
-	 * @param courseid
-	 *            id del curso
+	 * @param courseid id del curso
 	 * @return lista de grade item
-	 * @throws IOException
-	 *             si no se ha conectado con moodle
+	 * @throws IOException si no se ha conectado con moodle
 	 */
 	public static List<GradeItem> createGradeItems(int courseid) throws IOException {
 
@@ -699,8 +667,7 @@ public class CreatorUBUGradesController {
 	/**
 	 * Actualiza los grade item
 	 * 
-	 * @param gradeItems
-	 *            las de grade item
+	 * @param gradeItems las de grade item
 	 */
 	private static void updateToOriginalGradeItem(List<GradeItem> gradeItems) {
 		for (GradeItem gradeItem : gradeItems) {
@@ -732,7 +699,7 @@ public class CreatorUBUGradesController {
 	 * Crea la jearquia de padres e hijos de los grade item
 	 * 
 	 * @param jsonObject
-	 *            {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADES_TABLE}
+	 * {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADES_TABLE}
 	 * @return lista de grade item
 	 */
 	private static List<GradeItem> createHierarchyGradeItems(JSONObject jsonObject) {
@@ -787,10 +754,9 @@ public class CreatorUBUGradesController {
 	/**
 	 * Inicializa los atributos basicos del grade item
 	 * 
-	 * @param gradeItems
-	 *            lista de grade item
+	 * @param gradeItems lista de grade item
 	 * @param jsonObject
-	 *            {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADE_ITEMS}
+	 * {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADE_ITEMS}
 	 */
 	private static void setBasicAttributes(List<GradeItem> gradeItems, JSONObject jsonObject) {
 
@@ -802,8 +768,7 @@ public class CreatorUBUGradesController {
 			LOGGER.error(
 					"El tamaño de las lineas del calificador no son iguales: de la funcion gradereport_user_get_grade_items es de tamaño {} "
 							+ "y de la funcion gradereport_user_get_grades_table se obtiene:{} ",
-					gradeitems.length(),
-					gradeItems.size());
+					gradeitems.length(), gradeItems.size());
 			throw new IllegalStateException(
 					"El tamaño de las lineas del calificador no son iguales: de la funcion gradereport_user_get_grade_items es de tamaño"
 							+ gradeitems.length() + "y de la funcion gradereport_user_get_grades_table se obtiene: "
@@ -845,10 +810,9 @@ public class CreatorUBUGradesController {
 	/**
 	 * Añade las calificaciones a los usuarios.
 	 * 
-	 * @param gradeItems
-	 *            gradeitems
+	 * @param gradeItems gradeitems
 	 * @param jsonObject
-	 *            {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADE_ITEMS}
+	 * {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADE_ITEMS}
 	 */
 	private static void setEnrolledUserGrades(List<GradeItem> gradeItems, JSONObject jsonObject) {
 		JSONArray usergrades = jsonObject.getJSONArray("usergrades");
@@ -873,12 +837,9 @@ public class CreatorUBUGradesController {
 	/**
 	 * Crea la jerarquia de padre e hijo
 	 * 
-	 * @param categories
-	 *            grade item de tipo categoria
-	 * @param nivel
-	 *            nivel de jerarquia
-	 * @param gradeItem
-	 *            grade item
+	 * @param categories grade item de tipo categoria
+	 * @param nivel nivel de jerarquia
+	 * @param gradeItem grade item
 	 */
 	protected static void setFatherAndChildren(GradeItem[] categories, int nivel, GradeItem gradeItem) {
 		if (nivel > 1) {
@@ -892,8 +853,7 @@ public class CreatorUBUGradesController {
 	 * Busca el nivel jerarquico del grade item dentro del calificador. Por ejemplo
 	 * "level1 levelodd oddd1 b1b b1t column-itemname", devolvería 1.
 	 * 
-	 * @param stringClass
-	 *            el string del key "class" de "itemname"
+	 * @param stringClass el string del key "class" de "itemname"
 	 * @return el nivel
 	 */
 	protected static int getNivel(String stringClass) {

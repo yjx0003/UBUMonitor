@@ -11,6 +11,9 @@
 	<name>UBUMonitor</name>
 	<url>http://maven.apache.org</url>
 
+
+
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -72,6 +75,14 @@
 		<dependency>
 			<groupId>org.threeten</groupId>
 			<artifactId>threeten-extra</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp-urlconnection</artifactId>
 		</dependency>
 
 	</dependencies>
@@ -146,6 +157,16 @@
 				<version>4.1.1</version>
 			</dependency>
 
+			<dependency>
+				<groupId>com.squareup.okhttp3</groupId>
+				<artifactId>okhttp</artifactId>
+				<version>4.3.1</version>
+			</dependency>
+			<dependency>
+				<groupId>com.squareup.okhttp3</groupId>
+				<artifactId>okhttp-urlconnection</artifactId>
+				<version>4.3.1</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<build>

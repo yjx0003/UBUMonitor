@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -28,6 +29,7 @@ import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.ModuleType;
 import es.ubu.lsi.ubumonitor.webservice.WebService;
 import es.ubu.lsi.ubumonitor.webservice.gradereport.GradereportUserGetGradesTable;
+import okhttp3.Response;
 
 /**
  * Metodo alternativo de busqueda grade item al no funcionar la funcion
@@ -81,10 +83,10 @@ public class CreatorGradeItems {
 	 */
 	public List<GradeItem> createGradeItems(int courseid) throws IOException {
 		WebService ws = new GradereportUserGetGradesTable(courseid);
-		String response = ws.getResponse();
+		Response response = ws.getResponse();
 
-		JSONObject jsonObject = new JSONObject(response);
-
+		JSONObject jsonObject = new JSONObject(new JSONTokener(response.body().byteStream()));
+		response.close();
 		List<GradeItem> gradeItems = createHierarchyGradeItems(jsonObject);
 
 		setEnrolledUserGrades(jsonObject, gradeItems);

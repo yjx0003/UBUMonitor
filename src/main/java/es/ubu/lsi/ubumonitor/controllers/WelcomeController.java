@@ -57,6 +57,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import okhttp3.Response;
 
 /**
  * Clase controlador de la pantalla de bienvenida en la que se muestran los
@@ -464,7 +465,7 @@ public class WelcomeController implements Initializable {
 				updateMessage(I18n.get("label.loadingActivitiesCompletion"));
 				CreatorUBUGradesController.createActivitiesCompletionStatus(actualCourse.getId(),
 						actualCourse.getEnrolledUsers());
-				
+
 				int tries = 0;
 				int limitRelogin = 3;
 				while (tries < limitRelogin) {
@@ -472,28 +473,25 @@ public class WelcomeController implements Initializable {
 						if (!isFileCacheExists) {
 							updateMessage(I18n.get("label.downloadinglog"));
 							DownloadLogController downloadLogController = LogCreator.download();
-							
-							String downloadedData = downloadLogController.downloadLog();
-							
+
+							Response response = downloadLogController.downloadLog();
+							LOGGER.info("Log descargado");
 							updateMessage(I18n.get("label.parselog"));
-							
-							Logs logs = LogCreator.parseLog(downloadedData, downloadLogController.getServerTimeZone()); 
+
+							Logs logs = new Logs(downloadLogController.getServerTimeZone());
+							LogCreator.parserResponse(logs, response);
 							actualCourse.setLogs(logs);
 
 						} else {
-
-							Logs logs = actualCourse.getLogs();
 							updateMessage(I18n.get("label.downloadinglog"));
-							List<String> dailyLogs = LogCreator.downloadMultipleDays(logs);
-							updateMessage(I18n.get("label.parselog"));
-							LogCreator.parseMultipledays(logs, dailyLogs);
-
+							LogCreator.createLogsMultipleDays(actualCourse.getLogs());
+					
 						}
 						tries = limitRelogin;
 					} catch (RuntimeException e) {
 						tries++;
 						if (tries == limitRelogin) {
-							throw new IllegalStateException("Cannot download or parse logs", e);
+							throw e;
 						}
 						updateMessage(I18n.get("label.relogin"));
 						controller.reLogin();

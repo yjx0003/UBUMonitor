@@ -3,6 +3,7 @@ package es.ubu.lsi.ubumonitor.controllers;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.time.Instant;
@@ -299,8 +300,10 @@ public class MainController implements Initializable {
 		}
 	}
 
-	private void initUserPhoto() {
-		Image image = new Image(new ByteArrayInputStream(controller.getDataBase().getMoodleUser().getUserPhoto()));
+	private void initUserPhoto() throws IOException {
+		InputStream in = new ByteArrayInputStream(controller.getDataBase().getMoodleUser().getUserPhoto());
+		Image image = new Image(in);
+		in.close();
 		userPhoto.setImage(image);
 
 		ContextMenu menu = new ContextMenu();
@@ -427,9 +430,9 @@ public class MainController implements Initializable {
 		// Mostramos nº participantes
 
 		tfdParticipants.setOnAction(event -> filterParticipants());
-		
+
 		initEnrolledUsersListView();
-		autoCompletionBinding =  TextFields.bindAutoCompletion(tfdParticipants, filteredEnrolledList);
+		autoCompletionBinding = TextFields.bindAutoCompletion(tfdParticipants, filteredEnrolledList);
 		checkComboBoxGroup.getItems().addAll(controller.getActualCourse().getGroups());
 		ObservableList<Group> groups = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL,
 				"initialGroups");
@@ -516,8 +519,8 @@ public class MainController implements Initializable {
 
 					setTextFill(LastActivityFactory.getColorActivity(lastCourseAccess, lastLogInstant));
 
-					try {
-						Image image = new Image(new ByteArrayInputStream(user.getImageBytes()), 50, 50, false, false);
+					try (InputStream in = new ByteArrayInputStream(user.getImageBytes())) {
+						Image image = new Image(in, 50, 50, false, false);
 						setGraphic(new ImageView(image));
 
 					} catch (Exception e) {
@@ -1230,7 +1233,7 @@ public class MainController implements Initializable {
 				&& (textField.isEmpty() || e.getFullName().toLowerCase().contains(textField))
 				&& (lastActivity.contains(LastActivityFactory.getActivity(e.getLastcourseaccess(), lastLogInstant))));
 		autoCompletionBinding.dispose();
-		autoCompletionBinding  = TextFields.bindAutoCompletion(tfdParticipants, filteredEnrolledList);
+		autoCompletionBinding = TextFields.bindAutoCompletion(tfdParticipants, filteredEnrolledList);
 	}
 
 	private boolean checkUserHasGroup(List<Group> groups, EnrolledUser user) {
@@ -1479,11 +1482,10 @@ public class MainController implements Initializable {
 	}
 
 	public void importConfiguration() {
-		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("menu.importconfig"),
-				null,
+		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("menu.importconfig"), null,
 				Config.getProperty("configurationFolderPath", "./"),
 				new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
-	
+
 		File file = fileChooser.showOpenDialog(controller.getStage());
 		if (file != null) {
 			Config.setProperty("configurationFolderPath", file.getParent());
@@ -1503,7 +1505,7 @@ public class MainController implements Initializable {
 				UtilMethods.removeReservedChar(controller.getActualCourse().getFullName()) + ".json",
 				Config.getProperty("configurationFolderPath", "./"),
 				new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
-	
+
 		File file = fileChooser.showSaveDialog(controller.getStage());
 		if (file != null) {
 			ConfigurationController.saveConfiguration(controller.getMainConfiguration(), file.toPath());

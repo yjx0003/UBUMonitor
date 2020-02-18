@@ -8,6 +8,9 @@ import org.json.JSONTokener;
 
 import es.ubu.lsi.ubumonitor.controllers.Connection;
 import es.ubu.lsi.ubumonitor.webservice.core.CoreUserGetUsersByField.Field;
+import okhttp3.FormBody;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
@@ -60,10 +63,12 @@ public abstract class WebService {
 	 * @param password contraseña de moodle
 	 * @throws IOException si no se ha podido conectar al host
 	 */
-	public static void initialize(String host, String userName, String password) throws IOException {
-		String url = host + "/login/token.php?username=" + userName + "&password=" + password + "&service="
-				+ WSFunctions.MOODLE_MOBILE_APP;
-		Response response = Connection.getResponse(url);
+	public static void initialize(String host, String username, String password) throws IOException {
+		String url = host + "/login/token.php";
+		RequestBody formBody = new FormBody.Builder().add("username", username).add("password", password)
+				.add("service", WSFunctions.MOODLE_MOBILE_APP.toString()).build();
+		Response response = Connection.getResponse(new Request.Builder().url(url).post(formBody).build());
+
 		JSONObject jsonObject = new JSONObject(new JSONTokener(response.body().byteStream()));
 		response.close();
 		String token = jsonObject.getString("token");

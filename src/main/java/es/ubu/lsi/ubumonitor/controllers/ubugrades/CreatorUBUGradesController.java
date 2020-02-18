@@ -305,9 +305,8 @@ public class CreatorUBUGradesController {
 		enrolledUser.setProfileimageurlsmall(imageUrl);
 
 		if (imageUrl != null) {
-			LOGGER.info("Descargando foto de usuario: {} con la URL: {}", enrolledUser, imageUrl);
 			byte[] imageBytes = downloadImage(imageUrl);
-
+			
 			enrolledUser.setImageBytes(imageBytes);
 		}
 

@@ -1,8 +1,10 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InvalidClassException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -281,7 +283,7 @@ public class WelcomeController implements Initializable {
 
 	}
 
-	public void removeCourse(ActionEvent event) {
+	public void removeCourse() throws IOException {
 		Alert alert = new Alert(AlertType.WARNING, I18n.get("text.confirmationtext"), ButtonType.OK, ButtonType.CANCEL);
 		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		alert.initModality(Modality.APPLICATION_MODAL);
@@ -291,7 +293,7 @@ public class WelcomeController implements Initializable {
 
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.isPresent() && result.get() == ButtonType.OK) {
-			cacheFilePath.toFile().delete();
+			Files.delete(cacheFilePath);
 			@SuppressWarnings("unchecked")
 			ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem().getContent();
 			int index = listView.getSelectionModel().getSelectedIndex();
@@ -412,6 +414,7 @@ public class WelcomeController implements Initializable {
 		});
 
 		Thread thread = new Thread(task, "datos");
+		thread.setDaemon(true);
 		thread.start();
 
 	}

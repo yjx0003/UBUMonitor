@@ -1,12 +1,9 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.IOException;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -16,7 +13,6 @@ import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jsoup.Connection.Method;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -34,8 +30,6 @@ import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.webservice.WebService;
 import javafx.stage.Stage;
 import okhttp3.FormBody;
-import okhttp3.JavaNetCookieJar;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -67,8 +61,6 @@ public class Controller {
 	private MoodleUser user;
 
 	private Path configuration;
-
-	private OkHttpClient client;
 
 	/**
 	 * Instacia única de la clase Controller.
@@ -214,9 +206,9 @@ public class Controller {
 		URL hostURL = new URL(host);
 
 		WebService.initialize(hostURL.toString(), username, password);
-		String response = loginWebScraping(hostURL.toString(), username, password);
-	
-		sesskey = findSesskey(response);
+
+
+		sesskey = findSesskey(loginWebScraping(hostURL.toString(), username, password));
 
 		setURLHost(hostURL);
 
@@ -225,10 +217,9 @@ public class Controller {
 
 	}
 
-	public void reLogin() {
-		String response = loginWebScraping(host.toString(), username, password);
+	public void reLogin() throws IOException {
 
-		sesskey = findSesskey(response);
+		sesskey = findSesskey(loginWebScraping(host.toString(), username, password));
 
 	}
 
@@ -271,34 +262,20 @@ public class Controller {
 	 * loguearse
 	 * @throws IllegalStateException si no ha podido loguearse
 	 */
-	private String loginWebScraping(String host, String username, String password) {
+	private Response loginWebScraping(String host, String username, String password) {
 
 		try {
 			LOGGER.info("Logeandose para web scraping");
-
-			org.jsoup.Connection.Response loginForm = Jsoup.connect(host + "/login/index.php").method(Method.GET)
-					.execute();
-
-			Document loginDoc = loginForm.parse();
+			String hostLogin = host + "/login/index.php";
+			Response response = Connection.getResponse(hostLogin);
+			Document loginDoc = Jsoup.parse(response.body().byteStream(), null, hostLogin);
+			response.close();
 			Element e = loginDoc.selectFirst("input[name=logintoken]");
 			String logintoken = (e == null) ? "" : e.attr("value");
 
-	
-			RequestBody formBody = new FormBody.Builder()
-					.add("username", username)
-					.add("password", password)
-					.add("logintoken", logintoken)
-			        .build();
-			CookieManager cookieManager = new CookieManager();
-			cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
-			
-			
-			client = new OkHttpClient.Builder().cookieJar(new JavaNetCookieJar(cookieManager))
-					.readTimeout(Duration.ZERO)
-					.build();
-			try (Response response = client.newCall(new Request.Builder().url(host + "/login/index.php").post(formBody).build()).execute()) {
-				return response.body().string();
-			}
+			RequestBody formBody = new FormBody.Builder().add("username", username).add("password", password)
+					.add("logintoken", logintoken).build();
+			return Connection.getResponse(new Request.Builder().url(hostLogin).post(formBody).build());
 
 		} catch (Exception e) {
 			LOGGER.error("Error al intentar loguearse", e);
@@ -307,18 +284,10 @@ public class Controller {
 
 	}
 
-	public OkHttpClient getClient() {
-		return client;
-	}
+	public String findSesskey(Response html) throws IOException {
 
-	public void setClient(OkHttpClient client) {
-		this.client = client;
-	}
-
-	public String findSesskey(String html) {
-		
 		Pattern pattern = Pattern.compile("sesskey=([\\w]+)");
-		Matcher m = pattern.matcher(html);
+		Matcher m = pattern.matcher(html.body().string());
 		if (m.find()) {
 			return m.group(1);
 		}

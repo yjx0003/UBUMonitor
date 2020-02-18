@@ -1,7 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers.ubulogs;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -27,6 +26,7 @@ import es.ubu.lsi.ubumonitor.model.Event;
 import es.ubu.lsi.ubumonitor.model.LogLine;
 import es.ubu.lsi.ubumonitor.model.Logs;
 import es.ubu.lsi.ubumonitor.model.Origin;
+import okhttp3.Response;
 
 /**
  * Clase encargada de los logs, con metodos encargados de descargar los logs y
@@ -68,21 +68,7 @@ public class LogCreator {
 		dateTimeFormatter = dateTimeFormatter.withZone(zoneId);
 	}
 
-
-
-	public static void parseMultipledays(Logs logs, List<String> dailyLogs) throws IOException {
-		for (String dailyLog : dailyLogs) {
-			try(CSVParser csvParser = new CSVParser(new StringReader(dailyLog),
-					CSVFormat.DEFAULT.withFirstRecordAsHeader())){
-				List<LogLine> logList = LogCreator.createLogs(csvParser);
-				logs.addAll(logList);
-			} 
-			
-
-		}
-	}
-
-	public static List<String> downloadMultipleDays(Logs logs) {
+	public static void createLogsMultipleDays(Logs logs) throws IOException {
 		ZoneId userZoneDateTime = "99".equals(CONTROLLER.getUser().getTimezone()) ? logs.getZoneId()
 				: ZoneId.of(CONTROLLER.getUser().getTimezone());
 		LOGGER.info("Zona horaria del usuario: {}", userZoneDateTime);
@@ -93,25 +79,15 @@ public class LogCreator {
 		setDateTimeFormatter(download.getUserTimeZone());
 
 		ZonedDateTime lastDateTime = logs.getLastDatetime();
-
+		ZonedDateTime now = ZonedDateTime.now().withZoneSameInstant(lastDateTime.getZone());
 		LOGGER.info("La fecha del ultimo log antes de actualizar es {}", lastDateTime);
-
-		return download.downloadLog(lastDateTime,
-				ZonedDateTime.now().withZoneSameInstant(lastDateTime.getZone()));
-
-	}
-
-
-
-	public static Logs parseLog(String log, ZoneId serverTimeZone) throws IOException {
-		try (CSVParser csvParser = new CSVParser(new StringReader(log),
-				CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
-			List<LogLine> logList = LogCreator.createLogs(csvParser);
-			return new Logs(serverTimeZone, logList); // lo guardamos con la zona horaria del servidor.
+		while (now.isBefore(lastDateTime)) {
+			Response response = download.downloadLog(now);
+			parserResponse(logs, response);
+			now = now.plusDays(1);
 		}
+
 	}
-
-
 
 	public static DownloadLogController download() throws IOException {
 		DownloadLogController download = new DownloadLogController(CONTROLLER.getUrlHost().toString(),
@@ -119,6 +95,16 @@ public class LogCreator {
 
 		setDateTimeFormatter(download.getUserTimeZone());
 		return download;
+	}
+
+	public static void parserResponse(Logs logs, Response response) throws IOException {
+
+		try (CSVParser csvParser = new CSVParser(response.body().charStream(),
+				CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
+			List<LogLine> logList = LogCreator.createLogs(csvParser);
+			logs.addAll(logList);
+		}
+
 	}
 
 	/**

@@ -1,8 +1,10 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InvalidClassException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -57,6 +59,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import okhttp3.Response;
 
 /**
  * Clase controlador de la pantalla de bienvenida en la que se muestran los
@@ -280,7 +283,7 @@ public class WelcomeController implements Initializable {
 
 	}
 
-	public void removeCourse(ActionEvent event) {
+	public void removeCourse() throws IOException {
 		Alert alert = new Alert(AlertType.WARNING, I18n.get("text.confirmationtext"), ButtonType.OK, ButtonType.CANCEL);
 		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		alert.initModality(Modality.APPLICATION_MODAL);
@@ -290,7 +293,7 @@ public class WelcomeController implements Initializable {
 
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.isPresent() && result.get() == ButtonType.OK) {
-			cacheFilePath.toFile().delete();
+			Files.delete(cacheFilePath);
 			@SuppressWarnings("unchecked")
 			ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem().getContent();
 			int index = listView.getSelectionModel().getSelectedIndex();
@@ -411,6 +414,7 @@ public class WelcomeController implements Initializable {
 		});
 
 		Thread thread = new Thread(task, "datos");
+		thread.setDaemon(true);
 		thread.start();
 
 	}
@@ -464,7 +468,7 @@ public class WelcomeController implements Initializable {
 				updateMessage(I18n.get("label.loadingActivitiesCompletion"));
 				CreatorUBUGradesController.createActivitiesCompletionStatus(actualCourse.getId(),
 						actualCourse.getEnrolledUsers());
-				
+
 				int tries = 0;
 				int limitRelogin = 3;
 				while (tries < limitRelogin) {
@@ -472,28 +476,25 @@ public class WelcomeController implements Initializable {
 						if (!isFileCacheExists) {
 							updateMessage(I18n.get("label.downloadinglog"));
 							DownloadLogController downloadLogController = LogCreator.download();
-							
-							String downloadedData = downloadLogController.downloadLog();
-							
+
+							Response response = downloadLogController.downloadLog();
+							LOGGER.info("Log descargado");
 							updateMessage(I18n.get("label.parselog"));
-							
-							Logs logs = LogCreator.parseLog(downloadedData, downloadLogController.getServerTimeZone()); 
+
+							Logs logs = new Logs(downloadLogController.getServerTimeZone());
+							LogCreator.parserResponse(logs, response);
 							actualCourse.setLogs(logs);
 
 						} else {
-
-							Logs logs = actualCourse.getLogs();
 							updateMessage(I18n.get("label.downloadinglog"));
-							List<String> dailyLogs = LogCreator.downloadMultipleDays(logs);
-							updateMessage(I18n.get("label.parselog"));
-							LogCreator.parseMultipledays(logs, dailyLogs);
-
+							LogCreator.createLogsMultipleDays(actualCourse.getLogs());
+					
 						}
 						tries = limitRelogin;
 					} catch (RuntimeException e) {
 						tries++;
 						if (tries == limitRelogin) {
-							throw new IllegalStateException("Cannot download or parse logs", e);
+							throw e;
 						}
 						updateMessage(I18n.get("label.relogin"));
 						controller.reLogin();

@@ -13,12 +13,14 @@ import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.ubu.lsi.ubumonitor.controllers.Connection;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.model.ActivityCompletion;
 import es.ubu.lsi.ubumonitor.model.ActivityCompletion.State;
@@ -92,8 +94,9 @@ public class CreatorUBUGradesController {
 	 */
 	public static List<Course> getUserCourses(int userid) throws IOException {
 		WebService ws = new CoreEnrolGetUsersCourses(userid);
-		String response = ws.getResponse();
-		JSONArray jsonArray = new JSONArray(response);
+		Response response = ws.getResponse();
+		JSONArray jsonArray = new JSONArray(new JSONTokener(response.body().byteStream()));
+		response.close();
 		return createCourses(jsonArray, true);
 
 	}
@@ -107,10 +110,10 @@ public class CreatorUBUGradesController {
 	 */
 	public static MoodleUser createMoodleUser(String username) throws IOException {
 		WebService ws = new CoreUserGetUsersByField(Field.USERNAME, username);
-		String response = ws.getResponse();
+		Response response = ws.getResponse();
 
-		JSONObject jsonObject = new JSONArray(response).getJSONObject(0);
-
+		JSONObject jsonObject = new JSONArray(new JSONTokener(response.body().byteStream())).getJSONObject(0);
+		response.close();
 		MoodleUser moodleUser = new MoodleUser();
 		moodleUser.setId(jsonObject.getInt("id"));
 
@@ -154,8 +157,9 @@ public class CreatorUBUGradesController {
 	private static List<Course> coursesByTimeline(String classification) {
 		try {
 			WebService webService = new CoreCourseGetEnrolledCoursesByTimelineClassification(classification);
-			String response = webService.getResponse();
-			JSONArray courses = new JSONObject(response).getJSONArray("courses");
+			Response response = webService.getResponse();
+			JSONArray courses = new JSONObject(new JSONTokener(response.body().byteStream())).getJSONArray("courses");
+			response.close();
 			return createCourses(courses, true);
 		} catch (Exception ex) {
 			return Collections.emptyList();
@@ -186,13 +190,13 @@ public class CreatorUBUGradesController {
 
 		jsonArray.put(jsonObject);
 
-		try (Response response = CONTROLLER.getClient().newCall(new Request.Builder()
+		Response response = Connection.getResponse(new Request.Builder()
 				.url(CONTROLLER.getUrlHost() + "/lib/ajax/service.php?sesskey=" + CONTROLLER.getSesskey())
 				.post(RequestBody.create(jsonArray.toString(), MediaType.parse("application/json; charset=utf-8")))
-				.build()).execute()) {
-			JSONArray responseArray = new JSONArray(response.body().string());
-			return responseArray.getJSONObject(0).getJSONArray("data");
-		}
+				.build());
+		JSONArray responseArray = new JSONArray(new JSONTokener(response.body().byteStream()));
+		response.close();
+		return responseArray.getJSONObject(0).getJSONArray("data");
 
 	}
 
@@ -210,9 +214,7 @@ public class CreatorUBUGradesController {
 			return new byte[0];
 		}
 
-		try (Response response = CONTROLLER.getClient().newCall(new Request.Builder().url(url).build()).execute()) {
-			return response.body().bytes();
-		}
+		return Connection.getResponse(url).body().bytes();
 
 	}
 
@@ -225,8 +227,9 @@ public class CreatorUBUGradesController {
 	public static void createCourseCategories(Set<Integer> ids) throws IOException {
 
 		WebService ws = new CoreCourseGetCategories(ids);
-		String response = ws.getResponse();
-		JSONArray jsonArray = new JSONArray(response);
+		Response response = ws.getResponse();
+		JSONArray jsonArray = new JSONArray(new JSONTokener(response.body().byteStream()));
+		response.close();
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject jsonObject = jsonArray.getJSONObject(i);
 
@@ -254,9 +257,10 @@ public class CreatorUBUGradesController {
 
 		WebService ws = CoreEnrolGetEnrolledUsers.newBuilder(courseid).build();
 
-		String response = ws.getResponse();
+		Response response = ws.getResponse();
 
-		JSONArray users = new JSONArray(response);
+		JSONArray users = new JSONArray(new JSONTokener(response.body().byteStream()));
+		response.close();
 
 		List<EnrolledUser> enrolledUsers = new ArrayList<>();
 
@@ -301,7 +305,6 @@ public class CreatorUBUGradesController {
 		enrolledUser.setProfileimageurlsmall(imageUrl);
 
 		if (imageUrl != null) {
-			LOGGER.info("Descargando foto de usuario: {} con la URL: {}", enrolledUser, imageUrl);
 			byte[] imageBytes = downloadImage(imageUrl);
 
 			enrolledUser.setImageBytes(imageBytes);
@@ -519,9 +522,10 @@ public class CreatorUBUGradesController {
 
 		WebService ws = CoreCourseGetContents.newBuilder(courseid).setExcludecontents(true) // ignoramos el contenido
 				.build();
-		String response = ws.getResponse();
+		Response response = ws.getResponse();
 
-		JSONArray jsonArray = new JSONArray(response);
+		JSONArray jsonArray = new JSONArray(new JSONTokener(response.body().byteStream()));
+		response.close();
 		List<CourseModule> modulesList = new ArrayList<>();
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject sectionJson = jsonArray.getJSONObject(i);
@@ -610,12 +614,16 @@ public class CreatorUBUGradesController {
 
 	public static void createActivitiesCompletionStatus(int courseid, int userid) throws IOException {
 		WebService ws = new CoreCompletionGetActivitiesCompletionStatus(courseid, userid);
-		String response = ws.getResponse();
-
+		Response response = ws.getResponse();
+		JSONObject jsonObject = new JSONObject(new JSONTokener(response.body().byteStream()));
+		response.close();
 		SubDataBase<CourseModule> modules = CONTROLLER.getDataBase().getModules();
 		SubDataBase<EnrolledUser> enrolledUsers = CONTROLLER.getDataBase().getUsers();
-		JSONObject jsonObject = new JSONObject(response);
-		JSONArray statuses = jsonObject.getJSONArray("statuses");
+
+		JSONArray statuses = jsonObject.optJSONArray("statuses");
+		if (statuses == null) {
+			return;
+		}
 		for (int i = 0; i < statuses.length(); i++) {
 			JSONObject status = statuses.getJSONObject(i);
 
@@ -649,9 +657,9 @@ public class CreatorUBUGradesController {
 
 		WebService ws = new GradereportUserGetGradesTable(courseid);
 
-		String response = ws.getResponse();
+		Response response = ws.getResponse();
 
-		JSONObject jsonObject = new JSONObject(response);
+		JSONObject jsonObject = new JSONObject(new JSONTokener(response.body().byteStream()));
 
 		List<GradeItem> gradeItems = createHierarchyGradeItems(jsonObject);
 		ws = new GradereportUserGetGradeItems(courseid);

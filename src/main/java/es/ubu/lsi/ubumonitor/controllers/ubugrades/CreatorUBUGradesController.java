@@ -306,7 +306,7 @@ public class CreatorUBUGradesController {
 
 		if (imageUrl != null) {
 			byte[] imageBytes = downloadImage(imageUrl);
-			
+
 			enrolledUser.setImageBytes(imageBytes);
 		}
 
@@ -620,7 +620,10 @@ public class CreatorUBUGradesController {
 		SubDataBase<CourseModule> modules = CONTROLLER.getDataBase().getModules();
 		SubDataBase<EnrolledUser> enrolledUsers = CONTROLLER.getDataBase().getUsers();
 
-		JSONArray statuses = jsonObject.getJSONArray("statuses");
+		JSONArray statuses = jsonObject.optJSONArray("statuses");
+		if (statuses == null) {
+			return;
+		}
 		for (int i = 0; i < statuses.length(); i++) {
 			JSONObject status = statuses.getJSONObject(i);
 

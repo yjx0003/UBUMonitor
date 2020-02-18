@@ -44,10 +44,9 @@ public class Logs implements Serializable {
 	 * @param logLines
 	 *            lista de lineas de logs
 	 */
-	public Logs(ZoneId zoneId, List<LogLine> logLines) {
+	public Logs(ZoneId zoneId) {
 		this.zoneId = zoneId;
 		this.logLines = new ArrayList<>();
-		this.addAll(logLines);
 	}
 
 	/**

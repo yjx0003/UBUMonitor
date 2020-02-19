@@ -610,10 +610,27 @@ public class MainController implements Initializable {
 		observableListModuleTypes.sort(Comparator.nullsFirst(Comparator.comparing(I18n::get)));
 		if (!observableListModuleTypes.isEmpty()) {
 			observableListModuleTypes.add(0, ModuleType.DUMMY);
+			checkComboBoxModuleType.getItems().addAll(observableListModuleTypes);
+			checkComboBoxModuleType.getCheckModel().checkAll();
+			checkComboBoxModuleType.getItemBooleanProperty(0).addListener((observable, oldValue, newValue) -> {
+
+				if (newValue.booleanValue()) {
+					checkComboBoxModuleType.getCheckModel().checkAll();
+				} else {
+					checkComboBoxModuleType.getCheckModel().clearChecks();
+
+				}
+
+			});
+			checkComboBoxModuleType.getCheckModel().getCheckedItems().addListener((Change<? extends ModuleType> c) -> {
+
+				filterCourseModules.setPredicate(getActivityPredicade());
+				listViewActivity.setCellFactory(getListCellCourseModule());
+
+			});
 		}
 
-		checkComboBoxModuleType.getItems().addAll(observableListModuleTypes);
-		checkComboBoxModuleType.getCheckModel().checkAll();
+		
 
 		checkComboBoxModuleType.setConverter(new StringConverter<ModuleType>() {
 			@Override
@@ -641,22 +658,7 @@ public class MainController implements Initializable {
 			filterCourseModules.setPredicate(getActivityPredicade());
 			listViewActivity.setCellFactory(getListCellCourseModule());
 		});
-		checkComboBoxModuleType.getItemBooleanProperty(0).addListener((observable, oldValue, newValue) -> {
-
-			if (newValue.booleanValue()) {
-				checkComboBoxModuleType.getCheckModel().checkAll();
-			} else {
-				checkComboBoxModuleType.getCheckModel().clearChecks();
-
-			}
-
-		});
-		checkComboBoxModuleType.getCheckModel().getCheckedItems().addListener((Change<? extends ModuleType> c) -> {
-
-			filterCourseModules.setPredicate(getActivityPredicade());
-			listViewActivity.setCellFactory(getListCellCourseModule());
-
-		});
+		
 
 		checkBoxActivity.selectedProperty().addListener(c -> {
 			filterCourseModules.setPredicate(getActivityPredicade());
@@ -904,34 +906,41 @@ public class MainController implements Initializable {
 		observableListModuleTypes.sort(Comparator.nullsFirst(Comparator.comparing(I18n::get)));
 		if (!observableListModuleTypes.isEmpty()) {
 			observableListModuleTypes.add(0, ModuleType.DUMMY);
+			checkComboBoxCourseModule.getItems().addAll(observableListModuleTypes);
+			checkComboBoxCourseModule.getCheckModel().checkAll();
+			checkComboBoxCourseModule.getItemBooleanProperty(0).addListener((observable, oldValue, newValue) -> {
+
+				if (newValue.booleanValue()) {
+					checkComboBoxCourseModule.getCheckModel().checkAll();
+				} else {
+					checkComboBoxCourseModule.getCheckModel().clearChecks();
+
+				}
+
+			});
+			checkComboBoxCourseModule.setConverter(new StringConverter<ModuleType>() {
+				@Override
+				public ModuleType fromString(String moduleType) {
+					return null;// no se va a usar en un choiceBox.
+				}
+
+				@Override
+				public String toString(ModuleType moduleType) {
+					if (moduleType == null || moduleType == ModuleType.DUMMY) {
+						return I18n.get("text.selectall");
+					}
+					return I18n.get(moduleType);
+				}
+			});
+			
+			checkComboBoxCourseModule.getCheckModel().getCheckedItems().addListener((Change<? extends ModuleType> c) -> {
+				filterCourseModules.setPredicate(getCourseModulePredicate());
+				listViewCourseModule.setCellFactory(getListCellCourseModule());
+
+			});
 		}
 
-		checkComboBoxCourseModule.getItems().addAll(observableListModuleTypes);
-		checkComboBoxCourseModule.getCheckModel().checkAll();
-		checkComboBoxCourseModule.getItemBooleanProperty(0).addListener((observable, oldValue, newValue) -> {
-
-			if (newValue.booleanValue()) {
-				checkComboBoxCourseModule.getCheckModel().checkAll();
-			} else {
-				checkComboBoxCourseModule.getCheckModel().clearChecks();
-
-			}
-
-		});
-		checkComboBoxCourseModule.setConverter(new StringConverter<ModuleType>() {
-			@Override
-			public ModuleType fromString(String moduleType) {
-				return null;// no se va a usar en un choiceBox.
-			}
-
-			@Override
-			public String toString(ModuleType moduleType) {
-				if (moduleType == null || moduleType == ModuleType.DUMMY) {
-					return I18n.get("text.selectall");
-				}
-				return I18n.get(moduleType);
-			}
-		});
+		
 
 		// ponemos un listener al cuadro de texto para que se filtre el list view en
 		// tiempo real
@@ -945,23 +954,7 @@ public class MainController implements Initializable {
 			listViewCourseModule.setCellFactory(getListCellCourseModule());
 		});
 
-		checkComboBoxCourseModule.getCheckModel().getCheckedItems().addListener((Change<? extends ModuleType> c) -> {
-			c.next();
-			if (c.wasAdded() && c.getAddedSubList().get(0) == null) {
-				for (int i = 1; i < checkComboBoxCourseModule.getItems().size(); i++) {
-					checkComboBoxCourseModule.getCheckModel().check(i);
-				}
-
-			} else if (c.wasRemoved() && c.getRemoved().get(0) == null) {
-				for (int i = 1; i < checkComboBoxCourseModule.getItems().size(); i++) {
-					checkComboBoxCourseModule.getCheckModel().clearCheck(i);
-				}
-			} else {
-				filterCourseModules.setPredicate(getCourseModulePredicate());
-				listViewCourseModule.setCellFactory(getListCellCourseModule());
-			}
-
-		});
+		
 
 		checkBoxActivityCompleted.selectedProperty().addListener(c -> {
 			filterCourseModules.setPredicate(getCourseModulePredicate());

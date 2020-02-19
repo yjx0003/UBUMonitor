@@ -76,7 +76,7 @@ public class ActivityCompletion implements Serializable {
 	public enum Tracking {
 		NONE, MANUAL, AUTOMATIC;
 
-		private final static Tracking[] ALL_TRACKINGS = Tracking.values();
+		private static final Tracking[] ALL_TRACKINGS = Tracking.values();
 
 		public static Tracking getByIndex(int index) {
 			return ALL_TRACKINGS[index];

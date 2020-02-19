@@ -58,6 +58,8 @@ public class VisualizationController implements MainAction {
 
 	@FXML
 	private GridPane dateGridPane;
+	@FXML
+	private GridPane gridPaneOptionLogs;
 
 	@FXML
 	private DatePicker datePickerStart;
@@ -163,8 +165,10 @@ public class VisualizationController implements MainAction {
 			}
 		});
 
-		optionsUbuLogs.visibleProperty().bind(mainController.getTabUbuLogs().selectedProperty());
-		optionsUbuLogs.managedProperty().bind(mainController.getTabUbuLogs().selectedProperty());
+		optionsUbuLogs.visibleProperty().bind(mainController.getTabUbuLogs().selectedProperty().or(mainController.getTabActivity().selectedProperty()));
+		optionsUbuLogs.managedProperty().bind(optionsUbuLogs.visibleProperty());
+		
+		gridPaneOptionLogs.visibleProperty().bind(mainController.getTabUbuLogs().selectedProperty());
 	}
 
 	private void initContextMenu() {

@@ -28,6 +28,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class UtilMethods {
+	private UtilMethods() {
+	}
+
 	/**
 	 * Escapa las comillas simples de un texto añadiendo un \
 	 * 
@@ -35,7 +38,7 @@ public class UtilMethods {
 	 * @return texto escapado
 	 */
 	public static String escapeJavaScriptText(String input) {
-		return input.replace("'", "\\\\'");
+		return input.replace("'", "\\\'");
 	}
 
 	/**

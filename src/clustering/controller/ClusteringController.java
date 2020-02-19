@@ -35,6 +35,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
@@ -98,18 +99,23 @@ public class ClusteringController {
 	private TableColumn<UserData, Number> columnCluster;
 
 	private GradesCollector gradesCollector;
-
 	private ActivityCollector activityCollector;
 
 	private static final Callback<Item, PropertyEditor<?>> DEFAULT_PROPERTY_EDITOR_FACTORY = new DefaultPropertyEditorFactory();
 
-	@SuppressWarnings("unchecked")
 	public void init(MainController controller) {
 		mainController = controller;
+		buttonExecute.setOnAction(e -> execute());
+		initAlgorithms();
+		initCollectors();
+		initTable();
+	}
+
+	private void initAlgorithms() {
 		checkComboBoxLogs.disableProperty().bind(checkBoxLogs.selectedProperty().not());
 		algorithmList.getItems().setAll(Algorithms.getAlgorithms());
-		algorithmList.getSelectionModel().selectedItemProperty()
-				.addListener((obs, oldValue, newValue) -> changeAlgorithm(newValue));
+		algorithmList.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> propertySheet
+				.getItems().setAll(newValue.getParameters().getPropertyItems()));
 		algorithmList.getSelectionModel().selectFirst();
 		StringConverter<DistanceMeasure> stringConverter = new StringConverter<DistanceMeasure>() {
 
@@ -126,6 +132,7 @@ public class ClusteringController {
 
 		propertySheet.setPropertyEditorFactory(item -> {
 			if (item.getValue() instanceof DistanceMeasure) {
+				@SuppressWarnings("unchecked")
 				AbstractPropertyEditor<DistanceMeasure, ComboBox<DistanceMeasure>> editor = (AbstractPropertyEditor<DistanceMeasure, ComboBox<DistanceMeasure>>) Editors
 						.createChoiceEditor(item, Algorithms.DISTANCES_LIST);
 				editor.getEditor().setConverter(stringConverter);
@@ -133,8 +140,6 @@ public class ClusteringController {
 			}
 			return DEFAULT_PROPERTY_EDITOR_FACTORY.call(item);
 		});
-		buttonExecute.setOnAction(e -> execute());
-		initCollectors();
 	}
 
 	private void initCollectors() {
@@ -148,8 +153,21 @@ public class ClusteringController {
 		checkComboBoxLogs.getItems().setAll(collectors);
 	}
 
-	private void changeAlgorithm(Algorithm algorithm) {
-		propertySheet.getItems().setAll(algorithm.getParameters().getPropertyItems());
+	private void initTable() {
+		checkComboBoxCluster.setConverter(new IntegerStringConverter() {
+			@Override
+			public String toString(Integer value) {
+				if (value.equals(-1))
+					return I18n.get("text.all");
+				return super.toString(value);
+			}
+		});
+		checkComboBoxCluster.getItems().setAll(-1);
+		
+		columnImage.setCellValueFactory(c -> new SimpleObjectProperty<>(new ImageView(new Image(
+				new ByteArrayInputStream(c.getValue().getEnrolledUser().getImageBytes()), 50, 50, true, false))));
+		columnName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEnrolledUser().getFullName()));
+		columnCluster.setCellValueFactory(c -> new SimpleIntegerProperty(c.getValue().getCluster()));
 	}
 
 	private void execute() {
@@ -170,18 +188,11 @@ public class ClusteringController {
 		}
 		List<UserData> clusters = executer.execute(collectors);
 		LOGGER.debug("Parametros: {}", algorithm.getParameters());
-		updateTable(new FilteredList<UserData>(FXCollections.observableList(clusters)));
-		checkComboBoxCluster.setConverter(new IntegerStringConverter() {
-			@Override
-			public String toString(Integer value) {
-				if (value.equals(-1))
-					return I18n.get("text.all");
-				return super.toString(value);
-			}
-		});
-		checkComboBoxCluster.getItems().setAll(-1);
-		checkComboBoxCluster.getItems()
-				.addAll(IntStream.range(0, executer.getNumClusters()).boxed().collect(Collectors.toList()));
+
+		ObservableList<Integer> items = checkComboBoxCluster.getItems();
+		items.remove(1, items.size());
+		items.addAll(IntStream.range(0, executer.getNumClusters()).boxed().collect(Collectors.toList()));
+		checkComboBoxCluster.getCheckModel().checkAll();
 		checkComboBoxCluster.getItemBooleanProperty(0).addListener((obs, oldValue, newValue) -> {
 			if (newValue.booleanValue()) {
 				checkComboBoxCluster.getCheckModel().checkAll();
@@ -189,20 +200,13 @@ public class ClusteringController {
 				checkComboBoxCluster.getCheckModel().clearChecks();
 			}
 		});
-		checkComboBoxCluster.getCheckModel().checkAll();
+		updateTable(new FilteredList<>(FXCollections.observableList(clusters)));
 	}
 
 	private void updateTable(FilteredList<UserData> clusters) {
-		columnImage.setCellValueFactory(c -> new SimpleObjectProperty<>(new ImageView(new Image(
-				new ByteArrayInputStream(c.getValue().getEnrolledUser().getImageBytes()), 50, 50, true, false))));
-
 		SortedList<UserData> sortedList = new SortedList<>(clusters);
 		sortedList.comparatorProperty().bind(tableView.comparatorProperty());
 		tableView.setItems(sortedList);
-		columnName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEnrolledUser().getFullName()));
-
-		columnCluster.setCellValueFactory(c -> new SimpleIntegerProperty(c.getValue().getCluster()));
-
 		checkComboBoxCluster.getCheckModel().getCheckedItems()
 				.addListener((ListChangeListener.Change<? extends Integer> c) -> clusters.setPredicate(
 						o -> checkComboBoxCluster.getCheckModel().getCheckedItems().contains(o.getCluster())));

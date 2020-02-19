@@ -23,13 +23,14 @@ import clustering.algorithm.Algorithms;
 import clustering.controller.collector.ActivityCollector;
 import clustering.controller.collector.DataCollector;
 import clustering.controller.collector.GradesCollector;
-import clustering.controller.collector.LogComponentCollector;
-import clustering.controller.collector.LogCourseModuleCollector;
-import clustering.controller.collector.LogEventCollector;
-import clustering.controller.collector.LogSectionCollector;
+import clustering.controller.collector.LogCollector;
 import clustering.data.UserData;
 import controllers.I18n;
 import controllers.MainController;
+import controllers.datasets.DataSetComponent;
+import controllers.datasets.DataSetComponentEvent;
+import controllers.datasets.DataSetSection;
+import controllers.datasets.DatasSetCourseModule;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -145,12 +146,14 @@ public class ClusteringController {
 	private void initCollectors() {
 		gradesCollector = new GradesCollector(mainController);
 		activityCollector = new ActivityCollector(mainController);
-		List<DataCollector> collectors = new ArrayList<>();
-		collectors.add(new LogComponentCollector(mainController));
-		collectors.add(new LogEventCollector(mainController));
-		collectors.add(new LogSectionCollector(mainController));
-		collectors.add(new LogCourseModuleCollector(mainController));
-		checkComboBoxLogs.getItems().setAll(collectors);
+		List<DataCollector> list = new ArrayList<>();
+		list.add(new LogCollector<>("component", mainController.getListViewComponents(),
+				DataSetComponent.getInstance()));
+		list.add(new LogCollector<>("event", mainController.getListViewEvents(), DataSetComponentEvent.getInstance()));
+		list.add(new LogCollector<>("section", mainController.getListViewSection(), DataSetSection.getInstance()));
+		list.add(new LogCollector<>("coursemodule", mainController.getListViewCourseModule(),
+				DatasSetCourseModule.getInstance()));
+		checkComboBoxLogs.getItems().setAll(list);
 	}
 
 	private void initTable() {
@@ -162,8 +165,7 @@ public class ClusteringController {
 				return super.toString(value);
 			}
 		});
-		checkComboBoxCluster.getItems().setAll(-1);
-		
+
 		columnImage.setCellValueFactory(c -> new SimpleObjectProperty<>(new ImageView(new Image(
 				new ByteArrayInputStream(c.getValue().getEnrolledUser().getImageBytes()), 50, 50, true, false))));
 		columnName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEnrolledUser().getFullName()));
@@ -190,8 +192,8 @@ public class ClusteringController {
 		LOGGER.debug("Parametros: {}", algorithm.getParameters());
 
 		ObservableList<Integer> items = checkComboBoxCluster.getItems();
-		items.remove(1, items.size());
-		items.addAll(IntStream.range(0, executer.getNumClusters()).boxed().collect(Collectors.toList()));
+
+		items.setAll(IntStream.range(-1, executer.getNumClusters()).boxed().collect(Collectors.toList()));
 		checkComboBoxCluster.getCheckModel().checkAll();
 		checkComboBoxCluster.getItemBooleanProperty(0).addListener((obs, oldValue, newValue) -> {
 			if (newValue.booleanValue()) {

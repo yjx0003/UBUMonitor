@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import clustering.data.UserData;
 import controllers.Controller;
+import controllers.I18n;
 import controllers.datasets.DataSet;
 import controllers.ubulogs.GroupByAbstract;
 import controllers.ubulogs.TypeTimes;
@@ -15,10 +16,12 @@ import model.EnrolledUser;
 
 public class LogCollector<T> extends DataCollector {
 	
+	private String type;
 	private ListView<T> listView;
 	private DataSet<T> dataSet;
 	
-	public LogCollector(ListView<T> listView, DataSet<T> dataSet) {
+	public LogCollector(String type, ListView<T> listView, DataSet<T> dataSet) {
+		this.type = type;
 		this.listView = listView;
 		this.dataSet = dataSet;
 	}
@@ -36,6 +39,11 @@ public class LogCollector<T> extends DataCollector {
 				userData.addDatum(component.toString(), datum);
 			}
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return I18n.get("tab." + type);
 	}
 
 }

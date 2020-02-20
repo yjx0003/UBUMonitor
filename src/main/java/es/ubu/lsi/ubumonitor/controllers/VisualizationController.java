@@ -18,6 +18,7 @@ import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.TypeTimes;
 import es.ubu.lsi.ubumonitor.model.LogStats;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
@@ -123,12 +124,7 @@ public class VisualizationController implements MainAction {
 		choiceBoxDate.setItems(typeTimes);
 		choiceBoxDate.getSelectionModel().select(logStats.getByType(typeTime));
 
-		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> {
-			applyFilterLogs();
-			boolean useDatePicker = newValue.useDatePicker();
-			dateGridPane.setVisible(useDatePicker);
-
-		});
+		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> applyFilterLogs());
 
 		// traduccion de los elementos del choicebox
 		choiceBoxDate.setConverter(new StringConverter<GroupByAbstract<?>>() {
@@ -165,9 +161,11 @@ public class VisualizationController implements MainAction {
 			}
 		});
 
-		optionsUbuLogs.visibleProperty().bind(mainController.getTabUbuLogs().selectedProperty().or(mainController.getTabActivity().selectedProperty()));
+		optionsUbuLogs.visibleProperty().bind(mainController.getTabUbuLogs().selectedProperty()
+				.or(mainController.getTabActivity().selectedProperty()));
 		optionsUbuLogs.managedProperty().bind(optionsUbuLogs.visibleProperty());
-		
+		dateGridPane.visibleProperty().bind(mainController.getTabActivity().selectedProperty().or(Bindings
+				.createBooleanBinding(() -> choiceBoxDate.getValue().useDatePicker(), choiceBoxDate.valueProperty())));
 		gridPaneOptionLogs.visibleProperty().bind(mainController.getTabUbuLogs().selectedProperty());
 	}
 

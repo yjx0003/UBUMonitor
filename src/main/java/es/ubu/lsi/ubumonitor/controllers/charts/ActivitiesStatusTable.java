@@ -2,6 +2,7 @@ package es.ubu.lsi.ubumonitor.controllers.charts;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.chrono.IsoChronology;
 import java.time.format.DateTimeFormatter;
@@ -117,7 +118,8 @@ public class ActivitiesStatusTable extends Tabulator {
 	public String createData(List<EnrolledUser> enrolledUsers, List<CourseModule> courseModules) {
 		StringJoiner array = JSArray();
 		StringJoiner jsObject;
-
+		Instant init = datePickerStart.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant();
+		Instant end = datePickerEnd.getValue().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
 		for (EnrolledUser enrolledUser : enrolledUsers) {
 			jsObject = JSObject();
 			addKeyValueWithQuote(jsObject, "name", enrolledUser.getFullName());
@@ -131,9 +133,13 @@ public class ActivitiesStatusTable extends Tabulator {
 					switch (activity.getState()) {
 					case COMPLETE:
 					case COMPLETE_PASS:
-						progress++;
-						addKeyValueWithQuote(jsObject, field, dateFormatter.format(activity.getTimecompleted()) + ", "
-								+ timeFormatter.format(activity.getTimecompleted()));
+						Instant timeCompleted = activity.getTimecompleted();
+						if (timeCompleted != null && init.isBefore(timeCompleted) && end.isAfter(timeCompleted)) {
+							progress++;
+							addKeyValueWithQuote(jsObject, field, dateFormatter.format(activity.getTimecompleted())
+									+ ", " + timeFormatter.format(activity.getTimecompleted()));
+						}
+
 						break;
 					case COMPLETE_FAIL:
 						addKeyValue(jsObject, field, false);
@@ -194,7 +200,7 @@ public class ActivitiesStatusTable extends Tabulator {
 		header.add("fullname");
 		for (CourseModule courseModule : courseModules) {
 			header.add(courseModule.getModuleName());
-			header.add("end date "+ courseModule.getModuleName());
+			header.add("end date " + courseModule.getModuleName());
 		}
 		FileWriter out = new FileWriter(path);
 		try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {

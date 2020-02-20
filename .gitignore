@@ -14,3 +14,4 @@ bin
 /configuration/
 /target/
 /.classpath
+/.project

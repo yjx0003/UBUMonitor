@@ -39,6 +39,7 @@
          <columnConstraints>
             <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" />
             <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" />
+            <ColumnConstraints />
          </columnConstraints>
          <rowConstraints>
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -73,9 +74,9 @@
                </rowConstraints>
                <children>
                   <Label text="%label.startdate" GridPane.halignment="RIGHT" />
-                  <DatePicker fx:id="datePickerStart" editable="false" showWeekNumbers="true" GridPane.columnIndex="1" />
+                  <DatePicker fx:id="datePickerStart" editable="false" GridPane.columnIndex="1" />
                   <Label text="%label.enddate" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
-                  <DatePicker fx:id="datePickerEnd" editable="false" showWeekNumbers="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <DatePicker fx:id="datePickerEnd" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>
             </GridPane>
          </children>

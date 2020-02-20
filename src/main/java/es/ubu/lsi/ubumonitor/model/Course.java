@@ -550,4 +550,8 @@ public class Course implements Serializable {
 		this.isFavorite = isFavorite;
 	}
 
+	public boolean contains(EnrolledUser enrolledUser) {
+		return enrolledUsers.contains(enrolledUser);
+	}
+
 }

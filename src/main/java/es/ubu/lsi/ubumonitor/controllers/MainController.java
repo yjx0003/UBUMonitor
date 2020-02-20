@@ -7,7 +7,6 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -19,6 +18,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.StatusBar;
@@ -427,9 +427,9 @@ public class MainController implements Initializable {
 		// Mostramos nº participantes
 
 		tfdParticipants.setOnAction(event -> filterParticipants());
-		
+
 		initEnrolledUsersListView();
-		autoCompletionBinding =  TextFields.bindAutoCompletion(tfdParticipants, filteredEnrolledList);
+		autoCompletionBinding = TextFields.bindAutoCompletion(tfdParticipants, filteredEnrolledList);
 		checkComboBoxGroup.getItems().addAll(controller.getActualCourse().getGroups());
 		ObservableList<Group> groups = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL,
 				"initialGroups");
@@ -511,8 +511,9 @@ public class MainController implements Initializable {
 					Instant lastCourseAccess = user.getLastcourseaccess();
 					Instant lastAccess = user.getLastaccess();
 					Instant lastLogInstant = controller.getActualCourse().getLogs().getLastDatetime().toInstant();
-					setText(user + "\n" + I18n.get("label.course") + formatDates(lastCourseAccess, lastLogInstant)
-							+ " | " + I18n.get("text.moodle") + formatDates(lastAccess, lastLogInstant));
+					setText(user + "\n" + I18n.get("label.course")
+							+ UtilMethods.formatDates(lastCourseAccess, lastLogInstant) + " | "
+							+ I18n.get("text.moodle") + UtilMethods.formatDates(lastAccess, lastLogInstant));
 
 					setTextFill(LastActivityFactory.getColorActivity(lastCourseAccess, lastLogInstant));
 
@@ -524,58 +525,15 @@ public class MainController implements Initializable {
 						LOGGER.error("No se ha podido cargar la imagen de: {}", user);
 						setGraphic(new ImageView(new Image("/img/default_user.png")));
 					}
+					ContextMenu menu = new ContextMenu();
+					MenuItem seeUser = new MenuItem(I18n.get("text.see") + user);
+					seeUser.setOnAction(e -> userInfo(user));
+					menu.getItems().addAll(seeUser);
+					setContextMenu(menu);
 				}
 			}
 
 		});
-	}
-
-	/**
-	 * Devuelve la diferencia entre dos instantes, por dias, hora, minutos o
-	 * segundos siempre y cuando no sean 0. Si la diferencias de dias es 0 se busca
-	 * por horas, y asi consecutivamente.
-	 * 
-	 * @param lastCourseAccess fecha inicio
-	 * @param lastLogInstant fecha fin
-	 * @return texto con el numero y el tipo de tiempo
-	 */
-	private String formatDates(Instant lastCourseAccess, Instant lastLogInstant) {
-
-		if (lastCourseAccess == null || lastCourseAccess.getEpochSecond() == -1L) {
-			return " " + I18n.get("label.never");
-		}
-
-		if (lastCourseAccess.getEpochSecond() == 0L) {
-			return " " + I18n.get("text.never");
-		}
-
-		long time;
-
-		if ((time = betweenDates(ChronoUnit.DAYS, lastCourseAccess, lastLogInstant)) != 0L) {
-			return (time < 0 ? 0 : time) + " " + I18n.get("text.days");
-		}
-		if ((time = betweenDates(ChronoUnit.HOURS, lastCourseAccess, lastLogInstant)) != 0L) {
-			return (time < 0 ? 0 : time) + " " + I18n.get("text.hours");
-		}
-		if ((time = betweenDates(ChronoUnit.MINUTES, lastCourseAccess, lastLogInstant)) != 0L) {
-			return (time < 0 ? 0 : time) + " " + I18n.get("text.minutes");
-		}
-		time = betweenDates(ChronoUnit.SECONDS, lastCourseAccess, lastLogInstant);
-		long timeSeconds = time < 0 ? 0 : time;
-		return timeSeconds + " " + I18n.get("text.seconds");
-	}
-
-	/**
-	 * Devuelve la difernecia absoluta entre dos instantes dependiendo de que sea el
-	 * tipo
-	 * 
-	 * @param type dias, horas, minutos
-	 * @param lastCourseAccess instante inicio
-	 * @param lastLogInstant instante fin
-	 * @return numero de diferencia absoluta
-	 */
-	private long betweenDates(ChronoUnit type, Instant lastCourseAccess, Instant lastLogInstant) {
-		return type.between(lastCourseAccess, lastLogInstant);
 	}
 
 	private void initTabActivityCompletion() {
@@ -606,7 +564,9 @@ public class MainController implements Initializable {
 
 		ObservableList<ModuleType> observableListModuleTypes = FXCollections.observableArrayList();
 
-		observableListModuleTypes.addAll(controller.getActualCourse().getUniqueCourseModulesTypes());
+		observableListModuleTypes.addAll(
+				controller.getActualCourse().getModules().stream().filter(c -> !c.getActivitiesCompletion().isEmpty())
+						.map(CourseModule::getModuleType).distinct().collect(Collectors.toList()));
 		observableListModuleTypes.sort(Comparator.nullsFirst(Comparator.comparing(I18n::get)));
 		if (!observableListModuleTypes.isEmpty()) {
 			observableListModuleTypes.add(0, ModuleType.DUMMY);
@@ -629,8 +589,6 @@ public class MainController implements Initializable {
 
 			});
 		}
-
-		
 
 		checkComboBoxModuleType.setConverter(new StringConverter<ModuleType>() {
 			@Override
@@ -658,7 +616,6 @@ public class MainController implements Initializable {
 			filterCourseModules.setPredicate(getActivityPredicade());
 			listViewActivity.setCellFactory(getListCellCourseModule());
 		});
-		
 
 		checkBoxActivity.selectedProperty().addListener(c -> {
 			filterCourseModules.setPredicate(getActivityPredicade());
@@ -932,15 +889,14 @@ public class MainController implements Initializable {
 					return I18n.get(moduleType);
 				}
 			});
-			
-			checkComboBoxCourseModule.getCheckModel().getCheckedItems().addListener((Change<? extends ModuleType> c) -> {
-				filterCourseModules.setPredicate(getCourseModulePredicate());
-				listViewCourseModule.setCellFactory(getListCellCourseModule());
 
-			});
+			checkComboBoxCourseModule.getCheckModel().getCheckedItems()
+					.addListener((Change<? extends ModuleType> c) -> {
+						filterCourseModules.setPredicate(getCourseModulePredicate());
+						listViewCourseModule.setCellFactory(getListCellCourseModule());
+
+					});
 		}
-
-		
 
 		// ponemos un listener al cuadro de texto para que se filtre el list view en
 		// tiempo real
@@ -953,8 +909,6 @@ public class MainController implements Initializable {
 			filterCourseModules.setPredicate(getCourseModulePredicate());
 			listViewCourseModule.setCellFactory(getListCellCourseModule());
 		});
-
-		
 
 		checkBoxActivityCompleted.selectedProperty().addListener(c -> {
 			filterCourseModules.setPredicate(getCourseModulePredicate());
@@ -1223,7 +1177,7 @@ public class MainController implements Initializable {
 				&& (textField.isEmpty() || e.getFullName().toLowerCase().contains(textField))
 				&& (lastActivity.contains(LastActivityFactory.getActivity(e.getLastcourseaccess(), lastLogInstant))));
 		autoCompletionBinding.dispose();
-		autoCompletionBinding  = TextFields.bindAutoCompletion(tfdParticipants, filteredEnrolledList);
+		autoCompletionBinding = TextFields.bindAutoCompletion(tfdParticipants, filteredEnrolledList);
 	}
 
 	private boolean checkUserHasGroup(List<Group> groups, EnrolledUser user) {
@@ -1472,11 +1426,10 @@ public class MainController implements Initializable {
 	}
 
 	public void importConfiguration() {
-		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("menu.importconfig"),
-				null,
+		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("menu.importconfig"), null,
 				Config.getProperty("configurationFolderPath", "./"),
 				new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
-	
+
 		File file = fileChooser.showOpenDialog(controller.getStage());
 		if (file != null) {
 			Config.setProperty("configurationFolderPath", file.getParent());
@@ -1496,7 +1449,7 @@ public class MainController implements Initializable {
 				UtilMethods.removeReservedChar(controller.getActualCourse().getFullName()) + ".json",
 				Config.getProperty("configurationFolderPath", "./"),
 				new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
-	
+
 		File file = fileChooser.showSaveDialog(controller.getStage());
 		if (file != null) {
 			ConfigurationController.saveConfiguration(controller.getMainConfiguration(), file.toPath());
@@ -1509,7 +1462,7 @@ public class MainController implements Initializable {
 	 * 
 	 * @param actionEvent El ActionEvent.
 	 */
-	public void aboutApp(ActionEvent actionEvent) {
+	public void aboutApp() {
 
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AboutApp.fxml"), I18n.getResourceBundle());
 
@@ -1522,6 +1475,33 @@ public class MainController implements Initializable {
 		}
 		Style.addStyle(Config.getProperty("style"), newScene.getStylesheets());
 
+		Stage stage = new Stage();
+		stage.setScene(newScene);
+		stage.setResizable(false);
+		stage.initOwner(controller.getStage());
+		stage.initModality(Modality.WINDOW_MODAL);
+
+		stage.getIcons().add(new Image("/img/logo_min.png"));
+		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
+
+		stage.show();
+
+	}
+
+	public void userInfo(EnrolledUser enrolledUser) {
+
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/UserInfo.fxml"), I18n.getResourceBundle());
+
+		Scene newScene;
+		try {
+			newScene = new Scene(loader.load());
+		} catch (IOException ex) {
+			LOGGER.error("Error", ex);
+			return;
+		}
+		Style.addStyle(Config.getProperty("style"), newScene.getStylesheets());
+		UserInfoController userInfoController = loader.getController();
+		userInfoController.init(this, enrolledUser);
 		Stage stage = new Stage();
 		stage.setScene(newScene);
 		stage.setResizable(false);

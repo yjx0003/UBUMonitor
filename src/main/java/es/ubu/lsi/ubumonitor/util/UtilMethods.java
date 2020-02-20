@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -196,12 +199,28 @@ public class UtilMethods {
 	}
 
 	public static void openURL(String url) {
+		//from http://www.java2s.com/Code/Java/Development-Class/LaunchBrowserinMacLinuxUnix.htm
+		String osName = System.getProperty("os.name");
 		try {
-			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-				Desktop.getDesktop().browse(new URI(url));
+			if (osName.startsWith("Mac OS")) {
+				Class<?> fileMgr = Class.forName("com.apple.eio.FileManager");
+				Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] { String.class });
+				openURL.invoke(null, new Object[] { url });
+			} else if (osName.startsWith("Windows"))
+				Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
+			else { // assume Unix or Linux
+				String[] browsers = { "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" };
+				String browser = null;
+				for (int count = 0; count < browsers.length && browser == null; count++)
+					if (Runtime.getRuntime().exec(new String[] { "which", browsers[count] }).waitFor() == 0)
+						browser = browsers[count];
+				if (browser == null)
+					throw new IllegalStateException("Could not find web browser");
+				else
+					Runtime.getRuntime().exec(new String[] { browser, url });
 			}
 		} catch (Exception e) {
-			errorWindow("Cannot open " + url + " in the navigator");
+			errorWindow("Cannot open " + url + " in web browser", e);
 		}
 	}
 
@@ -223,5 +242,53 @@ public class UtilMethods {
 		fileChooser.setInitialDirectory(new File(initialDirectory));
 		fileChooser.getExtensionFilters().addAll(extensionFilters);
 		return fileChooser;
+	}
+
+	/**
+	 * Devuelve la diferencia entre dos instantes, por dias, hora, minutos o
+	 * segundos siempre y cuando no sean 0. Si la diferencias de dias es 0 se busca
+	 * por horas, y asi consecutivamente.
+	 * 
+	 * @param lastCourseAccess fecha inicio
+	 * @param lastLogInstant fecha fin
+	 * @return texto con el numero y el tipo de tiempo
+	 */
+	public static String formatDates(Instant lastCourseAccess, Instant lastLogInstant) {
+
+		if (lastCourseAccess == null || lastCourseAccess.getEpochSecond() == -1L) {
+			return " " + I18n.get("label.never");
+		}
+
+		if (lastCourseAccess.getEpochSecond() == 0L) {
+			return " " + I18n.get("text.never");
+		}
+
+		long time;
+
+		if ((time = betweenDates(ChronoUnit.DAYS, lastCourseAccess, lastLogInstant)) != 0L) {
+			return (time < 0 ? 0 : time) + " " + I18n.get("text.days");
+		}
+		if ((time = betweenDates(ChronoUnit.HOURS, lastCourseAccess, lastLogInstant)) != 0L) {
+			return (time < 0 ? 0 : time) + " " + I18n.get("text.hours");
+		}
+		if ((time = betweenDates(ChronoUnit.MINUTES, lastCourseAccess, lastLogInstant)) != 0L) {
+			return (time < 0 ? 0 : time) + " " + I18n.get("text.minutes");
+		}
+		time = betweenDates(ChronoUnit.SECONDS, lastCourseAccess, lastLogInstant);
+		long timeSeconds = time < 0 ? 0 : time;
+		return timeSeconds + " " + I18n.get("text.seconds");
+	}
+
+	/**
+	 * Devuelve la difernecia absoluta entre dos instantes dependiendo de que sea el
+	 * tipo
+	 * 
+	 * @param type dias, horas, minutos
+	 * @param lastCourseAccess instante inicio
+	 * @param lastLogInstant instante fin
+	 * @return numero de diferencia absoluta
+	 */
+	private static long betweenDates(ChronoUnit type, Instant lastCourseAccess, Instant lastLogInstant) {
+		return type.between(lastCourseAccess, lastLogInstant);
 	}
 }

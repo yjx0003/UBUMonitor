@@ -1,8 +1,9 @@
 package clustering.data;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.math3.ml.clustering.Clusterable;
 
@@ -11,12 +12,12 @@ import model.EnrolledUser;
 public class UserData implements Clusterable {
 
 	private EnrolledUser user;
-	private Map<String, Double> data;
+	private List<Double> data;
 	private int cluster;
 
 	public UserData(EnrolledUser user) {
 		this.user = user;
-		data = new LinkedHashMap<>();
+		data = new ArrayList<>();
 	}
 
 	public EnrolledUser getEnrolledUser() {
@@ -24,32 +25,28 @@ public class UserData implements Clusterable {
 	}
 
 	public void addDatum(String name, double datum) {
-		data.put(name, Double.isNaN(datum) ? 0 : datum);
+		data.add(Double.isNaN(datum) ? 0 : datum);
+	}
+	
+	public void setData(double[] data) {
+		this.data = Arrays.stream(data).boxed().collect(Collectors.toList());
 	}
 
 	@Override
 	public double[] getPoint() {
-		return data.values().stream().mapToDouble(Double::doubleValue).toArray();
+		return data.stream().mapToDouble(Double::doubleValue).toArray();
 	}
 
-	public void setCluster(int n) {
-		cluster = n;
+	public void setCluster(int cluster) {
+		this.cluster = cluster;
 	}
 
 	public int getCluster() {
 		return cluster;
 	}
 
-	public double getValue(String name) {
-		return data.get(name);
-	}
-
 	@Override
 	public String toString() {
 		return "UserData [user=" + user + ", data=" + data + ", cluster=" + cluster + "]";
-	}
-
-	public Set<String> getKeys() {
-		return data.keySet();
 	}
 }

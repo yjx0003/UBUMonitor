@@ -46,6 +46,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.web.WebView;
@@ -99,6 +100,12 @@ public class ClusteringController {
 	@FXML
 	private TableColumn<UserData, Number> columnCluster;
 
+	@FXML
+	private CheckBox checkBoxReduce;
+
+	@FXML
+	private TextField textFieldReduce;
+
 	private GradesCollector gradesCollector;
 	private ActivityCollector activityCollector;
 
@@ -113,6 +120,12 @@ public class ClusteringController {
 	}
 
 	private void initAlgorithms() {
+		textFieldReduce.disableProperty().bind(checkBoxReduce.selectedProperty().not());
+		textFieldReduce.textProperty().addListener((obs, oldValue, newValue) -> {
+			if (!newValue.isEmpty() && !newValue.matches("[1-9]\\d*")) {
+				textFieldReduce.setText(oldValue);
+			}
+		});
 		checkComboBoxLogs.disableProperty().bind(checkBoxLogs.selectedProperty().not());
 		algorithmList.getItems().setAll(Algorithms.getAlgorithms());
 		algorithmList.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> propertySheet
@@ -188,7 +201,12 @@ public class ClusteringController {
 		if (checkBoxActivity.isSelected()) {
 			collectors.add(activityCollector);
 		}
-		List<UserData> clusters = executer.execute(collectors);
+		List<UserData> clusters;
+		if (checkBoxReduce.isSelected()) {
+			clusters = executer.execute(collectors, Integer.valueOf(textFieldReduce.getText()));
+		} else {
+			clusters = executer.execute(collectors);
+		}
 		LOGGER.debug("Parametros: {}", algorithm.getParameters());
 
 		ObservableList<Integer> items = checkComboBoxCluster.getItems();

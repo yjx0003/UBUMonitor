@@ -3,6 +3,7 @@ package clustering.controller;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -170,15 +171,6 @@ public class ClusteringController {
 	}
 
 	private void initTable() {
-		checkComboBoxCluster.setConverter(new IntegerStringConverter() {
-			@Override
-			public String toString(Integer value) {
-				if (value.equals(-1))
-					return I18n.get("text.all");
-				return super.toString(value);
-			}
-		});
-
 		columnImage.setCellValueFactory(c -> new SimpleObjectProperty<>(new ImageView(new Image(
 				new ByteArrayInputStream(c.getValue().getEnrolledUser().getImageBytes()), 50, 50, true, false))));
 		columnName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEnrolledUser().getFullName()));
@@ -209,8 +201,9 @@ public class ClusteringController {
 		}
 		LOGGER.debug("Parametros: {}", algorithm.getParameters());
 
+		updateTable(clusters);
+		
 		ObservableList<Integer> items = checkComboBoxCluster.getItems();
-
 		items.setAll(IntStream.range(-1, executer.getNumClusters()).boxed().collect(Collectors.toList()));
 		checkComboBoxCluster.getCheckModel().checkAll();
 		checkComboBoxCluster.getItemBooleanProperty(0).addListener((obs, oldValue, newValue) -> {
@@ -220,15 +213,25 @@ public class ClusteringController {
 				checkComboBoxCluster.getCheckModel().clearChecks();
 			}
 		});
-		updateTable(new FilteredList<>(FXCollections.observableList(clusters)));
 	}
 
-	private void updateTable(FilteredList<UserData> clusters) {
-		SortedList<UserData> sortedList = new SortedList<>(clusters);
+	private void updateTable(List<UserData> clusters) {
+		FilteredList<UserData> filteredList = new FilteredList<>(FXCollections.observableList(clusters));
+		SortedList<UserData> sortedList = new SortedList<>(filteredList);
 		sortedList.comparatorProperty().bind(tableView.comparatorProperty());
 		tableView.setItems(sortedList);
+		Map<Integer, Long> count = clusters.stream()
+				.collect(Collectors.groupingBy(UserData::getCluster, Collectors.counting()));
+		checkComboBoxCluster.setConverter(new IntegerStringConverter() {
+			@Override
+			public String toString(Integer value) {
+				if (value.equals(-1))
+					return I18n.get("text.all");
+				return value + "  (" + count.get(value) + "/" + clusters.size() + ")";
+			}
+		});
 		checkComboBoxCluster.getCheckModel().getCheckedItems()
-				.addListener((ListChangeListener.Change<? extends Integer> c) -> clusters.setPredicate(
+				.addListener((ListChangeListener.Change<? extends Integer> c) -> filteredList.setPredicate(
 						o -> checkComboBoxCluster.getCheckModel().getCheckedItems().contains(o.getCluster())));
 	}
 }

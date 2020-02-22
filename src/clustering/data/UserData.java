@@ -49,4 +49,21 @@ public class UserData implements Clusterable {
 	public String toString() {
 		return "UserData [user=" + user + ", data=" + data + ", cluster=" + cluster + "]";
 	}
+
+	@Override
+	public int hashCode() {
+		return user.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof UserData))
+			return false;
+		UserData other = (UserData) obj;
+		return user.equals(other.user);
+	}
+	
+	
 }

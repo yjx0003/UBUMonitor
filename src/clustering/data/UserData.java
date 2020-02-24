@@ -13,7 +13,7 @@ public class UserData implements Clusterable {
 
 	private EnrolledUser user;
 	private List<Double> data;
-	private int cluster;
+	private int cluster = -1;
 
 	public UserData(EnrolledUser user) {
 		this.user = user;

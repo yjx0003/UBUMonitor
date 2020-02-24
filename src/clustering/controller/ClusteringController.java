@@ -50,11 +50,14 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import model.EnrolledUser;
+import util.JSArray;
+import util.JSObject;
 
 public class ClusteringController {
 
@@ -73,6 +76,7 @@ public class ClusteringController {
 
 	@FXML
 	private WebView webView;
+	private WebEngine webEngine;
 
 	@FXML
 	private TableView<UserData> tableView;
@@ -118,6 +122,9 @@ public class ClusteringController {
 		initAlgorithms();
 		initCollectors();
 		initTable();
+		webView.setContextMenuEnabled(false);
+		webEngine = webView.getEngine();
+		webEngine.load(getClass().getResource("/graphics/ClusterChart.html").toExternalForm());
 	}
 
 	private void initAlgorithms() {
@@ -200,9 +207,10 @@ public class ClusteringController {
 			clusters = executer.execute(collectors);
 		}
 		LOGGER.debug("Parametros: {}", algorithm.getParameters());
+		LOGGER.debug(clusters.toString());
 
 		updateTable(clusters);
-		
+
 		ObservableList<Integer> items = checkComboBoxCluster.getItems();
 		items.setAll(IntStream.range(-1, executer.getNumClusters()).boxed().collect(Collectors.toList()));
 		checkComboBoxCluster.getCheckModel().checkAll();
@@ -213,6 +221,7 @@ public class ClusteringController {
 				checkComboBoxCluster.getCheckModel().clearChecks();
 			}
 		});
+		webEngine.executeScript("updateChart(" + getChartData(executer.getPointsList()) + ")");
 	}
 
 	private void updateTable(List<UserData> clusters) {
@@ -233,5 +242,29 @@ public class ClusteringController {
 		checkComboBoxCluster.getCheckModel().getCheckedItems()
 				.addListener((ListChangeListener.Change<? extends Integer> c) -> filteredList.setPredicate(
 						o -> checkComboBoxCluster.getCheckModel().getCheckedItems().contains(o.getCluster())));
+	}
+
+	private String getChartData(List<Map<UserData, double[]>> points) {
+		JSObject root = new JSObject();
+		JSArray datasets = new JSArray();
+		for (int i = 0; i < points.size(); i++) {
+			JSObject group = new JSObject();
+			group.put("label", i);
+			group.put("backgroundColor", "colorHash.hex("+ i * i * i * i +")");
+			group.put("pointRadius", 6);
+			group.put("pointHoverRadius", 8);
+			JSArray data = new JSArray();
+			for (Map.Entry<UserData, double[]> userEntry : points.get(i).entrySet()) {
+				JSObject coord = new JSObject();
+				coord.putWithQuote("user", userEntry.getKey().getEnrolledUser().getFullName());
+				coord.put("x", userEntry.getValue()[0]);
+				coord.put("y", userEntry.getValue()[1]);
+				data.add(coord);
+			}
+			group.put("data", data);
+			datasets.add(group);
+		}
+		root.put("datasets", datasets);
+		return root.toString();
 	}
 }

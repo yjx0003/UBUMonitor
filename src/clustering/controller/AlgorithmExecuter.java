@@ -51,12 +51,16 @@ public class AlgorithmExecuter {
 			}
 		}
 		List<? extends Cluster<UserData>> clusters = clusterer.cluster(usersData);
+		List<UserData> users = new ArrayList<>();
 		for (int i = 0; i < clusters.size(); i++) {
 			for (UserData user : clusters.get(i).getPoints()) {
+				users.add(user);
 				user.setCluster(i);
 			}
 		}
+		usersData = users;
 		numClusters = clusters.size();
+		matrix = usersData.stream().map(UserData::getPoint).toArray(double[][]::new);
 		
 		double[][] points = pca.pca(matrix, 2);
 		for (Cluster<UserData> clusterUsers : clusters) {

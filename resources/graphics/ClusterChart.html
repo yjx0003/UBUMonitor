@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Charts</title>
+<link rel="stylesheet" type="text/css" href="../css/chart.css" />
+<script type="text/javascript" src="./lib/Chart.js"></script>
+<script type="text/javascript" src="./lib/color-hash.js"></script>
+</head>
+
+
+<canvas id="myChart" style="height: 100vh"></canvas>
+
+
+<script type="text/javascript">
+	var colorHash = new ColorHash();
+	var ctx = document.getElementById("myChart");
+	var myChart = new Chart(ctx, {
+		type : "scatter",
+		data : {
+			labels : [],
+			datasets : []
+		},
+		options : {
+			responsive : true,
+			maintainAspectRatio : false,
+			tooltips : {
+				callbacks : {
+					label : function(tooltipItem, data) {
+						var label = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].user;
+						return label + ': (' + tooltipItem.xLabel + ', '
+								+ tooltipItem.yLabel + ')';
+					}
+				}
+			}
+		}
+	});
+
+	function updateChart(data) {
+		myChart.data = data;
+		myChart.update();
+	}
+</script>
+</html>

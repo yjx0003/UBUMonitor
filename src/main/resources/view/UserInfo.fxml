@@ -41,20 +41,19 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Label text="%label.firstaccess" wrapText="true" GridPane.rowIndex="2" />
-            <Label layoutX="145.0" layoutY="72.0" text="%label.lastcourseaccess" wrapText="true" GridPane.rowIndex="4" />
-            <Label layoutX="145.0" layoutY="72.0" text="%label.lastaccess" wrapText="true" GridPane.rowIndex="3" />
-            <Label layoutX="69.0" layoutY="269.0" text="%label.roles" wrapText="true" GridPane.rowIndex="5" />
-            <Label fx:id="labelFirstAccess" layoutX="69.0" layoutY="72.0" text="Label" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Label fx:id="labelLastAccess" layoutX="69.0" layoutY="72.0" text="Label" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <Label fx:id="labelLastCourseAccess" layoutX="162.0" layoutY="215.0" text="Label" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <Label fx:id="labelRoles" layoutX="69.0" layoutY="54.0" text="Label" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            <Label layoutX="124.0" layoutY="273.0" text="%label.groups" wrapText="true" GridPane.rowIndex="6" />
-            <Label fx:id="labelGroups" layoutX="317.0" layoutY="117.0" text="Label" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-            <Label layoutX="237.0" layoutY="109.0" text="%label.email" wrapText="true" />
-            <Hyperlink fx:id="hyperlinkEmail" text="Hyperlink" wrapText="true" GridPane.columnIndex="1" />
-            <Label text="%label.ncourses" wrapText="true" GridPane.rowIndex="1" />
-            <Label fx:id="labelNcourses" layoutX="170.0" layoutY="342.0" text="Label" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label text="%label.firstaccess" wrapText="true" GridPane.rowIndex="3" />
+            <Label layoutX="145.0" layoutY="72.0" text="%label.lastcourseaccess" wrapText="true" GridPane.rowIndex="1" />
+            <Label layoutX="145.0" layoutY="72.0" text="%label.lastaccess" wrapText="true" GridPane.rowIndex="2" />
+            <Label layoutX="69.0" layoutY="269.0" text="%label.roles" wrapText="true" GridPane.rowIndex="4" />
+            <Label fx:id="labelFirstAccess" layoutX="69.0" layoutY="72.0" text="Label" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Label fx:id="labelLastAccess" layoutX="69.0" layoutY="72.0" text="Label" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label fx:id="labelLastCourseAccess" layoutX="162.0" layoutY="215.0" text="Label" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label fx:id="labelRoles" layoutX="69.0" layoutY="54.0" text="Label" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Label layoutX="124.0" layoutY="273.0" text="%label.groups" wrapText="true" GridPane.rowIndex="5" />
+            <Label fx:id="labelGroups" layoutX="317.0" layoutY="117.0" text="Label" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <Hyperlink fx:id="hyperlinkEmail" text="Hyperlink" wrapText="true" />
+            <Label text="%label.ncourses" wrapText="true" GridPane.rowIndex="6" />
+            <Label fx:id="labelNcourses" layoutX="170.0" layoutY="342.0" text="Label" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="6" />
          </children>
       </GridPane>
    </center>
@@ -103,10 +102,24 @@
       <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
    </padding>
    <top>
-      <Label fx:id="labelUser" text="Label" underline="true" wrapText="true" BorderPane.alignment="CENTER">
-         <font>
-            <Font name="System Bold" size="24.0" />
-         </font>
-      </Label>
+      <BorderPane BorderPane.alignment="CENTER">
+         <center>
+            <Label fx:id="labelUser" text="Label" wrapText="true" BorderPane.alignment="CENTER">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+         </center>
+         <left>
+            <ImageView fx:id="imageView" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER" />
+         </left>
+         <right>
+            <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+               <image>
+                  <Image url="@../img/titulo.png" />
+               </image>
+            </ImageView>
+         </right>
+      </BorderPane>
    </top>
 </BorderPane>

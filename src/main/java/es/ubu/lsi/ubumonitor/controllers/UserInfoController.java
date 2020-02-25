@@ -29,6 +29,8 @@ public class UserInfoController {
 	private EnrolledUser actualEnrolledUser;
 
 	@FXML
+	private ImageView imageView;
+	@FXML
 	private Label labelUser;
 	@FXML
 	private Hyperlink hyperlinkEmail;
@@ -76,13 +78,19 @@ public class UserInfoController {
 	public void setUser(EnrolledUser enrolledUser) {
 		actualEnrolledUser = enrolledUser;
 
-		labelUser.setGraphic(new ImageView(new Image(new ByteArrayInputStream(enrolledUser.getImageBytes()))));
+		imageView.setImage(new Image(new ByteArrayInputStream(enrolledUser.getImageBytes())));
 		labelUser.setText(enrolledUser.toString());
 		hyperlinkEmail.setText(enrolledUser.getEmail());
 		hyperlinkEmail.setOnAction(e -> UtilMethods.mailTo(enrolledUser.getEmail()));
 		Instant reference = Controller.getInstance().getActualCourse().getLogs().getLastDatetime().toInstant();
 		labelFirstAccess.setText(getDifferenceTime(enrolledUser.getFirstaccess(), reference));
 		labelLastAccess.setText(getDifferenceTime(enrolledUser.getLastaccess(), reference));
+		Circle circleLastAccees = new Circle(10);
+		circleLastAccees.setFill(LastActivityFactory.getColorActivity(enrolledUser.getLastaccess(),
+				Controller.getInstance().getActualCourse().getLogs().getLastDatetime().toInstant()));
+		labelLastAccess.setGraphic(circleLastAccees);
+		
+		
 		labelLastCourseAccess.setText(getDifferenceTime(enrolledUser.getLastcourseaccess(), reference));
 		Circle circle = new Circle(10);
 		circle.setFill(LastActivityFactory.getColorActivity(enrolledUser.getLastcourseaccess(),
@@ -96,7 +104,7 @@ public class UserInfoController {
 		ObservableList<Course> courses = Controller.getInstance().getDataBase().getCourses().getMap().values().stream()
 				.filter(c -> c.contains(enrolledUser))
 				.collect(Collectors.toCollection(FXCollections::observableArrayList));
-		courses.sort(Comparator.comparing(Course::getFullName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)));
+		courses.sort(Comparator.comparing(Course::getId, Comparator.reverseOrder()));
 		
 		coursesColumn.setCellValueFactory(v -> new SimpleStringProperty(v.getValue().getFullName()));
 		coursesColumn.setComparator(String::compareToIgnoreCase);

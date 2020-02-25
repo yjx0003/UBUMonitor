@@ -137,6 +137,7 @@ public class JavaConnector {
 	}
 
 	public void hideLegend() {
+		
 		currentType.hideLegend();
 	}
 

@@ -1,0 +1,15 @@
+02-20@14:16:50 INFO  (Connection.java:35)     - Received response in 307,5ms for school.moodledemo.net/login/token.php POST
+02-20@14:16:50 INFO  (Controller.java:268)     - Logeandose para web scraping
+02-20@14:16:51 INFO  (Connection.java:35)     - Received response in 121,6ms for school.moodledemo.net/login/index.php GET
+02-20@14:16:51 INFO  (Connection.java:35)     - Received response in 273,2ms for school.moodledemo.net/login/index.php POST
+02-20@14:16:51 INFO  (Connection.java:35)     - Received response in 80,6ms for school.moodledemo.net/login/index.php GET
+02-20@14:16:51 INFO  (Connection.java:35)     - Received response in 192,9ms for school.moodledemo.net/my/ GET
+02-20@14:16:51 INFO  (Connection.java:35)     - Received response in 92,9ms for school.moodledemo.net/webservice/rest/server.php GET
+02-20@14:16:52 INFO  (Connection.java:35)     - Received response in 80,5ms for school.moodledemo.net/pluginfile.php/160/user/icon/boost/f2 GET
+02-20@14:16:52 INFO  (Connection.java:35)     - Received response in 120,0ms for school.moodledemo.net/webservice/rest/server.php GET
+02-20@14:16:52 INFO  (Connection.java:35)     - Received response in 86,1ms for school.moodledemo.net/webservice/rest/server.php GET
+02-20@14:16:52 INFO  (Connection.java:35)     - Received response in 100,8ms for school.moodledemo.net/webservice/rest/server.php GET
+02-20@14:16:52 INFO  (Connection.java:35)     - Received response in 91,2ms for school.moodledemo.net/webservice/rest/server.php GET
+02-20@14:16:52 INFO  (Connection.java:35)     - Received response in 89,7ms for school.moodledemo.net/webservice/rest/server.php GET
+02-20@14:16:52 INFO  (Connection.java:35)     - Received response in 108,3ms for school.moodledemo.net/lib/ajax/service.php POST
+02-20@14:16:52 INFO  (Connection.java:35)     - Received response in 103,2ms for school.moodledemo.net/webservice/rest/server.php GET

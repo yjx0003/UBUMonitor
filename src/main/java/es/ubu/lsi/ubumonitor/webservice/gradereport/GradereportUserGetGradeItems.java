@@ -1,7 +1,6 @@
 package es.ubu.lsi.ubumonitor.webservice.gradereport;
 
 import es.ubu.lsi.ubumonitor.webservice.ParametersCourseidUseridGroupid;
-import es.ubu.lsi.ubumonitor.webservice.ParametersCourseidUseridGroupid.OptionalParameter;
 import es.ubu.lsi.ubumonitor.webservice.WSFunctions;
 
 

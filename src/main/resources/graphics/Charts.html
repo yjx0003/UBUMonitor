@@ -236,7 +236,10 @@
         displayLegendButton(options.useLegend);
         displayGroupButton(options.useGroup);
         displayGeneralButton(options.useGeneral);
-		options.legend = {display:options.legendActive};
+		if(!options.legend){
+			options.legend={};
+		}
+		options.legend.display = options.legendActive;
         if (myChart.config.type == options.typeGraph) {
             myChart.data = dataset;
             myChart.options = options;

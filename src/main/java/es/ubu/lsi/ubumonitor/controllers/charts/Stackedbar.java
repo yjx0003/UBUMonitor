@@ -183,15 +183,15 @@ public class Stackedbar extends Chartjs {
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<?> rangeDates = groupBy.getRange(dateStart, dateEnd);
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<EnrolledUser, Map<T, List<Long>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
 		for (EnrolledUser selectedUser : enrolledUsers) {
-			Map<T, List<Long>> types = userCounts.get(selectedUser);
+			Map<T, List<Integer>> types = userCounts.get(selectedUser);
 			List<Long> results = new ArrayList<>();
 			for (int j = 0; j < rangeDates.size(); j++) {
 				long result = 0;
 				for (T type : selecteds) {
-					List<Long> times = types.get(type);
+					List<Integer> times = types.get(type);
 					result += times.get(j);
 				}
 				results.add(result);
@@ -237,13 +237,13 @@ public class Stackedbar extends Chartjs {
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<EnrolledUser, Map<T, List<Long>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
 		for (EnrolledUser selectedUser : enrolledUsers) {
-			Map<T, List<Long>> types = userCounts.get(selectedUser);
+			Map<T, List<Integer>> types = userCounts.get(selectedUser);
 
 			for (T type : selecteds) {
-				List<Long> times = types.get(type);
+				List<Integer> times = types.get(type);
 				printer.print(selectedUser.getId());
 				printer.print(selectedUser.getFullName());
 				printer.print(type);

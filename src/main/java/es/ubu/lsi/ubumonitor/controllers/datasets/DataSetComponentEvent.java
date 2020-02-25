@@ -52,7 +52,7 @@ public class DataSetComponentEvent implements DataSet<ComponentEvent> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Map<EnrolledUser, Map<ComponentEvent, List<Long>>> getUserCounts(GroupByAbstract<?> groupBy, List<EnrolledUser> enrolledUsers,
+	public Map<EnrolledUser, Map<ComponentEvent, List<Integer>>> getUserCounts(GroupByAbstract<?> groupBy, List<EnrolledUser> enrolledUsers,
 			List<ComponentEvent> elements, LocalDate start, LocalDate end) {
 		return groupBy.getComponentsEvents().getUsersCounts(enrolledUsers, elements, start, end);
 	}

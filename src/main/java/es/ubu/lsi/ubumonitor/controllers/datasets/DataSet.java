@@ -30,6 +30,6 @@ public interface DataSet<T> {
 	 * 
 	 * @return los conteos de los usuarios
 	 */
-	Map<EnrolledUser, Map<T, List<Long>>> getUserCounts(GroupByAbstract<?> groupBy, List<EnrolledUser> enrolledUsers,
+	Map<EnrolledUser, Map<T, List<Integer>>> getUserCounts(GroupByAbstract<?> groupBy, List<EnrolledUser> enrolledUsers,
 			List<T> elements, LocalDate start, LocalDate end);
 }

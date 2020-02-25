@@ -128,14 +128,14 @@ public class StackedBarDataSet<T> {
 	 * Crea el dataset de los usuarios seleccionados
 	 */
 	private void setUsersDatasets() {
-		Map<EnrolledUser, Map<T, List<Long>>> userTDataset = dataSet.getUserCounts(groupBy, enrolledUsers, elements, start, end);
+		Map<EnrolledUser, Map<T, List<Integer>>> userTDataset = dataSet.getUserCounts(groupBy, enrolledUsers, elements, start, end);
 
 		for (EnrolledUser user : selectedUsers) {
 		
-			Map<T, List<Long>> elementDataset = userTDataset.get(user);
+			Map<T, List<Integer>> elementDataset = userTDataset.get(user);
 			for (T element : elements) {
 
-				List<Long> data = elementDataset.get(element);
+				List<Integer> data = elementDataset.get(element);
 
 				boolean anyNotZero = data.stream().anyMatch(value -> value != 0);
 

@@ -45,7 +45,7 @@ public class DataSetSection implements DataSet<Section> {
 	}
 
 	@Override
-	public Map<EnrolledUser, Map<Section, List<Long>>> getUserCounts(GroupByAbstract<?> groupBy,
+	public Map<EnrolledUser, Map<Section, List<Integer>>> getUserCounts(GroupByAbstract<?> groupBy,
 			List<EnrolledUser> enrolledUsers, List<Section> elements, LocalDate start, LocalDate end) {
 		return groupBy.getSections().getUsersCounts(enrolledUsers, elements, start, end);
 	}

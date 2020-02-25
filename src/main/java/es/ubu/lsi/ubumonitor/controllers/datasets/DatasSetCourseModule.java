@@ -45,7 +45,7 @@ public class DatasSetCourseModule implements DataSet<CourseModule> {
 	}
 
 	@Override
-	public Map<EnrolledUser, Map<CourseModule, List<Long>>> getUserCounts(GroupByAbstract<?> groupBy,
+	public Map<EnrolledUser, Map<CourseModule, List<Integer>>> getUserCounts(GroupByAbstract<?> groupBy,
 			List<EnrolledUser> enrolledUsers, List<CourseModule> elements, LocalDate start, LocalDate end) {
 		return groupBy.getCourseModules().getUsersCounts(enrolledUsers, elements, start, end);
 	}

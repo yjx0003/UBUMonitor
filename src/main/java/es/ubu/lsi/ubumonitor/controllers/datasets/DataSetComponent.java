@@ -50,7 +50,7 @@ public class DataSetComponent implements DataSet<Component> {
 	}
 
 	@Override
-	public Map<EnrolledUser, Map<Component, List<Long>>> getUserCounts(GroupByAbstract<?> groupBy, List<EnrolledUser> enrolledUsers,
+	public Map<EnrolledUser, Map<Component, List<Integer>>> getUserCounts(GroupByAbstract<?> groupBy, List<EnrolledUser> enrolledUsers,
 			List<Component> elements, LocalDate start, LocalDate end) {
 		return groupBy.getComponents().getUsersCounts(enrolledUsers, elements, start, end);
 	}

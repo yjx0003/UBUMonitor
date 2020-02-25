@@ -85,7 +85,7 @@ public class Heatmap extends ApexCharts {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("[");
 
-		Map<EnrolledUser, Map<T, List<Long>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
 		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
 
@@ -101,12 +101,12 @@ public class Heatmap extends ApexCharts {
 
 			stringBuilder.append("{name:'" + UtilMethods.escapeJavaScriptText(selectedUser.toString()) + "',");
 
-			Map<T, List<Long>> types = userCounts.get(selectedUser);
+			Map<T, List<Integer>> types = userCounts.get(selectedUser);
 			List<Long> results = new ArrayList<>();
 			for (int j = 0; j < rangeDates.size(); j++) {
 				long result = 0;
 				for (T type : selecteds) {
-					List<Long> times = types.get(type);
+					List<Integer> times = types.get(type);
 					result += times.get(j);
 				}
 				if (useQuartile && result != 0) {
@@ -261,15 +261,15 @@ public class Heatmap extends ApexCharts {
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<?> rangeDates = groupBy.getRange(dateStart, dateEnd);
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<EnrolledUser, Map<T, List<Long>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
 		for (EnrolledUser selectedUser : enrolledUsers) {
-			Map<T, List<Long>> types = userCounts.get(selectedUser);
-			List<Long> results = new ArrayList<>();
+			Map<T, List<Integer>> types = userCounts.get(selectedUser);
+			List<Integer> results = new ArrayList<>();
 			for (int j = 0; j < rangeDates.size(); j++) {
-				long result = 0;
+				int result = 0;
 				for (T type : selecteds) {
-					List<Long> times = types.get(type);
+					List<Integer> times = types.get(type);
 					result += times.get(j);
 				}
 				results.add(result);
@@ -315,13 +315,13 @@ public class Heatmap extends ApexCharts {
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<EnrolledUser, Map<T, List<Long>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
 		for (EnrolledUser selectedUser : enrolledUsers) {
-			Map<T, List<Long>> types = userCounts.get(selectedUser);
+			Map<T, List<Integer>> types = userCounts.get(selectedUser);
 
 			for (T type : selecteds) {
-				List<Long> times = types.get(type);
+				List<Integer> times = types.get(type);
 				printer.print(selectedUser.getId());
 				printer.print(selectedUser.getFullName());
 				printer.print(type);

@@ -36,7 +36,7 @@ public class MeanDiff extends ChartjsLog {
 	public <T> String createData(List<EnrolledUser> enrolledUsers, List<EnrolledUser> selectedUsers, List<T> typeLogs,
 			GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd, DataSet<T> dataSet) {
 
-		Map<EnrolledUser, Map<T, List<Long>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
+		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
 				dateStart, dateEnd);
 
 		Map<T, List<Double>> means = dataSet.getMeans(groupBy, enrolledUsers, typeLogs, dateStart, dateEnd);
@@ -57,7 +57,7 @@ public class MeanDiff extends ChartjsLog {
 	}
 
 	private <T> void createEnrolledUsersDatasets(List<EnrolledUser> selectedUsers, List<T> typeLogs,
-			Map<EnrolledUser, Map<T, List<Long>>> userCounts, List<Double> listMeans, List<String> rangeDates,
+			Map<EnrolledUser, Map<T, List<Integer>>> userCounts, List<Double> listMeans, List<String> rangeDates,
 			StringJoiner datasets) {
 		for (EnrolledUser selectedUser : selectedUsers) {
 			StringJoiner dataset = JSObject();
@@ -65,13 +65,13 @@ public class MeanDiff extends ChartjsLog {
 			addKeyValue(dataset, "borderColor", hex(selectedUser.getId()));
 			addKeyValue(dataset, "backgroundColor", rgba(selectedUser.getId(), OPACITY));
 
-			Map<T, List<Long>> types = userCounts.get(selectedUser);
+			Map<T, List<Integer>> types = userCounts.get(selectedUser);
 			StringJoiner results = JSArray();
 			long cum = 0;
 			for (int j = 0; j < rangeDates.size(); j++) {
 				long result = 0;
 				for (T typeLog : typeLogs) {
-					List<Long> times = types.get(typeLog);
+					List<Integer> times = types.get(typeLog);
 					result += times.get(j);
 				}
 				cum += result;
@@ -185,18 +185,18 @@ public class MeanDiff extends ChartjsLog {
 		Map<T, List<Double>> means = dataSet.getMeans(groupBy, listParticipants.getItems(), selecteds, dateStart,
 				dateEnd);
 
-		Map<EnrolledUser, Map<T, List<Long>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
 
 		List<Double> listMeans = createMeanList(selecteds, means, rangeDates);
 		for (EnrolledUser selectedUser : enrolledUsers) {
-			Map<T, List<Long>> types = userCounts.get(selectedUser);
+			Map<T, List<Integer>> types = userCounts.get(selectedUser);
 			List<Double> results = new ArrayList<>();
 			long result = 0;
 			for (int j = 0; j < rangeDates.size(); j++) {
 
 				for (T type : selecteds) {
-					List<Long> times = types.get(type);
+					List<Integer> times = types.get(type);
 					result += times.get(j);
 				}
 				results.add(result - listMeans.get(j));
@@ -244,15 +244,15 @@ public class MeanDiff extends ChartjsLog {
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<EnrolledUser, Map<T, List<Long>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
 		Map<T, List<Double>> means = dataSet.getMeans(groupBy, listParticipants.getItems(), selecteds, dateStart,
 				dateEnd);
 		for (EnrolledUser selectedUser : enrolledUsers) {
-			Map<T, List<Long>> types = userCounts.get(selectedUser);
+			Map<T, List<Integer>> types = userCounts.get(selectedUser);
 
 			for (T type : selecteds) {
-				List<Long> times = types.get(type);
+				List<Integer> times = types.get(type);
 				List<Double> meanTimes = means.get(type);
 				printer.print(selectedUser.getId());
 				printer.print(selectedUser.getFullName());

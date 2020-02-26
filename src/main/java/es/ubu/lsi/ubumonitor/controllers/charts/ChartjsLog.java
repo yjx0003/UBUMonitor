@@ -3,7 +3,6 @@ package es.ubu.lsi.ubumonitor.controllers.charts;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +15,7 @@ import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
 public abstract class ChartjsLog extends Chartjs {
@@ -28,8 +28,8 @@ public abstract class ChartjsLog extends Chartjs {
 
 	}
 
-	public StringJoiner createLabels(List<String> rangeDates) {
-		StringJoiner labels = JSArray();
+	public JSArray createLabels(List<String> rangeDates) {
+		JSArray labels = new JSArray();
 		for (String date : rangeDates) {
 			labels.add("'" + UtilMethods.escapeJavaScriptText(date) + "'");
 		}

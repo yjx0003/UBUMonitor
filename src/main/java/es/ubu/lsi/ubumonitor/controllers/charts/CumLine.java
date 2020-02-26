@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -23,6 +22,8 @@ import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.util.JSArray;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 
 public class CumLine extends ChartjsLog {
 
@@ -43,36 +44,36 @@ public class CumLine extends ChartjsLog {
 
 		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
 
-		StringJoiner data = JSObject();
+		JSObject data = new JSObject();
 
-		addKeyValue(data, "labels", createLabels(rangeDates));
+		data.put("labels", createLabels(rangeDates));
 
-		StringJoiner datasets = JSArray();
+		JSArray datasets = new JSArray();
 
 		createEnrolledUsersDatasets(selectedUsers, typeLogs, userCounts, rangeDates, datasets);
 
 		createMean(typeLogs, means, rangeDates, datasets);
 
-		addKeyValue(data, "datasets", datasets);
+		data.put("datasets", datasets);
 
 		return data.toString();
 	}
 
 	private <T> void createMean(List<T> typeLogs, Map<T, List<Double>> means, List<String> rangeDates,
-			StringJoiner datasets) {
-		StringJoiner dataset = JSObject();
+			JSArray datasets) {
+		JSObject dataset = new JSObject();
 		String generalMeanTranslate = I18n.get("chartlabel.generalMean");
-		addKeyValueWithQuote(dataset, "label", generalMeanTranslate);
-		addKeyValue(dataset, "borderColor", hex(generalMeanTranslate));
-		addKeyValue(dataset, "backgroundColor", rgba(generalMeanTranslate, OPACITY));
-		addKeyValue(dataset, "borderDash", "["
+		dataset.putWithQuote("label", generalMeanTranslate);
+		dataset.put("borderColor", hex(generalMeanTranslate));
+		dataset.put("backgroundColor", rgba(generalMeanTranslate, OPACITY));
+		dataset.put("borderDash", "["
 				+ Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL, "borderLength")
 				+ ","
 				+ Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL, "borderSpace")
 				+ "]");
-		addKeyValue(dataset, "hidden", !(boolean) Controller.getInstance().getMainConfiguration()
+		dataset.put("hidden", !(boolean) Controller.getInstance().getMainConfiguration()
 				.getValue(MainConfiguration.GENERAL, "generalActive"));
-		StringJoiner results = JSArray();
+		JSArray results = new JSArray();
 		double cumResult = 0;
 		for (int j = 0; j < rangeDates.size(); j++) {
 			double result = 0;
@@ -81,24 +82,24 @@ public class CumLine extends ChartjsLog {
 				result += times.get(j);
 			}
 			cumResult += result;
-			results.add(Double.toString(cumResult));
+			results.add(cumResult);
 		}
-		addKeyValue(dataset, "data", results);
-		datasets.add(dataset.toString());
+		dataset.put("data", results);
+		datasets.add(dataset);
 
 	}
 
 	private <T> void createEnrolledUsersDatasets(List<EnrolledUser> selectedUsers, List<T> typeLogs,
-			Map<EnrolledUser, Map<T, List<Integer>>> userCounts, List<String> rangeDates, StringJoiner datasets) {
+			Map<EnrolledUser, Map<T, List<Integer>>> userCounts, List<String> rangeDates, JSArray datasets) {
 
 		for (EnrolledUser selectedUser : selectedUsers) {
-			StringJoiner dataset = JSObject();
-			addKeyValueWithQuote(dataset, "label", selectedUser.getFullName());
-			addKeyValue(dataset, "borderColor", hex(selectedUser.getId()));
-			addKeyValue(dataset, "backgroundColor", rgba(selectedUser.getId(), OPACITY));
+			JSObject dataset = new JSObject();
+			dataset.putWithQuote("label", selectedUser.getFullName());
+			dataset.put("borderColor", hex(selectedUser.getId()));
+			dataset.put("backgroundColor", rgba(selectedUser.getId(), OPACITY));
 
 			Map<T, List<Integer>> types = userCounts.get(selectedUser);
-			StringJoiner results = JSArray();
+			JSArray results = new JSArray();
 			long result = 0;
 			for (int j = 0; j < rangeDates.size(); j++) {
 
@@ -109,8 +110,8 @@ public class CumLine extends ChartjsLog {
 
 				results.add(Long.toString(result));
 			}
-			addKeyValue(dataset, "data", results);
-			datasets.add(dataset.toString());
+			dataset.put("data", results);
+			datasets.add(dataset);
 
 		}
 
@@ -141,12 +142,12 @@ public class CumLine extends ChartjsLog {
 
 	@Override
 	public String getOptions() {
-		StringJoiner jsObject = getDefaultOptions();
-		addKeyValueWithQuote(jsObject, "typeGraph", "line");
+		JSObject jsObject = getDefaultOptions();
+		jsObject.putWithQuote("typeGraph", "line");
 
-		addKeyValue(jsObject, "scales", "{yAxes:[{" + getYScaleLabel() + ",ticks:{suggestedMax:" + getSuggestedMax()
+		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",ticks:{suggestedMax:" + getSuggestedMax()
 				+ ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
-		addKeyValue(jsObject, "tooltips",
+		jsObject.put("tooltips",
 				"{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+' : '+Math.round(100*a.yLabel)/100}}}");
 		return jsObject.toString();
 	}

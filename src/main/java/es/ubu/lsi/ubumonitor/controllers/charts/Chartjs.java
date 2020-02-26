@@ -1,9 +1,8 @@
 package es.ubu.lsi.ubumonitor.controllers.charts;
 
-import java.util.StringJoiner;
-
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 
 public abstract class Chartjs extends Chart {
 
@@ -31,31 +30,29 @@ public abstract class Chartjs extends Chart {
 
 	public String getXScaleLabel() {
 		MainConfiguration mainConfiguration = controller.getMainConfiguration();
-		StringJoiner jsObject = JSObject();
-		addKeyValue(jsObject, "display", (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "displayXScaleTitle"));
-		addKeyValueWithQuote(jsObject, "labelString", getXAxisTitle());
-		addKeyValue(jsObject, "fontColor", colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorXScaleTitle")));
-		addKeyValueWithQuote(jsObject, "fontStyle", "bold");
+		JSObject jsObject = new JSObject();
+		jsObject.put("display", (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "displayXScaleTitle"));
+		jsObject.putWithQuote("labelString", getXAxisTitle());
+		jsObject.put("fontColor",
+				colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorXScaleTitle")));
+		jsObject.putWithQuote("fontStyle", "bold");
 
-		return  "scaleLabel:" +jsObject.toString();
+		return "scaleLabel:" + jsObject;
 
 	}
 
 	public String getYScaleLabel() {
 		MainConfiguration mainConfiguration = controller.getMainConfiguration();
-		StringJoiner jsObject = JSObject();
-		addKeyValue(jsObject, "display",
-				(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "displayYScaleTitle"));
-		addKeyValueWithQuote(jsObject, "labelString", getYAxisTitle());
-		addKeyValueWithQuote(jsObject, "fontSize", 14);
-		addKeyValue(jsObject, "fontColor",
+		JSObject jsObject = new JSObject();
+		jsObject.put("display", (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "displayYScaleTitle"));
+		jsObject.putWithQuote("labelString", getYAxisTitle());
+		jsObject.putWithQuote("fontSize", 14);
+		jsObject.put("fontColor",
 				colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorYScaleTitle")));
-		addKeyValueWithQuote(jsObject, "fontStyle", "bold");
+		jsObject.putWithQuote("fontStyle", "bold");
 
-		return "scaleLabel:" + jsObject.toString();
+		return "scaleLabel:" + jsObject;
 
 	}
-
-	
 
 }

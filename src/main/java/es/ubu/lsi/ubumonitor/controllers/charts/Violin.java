@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.StringJoiner;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -18,6 +17,7 @@ import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
 public class Violin extends ChartjsGradeItem {
@@ -99,17 +99,17 @@ public class Violin extends ChartjsGradeItem {
 
 	@Override
 	public String getOptions() {
-		StringJoiner jsObject = getDefaultOptions();
+		JSObject jsObject = getDefaultOptions();
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		int tooltipDecimals = mainConfiguration.getValue(getChartType(), "tooltipDecimals");
-		addKeyValueWithQuote(jsObject, "typeGraph", useHorizontal ? "horizontalViolin" : "violin");
-		addKeyValue(jsObject, "tooltipDecimals", tooltipDecimals);
+		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalViolin" : "violin");
+		jsObject.put("tooltipDecimals", tooltipDecimals);
 		
 		String xLabel = useHorizontal ? getYScaleLabel() :getXScaleLabel();
 		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
 		
-		addKeyValue(jsObject, "scales",
+		jsObject.put("scales",
 				"{yAxes:[{" + yLabel + ",ticks:{min:0}}],xAxes:[{" + xLabel + ",ticks:{min:0}}]}");
 		return jsObject.toString();
 	}

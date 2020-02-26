@@ -4,7 +4,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -15,6 +14,8 @@ import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.util.JSArray;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.scene.paint.Color;
 
@@ -29,8 +30,8 @@ public class CalificationBar extends ChartjsGradeItem {
 	@Override
 	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
 
-		StringJoiner data = JSObject();
-		addKeyValue(data, "labels", "[" + UtilMethods.joinWithQuotes(selectedGradeItems) + "]");
+		JSObject data = new JSObject();
+		data.put("labels", "[" + UtilMethods.joinWithQuotes(selectedGradeItems) + "]");
 
 		List<Integer> countNaN = new ArrayList<>();
 		List<Integer> countLessCut = new ArrayList<>();
@@ -56,22 +57,22 @@ public class CalificationBar extends ChartjsGradeItem {
 			countGreaterCut.add(greater);
 		}
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
-		StringJoiner datasets = JSArray();
+		JSArray datasets = new JSArray();
 		datasets.add(createData(I18n.get("text.empty"), countNaN,
 				mainConfiguration.getValue(getChartType(), "emptyGradeColor")));
 		datasets.add(createData(I18n.get("text.fail"), countLessCut,
 				mainConfiguration.getValue(getChartType(), "failGradeColor")));
 		datasets.add(createData(I18n.get("text.pass"), countGreaterCut,
 				mainConfiguration.getValue(getChartType(), "passGradeColor")));
-		addKeyValue(data, "datasets", datasets.toString());
+		data.put("datasets", datasets);
 		return data.toString();
 	}
 
 	private String createData(String label, List<Integer> data, Color color) {
-		StringJoiner dataset = JSObject();
-		addKeyValueWithQuote(dataset, "label", label);
-		addKeyValue(dataset, "data", "[" + UtilMethods.join(data) + "]");
-		addKeyValue(dataset, "backgroundColor", colorToRGB(color));
+		JSObject dataset = new JSObject();
+		dataset.putWithQuote("label", label);
+		dataset.put("data", "[" + UtilMethods.join(data) + "]");
+		dataset.put("backgroundColor", colorToRGB(color));
 		// addKeyValueWithQuote(dataset, "borderColor", hexColor);
 		// addKeyValue(dataset, "borderWidth", 2);
 		return dataset.toString();
@@ -79,13 +80,13 @@ public class CalificationBar extends ChartjsGradeItem {
 
 	@Override
 	public String getOptions() {
-		StringJoiner jsObject = getDefaultOptions();
-		addKeyValueWithQuote(jsObject, "typeGraph", "bar");
-		addKeyValue(jsObject, "scales", "{xAxes:[{" + getXScaleLabel() + ",stacked: true}],yAxes:[{" + getYScaleLabel()
+		JSObject jsObject = getDefaultOptions();
+		jsObject.putWithQuote("typeGraph", "bar");
+		jsObject.put("scales", "{xAxes:[{" + getXScaleLabel() + ",stacked: true}],yAxes:[{" + getYScaleLabel()
 				+ ",stacked:true,ticks:{stepSize:0}}]}");
-		addKeyValue(jsObject, "tooltips", "{mode:'label'}");
-		addKeyValue(jsObject, "onClick", "function(event, array){}");
-		addKeyValue(jsObject, "plugins",
+		jsObject.put("tooltips", "{mode:'label'}");
+		jsObject.put("onClick", "function(event, array){}");
+		jsObject.put("plugins",
 				"{datalabels:{display:!0,font:{weight:\"bold\"},formatter:function(t,a){if(0===t)return\"\";let e=a.chart.data.datasets,l=0;for(i=0;i<e.length;i++)l+=e[i].data[a.dataIndex];return t+\"/\"+l+\" (\"+(t/l).toLocaleString(locale,{style:\"percent\",maximumFractionDigits:2})+\")\"}}}");
 		return jsObject.toString();
 	}

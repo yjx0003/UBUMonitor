@@ -11,7 +11,6 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.StringJoiner;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -25,6 +24,8 @@ import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.ActivityCompletion;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.util.JSArray;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 
 public class ActivitiesStatusTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActivitiesStatusTable.class);
@@ -48,87 +49,87 @@ public class ActivitiesStatusTable extends Tabulator {
 
 	public String createColumns(List<CourseModule> courseModules) {
 		// users columns
-		StringJoiner jsObject = JSObject();
-		StringJoiner array = JSArray();
+		JSObject jsObject = new JSObject();
+		JSArray array = new JSArray();
 
-		addKeyValueWithQuote(jsObject, "title", I18n.get("chartlabel.name"));
-		addKeyValueWithQuote(jsObject, "field", "name");
-		addKeyValueWithQuote(jsObject, "frozen", true);
+		jsObject.putWithQuote("title", I18n.get("chartlabel.name"));
+		jsObject.putWithQuote("field", "name");
+		jsObject.putWithQuote("frozen", true);
 		array.add(jsObject.toString());
 
-		StringJoiner formatterParams = JSObject();
-		addKeyValue(formatterParams, "allowEmpty", true);
-		addKeyValue(formatterParams, "allowTruthy", true);
+		JSObject formatterParams = new JSObject();
+		formatterParams.put("allowEmpty", true);
+		formatterParams.put("allowTruthy", true);
 		String stringFormatterParams = formatterParams.toString();
 
-		StringJoiner sorterParams = JSObject();
-		addKeyValueWithQuote(sorterParams, "format", datePattern.toUpperCase() + ", " + timePattern);
-		addKeyValueWithQuote(sorterParams, "alignEmptyValues", "bottom");
+		JSObject sorterParams = new JSObject();
+		sorterParams.putWithQuote("format", datePattern.toUpperCase() + ", " + timePattern);
+		sorterParams.putWithQuote("alignEmptyValues", "bottom");
 		String stringsorterParams = sorterParams.toString();
 
 		for (CourseModule courseModule : courseModules) {
-			jsObject = JSObject();
-			addKeyValueWithQuote(jsObject, "align", "center");
-			addKeyValue(jsObject, "tooltip", true);
+			jsObject = new JSObject();
+			jsObject.putWithQuote("align", "center");
+			jsObject.put("tooltip", true);
 
-			addKeyValueWithQuote(jsObject, "formatter", "tickCross");
-			addKeyValue(jsObject, "topCalc",
+			jsObject.putWithQuote("formatter", "tickCross");
+			jsObject.put("topCalc",
 					"function(n,r,c){var f=0;return n.forEach(function(n){n&&f++;}),f+'/'+n.length+' ('+(f/n.length||0).toLocaleString(locale,{style:'percent',maximumFractionDigits:2})+')';}");
-			addKeyValue(jsObject, "formatterParams", stringFormatterParams);
-			addKeyValueWithQuote(jsObject, "sorter", "datetime");
-			addKeyValue(jsObject, "sorterParams", stringsorterParams);
-			addKeyValueWithQuote(jsObject, "title", courseModule.getModuleName());
-			addKeyValueWithQuote(jsObject, "field", "ID" + courseModule.getCmid());
+			jsObject.put("formatterParams", stringFormatterParams);
+			jsObject.putWithQuote("sorter", "datetime");
+			jsObject.put("sorterParams", stringsorterParams);
+			jsObject.putWithQuote("title", courseModule.getModuleName());
+			jsObject.putWithQuote("field", "ID" + courseModule.getCmid());
 
 			array.add(jsObject.toString());
 		}
 
-		jsObject = JSObject();
-		addKeyValueWithQuote(jsObject, "title", I18n.get("chartlabel.progress"));
-		addKeyValueWithQuote(jsObject, "field", "progress");
-		addKeyValueWithQuote(jsObject, "formatter", "progress");
-		addKeyValueWithQuote(jsObject, "frozen", true);
-		addKeyValue(jsObject, "formatterParams", getProgressParam(courseModules.size()));
+		jsObject = new JSObject();
+		jsObject.putWithQuote("title", I18n.get("chartlabel.progress"));
+		jsObject.putWithQuote("field", "progress");
+		jsObject.putWithQuote("formatter", "progress");
+		jsObject.putWithQuote("frozen", true);
+		jsObject.put("formatterParams", getProgressParam(courseModules.size()));
 		array.add(jsObject.toString());
 		return array.toString();
 	}
 
 	private String getProgressParam(int max) {
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
-		StringJoiner jsObject = JSObject();
-		addKeyValue(jsObject, "min", 0);
-		addKeyValue(jsObject, "max", max);
+		JSObject jsObject = new JSObject();
+		jsObject.put("min", 0);
+		jsObject.put("max", max);
 
-		addKeyValue(jsObject, "legend", String
+		jsObject.put("legend", String
 				.format("function(value){return value+'/'+%s +' ('+Math.round(value/%s*100||0)+'%%)';}", max, max));
 
-		addKeyValueWithQuote(jsObject, "legendAlign", "center");
-		StringJoiner jsArray = JSArray();
+		jsObject.putWithQuote("legendAlign", "center");
+		JSArray jsArray = new JSArray();
 
 		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "firstInterval")));
 		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "secondInterval")));
 		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "thirdInterval")));
 		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "fourthInterval")));
 		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "moreMax")));
-		addKeyValue(jsObject, "color",
+		jsObject.put("color",
 				String.format(Locale.ROOT, "function(e){return %s[e/%f|0]}", jsArray.toString(), max / 4.0));
 		return jsObject.toString();
 	}
 
 	public String createData(List<EnrolledUser> enrolledUsers, List<CourseModule> courseModules) {
-		StringJoiner array = JSArray();
-		StringJoiner jsObject;
+		JSArray array = new JSArray();
+		JSObject jsObject;
 		Instant init = datePickerStart.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant();
 		Instant end = datePickerEnd.getValue().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
 		for (EnrolledUser enrolledUser : enrolledUsers) {
-			jsObject = JSObject();
-			addKeyValueWithQuote(jsObject, "name", enrolledUser.getFullName());
+			jsObject = new JSObject();
+			jsObject.putWithQuote("name", enrolledUser.getFullName());
 			int progress = 0;
 			for (CourseModule courseModule : courseModules) {
 				ActivityCompletion activity = courseModule.getActivitiesCompletion().get(enrolledUser);
 				String field = "ID" + courseModule.getCmid();
 				if (activity == null || activity.getState() == null) {
-					addKeyValueWithQuote(jsObject, field, "");
+					jsObject.putWithQuote(field, "");
 				} else {
 					switch (activity.getState()) {
 					case COMPLETE:
@@ -136,20 +137,20 @@ public class ActivitiesStatusTable extends Tabulator {
 						Instant timeCompleted = activity.getTimecompleted();
 						if (timeCompleted != null && init.isBefore(timeCompleted) && end.isAfter(timeCompleted)) {
 							progress++;
-							addKeyValueWithQuote(jsObject, field, dateFormatter.format(activity.getTimecompleted())
-									+ ", " + timeFormatter.format(activity.getTimecompleted()));
+							jsObject.putWithQuote(field, dateFormatter.format(activity.getTimecompleted()) + ", "
+									+ timeFormatter.format(activity.getTimecompleted()));
 						}
 
 						break;
 					case COMPLETE_FAIL:
-						addKeyValue(jsObject, field, false);
+						jsObject.put(field, false);
 						break;
 
 					case INCOMPLETE:
-						addKeyValueWithQuote(jsObject, field, "");
+						jsObject.putWithQuote(field, "");
 						break;
 					default:
-						addKeyValueWithQuote(jsObject, field, "");
+						jsObject.putWithQuote(field, "");
 						break;
 
 					}
@@ -158,7 +159,7 @@ public class ActivitiesStatusTable extends Tabulator {
 
 			}
 
-			addKeyValue(jsObject, "progress", progress);
+			jsObject.put("progress", progress);
 			array.add(jsObject.toString());
 		}
 		return array.toString();
@@ -181,13 +182,13 @@ public class ActivitiesStatusTable extends Tabulator {
 	@Override
 	public String getOptions() {
 
-		StringJoiner jsObject = getDefaultOptions();
-		addKeyValue(jsObject, "invalidOptionWarnings", false);
-		addKeyValue(jsObject, "height", "height");
-		addKeyValue(jsObject, "tooltipsHeader", true);
-		addKeyValue(jsObject, "virtualDom", true);
-		addKeyValueWithQuote(jsObject, "layout", "fitColumns");
-		addKeyValue(jsObject, "rowClick", "function(e,row){javaConnector.dataPointSelection(row.getPosition());}");
+		JSObject jsObject = getDefaultOptions();
+		jsObject.put("invalidOptionWarnings", false);
+		jsObject.put("height", "height");
+		jsObject.put("tooltipsHeader", true);
+		jsObject.put("virtualDom", true);
+		jsObject.putWithQuote("layout", "fitColumns");
+		jsObject.put("rowClick", "function(e,row){javaConnector.dataPointSelection(row.getPosition());}");
 		return jsObject.toString();
 	}
 

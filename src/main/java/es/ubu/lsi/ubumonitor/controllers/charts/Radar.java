@@ -4,7 +4,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -12,6 +11,7 @@ import org.apache.commons.csv.CSVPrinter;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 
 public class Radar extends ChartjsGradeItem {
 
@@ -33,8 +33,8 @@ public class Radar extends ChartjsGradeItem {
 
 	@Override
 	public String getOptions() {
-		StringJoiner jsObject = getDefaultOptions();
-		addKeyValueWithQuote(jsObject, "typeGraph", "radar");
+		JSObject jsObject = getDefaultOptions();
+		jsObject.putWithQuote("typeGraph", "radar");
 
 		return jsObject.toString();
 	}

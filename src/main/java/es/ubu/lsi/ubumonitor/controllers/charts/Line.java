@@ -4,7 +4,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -12,6 +11,7 @@ import org.apache.commons.csv.CSVPrinter;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 
 public class Line extends ChartjsGradeItem {
 
@@ -22,9 +22,9 @@ public class Line extends ChartjsGradeItem {
 
 	@Override
 	public String getOptions() {
-		StringJoiner jsObject = getDefaultOptions();
-		addKeyValueWithQuote(jsObject, "typeGraph", "line");
-		addKeyValue(jsObject, "scales", "{yAxes:[{" + getYScaleLabel() + "}],xAxes:[{" + getXScaleLabel() + "}]}");
+		JSObject jsObject = getDefaultOptions();
+		jsObject.putWithQuote("typeGraph", "line");
+		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + "}],xAxes:[{" + getXScaleLabel() + "}]}");
 		return jsObject.toString();
 	}
 
@@ -43,12 +43,12 @@ public class Line extends ChartjsGradeItem {
 				printer.print(enrolledUser.getId());
 				printer.print(enrolledUser.getFullName());
 				for (GradeItem gradeItem : gradeItems) {
-					printer.print(gradeItem.getEnrolledUserPercentage(enrolledUser)/10);
+					printer.print(gradeItem.getEnrolledUserPercentage(enrolledUser) / 10);
 				}
 				printer.println();
 			}
 		}
-		
+
 	}
 
 }

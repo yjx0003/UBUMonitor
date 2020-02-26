@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -29,6 +28,7 @@ import es.ubu.lsi.ubumonitor.model.ComponentEvent;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.Section;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 
 public class Stackedbar extends Chartjs {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Stackedbar.class);
@@ -117,19 +117,19 @@ public class Stackedbar extends Chartjs {
 
 	@Override
 	public String getOptions() {
-		StringJoiner jsObject = getDefaultOptions();
+		JSObject jsObject = getDefaultOptions();
 
 		long suggestedMax = getSuggestedMax();
 
-		addKeyValueWithQuote(jsObject, "typeGraph", "bar");
+		jsObject.putWithQuote("typeGraph", "bar");
 
-		addKeyValue(jsObject, "tooltips",
+		jsObject.put("tooltips",
 				"{position:\"nearest\",mode:\"x\",callbacks:{label:function(a,e){return e.datasets[a.datasetIndex].label+\" : \"+Math.round(100*a.yLabel)/100},afterTitle:function(a,e){return e.datasets[a[0].datasetIndex].name}}}");
-		addKeyValue(jsObject, "scales", "{yAxes:[{" + getYScaleLabel() + ",stacked:!0,ticks:{suggestedMax:"
+		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",stacked:!0,ticks:{suggestedMax:"
 				+ suggestedMax + ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
-		addKeyValue(jsObject, "legend",
+		jsObject.put("legend",
 				"{labels:{filter:function(e,t){return\"line\"==t.datasets[e.datasetIndex].type}}}");
-		addKeyValue(jsObject, "onClick",
+		jsObject.put("onClick",
 				"function(t,a){let e=myChart.getElementAtEvent(t)[0];e&&javaConnector.dataPointSelection(myChart.data.datasets[e._datasetIndex].stack)}");
 		return jsObject.toString();
 	}

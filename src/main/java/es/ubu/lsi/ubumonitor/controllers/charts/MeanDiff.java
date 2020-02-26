@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -23,6 +22,8 @@ import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.util.JSArray;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 
 public class MeanDiff extends ChartjsLog {
 
@@ -43,30 +44,30 @@ public class MeanDiff extends ChartjsLog {
 
 		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
 
-		StringJoiner data = JSObject();
+		JSObject data = new JSObject();
 
-		addKeyValue(data, "labels", createLabels(rangeDates));
+		data.put("labels", createLabels(rangeDates));
 
-		StringJoiner datasets = JSArray();
+		JSArray datasets = new JSArray();
 		List<Double> listMeans = createMeanList(typeLogs, means, rangeDates);
 		createEnrolledUsersDatasets(selectedUsers, typeLogs, userCounts, listMeans, rangeDates, datasets);
 
-		addKeyValue(data, "datasets", datasets);
+		data.put("datasets", datasets);
 
 		return data.toString();
 	}
 
 	private <T> void createEnrolledUsersDatasets(List<EnrolledUser> selectedUsers, List<T> typeLogs,
 			Map<EnrolledUser, Map<T, List<Integer>>> userCounts, List<Double> listMeans, List<String> rangeDates,
-			StringJoiner datasets) {
+			JSArray datasets) {
 		for (EnrolledUser selectedUser : selectedUsers) {
-			StringJoiner dataset = JSObject();
-			addKeyValueWithQuote(dataset, "label", selectedUser.getFullName());
-			addKeyValue(dataset, "borderColor", hex(selectedUser.getId()));
-			addKeyValue(dataset, "backgroundColor", rgba(selectedUser.getId(), OPACITY));
+			JSObject dataset = new JSObject();
+			dataset.putWithQuote("label", selectedUser.getFullName());
+			dataset.put("borderColor", hex(selectedUser.getId()));
+			dataset.put("backgroundColor", rgba(selectedUser.getId(), OPACITY));
 
 			Map<T, List<Integer>> types = userCounts.get(selectedUser);
-			StringJoiner results = JSArray();
+			JSArray results = new JSArray();
 			long cum = 0;
 			for (int j = 0; j < rangeDates.size(); j++) {
 				long result = 0;
@@ -78,8 +79,8 @@ public class MeanDiff extends ChartjsLog {
 
 				results.add(Double.toString(cum - listMeans.get(j)));
 			}
-			addKeyValue(dataset, "data", results);
-			datasets.add(dataset.toString());
+			dataset.put("data", results);
+			datasets.add(dataset);
 
 		}
 
@@ -128,9 +129,9 @@ public class MeanDiff extends ChartjsLog {
 	public String getOptions() {
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 
-		StringJoiner jsObject = getDefaultOptions();
-		addKeyValueWithQuote(jsObject, "typeGraph", "line");
-		addKeyValue(jsObject, "scales",
+		JSObject jsObject = getDefaultOptions();
+		jsObject.putWithQuote("typeGraph", "line");
+		jsObject.put("scales",
 				"{yAxes:[{" + getYScaleLabel() + ",gridLines:{zeroLineColor:"
 						+ colorToRGB(mainConfiguration.getValue(getChartType(), "zeroLineColor")) + ",zeroLineWidth:"
 						+ mainConfiguration.getValue(getChartType(), "zeroLineWidth") + ",zeroLineBorderDash:["
@@ -138,7 +139,7 @@ public class MeanDiff extends ChartjsLog {
 						+ mainConfiguration.getValue(MainConfiguration.GENERAL, "borderSpace")
 						+ "]},ticks:{suggestedMax:" + getSuggestedMax() + ",suggestedMin:" + -getSuggestedMax()
 						+ ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
-		addKeyValue(jsObject, "tooltips",
+		jsObject.put("tooltips",
 				"{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+\" : \"+Math.round(100*a.yLabel)/100}}}");
 		return jsObject.toString();
 	}

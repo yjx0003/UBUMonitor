@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -26,6 +25,7 @@ import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
 public class Heatmap extends ApexCharts {
@@ -162,17 +162,17 @@ public class Heatmap extends ApexCharts {
 		String fourthInterval = colorToRGB(mainConfiguration.getValue(getChartType(), "fourthInterval"));
 		String moreMax = colorToRGB(mainConfiguration.getValue(getChartType(), "moreMax"));
 
-		StringJoiner jsObject = getDefaultOptions();
-		addKeyValueWithQuote(jsObject, "typeGraph", "heatmap");
-		addKeyValue(jsObject, "tooltip", "{x:{show:!0}}");
+		JSObject jsObject = getDefaultOptions();
+		jsObject.putWithQuote( "typeGraph", "heatmap");
+		jsObject.put("tooltip", "{x:{show:!0}}");
 
-		addKeyValue(jsObject, "legend", "{position:'top'}");
-		addKeyValue(jsObject, "chart",
+		jsObject.put("legend", "{position:'top'}");
+		jsObject.put( "chart",
 				"{type:\"heatmap\",events:{dataPointSelection:function(e,t,n){javaConnector.dataPointSelection(n.w.config.series.length-1-n.seriesIndex)}},height:height,toolbar:{show:!1},animations:{enabled:!1}}");
-		addKeyValue(jsObject, "dataLabels",
+		jsObject.put("dataLabels",
 				"{formatter:function(r,t){return 0==r?\"\":r},style:{colors:[\"#000000\"]}}");
 
-		addKeyValue(jsObject, "xaxis", "{" + getXScaleLabel() + "}");
+		jsObject.put("xaxis", "{" + getXScaleLabel() + "}");
 
 		if ((boolean) mainConfiguration.getValue(getChartType(), "useQuartile")) {
 			quartileColor(zeroValue, firstInterval, secondInterval, thirdInterval, fourthInterval, jsObject);
@@ -186,8 +186,8 @@ public class Heatmap extends ApexCharts {
 	}
 
 	private void intervalColor(String zeroValue, String firstInterval, String secondInterval, String thirdInterval,
-			String fourthInterval, String moreMax, long maxValue, StringJoiner jsObject) {
-		addKeyValue(jsObject, "plotOptions",
+			String fourthInterval, String moreMax, long maxValue, JSObject jsObject) {
+		jsObject.put("plotOptions",
 				"{heatmap:{enableShades:!1,colorScale:{ranges:[{from:-1,to:0,color:" + zeroValue
 						+ ",name:'0'},{from:1,to:" + Math.max(Math.floor(.25 * maxValue), 1) + ",color:" + firstInterval
 						+ "},{from:" + Math.max(Math.ceil(.25 * maxValue), 1) + ",to:"
@@ -200,12 +200,12 @@ public class Heatmap extends ApexCharts {
 	}
 
 	private void quartileColor(String zeroValue, String firstInterval, String secondInterval, String thirdInterval,
-			String fourthInterval, StringJoiner jsObject) {
+			String fourthInterval, JSObject jsObject) {
 		long first = Math.max(1, Math.round(descriptiveStatistics.getPercentile(25)));
 		long second = Math.max(1, Math.round(descriptiveStatistics.getPercentile(50)));
 		long third = Math.max(1, Math.round(descriptiveStatistics.getPercentile(75)));
 		long fourth = Math.max(1, Math.round(descriptiveStatistics.getPercentile(100)));
-		addKeyValue(jsObject, "plotOptions",
+		jsObject.put("plotOptions",
 				"{heatmap:{enableShades:!1,colorScale:{ranges:[{from:-1,to:0,color:" + zeroValue
 						+ ",name:'0'},{from:1,to:" + first + ",color:" + firstInterval + "},{from:" + first + ",to:"
 						+ second + ",color:" + secondInterval + "},{from:" + second + ",to:" + third + ",color:"

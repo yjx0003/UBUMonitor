@@ -81,10 +81,10 @@ public class LogCreator {
 		ZonedDateTime lastDateTime = logs.getLastDatetime();
 		ZonedDateTime now = ZonedDateTime.now().withZoneSameInstant(lastDateTime.getZone());
 		LOGGER.info("La fecha del ultimo log antes de actualizar es {}", lastDateTime);
-		while (now.isBefore(lastDateTime)) {
-			Response response = download.downloadLog(now);
+		while (now.isAfter(lastDateTime)) {
+			Response response = download.downloadLog(lastDateTime);
 			parserResponse(logs, response);
-			now = now.plusDays(1);
+			lastDateTime = lastDateTime.plusDays(1);
 		}
 
 	}

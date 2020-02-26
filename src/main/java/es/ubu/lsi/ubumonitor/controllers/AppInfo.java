@@ -1,8 +1,5 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-
 /**
  * Clase de utilidad que devuelve la información de la aplicación.
  * 
@@ -59,9 +56,6 @@ public class AppInfo {
 
 	private AppInfo() {
 		throw new UnsupportedOperationException();
-	}
-	public static void main(String[] args) {
-		System.out.println(ZonedDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE));
 	}
 
 }

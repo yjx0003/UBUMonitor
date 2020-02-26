@@ -22,6 +22,7 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 	private Map<EnrolledUser, Map<E, Map<T, List<LogLine>>>> counts;
 	private Map<E, Map<T, DescriptiveStatistics>> statistics;
 	private GroupByAbstract<T> groupByAbstract;
+	private static final List<LogLine> EMPTY_LIST = Collections.emptyList();
 
 	public FirstGroupBy(GroupByAbstract<T> groupBy, List<LogLine> logLines, Predicate<LogLine> filter,
 			Function<LogLine, E> getEFunction, Function<LogLine, T> getTFunction) {
@@ -61,7 +62,7 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 
 				for (T groupBy : groupByRange) {
 
-					List<LogLine> count = userComponentsCounts.computeIfAbsent(groupBy, k -> Collections.emptyList());
+					List<LogLine> count = userComponentsCounts.computeIfAbsent(groupBy, k -> EMPTY_LIST);
 					DescriptiveStatistics descriptiveStatistics = statisticsMap.computeIfAbsent(groupBy,
 							k -> new DescriptiveStatistics());
 					descriptiveStatistics.addValue(count.size());
@@ -128,7 +129,7 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 				Map<T, List<LogLine>> countsMap = userCounts.computeIfAbsent(element, k -> new HashMap<>());
 
 				for (T groupBy : groupByRange) {
-					List<LogLine> count = countsMap.computeIfAbsent(groupBy, k -> Collections.emptyList());
+					List<LogLine> count = countsMap.computeIfAbsent(groupBy, k -> EMPTY_LIST);
 					userComponentCounts.add(count.size());
 				}
 			}
@@ -161,7 +162,7 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 			for (E element : elements) {
 				Map<T, List<LogLine>> groupByMap = elementsMap.computeIfAbsent(element, k -> new HashMap<>());
 				for (T groupBy : range) {
-					sumComponents.merge(groupBy, groupByMap.getOrDefault(groupBy, Collections.emptyList()).size(),
+					sumComponents.merge(groupBy, groupByMap.getOrDefault(groupBy, EMPTY_LIST).size(),
 							Integer::sum);
 				}
 
@@ -186,7 +187,7 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 			for (E element : elements) {
 				Map<T, List<LogLine>> groupByMap = elementsMap.computeIfAbsent(element, k -> new HashMap<>());
 				for (T groupBy : range) {
-					cum += groupByMap.getOrDefault(groupBy, Collections.emptyList()).size();
+					cum += groupByMap.getOrDefault(groupBy, EMPTY_LIST).size();
 				}
 
 			}
@@ -229,7 +230,7 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 				for (E logType : logTypes) {
 					Map<T, List<LogLine>> groupByMap = elementsMap.computeIfAbsent(logType, k -> new HashMap<>());
 
-					cum += groupByMap.getOrDefault(range.get(i), Collections.emptyList()).size();
+					cum += groupByMap.getOrDefault(range.get(i), EMPTY_LIST).size();
 
 				}
 				if (Math.abs(Math.ceil(cum - cumMeans.get(i))) > max) {
@@ -259,5 +260,26 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 			}
 		}
 		return max;
+	}
+
+	public Map<EnrolledUser, Map<E, List<LogLine>>> getUserLogs(List<EnrolledUser> enrolledUsers, List<E> elements,
+			LocalDate start, LocalDate end) {
+		Map<EnrolledUser, Map<E, List<LogLine>>> map = new HashMap<>();
+		List<T> times = groupByAbstract.getRange(start, end);
+		for (EnrolledUser enrolledUser : enrolledUsers) {
+			Map<E, List<LogLine>> enrolledUserMap = new HashMap<>();
+			map.put(enrolledUser, enrolledUserMap);
+			Map<E, Map<T, List<LogLine>>> userLogs = counts.computeIfAbsent(enrolledUser, k -> new HashMap<>());
+			for (E logType : elements) {
+				List<LogLine> logLines = new ArrayList<>();
+				enrolledUserMap.put(logType, logLines);
+				Map<T, List<LogLine>> logs = userLogs.computeIfAbsent(logType, k -> new HashMap<>());
+				for (T time : times) {
+					List<LogLine> listLogLine = logs.computeIfAbsent(time, k -> EMPTY_LIST);
+					logLines.addAll(listLogLine);
+				}
+			}
+		}
+		return map;
 	}
 }

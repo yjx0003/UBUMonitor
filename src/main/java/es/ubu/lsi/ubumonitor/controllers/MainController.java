@@ -1653,80 +1653,40 @@ public class MainController implements Initializable {
 		return tabPaneUbuLogs;
 	}
 
-	public void setTabPaneUbuLogs(TabPane tabPaneUbuLogs) {
-		this.tabPaneUbuLogs = tabPaneUbuLogs;
-	}
-
 	public CheckComboBox<Role> getCheckComboBoxRole() {
 		return checkComboBoxRole;
-	}
-
-	public void setCheckComboBoxRole(CheckComboBox<Role> checkComboBoxRole) {
-		this.checkComboBoxRole = checkComboBoxRole;
 	}
 
 	public CheckComboBox<Group> getCheckComboBoxGroup() {
 		return checkComboBoxGroup;
 	}
 
-	public void setCheckComboBoxGroup(CheckComboBox<Group> checkComboBoxGroup) {
-		this.checkComboBoxGroup = checkComboBoxGroup;
-	}
-
 	public CheckComboBox<LastActivity> getCheckComboBoxActivity() {
 		return checkComboBoxActivity;
-	}
-
-	public void setCheckComboBoxActivity(CheckComboBox<LastActivity> checkComboBoxActivity) {
-		this.checkComboBoxActivity = checkComboBoxActivity;
 	}
 
 	public VisualizationController getVisualizationTabPageController() {
 		return visualizationController;
 	}
 
-	public void setVisualizationTabPageController(VisualizationController visualizationTabPageController) {
-		this.visualizationController = visualizationTabPageController;
-	}
-
 	public CheckComboBox<ModuleType> getCheckComboBoxCourseModule() {
 		return checkComboBoxCourseModule;
-	}
-
-	public void setCheckComboBoxCourseModule(CheckComboBox<ModuleType> checkComboBoxCourseModule) {
-		this.checkComboBoxCourseModule = checkComboBoxCourseModule;
 	}
 
 	public CheckComboBox<ModuleType> getCheckComboBoxModuleType() {
 		return checkComboBoxModuleType;
 	}
 
-	public void setCheckComboBoxModuleType(CheckComboBox<ModuleType> checkComboBoxModuleType) {
-		this.checkComboBoxModuleType = checkComboBoxModuleType;
-	}
-
 	public TabPane getWebViewTabPane() {
 		return webViewTabPane;
-	}
-
-	public void setWebViewTabPane(TabPane webViewTabPane) {
-		this.webViewTabPane = webViewTabPane;
 	}
 
 	public Tab getVisualizationTab() {
 		return visualizationTab;
 	}
 
-	public void setVisualizationTab(Tab visualizationTab) {
-		this.visualizationTab = visualizationTab;
-	}
-
 	public Map<Tab, MainAction> getTabMap() {
 		return tabMap;
-	}
-
-	public void setTabMap(Map<Tab, MainAction> tabMap) {
-		this.tabMap = tabMap;
 	}
 
 	private MainAction getActions() {

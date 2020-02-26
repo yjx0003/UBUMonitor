@@ -8,6 +8,7 @@ import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.ComponentEvent;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.LogLine;
 
 /**
  * Clase que sobrescribe los metodos restantes para completar el equeleto de {@link StackedBarDataSet}
@@ -62,6 +63,12 @@ public class DataSetComponentEvent implements DataSet<ComponentEvent> {
 			List<ComponentEvent> elements, LocalDate start, LocalDate end) {
 		
 		return groupBy.getComponentsEvents().getMeans(enrolledUsers, elements, start, end);
+	}
+
+	@Override
+	public Map<EnrolledUser, Map<ComponentEvent, List<LogLine>>> getUserLogs(GroupByAbstract<?> groupBy,
+			List<EnrolledUser> enrolledUsers, List<ComponentEvent> elements, LocalDate start, LocalDate end) {
+		return groupBy.getComponentsEvents().getUserLogs(enrolledUsers, elements, start, end);
 	}
 
 }

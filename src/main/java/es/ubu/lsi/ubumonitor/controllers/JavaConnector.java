@@ -22,6 +22,7 @@ import es.ubu.lsi.ubumonitor.controllers.charts.Heatmap;
 import es.ubu.lsi.ubumonitor.controllers.charts.Line;
 import es.ubu.lsi.ubumonitor.controllers.charts.MeanDiff;
 import es.ubu.lsi.ubumonitor.controllers.charts.Radar;
+import es.ubu.lsi.ubumonitor.controllers.charts.Scatter;
 import es.ubu.lsi.ubumonitor.controllers.charts.Stackedbar;
 import es.ubu.lsi.ubumonitor.controllers.charts.Tabs;
 import es.ubu.lsi.ubumonitor.controllers.charts.Violin;
@@ -71,7 +72,7 @@ public class JavaConnector {
 		addChart(new Stackedbar(mainController));
 		addChart(new Line(mainController));
 		addChart(new Radar(mainController));
-
+		addChart(new Scatter(mainController));
 		addChart(new BoxPlot(mainController));
 
 		addChart(new Violin(mainController));

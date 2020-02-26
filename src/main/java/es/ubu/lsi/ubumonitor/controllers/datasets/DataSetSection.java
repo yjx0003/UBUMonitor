@@ -6,6 +6,7 @@ import java.util.Map;
 
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.LogLine;
 import es.ubu.lsi.ubumonitor.model.Section;
 
 public class DataSetSection implements DataSet<Section> {
@@ -48,6 +49,12 @@ public class DataSetSection implements DataSet<Section> {
 	public Map<EnrolledUser, Map<Section, List<Integer>>> getUserCounts(GroupByAbstract<?> groupBy,
 			List<EnrolledUser> enrolledUsers, List<Section> elements, LocalDate start, LocalDate end) {
 		return groupBy.getSections().getUsersCounts(enrolledUsers, elements, start, end);
+	}
+
+	@Override
+	public Map<EnrolledUser, Map<Section, List<LogLine>>> getUserLogs(GroupByAbstract<?> groupBy,
+			List<EnrolledUser> enrolledUsers, List<Section> elements, LocalDate start, LocalDate end) {
+		 return groupBy.getSections().getUserLogs(enrolledUsers, elements, start, end);
 	}
 
 }

@@ -62,13 +62,15 @@ public class Scatter extends Chartjs {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		jsObject.put("typeGraph", "'scatter'");
-		jsObject.put("onClick", "function(t,a){let e=myChart.getElementAtEvent(t)[0];e&&javaConnector.dataPointSelection(myChart.data.datasets[e._datasetIndex].data[e._index].y)}");
+		jsObject.put("onClick",
+				"function(t,a){let e=myChart.getElementAtEvent(t)[0];e&&javaConnector.dataPointSelection(myChart.data.datasets[e._datasetIndex].data[e._index].y)}");
 		jsObject.put("scales",
-				"{yAxes:[{type:'category'}],xAxes:[{type:'time',ticks:{maxTicksLimit:10},time:{min:'"
-						+ dateFormatter.format(dateStart) + "',max:'" + dateFormatter.format(dateEnd) + "',format:'"
-						+ datePattern + " " + timePattern + "'}}]}");
-		
-		jsObject.put("tooltips", "{callbacks:{label:function(l,a){return a.datasets[l.datasetIndex].label+': '+ l.xLabel}}}");
+				"{yAxes:[{type:'category'}],xAxes:[{type:'time',ticks:{min:'" + dateFormatter.format(dateStart)
+						+ "',max:'" + dateFormatter.format(dateEnd) + "',maxTicksLimit:10},time:{minUnit:'day',parser:'" + datePattern
+						+ " " + timePattern + "'}}]}");
+
+		jsObject.put("tooltips",
+				"{callbacks:{label:function(l,a){return a.datasets[l.datasetIndex].label+': '+ l.xLabel}}}");
 		return jsObject.toString();
 	}
 
@@ -131,15 +133,15 @@ public class Scatter extends Chartjs {
 
 			}
 		}
-		
-		for(E logType : logTypes ) {
+
+		for (E logType : logTypes) {
 			JSObject dataset = new JSObject();
 			dataset.putWithQuote("label", dataSet.translate(logType));
 			dataset.put("backgroundColor", hex(logType));
 			dataset.put("data", dataMap.get(logType));
 			datasets.add(dataset);
 		}
-		
+
 		data.put("datasets", datasets);
 		return data.toString();
 	}

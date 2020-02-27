@@ -31,12 +31,17 @@ public class MeanDiff extends ChartjsLog {
 		super(mainController, ChartType.MEAN_DIFF);
 		useLegend = true;
 		useNegativeValues = true;
+		useGroupBy = true;
 	}
 
 	@Override
-	public <T> String createData(List<EnrolledUser> enrolledUsers, List<EnrolledUser> selectedUsers, List<T> typeLogs,
-			GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd, DataSet<T> dataSet) {
+	public <T> String createData(List<T> typeLogs, DataSet<T> dataSet) {
+		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
+		List<EnrolledUser> enrolledUsers = new ArrayList<>(listParticipants.getItems());
 
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
 				dateStart, dateEnd);
 

@@ -44,7 +44,7 @@ public class ActivitiesStatusTable extends Tabulator {
 				IsoChronology.INSTANCE, Locale.getDefault());
 		dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
 		timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
-
+		useRangeDate = true;
 	}
 
 	public String createColumns(List<CourseModule> courseModules) {

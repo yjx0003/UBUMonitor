@@ -92,6 +92,7 @@ public class VisualizationController implements MainAction {
 		webViewChartsEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
 			if (Worker.State.SUCCEEDED != newState)
 				return;
+			progressBar.setVisible(false);
 			JSObject window = (JSObject) webViewChartsEngine.executeScript("window");
 			window.setMember("javaConnector", javaConnector);
 			webViewChartsEngine.executeScript("setLanguage()");
@@ -161,12 +162,12 @@ public class VisualizationController implements MainAction {
 			}
 		});
 
-		optionsUbuLogs.visibleProperty().bind(mainController.getTabUbuLogs().selectedProperty()
-				.or(mainController.getTabActivity().selectedProperty()));
 		optionsUbuLogs.managedProperty().bind(optionsUbuLogs.visibleProperty());
-		dateGridPane.visibleProperty().bind(mainController.getTabActivity().selectedProperty().or(Bindings
-				.createBooleanBinding(() -> choiceBoxDate.getValue().useDatePicker(), choiceBoxDate.valueProperty())));
-		gridPaneOptionLogs.visibleProperty().bind(mainController.getTabUbuLogs().selectedProperty());
+		
+	}
+
+	public GridPane getGridPaneOptionLogs() {
+		return gridPaneOptionLogs;
 	}
 
 	private void initContextMenu() {

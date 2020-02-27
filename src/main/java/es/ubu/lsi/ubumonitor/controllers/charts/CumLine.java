@@ -31,16 +31,22 @@ public class CumLine extends ChartjsLog {
 		super(mainController, ChartType.CUM_LINE);
 		useGeneralButton = true;
 		useLegend = true;
+		useGroupBy = true;
 	}
 
 	@Override
-	public <T> String createData(List<EnrolledUser> enrolledUsers, List<EnrolledUser> selectedUsers, List<T> typeLogs,
-			GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd, DataSet<T> dataSet) {
+	public <E> String createData( List<E> typeLogs, DataSet<E> dataSet) {
 
-		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
+		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
+		List<EnrolledUser> enrolledUsers = new ArrayList<>(listParticipants.getItems());
+
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
 				dateStart, dateEnd);
 
-		Map<T, List<Double>> means = dataSet.getMeans(groupBy, enrolledUsers, typeLogs, dateStart, dateEnd);
+		Map<E, List<Double>> means = dataSet.getMeans(groupBy, enrolledUsers, typeLogs, dateStart, dateEnd);
 
 		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
 
@@ -59,7 +65,7 @@ public class CumLine extends ChartjsLog {
 		return data.toString();
 	}
 
-	private <T> void createMean(List<T> typeLogs, Map<T, List<Double>> means, List<String> rangeDates,
+	private <E> void createMean(List<E> typeLogs, Map<E, List<Double>> means, List<String> rangeDates,
 			JSArray datasets) {
 		JSObject dataset = new JSObject();
 		String generalMeanTranslate = I18n.get("chartlabel.generalMean");
@@ -77,7 +83,7 @@ public class CumLine extends ChartjsLog {
 		double cumResult = 0;
 		for (int j = 0; j < rangeDates.size(); j++) {
 			double result = 0;
-			for (T typeLog : typeLogs) {
+			for (E typeLog : typeLogs) {
 				List<Double> times = means.get(typeLog);
 				result += times.get(j);
 			}
@@ -89,8 +95,8 @@ public class CumLine extends ChartjsLog {
 
 	}
 
-	private <T> void createEnrolledUsersDatasets(List<EnrolledUser> selectedUsers, List<T> typeLogs,
-			Map<EnrolledUser, Map<T, List<Integer>>> userCounts, List<String> rangeDates, JSArray datasets) {
+	private <E> void createEnrolledUsersDatasets(List<EnrolledUser> selectedUsers, List<E> typeLogs,
+			Map<EnrolledUser, Map<E, List<Integer>>> userCounts, List<String> rangeDates, JSArray datasets) {
 
 		for (EnrolledUser selectedUser : selectedUsers) {
 			JSObject dataset = new JSObject();
@@ -98,12 +104,12 @@ public class CumLine extends ChartjsLog {
 			dataset.put("borderColor", hex(selectedUser.getId()));
 			dataset.put("backgroundColor", rgba(selectedUser.getId(), OPACITY));
 
-			Map<T, List<Integer>> types = userCounts.get(selectedUser);
+			Map<E, List<Integer>> types = userCounts.get(selectedUser);
 			JSArray results = new JSArray();
 			long result = 0;
 			for (int j = 0; j < rangeDates.size(); j++) {
 
-				for (T typeLog : typeLogs) {
+				for (E typeLog : typeLogs) {
 					List<Integer> times = types.get(typeLog);
 					result += times.get(j);
 				}
@@ -184,22 +190,22 @@ public class CumLine extends ChartjsLog {
 		}
 	}
 
-	private <T> void exportCSV(CSVPrinter printer, DataSet<T> dataSet, List<T> selecteds) throws IOException {
+	private <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> selecteds) throws IOException {
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<?> rangeDates = groupBy.getRange(dateStart, dateEnd);
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
 		for (EnrolledUser selectedUser : enrolledUsers) {
-			Map<T, List<Integer>> types = userCounts.get(selectedUser);
+			Map<E, List<Integer>> types = userCounts.get(selectedUser);
 			List<Long> results = new ArrayList<>();
 			long result = 0;
 			for (int j = 0; j < rangeDates.size(); j++) {
 
-				for (T type : selecteds) {
+				for (E type : selecteds) {
 					List<Integer> times = types.get(type);
 					result += times.get(j);
 				}
@@ -243,18 +249,18 @@ public class CumLine extends ChartjsLog {
 		}
 	}
 
-	private <T> void exportCSVDesglosed(CSVPrinter printer, DataSet<T> dataSet, List<T> selecteds) throws IOException {
+	private <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> selecteds) throws IOException {
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
 		for (EnrolledUser selectedUser : enrolledUsers) {
-			Map<T, List<Integer>> types = userCounts.get(selectedUser);
+			Map<E, List<Integer>> types = userCounts.get(selectedUser);
 
-			for (T type : selecteds) {
+			for (E type : selecteds) {
 				List<Integer> times = types.get(type);
 				printer.print(selectedUser.getId());
 				printer.print(selectedUser.getFullName());

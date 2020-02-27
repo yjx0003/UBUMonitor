@@ -60,6 +60,10 @@ public abstract class Chart implements Exportable {
 	protected boolean useLegend;
 	protected boolean useGeneralButton;
 	protected boolean useGroupButton;
+	protected boolean useGroupBy;
+	
+
+	protected boolean useRangeDate;
 
 	protected boolean useNegativeValues;
 	protected VisualizationController visualizationController;
@@ -93,10 +97,6 @@ public abstract class Chart implements Exportable {
 		this.chartType = chartType;
 		this.tabName = tabName;
 
-		this.useLegend = false;
-		this.useGeneralButton = false;
-		this.useGroupButton = false;
-		this.useNegativeValues = false;
 	}
 
 	public boolean isUseLegend() {
@@ -231,6 +231,13 @@ public abstract class Chart implements Exportable {
 	public void setMax(String max) {
 		// TODO Auto-generated method stub
 
+	}
+	public boolean isUseGroupBy() {
+		return useGroupBy;
+	}
+
+	public boolean isUseRangeDate() {
+		return useRangeDate;
 	}
 
 }

@@ -37,6 +37,7 @@ public class Heatmap extends ApexCharts {
 	public Heatmap(MainController mainController) {
 		super(mainController, ChartType.HEAT_MAP, Tabs.LOGS);
 		descriptiveStatistics = new DescriptiveStatistics();
+		useGroupBy = true;
 	}
 
 	@Override
@@ -79,13 +80,13 @@ public class Heatmap extends ApexCharts {
 				.executeScript(String.format("updateApexCharts(%s,%s, %s)", heatmapdataset, categories, getOptions()));
 	}
 
-	public <T> String createSeries(List<EnrolledUser> enrolledUsers, List<EnrolledUser> selectedUsers,
-			List<T> selecteds, GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd, DataSet<T> dataSet) {
+	public <E> String createSeries(List<EnrolledUser> enrolledUsers, List<EnrolledUser> selectedUsers,
+			List<E> selecteds, GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd, DataSet<E> dataSet) {
 
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("[");
 
-		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
 		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
 
@@ -101,11 +102,11 @@ public class Heatmap extends ApexCharts {
 
 			stringBuilder.append("{name:'" + UtilMethods.escapeJavaScriptText(selectedUser.toString()) + "',");
 
-			Map<T, List<Integer>> types = userCounts.get(selectedUser);
+			Map<E, List<Integer>> types = userCounts.get(selectedUser);
 			List<Long> results = new ArrayList<>();
 			for (int j = 0; j < rangeDates.size(); j++) {
 				long result = 0;
-				for (T type : selecteds) {
+				for (E type : selecteds) {
 					List<Integer> times = types.get(type);
 					result += times.get(j);
 				}

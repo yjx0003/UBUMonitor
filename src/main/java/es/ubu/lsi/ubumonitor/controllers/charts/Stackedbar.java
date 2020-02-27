@@ -42,7 +42,7 @@ public class Stackedbar extends Chartjs {
 	public Stackedbar(MainController mainController) {
 		super(mainController, ChartType.STACKED_BAR, Tabs.LOGS);
 		useLegend = true;
-
+		useGroupBy = true;
 	}
 
 	@Override
@@ -80,7 +80,7 @@ public class Stackedbar extends Chartjs {
 		LOGGER.info("Dataset para el stacked bar en JS: {}", stackedbardataset);
 		LOGGER.info("Opciones para el stacked bar en JS: {}", options);
 
-		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", stackedbardataset, options));
+		webViewChartsEngine.executeScript("updateChartjs(" + stackedbardataset + "," + options + ")");
 
 	}
 
@@ -125,10 +125,9 @@ public class Stackedbar extends Chartjs {
 
 		jsObject.put("tooltips",
 				"{position:\"nearest\",mode:\"x\",callbacks:{label:function(a,e){return e.datasets[a.datasetIndex].label+\" : \"+Math.round(100*a.yLabel)/100},afterTitle:function(a,e){return e.datasets[a[0].datasetIndex].name}}}");
-		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",stacked:!0,ticks:{suggestedMax:"
-				+ suggestedMax + ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
-		jsObject.put("legend",
-				"{labels:{filter:function(e,t){return\"line\"==t.datasets[e.datasetIndex].type}}}");
+		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",stacked:!0,ticks:{suggestedMax:" + suggestedMax
+				+ ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
+		jsObject.put("legend", "{labels:{filter:function(e,t){return\"line\"==t.datasets[e.datasetIndex].type}}}");
 		jsObject.put("onClick",
 				"function(t,a){let e=myChart.getElementAtEvent(t)[0];e&&javaConnector.dataPointSelection(myChart.data.datasets[e._datasetIndex].stack)}");
 		return jsObject.toString();

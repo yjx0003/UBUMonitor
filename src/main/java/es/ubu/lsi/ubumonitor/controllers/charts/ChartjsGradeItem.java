@@ -14,6 +14,8 @@ import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
+import es.ubu.lsi.ubumonitor.util.JSArray;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
 public abstract class ChartjsGradeItem extends Chartjs {
@@ -28,76 +30,81 @@ public abstract class ChartjsGradeItem extends Chartjs {
 	}
 
 	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
-		
+
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
-		int borderLength =  mainConfiguration.getValue(MainConfiguration.GENERAL, "borderLength");
+		int borderLength = mainConfiguration.getValue(MainConfiguration.GENERAL, "borderLength");
 		int borderSpace = mainConfiguration.getValue(MainConfiguration.GENERAL, "borderSpace");
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("{labels:[");
-		stringBuilder.append(UtilMethods.joinWithQuotes(selectedGradeItems));
-		stringBuilder.append("],datasets:[");
+		JSObject data = new JSObject();
+
+		data.put("labels", "[" + UtilMethods.joinWithQuotes(selectedGradeItems) + "]");
+		JSArray datasets = new JSArray();
+
 		for (EnrolledUser user : selectedUser) {
-			stringBuilder.append("{label:'" + UtilMethods.escapeJavaScriptText(user.getFullName()) + "',");
-			stringBuilder.append("borderColor:" + hex(user.getId()) + ",");
-			stringBuilder.append("backgroundColor:" + rgba(user.getId(), OPACITY) + ",");
-			stringBuilder.append("data:[");
+			JSObject dataset = new JSObject();
+			dataset.putWithQuote("label", user.getFullName());
+			dataset.put("borderColor", hex(user.getId()));
+			dataset.put("backgrounColor", rgba(user.getId(), OPACITY));
+			JSArray dataArray = new JSArray();
 			for (GradeItem gradeItem : selectedGradeItems) {
 				double grade = gradeItem.getEnrolledUserPercentage(user);
 
-				stringBuilder.append(adjustTo10(grade) + ",");
+				dataArray.add(adjustTo10(grade));
 
 			}
-			stringBuilder.append("]},");
+			dataset.put("data", dataArray);
+			datasets.add(dataset);
 		}
+		
 		if (useGeneralButton) {
-			stringBuilder
-					.append("{label:'" + UtilMethods.escapeJavaScriptText(I18n.get("chartlabel.generalMean")) + "',");
-			stringBuilder.append("borderColor:" + hex(I18n.get("chartlabel.generalMean")) + ",");
-			stringBuilder.append("backgroundColor:" + rgba(I18n.get("chartlabel.generalMean"), OPACITY) + ",");
-			stringBuilder.append("hidden: " + !(boolean)mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive") + ",");
-			stringBuilder.append(
-					"borderDash:[" + borderLength + "," + borderSpace + "],");
-			stringBuilder.append("data:[");
+			JSObject dataset = new JSObject();
+			dataset.putWithQuote("label", I18n.get("chartlabel.generalMean"));
+			dataset.put("borderColor", hex(I18n.get("chartlabel.generalMean")));
+			dataset.put("backgroundColor", rgba(I18n.get("chartlabel.generalMean"), OPACITY));
+			dataset.put("hidden", !(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive"));
+			dataset.put("borderDash", "["+ borderLength + "," + borderSpace +"]");
+			
+			JSArray dataArray = new JSArray();
 			Map<GradeItem, DescriptiveStatistics> descriptiveStats = stats.getGeneralStats();
 			for (GradeItem gradeItem : selectedGradeItems) {
 				double grade = descriptiveStats.get(gradeItem).getMean();
-				stringBuilder.append(adjustTo10(grade) + ",");
+				dataArray.add(adjustTo10(grade));
 			}
-			stringBuilder.append("]},");
+			dataset.put("data", dataArray);
+			datasets.add(dataset);
 		}
 
 		if (useGroupButton) {
 			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
 				if (group == null)
 					continue;
-				stringBuilder.append("{label:'" + UtilMethods
-						.escapeJavaScriptText(I18n.get("chart.mean") + " " + group.getGroupName()) + "',");
-				stringBuilder.append("borderColor:" + hex(group.getGroupId()) + ",");
-				stringBuilder.append("backgroundColor:" + rgba(group.getGroupId(), OPACITY) + ",");
-				stringBuilder.append("hidden: " + !(boolean)mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive") + ",");
-				stringBuilder.append("borderDash:[" + borderLength + ","
-						+ borderSpace + "],");
-				stringBuilder.append("data:[");
+				JSObject dataset = new JSObject();
+				dataset.putWithQuote("label", I18n.get("chart.mean") + " " + group.getGroupName());
+			
+				dataset.put("borderColor", hex(I18n.get("chartlabel.generalMean")));
+				dataset.put("backgroundColor", rgba(I18n.get("chartlabel.generalMean"), OPACITY));
+				dataset.put("hidden", !(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL,"groupActive"));
+				dataset.put("borderDash", "["+ borderLength + "," + borderSpace +"]");
+				JSArray dataArray = new JSArray();
 				Map<GradeItem, DescriptiveStatistics> descriptiveStats = stats.getGroupStats(group);
 				for (GradeItem gradeItem : selectedGradeItems) {
 					double grade = descriptiveStats.get(gradeItem).getMean();
-					stringBuilder.append(adjustTo10(grade) + ",");
+					dataArray.add(adjustTo10(grade));
 				}
-				stringBuilder.append("]}");
+				datasets.add(dataset);
 			}
 
 		}
 
-		stringBuilder.append("]}");
+		data.put("datasets", datasets);
 
-		return stringBuilder.toString();
+		return data.toString();
 
 	}
 
 	@Override
 	public void update() {
 		String dataset = createDataset(getSelectedEnrolledUser(), getSelectedGradeItems());
-		String options =  getOptions();
+		String options = getOptions();
 		LOGGER.debug(dataset);
 		LOGGER.debug(options);
 		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, options));

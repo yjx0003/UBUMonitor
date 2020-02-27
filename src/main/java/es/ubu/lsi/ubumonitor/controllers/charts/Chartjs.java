@@ -36,7 +36,7 @@ public abstract class Chartjs extends Chart {
 		jsObject.put("fontColor",
 				colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorXScaleTitle")));
 		jsObject.putWithQuote("fontStyle", "bold");
-
+		
 		return "scaleLabel:" + jsObject;
 
 	}

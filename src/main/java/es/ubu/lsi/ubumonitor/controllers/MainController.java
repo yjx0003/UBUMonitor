@@ -300,11 +300,11 @@ public class MainController implements Initializable {
 	}
 
 	private void initUserPhoto() {
-		Image image = new Image(new ByteArrayInputStream(controller.getDataBase().getMoodleUser().getUserPhoto()));
+		Image image = new Image(new ByteArrayInputStream(controller.getDataBase().getUserPhoto()));
 		userPhoto.setImage(image);
 
 		ContextMenu menu = new ContextMenu();
-		MenuItem user = new MenuItem(controller.getDataBase().getMoodleUser().getFullName(), new ImageView(image));
+		MenuItem user = new MenuItem(controller.getDataBase().getFullName(), new ImageView(image));
 		MenuItem logout = new MenuItem(I18n.get("menu.logout"));
 		MenuItem exit = new MenuItem(I18n.get("menu.exit"));
 

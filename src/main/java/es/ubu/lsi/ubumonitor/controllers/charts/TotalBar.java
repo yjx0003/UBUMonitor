@@ -38,7 +38,7 @@ public class TotalBar extends ChartjsLog {
 	public String getOptions() {
 		JSObject jsObject = getDefaultOptions();
 		jsObject.putWithQuote("typeGraph", "bar");
-		jsObject.put("scales", "{yAxes:[{ticks:{stepSize:0}}]}");
+		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",ticks:{stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
 		jsObject.put("onClick", null);
 		return jsObject.toString();
 	}
@@ -87,6 +87,12 @@ public class TotalBar extends ChartjsLog {
 		data.put("labels", labels);
 		data.put("datasets", "[" + dataset + "]");
 		return data.toString();
+	}
+	
+	@Override
+	public String getXAxisTitle() {
+		return mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
+
 	}
 
 }

@@ -269,7 +269,8 @@ public class WelcomeController implements Initializable {
 				loadData(controller.getPassword());
 			} else {
 				DataBase copyDataBase = new DataBase();
-				copyDataBase.setMoodleUser(controller.getUser());
+				copyDataBase.setUserPhoto(controller.getUser().getUserPhoto());
+				copyDataBase.setFullName(controller.getUser().getFullName());
 				Course copyCourse = copyCourse(copyDataBase, selectedCourse);
 				controller.setDataBase(copyDataBase);
 				controller.setActualCourse(copyCourse);

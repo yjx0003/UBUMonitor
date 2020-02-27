@@ -25,6 +25,7 @@ import es.ubu.lsi.ubumonitor.controllers.charts.Radar;
 import es.ubu.lsi.ubumonitor.controllers.charts.Scatter;
 import es.ubu.lsi.ubumonitor.controllers.charts.Stackedbar;
 import es.ubu.lsi.ubumonitor.controllers.charts.Tabs;
+import es.ubu.lsi.ubumonitor.controllers.charts.TotalBar;
 import es.ubu.lsi.ubumonitor.controllers.charts.Violin;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
@@ -74,7 +75,7 @@ public class JavaConnector {
 		addChart(new Radar(mainController));
 		addChart(new Scatter(mainController));
 		addChart(new BoxPlot(mainController));
-
+		addChart(new TotalBar(mainController));
 		addChart(new Violin(mainController));
 		addChart(new GradeReportTable(mainController));
 		addChart(new CumLine(mainController));
@@ -103,42 +104,52 @@ public class JavaConnector {
 			currentType.clear();
 			currentType = chart;
 		}
-		
+
 		if (tabLogs.isSelected()) {
-			if(currentType.isCalculateMaxActivated()) {
+			if (currentType.isCalculateMaxActivated()) {
 				visualizationController.getTextFieldMax().setText(currentType.calculateMax());
-			}else {
+			} else {
 				visualizationController.getTextFieldMax().setText(currentType.getMax());
 			}
 
-		
 		}
+		manageOptions();
 		currentType.update();
-		
+
+	}
+
+	private void manageOptions() {
+		visualizationController.getOptionsUbuLogs()
+				.setVisible(currentType.isUseRangeDate() || currentType.isUseGroupBy());
+		visualizationController.getDateGridPane().setVisible(currentType.isUseRangeDate()
+				|| currentType.isUseGroupBy() && visualizationController.getChoiceBoxDate().getValue().useDatePicker());
+		visualizationController.getGridPaneOptionLogs().setVisible(currentType.isUseGroupBy());
 	}
 
 	public void updateChart(boolean calculateMax) {
 		if (webViewChartsEngine.getLoadWorker().getState() != State.SUCCEEDED) {
 			return;
 		}
-		if(calculateMax) {
+		if (calculateMax) {
 			setMax();
 		}
+		manageOptions();
 		currentType.update();
 
 	}
+
 	public void updateChart() {
 		updateChart(true);
 
 	}
 
 	public void updateChartFromJS() {
-
+		manageOptions();
 		currentType.update();
 	}
 
 	public void hideLegend() {
-		
+
 		currentType.hideLegend();
 	}
 

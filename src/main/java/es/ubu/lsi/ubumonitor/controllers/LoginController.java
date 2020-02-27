@@ -288,7 +288,7 @@ public class LoginController implements Initializable {
 			lblStatus.setText(e.getSource().getException().getMessage());
 		});
 		Thread th = new Thread(loginTask, "login");
-
+		th.setDaemon(true);
 		th.start();
 	}
 

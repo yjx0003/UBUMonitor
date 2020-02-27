@@ -180,14 +180,10 @@ public class UtilMethods {
 		try {
 
 			Parent root = loader.load();
-
-			if (stage.getScene() == null) {
-				stage.setScene(new Scene(root));
-			} else {
-				stage.getScene().setRoot(root);
-
-			}
 			stage.close();
+
+			stage.setScene(new Scene(root));
+
 			if (showStage) {
 				stage.show();
 			}
@@ -199,7 +195,8 @@ public class UtilMethods {
 	}
 
 	public static void openURL(String url) {
-		//from http://www.java2s.com/Code/Java/Development-Class/LaunchBrowserinMacLinuxUnix.htm
+		// from
+		// http://www.java2s.com/Code/Java/Development-Class/LaunchBrowserinMacLinuxUnix.htm
 		String osName = System.getProperty("os.name");
 		try {
 			if (osName.startsWith("Mac OS")) {

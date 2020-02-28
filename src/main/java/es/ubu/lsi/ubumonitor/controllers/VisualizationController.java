@@ -194,6 +194,30 @@ public class VisualizationController implements MainAction {
 
 	}
 
+	@Override
+	public void save() {
+		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportpng"),
+				String.format("%s_%s_%s.png", controller.getActualCourse().getId(),
+						LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
+						javaConnector.getCurrentType().getChartType()),
+				Config.getProperty("imageFolderPath", "./"), new FileChooser.ExtensionFilter(".png", "*.png"));
+
+		try {
+			File file = fileChooser.showSaveDialog(controller.getStage());
+			if (file != null) {
+				String str = javaConnector.export(file);
+				if (str == null)
+					return;
+				javaConnector.saveImage(str);
+				Config.setProperty("imageFolderPath", file.getParent());
+			}
+		} catch (IOException e) {
+			LOGGER.error("Error al guardar el gráfico: {}", e);
+			UtilMethods.errorWindow(I18n.get("error.savechart"), e);
+		}
+
+	}
+	
 	public void exportCSV() {
 
 		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportcsv"),
@@ -207,6 +231,7 @@ public class VisualizationController implements MainAction {
 			Config.setProperty("csvFolderPath", file.getParent());
 			try {
 				javaConnector.getCurrentType().exportCSV(file.getAbsolutePath());
+				UtilMethods.infoWindow(I18n.get("message.export_csv") + file.getAbsolutePath());
 			} catch (IOException e) {
 				UtilMethods.errorWindow("Cannot save file", e);
 			}
@@ -227,6 +252,7 @@ public class VisualizationController implements MainAction {
 			Config.setProperty("csvFolderPath", file.getParent());
 			try {
 				javaConnector.getCurrentType().exportCSVDesglosed(file.getAbsolutePath());
+				UtilMethods.infoWindow(I18n.get("message.export_csv_desglossed") + file.getAbsolutePath());
 			} catch (IOException e) {
 				UtilMethods.errorWindow("Cannot save file", e);
 			}
@@ -341,29 +367,7 @@ public class VisualizationController implements MainAction {
 		javaConnector.updateChart();
 	}
 
-	@Override
-	public void save() {
-		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportpng"),
-				String.format("%s_%s_%s.png", controller.getActualCourse().getId(),
-						LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
-						javaConnector.getCurrentType().getChartType()),
-				Config.getProperty("imageFolderPath", "./"), new FileChooser.ExtensionFilter(".png", "*.png"));
 
-		try {
-			File file = fileChooser.showSaveDialog(controller.getStage());
-			if (file != null) {
-				String str = javaConnector.export(file);
-				if (str == null)
-					return;
-				javaConnector.saveImage(str);
-				Config.setProperty("imageFolderPath", file.getParent());
-			}
-		} catch (IOException e) {
-			LOGGER.error("Error al guardar el gráfico: {}", e);
-			UtilMethods.errorWindow(I18n.get("error.savechart"), e);
-		}
-
-	}
 
 	@Override
 	public void applyConfiguration() {

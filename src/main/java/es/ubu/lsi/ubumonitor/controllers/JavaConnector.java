@@ -235,10 +235,12 @@ public class JavaConnector {
 	}
 
 	public void saveImage(String str) throws IOException {
-
+		
 		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
 		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
+
 		ImageIO.write(bufferedImage, "png", file);
+		UtilMethods.infoWindow(I18n.get("message.export_png") + file.getAbsolutePath());
 	}
 
 	public void showErrorWindow(String errorMessage) {

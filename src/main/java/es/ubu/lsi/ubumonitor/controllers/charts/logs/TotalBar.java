@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
@@ -14,6 +15,7 @@ import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.charts.Chart;
 import es.ubu.lsi.ubumonitor.controllers.charts.ChartType;
+import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSet;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.TypeTimes;
@@ -30,17 +32,17 @@ public class TotalBar extends ChartjsLog {
 		useLegend = true;
 	}
 
-	@Override
-	public void exportCSV(String path) throws IOException {
-		// TODO Auto-generated meOthod stub
-
-	}
 
 	@Override
 	public String getOptions() {
 		JSObject jsObject = getDefaultOptions();
-		jsObject.putWithQuote("typeGraph", "bar");
-		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",ticks:{stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
+		
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
+		jsObject.putWithQuote("typeGraph", useHorizontal? "horizontalBar": "bar");
+		String xLabel = useHorizontal ? getYScaleLabel() :getXScaleLabel();
+		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
+		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{stepSize:0}}],xAxes:[{" + xLabel + "}]}");
 		jsObject.put("onClick", null);
 		return jsObject.toString();
 	}
@@ -95,6 +97,65 @@ public class TotalBar extends ChartjsLog {
 	public String getXAxisTitle() {
 		return mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
 
+	}
+
+	@Override
+	protected <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
+		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
+
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		Map<EnrolledUser, Map<E, List<Integer>>> map = dataSet.getUserCounts(groupBy, selectedUsers, typeLogs,
+				dateStart, dateEnd);
+		
+		List<DescriptiveStatistics> result = Stream.generate(DescriptiveStatistics::new).limit(typeLogs.size())
+				.collect(Collectors.toList());
+		for (Map<E, List<Integer>> values : map.values()) {
+			for (int i = 0; i < typeLogs.size(); i++) {
+				List<Integer> counts = values.get(typeLogs.get(i));
+				DescriptiveStatistics descriptiveStatistics = result.get(i);
+				int sum = counts.stream().mapToInt(Integer::intValue).sum(); // sum all logs between days
+				descriptiveStatistics.addValue(sum);
+			}
+		}
+		for (int i = 0; i < typeLogs.size(); i++) {
+			E typeLog = typeLogs.get(i);
+			printer.printRecord(typeLog.hashCode(), typeLog);
+		}
+		
+	}
+
+
+	@Override
+	protected String[] getCSVHeader() {
+		String selectedTab = mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
+		return new String[] {selectedTab + "_id", selectedTab};
+	}
+
+	@Override
+	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs)
+			throws IOException {
+		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
+
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		Map<EnrolledUser, Map<E, List<Integer>>> map = dataSet.getUserCounts(groupBy, selectedUsers, typeLogs,
+				dateStart, dateEnd);
+		for(EnrolledUser enrolledUser:selectedUsers) {
+			for(E typeLog: typeLogs) {
+				List<Integer> list = map.get(enrolledUser).get(typeLog);
+				int sum = list.stream().mapToInt(Integer::intValue).sum();
+				printer.printRecord(enrolledUser.getId(), enrolledUser.getFullName(), typeLog.hashCode(), typeLog, sum);
+			}
+		}
+	}
+
+	@Override
+	protected String[] getCSVDesglosedHeader() {
+		String selectedTab = mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
+		return new String[] {"userid", "fullname", selectedTab + "_id", selectedTab, "logs"};
 	}
 
 }

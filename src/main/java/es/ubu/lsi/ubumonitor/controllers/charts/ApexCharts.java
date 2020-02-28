@@ -28,7 +28,7 @@ public abstract class ApexCharts extends Chart {
 		webViewChartsEngine.executeScript("exportApexcharts()");
 		return null;
 	}
-
+	
 	public String getXScaleLabel() {
 		MainConfiguration mainConfiguration = controller.getMainConfiguration();
 		JSObject jsObject = new JSObject();

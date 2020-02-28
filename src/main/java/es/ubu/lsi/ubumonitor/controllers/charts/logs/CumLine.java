@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
@@ -16,10 +15,6 @@ import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.charts.ChartType;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSet;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponent;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.JSArray;
@@ -35,7 +30,7 @@ public class CumLine extends ChartjsLog {
 	}
 
 	@Override
-	public <E> String createData( List<E> typeLogs, DataSet<E> dataSet) {
+	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet) {
 
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		List<EnrolledUser> enrolledUsers = new ArrayList<>(listParticipants.getItems());
@@ -164,40 +159,14 @@ public class CumLine extends ChartjsLog {
 				I18n.get(choiceBoxDate.getValue().getTypeTime()));
 	}
 
-	public void exportCSV(String path) throws IOException {
-		LocalDate dateStart = datePickerStart.getValue();
-		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
-		List<String> range = groupBy.getRangeString(dateStart, dateEnd);
-		range.add(0, "userid");
-		range.add(1, "fullname");
-
-	
-		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(range.toArray(new String[0])))) {
-			if (tabUbuLogsComponent.isSelected()) {
-				exportCSV(printer, DataSetComponent.getInstance(),
-						listViewComponents.getSelectionModel().getSelectedItems());
-			} else if (tabUbuLogsEvent.isSelected()) {
-				exportCSV(printer, DataSetComponentEvent.getInstance(),
-						listViewEvents.getSelectionModel().getSelectedItems());
-			} else if (tabUbuLogsSection.isSelected()) {
-				exportCSV(printer, DataSetSection.getInstance(),
-						listViewSection.getSelectionModel().getSelectedItems());
-			} else if (tabUbuLogsCourseModule.isSelected()) {
-				exportCSV(printer, DatasSetCourseModule.getInstance(),
-						listViewCourseModule.getSelectionModel().getSelectedItems());
-			}
-		}
-	}
-
-	private <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> selecteds) throws IOException {
-
+	@Override
+	protected <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<?> rangeDates = groupBy.getRange(dateStart, dateEnd);
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
 				dateStart, dateEnd);
 		for (EnrolledUser selectedUser : enrolledUsers) {
 			Map<E, List<Integer>> types = userCounts.get(selectedUser);
@@ -205,7 +174,7 @@ public class CumLine extends ChartjsLog {
 			long result = 0;
 			for (int j = 0; j < rangeDates.size(); j++) {
 
-				for (E type : selecteds) {
+				for (E type : typeLogs) {
 					List<Integer> times = types.get(type);
 					result += times.get(j);
 				}
@@ -219,51 +188,37 @@ public class CumLine extends ChartjsLog {
 			printer.printRecord(results);
 
 		}
+
 	}
 
 	@Override
-	public void exportCSVDesglosed(String path) throws IOException {
+	protected String[] getCSVHeader() {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<String> range = groupBy.getRangeString(dateStart, dateEnd);
 		range.add(0, "userid");
 		range.add(1, "fullname");
-		range.add(2, "log");
-
-
-		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(range.toArray(new String[0])))) {
-			if (tabUbuLogsComponent.isSelected()) {
-				exportCSVDesglosed(printer, DataSetComponent.getInstance(),
-						listViewComponents.getSelectionModel().getSelectedItems());
-			} else if (tabUbuLogsEvent.isSelected()) {
-				exportCSVDesglosed(printer, DataSetComponentEvent.getInstance(),
-						listViewEvents.getSelectionModel().getSelectedItems());
-			} else if (tabUbuLogsSection.isSelected()) {
-				exportCSVDesglosed(printer, DataSetSection.getInstance(),
-						listViewSection.getSelectionModel().getSelectedItems());
-			} else if (tabUbuLogsCourseModule.isSelected()) {
-				exportCSVDesglosed(printer, DatasSetCourseModule.getInstance(),
-						listViewCourseModule.getSelectionModel().getSelectedItems());
-			}
-		}
+		return range.toArray(new String[0]);
 	}
 
-	private <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> selecteds) throws IOException {
-
+	@Override
+	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs)
+			throws IOException {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
 				dateStart, dateEnd);
 		for (EnrolledUser selectedUser : enrolledUsers) {
 			Map<E, List<Integer>> types = userCounts.get(selectedUser);
 
-			for (E type : selecteds) {
+			for (E type : typeLogs) {
 				List<Integer> times = types.get(type);
 				printer.print(selectedUser.getId());
 				printer.print(selectedUser.getFullName());
+				printer.print(type.hashCode());
 				printer.print(type);
 				long sum = 0;
 				for (long result : times) {
@@ -276,4 +231,19 @@ public class CumLine extends ChartjsLog {
 		}
 
 	}
+
+	@Override
+	protected String[] getCSVDesglosedHeader() {
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
+		List<String> range = groupBy.getRangeString(dateStart, dateEnd);
+		range.add(0, "userid");
+		range.add(1, "fullname");
+		String selectedTab = mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
+		range.add(2, selectedTab + "_id");
+		range.add(3, selectedTab);
+		return range.toArray(new String[0]);
+	}
+
 }

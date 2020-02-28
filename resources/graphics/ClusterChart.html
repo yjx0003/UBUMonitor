@@ -14,26 +14,36 @@
 <script type="text/javascript">
 	var colorHash = new ColorHash();
 	var ctx = document.getElementById("myChart");
-	var myChart = new Chart(ctx, {
-		type : "scatter",
-		data : {
-			labels : [],
-			datasets : []
-		},
-		options : {
-			responsive : true,
-			maintainAspectRatio : false,
-			tooltips : {
-				callbacks : {
-					label : function(tooltipItem, data) {
-						var label = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].user;
-						return label + ': (' + tooltipItem.xLabel + ', '
-								+ tooltipItem.yLabel + ')';
+	var myChart = new Chart(
+			ctx,
+			{
+				type : "scatter",
+				data : {
+					labels : [],
+					datasets : []
+				},
+				options : {
+					responsive : true,
+					maintainAspectRatio : false,
+					tooltips : {
+						callbacks : {
+							label : function(tooltipItem, data) {
+								var label = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].user;
+								return label + ': (' + tooltipItem.xLabel.toFixed(2)
+										+ ', ' + tooltipItem.yLabel.toFixed(2) + ')';
+							}
+						}
+					},
+					layout : {
+						padding : {
+							left : 50,
+							right : 50,
+							top : 30,
+							bottom : 50
+						}
 					}
 				}
-			}
-		}
-	});
+			});
 
 	function updateChart(data) {
 		myChart.data = data;

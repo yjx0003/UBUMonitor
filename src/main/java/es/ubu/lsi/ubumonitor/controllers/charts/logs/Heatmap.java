@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
@@ -16,115 +15,79 @@ import org.slf4j.LoggerFactory;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.charts.ApexCharts;
 import es.ubu.lsi.ubumonitor.controllers.charts.ChartType;
-import es.ubu.lsi.ubumonitor.controllers.charts.Tabs;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSet;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponent;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
-public class Heatmap extends ApexCharts {
+public class Heatmap extends ChartLogs {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Heatmap.class);
-	private String max;
+	
 	private DescriptiveStatistics descriptiveStatistics;
 
 	public Heatmap(MainController mainController) {
-		super(mainController, ChartType.HEAT_MAP, Tabs.LOGS);
+		super(mainController, ChartType.HEAT_MAP);
 		descriptiveStatistics = new DescriptiveStatistics();
 		useGroupBy = true;
+		useLegend = true;
 	}
 
 	@Override
-	public void update() {
-		String heatmapdataset = null;
-		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-		List<EnrolledUser> enrolledUsers = new ArrayList<>(listParticipants.getItems());
+	public void clear() {
+		// TODO Auto-generated method stub
 
-		LocalDate dateStart = datePickerStart.getValue();
-		LocalDate dateEnd = datePickerEnd.getValue();
-
-		if (tabUbuLogsComponent.isSelected()) {
-
-			heatmapdataset = createSeries(enrolledUsers, selectedUsers,
-					listViewComponents.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart,
-					dateEnd, DataSetComponent.getInstance());
-		} else if (tabUbuLogsEvent.isSelected()) {
-
-			heatmapdataset = createSeries(enrolledUsers, selectedUsers,
-					listViewEvents.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart, dateEnd,
-					DataSetComponentEvent.getInstance());
-		} else if (tabUbuLogsSection.isSelected()) {
-
-			heatmapdataset = createSeries(enrolledUsers, selectedUsers,
-					listViewSection.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart,
-					dateEnd, DataSetSection.getInstance());
-		} else if (tabUbuLogsCourseModule.isSelected()) {
-
-			heatmapdataset = createSeries(enrolledUsers, selectedUsers,
-					listViewCourseModule.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart,
-					dateEnd, DatasSetCourseModule.getInstance());
-		}
-
-		String categories = createCategory(choiceBoxDate.getValue(), dateStart, dateEnd);
-		LOGGER.info("Dataset para el heatmap en JS: {}", heatmapdataset);
-		LOGGER.info("Categorias del heatmap en JS: {}", categories);
-		LOGGER.info("Opciones del heatmap ne JS: {}", getOptions());
-
-		webViewChartsEngine
-				.executeScript(String.format("updateApexCharts(%s,%s, %s)", heatmapdataset, categories, getOptions()));
 	}
 
-	public <E> String createSeries(List<EnrolledUser> enrolledUsers, List<EnrolledUser> selectedUsers,
-			List<E> selecteds, GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd, DataSet<E> dataSet) {
+	@Override
+	public void hideLegend() {
+		webViewChartsEngine.executeScript("hideLegendApexCharts(" + getOptions() + ")");
 
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("[");
+	}
 
-		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
-				dateStart, dateEnd);
-		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
+	@Override
+	public String export() {
+		webViewChartsEngine.executeScript("exportApexcharts()");
+		return null;
+	}
 
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
-		boolean useQuartile = mainConfiguration.getValue(getChartType(), "useQuartile");
+	public String getXScaleLabel() {
+		MainConfiguration mainConfiguration = controller.getMainConfiguration();
+		JSObject jsObject = new JSObject();
 
-		if (useQuartile) {
-			descriptiveStatistics.clear();
+		boolean display = mainConfiguration.getValue(MainConfiguration.GENERAL, "displayXScaleTitle");
+		if (!display) {
+			return "title:{}";
 		}
+		jsObject.putWithQuote("text", getXAxisTitle());
+		JSObject style = new JSObject();
+		style.putWithQuote("fontSize", 14);
+		style.put("color", colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorXScaleTitle")));
+		style.putWithQuote("cssClass", "apexcharts");
+		jsObject.put("style", style);
 
-		for (int i = selectedUsers.size() - 1; i >= 0; i--) {
-			EnrolledUser selectedUser = selectedUsers.get(i);
+		return "title:" + jsObject;
 
-			stringBuilder.append("{name:'" + UtilMethods.escapeJavaScriptText(selectedUser.toString()) + "',");
+	}
 
-			Map<E, List<Integer>> types = userCounts.get(selectedUser);
-			List<Long> results = new ArrayList<>();
-			for (int j = 0; j < rangeDates.size(); j++) {
-				long result = 0;
-				for (E type : selecteds) {
-					List<Integer> times = types.get(type);
-					result += times.get(j);
-				}
-				if (useQuartile && result != 0) {
-					descriptiveStatistics.addValue(result);
-				}
-				results.add(result);
+	public String getYScaleLabel() {
+		MainConfiguration mainConfiguration = controller.getMainConfiguration();
+		JSObject jsObject = new JSObject();
 
-			}
-
-			stringBuilder.append("data: [" + UtilMethods.join(results) + "]},");
-
+		boolean display = mainConfiguration.getValue(MainConfiguration.GENERAL, "displayYScaleTitle");
+		if (!display) {
+			return "title:{}";
 		}
-		stringBuilder.append("]");
+		jsObject.putWithQuote("text", getYAxisTitle());
+		JSObject style = new JSObject();
+		style.putWithQuote("fontSize", 14);
+		style.put("color", colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorYScaleTitle")));
+		jsObject.put("style", style.toString());
+		return "title:" + jsObject.toString();
 
-		return stringBuilder.toString();
 	}
 
 	public static String createCategory(GroupByAbstract<?> groupBy, LocalDate dateStart, LocalDate dateEnd) {
@@ -166,14 +129,13 @@ public class Heatmap extends ApexCharts {
 		String moreMax = colorToRGB(mainConfiguration.getValue(getChartType(), "moreMax"));
 
 		JSObject jsObject = getDefaultOptions();
-		jsObject.putWithQuote( "typeGraph", "heatmap");
+		jsObject.putWithQuote("typeGraph", "heatmap");
 		jsObject.put("tooltip", "{x:{show:!0}}");
 
 		jsObject.put("legend", "{position:'top'}");
-		jsObject.put( "chart",
+		jsObject.put("chart",
 				"{type:\"heatmap\",events:{dataPointSelection:function(e,t,n){javaConnector.dataPointSelection(n.w.config.series.length-1-n.seriesIndex)}},height:height,toolbar:{show:!1},animations:{enabled:!1}}");
-		jsObject.put("dataLabels",
-				"{formatter:function(r,t){return 0==r?\"\":r},style:{colors:[\"#000000\"]}}");
+		jsObject.put("dataLabels", "{formatter:function(r,t){return 0==r?\"\":r},style:{colors:[\"#000000\"]}}");
 
 		jsObject.put("xaxis", "{" + getXScaleLabel() + "}");
 
@@ -215,63 +177,89 @@ public class Heatmap extends ApexCharts {
 						+ thirdInterval + "},{from:" + third + ",to:" + fourth + ",color:" + fourthInterval + "}]}}}");
 	}
 
-	@Override
-	public String getMax() {
-		return max;
-	}
 
-	@Override
-	public void setMax(String max) {
-		this.max = max;
-	}
 
 	@Override
 	public String getXAxisTitle() {
 		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"),
 				I18n.get(choiceBoxDate.getValue().getTypeTime()));
 	}
-	
+
 	@Override
-	public void exportCSV(String path) throws IOException {
+	protected String getJSFunction(String dataset, String options) {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
-		List<String> range = groupBy.getRangeString(dateStart, dateEnd);
-		range.add(0, "userid");
-		range.add(1, "fullname");
-
-		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(range.toArray(new String[0])))) {
-			if (tabUbuLogsComponent.isSelected()) {
-				exportCSV(printer, DataSetComponent.getInstance(),
-						listViewComponents.getSelectionModel().getSelectedItems());
-			} else if (tabUbuLogsEvent.isSelected()) {
-				exportCSV(printer, DataSetComponentEvent.getInstance(),
-						listViewEvents.getSelectionModel().getSelectedItems());
-			} else if (tabUbuLogsSection.isSelected()) {
-				exportCSV(printer, DataSetSection.getInstance(),
-						listViewSection.getSelectionModel().getSelectedItems());
-			} else if (tabUbuLogsCourseModule.isSelected()) {
-				exportCSV(printer, DatasSetCourseModule.getInstance(),
-						listViewCourseModule.getSelectionModel().getSelectedItems());
-			}
-		}
+		String categories = createCategory(groupBy, dateStart, dateEnd);
+		LOGGER.debug("Categorias de heatmap {}", categories);
+		return "updateApexCharts(" + dataset + "," + categories + "," + options + ")";
 	}
 
-	private <T> void exportCSV(CSVPrinter printer, DataSet<T> dataSet, List<T> selecteds) throws IOException {
+	@Override
+	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet) {
+		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
+		List<EnrolledUser> enrolledUsers = new ArrayList<>(listParticipants.getItems());
+		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("[");
+
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
+				dateStart, dateEnd);
+		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
+
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		boolean useQuartile = mainConfiguration.getValue(getChartType(), "useQuartile");
+
+		if (useQuartile) {
+			descriptiveStatistics.clear();
+		}
+
+		for (int i = selectedUsers.size() - 1; i >= 0; i--) {
+			EnrolledUser selectedUser = selectedUsers.get(i);
+
+			stringBuilder.append("{name:'" + UtilMethods.escapeJavaScriptText(selectedUser.toString()) + "',");
+
+			Map<E, List<Integer>> types = userCounts.get(selectedUser);
+			List<Long> results = new ArrayList<>();
+			for (int j = 0; j < rangeDates.size(); j++) {
+				long result = 0;
+				for (E type : typeLogs) {
+					List<Integer> times = types.get(type);
+					result += times.get(j);
+				}
+				if (useQuartile && result != 0) {
+					descriptiveStatistics.addValue(result);
+				}
+				results.add(result);
+
+			}
+
+			stringBuilder.append("data: [" + UtilMethods.join(results) + "]},");
+
+		}
+		stringBuilder.append("]");
+
+		return stringBuilder.toString();
+	}
+
+	@Override
+	protected <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<?> rangeDates = groupBy.getRange(dateStart, dateEnd);
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
 				dateStart, dateEnd);
 		for (EnrolledUser selectedUser : enrolledUsers) {
-			Map<T, List<Integer>> types = userCounts.get(selectedUser);
+			Map<E, List<Integer>> types = userCounts.get(selectedUser);
 			List<Integer> results = new ArrayList<>();
 			for (int j = 0; j < rangeDates.size(); j++) {
 				int result = 0;
-				for (T type : selecteds) {
+				for (E type : typeLogs) {
 					List<Integer> times = types.get(type);
 					result += times.get(j);
 				}
@@ -285,52 +273,52 @@ public class Heatmap extends ApexCharts {
 	}
 
 	@Override
-	public void exportCSVDesglosed(String path) throws IOException {
+	protected String[] getCSVHeader() {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<String> range = groupBy.getRangeString(dateStart, dateEnd);
 		range.add(0, "userid");
 		range.add(1, "fullname");
-		range.add(2, "log");
-
-		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(range.toArray(new String[0])))) {
-			if (tabUbuLogsComponent.isSelected()) {
-				exportCSVDesglosed(printer, DataSetComponent.getInstance(),
-						listViewComponents.getSelectionModel().getSelectedItems());
-			} else if (tabUbuLogsEvent.isSelected()) {
-				exportCSVDesglosed(printer, DataSetComponentEvent.getInstance(),
-						listViewEvents.getSelectionModel().getSelectedItems());
-			} else if (tabUbuLogsSection.isSelected()) {
-				exportCSVDesglosed(printer, DataSetSection.getInstance(),
-						listViewSection.getSelectionModel().getSelectedItems());
-			} else if (tabUbuLogsCourseModule.isSelected()) {
-				exportCSVDesglosed(printer, DatasSetCourseModule.getInstance(),
-						listViewCourseModule.getSelectionModel().getSelectedItems());
-			}
-		}
+		return range.toArray(new String[0]);
 	}
 
-	private <T> void exportCSVDesglosed(CSVPrinter printer, DataSet<T> dataSet, List<T> selecteds) throws IOException {
+	@Override
+	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
 				dateStart, dateEnd);
 		for (EnrolledUser selectedUser : enrolledUsers) {
-			Map<T, List<Integer>> types = userCounts.get(selectedUser);
+			Map<E, List<Integer>> types = userCounts.get(selectedUser);
 
-			for (T type : selecteds) {
+			for (E type : typeLogs) {
 				List<Integer> times = types.get(type);
 				printer.print(selectedUser.getId());
 				printer.print(selectedUser.getFullName());
+				printer.print(type.hashCode());
 				printer.print(type);
 				printer.printRecord(times);
 			}
 
 		}
 
+	}
+
+	@Override
+	protected String[] getCSVDesglosedHeader() {
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
+		List<String> range = groupBy.getRangeString(dateStart, dateEnd);
+		range.add(0, "userid");
+		range.add(1, "fullname");
+		String selectedTab = mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
+		range.add(2, selectedTab + "_id");
+		range.add(3, selectedTab);
+		return range.toArray(new String[0]);
 	}
 }

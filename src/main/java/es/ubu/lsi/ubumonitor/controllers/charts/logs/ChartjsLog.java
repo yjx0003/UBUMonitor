@@ -2,32 +2,22 @@ package es.ubu.lsi.ubumonitor.controllers.charts.logs;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.charts.ChartType;
-import es.ubu.lsi.ubumonitor.controllers.charts.Chartjs;
-import es.ubu.lsi.ubumonitor.controllers.charts.Tabs;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DataSet;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponent;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
+import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.util.JSArray;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
-public abstract class ChartjsLog extends Chartjs {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ChartjsLog.class);
+public abstract class ChartjsLog extends ChartLogs {
 
-	private String max;
 
 	public ChartjsLog(MainController mainController, ChartType chartType) {
-		super(mainController, chartType, Tabs.LOGS);
+		super(mainController, chartType);
 
 	}
 
-	public JSArray createLabels(List<String> rangeDates) {
+	protected JSArray createLabels(List<String> rangeDates) {
 		JSArray labels = new JSArray();
 		for (String date : rangeDates) {
 			labels.add("'" + UtilMethods.escapeJavaScriptText(date) + "'");
@@ -35,44 +25,56 @@ public abstract class ChartjsLog extends Chartjs {
 		return labels;
 	}
 
+
+
 	@Override
-	public void update() {
-		String dataset = null;
-
-		if (tabUbuLogsComponent.isSelected()) {
-
-			dataset = createData(listViewComponents.getSelectionModel().getSelectedItems(),
-					DataSetComponent.getInstance());
-		} else if (tabUbuLogsEvent.isSelected()) {
-
-			dataset = createData(listViewEvents.getSelectionModel().getSelectedItems(),
-					DataSetComponentEvent.getInstance());
-		} else if (tabUbuLogsSection.isSelected()) {
-
-			dataset = createData(listViewSection.getSelectionModel().getSelectedItems(), DataSetSection.getInstance());
-		} else if (tabUbuLogsCourseModule.isSelected()) {
-
-			dataset = createData(listViewCourseModule.getSelectionModel().getSelectedItems(),
-					DatasSetCourseModule.getInstance());
-		}
-
-		String options = getOptions();
-		LOGGER.info("Dataset en JS: {}", dataset);
-		LOGGER.info("Opciones en JS: {}", options);
-		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, options));
+	public void clear() {
+		webViewChartsEngine.executeScript("clearChartjs()");
 
 	}
 
 	@Override
-	public String getMax() {
-		return max;
+	public void hideLegend() {
+		webViewChartsEngine.executeScript("hideLegendChartjs()");
+
 	}
 
 	@Override
-	public void setMax(String max) {
-		this.max = max;
+	public String export() {
+		return (String) webViewChartsEngine.executeScript("exportChartjs()");
+	}
+	
+
+	public String getXScaleLabel() {
+		MainConfiguration mainConfiguration = controller.getMainConfiguration();
+		JSObject jsObject = new JSObject();
+		jsObject.put("display", (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "displayXScaleTitle"));
+		jsObject.putWithQuote("labelString", getXAxisTitle());
+		jsObject.put("fontColor",
+				colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorXScaleTitle")));
+		jsObject.putWithQuote("fontStyle", "bold");
+
+		return "scaleLabel:" + jsObject;
+
 	}
 
-	public abstract <E> String createData(List<E> typeLogs, DataSet<E> dataSet);
 
+	public String getYScaleLabel() {
+		MainConfiguration mainConfiguration = controller.getMainConfiguration();
+		JSObject jsObject = new JSObject();
+		jsObject.put("display", (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "displayYScaleTitle"));
+		jsObject.putWithQuote("labelString", getYAxisTitle());
+		jsObject.putWithQuote("fontSize", 14);
+		jsObject.put("fontColor",
+				colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorYScaleTitle")));
+		jsObject.putWithQuote("fontStyle", "bold");
+
+		return "scaleLabel:" + jsObject;
+
+	}
+
+	@Override
+	protected String getJSFunction(String dataset, String options) {
+		return "updateChartjs" + "(" + dataset + "," + options + ")";
+	}
 }

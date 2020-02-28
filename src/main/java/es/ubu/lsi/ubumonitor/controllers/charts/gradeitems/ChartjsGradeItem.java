@@ -1,4 +1,4 @@
-package es.ubu.lsi.ubumonitor.controllers.charts;
+package es.ubu.lsi.ubumonitor.controllers.charts.gradeitems;
 
 import java.util.List;
 import java.util.Map;
@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.controllers.charts.ChartType;
+import es.ubu.lsi.ubumonitor.controllers.charts.Chartjs;
+import es.ubu.lsi.ubumonitor.controllers.charts.Tabs;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;

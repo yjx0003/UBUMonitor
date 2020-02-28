@@ -74,6 +74,7 @@ public class MainConfiguration {
 		createItem(ChartType.HEAT_MAP, "thirdInterval", Color.web("#b5ff33"));
 		createItem(ChartType.HEAT_MAP, "fourthInterval", Color.web("#38e330"));
 		createItem(ChartType.HEAT_MAP, "moreMax", Color.web("#67b92e"));
+		createItem(ChartType.TOTAL_BAR, "horizontalMode", false);
 
 		createItem(ChartType.CUM_LINE, "calculateMax", false);
 

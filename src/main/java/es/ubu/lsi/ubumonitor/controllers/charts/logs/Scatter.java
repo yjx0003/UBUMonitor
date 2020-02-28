@@ -7,10 +7,13 @@ import java.time.chrono.IsoChronology;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import org.apache.commons.csv.CSVPrinter;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
@@ -24,7 +27,7 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 
 public class Scatter extends ChartjsLog {
-	
+
 	private DateTimeFormatter dateFormatter;
 	private DateTimeFormatter timeFormatter;
 	private String datePattern;
@@ -45,12 +48,6 @@ public class Scatter extends ChartjsLog {
 	}
 
 	@Override
-	public void exportCSV(String path) throws IOException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public String getOptions() {
 		JSObject jsObject = getDefaultOptions();
 		LocalDate dateStart = datePickerStart.getValue();
@@ -67,8 +64,6 @@ public class Scatter extends ChartjsLog {
 				"{callbacks:{label:function(l,a){return a.datasets[l.datasetIndex].label+': '+ l.xLabel}}}");
 		return jsObject.toString();
 	}
-
-
 
 	@Override
 	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet) {
@@ -112,6 +107,84 @@ public class Scatter extends ChartjsLog {
 
 		data.put("datasets", datasets);
 		return data.toString();
+	}
+
+	@Override
+	protected <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		List<?> rangeDates = groupBy.getRange(dateStart, dateEnd);
+		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
+				dateStart, dateEnd);
+		for (EnrolledUser selectedUser : enrolledUsers) {
+			Map<E, List<Integer>> types = userCounts.get(selectedUser);
+			List<Integer> results = new ArrayList<>();
+			for (int j = 0; j < rangeDates.size(); j++) {
+				int result = 0;
+				for (E type : typeLogs) {
+					List<Integer> times = types.get(type);
+					result += times.get(j);
+				}
+				results.add(result);
+
+			}
+			printer.print(selectedUser.getId());
+			printer.print(selectedUser.getFullName());
+			printer.printRecord(results);
+		}
+
+	}
+
+	@Override
+	protected String[] getCSVHeader() {
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		List<String> range = groupBy.getRangeString(dateStart, dateEnd);
+		range.add(0, "userid");
+		range.add(1, "fullname");
+		return range.toArray(new String[0]);
+	}
+
+	@Override
+	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
+
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
+				dateStart, dateEnd);
+		for (EnrolledUser selectedUser : enrolledUsers) {
+			Map<E, List<Integer>> types = userCounts.get(selectedUser);
+
+			for (E type : typeLogs) {
+				List<Integer> times = types.get(type);
+				printer.print(selectedUser.getId());
+				printer.print(selectedUser.getFullName());
+				printer.print(type.hashCode());
+				printer.print(type);
+				printer.printRecord(times);
+			}
+
+		}
+
+	}
+
+	@Override
+	protected String[] getCSVDesglosedHeader() {
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		List<String> range = groupBy.getRangeString(dateStart, dateEnd);
+		range.add(0, "userid");
+		range.add(1, "fullname");
+		String selectedTab = mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
+		range.add(2, selectedTab + "_id");
+		range.add(3, selectedTab);
+		return range.toArray(new String[0]);
 	}
 
 }

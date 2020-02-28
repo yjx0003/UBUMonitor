@@ -1,6 +1,5 @@
 package es.ubu.lsi.ubumonitor.controllers.charts;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -157,8 +156,7 @@ public class Stackedbar extends Chartjs {
 		range.add(0, "userid");
 		range.add(1, "fullname");
 
-		FileWriter out = new FileWriter(path);
-		try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT.withHeader(range.toArray(new String[0])))) {
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(range.toArray(new String[0])))) {
 			if (tabUbuLogsComponent.isSelected()) {
 				exportCSV(printer, DataSetComponent.getInstance(),
 						listViewComponents.getSelectionModel().getSelectedItems());
@@ -212,8 +210,7 @@ public class Stackedbar extends Chartjs {
 		range.add(1, "fullname");
 		range.add(2, "log");
 
-		FileWriter out = new FileWriter(path);
-		try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT.withHeader(range.toArray(new String[0])))) {
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(range.toArray(new String[0])))) {
 			if (tabUbuLogsComponent.isSelected()) {
 				exportCSVDesglosed(printer, DataSetComponent.getInstance(),
 						listViewComponents.getSelectionModel().getSelectedItems());

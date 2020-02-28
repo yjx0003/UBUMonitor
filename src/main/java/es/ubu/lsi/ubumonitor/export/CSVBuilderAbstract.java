@@ -3,7 +3,7 @@ package es.ubu.lsi.ubumonitor.export;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,6 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 
 	/** File extensio. */
 	private static final String EXTENSION = ".csv";
-	
 
 	/** Logger. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(CSVBuilderAbstract.class);
@@ -43,13 +42,11 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 
 	/** Database. */
 	private DataBase dataBase;
-	
-	
+
 	public static void setPath(Path path) {
 		CSVBuilderAbstract.path = path;
-		
+
 	}
-	
 
 	/**
 	 * Gets header.
@@ -63,8 +60,7 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	/**
 	 * Sets header.
 	 * 
-	 * @param header
-	 *            header
+	 * @param header header
 	 */
 	protected void setHeader(String[] header) {
 		this.header = header;
@@ -82,8 +78,7 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	/**
 	 * Sets datata.
 	 * 
-	 * @param data
-	 *            data
+	 * @param data data
 	 */
 	protected void setData(List<String[]> data) {
 		this.data = data;
@@ -101,8 +96,7 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	/**
 	 * Sets database.
 	 * 
-	 * @param dataBase
-	 *            database
+	 * @param dataBase database
 	 */
 	private void setDataBase(DataBase dataBase) {
 		this.dataBase = dataBase;
@@ -111,12 +105,9 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	/**
 	 * Constructor.
 	 * 
-	 * @param name
-	 *            name
-	 * @param dataBase
-	 *            dataBase
-	 * @param header
-	 *            header
+	 * @param name name
+	 * @param dataBase dataBase
+	 * @param header header
 	 */
 	public CSVBuilderAbstract(String name, DataBase dataBase, String[] header) {
 		setName(name);
@@ -137,8 +128,7 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	/**
 	 * Sets file name.
 	 * 
-	 * @param name
-	 *            file name
+	 * @param name file name
 	 */
 	private void setName(String name) {
 		this.name = name;
@@ -153,11 +143,11 @@ public abstract class CSVBuilderAbstract implements CSVBuilder {
 	 * http://http://opencsv.sourceforge.net/).
 	 */
 	@Override
-	public void writeCSV() {
+	public void writeCSV(Charset charset) {
 		final CSVWriter writer;
-		
+
 		try (FileOutputStream fos = new FileOutputStream(path.resolve(getFileName()).toFile());
-				OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
+				OutputStreamWriter osw = new OutputStreamWriter(fos, charset)) {
 			writer = new CSVWriter(osw);
 			writer.writeAll(getData());
 			writer.close();

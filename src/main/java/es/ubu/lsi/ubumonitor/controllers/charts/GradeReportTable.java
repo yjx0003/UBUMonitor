@@ -1,9 +1,12 @@
 package es.ubu.lsi.ubumonitor.controllers.charts;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,8 +148,27 @@ public class GradeReportTable extends Tabulator {
 
 	@Override
 	public void exportCSV(String path) throws IOException {
-		// TODO Auto-generated method stub
+		List<String> header = new ArrayList<>();
+		header.add("userid");
+		header.add("fullname");
+		List<GradeItem> gradeItems = getSelectedGradeItems();
+		for (GradeItem gradeItem : gradeItems) {
+			header.add(gradeItem.getItemname());
+		}
 		
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
+			for (EnrolledUser enrolledUser : getSelectedEnrolledUser()) {
+				printer.print(enrolledUser.getId());
+				printer.print(enrolledUser.getFullName());
+				for (GradeItem gradeItem : gradeItems) {
+					printer.print(gradeItem.getEnrolledUserPercentage(enrolledUser) / 10);
+				}
+				printer.println();
+			}
+		}
+
 	}
+		
+	
 
 }

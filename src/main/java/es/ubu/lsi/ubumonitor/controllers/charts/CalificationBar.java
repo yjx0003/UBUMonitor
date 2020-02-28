@@ -1,6 +1,5 @@
 package es.ubu.lsi.ubumonitor.controllers.charts;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -99,8 +98,8 @@ public class CalificationBar extends ChartjsGradeItem {
 		for (GradeItem gradeItem : gradeItems) {
 			header.add(gradeItem.getItemname());
 		}
-		FileWriter out = new FileWriter(path);
-		try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
+	
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
 			double cutGrade = Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL,
 					"cutGrade");
 			List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();

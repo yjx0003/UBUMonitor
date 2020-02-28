@@ -24,6 +24,7 @@ import es.ubu.lsi.ubumonitor.model.Group;
 import es.ubu.lsi.ubumonitor.model.LastActivity;
 import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
 import es.ubu.lsi.ubumonitor.model.Role;
+import es.ubu.lsi.ubumonitor.util.Charsets;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -44,6 +45,7 @@ public class MainConfiguration {
 	public void setDefaultValues() {
 		properties.clear();
 		categories.clear();
+		createItem(GENERAL, "charset", Charsets.UTF_8);
 		createItem(GENERAL, "cutGrade", 5.0);
 		createItem(GENERAL, "borderLength", 10);
 		createItem(GENERAL, "borderSpace", 5);

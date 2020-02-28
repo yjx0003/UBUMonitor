@@ -1,5 +1,9 @@
 package es.ubu.lsi.ubumonitor.controllers.charts;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +27,7 @@ import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
 import es.ubu.lsi.ubumonitor.model.Section;
 import es.ubu.lsi.ubumonitor.model.Stats;
+import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.scene.control.ChoiceBox;
@@ -238,6 +243,12 @@ public abstract class Chart implements Exportable {
 
 	public boolean isUseRangeDate() {
 		return useRangeDate;
+	}
+	
+	@Override
+	public Writer getWritter(String path) throws IOException {
+		Charsets charset = Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL, "charset");
+		return new OutputStreamWriter(new FileOutputStream(path), charset.get());
 	}
 
 }

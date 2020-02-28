@@ -1,6 +1,5 @@
 package es.ubu.lsi.ubumonitor.controllers.charts;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -203,8 +202,8 @@ public class ActivitiesStatusTable extends Tabulator {
 			header.add(courseModule.getModuleName());
 			header.add("end date " + courseModule.getModuleName());
 		}
-		FileWriter out = new FileWriter(path);
-		try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
+		
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
 			for (EnrolledUser enrolledUser : enrolledUsers) {
 				printer.print(enrolledUser.getId());
 				printer.print(enrolledUser.getFullName());

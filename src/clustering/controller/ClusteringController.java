@@ -236,7 +236,8 @@ public class ClusteringController {
 			public String toString(Integer value) {
 				if (value.equals(-1))
 					return I18n.get("text.all");
-				return value + "  (" + count.get(value) + "/" + clusters.size() + ")";
+				Long n = count.get(value);
+				return value + "  (" + (n == null ? 0 : n) + "/" + clusters.size() + ")";
 			}
 		});
 		checkComboBoxCluster.getCheckModel().getCheckedItems()
@@ -250,7 +251,7 @@ public class ClusteringController {
 		for (int i = 0; i < points.size(); i++) {
 			JSObject group = new JSObject();
 			group.put("label", i);
-			group.put("backgroundColor", "colorHash.hex("+ i * i * i * i +")");
+			group.put("backgroundColor", "colorHash.hex("+ i * i +")");
 			group.put("pointRadius", 6);
 			group.put("pointHoverRadius", 8);
 			JSArray data = new JSArray();

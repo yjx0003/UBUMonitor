@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ListView?>
@@ -17,7 +18,7 @@
 <?import org.controlsfx.control.CheckComboBox?>
 <?import org.controlsfx.control.PropertySheet?>
 
-<BorderPane prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clustering.controller.ClusteringController">
+<BorderPane prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clustering.controller.ClusteringController">
    <top>
       <GridPane BorderPane.alignment="CENTER">
         <columnConstraints>
@@ -36,15 +37,30 @@
 
             <PropertySheet fx:id="propertySheet" modeSwitcherVisible="false" prefHeight="59.0" prefWidth="137.0" searchBoxVisible="false" GridPane.columnIndex="1" GridPane.rowSpan="4" />
             <Button fx:id="buttonExecute" mnemonicParsing="false" text="Button" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-            <CheckBox fx:id="checkBoxGrades" mnemonicParsing="false" text="%tab.grades" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-            <CheckBox fx:id="checkBoxLogs" mnemonicParsing="false" text="%tab.logs" GridPane.columnIndex="2" />
-            <CheckBox fx:id="checkBoxActivity" mnemonicParsing="false" text="%tab.activityCompletion" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <CheckBox fx:id="checkBoxGrades" mnemonicParsing="false" text="%tab.grades" GridPane.columnIndex="2" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin></CheckBox>
+            <CheckBox fx:id="checkBoxLogs" mnemonicParsing="false" text="%tab.logs" GridPane.columnIndex="2">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin></CheckBox>
+            <CheckBox fx:id="checkBoxActivity" mnemonicParsing="false" text="%tab.activityCompletion" GridPane.columnIndex="2" GridPane.rowIndex="3">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin></CheckBox>
             <ListView fx:id="algorithmList" prefHeight="200.0" prefWidth="200.0" GridPane.rowSpan="4" />
-            <CheckComboBox fx:id="checkComboBoxLogs" title="\%clustering.logsTypes" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.hgrow="NEVER" GridPane.rowIndex="1" />
+            <CheckComboBox fx:id="checkComboBoxLogs" title="\%clustering.logsTypes" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.hgrow="NEVER" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin></CheckComboBox>
             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <children>
                   <CheckBox fx:id="checkBoxReduce" mnemonicParsing="false" text="\%clustering.reduce" />
-                  <TextField fx:id="textFieldReduce" prefWidth="50.0" />
+                  <TextField fx:id="textFieldReduce" prefWidth="50.0">
+                     <HBox.margin>
+                        <Insets left="15.0" />
+                     </HBox.margin></TextField>
                </children>
             </HBox>
          </children>

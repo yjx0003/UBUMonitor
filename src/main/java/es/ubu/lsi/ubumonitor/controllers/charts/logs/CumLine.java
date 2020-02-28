@@ -1,4 +1,4 @@
-package es.ubu.lsi.ubumonitor.controllers.charts;
+package es.ubu.lsi.ubumonitor.controllers.charts.logs;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -9,98 +9,137 @@ import java.util.Map;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.controllers.charts.ChartType;
+import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSet;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponent;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
-import es.ubu.lsi.ubumonitor.controllers.datasets.StackedBarDataSet;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
-import es.ubu.lsi.ubumonitor.model.Component;
-import es.ubu.lsi.ubumonitor.model.ComponentEvent;
-import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
-import es.ubu.lsi.ubumonitor.model.Section;
+import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 
-public class Stackedbar extends Chartjs {
-	private static final Logger LOGGER = LoggerFactory.getLogger(Stackedbar.class);
+public class CumLine extends ChartjsLog {
 
-	private StackedBarDataSet<Component> stackedBarComponent = new StackedBarDataSet<>();
-	private StackedBarDataSet<ComponentEvent> stackedBarEvent = new StackedBarDataSet<>();
-	private StackedBarDataSet<Section> stackedBarSection = new StackedBarDataSet<>();
-	private StackedBarDataSet<CourseModule> stackedBarCourseModule = new StackedBarDataSet<>();
-	private String max;
-
-	public Stackedbar(MainController mainController) {
-		super(mainController, ChartType.STACKED_BAR, Tabs.LOGS);
+	public CumLine(MainController mainController) {
+		super(mainController, ChartType.CUM_LINE);
+		useGeneralButton = true;
 		useLegend = true;
 		useGroupBy = true;
 	}
 
 	@Override
-	public void update() {
-		String stackedbardataset = null;
+	public <E> String createData( List<E> typeLogs, DataSet<E> dataSet) {
+
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		List<EnrolledUser> enrolledUsers = new ArrayList<>(listParticipants.getItems());
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
+				dateStart, dateEnd);
 
-		if (tabUbuLogsComponent.isSelected()) {
+		Map<E, List<Double>> means = dataSet.getMeans(groupBy, enrolledUsers, typeLogs, dateStart, dateEnd);
 
-			stackedbardataset = stackedBarComponent.createData(enrolledUsers, selectedUsers,
-					listViewComponents.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart,
-					dateEnd, DataSetComponent.getInstance());
+		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
 
-		} else if (tabUbuLogsEvent.isSelected()) {
-			stackedbardataset = stackedBarEvent.createData(enrolledUsers, selectedUsers,
-					listViewEvents.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart, dateEnd,
-					DataSetComponentEvent.getInstance());
+		JSObject data = new JSObject();
 
-		} else if (tabUbuLogsSection.isSelected()) {
-			stackedbardataset = stackedBarSection.createData(enrolledUsers, selectedUsers,
-					listViewSection.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart,
-					dateEnd, DataSetSection.getInstance());
+		data.put("labels", createLabels(rangeDates));
 
-		} else if (tabUbuLogsCourseModule.isSelected()) {
-			stackedbardataset = stackedBarCourseModule.createData(enrolledUsers, selectedUsers,
-					listViewCourseModule.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart,
-					dateEnd, DatasSetCourseModule.getInstance());
+		JSArray datasets = new JSArray();
+
+		createEnrolledUsersDatasets(selectedUsers, typeLogs, userCounts, rangeDates, datasets);
+
+		createMean(typeLogs, means, rangeDates, datasets);
+
+		data.put("datasets", datasets);
+
+		return data.toString();
+	}
+
+	private <E> void createMean(List<E> typeLogs, Map<E, List<Double>> means, List<String> rangeDates,
+			JSArray datasets) {
+		JSObject dataset = new JSObject();
+		String generalMeanTranslate = I18n.get("chartlabel.generalMean");
+		dataset.putWithQuote("label", generalMeanTranslate);
+		dataset.put("borderColor", hex(generalMeanTranslate));
+		dataset.put("backgroundColor", rgba(generalMeanTranslate, OPACITY));
+		dataset.put("borderDash", "["
+				+ Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL, "borderLength")
+				+ ","
+				+ Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL, "borderSpace")
+				+ "]");
+		dataset.put("hidden", !(boolean) Controller.getInstance().getMainConfiguration()
+				.getValue(MainConfiguration.GENERAL, "generalActive"));
+		JSArray results = new JSArray();
+		double cumResult = 0;
+		for (int j = 0; j < rangeDates.size(); j++) {
+			double result = 0;
+			for (E typeLog : typeLogs) {
+				List<Double> times = means.get(typeLog);
+				result += times.get(j);
+			}
+			cumResult += result;
+			results.add(cumResult);
 		}
+		dataset.put("data", results);
+		datasets.add(dataset);
 
-		String options = getOptions();
-		LOGGER.info("Dataset para el stacked bar en JS: {}", stackedbardataset);
-		LOGGER.info("Opciones para el stacked bar en JS: {}", options);
+	}
 
-		webViewChartsEngine.executeScript("updateChartjs(" + stackedbardataset + "," + options + ")");
+	private <E> void createEnrolledUsersDatasets(List<EnrolledUser> selectedUsers, List<E> typeLogs,
+			Map<EnrolledUser, Map<E, List<Integer>>> userCounts, List<String> rangeDates, JSArray datasets) {
+
+		for (EnrolledUser selectedUser : selectedUsers) {
+			JSObject dataset = new JSObject();
+			dataset.putWithQuote("label", selectedUser.getFullName());
+			dataset.put("borderColor", hex(selectedUser.getId()));
+			dataset.put("backgroundColor", rgba(selectedUser.getId(), OPACITY));
+
+			Map<E, List<Integer>> types = userCounts.get(selectedUser);
+			JSArray results = new JSArray();
+			long result = 0;
+			for (int j = 0; j < rangeDates.size(); j++) {
+
+				for (E typeLog : typeLogs) {
+					List<Integer> times = types.get(typeLog);
+					result += times.get(j);
+				}
+
+				results.add(Long.toString(result));
+			}
+			dataset.put("data", results);
+			datasets.add(dataset);
+
+		}
 
 	}
 
 	@Override
 	public String calculateMax() {
-
 		long maxYAxis = 1L;
 		if (tabUbuLogsComponent.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getComponents().getMaxElement(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getComponents().getCumulativeMax(listParticipants.getItems(),
 					listViewComponents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		} else if (tabUbuLogsEvent.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getMaxElement(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getCumulativeMax(listParticipants.getItems(),
 					listViewEvents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		} else if (tabUbuLogsSection.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getSections().getMaxElement(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getSections().getCumulativeMax(listParticipants.getItems(),
 					listViewSection.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		} else if (tabUbuLogsCourseModule.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getCourseModules().getMaxElement(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getCourseModules().getCumulativeMax(listParticipants.getItems(),
 					listViewCourseModule.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		}
@@ -108,38 +147,15 @@ public class Stackedbar extends Chartjs {
 	}
 
 	@Override
-	public int onClick(int userid) {
-
-		EnrolledUser user = Controller.getInstance().getDataBase().getUsers().getById(userid);
-		return listParticipants.getItems().indexOf(user);
-	}
-
-	@Override
 	public String getOptions() {
 		JSObject jsObject = getDefaultOptions();
+		jsObject.putWithQuote("typeGraph", "line");
 
-		long suggestedMax = getSuggestedMax();
-
-		jsObject.putWithQuote("typeGraph", "bar");
-
-		jsObject.put("tooltips",
-				"{position:\"nearest\",mode:\"x\",callbacks:{label:function(a,e){return e.datasets[a.datasetIndex].label+\" : \"+Math.round(100*a.yLabel)/100},afterTitle:function(a,e){return e.datasets[a[0].datasetIndex].name}}}");
-		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",stacked:!0,ticks:{suggestedMax:" + suggestedMax
+		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",ticks:{suggestedMax:" + getSuggestedMax()
 				+ ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
-		jsObject.put("legend", "{labels:{filter:function(e,t){return\"line\"==t.datasets[e.datasetIndex].type}}}");
-		jsObject.put("onClick",
-				"function(t,a){let e=myChart.getElementAtEvent(t)[0];e&&javaConnector.dataPointSelection(myChart.data.datasets[e._datasetIndex].stack)}");
+		jsObject.put("tooltips",
+				"{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+' : '+Math.round(100*a.yLabel)/100}}}");
 		return jsObject.toString();
-	}
-
-	@Override
-	public String getMax() {
-		return max;
-	}
-
-	@Override
-	public void setMax(String max) {
-		this.max = max;
 	}
 
 	@Override
@@ -156,6 +172,7 @@ public class Stackedbar extends Chartjs {
 		range.add(0, "userid");
 		range.add(1, "fullname");
 
+	
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(range.toArray(new String[0])))) {
 			if (tabUbuLogsComponent.isSelected()) {
 				exportCSV(printer, DataSetComponent.getInstance(),
@@ -173,30 +190,34 @@ public class Stackedbar extends Chartjs {
 		}
 	}
 
-	private <T> void exportCSV(CSVPrinter printer, DataSet<T> dataSet, List<T> selecteds) throws IOException {
+	private <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> selecteds) throws IOException {
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<?> rangeDates = groupBy.getRange(dateStart, dateEnd);
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
 		for (EnrolledUser selectedUser : enrolledUsers) {
-			Map<T, List<Integer>> types = userCounts.get(selectedUser);
+			Map<E, List<Integer>> types = userCounts.get(selectedUser);
 			List<Long> results = new ArrayList<>();
+			long result = 0;
 			for (int j = 0; j < rangeDates.size(); j++) {
-				long result = 0;
-				for (T type : selecteds) {
+
+				for (E type : selecteds) {
 					List<Integer> times = types.get(type);
 					result += times.get(j);
 				}
+
 				results.add(result);
 
 			}
 			printer.print(selectedUser.getId());
 			printer.print(selectedUser.getFullName());
+
 			printer.printRecord(results);
+
 		}
 	}
 
@@ -209,6 +230,7 @@ public class Stackedbar extends Chartjs {
 		range.add(0, "userid");
 		range.add(1, "fullname");
 		range.add(2, "log");
+
 
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(range.toArray(new String[0])))) {
 			if (tabUbuLogsComponent.isSelected()) {
@@ -227,27 +249,31 @@ public class Stackedbar extends Chartjs {
 		}
 	}
 
-	private <T> void exportCSVDesglosed(CSVPrinter printer, DataSet<T> dataSet, List<T> selecteds) throws IOException {
+	private <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> selecteds) throws IOException {
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
 		for (EnrolledUser selectedUser : enrolledUsers) {
-			Map<T, List<Integer>> types = userCounts.get(selectedUser);
+			Map<E, List<Integer>> types = userCounts.get(selectedUser);
 
-			for (T type : selecteds) {
+			for (E type : selecteds) {
 				List<Integer> times = types.get(type);
 				printer.print(selectedUser.getId());
 				printer.print(selectedUser.getFullName());
 				printer.print(type);
-				printer.printRecord(times);
+				long sum = 0;
+				for (long result : times) {
+					sum += result;
+					printer.print(sum);
+				}
+				printer.println();
 			}
 
 		}
 
 	}
-
 }

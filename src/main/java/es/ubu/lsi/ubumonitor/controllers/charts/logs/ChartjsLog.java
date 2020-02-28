@@ -1,4 +1,4 @@
-package es.ubu.lsi.ubumonitor.controllers.charts;
+package es.ubu.lsi.ubumonitor.controllers.charts.logs;
 
 import java.util.List;
 
@@ -6,6 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.controllers.charts.ChartType;
+import es.ubu.lsi.ubumonitor.controllers.charts.Chartjs;
+import es.ubu.lsi.ubumonitor.controllers.charts.Tabs;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSet;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponent;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;

@@ -1,4 +1,4 @@
-package es.ubu.lsi.ubumonitor.controllers.charts;
+package es.ubu.lsi.ubumonitor.controllers.charts.logs;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -13,6 +13,7 @@ import org.apache.commons.csv.CSVPrinter;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.controllers.charts.ChartType;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSet;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponent;
@@ -24,28 +25,27 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 
-public class CumLine extends ChartjsLog {
+public class MeanDiff extends ChartjsLog {
 
-	public CumLine(MainController mainController) {
-		super(mainController, ChartType.CUM_LINE);
-		useGeneralButton = true;
+	public MeanDiff(MainController mainController) {
+		super(mainController, ChartType.MEAN_DIFF);
 		useLegend = true;
+		useNegativeValues = true;
 		useGroupBy = true;
 	}
 
 	@Override
-	public <E> String createData( List<E> typeLogs, DataSet<E> dataSet) {
-
+	public <T> String createData(List<T> typeLogs, DataSet<T> dataSet) {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		List<EnrolledUser> enrolledUsers = new ArrayList<>(listParticipants.getItems());
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
-		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
+		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
 				dateStart, dateEnd);
 
-		Map<E, List<Double>> means = dataSet.getMeans(groupBy, enrolledUsers, typeLogs, dateStart, dateEnd);
+		Map<T, List<Double>> means = dataSet.getMeans(groupBy, enrolledUsers, typeLogs, dateStart, dateEnd);
 
 		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
 
@@ -54,66 +54,35 @@ public class CumLine extends ChartjsLog {
 		data.put("labels", createLabels(rangeDates));
 
 		JSArray datasets = new JSArray();
-
-		createEnrolledUsersDatasets(selectedUsers, typeLogs, userCounts, rangeDates, datasets);
-
-		createMean(typeLogs, means, rangeDates, datasets);
+		List<Double> listMeans = createMeanList(typeLogs, means, rangeDates);
+		createEnrolledUsersDatasets(selectedUsers, typeLogs, userCounts, listMeans, rangeDates, datasets);
 
 		data.put("datasets", datasets);
 
 		return data.toString();
 	}
 
-	private <E> void createMean(List<E> typeLogs, Map<E, List<Double>> means, List<String> rangeDates,
+	private <T> void createEnrolledUsersDatasets(List<EnrolledUser> selectedUsers, List<T> typeLogs,
+			Map<EnrolledUser, Map<T, List<Integer>>> userCounts, List<Double> listMeans, List<String> rangeDates,
 			JSArray datasets) {
-		JSObject dataset = new JSObject();
-		String generalMeanTranslate = I18n.get("chartlabel.generalMean");
-		dataset.putWithQuote("label", generalMeanTranslate);
-		dataset.put("borderColor", hex(generalMeanTranslate));
-		dataset.put("backgroundColor", rgba(generalMeanTranslate, OPACITY));
-		dataset.put("borderDash", "["
-				+ Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL, "borderLength")
-				+ ","
-				+ Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL, "borderSpace")
-				+ "]");
-		dataset.put("hidden", !(boolean) Controller.getInstance().getMainConfiguration()
-				.getValue(MainConfiguration.GENERAL, "generalActive"));
-		JSArray results = new JSArray();
-		double cumResult = 0;
-		for (int j = 0; j < rangeDates.size(); j++) {
-			double result = 0;
-			for (E typeLog : typeLogs) {
-				List<Double> times = means.get(typeLog);
-				result += times.get(j);
-			}
-			cumResult += result;
-			results.add(cumResult);
-		}
-		dataset.put("data", results);
-		datasets.add(dataset);
-
-	}
-
-	private <E> void createEnrolledUsersDatasets(List<EnrolledUser> selectedUsers, List<E> typeLogs,
-			Map<EnrolledUser, Map<E, List<Integer>>> userCounts, List<String> rangeDates, JSArray datasets) {
-
 		for (EnrolledUser selectedUser : selectedUsers) {
 			JSObject dataset = new JSObject();
 			dataset.putWithQuote("label", selectedUser.getFullName());
 			dataset.put("borderColor", hex(selectedUser.getId()));
 			dataset.put("backgroundColor", rgba(selectedUser.getId(), OPACITY));
 
-			Map<E, List<Integer>> types = userCounts.get(selectedUser);
+			Map<T, List<Integer>> types = userCounts.get(selectedUser);
 			JSArray results = new JSArray();
-			long result = 0;
+			long cum = 0;
 			for (int j = 0; j < rangeDates.size(); j++) {
-
-				for (E typeLog : typeLogs) {
+				long result = 0;
+				for (T typeLog : typeLogs) {
 					List<Integer> times = types.get(typeLog);
 					result += times.get(j);
 				}
+				cum += result;
 
-				results.add(Long.toString(result));
+				results.add(Double.toString(cum - listMeans.get(j)));
 			}
 			dataset.put("data", results);
 			datasets.add(dataset);
@@ -122,23 +91,39 @@ public class CumLine extends ChartjsLog {
 
 	}
 
+	private <T> List<Double> createMeanList(List<T> typeLogs, Map<T, List<Double>> means, List<String> rangeDates) {
+		List<Double> results = new ArrayList<>();
+		double cum = 0;
+		for (int j = 0; j < rangeDates.size(); j++) {
+			double result = 0;
+			for (T typeLog : typeLogs) {
+				List<Double> times = means.get(typeLog);
+				result += times.get(j);
+			}
+			cum += result;
+			results.add(cum);
+		}
+		return results;
+
+	}
+
 	@Override
 	public String calculateMax() {
 		long maxYAxis = 1L;
 		if (tabUbuLogsComponent.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getComponents().getCumulativeMax(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getComponents().getMeanDifferenceMax(listParticipants.getItems(),
 					listViewComponents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		} else if (tabUbuLogsEvent.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getCumulativeMax(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getMeanDifferenceMax(listParticipants.getItems(),
 					listViewEvents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		} else if (tabUbuLogsSection.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getSections().getCumulativeMax(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getSections().getMeanDifferenceMax(listParticipants.getItems(),
 					listViewSection.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		} else if (tabUbuLogsCourseModule.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getCourseModules().getCumulativeMax(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getCourseModules().getMeanDifferenceMax(listParticipants.getItems(),
 					listViewCourseModule.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		}
@@ -147,13 +132,20 @@ public class CumLine extends ChartjsLog {
 
 	@Override
 	public String getOptions() {
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+
 		JSObject jsObject = getDefaultOptions();
 		jsObject.putWithQuote("typeGraph", "line");
-
-		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",ticks:{suggestedMax:" + getSuggestedMax()
-				+ ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
+		jsObject.put("scales",
+				"{yAxes:[{" + getYScaleLabel() + ",gridLines:{zeroLineColor:"
+						+ colorToRGB(mainConfiguration.getValue(getChartType(), "zeroLineColor")) + ",zeroLineWidth:"
+						+ mainConfiguration.getValue(getChartType(), "zeroLineWidth") + ",zeroLineBorderDash:["
+						+ mainConfiguration.getValue(MainConfiguration.GENERAL, "borderLength") + ","
+						+ mainConfiguration.getValue(MainConfiguration.GENERAL, "borderSpace")
+						+ "]},ticks:{suggestedMax:" + getSuggestedMax() + ",suggestedMin:" + -getSuggestedMax()
+						+ ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
 		jsObject.put("tooltips",
-				"{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+' : '+Math.round(100*a.yLabel)/100}}}");
+				"{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+\" : \"+Math.round(100*a.yLabel)/100}}}");
 		return jsObject.toString();
 	}
 
@@ -171,7 +163,6 @@ public class CumLine extends ChartjsLog {
 		range.add(0, "userid");
 		range.add(1, "fullname");
 
-	
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(range.toArray(new String[0])))) {
 			if (tabUbuLogsComponent.isSelected()) {
 				exportCSV(printer, DataSetComponent.getInstance(),
@@ -189,27 +180,31 @@ public class CumLine extends ChartjsLog {
 		}
 	}
 
-	private <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> selecteds) throws IOException {
+	private <T> void exportCSV(CSVPrinter printer, DataSet<T> dataSet, List<T> selecteds) throws IOException {
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
-		List<?> rangeDates = groupBy.getRange(dateStart, dateEnd);
+		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+		Map<T, List<Double>> means = dataSet.getMeans(groupBy, listParticipants.getItems(), selecteds, dateStart,
+				dateEnd);
+
+		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
+
+		List<Double> listMeans = createMeanList(selecteds, means, rangeDates);
 		for (EnrolledUser selectedUser : enrolledUsers) {
-			Map<E, List<Integer>> types = userCounts.get(selectedUser);
-			List<Long> results = new ArrayList<>();
+			Map<T, List<Integer>> types = userCounts.get(selectedUser);
+			List<Double> results = new ArrayList<>();
 			long result = 0;
 			for (int j = 0; j < rangeDates.size(); j++) {
 
-				for (E type : selecteds) {
+				for (T type : selecteds) {
 					List<Integer> times = types.get(type);
 					result += times.get(j);
 				}
-
-				results.add(result);
+				results.add(result - listMeans.get(j));
 
 			}
 			printer.print(selectedUser.getId());
@@ -230,7 +225,6 @@ public class CumLine extends ChartjsLog {
 		range.add(1, "fullname");
 		range.add(2, "log");
 
-
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(range.toArray(new String[0])))) {
 			if (tabUbuLogsComponent.isSelected()) {
 				exportCSVDesglosed(printer, DataSetComponent.getInstance(),
@@ -248,28 +242,34 @@ public class CumLine extends ChartjsLog {
 		}
 	}
 
-	private <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> selecteds) throws IOException {
+	private <T> void exportCSVDesglosed(CSVPrinter printer, DataSet<T> dataSet, List<T> selecteds) throws IOException {
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
+		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
+		Map<T, List<Double>> means = dataSet.getMeans(groupBy, listParticipants.getItems(), selecteds, dateStart,
+				dateEnd);
 		for (EnrolledUser selectedUser : enrolledUsers) {
-			Map<E, List<Integer>> types = userCounts.get(selectedUser);
+			Map<T, List<Integer>> types = userCounts.get(selectedUser);
 
-			for (E type : selecteds) {
+			for (T type : selecteds) {
 				List<Integer> times = types.get(type);
+				List<Double> meanTimes = means.get(type);
 				printer.print(selectedUser.getId());
 				printer.print(selectedUser.getFullName());
 				printer.print(type);
 				long sum = 0;
-				for (long result : times) {
-					sum += result;
-					printer.print(sum);
+				double meanSum = 0;
+				for (int i = 0; i < times.size(); i++) {
+					sum += times.get(i);
+					meanSum += meanTimes.get(i);
+					printer.print(sum - meanSum);
 				}
 				printer.println();
+
 			}
 
 		}

@@ -1,5 +1,7 @@
 package es.ubu.lsi.ubumonitor.export;
 
+import java.nio.charset.Charset;
+
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.export.builder.CSVCourse;
 import es.ubu.lsi.ubumonitor.export.builder.CSVCourseModule;
@@ -32,30 +34,29 @@ public class CSVExport {
 	/**
 	 * Run the CSV generation.
 	 */
-	public static void run() {
+	public static void run(Charset charset) {
 		DataBase dataBase = Controller.getInstance().getDataBase();
-		generateFile(new CSVEnrolledUser("enrolled_users", dataBase));
-		generateFile(new CSVCourseModule("course_modules", dataBase));
-		generateFile(new CSVLog("logs", dataBase));
-		generateFile(new CSVGrade("grades", dataBase));
-		generateFile(new CSVGroup("groups", dataBase));
-		generateFile(new CSVRole("roles", dataBase));
-		generateFile(new CSVSection("sections", dataBase));
-		generateFile(new CSVCourse("courses",dataBase));
-	}	
+		generateFile(new CSVEnrolledUser("enrolled_users", dataBase), charset);
+		generateFile(new CSVCourseModule("course_modules", dataBase), charset);
+		generateFile(new CSVLog("logs", dataBase), charset);
+		generateFile(new CSVGrade("grades", dataBase), charset);
+		generateFile(new CSVGroup("groups", dataBase), charset);
+		generateFile(new CSVRole("roles", dataBase), charset);
+		generateFile(new CSVSection("sections", dataBase), charset);
+		generateFile(new CSVCourse("courses", dataBase), charset);
+	}
 
 	/**
 	 * Generate a CSV file. Create the header, body and save the csv file.
 	 * 
 	 * @param builder builder
 	 */
-	private static void generateFile(CSVBuilder builder) {
+	private static void generateFile(CSVBuilder builder, Charset charset) {
 		builder.buildHeader();
 		builder.buildBody();
-		builder.writeCSV();
+		builder.writeCSV(charset);
 	}
-	
-	
+
 	private CSVExport() {
 		throw new UnsupportedOperationException();
 	}

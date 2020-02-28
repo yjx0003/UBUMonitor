@@ -350,7 +350,7 @@ public class WelcomeController implements Initializable {
 			previusPasswordWindow();
 		} catch (InvalidClassException | ClassNotFoundException | ClassCastException e) {
 			LOGGER.warn("Se ha modificado una de las clases serializables", e);
-			UtilMethods.errorWindow("Se ha modificado una de las clases serializables", e);
+			UtilMethods.errorWindow(I18n.get("error.invalidcache"), e);
 		}
 
 	}

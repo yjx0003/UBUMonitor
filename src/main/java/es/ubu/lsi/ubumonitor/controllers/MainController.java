@@ -44,6 +44,7 @@ import es.ubu.lsi.ubumonitor.model.ModuleType;
 import es.ubu.lsi.ubumonitor.model.Role;
 import es.ubu.lsi.ubumonitor.model.Section;
 import es.ubu.lsi.ubumonitor.model.Stats;
+import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -1327,7 +1328,8 @@ public class MainController implements Initializable {
 			File selectedDir = dir.showDialog(controller.getStage());
 			if (selectedDir != null) {
 				CSVBuilderAbstract.setPath(selectedDir.toPath());
-				CSVExport.run();
+				Charsets charset = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL, "charset");
+				CSVExport.run(charset.get());
 				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + selectedDir.getAbsolutePath());
 				Config.setProperty("csvFolderPath", selectedDir.getAbsolutePath());
 			}

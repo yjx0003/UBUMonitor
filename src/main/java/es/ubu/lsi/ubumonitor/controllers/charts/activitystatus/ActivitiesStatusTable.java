@@ -1,4 +1,4 @@
-package es.ubu.lsi.ubumonitor.controllers.charts;
+package es.ubu.lsi.ubumonitor.controllers.charts.activitystatus;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -19,6 +19,9 @@ import org.slf4j.LoggerFactory;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.controllers.charts.ChartType;
+import es.ubu.lsi.ubumonitor.controllers.charts.Tabs;
+import es.ubu.lsi.ubumonitor.controllers.charts.Tabulator;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.ActivityCompletion;
 import es.ubu.lsi.ubumonitor.model.CourseModule;

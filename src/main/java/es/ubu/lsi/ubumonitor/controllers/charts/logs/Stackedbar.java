@@ -1,4 +1,4 @@
-package es.ubu.lsi.ubumonitor.controllers.charts;
+package es.ubu.lsi.ubumonitor.controllers.charts.logs;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -9,120 +9,101 @@ import java.util.Map;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.controllers.charts.ChartType;
+import es.ubu.lsi.ubumonitor.controllers.charts.Chartjs;
+import es.ubu.lsi.ubumonitor.controllers.charts.Tabs;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSet;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponent;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
+import es.ubu.lsi.ubumonitor.controllers.datasets.StackedBarDataSet;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
+import es.ubu.lsi.ubumonitor.model.Component;
+import es.ubu.lsi.ubumonitor.model.ComponentEvent;
+import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
-import es.ubu.lsi.ubumonitor.util.JSArray;
+import es.ubu.lsi.ubumonitor.model.Section;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 
-public class MeanDiff extends ChartjsLog {
+public class Stackedbar extends Chartjs {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Stackedbar.class);
 
-	public MeanDiff(MainController mainController) {
-		super(mainController, ChartType.MEAN_DIFF);
+	private StackedBarDataSet<Component> stackedBarComponent = new StackedBarDataSet<>();
+	private StackedBarDataSet<ComponentEvent> stackedBarEvent = new StackedBarDataSet<>();
+	private StackedBarDataSet<Section> stackedBarSection = new StackedBarDataSet<>();
+	private StackedBarDataSet<CourseModule> stackedBarCourseModule = new StackedBarDataSet<>();
+	private String max;
+
+	public Stackedbar(MainController mainController) {
+		super(mainController, ChartType.STACKED_BAR, Tabs.LOGS);
 		useLegend = true;
-		useNegativeValues = true;
 		useGroupBy = true;
 	}
 
 	@Override
-	public <T> String createData(List<T> typeLogs, DataSet<T> dataSet) {
+	public void update() {
+		String stackedbardataset = null;
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		List<EnrolledUser> enrolledUsers = new ArrayList<>(listParticipants.getItems());
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
-		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
-				dateStart, dateEnd);
 
-		Map<T, List<Double>> means = dataSet.getMeans(groupBy, enrolledUsers, typeLogs, dateStart, dateEnd);
+		if (tabUbuLogsComponent.isSelected()) {
 
-		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
+			stackedbardataset = stackedBarComponent.createData(enrolledUsers, selectedUsers,
+					listViewComponents.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart,
+					dateEnd, DataSetComponent.getInstance());
 
-		JSObject data = new JSObject();
+		} else if (tabUbuLogsEvent.isSelected()) {
+			stackedbardataset = stackedBarEvent.createData(enrolledUsers, selectedUsers,
+					listViewEvents.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart, dateEnd,
+					DataSetComponentEvent.getInstance());
 
-		data.put("labels", createLabels(rangeDates));
+		} else if (tabUbuLogsSection.isSelected()) {
+			stackedbardataset = stackedBarSection.createData(enrolledUsers, selectedUsers,
+					listViewSection.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart,
+					dateEnd, DataSetSection.getInstance());
 
-		JSArray datasets = new JSArray();
-		List<Double> listMeans = createMeanList(typeLogs, means, rangeDates);
-		createEnrolledUsersDatasets(selectedUsers, typeLogs, userCounts, listMeans, rangeDates, datasets);
-
-		data.put("datasets", datasets);
-
-		return data.toString();
-	}
-
-	private <T> void createEnrolledUsersDatasets(List<EnrolledUser> selectedUsers, List<T> typeLogs,
-			Map<EnrolledUser, Map<T, List<Integer>>> userCounts, List<Double> listMeans, List<String> rangeDates,
-			JSArray datasets) {
-		for (EnrolledUser selectedUser : selectedUsers) {
-			JSObject dataset = new JSObject();
-			dataset.putWithQuote("label", selectedUser.getFullName());
-			dataset.put("borderColor", hex(selectedUser.getId()));
-			dataset.put("backgroundColor", rgba(selectedUser.getId(), OPACITY));
-
-			Map<T, List<Integer>> types = userCounts.get(selectedUser);
-			JSArray results = new JSArray();
-			long cum = 0;
-			for (int j = 0; j < rangeDates.size(); j++) {
-				long result = 0;
-				for (T typeLog : typeLogs) {
-					List<Integer> times = types.get(typeLog);
-					result += times.get(j);
-				}
-				cum += result;
-
-				results.add(Double.toString(cum - listMeans.get(j)));
-			}
-			dataset.put("data", results);
-			datasets.add(dataset);
-
+		} else if (tabUbuLogsCourseModule.isSelected()) {
+			stackedbardataset = stackedBarCourseModule.createData(enrolledUsers, selectedUsers,
+					listViewCourseModule.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart,
+					dateEnd, DatasSetCourseModule.getInstance());
 		}
 
-	}
+		String options = getOptions();
+		LOGGER.info("Dataset para el stacked bar en JS: {}", stackedbardataset);
+		LOGGER.info("Opciones para el stacked bar en JS: {}", options);
 
-	private <T> List<Double> createMeanList(List<T> typeLogs, Map<T, List<Double>> means, List<String> rangeDates) {
-		List<Double> results = new ArrayList<>();
-		double cum = 0;
-		for (int j = 0; j < rangeDates.size(); j++) {
-			double result = 0;
-			for (T typeLog : typeLogs) {
-				List<Double> times = means.get(typeLog);
-				result += times.get(j);
-			}
-			cum += result;
-			results.add(cum);
-		}
-		return results;
+		webViewChartsEngine.executeScript("updateChartjs(" + stackedbardataset + "," + options + ")");
 
 	}
 
 	@Override
 	public String calculateMax() {
+
 		long maxYAxis = 1L;
 		if (tabUbuLogsComponent.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getComponents().getMeanDifferenceMax(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getComponents().getMaxElement(listParticipants.getItems(),
 					listViewComponents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		} else if (tabUbuLogsEvent.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getMeanDifferenceMax(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getMaxElement(listParticipants.getItems(),
 					listViewEvents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		} else if (tabUbuLogsSection.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getSections().getMeanDifferenceMax(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getSections().getMaxElement(listParticipants.getItems(),
 					listViewSection.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		} else if (tabUbuLogsCourseModule.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getCourseModules().getMeanDifferenceMax(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getCourseModules().getMaxElement(listParticipants.getItems(),
 					listViewCourseModule.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		}
@@ -130,22 +111,38 @@ public class MeanDiff extends ChartjsLog {
 	}
 
 	@Override
-	public String getOptions() {
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+	public int onClick(int userid) {
 
+		EnrolledUser user = Controller.getInstance().getDataBase().getUsers().getById(userid);
+		return listParticipants.getItems().indexOf(user);
+	}
+
+	@Override
+	public String getOptions() {
 		JSObject jsObject = getDefaultOptions();
-		jsObject.putWithQuote("typeGraph", "line");
-		jsObject.put("scales",
-				"{yAxes:[{" + getYScaleLabel() + ",gridLines:{zeroLineColor:"
-						+ colorToRGB(mainConfiguration.getValue(getChartType(), "zeroLineColor")) + ",zeroLineWidth:"
-						+ mainConfiguration.getValue(getChartType(), "zeroLineWidth") + ",zeroLineBorderDash:["
-						+ mainConfiguration.getValue(MainConfiguration.GENERAL, "borderLength") + ","
-						+ mainConfiguration.getValue(MainConfiguration.GENERAL, "borderSpace")
-						+ "]},ticks:{suggestedMax:" + getSuggestedMax() + ",suggestedMin:" + -getSuggestedMax()
-						+ ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
+
+		long suggestedMax = getSuggestedMax();
+
+		jsObject.putWithQuote("typeGraph", "bar");
+
 		jsObject.put("tooltips",
-				"{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+\" : \"+Math.round(100*a.yLabel)/100}}}");
+				"{position:\"nearest\",mode:\"x\",callbacks:{label:function(a,e){return e.datasets[a.datasetIndex].label+\" : \"+Math.round(100*a.yLabel)/100},afterTitle:function(a,e){return e.datasets[a[0].datasetIndex].name}}}");
+		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",stacked:!0,ticks:{suggestedMax:" + suggestedMax
+				+ ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
+		jsObject.put("legend", "{labels:{filter:function(e,t){return\"line\"==t.datasets[e.datasetIndex].type}}}");
+		jsObject.put("onClick",
+				"function(t,a){let e=myChart.getElementAtEvent(t)[0];e&&javaConnector.dataPointSelection(myChart.data.datasets[e._datasetIndex].stack)}");
 		return jsObject.toString();
+	}
+
+	@Override
+	public String getMax() {
+		return max;
+	}
+
+	@Override
+	public void setMax(String max) {
+		this.max = max;
 	}
 
 	@Override
@@ -184,33 +181,25 @@ public class MeanDiff extends ChartjsLog {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
-		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
+		List<?> rangeDates = groupBy.getRange(dateStart, dateEnd);
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<T, List<Double>> means = dataSet.getMeans(groupBy, listParticipants.getItems(), selecteds, dateStart,
-				dateEnd);
-
 		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
-
-		List<Double> listMeans = createMeanList(selecteds, means, rangeDates);
 		for (EnrolledUser selectedUser : enrolledUsers) {
 			Map<T, List<Integer>> types = userCounts.get(selectedUser);
-			List<Double> results = new ArrayList<>();
-			long result = 0;
+			List<Long> results = new ArrayList<>();
 			for (int j = 0; j < rangeDates.size(); j++) {
-
+				long result = 0;
 				for (T type : selecteds) {
 					List<Integer> times = types.get(type);
 					result += times.get(j);
 				}
-				results.add(result - listMeans.get(j));
+				results.add(result);
 
 			}
 			printer.print(selectedUser.getId());
 			printer.print(selectedUser.getFullName());
-
 			printer.printRecord(results);
-
 		}
 	}
 
@@ -249,29 +238,19 @@ public class MeanDiff extends ChartjsLog {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
-		Map<T, List<Double>> means = dataSet.getMeans(groupBy, listParticipants.getItems(), selecteds, dateStart,
-				dateEnd);
 		for (EnrolledUser selectedUser : enrolledUsers) {
 			Map<T, List<Integer>> types = userCounts.get(selectedUser);
 
 			for (T type : selecteds) {
 				List<Integer> times = types.get(type);
-				List<Double> meanTimes = means.get(type);
 				printer.print(selectedUser.getId());
 				printer.print(selectedUser.getFullName());
 				printer.print(type);
-				long sum = 0;
-				double meanSum = 0;
-				for (int i = 0; i < times.size(); i++) {
-					sum += times.get(i);
-					meanSum += meanTimes.get(i);
-					printer.print(sum - meanSum);
-				}
-				printer.println();
-
+				printer.printRecord(times);
 			}
 
 		}
 
 	}
+
 }

@@ -79,7 +79,7 @@
             <WebView fx:id="webView" prefHeight="340.0" prefWidth="476.0" />
             <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="1">
               <tabs>
-                <Tab text="JavaFX">
+                <Tab text="Tabla">
                      <content>
                         <BorderPane prefHeight="200.0" prefWidth="200.0">
                            <top>
@@ -99,9 +99,20 @@
                         </BorderPane>
                      </content>
                 </Tab>
-                <Tab text="Tabulator">
+                <Tab text="Renombrado">
                      <content>
-                        <WebView prefHeight="200.0" prefWidth="200.0" />
+                        <BorderPane prefHeight="200.0" prefWidth="200.0">
+                           <center>
+                              <PropertySheet fx:id="propertySheetRename" modeSwitcherVisible="false" searchBoxVisible="false" BorderPane.alignment="CENTER" />
+                           </center>
+                           <bottom>
+                              <Button fx:id="buttonRename" mnemonicParsing="false" text="Renombrar" BorderPane.alignment="CENTER">
+                                 <BorderPane.margin>
+                                    <Insets bottom="20.0" />
+                                 </BorderPane.margin>
+                              </Button>
+                           </bottom>
+                        </BorderPane>
                      </content>
                 </Tab>
               </tabs>

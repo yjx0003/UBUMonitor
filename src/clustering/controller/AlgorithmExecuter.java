@@ -1,7 +1,7 @@
 package clustering.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,6 +12,7 @@ import org.apache.commons.math3.ml.clustering.Clusterer;
 import com.jujutsu.tsne.PrincipalComponentAnalysis;
 
 import clustering.controller.collector.DataCollector;
+import clustering.data.ClusterWrapper;
 import clustering.data.UserData;
 import model.EnrolledUser;
 
@@ -28,7 +29,7 @@ public class AlgorithmExecuter {
 		dataCollectors.forEach(collector -> collector.collect(usersData));
 	}
 
-	public List<List<UserData>> execute(int dimension) {
+	public List<ClusterWrapper> execute(int dimension) {
 		PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
 		double[][] matrix = usersData.stream().map(UserData::getPoint).toArray(double[][]::new);
 		if (dimension > 0) {
@@ -38,14 +39,13 @@ public class AlgorithmExecuter {
 			}
 		}
 		List<? extends Cluster<UserData>> clusters = clusterer.cluster(usersData);
-		List<List<UserData>> users = new ArrayList<>();
+		List<ClusterWrapper> users = new ArrayList<>();
 		for (int i = 0; i < clusters.size(); i++) {
-			List<UserData> list = new ArrayList<>();
+			ClusterWrapper clusterWrapper = new ClusterWrapper(String.valueOf(i), clusters.get(i));
 			for (UserData user : clusters.get(i).getPoints()) {
-				list.add(user);
 				user.setCluster(i);
 			}
-			users.add(list);
+			users.add(clusterWrapper);
 		}
 		return users;
 	}
@@ -58,18 +58,18 @@ public class AlgorithmExecuter {
 		return usersData;
 	}
 
-	public static List<Map<UserData, double[]>> clustersTo2D(List<List<UserData>> clusters) {
-		double[][] matrix = clusters.stream().flatMap(List::stream).map(UserData::getPoint).toArray(double[][]::new);
+	public static List<Map<UserData, double[]>> clustersTo2D(List<ClusterWrapper> clusters) {
+		double[][] matrix = clusters.stream().flatMap(ClusterWrapper::stream).map(UserData::getPoint)
+				.toArray(double[][]::new);
 		PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
 		List<Map<UserData, double[]>> points = new ArrayList<>();
 		matrix = pca.pca(matrix, 2);
-		
+
 		int i = 0;
 		for (List<UserData> list : clusters) {
-			Map<UserData, double[]> map = new HashMap<>();
+			Map<UserData, double[]> map = new LinkedHashMap<>();
 			for (UserData userData : list) {
-				double[] point = matrix[i++];
-				map.put(userData, point);
+				map.put(userData, matrix[i++]);
 			}
 			points.add(map);
 		}

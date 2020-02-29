@@ -25,14 +25,15 @@ import clustering.controller.collector.ActivityCollector;
 import clustering.controller.collector.DataCollector;
 import clustering.controller.collector.GradesCollector;
 import clustering.controller.collector.LogCollector;
+import clustering.data.ClusterWrapper;
 import clustering.data.UserData;
+import clustering.util.SimplePropertySheetItem;
 import controllers.I18n;
 import controllers.MainController;
 import controllers.datasets.DataSetComponent;
 import controllers.datasets.DataSetComponentEvent;
 import controllers.datasets.DataSetSection;
 import controllers.datasets.DatasSetCourseModule;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -104,7 +105,7 @@ public class ClusteringController {
 	private TableColumn<UserData, String> columnName;
 
 	@FXML
-	private TableColumn<UserData, Number> columnCluster;
+	private TableColumn<UserData, String> columnCluster;
 
 	@FXML
 	private CheckBox checkBoxReduce;
@@ -112,10 +113,18 @@ public class ClusteringController {
 	@FXML
 	private TextField textFieldReduce;
 
+	@FXML
+	private PropertySheet propertySheetRename;
+
+	@FXML
+	private Button buttonRename;
+
 	private GradesCollector gradesCollector;
 	private ActivityCollector activityCollector;
 
 	private Connector connector;
+
+	private List<ClusterWrapper> clusters;
 
 	private static final Callback<Item, PropertyEditor<?>> DEFAULT_PROPERTY_EDITOR_FACTORY = new DefaultPropertyEditorFactory();
 
@@ -193,7 +202,8 @@ public class ClusteringController {
 		columnImage.setCellValueFactory(c -> new SimpleObjectProperty<>(new ImageView(new Image(
 				new ByteArrayInputStream(c.getValue().getEnrolledUser().getImageBytes()), 50, 50, true, false))));
 		columnName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEnrolledUser().getFullName()));
-		columnCluster.setCellValueFactory(c -> new SimpleIntegerProperty(c.getValue().getCluster()));
+		columnCluster
+				.setCellValueFactory(c -> new SimpleStringProperty(clusters.get(c.getValue().getCluster()).getName()));
 	}
 
 	private void execute() {
@@ -215,13 +225,14 @@ public class ClusteringController {
 		AlgorithmExecuter algorithmExecuter = new AlgorithmExecuter(clusterer, users, collectors);
 
 		int dim = checkBoxReduce.isSelected() ? Integer.valueOf(textFieldReduce.getText()) : 0;
-		List<List<UserData>> clusters = algorithmExecuter.execute(dim);
+		clusters = algorithmExecuter.execute(dim);
 		connector.setClusters(clusters);
 
 		LOGGER.debug("Parametros: {}", algorithm.getParameters());
-		LOGGER.debug(clusters.toString());
+		LOGGER.debug("Clusters: {}", clusters);
 
-		updateTable(clusters);
+		updateTable();
+		updateRename();
 
 		ObservableList<Integer> items = checkComboBoxCluster.getItems();
 		items.setAll(IntStream.range(-1, clusters.size()).boxed().collect(Collectors.toList()));
@@ -233,10 +244,24 @@ public class ClusteringController {
 				checkComboBoxCluster.getCheckModel().clearChecks();
 			}
 		});
-		webEngine.executeScript("updateChart(" + getChartData(clusters) + ")");
+		updateChart();
 	}
 
-	private void updateTable(List<List<UserData>> clusters) {
+	private void updateRename() {
+		List<PropertySheet.Item> items = IntStream.range(0, clusters.size())
+				.mapToObj(i -> new SimplePropertySheetItem(String.valueOf(i), String.valueOf(i)))
+				.collect(Collectors.toList());
+		propertySheetRename.getItems().setAll(items);
+		buttonRename.setOnAction(e -> {
+			for (int i = 0; i < items.size(); i++) {
+				clusters.get(i).setName(items.get(i).getValue().toString());
+			}
+			updateChart();
+			updateTable();
+		});
+	}
+
+	private void updateTable() {
 		List<UserData> users = clusters.stream().flatMap(List::stream).collect(Collectors.toList());
 		FilteredList<UserData> filteredList = new FilteredList<>(FXCollections.observableList(users));
 		SortedList<UserData> sortedList = new SortedList<>(filteredList);
@@ -250,22 +275,24 @@ public class ClusteringController {
 				if (value.equals(-1))
 					return I18n.get("text.all");
 				Long n = count.get(value);
-				return value + "  (" + (n == null ? 0 : n) + "/" + clusters.size() + ")";
+				return clusters.get(value).getName() + "  (" + (n == null ? 0 : n) + "/"
+						+ count.values().stream().mapToLong(Long::longValue).sum() + ")";
 			}
 		});
 		checkComboBoxCluster.getCheckModel().getCheckedItems()
 				.addListener((ListChangeListener.Change<? extends Integer> c) -> filteredList.setPredicate(
 						o -> checkComboBoxCluster.getCheckModel().getCheckedItems().contains(o.getCluster())));
+		tableView.refresh();
 	}
 
-	private String getChartData(List<List<UserData>> clusters) {
+	private void updateChart() {
 		List<Map<UserData, double[]>> points = AlgorithmExecuter.clustersTo2D(clusters);
 		LOGGER.debug("Puntos: {}", points);
 		JSObject root = new JSObject();
 		JSArray datasets = new JSArray();
 		for (int i = 0; i < points.size(); i++) {
 			JSObject group = new JSObject();
-			group.put("label", i);
+			group.putWithQuote("label", clusters.get(i).getName());
 			group.put("backgroundColor", "colorHash.hex(" + i * i + ")");
 			group.put("pointRadius", 6);
 			group.put("pointHoverRadius", 8);
@@ -282,7 +309,7 @@ public class ClusteringController {
 		}
 		root.put("datasets", datasets);
 		LOGGER.debug("Data: {}", root);
-		return root.toString();
+		webEngine.executeScript("updateChart(" + root + ")");
 	}
 
 	/**
@@ -386,7 +413,7 @@ public class ClusteringController {
 	/**
 	 * @return the columnCluster
 	 */
-	public TableColumn<UserData, Number> getColumnCluster() {
+	public TableColumn<UserData, String> getColumnCluster() {
 		return columnCluster;
 	}
 

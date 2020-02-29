@@ -14,6 +14,12 @@
 <script type="text/javascript">
 	var colorHash = new ColorHash();
 	var ctx = document.getElementById("myChart");
+	Chart.defaults.global.onClick = function (event, array) {
+        let element = myChart.getElementsAtEventForMode(event, "point", { intersect: false });
+        if (element.length > 0) {
+        	javaConnector.selectUser(element[0]._datasetIndex, element[0]._index);
+        }
+    }
 	var myChart = new Chart(
 			ctx,
 			{
@@ -29,8 +35,9 @@
 						callbacks : {
 							label : function(tooltipItem, data) {
 								var label = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].user;
-								return label + ': (' + tooltipItem.xLabel.toFixed(2)
-										+ ', ' + tooltipItem.yLabel.toFixed(2) + ')';
+								return label + ': ('
+										+ tooltipItem.xLabel.toFixed(2) + ', '
+										+ tooltipItem.yLabel.toFixed(2) + ')';
 							}
 						}
 					},

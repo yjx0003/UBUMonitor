@@ -21,61 +21,33 @@ public class AlgorithmExecuter {
 
 	private List<UserData> usersData;
 
-	private List<EnrolledUser> enroledUsers;
-
-	private int numClusters;
-
-	private List<Map<UserData, double[]>> pointsList;
-
-	public AlgorithmExecuter(Clusterer<UserData> clusterer, List<EnrolledUser> enrolledUsers) {
+	public AlgorithmExecuter(Clusterer<UserData> clusterer, List<EnrolledUser> enrolledUsers,
+			List<DataCollector> dataCollectors) {
 		this.clusterer = clusterer;
-		this.enroledUsers = enrolledUsers;
 		usersData = enrolledUsers.stream().map(UserData::new).collect(Collectors.toList());
-		pointsList = new ArrayList<>();
+		dataCollectors.forEach(collector -> collector.collect(usersData));
 	}
 
-	public List<UserData> execute(List<DataCollector> collectors) {
-		return execute(collectors, 0);
-	}
-
-	public List<UserData> execute(List<DataCollector> collectors, int n) {
-		for (DataCollector dataCollector : collectors) {
-			dataCollector.collect(usersData);
-		}
+	public List<List<UserData>> execute(int dimension) {
 		PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
 		double[][] matrix = usersData.stream().map(UserData::getPoint).toArray(double[][]::new);
-		if (n > 0) {
-			matrix = pca.pca(matrix, n);
+		if (dimension > 0) {
+			matrix = pca.pca(matrix, dimension);
 			for (int i = 0; i < matrix.length; i++) {
 				usersData.get(i).setData(matrix[i]);
 			}
 		}
 		List<? extends Cluster<UserData>> clusters = clusterer.cluster(usersData);
-		List<UserData> users = new ArrayList<>();
+		List<List<UserData>> users = new ArrayList<>();
 		for (int i = 0; i < clusters.size(); i++) {
+			List<UserData> list = new ArrayList<>();
 			for (UserData user : clusters.get(i).getPoints()) {
-				users.add(user);
+				list.add(user);
 				user.setCluster(i);
 			}
+			users.add(list);
 		}
-		usersData = users;
-		numClusters = clusters.size();
-		matrix = usersData.stream().map(UserData::getPoint).toArray(double[][]::new);
-		
-		double[][] points = pca.pca(matrix, 2);
-		for (Cluster<UserData> clusterUsers : clusters) {
-			Map<UserData, double[]> group = new HashMap<>();
-			for (UserData user : clusterUsers.getPoints()) {
-				double[] point = points[usersData.indexOf(user)];
-				group.put(user, point);
-			}
-			pointsList.add(group);
-		}
-		return usersData;
-	}
-	
-	public List<Map<UserData, double[]>> getPointsList() {
-		return pointsList;
+		return users;
 	}
 
 	public Clusterer<UserData> getClusterer() {
@@ -86,11 +58,21 @@ public class AlgorithmExecuter {
 		return usersData;
 	}
 
-	public List<EnrolledUser> getEnroledUsers() {
-		return enroledUsers;
-	}
-
-	public int getNumClusters() {
-		return numClusters;
+	public static List<Map<UserData, double[]>> clustersTo2D(List<List<UserData>> clusters) {
+		double[][] matrix = clusters.stream().flatMap(List::stream).map(UserData::getPoint).toArray(double[][]::new);
+		PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
+		List<Map<UserData, double[]>> points = new ArrayList<>();
+		matrix = pca.pca(matrix, 2);
+		
+		int i = 0;
+		for (List<UserData> list : clusters) {
+			Map<UserData, double[]> map = new HashMap<>();
+			for (UserData userData : list) {
+				double[] point = matrix[i++];
+				map.put(userData, point);
+			}
+			points.add(map);
+		}
+		return points;
 	}
 }

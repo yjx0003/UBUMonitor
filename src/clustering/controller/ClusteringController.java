@@ -40,6 +40,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -114,6 +115,8 @@ public class ClusteringController {
 	private GradesCollector gradesCollector;
 	private ActivityCollector activityCollector;
 
+	private Connector connector;
+
 	private static final Callback<Item, PropertyEditor<?>> DEFAULT_PROPERTY_EDITOR_FACTORY = new DefaultPropertyEditorFactory();
 
 	public void init(MainController controller) {
@@ -122,9 +125,18 @@ public class ClusteringController {
 		initAlgorithms();
 		initCollectors();
 		initTable();
+		connector = new Connector(this);
 		webView.setContextMenuEnabled(false);
 		webEngine = webView.getEngine();
+
+		webEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
+			if (Worker.State.SUCCEEDED != newState)
+				return;
+			netscape.javascript.JSObject window = (netscape.javascript.JSObject) webEngine.executeScript("window");
+			window.setMember("javaConnector", connector);
+		});
 		webEngine.load(getClass().getResource("/graphics/ClusterChart.html").toExternalForm());
+
 	}
 
 	private void initAlgorithms() {
@@ -189,7 +201,6 @@ public class ClusteringController {
 		Algorithm algorithm = algorithmList.getSelectionModel().getSelectedItem();
 		Clusterer<UserData> clusterer = algorithm.getClusterer();
 
-		AlgorithmExecuter executer = new AlgorithmExecuter(clusterer, users);
 		List<DataCollector> collectors = new ArrayList<>();
 		if (checkBoxLogs.isSelected()) {
 			collectors.addAll(checkComboBoxLogs.getCheckModel().getCheckedItems());
@@ -200,19 +211,20 @@ public class ClusteringController {
 		if (checkBoxActivity.isSelected()) {
 			collectors.add(activityCollector);
 		}
-		List<UserData> clusters;
-		if (checkBoxReduce.isSelected()) {
-			clusters = executer.execute(collectors, Integer.valueOf(textFieldReduce.getText()));
-		} else {
-			clusters = executer.execute(collectors);
-		}
+
+		AlgorithmExecuter algorithmExecuter = new AlgorithmExecuter(clusterer, users, collectors);
+
+		int dim = checkBoxReduce.isSelected() ? Integer.valueOf(textFieldReduce.getText()) : 0;
+		List<List<UserData>> clusters = algorithmExecuter.execute(dim);
+		connector.setClusters(clusters);
+
 		LOGGER.debug("Parametros: {}", algorithm.getParameters());
 		LOGGER.debug(clusters.toString());
 
 		updateTable(clusters);
 
 		ObservableList<Integer> items = checkComboBoxCluster.getItems();
-		items.setAll(IntStream.range(-1, executer.getNumClusters()).boxed().collect(Collectors.toList()));
+		items.setAll(IntStream.range(-1, clusters.size()).boxed().collect(Collectors.toList()));
 		checkComboBoxCluster.getCheckModel().checkAll();
 		checkComboBoxCluster.getItemBooleanProperty(0).addListener((obs, oldValue, newValue) -> {
 			if (newValue.booleanValue()) {
@@ -221,15 +233,16 @@ public class ClusteringController {
 				checkComboBoxCluster.getCheckModel().clearChecks();
 			}
 		});
-		webEngine.executeScript("updateChart(" + getChartData(executer.getPointsList()) + ")");
+		webEngine.executeScript("updateChart(" + getChartData(clusters) + ")");
 	}
 
-	private void updateTable(List<UserData> clusters) {
-		FilteredList<UserData> filteredList = new FilteredList<>(FXCollections.observableList(clusters));
+	private void updateTable(List<List<UserData>> clusters) {
+		List<UserData> users = clusters.stream().flatMap(List::stream).collect(Collectors.toList());
+		FilteredList<UserData> filteredList = new FilteredList<>(FXCollections.observableList(users));
 		SortedList<UserData> sortedList = new SortedList<>(filteredList);
 		sortedList.comparatorProperty().bind(tableView.comparatorProperty());
 		tableView.setItems(sortedList);
-		Map<Integer, Long> count = clusters.stream()
+		Map<Integer, Long> count = users.stream()
 				.collect(Collectors.groupingBy(UserData::getCluster, Collectors.counting()));
 		checkComboBoxCluster.setConverter(new IntegerStringConverter() {
 			@Override
@@ -245,13 +258,15 @@ public class ClusteringController {
 						o -> checkComboBoxCluster.getCheckModel().getCheckedItems().contains(o.getCluster())));
 	}
 
-	private String getChartData(List<Map<UserData, double[]>> points) {
+	private String getChartData(List<List<UserData>> clusters) {
+		List<Map<UserData, double[]>> points = AlgorithmExecuter.clustersTo2D(clusters);
+		LOGGER.debug("Puntos: {}", points);
 		JSObject root = new JSObject();
 		JSArray datasets = new JSArray();
 		for (int i = 0; i < points.size(); i++) {
 			JSObject group = new JSObject();
 			group.put("label", i);
-			group.put("backgroundColor", "colorHash.hex("+ i * i +")");
+			group.put("backgroundColor", "colorHash.hex(" + i * i + ")");
 			group.put("pointRadius", 6);
 			group.put("pointHoverRadius", 8);
 			JSArray data = new JSArray();
@@ -266,6 +281,141 @@ public class ClusteringController {
 			datasets.add(group);
 		}
 		root.put("datasets", datasets);
+		LOGGER.debug("Data: {}", root);
 		return root.toString();
 	}
+
+	/**
+	 * @return the mainController
+	 */
+	public MainController getMainController() {
+		return mainController;
+	}
+
+	/**
+	 * @return the propertySheet
+	 */
+	public PropertySheet getPropertySheet() {
+		return propertySheet;
+	}
+
+	/**
+	 * @return the algorithmList
+	 */
+	public ListView<Algorithm> getAlgorithmList() {
+		return algorithmList;
+	}
+
+	/**
+	 * @return the buttonExecute
+	 */
+	public Button getButtonExecute() {
+		return buttonExecute;
+	}
+
+	/**
+	 * @return the webView
+	 */
+	public WebView getWebView() {
+		return webView;
+	}
+
+	/**
+	 * @return the webEngine
+	 */
+	public WebEngine getWebEngine() {
+		return webEngine;
+	}
+
+	/**
+	 * @return the tableView
+	 */
+	public TableView<UserData> getTableView() {
+		return tableView;
+	}
+
+	/**
+	 * @return the checkComboBoxLogs
+	 */
+	public CheckComboBox<DataCollector> getCheckComboBoxLogs() {
+		return checkComboBoxLogs;
+	}
+
+	/**
+	 * @return the checkBoxLogs
+	 */
+	public CheckBox getCheckBoxLogs() {
+		return checkBoxLogs;
+	}
+
+	/**
+	 * @return the checkBoxGrades
+	 */
+	public CheckBox getCheckBoxGrades() {
+		return checkBoxGrades;
+	}
+
+	/**
+	 * @return the checkBoxActivity
+	 */
+	public CheckBox getCheckBoxActivity() {
+		return checkBoxActivity;
+	}
+
+	/**
+	 * @return the checkComboBoxCluster
+	 */
+	public CheckComboBox<Integer> getCheckComboBoxCluster() {
+		return checkComboBoxCluster;
+	}
+
+	/**
+	 * @return the columnImage
+	 */
+	public TableColumn<UserData, ImageView> getColumnImage() {
+		return columnImage;
+	}
+
+	/**
+	 * @return the columnName
+	 */
+	public TableColumn<UserData, String> getColumnName() {
+		return columnName;
+	}
+
+	/**
+	 * @return the columnCluster
+	 */
+	public TableColumn<UserData, Number> getColumnCluster() {
+		return columnCluster;
+	}
+
+	/**
+	 * @return the checkBoxReduce
+	 */
+	public CheckBox getCheckBoxReduce() {
+		return checkBoxReduce;
+	}
+
+	/**
+	 * @return the textFieldReduce
+	 */
+	public TextField getTextFieldReduce() {
+		return textFieldReduce;
+	}
+
+	/**
+	 * @return the gradesCollector
+	 */
+	public GradesCollector getGradesCollector() {
+		return gradesCollector;
+	}
+
+	/**
+	 * @return the activityCollector
+	 */
+	public ActivityCollector getActivityCollector() {
+		return activityCollector;
+	}
+
 }

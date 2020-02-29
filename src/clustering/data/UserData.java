@@ -13,10 +13,11 @@ public class UserData implements Clusterable {
 
 	private EnrolledUser user;
 	private List<Double> data;
-	private int cluster = -1;
+	private int cluster;
 
 	public UserData(EnrolledUser user) {
 		this.user = user;
+		cluster = -1;
 		data = new ArrayList<>();
 	}
 
@@ -27,7 +28,7 @@ public class UserData implements Clusterable {
 	public void addDatum(String name, double datum) {
 		data.add(Double.isNaN(datum) ? 0 : datum);
 	}
-	
+
 	public void setData(double[] data) {
 		this.data = Arrays.stream(data).boxed().collect(Collectors.toList());
 	}
@@ -64,6 +65,5 @@ public class UserData implements Clusterable {
 		UserData other = (UserData) obj;
 		return user.equals(other.user);
 	}
-	
-	
+
 }

@@ -17,7 +17,6 @@ public class UserData implements Clusterable {
 
 	public UserData(EnrolledUser user) {
 		this.user = user;
-		cluster = -1;
 		data = new ArrayList<>();
 	}
 

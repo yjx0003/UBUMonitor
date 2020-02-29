@@ -189,7 +189,7 @@ public class DownloadLogController {
 	public Response downloadLog(String dateSeconds) {
 		try {
 			String url = host + "/report/log/index.php?lang=en&download=csv&id=" + idCourse + "&date=" + dateSeconds
-					+ "&modid=&chooselog=1&logreader=logstore_standard";
+					+ "&modid=&chooselog=1&logreader=logstore_standard&origin=web";
 			LOGGER.info("Descargando log con la URL {}: ", url);
 			return Connection.getResponse(url);
 

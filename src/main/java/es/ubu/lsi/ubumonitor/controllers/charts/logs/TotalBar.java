@@ -23,7 +23,6 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 
-
 public class TotalBar extends ChartjsLog {
 
 	public TotalBar(MainController mainController) {
@@ -32,15 +31,14 @@ public class TotalBar extends ChartjsLog {
 		useLegend = true;
 	}
 
-
 	@Override
 	public String getOptions() {
 		JSObject jsObject = getDefaultOptions();
-		
+
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
-		jsObject.putWithQuote("typeGraph", useHorizontal? "horizontalBar": "bar");
-		String xLabel = useHorizontal ? getYScaleLabel() :getXScaleLabel();
+		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBar" : "bar");
+		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
 		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
 		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{stepSize:0}}],xAxes:[{" + xLabel + "}]}");
 		jsObject.put("onClick", null);
@@ -69,14 +67,14 @@ public class TotalBar extends ChartjsLog {
 		}
 
 		JSObject data = new JSObject();
-		
+
 		JSObject dataset = new JSObject();
 		dataset.putWithQuote("label", I18n.get("text.total"));
 		JSArray labels = new JSArray();
 		JSArray dataArray = new JSArray();
 		JSArray backgrounColor = new JSArray();
 		JSArray borderColor = new JSArray();
-		
+
 		for (int i = 0; i < typeLogs.size(); i++) {
 			E typeLog = typeLogs.get(i);
 			labels.addWithQuote(dataSet.translate(typeLog));
@@ -92,7 +90,7 @@ public class TotalBar extends ChartjsLog {
 		data.put("datasets", "[" + dataset + "]");
 		return data.toString();
 	}
-	
+
 	@Override
 	public String getXAxisTitle() {
 		return mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
@@ -108,7 +106,7 @@ public class TotalBar extends ChartjsLog {
 		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
 		Map<EnrolledUser, Map<E, List<Integer>>> map = dataSet.getUserCounts(groupBy, selectedUsers, typeLogs,
 				dateStart, dateEnd);
-		
+
 		List<DescriptiveStatistics> result = Stream.generate(DescriptiveStatistics::new).limit(typeLogs.size())
 				.collect(Collectors.toList());
 		for (Map<E, List<Integer>> values : map.values()) {
@@ -121,21 +119,19 @@ public class TotalBar extends ChartjsLog {
 		}
 		for (int i = 0; i < typeLogs.size(); i++) {
 			E typeLog = typeLogs.get(i);
-			printer.printRecord(typeLog.hashCode(), typeLog);
+			printer.printRecord(typeLog.hashCode(), typeLog, result.get(i).getSum());
 		}
-		
-	}
 
+	}
 
 	@Override
 	protected String[] getCSVHeader() {
 		String selectedTab = mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
-		return new String[] {selectedTab + "_id", selectedTab};
+		return new String[] { selectedTab + "_id", selectedTab, "logs" };
 	}
 
 	@Override
-	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs)
-			throws IOException {
+	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 
 		LocalDate dateStart = datePickerStart.getValue();
@@ -143,8 +139,8 @@ public class TotalBar extends ChartjsLog {
 		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
 		Map<EnrolledUser, Map<E, List<Integer>>> map = dataSet.getUserCounts(groupBy, selectedUsers, typeLogs,
 				dateStart, dateEnd);
-		for(EnrolledUser enrolledUser:selectedUsers) {
-			for(E typeLog: typeLogs) {
+		for (EnrolledUser enrolledUser : selectedUsers) {
+			for (E typeLog : typeLogs) {
 				List<Integer> list = map.get(enrolledUser).get(typeLog);
 				int sum = list.stream().mapToInt(Integer::intValue).sum();
 				printer.printRecord(enrolledUser.getId(), enrolledUser.getFullName(), typeLog.hashCode(), typeLog, sum);
@@ -155,7 +151,7 @@ public class TotalBar extends ChartjsLog {
 	@Override
 	protected String[] getCSVDesglosedHeader() {
 		String selectedTab = mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
-		return new String[] {"userid", "fullname", selectedTab + "_id", selectedTab, "logs"};
+		return new String[] { "userid", "fullname", selectedTab + "_id", selectedTab, "logs" };
 	}
 
 }

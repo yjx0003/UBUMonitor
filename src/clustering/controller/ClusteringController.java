@@ -1,6 +1,7 @@
 package clustering.controller;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,9 +28,11 @@ import clustering.controller.collector.GradesCollector;
 import clustering.controller.collector.LogCollector;
 import clustering.data.ClusterWrapper;
 import clustering.data.UserData;
+import clustering.util.CSVClustering;
 import clustering.util.SimplePropertySheetItem;
 import controllers.I18n;
 import controllers.MainController;
+import controllers.configuration.Config;
 import controllers.datasets.DataSetComponent;
 import controllers.datasets.DataSetComponentEvent;
 import controllers.datasets.DataSetSection;
@@ -54,12 +57,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.DirectoryChooser;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import model.EnrolledUser;
 import util.JSArray;
 import util.JSObject;
+import util.UtilMethods;
 
 public class ClusteringController {
 
@@ -72,9 +77,6 @@ public class ClusteringController {
 
 	@FXML
 	private ListView<Algorithm> algorithmList;
-
-	@FXML
-	private Button buttonExecute;
 
 	@FXML
 	private WebView webView;
@@ -130,7 +132,6 @@ public class ClusteringController {
 
 	public void init(MainController controller) {
 		mainController = controller;
-		buttonExecute.setOnAction(e -> execute());
 		initAlgorithms();
 		initCollectors();
 		initTable();
@@ -206,6 +207,7 @@ public class ClusteringController {
 				.setCellValueFactory(c -> new SimpleStringProperty(clusters.get(c.getValue().getCluster()).getName()));
 	}
 
+	@FXML
 	private void execute() {
 		List<EnrolledUser> users = mainController.getListParticipants().getSelectionModel().getSelectedItems();
 		Algorithm algorithm = algorithmList.getSelectionModel().getSelectedItem();
@@ -312,6 +314,25 @@ public class ClusteringController {
 		webEngine.executeScript("updateChart(" + root + ")");
 	}
 
+	public void export() {
+		try {
+			DirectoryChooser directoryChooser = new DirectoryChooser();
+			File file = new File(Config.getProperty("csvFolderPath", "./"));
+			if (file.exists() && file.isDirectory()) {
+				directoryChooser.setInitialDirectory(file);
+			}
+
+			File selectedDir = directoryChooser.showDialog(mainController.getController().getStage());
+			if (selectedDir != null) {
+				CSVClustering.export(clusters, selectedDir.toPath());
+				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + selectedDir.getAbsolutePath());
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error al exportar ficheros CSV.", e);
+			UtilMethods.errorWindow(I18n.get("error.savecsvfiles"), e);
+		}
+	}
+
 	/**
 	 * @return the mainController
 	 */
@@ -331,13 +352,6 @@ public class ClusteringController {
 	 */
 	public ListView<Algorithm> getAlgorithmList() {
 		return algorithmList;
-	}
-
-	/**
-	 * @return the buttonExecute
-	 */
-	public Button getButtonExecute() {
-		return buttonExecute;
 	}
 
 	/**

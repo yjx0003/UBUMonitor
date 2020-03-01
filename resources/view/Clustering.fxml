@@ -36,7 +36,7 @@
          <children>
 
             <PropertySheet fx:id="propertySheet" modeSwitcherVisible="false" prefHeight="59.0" prefWidth="137.0" searchBoxVisible="false" GridPane.columnIndex="1" GridPane.rowSpan="4" />
-            <Button fx:id="buttonExecute" mnemonicParsing="false" text="Button" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+            <Button mnemonicParsing="false" onAction="#execute" text="Button" GridPane.columnIndex="3" GridPane.rowIndex="2" />
             <CheckBox fx:id="checkBoxGrades" mnemonicParsing="false" text="%tab.grades" GridPane.columnIndex="2" GridPane.rowIndex="2">
                <GridPane.margin>
                   <Insets left="10.0" />
@@ -82,9 +82,6 @@
                 <Tab text="Tabla">
                      <content>
                         <BorderPane prefHeight="200.0" prefWidth="200.0">
-                           <top>
-                              <CheckComboBox fx:id="checkComboBoxCluster" title="Clusters" BorderPane.alignment="BOTTOM_LEFT" />
-                           </top>
                            <center>
                               <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                  <columns>
@@ -96,6 +93,21 @@
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                  </columnResizePolicy></TableView>
                            </center>
+                           <top>
+                              <GridPane BorderPane.alignment="CENTER">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                  <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <CheckComboBox fx:id="checkComboBoxCluster" title="Clusters" />
+                                    <Button fx:id="buttonExport" mnemonicParsing="false" onAction="#export" text="Export" GridPane.columnIndex="1" />
+                                 </children>
+                              </GridPane>
+                           </top>
                         </BorderPane>
                      </content>
                 </Tab>

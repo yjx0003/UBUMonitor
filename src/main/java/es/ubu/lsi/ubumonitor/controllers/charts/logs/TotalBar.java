@@ -171,13 +171,13 @@ public class TotalBar extends ChartjsLog {
 				printer.print(typeLog.hashCode());
 			}
 			printer.print(typeLog);
-			printer.print(selectedUsersStats.get(i).getSum());
+			printer.print((int) selectedUsersStats.get(i).getSum());
 			if (generalActive) {
-				printer.print(filteredUsersStats.get(i).getSum());
+				printer.print((int) filteredUsersStats.get(i).getSum());
 			}
 			if (groupActive) {
 				for (List<DescriptiveStatistics> groupStat : groupStats) {
-					printer.print(groupStat.get(i).getSum());
+					printer.print((int) groupStat.get(i).getSum());
 				}
 			}
 
@@ -215,21 +215,18 @@ public class TotalBar extends ChartjsLog {
 	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		List<EnrolledUser> filteredUsers = listParticipants.getItems();
-		List<EnrolledUser> users = Controller.getInstance().getActualCourse().getEnrolledUsers()
-				.stream()
-				.sorted(EnrolledUser.NAME_COMPARATOR)
-				.collect(Collectors.toList());
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
-		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
-		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
 		
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		
+		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
+
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
-		Map<EnrolledUser, Map<E, List<Integer>>> map = dataSet.getUserCounts(groupBy, users, typeLogs,
-				dateStart, dateEnd);
+		Map<EnrolledUser, Map<E, List<Integer>>> map = dataSet.getUserCounts(groupBy, filteredUsers, typeLogs, dateStart,
+				dateEnd);
 		boolean hasId = hasId();
-		for (EnrolledUser enrolledUser : users) {
+		for (EnrolledUser enrolledUser : filteredUsers) {
 			for (E typeLog : typeLogs) {
 				List<Integer> list = map.get(enrolledUser).get(typeLog);
 				int sum = list.stream().mapToInt(Integer::intValue).sum();
@@ -239,14 +236,12 @@ public class TotalBar extends ChartjsLog {
 					printer.print(typeLog.hashCode());
 				}
 				printer.print(typeLog);
-				printer.print(sum);
-				printer.print(selectedUsers.contains(enrolledUser));
-				if(generalActive) {
-					printer.print(filteredUsers.contains(enrolledUser));
-				}
-				if(groupActive) {
-					for(Group group: slcGroup.getCheckModel().getCheckedItems()) {
-						printer.print(group.contains(enrolledUser));
+				printer.print((int) sum);
+				printer.print(selectedUsers.contains(enrolledUser) ? 1 : 0);
+				
+				if (groupActive) {
+					for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
+						printer.print(group.contains(enrolledUser) ? 1 : 0);
 					}
 				}
 				printer.println();

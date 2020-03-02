@@ -22,13 +22,13 @@ public class CSVClustering {
 
 	private static final String FILENAME = "clusering.csv";
 
-	private static final String[] HEAD = new String[] { "UserId", "FullName", "Cluster" };
+	private static final String[] HEAD_TABLE = new String[] { "UserId", "FullName", "Cluster" };
 
-	public static void export(List<ClusterWrapper> clusters, Path path) {
+	public static void exportTable(List<ClusterWrapper> clusters, Path path) {
 		try (Writer writer = Files.newBufferedWriter(path.resolve(FILENAME), StandardCharsets.UTF_8);
 				CSVWriter csvWriter = new CSVWriter(writer)) {
 
-			csvWriter.writeNext(HEAD);
+			csvWriter.writeNext(HEAD_TABLE);
 			for (ClusterWrapper clusterWrapper : clusters) {
 				for (UserData userData : clusterWrapper) {
 					EnrolledUser enrolledUser = userData.getEnrolledUser();
@@ -45,5 +45,4 @@ public class CSVClustering {
 			throw new IllegalStateException("Error exporting CSV file" + path, e);
 		}
 	}
-
 }

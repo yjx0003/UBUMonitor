@@ -104,7 +104,7 @@
                                 </rowConstraints>
                                  <children>
                                     <CheckComboBox fx:id="checkComboBoxCluster" title="Clusters" />
-                                    <Button fx:id="buttonExport" mnemonicParsing="false" onAction="#export" text="Export" GridPane.columnIndex="1" />
+                                    <Button fx:id="buttonExport" mnemonicParsing="false" onAction="#exportTable" text="Export" GridPane.columnIndex="1" />
                                  </children>
                               </GridPane>
                            </top>

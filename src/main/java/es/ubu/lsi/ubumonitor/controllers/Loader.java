@@ -3,7 +3,7 @@ package es.ubu.lsi.ubumonitor.controllers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.ubumonitor.controllers.configuration.Config;
+import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.application.Application;
 import javafx.scene.image.Image;
@@ -33,7 +33,7 @@ public class Loader extends Application {
 			primaryStage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 			primaryStage.setResizable(false);
 			UtilMethods.changeScene(getClass().getResource("/view/Login.fxml"), primaryStage);
-			Style.addStyle(Config.getProperty("style"), primaryStage.getScene().getStylesheets());
+			Style.addStyle(ConfigHelper.getProperty("style"), primaryStage.getScene().getStylesheets());
 			controller.setStage(primaryStage);
 			
 		} catch (Exception e) {
@@ -44,7 +44,7 @@ public class Loader extends Application {
 	@Override
 	public void stop() {
 
-		Config.save();
+		ConfigHelper.save();
 	}
 
 	public static void initialize() {

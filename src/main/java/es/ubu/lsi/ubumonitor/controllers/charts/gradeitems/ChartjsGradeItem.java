@@ -58,7 +58,7 @@ public abstract class ChartjsGradeItem extends Chartjs {
 			datasets.add(dataset);
 		}
 		
-		if (useGeneralButton) {
+
 			JSObject dataset = new JSObject();
 			dataset.putWithQuote("label", I18n.get("chartlabel.generalMean"));
 			dataset.put("borderColor", hex(I18n.get("chartlabel.generalMean")));
@@ -74,29 +74,30 @@ public abstract class ChartjsGradeItem extends Chartjs {
 			}
 			dataset.put("data", dataArray);
 			datasets.add(dataset);
-		}
+		
 
-		if (useGroupButton) {
+		
 			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
 				if (group == null)
 					continue;
-				JSObject dataset = new JSObject();
+				dataset = new JSObject();
 				dataset.putWithQuote("label", I18n.get("chart.mean") + " " + group.getGroupName());
 			
-				dataset.put("borderColor", hex(I18n.get("chartlabel.generalMean")));
-				dataset.put("backgroundColor", rgba(I18n.get("chartlabel.generalMean"), OPACITY));
+				dataset.put("borderColor", hex(group.getGroupName()));
+				dataset.put("backgroundColor", rgba(group.getGroupName(), OPACITY));
 				dataset.put("hidden", !(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL,"groupActive"));
 				dataset.put("borderDash", "["+ borderLength + "," + borderSpace +"]");
-				JSArray dataArray = new JSArray();
-				Map<GradeItem, DescriptiveStatistics> descriptiveStats = stats.getGroupStats(group);
+				dataArray = new JSArray();
+				descriptiveStats = stats.getGroupStats(group);
 				for (GradeItem gradeItem : selectedGradeItems) {
 					double grade = descriptiveStats.get(gradeItem).getMean();
 					dataArray.add(adjustTo10(grade));
 				}
+				dataset.put("data", dataArray);
 				datasets.add(dataset);
 			}
 
-		}
+		
 
 		data.put("datasets", datasets);
 

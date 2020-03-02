@@ -27,13 +27,14 @@ import org.controlsfx.control.textfield.TextFields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.ubumonitor.controllers.configuration.Config;
+import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigurationController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.export.CSVBuilderAbstract;
 import es.ubu.lsi.ubumonitor.export.CSVExport;
 import es.ubu.lsi.ubumonitor.model.Component;
 import es.ubu.lsi.ubumonitor.model.ComponentEvent;
+import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
@@ -118,7 +119,7 @@ public class MainController implements Initializable {
 	private Label lblCountParticipants;
 	@FXML
 	private ListView<EnrolledUser> listParticipants;
-	FilteredList<EnrolledUser> filteredEnrolledList;
+	private FilteredList<EnrolledUser> filteredEnrolledList;
 
 	@FXML
 	private CheckComboBox<Role> checkComboBoxRole;
@@ -240,12 +241,29 @@ public class MainController implements Initializable {
 	private AutoCompletionBinding<EnrolledUser> autoCompletionBinding;
 
 	/**
+     * Log course general statistics.
+     * 
+     * @since v2.6.3-stable
+     */
+    private void logStatistics(Course actualCourse) {
+        LOGGER.info("COURSE STATISTICS: {} {}", actualCourse.getId(), actualCourse.getFullName());
+        LOGGER.info("# enrolled users: {}", actualCourse.getEnrolledUsersCount());
+        LOGGER.info("# logs entries: {}", actualCourse.getLogs().getList().size());
+        LOGGER.info("# component types: {}", actualCourse.getUniqueComponents().size());
+        LOGGER.info("# type events: {}", actualCourse.getUniqueComponentsEvents().size());
+        LOGGER.info("# sections: {}", actualCourse.getSections().size());
+        LOGGER.info("# course modules: {}", actualCourse.getModules().size());
+        LOGGER.info("# grade book items: {}", actualCourse.getGradeItems().size());
+        LOGGER.info("# activity completion items: {}", actualCourse.getModules().stream().filter(cm -> !cm.getActivitiesCompletion().isEmpty()).count());
+    }
+	
+	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades de
 	 * las que se compone.
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		logStatistics(controller.getActualCourse());
 		try {
 			LOGGER.info("Completada la carga del curso {}", controller.getActualCourse().getFullName());
 
@@ -259,7 +277,7 @@ public class MainController implements Initializable {
 					controller.getConfiguration(controller.getActualCourse()));
 			initWebViewTabs();
 			tabPane.getSelectionModel()
-					.select(Config.getProperty("tabPane", tabPane.getSelectionModel().getSelectedIndex()));
+					.select(ConfigHelper.getProperty("tabPane", tabPane.getSelectionModel().getSelectedIndex()));
 			initTabGrades();
 			initTabLogs();
 			initTabActivityCompletion();
@@ -285,7 +303,7 @@ public class MainController implements Initializable {
 			menuItem.setText(key);
 			menuItem.setToggleGroup(group);
 
-			if (key.equals(Config.getProperty("style", "Modena"))) {
+			if (key.equals(ConfigHelper.getProperty("style", "Modena"))) {
 				menuItem.setSelected(true);
 			}
 			menuItem.setOnAction(event -> {
@@ -294,7 +312,7 @@ public class MainController implements Initializable {
 				if (path != null) {
 					controller.getStage().getScene().getStylesheets().add(path);
 				}
-				Config.setProperty("style", key);
+				ConfigHelper.setProperty("style", key);
 			});
 			menuTheme.getItems().add(menuItem);
 		}
@@ -358,7 +376,7 @@ public class MainController implements Initializable {
 	private void initWebViewTabs() {
 
 		webViewTabPane.getSelectionModel()
-				.select(Config.getProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex()));
+				.select(ConfigHelper.getProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex()));
 		webViewTabPane.getSelectionModel().selectedItemProperty().addListener((ob, old, newValue) -> {
 			if (tabUbuLogs.isSelected()) {
 				getActions().onSetTabLogs();
@@ -1320,7 +1338,7 @@ public class MainController implements Initializable {
 		LOGGER.info("Exportando ficheros CSV");
 		try {
 			DirectoryChooser dir = new DirectoryChooser();
-			File file = new File(Config.getProperty("csvFolderPath", "./"));
+			File file = new File(ConfigHelper.getProperty("csvFolderPath", "./"));
 			if (file.exists() && file.isDirectory()) {
 				dir.setInitialDirectory(file);
 			}
@@ -1331,7 +1349,7 @@ public class MainController implements Initializable {
 				Charsets charset = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL, "charset");
 				CSVExport.run(charset.get());
 				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + selectedDir.getAbsolutePath());
-				Config.setProperty("csvFolderPath", selectedDir.getAbsolutePath());
+				ConfigHelper.setProperty("csvFolderPath", selectedDir.getAbsolutePath());
 			}
 
 		} catch (Exception e) {
@@ -1413,7 +1431,7 @@ public class MainController implements Initializable {
 			LOGGER.error("Error", ex);
 			return;
 		}
-		Style.addStyle(Config.getProperty("style"), newScene.getStylesheets());
+		Style.addStyle(ConfigHelper.getProperty("style"), newScene.getStylesheets());
 		ConfigurationController configurationController = loader.getController();
 		Stage stage = new Stage();
 		configurationController.setMainController(this);
@@ -1429,12 +1447,12 @@ public class MainController implements Initializable {
 
 	public void importConfiguration() {
 		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("menu.importconfig"), null,
-				Config.getProperty("configurationFolderPath", "./"),
+				ConfigHelper.getProperty("configurationFolderPath", "./"),
 				new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
 
 		File file = fileChooser.showOpenDialog(controller.getStage());
 		if (file != null) {
-			Config.setProperty("configurationFolderPath", file.getParent());
+			ConfigHelper.setProperty("configurationFolderPath", file.getParent());
 			try {
 				ConfigurationController.loadConfiguration(controller.getMainConfiguration(), file.toPath());
 				changeConfiguration();
@@ -1449,13 +1467,13 @@ public class MainController implements Initializable {
 	public void exportConfiguration() {
 		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("menu.exportconfig"),
 				UtilMethods.removeReservedChar(controller.getActualCourse().getFullName()) + ".json",
-				Config.getProperty("configurationFolderPath", "./"),
+				ConfigHelper.getProperty("configurationFolderPath", "./"),
 				new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
 
 		File file = fileChooser.showSaveDialog(controller.getStage());
 		if (file != null) {
 			ConfigurationController.saveConfiguration(controller.getMainConfiguration(), file.toPath());
-			Config.setProperty("configurationFolderPath", file.getParent());
+			ConfigHelper.setProperty("configurationFolderPath", file.getParent());
 		}
 	}
 
@@ -1475,7 +1493,7 @@ public class MainController implements Initializable {
 			LOGGER.error("Error", ex);
 			return;
 		}
-		Style.addStyle(Config.getProperty("style"), newScene.getStylesheets());
+		Style.addStyle(ConfigHelper.getProperty("style"), newScene.getStylesheets());
 
 		Stage stage = new Stage();
 		stage.setScene(newScene);
@@ -1501,7 +1519,7 @@ public class MainController implements Initializable {
 			LOGGER.error("Error", ex);
 			return;
 		}
-		Style.addStyle(Config.getProperty("style"), newScene.getStylesheets());
+		Style.addStyle(ConfigHelper.getProperty("style"), newScene.getStylesheets());
 		UserInfoController userInfoController = loader.getController();
 		userInfoController.init(this, enrolledUser);
 		Stage stage = new Stage();
@@ -1751,8 +1769,8 @@ public class MainController implements Initializable {
 	}
 
 	private void onClose() {
-		Config.setProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex());
-		Config.setProperty("tabPane", tabPane.getSelectionModel().getSelectedIndex());
+		ConfigHelper.setProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex());
+		ConfigHelper.setProperty("tabPane", tabPane.getSelectionModel().getSelectedIndex());
 	}
 
 }

@@ -18,7 +18,7 @@ import javax.crypto.IllegalBlockSizeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.ubumonitor.controllers.configuration.Config;
+import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.DataBase;
 import es.ubu.lsi.ubumonitor.persistence.Serialization;
@@ -120,12 +120,12 @@ public class WelcomeOfflineController implements Initializable {
 				listView.getSelectionModel().clearSelection();
 
 			});
-			tabPane.getSelectionModel().select(Config.getProperty("courseList", 0));
+			tabPane.getSelectionModel().select(ConfigHelper.getProperty("courseList", 0));
 
 			Platform.runLater(() -> {
 				ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem()
 						.getContent();
-				Course course = controller.getUser().getCourseById(Config.getProperty("actualCourse", -1));
+				Course course = controller.getUser().getCourseById(ConfigHelper.getProperty("actualCourse", -1));
 
 				listView.getSelectionModel().select(course);
 				listView.scrollTo(course);
@@ -200,9 +200,9 @@ public class WelcomeOfflineController implements Initializable {
 
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getFullName());
 
-		Config.setProperty("courseList", Integer.toString(tabPane.getSelectionModel().getSelectedIndex()));
+		ConfigHelper.setProperty("courseList", Integer.toString(tabPane.getSelectionModel().getSelectedIndex()));
 
-		Config.setProperty("actualCourse", getSelectedCourse().getId());
+		ConfigHelper.setProperty("actualCourse", getSelectedCourse().getId());
 
 		// if loading cache
 		loadData(controller.getPassword());

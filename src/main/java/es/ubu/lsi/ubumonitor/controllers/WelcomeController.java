@@ -21,7 +21,7 @@ import javax.crypto.IllegalBlockSizeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.ubumonitor.controllers.configuration.Config;
+import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.ubugrades.CreatorGradeItems;
 import es.ubu.lsi.ubumonitor.controllers.ubugrades.CreatorUBUGradesController;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.DownloadLogController;
@@ -125,6 +125,8 @@ public class WelcomeController implements Initializable {
 	private Label lblDateUpdate;
 	@FXML
 	private CheckBox chkUpdateData;
+	@FXML
+	private CheckBox chkOnlyWeb;
 	private boolean isBBDDLoaded;
 
 	@FXML
@@ -156,7 +158,8 @@ public class WelcomeController implements Initializable {
 			lblProgress.visibleProperty().bind(btnEntrar.visibleProperty().not());
 			btnRemove.visibleProperty().bind(btnEntrar.visibleProperty());
 			btnRemove.disableProperty().bind(chkUpdateData.disabledProperty());
-
+			chkOnlyWeb.visibleProperty().bind(chkUpdateData.selectedProperty());
+			chkOnlyWeb.setSelected(Boolean.parseBoolean(ConfigHelper.getProperty("onlyWeb", "true")));
 			labelLoggedIn.setText(controller.getLoggedIn().format(Controller.DATE_TIME_FORMATTER));
 			labelHost.setText(controller.getUrlHost().toString());
 
@@ -168,12 +171,12 @@ public class WelcomeController implements Initializable {
 				chkUpdateData.setDisable(true);
 				lblDateUpdate.setText(null);
 			});
-			tabPane.getSelectionModel().select(Config.getProperty("courseList", 0));
+			tabPane.getSelectionModel().select(ConfigHelper.getProperty("courseList", 0));
 
 			Platform.runLater(() -> {
 				ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem()
 						.getContent();
-				Course course = controller.getUser().getCourseById(Config.getProperty("actualCourse", -1));
+				Course course = controller.getUser().getCourseById(ConfigHelper.getProperty("actualCourse", -1));
 
 				listView.getSelectionModel().select(course);
 				listView.scrollTo(course);
@@ -260,9 +263,11 @@ public class WelcomeController implements Initializable {
 
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getFullName());
 
-		Config.setProperty("courseList", Integer.toString(tabPane.getSelectionModel().getSelectedIndex()));
+		ConfigHelper.setProperty("courseList", Integer.toString(tabPane.getSelectionModel().getSelectedIndex()));
 
-		Config.setProperty("actualCourse", getSelectedCourse().getId());
+		ConfigHelper.setProperty("actualCourse", getSelectedCourse().getId());
+
+		ConfigHelper.setProperty("onlyWeb", Boolean.toString(chkOnlyWeb.isSelected()));
 
 		if (chkUpdateData.isSelected()) {
 			if (isFileCacheExists) {
@@ -478,18 +483,19 @@ public class WelcomeController implements Initializable {
 							updateMessage(I18n.get("label.downloadinglog"));
 							DownloadLogController downloadLogController = LogCreator.download();
 
-							Response response = downloadLogController.downloadLog();
+							Response response = downloadLogController.downloadLog(chkOnlyWeb.isSelected());
 							LOGGER.info("Log descargado");
 							updateMessage(I18n.get("label.parselog"));
 
 							Logs logs = new Logs(downloadLogController.getServerTimeZone());
-							LogCreator.parserResponse(logs, response);
+							LogCreator.parserResponse(logs, response, actualCourse.getEnrolledUsers());
 							actualCourse.setLogs(logs);
 
 						} else {
 							updateMessage(I18n.get("label.downloadinglog"));
-							LogCreator.createLogsMultipleDays(actualCourse.getLogs());
-					
+							LogCreator.createLogsMultipleDays(actualCourse.getLogs(), actualCourse.getEnrolledUsers(),
+									chkOnlyWeb.isSelected());
+
 						}
 						tries = limitRelogin;
 					} catch (RuntimeException e) {

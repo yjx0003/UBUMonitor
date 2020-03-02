@@ -51,7 +51,7 @@ public class UtilMethods {
 	 * @return
 	 */
 	public static <E> String join(List<E> datasets) {
-		return datasets.stream().map(E::toString).collect(Collectors.joining(", "));
+		return datasets.stream().map(E::toString).collect(Collectors.joining(","));
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class UtilMethods {
 	 */
 	public static <T> String joinWithQuotes(List<T> list) {
 		// https://stackoverflow.com/a/18229122
-		return list.stream().map(s -> "'" + escapeJavaScriptText(s.toString()) + "'").collect(Collectors.joining(", "));
+		return list.stream().map(s -> "'" + escapeJavaScriptText(s.toString()) + "'").collect(Collectors.joining(","));
 	}
 
 	/**

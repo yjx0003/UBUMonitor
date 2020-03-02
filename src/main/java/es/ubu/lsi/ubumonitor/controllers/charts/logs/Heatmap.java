@@ -26,7 +26,7 @@ import es.ubu.lsi.ubumonitor.util.UtilMethods;
 public class Heatmap extends ChartLogs {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Heatmap.class);
-	
+
 	private DescriptiveStatistics descriptiveStatistics;
 
 	public Heatmap(MainController mainController) {
@@ -177,8 +177,6 @@ public class Heatmap extends ChartLogs {
 						+ thirdInterval + "},{from:" + third + ",to:" + fourth + ",color:" + fourthInterval + "}]}}}");
 	}
 
-
-
 	@Override
 	public String getXAxisTitle() {
 		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"),
@@ -284,7 +282,8 @@ public class Heatmap extends ChartLogs {
 	}
 
 	@Override
-	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
+	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs)
+			throws IOException {
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
@@ -292,6 +291,7 @@ public class Heatmap extends ChartLogs {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
 				dateStart, dateEnd);
+		boolean hasId = hasId();
 		for (EnrolledUser selectedUser : enrolledUsers) {
 			Map<E, List<Integer>> types = userCounts.get(selectedUser);
 
@@ -299,7 +299,10 @@ public class Heatmap extends ChartLogs {
 				List<Integer> times = types.get(type);
 				printer.print(selectedUser.getId());
 				printer.print(selectedUser.getFullName());
-				printer.print(type.hashCode());
+				if (hasId) {
+					printer.print(type.hashCode());
+				}
+
 				printer.print(type);
 				printer.printRecord(times);
 			}
@@ -313,12 +316,15 @@ public class Heatmap extends ChartLogs {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
-		List<String> range = groupBy.getRangeString(dateStart, dateEnd);
-		range.add(0, "userid");
-		range.add(1, "fullname");
+		List<String> list = new ArrayList<>();
+		list.add("userid");
+		list.add("fullname");
 		String selectedTab = mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
-		range.add(2, selectedTab + "_id");
-		range.add(3, selectedTab);
-		return range.toArray(new String[0]);
+		if(hasId()) {
+			list.add(selectedTab + "_id");
+		}
+		list.add(selectedTab);
+		list.addAll(groupBy.getRangeString(dateStart, dateEnd));
+		return list.toArray(new String[0]);
 	}
 }

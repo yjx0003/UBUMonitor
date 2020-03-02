@@ -17,6 +17,7 @@ import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
+import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
@@ -28,62 +29,63 @@ public class BoxPlot extends ChartjsGradeItem {
 
 	@Override
 	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
-		StringBuilder stringBuilder = new StringBuilder();
+		JSObject data = new JSObject();
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
-		stringBuilder.append("{labels:[");
-		stringBuilder.append(UtilMethods.joinWithQuotes(selectedGradeItems));
-		stringBuilder.append("],datasets:[");
+		data.put("labels", "[" + UtilMethods.joinWithQuotes(selectedGradeItems) + "]");
+		JSArray datasets = new JSArray();
+
 		if (!selectedUser.isEmpty()) {
-			createData(selectedUser, selectedGradeItems, stringBuilder, I18n.get("text.selectedUsers"), false);
+			datasets.add(createData(selectedUser, selectedGradeItems, I18n.get("text.selectedUsers"), false));
 
 		}
-		if (useGeneralButton) {
-			createData(Controller.getInstance().getActualCourse().getEnrolledUsers(), selectedGradeItems, stringBuilder,
-					I18n.get("text.all"),
-					!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive"));
-		}
-		if (useGroupButton) {
-			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
-				if (group != null) {
-					createData(group.getEnrolledUsers(), selectedGradeItems, stringBuilder, group.getGroupName(),
-							!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive"));
-				}
 
+		datasets.add(createData(Controller.getInstance().getActualCourse().getEnrolledUsers(), selectedGradeItems,
+				I18n.get("text.all"),
+				!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")));
+
+		for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
+			if (group != null) {
+				datasets.add(createData(group.getEnrolledUsers(), selectedGradeItems, group.getGroupName(),
+						!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")));
 			}
 
 		}
 
-		stringBuilder.append("]}");
+		data.put("datasets", datasets);
 
-		return stringBuilder.toString();
+		return data.toString();
 	}
 
-	private void createData(Collection<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems,
-			StringBuilder stringBuilder, String text, boolean hidden) {
-		stringBuilder.append("{label:'" + text + "',");
-		stringBuilder.append("borderColor:" + rgba(text, 0.7) + ",");
-		stringBuilder.append("backgroundColor:" + rgba(text, OPACITY) + ",");
+	private JSObject createData(Collection<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems, String text,
+			boolean hidden) {
 
-		stringBuilder.append("padding: 10,");
-		stringBuilder.append("itemRadius: 2,");
-		stringBuilder.append("itemStyle: 'circle',");
-		stringBuilder.append("itemBackgroundColor:" + hex(text) + ",");
-		stringBuilder.append("outlierColor:" + hex(text) + ",");
-		stringBuilder.append("borderWidth: 1,");
-		stringBuilder.append("outlierRadius : 5,");
-		stringBuilder.append("hidden:" + hidden + ",");
-		stringBuilder.append("data:[");
+		JSObject dataset = new JSObject();
+		dataset.putWithQuote("label", text);
+		dataset.put("borderColor", hex(text));
+		dataset.put("backgroundColor", rgba(text, OPACITY));
+
+		dataset.put("padding", 10);
+		dataset.put("itemRadius", 2);
+		dataset.putWithQuote("itemStyle", "circle");
+		dataset.put("itemBackgroundColor", hex(text));
+		dataset.put("outlierColor", hex(text));
+		dataset.put("borderWidth", 1);
+		dataset.put("outlierRadius", 5);
+		dataset.put("hidden", hidden);
+		JSArray data = new JSArray();
 
 		for (GradeItem gradeItem : selectedGradeItems) {
-			stringBuilder.append("[");
+			JSArray dataArray = new JSArray();
 			for (EnrolledUser user : selectedUser) {
 				double grade = gradeItem.getEnrolledUserPercentage(user);
-				if (!Double.isNaN(grade))
-					stringBuilder.append(adjustTo10(grade) + ",");
+				if (!Double.isNaN(grade)) {
+					dataArray.add(adjustTo10(grade));
+				}
 			}
-			stringBuilder.append("],");
+			data.add(dataArray);
 		}
-		stringBuilder.append("]},");
+		dataset.put("data", data);
+		return dataset;
 	}
 
 	@Override
@@ -114,17 +116,24 @@ public class BoxPlot extends ChartjsGradeItem {
 		for (GradeItem gradeItem : gradeItems) {
 			header.add(gradeItem.getItemname());
 		}
-		
-		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
+				CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
 			List<EnrolledUser> enrolledUser = getSelectedEnrolledUser();
 			if (enrolledUser != null && !enrolledUser.isEmpty()) {
 				exportCSV(printer, enrolledUser, gradeItems, "selected users");
 
 			}
-			exportCSV(printer, controller.getActualCourse().getEnrolledUsers(), gradeItems, "all");
-			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
-				exportCSV(printer, group.getEnrolledUsers(), gradeItems, group.getGroupName());
+			if((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")){
+				exportCSV(printer, controller.getActualCourse().getEnrolledUsers(), gradeItems, "all");
 			}
+			
+			if((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")){
+				for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
+					exportCSV(printer, group.getEnrolledUsers(), gradeItems, group.getGroupName());
+				}
+			}
+			
 		}
 
 	}

@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 import es.ubu.lsi.ubumonitor.controllers.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.controllers.Style;
+import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -192,6 +194,29 @@ public class UtilMethods {
 			throw new IllegalArgumentException("Invalid fxml");
 		}
 
+	}
+	
+	public static void createDialog(FXMLLoader loader, Stage ownerStage) {
+		
+
+		Scene newScene;
+		try {
+			newScene = new Scene(loader.load());
+		} catch (IOException ex) {
+			errorWindow("FXML file corrupted", ex);
+			return;
+		}
+		Style.addStyle(ConfigHelper.getProperty("style"), newScene.getStylesheets());
+		Stage stage = new Stage();
+		stage.setScene(newScene);
+		stage.setResizable(false);
+		stage.initOwner(ownerStage);
+		stage.initModality(Modality.WINDOW_MODAL);
+
+		stage.getIcons().add(new Image("/img/logo_min.png"));
+		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
+
+		stage.show();
 	}
 
 	public static void openURL(String url) {

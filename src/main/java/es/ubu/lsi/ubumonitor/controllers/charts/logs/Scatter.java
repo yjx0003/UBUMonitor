@@ -164,7 +164,9 @@ public class Scatter extends ChartjsLog {
 				List<Integer> times = types.get(type);
 				printer.print(selectedUser.getId());
 				printer.print(selectedUser.getFullName());
-				printer.print(type.hashCode());
+				if(hasId()) {
+					printer.print(type.hashCode());
+				}
 				printer.print(type);
 				printer.printRecord(times);
 			}
@@ -177,14 +179,17 @@ public class Scatter extends ChartjsLog {
 	protected String[] getCSVDesglosedHeader() {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
-		List<String> range = groupBy.getRangeString(dateStart, dateEnd);
-		range.add(0, "userid");
-		range.add(1, "fullname");
+		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
+		List<String> list = new ArrayList<>();
+		list.add("userid");
+		list.add("fullname");
 		String selectedTab = mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
-		range.add(2, selectedTab + "_id");
-		range.add(3, selectedTab);
-		return range.toArray(new String[0]);
+		if(hasId()) {
+			list.add(selectedTab + "_id");
+		}
+		list.add(selectedTab);
+		list.addAll(groupBy.getRangeString(dateStart, dateEnd));
+		return list.toArray(new String[0]);
 	}
 
 }

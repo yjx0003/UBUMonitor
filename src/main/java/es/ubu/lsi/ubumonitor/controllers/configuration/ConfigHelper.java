@@ -10,8 +10,8 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Config {
-	private static final Logger LOGGER = LoggerFactory.getLogger(Config.class);
+public class ConfigHelper {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigHelper.class);
 
 	private static Properties properties;
 	private static String path;
@@ -26,7 +26,7 @@ public class Config {
 			try (InputStream in = new FileInputStream(file)) {
 
 				properties.load(in);
-				Config.path = path;
+				ConfigHelper.path = path;
 			} catch (IOException e) {
 				LOGGER.error("No se ha podido cargar {} ", path);
 			}
@@ -68,7 +68,7 @@ public class Config {
 		save(path);
 	}
 
-	private Config() {
+	private ConfigHelper() {
 	}
 
 }

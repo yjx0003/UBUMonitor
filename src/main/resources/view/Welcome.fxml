@@ -125,6 +125,7 @@
             <Label layoutX="70.0" layoutY="300.0" prefHeight="21.0" prefWidth="258.0" text="%label.lastupdate" />
             <CheckBox fx:id="chkUpdateData" disable="true" layoutX="70.0" layoutY="330.0" mnemonicParsing="false" text="%checkbox.updatedata" />
             <Label fx:id="lblDateUpdate" layoutX="300.0" layoutY="300.0" prefHeight="21.0" prefWidth="146.0" />
+            <CheckBox fx:id="chkOnlyWeb" layoutX="300.0" layoutY="330.0" mnemonicParsing="false" selected="true" text="%checkbox.onlyweb" />
          </children>
       </AnchorPane>
 		<Button fx:id="btnEntrar" defaultButton="true" layoutX="200.0" layoutY="540.0" mnemonicParsing="false" onAction="#enterCourse" prefHeight="39.0" prefWidth="86.0" style="-fx-font-size: 16;" styleClass="rich-blue" stylesheets="@/css/style.css" text="%btn.enter">

@@ -21,7 +21,7 @@ import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.ubumonitor.controllers.configuration.Config;
+import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.ubugrades.CreatorUBUGradesController;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
@@ -160,15 +160,15 @@ public class LoginController implements Initializable {
 	 */
 	private void initializeProperties() {
 
-		txtHost.setText(Config.getProperty("host", ""));
+		txtHost.setText(ConfigHelper.getProperty("host", ""));
 
-		txtUsername.setText(Config.getProperty("username", ""));
+		txtUsername.setText(ConfigHelper.getProperty("username", ""));
 		txtPassword.setText(System.getProperty(AppInfo.APPLICATION_NAME + ".password", ""));
-		chkSaveUsername.setSelected(Boolean.parseBoolean(Config.getProperty("saveUsername")));
-		chkSaveHost.setSelected(Boolean.parseBoolean(Config.getProperty("saveHost")));
-		chkOfflineMode.setSelected(Boolean.parseBoolean(Config.getProperty("offlineMode")));
-		String[] hosts = Config.getProperty("hosts", Config.getProperty("host", "")).split("\t");
-		String[] usernames = Config.getProperty("usernames", Config.getProperty("username", "")).split("\t");
+		chkSaveUsername.setSelected(Boolean.parseBoolean(ConfigHelper.getProperty("saveUsername")));
+		chkSaveHost.setSelected(Boolean.parseBoolean(ConfigHelper.getProperty("saveHost")));
+		chkOfflineMode.setSelected(Boolean.parseBoolean(ConfigHelper.getProperty("offlineMode")));
+		String[] hosts = ConfigHelper.getProperty("hosts", ConfigHelper.getProperty("host", "")).split("\t");
+		String[] usernames = ConfigHelper.getProperty("usernames", ConfigHelper.getProperty("username", "")).split("\t");
 		TextFields.bindAutoCompletion(txtUsername, usernames);
 		TextFields.bindAutoCompletion(txtHost, hosts);
 
@@ -180,25 +180,25 @@ public class LoginController implements Initializable {
 	private void saveProperties() {
 
 		String username = chkSaveUsername.isSelected() ? txtUsername.getText() : "";
-		Config.setProperty("username", username);
-		Config.setProperty("saveUsername", Boolean.toString(chkSaveUsername.isSelected()));
+		ConfigHelper.setProperty("username", username);
+		ConfigHelper.setProperty("saveUsername", Boolean.toString(chkSaveUsername.isSelected()));
 
 		String host = chkSaveHost.isSelected() ? txtHost.getText() : "";
-		Config.setProperty("host", host);
-		Config.setProperty("saveHost", Boolean.toString(chkSaveHost.isSelected()));
+		ConfigHelper.setProperty("host", host);
+		ConfigHelper.setProperty("saveHost", Boolean.toString(chkSaveHost.isSelected()));
 
-		Config.setProperty("offlineMode", Boolean.toString(chkOfflineMode.isSelected()));
+		ConfigHelper.setProperty("offlineMode", Boolean.toString(chkOfflineMode.isSelected()));
 		if (chkSaveUsername.isSelected()) {
-			String[] usernames = Config.getProperty("usernames", "").split("\t");
+			String[] usernames = ConfigHelper.getProperty("usernames", "").split("\t");
 			if (Arrays.stream(usernames).noneMatch(username::equals)) {
-				Config.setProperty("usernames", username + "\t" + String.join("\t", usernames));
+				ConfigHelper.setProperty("usernames", username + "\t" + String.join("\t", usernames));
 			}
 		}
 		if (chkSaveHost.isSelected()) {
 
-			String[] hosts = Config.getProperty("hosts", "").split("\t");
+			String[] hosts = ConfigHelper.getProperty("hosts", "").split("\t");
 			if (Arrays.stream(hosts).noneMatch(host::equals)) {
-				Config.setProperty("hosts", host + "\t" + String.join("\t", hosts));
+				ConfigHelper.setProperty("hosts", host + "\t" + String.join("\t", hosts));
 			}
 		}
 

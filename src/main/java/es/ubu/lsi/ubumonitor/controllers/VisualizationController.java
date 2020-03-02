@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.sun.javafx.webkit.WebConsoleListener;
 
 import es.ubu.lsi.ubumonitor.controllers.charts.Tabs;
-import es.ubu.lsi.ubumonitor.controllers.configuration.Config;
+import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.TypeTimes;
@@ -200,7 +200,7 @@ public class VisualizationController implements MainAction {
 				String.format("%s_%s_%s.png", controller.getActualCourse().getId(),
 						LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
 						javaConnector.getCurrentType().getChartType()),
-				Config.getProperty("imageFolderPath", "./"), new FileChooser.ExtensionFilter(".png", "*.png"));
+				ConfigHelper.getProperty("imageFolderPath", "./"), new FileChooser.ExtensionFilter(".png", "*.png"));
 
 		try {
 			File file = fileChooser.showSaveDialog(controller.getStage());
@@ -209,7 +209,7 @@ public class VisualizationController implements MainAction {
 				if (str == null)
 					return;
 				javaConnector.saveImage(str);
-				Config.setProperty("imageFolderPath", file.getParent());
+				ConfigHelper.setProperty("imageFolderPath", file.getParent());
 			}
 		} catch (IOException e) {
 			LOGGER.error("Error al guardar el gráfico: {}", e);
@@ -224,11 +224,11 @@ public class VisualizationController implements MainAction {
 				String.format("%s_%s_%s.csv", controller.getActualCourse().getId(),
 						LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
 						javaConnector.getCurrentType().getChartType()),
-				Config.getProperty("csvFolderPath", "./"), new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
+				ConfigHelper.getProperty("csvFolderPath", "./"), new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
 
 		File file = fileChooser.showSaveDialog(controller.getStage());
 		if (file != null) {
-			Config.setProperty("csvFolderPath", file.getParent());
+			ConfigHelper.setProperty("csvFolderPath", file.getParent());
 			try {
 				javaConnector.getCurrentType().exportCSV(file.getAbsolutePath());
 				UtilMethods.infoWindow(I18n.get("message.export_csv") + file.getAbsolutePath());
@@ -245,11 +245,11 @@ public class VisualizationController implements MainAction {
 				String.format("%s_%s_%s_breakdown.csv", controller.getActualCourse().getId(),
 						LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
 						javaConnector.getCurrentType().getChartType()),
-				Config.getProperty("csvFolderPath", "./"), new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
+				ConfigHelper.getProperty("csvFolderPath", "./"), new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
 
 		File file = fileChooser.showSaveDialog(controller.getStage());
 		if (file != null) {
-			Config.setProperty("csvFolderPath", file.getParent());
+			ConfigHelper.setProperty("csvFolderPath", file.getParent());
 			try {
 				javaConnector.getCurrentType().exportCSVDesglosed(file.getAbsolutePath());
 				UtilMethods.infoWindow(I18n.get("message.export_csv_desglossed") + file.getAbsolutePath());

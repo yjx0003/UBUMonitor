@@ -85,6 +85,10 @@ public abstract class ChartLogs extends Chart {
 		}
 
 	}
+	
+	public boolean hasId() {
+		return tabUbuLogsSection.isSelected() || tabUbuLogsCourseModule.isSelected();
+	}
 
 	@Override
 	public void exportCSVDesglosed(String path) throws IOException {
@@ -115,8 +119,7 @@ public abstract class ChartLogs extends Chart {
 
 	protected abstract String[] getCSVHeader();
 
-	protected abstract <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs)
-			throws IOException;
+	protected abstract <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException;
 
 	protected abstract String[] getCSVDesglosedHeader();
 

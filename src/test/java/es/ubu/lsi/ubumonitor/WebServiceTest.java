@@ -97,10 +97,10 @@ public class WebServiceTest {
 	public void getLogs() throws IOException {
 		DownloadLogController downloadLogController = LogCreator.download();
 
-		Response response = downloadLogController.downloadLog();
+		Response response = downloadLogController.downloadLog(true);
 	
 		Logs logs = new Logs(downloadLogController.getServerTimeZone());
-		LogCreator.parserResponse(logs, response);
+		LogCreator.parserResponse(logs, response, CONTROLLER.getActualCourse().getEnrolledUsers());
 		CONTROLLER.getActualCourse().setLogs(logs);
 	}
 

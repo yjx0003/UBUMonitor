@@ -245,7 +245,7 @@ public class MainController implements Initializable {
      * 
      * @since v2.6.3-stable
      */
-    private void logStatistics(Course actualCourse) {
+	private void logStatistics(Course actualCourse) {
         LOGGER.info("COURSE STATISTICS: {} {}", actualCourse.getId(), actualCourse.getFullName());
         LOGGER.info("# enrolled users: {}", actualCourse.getEnrolledUsersCount());
         LOGGER.info("# logs entries: {}", actualCourse.getLogs().getList().size());
@@ -253,8 +253,9 @@ public class MainController implements Initializable {
         LOGGER.info("# type events: {}", actualCourse.getUniqueComponentsEvents().size());
         LOGGER.info("# sections: {}", actualCourse.getSections().size());
         LOGGER.info("# course modules: {}", actualCourse.getModules().size());
-        LOGGER.info("# grade book items: {}", actualCourse.getGradeItems().size());
-        LOGGER.info("# activity completion items: {}", actualCourse.getModules().stream().filter(cm -> !cm.getActivitiesCompletion().isEmpty()).count());
+        LOGGER.info("# grade book all items: {}", actualCourse.getGradeItems().size());
+        LOGGER.info("# grade book course module items: {}", actualCourse.getGradeItems().stream().filter(cm -> cm.getModule()!=null).count());
+        LOGGER.info("# activity completion items: {}", actualCourse.getModules().stream().filter(cm -> !(cm.getActivitiesCompletion().isEmpty())).count());
     }
 	
 	/**

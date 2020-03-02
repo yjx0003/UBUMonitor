@@ -179,7 +179,7 @@ public class Scatter extends ChartjsLog {
 	protected String[] getCSVDesglosedHeader() {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
+		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
 		List<String> list = new ArrayList<>();
 		list.add("userid");
 		list.add("fullname");

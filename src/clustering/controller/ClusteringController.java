@@ -49,12 +49,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
@@ -128,6 +131,9 @@ public class ClusteringController {
 
 	private List<ClusterWrapper> clusters;
 
+	private MenuItem exportCSV;
+	private MenuItem exportPNG;
+
 	private static final Callback<Item, PropertyEditor<?>> DEFAULT_PROPERTY_EDITOR_FACTORY = new DefaultPropertyEditorFactory();
 
 	public void init(MainController controller) {
@@ -135,6 +141,7 @@ public class ClusteringController {
 		initAlgorithms();
 		initCollectors();
 		initTable();
+		initContextMenu();
 		connector = new Connector(this);
 		webView.setContextMenuEnabled(false);
 		webEngine = webView.getEngine();
@@ -205,6 +212,19 @@ public class ClusteringController {
 		columnName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEnrolledUser().getFullName()));
 		columnCluster
 				.setCellValueFactory(c -> new SimpleStringProperty(clusters.get(c.getValue().getCluster()).getName()));
+	}
+
+	private void initContextMenu() {
+		ContextMenu contextMenu = new ContextMenu();
+		contextMenu.setAutoHide(true);
+
+		exportCSV = new MenuItem("Export CSV");
+		exportPNG = new MenuItem("Export PNG");
+		contextMenu.getItems().setAll(exportCSV, exportPNG);
+		webView.setOnMouseClicked(e -> {
+			if (e.getButton() == MouseButton.SECONDARY)
+				contextMenu.show(webView, e.getScreenX(), e.getScreenY());
+		});
 	}
 
 	@FXML
@@ -312,9 +332,11 @@ public class ClusteringController {
 		root.put("datasets", datasets);
 		LOGGER.debug("Data: {}", root);
 		webEngine.executeScript("updateChart(" + root + ")");
+
 	}
 
-	public void export() {
+	@FXML
+	private void exportTable() {
 		try {
 			DirectoryChooser directoryChooser = new DirectoryChooser();
 			File file = new File(Config.getProperty("csvFolderPath", "./"));
@@ -324,7 +346,7 @@ public class ClusteringController {
 
 			File selectedDir = directoryChooser.showDialog(mainController.getController().getStage());
 			if (selectedDir != null) {
-				CSVClustering.export(clusters, selectedDir.toPath());
+				CSVClustering.exportTable(clusters, selectedDir.toPath());
 				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + selectedDir.getAbsolutePath());
 			}
 		} catch (Exception e) {

@@ -34,7 +34,6 @@ import es.ubu.lsi.ubumonitor.export.CSVBuilderAbstract;
 import es.ubu.lsi.ubumonitor.export.CSVExport;
 import es.ubu.lsi.ubumonitor.model.Component;
 import es.ubu.lsi.ubumonitor.model.ComponentEvent;
-import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
@@ -240,23 +239,7 @@ public class MainController implements Initializable {
 
 	private AutoCompletionBinding<EnrolledUser> autoCompletionBinding;
 
-	/**
-     * Log course general statistics.
-     * 
-     * @since v2.6.3-stable
-     */
-	private void logStatistics(Course actualCourse) {
-        LOGGER.info("COURSE STATISTICS: {} {}", actualCourse.getId(), actualCourse.getFullName());
-        LOGGER.info("# enrolled users: {}", actualCourse.getEnrolledUsersCount());
-        LOGGER.info("# logs entries: {}", actualCourse.getLogs().getList().size());
-        LOGGER.info("# component types: {}", actualCourse.getUniqueComponents().size());
-        LOGGER.info("# type events: {}", actualCourse.getUniqueComponentsEvents().size());
-        LOGGER.info("# sections: {}", actualCourse.getSections().size());
-        LOGGER.info("# course modules: {}", actualCourse.getModules().size());
-        LOGGER.info("# grade book all items: {}", actualCourse.getGradeItems().size());
-        LOGGER.info("# grade book course module items: {}", actualCourse.getGradeItems().stream().filter(cm -> cm.getModule()!=null).count());
-        LOGGER.info("# activity completion items: {}", actualCourse.getModules().stream().filter(cm -> !(cm.getActivitiesCompletion().isEmpty())).count());
-    }
+
 	
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades de
@@ -264,7 +247,7 @@ public class MainController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		logStatistics(controller.getActualCourse());
+		CourseStatsController.logStatistics(controller.getActualCourse());
 		try {
 			LOGGER.info("Completada la carga del curso {}", controller.getActualCourse().getFullName());
 
@@ -1487,25 +1470,7 @@ public class MainController implements Initializable {
 
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AboutApp.fxml"), I18n.getResourceBundle());
 
-		Scene newScene;
-		try {
-			newScene = new Scene(loader.load());
-		} catch (IOException ex) {
-			LOGGER.error("Error", ex);
-			return;
-		}
-		Style.addStyle(ConfigHelper.getProperty("style"), newScene.getStylesheets());
-
-		Stage stage = new Stage();
-		stage.setScene(newScene);
-		stage.setResizable(false);
-		stage.initOwner(controller.getStage());
-		stage.initModality(Modality.WINDOW_MODAL);
-
-		stage.getIcons().add(new Image("/img/logo_min.png"));
-		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
-
-		stage.show();
+		UtilMethods.createDialog(loader, controller.getStage());
 
 	}
 
@@ -1513,31 +1478,19 @@ public class MainController implements Initializable {
 
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/UserInfo.fxml"), I18n.getResourceBundle());
 
-		Scene newScene;
-		try {
-			newScene = new Scene(loader.load());
-		} catch (IOException ex) {
-			LOGGER.error("Error", ex);
-			return;
-		}
-		Style.addStyle(ConfigHelper.getProperty("style"), newScene.getStylesheets());
+		UtilMethods.createDialog(loader, controller.getStage());
+		
 		UserInfoController userInfoController = loader.getController();
 		userInfoController.init(this, enrolledUser);
-		Stage stage = new Stage();
-		stage.setScene(newScene);
-		stage.setResizable(false);
-		stage.initOwner(controller.getStage());
-		stage.initModality(Modality.WINDOW_MODAL);
-
-		stage.getIcons().add(new Image("/img/logo_min.png"));
-		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
-
-		stage.show();
 
 	}
 
 	public void moreInfo() {
 		UtilMethods.openURL(AppInfo.GITHUB);
+	}
+	
+	public void courseStats() {
+		UtilMethods.createDialog(new FXMLLoader(getClass().getResource("/view/CourseStats.fxml"), I18n.getResourceBundle()), controller.getStage());
 	}
 
 	/**

@@ -320,6 +320,7 @@
                   </Menu>
       						<Menu mnemonicParsing="false" text="%menu.help">
       							<items>
+                        <MenuItem onAction="#courseStats" text="%menu.coursestats" />
                         <MenuItem onAction="#moreInfo" text="%menu.moreinfo" />
       								<MenuItem fx:id="MIAboutUBUGrades" onAction="#aboutApp" text="%menu.about" />
       							</items>

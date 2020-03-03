@@ -1,7 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
 import java.net.URL;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
@@ -15,7 +14,7 @@ import javafx.scene.control.TextField;
 
 public class CourseStatsController implements Initializable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CourseStatsController.class);
-	
+
 	@FXML
 	private Label labelCourse;
 	@FXML
@@ -45,13 +44,15 @@ public class CourseStatsController implements Initializable {
 		setText(textFieldLogs, actualCourse.getLogs().getList().size());
 		setText(textFieldComponents, actualCourse.getUniqueComponents().size());
 		setText(textFieldComponentsEvents, actualCourse.getUniqueComponentsEvents().size());
-		setText(textFieldSections,  actualCourse.getSections().size());
+		setText(textFieldSections, actualCourse.getSections().size());
 		setText(textFieldCourseModules, actualCourse.getModules().size());
-		setText(textFieldGradebook,  actualCourse.getGradeItems().size());
-		setText(textFieldGradebookCM, actualCourse.getGradeItems().stream().filter(Objects::nonNull).count());
-		setText(textFieldActivityCompletion, actualCourse.getModules().stream().filter(cm -> !(cm.getActivitiesCompletion().isEmpty())).count());
+		setText(textFieldGradebook, actualCourse.getGradeItems().size());
+		setText(textFieldGradebookCM,
+				actualCourse.getGradeItems().stream().filter(cm -> cm.getModule() != null).count());
+		setText(textFieldActivityCompletion,
+				actualCourse.getModules().stream().filter(cm -> !(cm.getActivitiesCompletion().isEmpty())).count());
 	}
-	
+
 	private void setText(TextField textfield, Object value) {
 		textfield.setText(value.toString());
 	}

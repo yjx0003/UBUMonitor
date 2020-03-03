@@ -23,12 +23,13 @@ public class GradesCollector extends DataCollector {
 			for (TreeItem<GradeItem> treeItem : selected) {
 				GradeItem gradeItem = treeItem.getValue();
 				double datum = gradeItem.getEnrolledUserPercentage(userData.getEnrolledUser());
+				userData.addDatum(gradeItem.getItemname(), datum);
 				if (Double.isNaN(datum)) {
 					datum = 0.0;
 				} else {
 					datum /= 100.0;
 				}
-				userData.addDatum(gradeItem.getItemname(), datum);
+				userData.addNormalizedDatum(datum);
 			}
 		}
 	}

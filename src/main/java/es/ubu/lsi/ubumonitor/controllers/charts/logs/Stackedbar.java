@@ -1,85 +1,33 @@
 package es.ubu.lsi.ubumonitor.controllers.charts.logs;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.csv.CSVPrinter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.charts.ChartType;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSet;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponent;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
-import es.ubu.lsi.ubumonitor.controllers.datasets.StackedBarDataSet;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
-import es.ubu.lsi.ubumonitor.model.Component;
-import es.ubu.lsi.ubumonitor.model.ComponentEvent;
-import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
-import es.ubu.lsi.ubumonitor.model.Section;
+import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
 public class Stackedbar extends ChartjsLog {
-	private static final Logger LOGGER = LoggerFactory.getLogger(Stackedbar.class);
-
-	private StackedBarDataSet<Component> stackedBarComponent = new StackedBarDataSet<>();
-	private StackedBarDataSet<ComponentEvent> stackedBarEvent = new StackedBarDataSet<>();
-	private StackedBarDataSet<Section> stackedBarSection = new StackedBarDataSet<>();
-	private StackedBarDataSet<CourseModule> stackedBarCourseModule = new StackedBarDataSet<>();
 
 	public Stackedbar(MainController mainController) {
 		super(mainController, ChartType.STACKED_BAR);
 		useLegend = true;
 		useGroupBy = true;
-	}
-
-	@Override
-	public void update() {
-		String stackedbardataset = null;
-		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-		List<EnrolledUser> enrolledUsers = new ArrayList<>(listParticipants.getItems());
-
-		LocalDate dateStart = datePickerStart.getValue();
-		LocalDate dateEnd = datePickerEnd.getValue();
-
-		if (tabUbuLogsComponent.isSelected()) {
-
-			stackedbardataset = stackedBarComponent.createData(enrolledUsers, selectedUsers,
-					listViewComponents.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart,
-					dateEnd, DataSetComponent.getInstance());
-
-		} else if (tabUbuLogsEvent.isSelected()) {
-			stackedbardataset = stackedBarEvent.createData(enrolledUsers, selectedUsers,
-					listViewEvents.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart, dateEnd,
-					DataSetComponentEvent.getInstance());
-
-		} else if (tabUbuLogsSection.isSelected()) {
-			stackedbardataset = stackedBarSection.createData(enrolledUsers, selectedUsers,
-					listViewSection.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart,
-					dateEnd, DataSetSection.getInstance());
-
-		} else if (tabUbuLogsCourseModule.isSelected()) {
-			stackedbardataset = stackedBarCourseModule.createData(enrolledUsers, selectedUsers,
-					listViewCourseModule.getSelectionModel().getSelectedItems(), choiceBoxDate.getValue(), dateStart,
-					dateEnd, DatasSetCourseModule.getInstance());
-		}
-
-		String options = getOptions();
-		LOGGER.info("Dataset para el stacked bar en JS: {}", stackedbardataset);
-		LOGGER.info("Opciones para el stacked bar en JS: {}", options);
-
-		webViewChartsEngine.executeScript("updateChartjs(" + stackedbardataset + "," + options + ")");
-
 	}
 
 	@Override
@@ -128,6 +76,8 @@ public class Stackedbar extends ChartjsLog {
 		jsObject.put("legend", "{labels:{filter:function(e,t){return\"line\"==t.datasets[e.datasetIndex].type}}}");
 		jsObject.put("onClick",
 				"function(t,a){let e=myChart.getElementAtEvent(t)[0];e&&javaConnector.dataPointSelection(myChart.data.datasets[e._datasetIndex].stack)}");
+
+		jsObject.put("elements", "{line:{fill:!1}}");
 		return jsObject.toString();
 	}
 
@@ -166,7 +116,95 @@ public class Stackedbar extends ChartjsLog {
 
 	@Override
 	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet) {
-		return null;
+		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
+		List<EnrolledUser> enrolledUsers = new ArrayList<>(listParticipants.getItems());
+
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
+				dateStart, dateEnd);
+		
+		Map<E, Color> colors = getRandomColors(typeLogs);
+ 
+		Map<E, List<Double>> means = dataSet.getMeans(groupBy, enrolledUsers, typeLogs, dateStart, dateEnd);
+
+		JSObject data = new JSObject();
+		data.put("labels", "[" + UtilMethods.joinWithQuotes(groupBy.getRangeString(dateStart, dateEnd)) + "]");
+		JSArray datasets = new JSArray();
+		
+
+		for (E typeLog : typeLogs) {
+
+			List<Double> datas = means.get(typeLog);
+
+			boolean anyNotZero = datas.stream().anyMatch(value -> value != 0.0);
+
+			if (anyNotZero) {
+				JSObject dataset = new JSObject();
+
+				dataset.putWithQuote("label", I18n.get("chart.mean") + " " + dataSet.translate(typeLog));
+				dataset.put("type", "'line'");
+				Color c = colors.get(typeLog);
+				int r = c.getRed();
+				int g = c.getGreen();
+				int b = c.getBlue();
+				// dataset.put("fill", false);
+				dataset.put("backgroundColor", String.format("'rgba(%d,%d,%d,0.4)'", r,g,b));
+				dataset.put("borderColor", String.format("'#%02x%02x%02x'", r, g, b));
+				dataset.put("data", "[" + UtilMethods.join(datas) + "]");
+				datasets.add(dataset);
+			}
+		}
+
+		for (EnrolledUser user : selectedUsers) {
+
+			Map<E, List<Integer>> elementDataset = userCounts.get(user);
+			for (E typeLog : typeLogs) {
+
+				List<Integer> datas = elementDataset.get(typeLog);
+
+				boolean anyNotZero = datas.stream().anyMatch(value -> value != 0);
+
+				if (anyNotZero) {
+					JSObject dataset = new JSObject();
+					dataset.putWithQuote("label", dataSet.translate(typeLog));
+					dataset.putWithQuote("name", user);
+					dataset.put("stack", user.getId());
+					Color c = colors.get(typeLog);
+					int r = c.getRed();
+					int g = c.getGreen();
+					int b = c.getBlue();
+					// dataset.put("fill", false);
+					dataset.put("backgroundColor", String.format("'rgba(%d,%d,%d,0.4)'", r,g,b));
+					dataset.put("borderColor", String.format("'#%02x%02x%02x'", r, g, b));
+					dataset.put("data", "[" + UtilMethods.join(datas) + "]");
+					datasets.add(dataset);
+				}
+
+			}
+		}
+		data.put("datasets", datasets);
+		return data.toString();
+	}
+	
+	
+	/**
+	 * Selecciona colores pseudo-aleatorios a partir del HSV
+	 * @param <E>
+	 */
+	private <E> Map<E, Color> getRandomColors(List<E> typeLogs) {
+		Map<E, Color>colors = new HashMap<>();
+
+		for (int i = 0; i < typeLogs.size(); i++) {
+
+			// generamos un color a partir de HSB, el hue(H) es el color, saturacion (S), y
+			// brillo(B)
+			Color c = new Color(Color.HSBtoRGB(i / (float) typeLogs.size(), 0.8f, 1.0f));
+			colors.put(typeLogs.get(i), c);
+		}
+		return colors;
+
 	}
 
 	@Override
@@ -181,7 +219,8 @@ public class Stackedbar extends ChartjsLog {
 	}
 
 	@Override
-	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> selecteds) throws IOException {
+	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> selecteds)
+			throws IOException {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();

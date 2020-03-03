@@ -2,6 +2,7 @@ package clustering.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import clustering.data.ClusterWrapper;
 import clustering.data.UserData;
 import clustering.util.CSVClustering;
 import clustering.util.SimplePropertySheetItem;
+import controllers.Controller;
 import controllers.I18n;
 import controllers.MainController;
 import controllers.configuration.Config;
@@ -37,6 +39,7 @@ import controllers.datasets.DataSetComponent;
 import controllers.datasets.DataSetComponentEvent;
 import controllers.datasets.DataSetSection;
 import controllers.datasets.DatasSetCourseModule;
+
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -46,6 +49,8 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -53,6 +58,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -61,6 +67,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
@@ -212,6 +220,32 @@ public class ClusteringController {
 		columnName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEnrolledUser().getFullName()));
 		columnCluster
 				.setCellValueFactory(c -> new SimpleStringProperty(clusters.get(c.getValue().getCluster()).getName()));
+
+		tableView.setRowFactory(tv -> {
+			TableRow<UserData> row = new TableRow<>();
+			row.setOnMouseClicked(e -> {
+				if (e.getButton() == MouseButton.PRIMARY && e.getClickCount() == 2 && !row.isEmpty())
+					showUserDataInfo(row.getItem());
+			});
+			return row;
+		});
+	}
+
+	private void showUserDataInfo(UserData userData) {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ClusteringInfo.fxml"));
+			Scene scene = new Scene(loader.load());
+			Stage stage = new Stage();
+			stage.setScene(scene);
+			stage.initModality(Modality.WINDOW_MODAL);
+			stage.initOwner(Controller.getInstance().getStage());
+			stage.setTitle(userData.getEnrolledUser().getFullName());
+			UserDataController controller = loader.getController();
+			controller.init(userData);
+			stage.show();
+		} catch (IOException e) {
+			LOGGER.error("Error", e);
+		}
 	}
 
 	private void initContextMenu() {

@@ -24,8 +24,9 @@ public class ActivityCollector extends DataCollector {
 			for (CourseModule courseModule : selected) {
 				ActivityCompletion activity = courseModule.getActivitiesCompletion().get(userData.getEnrolledUser());
 				State state = activity.getState();
-				double value = (state == State.COMPLETE || state == State.COMPLETE_PASS) ? 1 : 0;
+				double value = (state == State.COMPLETE || state == State.COMPLETE_PASS) ? 1.0 : 0.0;
 				userData.addDatum(courseModule.getModuleName(), value);
+				userData.addNormalizedDatum(value);
 			}
 		}
 	}

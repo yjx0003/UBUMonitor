@@ -41,8 +41,10 @@ public class LogCollector<T> extends DataCollector {
 			long max = Collections.max(values);
 			for (UserData userData : users) {
 				double datum = result.get(userData.getEnrolledUser()).get(logType).get(0);
-				datum = (datum - min) / (max - min);
 				userData.addDatum(logType.toString(), datum);
+				datum = (datum - min) / (max - min);
+				userData.addNormalizedDatum(datum);
+				
 			}
 		}
 	}

@@ -149,7 +149,7 @@ public class Stackedbar extends ChartjsLog {
 				int r = c.getRed();
 				int g = c.getGreen();
 				int b = c.getBlue();
-				// dataset.put("fill", false);
+			
 				dataset.put("backgroundColor", String.format("'rgba(%d,%d,%d,0.4)'", r,g,b));
 				dataset.put("borderColor", String.format("'#%02x%02x%02x'", r, g, b));
 				dataset.put("data", "[" + UtilMethods.join(datas) + "]");
@@ -175,7 +175,7 @@ public class Stackedbar extends ChartjsLog {
 					int r = c.getRed();
 					int g = c.getGreen();
 					int b = c.getBlue();
-					// dataset.put("fill", false);
+		
 					dataset.put("backgroundColor", String.format("'rgba(%d,%d,%d,0.4)'", r,g,b));
 					dataset.put("borderColor", String.format("'#%02x%02x%02x'", r, g, b));
 					dataset.put("data", "[" + UtilMethods.join(datas) + "]");

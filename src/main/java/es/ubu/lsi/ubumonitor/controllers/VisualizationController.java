@@ -177,7 +177,7 @@ public class VisualizationController implements MainAction {
 		MenuItem exportCSVDesglosed = new MenuItem(I18n.get("text.exportcsvdesglosed"));
 		exportCSV.setOnAction(e -> exportCSV());
 		exportCSVDesglosed.setOnAction(e -> exportCSVDesglosed());
-		exportCSVDesglosed.visibleProperty().bind(mainController.getTabUbuLogs().selectedProperty());
+		exportCSVDesglosed.visibleProperty().bind(mainController.getSelectionController().getTabUbuLogs().selectedProperty());
 
 		MenuItem exportPNG = new MenuItem(I18n.get("text.exportpng"));
 		exportPNG.setOnAction(e -> save());

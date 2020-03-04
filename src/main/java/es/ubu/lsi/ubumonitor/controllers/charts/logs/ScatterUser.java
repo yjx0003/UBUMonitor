@@ -8,7 +8,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -26,15 +25,15 @@ import es.ubu.lsi.ubumonitor.model.LogLine;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 
-public class Scatter extends ChartjsLog {
+public class ScatterUser extends ChartjsLog {
 
 	private DateTimeFormatter dateFormatter;
 	private DateTimeFormatter timeFormatter;
 	private String datePattern;
 	private String timePattern;
 
-	public Scatter(MainController mainController) {
-		super(mainController, ChartType.SCATTER);
+	public ScatterUser(MainController mainController) {
+		super(mainController, ChartType.SCATTER_USER);
 		useLegend = true;
 		useRangeDate = true;
 		datePattern = DateTimeFormatterBuilder
@@ -54,12 +53,11 @@ public class Scatter extends ChartjsLog {
 		LocalDate dateEnd = datePickerEnd.getValue();
 		jsObject.put("typeGraph", "'scatter'");
 		jsObject.put("onClick",
-				"function(t,a){let e=myChart.getElementAtEvent(t)[0];e&&javaConnector.dataPointSelection(myChart.data.datasets[e._datasetIndex].data[e._index].y)}");
+				"function(t,a){let e=myChart.getElementAtEvent(t)[0];e&&javaConnector.dataPointSelection(e._datasetIndex)}");
 		jsObject.put("scales",
 				"{yAxes:[{type:'category'}],xAxes:[{type:'time',ticks:{min:'" + dateFormatter.format(dateStart)
 						+ "',max:'" + dateFormatter.format(dateEnd) + "',maxTicksLimit:10},time:{minUnit:'day',parser:'"
 						+ datePattern + " " + timePattern + "'}}]}");
-
 		jsObject.put("tooltips",
 				"{callbacks:{label:function(l,a){return a.datasets[l.datasetIndex].label+': '+ l.xLabel}}}");
 		return jsObject.toString();
@@ -74,34 +72,33 @@ public class Scatter extends ChartjsLog {
 		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
 		Map<EnrolledUser, Map<E, List<LogLine>>> map = dataSet.getUserLogs(groupBy, selectedUsers, typeLogs, dateStart,
 				dateEnd);
-		Map<E, JSArray> dataMap = new HashMap<>();
 		JSObject data = new JSObject();
-		JSArray jsArray = new JSArray();
 		JSArray datasets = new JSArray();
-		jsArray.addAllWithQuote(selectedUsers);
-		data.put("labels", jsArray);
 
-		for (int i = 0; i < selectedUsers.size(); i++) {
-			Map<E, List<LogLine>> mapLogTypes = map.get(selectedUsers.get(i));
-			for (E logTye : typeLogs) {
-				jsArray = dataMap.computeIfAbsent(logTye, k -> new JSArray());
-				List<LogLine> logLines = mapLogTypes.get(logTye);
+		JSArray labels = new JSArray();
+		for (E typeLog : typeLogs) {
+			labels.addWithQuote(dataSet.translate(typeLog));
+		}
+
+		data.put("labels", labels);
+
+		for (EnrolledUser user : selectedUsers) {
+			JSObject dataset = new JSObject();
+			dataset.putWithQuote("label", user.getFullName());
+			dataset.put("backgroundColor", hex(user.getId()));
+			JSArray dataArray = new JSArray();
+			for (int i = 0; i < typeLogs.size(); i++) {
+				List<LogLine> logLines = map.get(user).get(typeLogs.get(i));
 				for (LogLine logLine : logLines) {
 					JSObject point = new JSObject();
 					point.putWithQuote("x",
 							dateFormatter.format(logLine.getTime()) + " " + timeFormatter.format(logLine.getTime()));
-					point.put("y", i);
-					jsArray.add(point);
+					point.putWithQuote("y", i);
+					dataArray.add(point);
 				}
 
 			}
-		}
-
-		for (E logType : typeLogs) {
-			JSObject dataset = new JSObject();
-			dataset.putWithQuote("label", dataSet.translate(logType));
-			dataset.put("backgroundColor", hex(logType));
-			dataset.put("data", dataMap.get(logType));
+			dataset.put("data", dataArray);
 			datasets.add(dataset);
 		}
 
@@ -164,7 +161,7 @@ public class Scatter extends ChartjsLog {
 				List<Integer> times = types.get(type);
 				printer.print(selectedUser.getId());
 				printer.print(selectedUser.getFullName());
-				if(hasId()) {
+				if (hasId()) {
 					printer.print(type.hashCode());
 				}
 				printer.print(type);
@@ -184,7 +181,7 @@ public class Scatter extends ChartjsLog {
 		list.add("userid");
 		list.add("fullname");
 		String selectedTab = tabPaneUbuLogs.getSelectionModel().getSelectedItem().getText();
-		if(hasId()) {
+		if (hasId()) {
 			list.add(selectedTab + "_id");
 		}
 		list.add(selectedTab);

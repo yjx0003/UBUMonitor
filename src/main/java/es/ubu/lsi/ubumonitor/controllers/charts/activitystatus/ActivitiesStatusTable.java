@@ -171,7 +171,7 @@ public class ActivitiesStatusTable extends Tabulator {
 	public void update() {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 
-		List<CourseModule> courseModules = mainController.getListViewActivity().getSelectionModel().getSelectedItems();
+		List<CourseModule> courseModules = selectionController.getListViewActivity().getSelectionModel().getSelectedItems();
 		String columns = createColumns(courseModules);
 		String data = createData(enrolledUsers, courseModules);
 		LOGGER.debug("Usuarios seleccionados:{}", enrolledUsers);
@@ -197,7 +197,7 @@ public class ActivitiesStatusTable extends Tabulator {
 	@Override
 	public void exportCSV(String path) throws IOException {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		List<CourseModule> courseModules = mainController.getListViewActivity().getSelectionModel().getSelectedItems();
+		List<CourseModule> courseModules = selectionController.getListViewActivity().getSelectionModel().getSelectedItems();
 		List<String> header = new ArrayList<>();
 		header.add("userid");
 		header.add("fullname");

@@ -47,7 +47,7 @@ public class TotalBar extends ChartjsLog {
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBar" : "bar");
 		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
 		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
-		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{stepSize:0}}],xAxes:[{" + xLabel + "}]}");
+		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{stepSize:0}}],xAxes:[{" + xLabel + (useHorizontal ?",ticks:{maxTicksLimit:10}": "")+"}]}");
 		jsObject.put("onClick", null);
 		jsObject.put("tooltips", "{mode:'index'}");
 		return jsObject.toString();
@@ -93,8 +93,8 @@ public class TotalBar extends ChartjsLog {
 	}
 
 	public Set<EnrolledUser> getUsersInRoles() {
-		return mainController.getCheckComboBoxRole().getCheckModel().getCheckedItems()
-				.stream().map(Role::getEnrolledUsers).flatMap(Set::stream).collect(Collectors.toSet());
+		return selectionUserController.getCheckComboBoxRole().getCheckModel().getCheckedItems().stream()
+				.map(Role::getEnrolledUsers).flatMap(Set::stream).collect(Collectors.toSet());
 
 	}
 
@@ -149,7 +149,7 @@ public class TotalBar extends ChartjsLog {
 
 	@Override
 	public String getXAxisTitle() {
-		return mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
+		return tabPaneUbuLogs.getSelectionModel().getSelectedItem().getText();
 
 	}
 
@@ -176,8 +176,8 @@ public class TotalBar extends ChartjsLog {
 			Set<EnrolledUser> usersInRoles = getUsersInRoles();
 			groupStats = new ArrayList<>();
 			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
-				map = dataSet.getUserCounts(groupBy, getUserWithRole(group.getEnrolledUsers(), usersInRoles), typeLogs, dateStart,
-						dateEnd);
+				map = dataSet.getUserCounts(groupBy, getUserWithRole(group.getEnrolledUsers(), usersInRoles), typeLogs,
+						dateStart, dateEnd);
 				groupStats.add(getTypeLogsStats(typeLogs, map));
 			}
 		}
@@ -206,7 +206,7 @@ public class TotalBar extends ChartjsLog {
 
 	@Override
 	protected String[] getCSVHeader() {
-		String selectedTab = mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
+		String selectedTab = tabPaneUbuLogs.getSelectionModel().getSelectedItem().getText();
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
 		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
@@ -221,7 +221,7 @@ public class TotalBar extends ChartjsLog {
 			list.add(I18n.get("text.filteredusers"));
 		}
 		if (groupActive) {
-			
+
 			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
 				list.add(group.getGroupName());
 			}
@@ -261,7 +261,7 @@ public class TotalBar extends ChartjsLog {
 				if (groupActive) {
 					Set<EnrolledUser> usersInRoles = getUsersInRoles();
 					for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
-						printer.print(group.contains(enrolledUser)  && usersInRoles.contains(enrolledUser) ? 1 : 0);
+						printer.print(group.contains(enrolledUser) && usersInRoles.contains(enrolledUser) ? 1 : 0);
 					}
 				}
 				printer.println();
@@ -271,7 +271,7 @@ public class TotalBar extends ChartjsLog {
 
 	@Override
 	protected String[] getCSVDesglosedHeader() {
-		String selectedTab = mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
+		String selectedTab = tabPaneUbuLogs.getSelectionModel().getSelectedItem().getText();
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
 

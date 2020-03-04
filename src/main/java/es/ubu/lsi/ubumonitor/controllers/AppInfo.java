@@ -8,7 +8,7 @@ package es.ubu.lsi.ubumonitor.controllers;
  */
 public class AppInfo {
 
-	public static final String APPLICATION_VERSION = "v2.6.3-stable";
+	public static final String APPLICATION_VERSION = "v2.6.4-stable";
 
 	public static final String APPLICATION_NAME = "UBUMonitor";
 

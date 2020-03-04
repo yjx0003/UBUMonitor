@@ -25,6 +25,7 @@ import es.ubu.lsi.ubumonitor.controllers.charts.logs.CumLine;
 import es.ubu.lsi.ubumonitor.controllers.charts.logs.Heatmap;
 import es.ubu.lsi.ubumonitor.controllers.charts.logs.MeanDiff;
 import es.ubu.lsi.ubumonitor.controllers.charts.logs.Scatter;
+import es.ubu.lsi.ubumonitor.controllers.charts.logs.ScatterUser;
 import es.ubu.lsi.ubumonitor.controllers.charts.logs.Stackedbar;
 import es.ubu.lsi.ubumonitor.controllers.charts.logs.TotalBar;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
@@ -64,9 +65,9 @@ public class JavaConnector {
 		this.visualizationController = visualizationController;
 		this.mainController = visualizationController.getMainController();
 		webViewChartsEngine = visualizationController.getWebViewChartsEngine();
-		tabLogs = mainController.getTabUbuLogs();
-		tabGrades = mainController.getTabUbuGrades();
-		tabActivityCompletion = mainController.getTabActivity();
+		tabLogs = mainController.getSelectionController().getTabUbuLogs();
+		tabGrades = mainController.getSelectionController().getTabUbuGrades();
+		tabActivityCompletion = mainController.getSelectionController().getTabActivity();
 
 		mapChart = new EnumMap<>(ChartType.class);
 		addChart(new Heatmap(mainController));
@@ -74,6 +75,7 @@ public class JavaConnector {
 		addChart(new Line(mainController));
 		addChart(new Radar(mainController));
 		addChart(new Scatter(mainController));
+		addChart(new ScatterUser(mainController));
 		addChart(new BoxPlot(mainController));
 		addChart(new TotalBar(mainController));
 		addChart(new Violin(mainController));
@@ -251,8 +253,8 @@ public class JavaConnector {
 
 		int index = currentType.onClick(selectedIndex);
 		if (index >= 0) {
-			mainController.getListParticipants().scrollTo(index);
-			mainController.getListParticipants().getFocusModel().focus(index);
+			mainController.getSelectionUserController().getListParticipants().scrollTo(index);
+			mainController.getSelectionUserController().getListParticipants().getFocusModel().focus(index);
 		}
 
 	}

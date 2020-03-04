@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
@@ -35,7 +36,7 @@
       </StackPane>
    </center>
    <bottom>
-      <GridPane fx:id="optionsUbuLogs" prefHeight="98.0" prefWidth="490.0" BorderPane.alignment="CENTER">
+      <GridPane fx:id="optionsUbuLogs" BorderPane.alignment="CENTER">
          <columnConstraints>
             <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" />
             <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" />
@@ -60,7 +61,10 @@
                   <ChoiceBox fx:id="choiceBoxDate" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <Label text="%label.groupbydate" GridPane.rowIndex="1" />
                   <Label text="%label.setMax" />
-                  <TextField fx:id="textFieldMax" maxWidth="100.0" GridPane.columnIndex="1" />
+                  <TextField fx:id="textFieldMax" maxWidth="100.0" GridPane.columnIndex="1">
+                     <GridPane.margin>
+                        <Insets bottom="10.0" />
+                     </GridPane.margin></TextField>
                </children>
             </GridPane>
             <GridPane fx:id="dateGridPane" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowSpan="3">
@@ -74,7 +78,10 @@
                </rowConstraints>
                <children>
                   <Label text="%label.startdate" GridPane.halignment="RIGHT" />
-                  <DatePicker fx:id="datePickerStart" editable="false" GridPane.columnIndex="1" />
+                  <DatePicker fx:id="datePickerStart" editable="false" GridPane.columnIndex="1">
+                     <GridPane.margin>
+                        <Insets bottom="10.0" />
+                     </GridPane.margin></DatePicker>
                   <Label text="%label.enddate" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
                   <DatePicker fx:id="datePickerEnd" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>

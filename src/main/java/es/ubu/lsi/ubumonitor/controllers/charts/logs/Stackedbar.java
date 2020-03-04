@@ -255,7 +255,7 @@ public class Stackedbar extends ChartjsLog {
 		List<String> list = new ArrayList<>();
 		list.add("userid");
 		list.add("fullname");
-		String selectedTab = mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
+		String selectedTab = tabPaneUbuLogs.getSelectionModel().getSelectedItem().getText();
 		if (hasId()) {
 			list.add(selectedTab + "_id");
 		}

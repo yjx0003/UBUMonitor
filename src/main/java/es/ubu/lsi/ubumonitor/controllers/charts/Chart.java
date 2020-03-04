@@ -16,6 +16,8 @@ import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.Exportable;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.controllers.SelectionController;
+import es.ubu.lsi.ubumonitor.controllers.SelectionUserController;
 import es.ubu.lsi.ubumonitor.controllers.VisualizationController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
@@ -74,28 +76,31 @@ public abstract class Chart implements Exportable {
 	protected VisualizationController visualizationController;
 	protected Controller controller = Controller.getInstance();
 	protected MainController mainController;
+	protected SelectionController selectionController;
+	protected SelectionUserController selectionUserController;
 	protected static final double OPACITY = 0.2;
 
 	public Chart(MainController mainController, ChartType chartType, Tabs tabName) {
 		this.visualizationController = mainController.getVisualizationTabPageController();
-
-		this.slcGroup = mainController.getCheckComboBoxGroup();
-		this.listParticipants = mainController.getListParticipants();
-		this.tabUbuLogs = mainController.getTabUbuLogs();
-		this.tabUbuLogsComponent = mainController.getTabUbuLogsComponent();
-		this.tabUbuLogsEvent = mainController.getTabUbuLogsEvent();
-		this.tabUbuLogsSection = mainController.getTabUbuLogsSection();
-		this.tabUbuLogsCourseModule = mainController.getTabUbuLogsCourseModule();
-		this.listViewComponents = mainController.getListViewComponents();
-		this.listViewEvents = mainController.getListViewEvents();
-		this.listViewSection = mainController.getListViewSection();
-		this.listViewCourseModule = mainController.getListViewCourseModule();
+		this.selectionController = mainController.getSelectionController();
+		this.selectionUserController = mainController.getSelectionUserController();
+		this.slcGroup = selectionUserController.getCheckComboBoxGroup();
+		this.listParticipants = selectionUserController.getListParticipants();
+		this.tabUbuLogs = selectionController.getTabUbuLogs();
+		this.tabUbuLogsComponent = selectionController.getTabUbuLogsComponent();
+		this.tabUbuLogsEvent = selectionController.getTabUbuLogsEvent();
+		this.tabUbuLogsSection = selectionController.getTabUbuLogsSection();
+		this.tabUbuLogsCourseModule = selectionController.getTabUbuLogsCourseModule();
+		this.listViewComponents = selectionController.getListViewComponents();
+		this.listViewEvents = selectionController.getListViewEvents();
+		this.listViewSection = selectionController.getListViewSection();
+		this.listViewCourseModule = selectionController.getListViewCourseModule();
 		this.choiceBoxDate = visualizationController.getChoiceBoxDate();
 		this.datePickerStart = visualizationController.getDatePickerStart();
 		this.datePickerEnd = visualizationController.getDatePickerEnd();
 		this.stats = mainController.getStats();
-		this.tvwGradeReport = mainController.getTvwGradeReport();
-		this.tabPaneUbuLogs = mainController.getTabPaneUbuLogs();
+		this.tvwGradeReport = selectionController.getTvwGradeReport();
+		this.tabPaneUbuLogs = selectionController.getTabPaneUbuLogs();
 		this.webViewChartsEngine = visualizationController.getWebViewChartsEngine();
 
 		this.mainController = mainController;

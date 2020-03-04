@@ -59,14 +59,14 @@ public class UserInfoController {
 	}
 
 	public void previousUser() {
-		ObservableList<EnrolledUser> list = mainController.getListParticipants().getItems();
+		ObservableList<EnrolledUser> list = mainController.getSelectionUserController().getListParticipants().getItems();
 		int index = list.indexOf(actualEnrolledUser);
 		EnrolledUser previousUser = index == 0 ? list.get(list.size() - 1) : list.get(--index);
 		setUser(previousUser);
 	}
 
 	public void nextUser() {
-		ObservableList<EnrolledUser> list = mainController.getListParticipants().getItems();
+		ObservableList<EnrolledUser> list =  mainController.getSelectionUserController().getListParticipants().getItems();
 
 		int index = list.indexOf(actualEnrolledUser);
 

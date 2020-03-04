@@ -208,6 +208,7 @@ public class MenuController {
 		UtilMethods.createDialog(loader, controller.getStage());
 		ConfigurationController configurationController = loader.getController();
 		configurationController.setMainController(mainController);
+		configurationController.setOnClose();
 
 	}
 

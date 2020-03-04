@@ -2,9 +2,27 @@ package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.util.Units;
+import org.apache.poi.wp.usermodel.HeaderFooterType;
+import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
+import org.apache.poi.xwpf.usermodel.Document;
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFFooter;
+import org.apache.poi.xwpf.usermodel.XWPFHeader;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +31,8 @@ import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigurationController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.export.CSVBuilderAbstract;
 import es.ubu.lsi.ubumonitor.export.CSVExport;
+import es.ubu.lsi.ubumonitor.model.Course;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.event.ActionEvent;
@@ -72,7 +92,7 @@ public class MenuController {
 				ConfigHelper.setProperty("style", key);
 			});
 			menuTheme.getItems().add(menuItem);
-		
+
 		}
 	}
 
@@ -265,6 +285,76 @@ public class MenuController {
 		UtilMethods.createDialog(
 				new FXMLLoader(getClass().getResource("/view/CourseStats.fxml"), I18n.getResourceBundle()),
 				controller.getStage());
+	}
+
+	public void exportEnrolledUsersPhoto() throws IOException, InvalidFormatException {
+		List<EnrolledUser> enrolledUsers = mainController.getSelectionUserController().getListParticipants()
+				.getSelectionModel().getSelectedItems();
+		int columns = 5;
+		Course course = controller.getActualCourse();
+		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("menu.exportconfig"),
+				UtilMethods.removeReservedChar(course.getFullName()+"-"+course.getId())+".docx",
+				ConfigHelper.getProperty("configurationFolderPath", "./"),new FileChooser.ExtensionFilter("Word (*.docx)", "*.docx"));
+
+		File file = fileChooser.showSaveDialog(controller.getStage());
+		if (file == null)
+			return;
+
+		try (FileOutputStream out = new FileOutputStream(file);
+				XWPFDocument document = new XWPFDocument();) {
+
+			XWPFHeaderFooterPolicy headerFooterPolicy = document.getHeaderFooterPolicy();
+			if (headerFooterPolicy == null)
+				headerFooterPolicy = document.createHeaderFooterPolicy();
+
+			// create header start
+			XWPFHeader header = headerFooterPolicy.createHeader(XWPFHeaderFooterPolicy.DEFAULT);
+
+			XWPFParagraph paragraph = header.createParagraph();
+
+			XWPFRun run = paragraph.createRun();
+			run.setText(controller.getActualCourse().getFullName());
+			paragraph = header.createParagraph();
+			paragraph.setAlignment(ParagraphAlignment.RIGHT);
+
+			run = paragraph.createRun();
+			run.setText(LocalDateTime.now().format(Controller.DATE_TIME_FORMATTER));
+
+			XWPFFooter footer = document.createFooter(HeaderFooterType.DEFAULT);
+
+			paragraph = footer.getParagraphArray(0);
+			if (paragraph == null)
+				paragraph = footer.createParagraph();
+			paragraph.setAlignment(ParagraphAlignment.CENTER);
+			run = paragraph.createRun();
+
+			paragraph.getCTP().addNewFldSimple().setInstr("PAGE \\* ARABIC MERGEFORMAT");
+			run = paragraph.createRun();
+			run.setText("/");
+			paragraph.getCTP().addNewFldSimple().setInstr("NUMPAGES \\* ARABIC MERGEFORMAT");
+
+			XWPFTable tab = document.createTable((int) Math.ceil(enrolledUsers.size() / (double) columns), columns);
+			tab.setCellMargins(50, 0, 0, 0);
+
+			for (int i = 0; i < enrolledUsers.size(); i++) {
+
+				XWPFTableRow row = tab.getRow(i / columns);
+				XWPFTableCell cell = row.getCell(i % columns);
+				paragraph = cell.getParagraphArray(0);
+				paragraph.setAlignment(ParagraphAlignment.CENTER);
+				run = paragraph.createRun();
+				run.addPicture(new ByteArrayInputStream(enrolledUsers.get(i).getImageBytes()),
+						Document.PICTURE_TYPE_PNG, enrolledUsers.get(i).getId() + ".png", Units.pixelToEMU(100),
+						Units.pixelToEMU(100));
+				run.addBreak();
+				run.setText(enrolledUsers.get(i).getFullName());
+
+			}
+			document.write(out);
+
+		}
+		UtilMethods.confirmationWindow("Exported");
+
 	}
 
 	/**

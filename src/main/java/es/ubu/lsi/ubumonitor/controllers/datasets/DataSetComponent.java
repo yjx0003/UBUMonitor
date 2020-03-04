@@ -8,6 +8,7 @@ import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.Component;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.LogLine;
 
 /**
  * Clase que sobrescribe los metodos restantes para completar el equeleto de
@@ -50,7 +51,7 @@ public class DataSetComponent implements DataSet<Component> {
 	}
 
 	@Override
-	public Map<EnrolledUser, Map<Component, List<Long>>> getUserCounts(GroupByAbstract<?> groupBy, List<EnrolledUser> enrolledUsers,
+	public Map<EnrolledUser, Map<Component, List<Integer>>> getUserCounts(GroupByAbstract<?> groupBy, List<EnrolledUser> enrolledUsers,
 			List<Component> elements, LocalDate start, LocalDate end) {
 		return groupBy.getComponents().getUsersCounts(enrolledUsers, elements, start, end);
 	}
@@ -60,6 +61,12 @@ public class DataSetComponent implements DataSet<Component> {
 			List<Component> elements, LocalDate start, LocalDate end) {
 		return groupBy.getComponents().getMeans(enrolledUsers, elements, start, end);
 
+	}
+
+	@Override
+	public Map<EnrolledUser, Map<Component, List<LogLine>>> getUserLogs(GroupByAbstract<?> groupBy,
+			List<EnrolledUser> enrolledUsers, List<Component> elements, LocalDate start, LocalDate end) {
+		return groupBy.getComponents().getUserLogs(enrolledUsers, elements, start, end);
 	}
 
 }

@@ -35,7 +35,7 @@ public class ConfigurationController implements Initializable {
 	private MainController mainController;
 
 	@FXML
-	PropertySheet propertySheet;
+	private PropertySheet propertySheet;
 
 	private static final Callback<Item, PropertyEditor<?>> DEFAUL_PROPERTY_EDITOR_FACTORY = new DefaultPropertyEditorFactory();
 

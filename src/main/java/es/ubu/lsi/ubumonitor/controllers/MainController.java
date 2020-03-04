@@ -27,7 +27,7 @@ import org.controlsfx.control.textfield.TextFields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.ubumonitor.controllers.configuration.Config;
+import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigurationController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.export.CSVBuilderAbstract;
@@ -44,6 +44,7 @@ import es.ubu.lsi.ubumonitor.model.ModuleType;
 import es.ubu.lsi.ubumonitor.model.Role;
 import es.ubu.lsi.ubumonitor.model.Section;
 import es.ubu.lsi.ubumonitor.model.Stats;
+import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -117,7 +118,7 @@ public class MainController implements Initializable {
 	private Label lblCountParticipants;
 	@FXML
 	private ListView<EnrolledUser> listParticipants;
-	FilteredList<EnrolledUser> filteredEnrolledList;
+	private FilteredList<EnrolledUser> filteredEnrolledList;
 
 	@FXML
 	private CheckComboBox<Role> checkComboBoxRole;
@@ -238,13 +239,15 @@ public class MainController implements Initializable {
 
 	private AutoCompletionBinding<EnrolledUser> autoCompletionBinding;
 
+
+	
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades de
 	 * las que se compone.
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		CourseStatsController.logStatistics(controller.getActualCourse());
 		try {
 			LOGGER.info("Completada la carga del curso {}", controller.getActualCourse().getFullName());
 
@@ -258,7 +261,7 @@ public class MainController implements Initializable {
 					controller.getConfiguration(controller.getActualCourse()));
 			initWebViewTabs();
 			tabPane.getSelectionModel()
-					.select(Config.getProperty("tabPane", tabPane.getSelectionModel().getSelectedIndex()));
+					.select(ConfigHelper.getProperty("tabPane", tabPane.getSelectionModel().getSelectedIndex()));
 			initTabGrades();
 			initTabLogs();
 			initTabActivityCompletion();
@@ -284,7 +287,7 @@ public class MainController implements Initializable {
 			menuItem.setText(key);
 			menuItem.setToggleGroup(group);
 
-			if (key.equals(Config.getProperty("style", "Modena"))) {
+			if (key.equals(ConfigHelper.getProperty("style", "Modena"))) {
 				menuItem.setSelected(true);
 			}
 			menuItem.setOnAction(event -> {
@@ -293,18 +296,18 @@ public class MainController implements Initializable {
 				if (path != null) {
 					controller.getStage().getScene().getStylesheets().add(path);
 				}
-				Config.setProperty("style", key);
+				ConfigHelper.setProperty("style", key);
 			});
 			menuTheme.getItems().add(menuItem);
 		}
 	}
 
 	private void initUserPhoto() {
-		Image image = new Image(new ByteArrayInputStream(controller.getDataBase().getMoodleUser().getUserPhoto()));
+		Image image = new Image(new ByteArrayInputStream(controller.getDataBase().getUserPhoto()));
 		userPhoto.setImage(image);
 
 		ContextMenu menu = new ContextMenu();
-		MenuItem user = new MenuItem(controller.getDataBase().getMoodleUser().getFullName(), new ImageView(image));
+		MenuItem user = new MenuItem(controller.getDataBase().getFullName(), new ImageView(image));
 		MenuItem logout = new MenuItem(I18n.get("menu.logout"));
 		MenuItem exit = new MenuItem(I18n.get("menu.exit"));
 
@@ -357,7 +360,7 @@ public class MainController implements Initializable {
 	private void initWebViewTabs() {
 
 		webViewTabPane.getSelectionModel()
-				.select(Config.getProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex()));
+				.select(ConfigHelper.getProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex()));
 		webViewTabPane.getSelectionModel().selectedItemProperty().addListener((ob, old, newValue) -> {
 			if (tabUbuLogs.isSelected()) {
 				getActions().onSetTabLogs();
@@ -1319,7 +1322,7 @@ public class MainController implements Initializable {
 		LOGGER.info("Exportando ficheros CSV");
 		try {
 			DirectoryChooser dir = new DirectoryChooser();
-			File file = new File(Config.getProperty("csvFolderPath", "./"));
+			File file = new File(ConfigHelper.getProperty("csvFolderPath", "./"));
 			if (file.exists() && file.isDirectory()) {
 				dir.setInitialDirectory(file);
 			}
@@ -1327,9 +1330,10 @@ public class MainController implements Initializable {
 			File selectedDir = dir.showDialog(controller.getStage());
 			if (selectedDir != null) {
 				CSVBuilderAbstract.setPath(selectedDir.toPath());
-				CSVExport.run();
+				Charsets charset = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL, "charset");
+				CSVExport.run(charset.get());
 				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + selectedDir.getAbsolutePath());
-				Config.setProperty("csvFolderPath", selectedDir.getAbsolutePath());
+				ConfigHelper.setProperty("csvFolderPath", selectedDir.getAbsolutePath());
 			}
 
 		} catch (Exception e) {
@@ -1411,7 +1415,7 @@ public class MainController implements Initializable {
 			LOGGER.error("Error", ex);
 			return;
 		}
-		Style.addStyle(Config.getProperty("style"), newScene.getStylesheets());
+		Style.addStyle(ConfigHelper.getProperty("style"), newScene.getStylesheets());
 		ConfigurationController configurationController = loader.getController();
 		Stage stage = new Stage();
 		configurationController.setMainController(this);
@@ -1427,12 +1431,12 @@ public class MainController implements Initializable {
 
 	public void importConfiguration() {
 		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("menu.importconfig"), null,
-				Config.getProperty("configurationFolderPath", "./"),
+				ConfigHelper.getProperty("configurationFolderPath", "./"),
 				new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
 
 		File file = fileChooser.showOpenDialog(controller.getStage());
 		if (file != null) {
-			Config.setProperty("configurationFolderPath", file.getParent());
+			ConfigHelper.setProperty("configurationFolderPath", file.getParent());
 			try {
 				ConfigurationController.loadConfiguration(controller.getMainConfiguration(), file.toPath());
 				changeConfiguration();
@@ -1447,13 +1451,13 @@ public class MainController implements Initializable {
 	public void exportConfiguration() {
 		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("menu.exportconfig"),
 				UtilMethods.removeReservedChar(controller.getActualCourse().getFullName()) + ".json",
-				Config.getProperty("configurationFolderPath", "./"),
+				ConfigHelper.getProperty("configurationFolderPath", "./"),
 				new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
 
 		File file = fileChooser.showSaveDialog(controller.getStage());
 		if (file != null) {
 			ConfigurationController.saveConfiguration(controller.getMainConfiguration(), file.toPath());
-			Config.setProperty("configurationFolderPath", file.getParent());
+			ConfigHelper.setProperty("configurationFolderPath", file.getParent());
 		}
 	}
 
@@ -1466,25 +1470,7 @@ public class MainController implements Initializable {
 
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AboutApp.fxml"), I18n.getResourceBundle());
 
-		Scene newScene;
-		try {
-			newScene = new Scene(loader.load());
-		} catch (IOException ex) {
-			LOGGER.error("Error", ex);
-			return;
-		}
-		Style.addStyle(Config.getProperty("style"), newScene.getStylesheets());
-
-		Stage stage = new Stage();
-		stage.setScene(newScene);
-		stage.setResizable(false);
-		stage.initOwner(controller.getStage());
-		stage.initModality(Modality.WINDOW_MODAL);
-
-		stage.getIcons().add(new Image("/img/logo_min.png"));
-		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
-
-		stage.show();
+		UtilMethods.createDialog(loader, controller.getStage());
 
 	}
 
@@ -1492,31 +1478,19 @@ public class MainController implements Initializable {
 
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/UserInfo.fxml"), I18n.getResourceBundle());
 
-		Scene newScene;
-		try {
-			newScene = new Scene(loader.load());
-		} catch (IOException ex) {
-			LOGGER.error("Error", ex);
-			return;
-		}
-		Style.addStyle(Config.getProperty("style"), newScene.getStylesheets());
+		UtilMethods.createDialog(loader, controller.getStage());
+		
 		UserInfoController userInfoController = loader.getController();
 		userInfoController.init(this, enrolledUser);
-		Stage stage = new Stage();
-		stage.setScene(newScene);
-		stage.setResizable(false);
-		stage.initOwner(controller.getStage());
-		stage.initModality(Modality.WINDOW_MODAL);
-
-		stage.getIcons().add(new Image("/img/logo_min.png"));
-		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
-
-		stage.show();
 
 	}
 
 	public void moreInfo() {
 		UtilMethods.openURL(AppInfo.GITHUB);
+	}
+	
+	public void courseStats() {
+		UtilMethods.createDialog(new FXMLLoader(getClass().getResource("/view/CourseStats.fxml"), I18n.getResourceBundle()), controller.getStage());
 	}
 
 	/**
@@ -1653,80 +1627,40 @@ public class MainController implements Initializable {
 		return tabPaneUbuLogs;
 	}
 
-	public void setTabPaneUbuLogs(TabPane tabPaneUbuLogs) {
-		this.tabPaneUbuLogs = tabPaneUbuLogs;
-	}
-
 	public CheckComboBox<Role> getCheckComboBoxRole() {
 		return checkComboBoxRole;
-	}
-
-	public void setCheckComboBoxRole(CheckComboBox<Role> checkComboBoxRole) {
-		this.checkComboBoxRole = checkComboBoxRole;
 	}
 
 	public CheckComboBox<Group> getCheckComboBoxGroup() {
 		return checkComboBoxGroup;
 	}
 
-	public void setCheckComboBoxGroup(CheckComboBox<Group> checkComboBoxGroup) {
-		this.checkComboBoxGroup = checkComboBoxGroup;
-	}
-
 	public CheckComboBox<LastActivity> getCheckComboBoxActivity() {
 		return checkComboBoxActivity;
-	}
-
-	public void setCheckComboBoxActivity(CheckComboBox<LastActivity> checkComboBoxActivity) {
-		this.checkComboBoxActivity = checkComboBoxActivity;
 	}
 
 	public VisualizationController getVisualizationTabPageController() {
 		return visualizationController;
 	}
 
-	public void setVisualizationTabPageController(VisualizationController visualizationTabPageController) {
-		this.visualizationController = visualizationTabPageController;
-	}
-
 	public CheckComboBox<ModuleType> getCheckComboBoxCourseModule() {
 		return checkComboBoxCourseModule;
-	}
-
-	public void setCheckComboBoxCourseModule(CheckComboBox<ModuleType> checkComboBoxCourseModule) {
-		this.checkComboBoxCourseModule = checkComboBoxCourseModule;
 	}
 
 	public CheckComboBox<ModuleType> getCheckComboBoxModuleType() {
 		return checkComboBoxModuleType;
 	}
 
-	public void setCheckComboBoxModuleType(CheckComboBox<ModuleType> checkComboBoxModuleType) {
-		this.checkComboBoxModuleType = checkComboBoxModuleType;
-	}
-
 	public TabPane getWebViewTabPane() {
 		return webViewTabPane;
-	}
-
-	public void setWebViewTabPane(TabPane webViewTabPane) {
-		this.webViewTabPane = webViewTabPane;
 	}
 
 	public Tab getVisualizationTab() {
 		return visualizationTab;
 	}
 
-	public void setVisualizationTab(Tab visualizationTab) {
-		this.visualizationTab = visualizationTab;
-	}
-
 	public Map<Tab, MainAction> getTabMap() {
 		return tabMap;
-	}
-
-	public void setTabMap(Map<Tab, MainAction> tabMap) {
-		this.tabMap = tabMap;
 	}
 
 	private MainAction getActions() {
@@ -1789,8 +1723,8 @@ public class MainController implements Initializable {
 	}
 
 	private void onClose() {
-		Config.setProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex());
-		Config.setProperty("tabPane", tabPane.getSelectionModel().getSelectedIndex());
+		ConfigHelper.setProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex());
+		ConfigHelper.setProperty("tabPane", tabPane.getSelectionModel().getSelectedIndex());
 	}
 
 }

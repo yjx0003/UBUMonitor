@@ -12,13 +12,12 @@ import org.slf4j.LoggerFactory;
 import com.sun.javafx.webkit.WebConsoleListener;
 
 import es.ubu.lsi.ubumonitor.controllers.charts.Tabs;
-import es.ubu.lsi.ubumonitor.controllers.configuration.Config;
+import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.TypeTimes;
 import es.ubu.lsi.ubumonitor.model.LogStats;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
@@ -92,6 +91,7 @@ public class VisualizationController implements MainAction {
 		webViewChartsEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
 			if (Worker.State.SUCCEEDED != newState)
 				return;
+			progressBar.setVisible(false);
 			JSObject window = (JSObject) webViewChartsEngine.executeScript("window");
 			window.setMember("javaConnector", javaConnector);
 			webViewChartsEngine.executeScript("setLanguage()");
@@ -161,12 +161,12 @@ public class VisualizationController implements MainAction {
 			}
 		});
 
-		optionsUbuLogs.visibleProperty().bind(mainController.getTabUbuLogs().selectedProperty()
-				.or(mainController.getTabActivity().selectedProperty()));
 		optionsUbuLogs.managedProperty().bind(optionsUbuLogs.visibleProperty());
-		dateGridPane.visibleProperty().bind(mainController.getTabActivity().selectedProperty().or(Bindings
-				.createBooleanBinding(() -> choiceBoxDate.getValue().useDatePicker(), choiceBoxDate.valueProperty())));
-		gridPaneOptionLogs.visibleProperty().bind(mainController.getTabUbuLogs().selectedProperty());
+		
+	}
+
+	public GridPane getGridPaneOptionLogs() {
+		return gridPaneOptionLogs;
 	}
 
 	private void initContextMenu() {
@@ -193,19 +193,44 @@ public class VisualizationController implements MainAction {
 
 	}
 
+	@Override
+	public void save() {
+		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportpng"),
+				String.format("%s_%s_%s.png", controller.getActualCourse().getId(),
+						LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
+						javaConnector.getCurrentType().getChartType()),
+				ConfigHelper.getProperty("imageFolderPath", "./"), new FileChooser.ExtensionFilter(".png", "*.png"));
+
+		try {
+			File file = fileChooser.showSaveDialog(controller.getStage());
+			if (file != null) {
+				String str = javaConnector.export(file);
+				if (str == null)
+					return;
+				javaConnector.saveImage(str);
+				ConfigHelper.setProperty("imageFolderPath", file.getParent());
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error al guardar el gráfico: {}", e);
+			UtilMethods.errorWindow(I18n.get("error.savechart"), e);
+		}
+
+	}
+	
 	public void exportCSV() {
 
 		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportcsv"),
 				String.format("%s_%s_%s.csv", controller.getActualCourse().getId(),
 						LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
 						javaConnector.getCurrentType().getChartType()),
-				Config.getProperty("csvFolderPath", "./"), new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
+				ConfigHelper.getProperty("csvFolderPath", "./"), new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
 
 		File file = fileChooser.showSaveDialog(controller.getStage());
 		if (file != null) {
-			Config.setProperty("csvFolderPath", file.getParent());
+			ConfigHelper.setProperty("csvFolderPath", file.getParent());
 			try {
 				javaConnector.getCurrentType().exportCSV(file.getAbsolutePath());
+				UtilMethods.infoWindow(I18n.get("message.export_csv") + file.getAbsolutePath());
 			} catch (IOException e) {
 				UtilMethods.errorWindow("Cannot save file", e);
 			}
@@ -219,13 +244,14 @@ public class VisualizationController implements MainAction {
 				String.format("%s_%s_%s_breakdown.csv", controller.getActualCourse().getId(),
 						LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
 						javaConnector.getCurrentType().getChartType()),
-				Config.getProperty("csvFolderPath", "./"), new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
+				ConfigHelper.getProperty("csvFolderPath", "./"), new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
 
 		File file = fileChooser.showSaveDialog(controller.getStage());
 		if (file != null) {
-			Config.setProperty("csvFolderPath", file.getParent());
+			ConfigHelper.setProperty("csvFolderPath", file.getParent());
 			try {
 				javaConnector.getCurrentType().exportCSVDesglosed(file.getAbsolutePath());
+				UtilMethods.infoWindow(I18n.get("message.export_csv_desglossed") + file.getAbsolutePath());
 			} catch (IOException e) {
 				UtilMethods.errorWindow("Cannot save file", e);
 			}
@@ -340,29 +366,7 @@ public class VisualizationController implements MainAction {
 		javaConnector.updateChart();
 	}
 
-	@Override
-	public void save() {
-		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportpng"),
-				String.format("%s_%s_%s.png", controller.getActualCourse().getId(),
-						LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
-						javaConnector.getCurrentType().getChartType()),
-				Config.getProperty("imageFolderPath", "./"), new FileChooser.ExtensionFilter(".png", "*.png"));
 
-		try {
-			File file = fileChooser.showSaveDialog(controller.getStage());
-			if (file != null) {
-				String str = javaConnector.export(file);
-				if (str == null)
-					return;
-				javaConnector.saveImage(str);
-				Config.setProperty("imageFolderPath", file.getParent());
-			}
-		} catch (IOException e) {
-			LOGGER.error("Error al guardar el gráfico: {}", e);
-			UtilMethods.errorWindow(I18n.get("error.savechart"), e);
-		}
-
-	}
 
 	@Override
 	public void applyConfiguration() {

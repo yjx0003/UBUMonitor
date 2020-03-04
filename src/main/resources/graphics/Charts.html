@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="../css/tabulator.css" />
     <link rel="stylesheet" type="text/css" href="../css/chart.css" />
 
-    <script type="text/javascript" src="./lib/moment.js"></script>
+    <script type="text/javascript" src="./lib/moment-with-locale.js"></script>
     <script type="text/javascript" src="./lib/Chart.js"></script>
     <script type="text/javascript" src="./lib/color-hash.js"></script>
     <script type="text/javascript" src="./lib/html2canvas.js"></script>
@@ -39,6 +39,9 @@
         <input type="button" class="btn" id="HEAT_MAP" onclick='javaConnector.updateCharts("HEAT_MAP");' />
         <input type="button" class="btn" id="CUM_LINE" onclick='javaConnector.updateCharts("CUM_LINE");' />
         <input type="button" class="btn" id="MEAN_DIFF" onclick='javaConnector.updateCharts("MEAN_DIFF");' />
+        <input type="button" class="btn" id="SCATTER" onclick='javaConnector.updateCharts("SCATTER");' />
+        <input type="button" class="btn" id="TOTAL_BAR" onclick='javaConnector.updateCharts("TOTAL_BAR");' />
+        
 
     </div>
     <div class="pestañas" id="ACTIVITY_COMPLETION">
@@ -236,14 +239,13 @@
         displayLegendButton(options.useLegend);
         displayGroupButton(options.useGroup);
         displayGeneralButton(options.useGeneral);
-
+		if(!options.legend){
+			options.legend={};
+		}
+		options.legend.display = options.legendActive;
         if (myChart.config.type == options.typeGraph) {
             myChart.data = dataset;
             myChart.options = options;
-            if(myChart.options.legend ==null){
-            	myChart.options.legend = {};
-            }
-            myChart.options.legend.display = options.legendActive;
             myChart.update();        
             
             
@@ -379,6 +381,7 @@
 
     function setLocale(newLocale) {
         locale = newLocale;
+        moment.locale(newLocale);
     }
     function colorRGB(color) {
         let colors = colorHash.rgb(color);
@@ -395,22 +398,6 @@
         return colorHash.hex(color);
     }
 
-    // Plugin que nos permite establecer el color de fondo del gráfico
-    // el color se define en opciones->chartArea->backgroundColor
-    Chart.pluginService.register({
-        beforeDraw: function (chart, easing) {
-            if (chart.config.options.chartArea && chart.config.options.chartArea.backgroundColor) {
-                var helpers = Chart.helpers;
-                var ctx = chart.chart.ctx;
-                var canvas = document.getElementById('myChart');
-
-                ctx.save();
-                ctx.fillStyle = chart.config.options.chartArea.backgroundColor;
-                ctx.fillRect(0, 0, canvas.scrollWidth, canvas.scrollHeight);
-                ctx.restore();
-            }
-        }
-    });
 </script>
 
 </body>

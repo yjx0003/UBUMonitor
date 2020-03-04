@@ -7,6 +7,7 @@ import java.util.Map;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.LogLine;
 
 public class DatasSetCourseModule implements DataSet<CourseModule> {
 
@@ -45,9 +46,15 @@ public class DatasSetCourseModule implements DataSet<CourseModule> {
 	}
 
 	@Override
-	public Map<EnrolledUser, Map<CourseModule, List<Long>>> getUserCounts(GroupByAbstract<?> groupBy,
+	public Map<EnrolledUser, Map<CourseModule, List<Integer>>> getUserCounts(GroupByAbstract<?> groupBy,
 			List<EnrolledUser> enrolledUsers, List<CourseModule> elements, LocalDate start, LocalDate end) {
 		return groupBy.getCourseModules().getUsersCounts(enrolledUsers, elements, start, end);
+	}
+
+	@Override
+	public Map<EnrolledUser, Map<CourseModule, List<LogLine>>> getUserLogs(GroupByAbstract<?> groupBy,
+			List<EnrolledUser> enrolledUsers, List<CourseModule> elements, LocalDate start, LocalDate end) {
+		return groupBy.getCourseModules().getUserLogs(enrolledUsers, elements, start, end);
 	}
 
 }

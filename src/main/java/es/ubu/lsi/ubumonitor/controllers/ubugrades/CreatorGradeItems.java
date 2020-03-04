@@ -84,9 +84,16 @@ public class CreatorGradeItems {
 	public List<GradeItem> createGradeItems(int courseid) throws IOException {
 		WebService ws = new GradereportUserGetGradesTable(courseid);
 		Response response = ws.getResponse();
-
-		JSONObject jsonObject = new JSONObject(new JSONTokener(response.body().byteStream()));
-		response.close();
+		JSONObject jsonObject;
+		try {
+			jsonObject = new JSONObject(new JSONTokener(response.body().byteStream()));
+		}catch(JSONException e) {
+			LOGGER.error("Error al parsear las calificaciones.", e);
+			return Collections.emptyList();
+		}finally {
+			response.close();
+		}
+		
 		List<GradeItem> gradeItems = createHierarchyGradeItems(jsonObject);
 
 		setEnrolledUserGrades(jsonObject, gradeItems);

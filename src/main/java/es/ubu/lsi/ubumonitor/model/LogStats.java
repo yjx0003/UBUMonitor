@@ -6,13 +6,10 @@ import java.util.List;
 
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAll;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAmPm;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByDay;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByDayOfWeek;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByHour;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByYear;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByYearMonth;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByYearQuarter;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByYearWeek;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.TypeTimes;
 
@@ -38,13 +35,10 @@ public class LogStats implements Serializable {
 		stastistics = new ArrayList<>();
 
 		stastistics.add(new GroupByHour(logLines));
-		stastistics.add(new GroupByAmPm(logLines));
 		stastistics.add(new GroupByDay(logLines));
 		stastistics.add(new GroupByDayOfWeek(logLines));
 		stastistics.add(new GroupByYearWeek(logLines));
 		stastistics.add(new GroupByYearMonth(logLines));
-		stastistics.add(new GroupByYearQuarter(logLines));
-		stastistics.add(new GroupByYear(logLines));
 		stastistics.add(new GroupByAll(logLines));
 
 	}

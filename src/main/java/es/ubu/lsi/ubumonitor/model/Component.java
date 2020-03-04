@@ -62,9 +62,6 @@ public enum Component {
 	XML_FILE("XML file"),
 	COMPONENT_NOT_AVAILABLE("Component not avaible");
 
-
-
-	
 	private String name;
 	private static Map<String, Component> map;
 

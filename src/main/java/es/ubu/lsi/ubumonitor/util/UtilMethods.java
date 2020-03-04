@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 import es.ubu.lsi.ubumonitor.controllers.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.controllers.Style;
+import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -51,7 +53,7 @@ public class UtilMethods {
 	 * @return
 	 */
 	public static <E> String join(List<E> datasets) {
-		return datasets.stream().map(E::toString).collect(Collectors.joining(", "));
+		return datasets.stream().map(E::toString).collect(Collectors.joining(","));
 	}
 
 	/**
@@ -63,7 +65,7 @@ public class UtilMethods {
 	 */
 	public static <T> String joinWithQuotes(List<T> list) {
 		// https://stackoverflow.com/a/18229122
-		return list.stream().map(s -> "'" + escapeJavaScriptText(s.toString()) + "'").collect(Collectors.joining(", "));
+		return list.stream().map(s -> "'" + escapeJavaScriptText(s.toString()) + "'").collect(Collectors.joining(","));
 	}
 
 	/**
@@ -180,14 +182,10 @@ public class UtilMethods {
 		try {
 
 			Parent root = loader.load();
-
-			if (stage.getScene() == null) {
-				stage.setScene(new Scene(root));
-			} else {
-				stage.getScene().setRoot(root);
-
-			}
 			stage.close();
+
+			stage.setScene(new Scene(root));
+
 			if (showStage) {
 				stage.show();
 			}
@@ -197,9 +195,33 @@ public class UtilMethods {
 		}
 
 	}
+	
+	public static void createDialog(FXMLLoader loader, Stage ownerStage) {
+		
+
+		Scene newScene;
+		try {
+			newScene = new Scene(loader.load());
+		} catch (IOException ex) {
+			errorWindow("FXML file corrupted", ex);
+			return;
+		}
+		Style.addStyle(ConfigHelper.getProperty("style"), newScene.getStylesheets());
+		Stage stage = new Stage();
+		stage.setScene(newScene);
+		stage.setResizable(false);
+		stage.initOwner(ownerStage);
+		stage.initModality(Modality.WINDOW_MODAL);
+
+		stage.getIcons().add(new Image("/img/logo_min.png"));
+		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
+
+		stage.show();
+	}
 
 	public static void openURL(String url) {
-		//from http://www.java2s.com/Code/Java/Development-Class/LaunchBrowserinMacLinuxUnix.htm
+		// from
+		// http://www.java2s.com/Code/Java/Development-Class/LaunchBrowserinMacLinuxUnix.htm
 		String osName = System.getProperty("os.name");
 		try {
 			if (osName.startsWith("Mac OS")) {

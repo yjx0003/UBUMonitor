@@ -209,6 +209,7 @@ public class TotalBar extends ChartjsLog {
 		String selectedTab = mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
+		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
 
 		List<String> list = new ArrayList<>();
 		if (hasId()) {
@@ -216,6 +217,9 @@ public class TotalBar extends ChartjsLog {
 		}
 		list.add(selectedTab);
 		list.add(I18n.get("text.selectedUsers"));
+		if (generalActive) {
+			list.add(I18n.get("text.filteredusers"));
+		}
 		if (groupActive) {
 			
 			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {

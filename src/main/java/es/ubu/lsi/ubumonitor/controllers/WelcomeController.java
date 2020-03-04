@@ -150,16 +150,14 @@ public class WelcomeController implements Initializable {
 
 		try {
 			conexionLabel.setText(I18n.get("text.online_" + !controller.isOfflineMode()));
-			lblUser.setText(controller.getUser().getFullName());
-			LOGGER.info("Cargando cursos...");
-
+			lblUser.setText(I18n.get("label.welcome") + " " + controller.getUser().getFullName());
 			progressBar.visibleProperty().bind(btnEntrar.visibleProperty().not());
 			anchorPane.disableProperty().bind(btnEntrar.visibleProperty().not());
 			lblProgress.visibleProperty().bind(btnEntrar.visibleProperty().not());
 			btnRemove.visibleProperty().bind(btnEntrar.visibleProperty());
 			btnRemove.disableProperty().bind(chkUpdateData.disabledProperty());
 			chkOnlyWeb.visibleProperty().bind(chkUpdateData.selectedProperty());
-			chkOnlyWeb.setSelected(Boolean.parseBoolean(ConfigHelper.getProperty("onlyWeb", "true")));
+			chkOnlyWeb.setSelected(Boolean.parseBoolean(ConfigHelper.getProperty("onlyWeb", "false")));
 			labelLoggedIn.setText(controller.getLoggedIn().format(Controller.DATE_TIME_FORMATTER));
 			labelHost.setText(controller.getUrlHost().toString());
 
@@ -257,10 +255,10 @@ public class WelcomeController implements Initializable {
 
 		Course selectedCourse = getSelectedCourse();
 		if (selectedCourse == null) {
-			lblNoSelect.setText(I18n.get("error.nocourse"));
+			lblNoSelect.setVisible(true);
 			return;
 		}
-
+		lblNoSelect.setVisible(false);
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getFullName());
 
 		ConfigHelper.setProperty("courseList", Integer.toString(tabPane.getSelectionModel().getSelectedIndex()));

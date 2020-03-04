@@ -210,7 +210,7 @@ public class VisualizationController implements MainAction {
 				javaConnector.saveImage(str);
 				ConfigHelper.setProperty("imageFolderPath", file.getParent());
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			LOGGER.error("Error al guardar el gráfico: {}", e);
 			UtilMethods.errorWindow(I18n.get("error.savechart"), e);
 		}

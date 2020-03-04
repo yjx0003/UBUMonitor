@@ -68,6 +68,10 @@ public class ConfigurationController implements Initializable {
 		});
 
 	}
+	
+	public void setOnClose() {
+		propertySheet.getScene().getWindow().setOnHidden(e -> onClose());
+	}
 
 	public void onClose() {
 		Controller controller = Controller.getInstance();
@@ -92,11 +96,10 @@ public class ConfigurationController implements Initializable {
 
 	public void restoreConfiguration() {
 		ButtonType option = UtilMethods.confirmationWindow(I18n.get("text.restoredefault"));
-		if(option == ButtonType.OK) {
+		if (option == ButtonType.OK) {
 			Controller.getInstance().getMainConfiguration().setDefaultValues();
 			propertySheet.getItems().setAll(Controller.getInstance().getMainConfiguration().getProperties());
 		}
-	
 
 	}
 
@@ -130,6 +133,5 @@ public class ConfigurationController implements Initializable {
 	public void setMainController(MainController mainController) {
 		this.mainController = mainController;
 	}
-
 
 }

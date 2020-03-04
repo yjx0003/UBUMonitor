@@ -20,12 +20,10 @@ public class CSVClustering {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CSVClustering.class);
 
-	private static final String FILENAME = "clusering.csv";
-
 	private static final String[] HEAD_TABLE = new String[] { "UserId", "FullName", "Cluster" };
 
 	public static void exportTable(List<ClusterWrapper> clusters, Path path) {
-		try (Writer writer = Files.newBufferedWriter(path.resolve(FILENAME), StandardCharsets.UTF_8);
+		try (Writer writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
 				CSVWriter csvWriter = new CSVWriter(writer)) {
 
 			csvWriter.writeNext(HEAD_TABLE);

@@ -39,7 +39,6 @@ import controllers.datasets.DataSetComponent;
 import controllers.datasets.DataSetComponentEvent;
 import controllers.datasets.DataSetSection;
 import controllers.datasets.DatasSetCourseModule;
-
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -66,7 +65,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -372,16 +372,19 @@ public class ClusteringController {
 	@FXML
 	private void exportTable() {
 		try {
-			DirectoryChooser directoryChooser = new DirectoryChooser();
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.getExtensionFilters().add(new ExtensionFilter("CSV (*.csv)", "*.csv"));
+			
+			
 			File file = new File(Config.getProperty("csvFolderPath", "./"));
 			if (file.exists() && file.isDirectory()) {
-				directoryChooser.setInitialDirectory(file);
+				fileChooser.setInitialDirectory(file);
 			}
-
-			File selectedDir = directoryChooser.showDialog(mainController.getController().getStage());
-			if (selectedDir != null) {
-				CSVClustering.exportTable(clusters, selectedDir.toPath());
-				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + selectedDir.getAbsolutePath());
+			fileChooser.setInitialFileName("clustering.csv");
+			File selectedFile = fileChooser.showSaveDialog(mainController.getController().getStage());
+			if (selectedFile != null) {
+				CSVClustering.exportTable(clusters, selectedFile.toPath());
+				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + selectedFile.getAbsolutePath());
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error al exportar ficheros CSV.", e);

@@ -1,12 +1,10 @@
 package es.ubu.lsi.ubumonitor.controllers.charts;
 
-import java.util.StringJoiner;
-
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 
 public abstract class ApexCharts extends Chart {
-	
 
 	public ApexCharts(MainController mainController, ChartType chartType, Tabs tabName) {
 		super(mainController, chartType, tabName);
@@ -18,11 +16,11 @@ public abstract class ApexCharts extends Chart {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	@Override
 	public void hideLegend() {
-		webViewChartsEngine.executeScript("hideLegendApexCharts("+getOptions()+")");
-		
+		webViewChartsEngine.executeScript("hideLegendApexCharts(" + getOptions() + ")");
+
 	}
 
 	@Override
@@ -33,41 +31,39 @@ public abstract class ApexCharts extends Chart {
 	
 	public String getXScaleLabel() {
 		MainConfiguration mainConfiguration = controller.getMainConfiguration();
-		StringJoiner jsObject = JSObject();
-		
-		boolean display =  mainConfiguration.getValue(MainConfiguration.GENERAL, "displayXScaleTitle");
+		JSObject jsObject = new JSObject();
+
+		boolean display = mainConfiguration.getValue(MainConfiguration.GENERAL, "displayXScaleTitle");
 		if (!display) {
 			return "title:{}";
 		}
-		addKeyValueWithQuote(jsObject, "text", getXAxisTitle());
-		StringJoiner style= JSObject();
-		addKeyValueWithQuote(style, "fontSize", 14);
-		addKeyValue(style, "color",
+		jsObject.putWithQuote("text", getXAxisTitle());
+		JSObject style = new JSObject();
+		style.putWithQuote("fontSize", 14);
+		style.put("color",
 				colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorXScaleTitle")));
-		addKeyValueWithQuote(style, "cssClass", "apexcharts");
-		addKeyValue(jsObject, "style", style.toString());
-		
-		return "title:" + jsObject.toString();
+		style.putWithQuote("cssClass", "apexcharts");
+		jsObject.put("style", style);
+
+		return "title:" + jsObject;
 
 	}
 
 	public String getYScaleLabel() {
 		MainConfiguration mainConfiguration = controller.getMainConfiguration();
-		StringJoiner jsObject = JSObject();
-		
-		boolean display =  mainConfiguration.getValue(MainConfiguration.GENERAL, "displayYScaleTitle");
+		JSObject jsObject = new JSObject();
+
+		boolean display = mainConfiguration.getValue(MainConfiguration.GENERAL, "displayYScaleTitle");
 		if (!display) {
 			return "title:{}";
 		}
-		addKeyValueWithQuote(jsObject, "text", getYAxisTitle());
-		StringJoiner style= JSObject();
-		addKeyValueWithQuote(style, "fontSize", 14);
-		addKeyValue(style, "color",
-				colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorYScaleTitle")));
-		addKeyValue(jsObject, "style", style.toString());
+		jsObject.putWithQuote("text", getYAxisTitle());
+		JSObject style = new JSObject();
+		style.putWithQuote("fontSize", 14);
+		style.put("color", colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorYScaleTitle")));
+		jsObject.put("style", style.toString());
 		return "title:" + jsObject.toString();
 
 	}
-
 
 }

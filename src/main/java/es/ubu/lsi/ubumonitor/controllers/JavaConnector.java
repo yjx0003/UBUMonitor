@@ -11,20 +11,22 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 
-import es.ubu.lsi.ubumonitor.controllers.charts.ActivitiesStatusTable;
-import es.ubu.lsi.ubumonitor.controllers.charts.BoxPlot;
-import es.ubu.lsi.ubumonitor.controllers.charts.CalificationBar;
 import es.ubu.lsi.ubumonitor.controllers.charts.Chart;
 import es.ubu.lsi.ubumonitor.controllers.charts.ChartType;
-import es.ubu.lsi.ubumonitor.controllers.charts.CumLine;
 import es.ubu.lsi.ubumonitor.controllers.charts.GradeReportTable;
-import es.ubu.lsi.ubumonitor.controllers.charts.Heatmap;
-import es.ubu.lsi.ubumonitor.controllers.charts.Line;
-import es.ubu.lsi.ubumonitor.controllers.charts.MeanDiff;
-import es.ubu.lsi.ubumonitor.controllers.charts.Radar;
-import es.ubu.lsi.ubumonitor.controllers.charts.Stackedbar;
 import es.ubu.lsi.ubumonitor.controllers.charts.Tabs;
-import es.ubu.lsi.ubumonitor.controllers.charts.Violin;
+import es.ubu.lsi.ubumonitor.controllers.charts.activitystatus.ActivitiesStatusTable;
+import es.ubu.lsi.ubumonitor.controllers.charts.gradeitems.BoxPlot;
+import es.ubu.lsi.ubumonitor.controllers.charts.gradeitems.CalificationBar;
+import es.ubu.lsi.ubumonitor.controllers.charts.gradeitems.Line;
+import es.ubu.lsi.ubumonitor.controllers.charts.gradeitems.Radar;
+import es.ubu.lsi.ubumonitor.controllers.charts.gradeitems.Violin;
+import es.ubu.lsi.ubumonitor.controllers.charts.logs.CumLine;
+import es.ubu.lsi.ubumonitor.controllers.charts.logs.Heatmap;
+import es.ubu.lsi.ubumonitor.controllers.charts.logs.MeanDiff;
+import es.ubu.lsi.ubumonitor.controllers.charts.logs.Scatter;
+import es.ubu.lsi.ubumonitor.controllers.charts.logs.Stackedbar;
+import es.ubu.lsi.ubumonitor.controllers.charts.logs.TotalBar;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.concurrent.Worker.State;
@@ -71,9 +73,9 @@ public class JavaConnector {
 		addChart(new Stackedbar(mainController));
 		addChart(new Line(mainController));
 		addChart(new Radar(mainController));
-
+		addChart(new Scatter(mainController));
 		addChart(new BoxPlot(mainController));
-
+		addChart(new TotalBar(mainController));
 		addChart(new Violin(mainController));
 		addChart(new GradeReportTable(mainController));
 		addChart(new CumLine(mainController));
@@ -102,42 +104,52 @@ public class JavaConnector {
 			currentType.clear();
 			currentType = chart;
 		}
-		
+
 		if (tabLogs.isSelected()) {
-			if(currentType.isCalculateMaxActivated()) {
+			if (currentType.isCalculateMaxActivated()) {
 				visualizationController.getTextFieldMax().setText(currentType.calculateMax());
-			}else {
+			} else {
 				visualizationController.getTextFieldMax().setText(currentType.getMax());
 			}
 
-		
 		}
+		manageOptions();
 		currentType.update();
-		
+
+	}
+
+	private void manageOptions() {
+		visualizationController.getOptionsUbuLogs()
+				.setVisible(currentType.isUseRangeDate() || currentType.isUseGroupBy());
+		visualizationController.getDateGridPane().setVisible(currentType.isUseRangeDate()
+				|| currentType.isUseGroupBy() && visualizationController.getChoiceBoxDate().getValue().useDatePicker());
+		visualizationController.getGridPaneOptionLogs().setVisible(currentType.isUseGroupBy());
 	}
 
 	public void updateChart(boolean calculateMax) {
 		if (webViewChartsEngine.getLoadWorker().getState() != State.SUCCEEDED) {
 			return;
 		}
-		if(calculateMax) {
+		if (calculateMax) {
 			setMax();
 		}
+		manageOptions();
 		currentType.update();
 
 	}
+
 	public void updateChart() {
 		updateChart(true);
 
 	}
 
 	public void updateChartFromJS() {
-
+		manageOptions();
 		currentType.update();
 	}
 
 	public void hideLegend() {
-		
+
 		currentType.hideLegend();
 	}
 
@@ -223,10 +235,12 @@ public class JavaConnector {
 	}
 
 	public void saveImage(String str) throws IOException {
-
+		
 		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
 		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
+
 		ImageIO.write(bufferedImage, "png", file);
+		UtilMethods.infoWindow(I18n.get("message.export_png") + file.getAbsolutePath());
 	}
 
 	public void showErrorWindow(String errorMessage) {

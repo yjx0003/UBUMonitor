@@ -1,10 +1,13 @@
 package es.ubu.lsi.ubumonitor.controllers.charts;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import org.controlsfx.control.CheckComboBox;
@@ -24,6 +27,8 @@ import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
 import es.ubu.lsi.ubumonitor.model.Section;
 import es.ubu.lsi.ubumonitor.model.Stats;
+import es.ubu.lsi.ubumonitor.util.Charsets;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
@@ -35,7 +40,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 
-public abstract class Chart implements Exportable{
+public abstract class Chart implements Exportable {
 
 	protected WebEngine webViewChartsEngine;
 	protected CheckComboBox<Group> slcGroup;
@@ -60,6 +65,10 @@ public abstract class Chart implements Exportable{
 	protected boolean useLegend;
 	protected boolean useGeneralButton;
 	protected boolean useGroupButton;
+	protected boolean useGroupBy;
+	
+
+	protected boolean useRangeDate;
 
 	protected boolean useNegativeValues;
 	protected VisualizationController visualizationController;
@@ -93,10 +102,6 @@ public abstract class Chart implements Exportable{
 		this.chartType = chartType;
 		this.tabName = tabName;
 
-		this.useLegend = false;
-		this.useGeneralButton = false;
-		this.useGroupButton = false;
-		this.useNegativeValues = false;
 	}
 
 	public boolean isUseLegend() {
@@ -162,38 +167,6 @@ public abstract class Chart implements Exportable{
 				.map(TreeItem::getValue).collect(Collectors.toList());
 	}
 
-	public StringJoiner JSArray() {
-		return new StringJoiner(",", "[", "]");
-	}
-
-	public StringJoiner JSObject() {
-		return new StringJoiner(",", "{", "}");
-	}
-
-	public <K, V> void addKeyValueWithQuote(StringJoiner jsObject, K key, V value) {
-		jsObject.add(key + ":'" + UtilMethods.escapeJavaScriptText(value.toString()) + "'");
-	}
-
-	public <T> void addKeyValue(StringJoiner jsObject, T key, int value) {
-		jsObject.add(key + ":" + value);
-	}
-
-	public <T> void addKeyValue(StringJoiner jsObject, T key, double value) {
-		jsObject.add(key + ":" + value);
-	}
-
-	public <T> void addKeyValue(StringJoiner jsObject, T key, boolean value) {
-		jsObject.add(key + ":" + value);
-	}
-
-	public <T> void addKeyValue(StringJoiner jsObject, T key, StringJoiner jsArray) {
-		jsObject.add(key + ":" + jsArray.toString());
-	}
-
-	public <T> void addKeyValue(StringJoiner jsObject, T key, String value) {
-		jsObject.add(key + ":" + value);
-	}
-
 	public abstract String getOptions();
 
 	public abstract void update();
@@ -204,19 +177,17 @@ public abstract class Chart implements Exportable{
 
 	public abstract String export();
 
-	public StringJoiner getDefaultOptions() {
+	public JSObject getDefaultOptions() {
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
-		StringJoiner jsObject = JSObject();
-		addKeyValue(jsObject, "useLegend", useLegend);
-		addKeyValue(jsObject, "useGroup", useGroupButton);
-		addKeyValue(jsObject, "useGeneral", useGeneralButton);
-		addKeyValueWithQuote(jsObject, "tab", tabName);
-		addKeyValueWithQuote(jsObject, "button", getChartType().name());
-		addKeyValue(jsObject, "legendActive",
-				(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "legendActive"));
-		addKeyValue(jsObject, "generalActive",
-				(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive"));
-		addKeyValue(jsObject, "groupActive",
+		JSObject jsObject = new JSObject();
+		jsObject.put("useLegend", useLegend);
+		jsObject.put("useGroup", useGroupButton);
+		jsObject.put("useGeneral", useGeneralButton);
+		jsObject.putWithQuote("tab", tabName);
+		jsObject.putWithQuote("button", getChartType().name());
+		jsObject.put("legendActive", (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "legendActive"));
+		jsObject.put("generalActive", (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive"));
+		jsObject.put("groupActive",
 				(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive"));
 
 		return jsObject;
@@ -266,6 +237,18 @@ public abstract class Chart implements Exportable{
 		// TODO Auto-generated method stub
 
 	}
+	public boolean isUseGroupBy() {
+		return useGroupBy;
+	}
 
+	public boolean isUseRangeDate() {
+		return useRangeDate;
+	}
 	
+	@Override
+	public Writer getWritter(String path) throws IOException {
+		Charsets charset = Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL, "charset");
+		return new OutputStreamWriter(new FileOutputStream(path), charset.get());
+	}
+
 }

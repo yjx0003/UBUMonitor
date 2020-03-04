@@ -51,6 +51,8 @@ public class Course implements Serializable {
 	private Logs logs;
 	private Stats stats;
 	private LogStats logStats;
+	private byte[] userPhoto;
+	private String userFullName;
 
 	public Course() {
 		this.enrolledUsers = new HashSet<>();
@@ -552,6 +554,34 @@ public class Course implements Serializable {
 
 	public boolean contains(EnrolledUser enrolledUser) {
 		return enrolledUsers.contains(enrolledUser);
+	}
+
+	/**
+	 * @return the userPhoto
+	 */
+	public byte[] getUserPhoto() {
+		return userPhoto;
+	}
+
+	/**
+	 * @param userPhoto the userPhoto to set
+	 */
+	public void setUserPhoto(byte[] userPhoto) {
+		this.userPhoto = userPhoto;
+	}
+
+	/**
+	 * @return the userFullName
+	 */
+	public String getUserFullName() {
+		return userFullName;
+	}
+
+	/**
+	 * @param userFullName the userFullName to set
+	 */
+	public void setUserFullName(String userFullName) {
+		this.userFullName = userFullName;
 	}
 
 }

@@ -19,7 +19,7 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.ubumonitor.controllers.configuration.Config;
+import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.DataBase;
@@ -86,11 +86,11 @@ public class Controller {
 	}
 
 	public void initialize() throws IOException {
-		Config.initialize(AppInfo.PROPERTIES_PATH);
+		ConfigHelper.initialize(AppInfo.PROPERTIES_PATH);
 		setDataBase(new DataBase());
 		// Si no existe el recurso de idioma especificado cargamos el Español
 		Languages lang = Languages
-				.getLanguageByTag(Config.getProperty("language", Locale.getDefault().toLanguageTag()));
+				.getLanguageByTag(ConfigHelper.getProperty("language", Locale.getDefault().toLanguageTag()));
 		try {
 
 			if (lang == null) {
@@ -118,7 +118,7 @@ public class Controller {
 		Locale a = selectedLanguage.getLocale();
 		Locale.setDefault(a);
 		I18n.setResourceBundle(ResourceBundle.getBundle(AppInfo.RESOURCE_BUNDLE_FILE_NAME));
-		Config.setProperty("language", a.toLanguageTag());
+		ConfigHelper.setProperty("language", a.toLanguageTag());
 	}
 
 	public void setDataBase(DataBase dataBase) {

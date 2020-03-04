@@ -18,7 +18,8 @@ public class DataBase implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	private MoodleUser moodleUser;
+	private byte[] userPhoto;
+	private String fullName;
 	private SubDataBase<Role> roles;
 	private SubDataBase<Group> groups;
 	private SubDataBase<EnrolledUser> users;
@@ -96,17 +97,31 @@ public class DataBase implements Serializable {
 	}
 
 	/**
-	 * @return the moodleUser
+	 * @return the userPhoto
 	 */
-	public MoodleUser getMoodleUser() {
-		return moodleUser;
+	public byte[] getUserPhoto() {
+		return userPhoto;
 	}
 
 	/**
-	 * @param moodleUser the moodleUser to set
+	 * @param userPhoto the userPhoto to set
 	 */
-	public void setMoodleUser(MoodleUser moodleUser) {
-		this.moodleUser = moodleUser;
+	public void setUserPhoto(byte[] userPhoto) {
+		this.userPhoto = userPhoto;
+	}
+
+	/**
+	 * @return the fullName
+	 */
+	public String getFullName() {
+		return fullName;
+	}
+
+	/**
+	 * @param fullName the fullName to set
+	 */
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
 	}
 
 	

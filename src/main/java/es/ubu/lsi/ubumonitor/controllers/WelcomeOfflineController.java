@@ -18,7 +18,7 @@ import javax.crypto.IllegalBlockSizeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.ubumonitor.controllers.configuration.Config;
+import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.DataBase;
 import es.ubu.lsi.ubumonitor.persistence.Serialization;
@@ -104,7 +104,7 @@ public class WelcomeOfflineController implements Initializable {
 
 		try {
 			conexionLabel.setText(I18n.get("text.online_" + !controller.isOfflineMode()));
-			lblUser.setText(controller.getUser().getFullName());
+			lblUser.setText(I18n.get("label.welcome") + " " + controller.getUser().getFullName());
 			LOGGER.info("Cargando cursos...");
 
 			anchorPane.disableProperty().bind(btnEntrar.visibleProperty().not());
@@ -120,12 +120,12 @@ public class WelcomeOfflineController implements Initializable {
 				listView.getSelectionModel().clearSelection();
 
 			});
-			tabPane.getSelectionModel().select(Config.getProperty("courseList", 0));
+			tabPane.getSelectionModel().select(ConfigHelper.getProperty("courseList", 0));
 
 			Platform.runLater(() -> {
 				ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem()
 						.getContent();
-				Course course = controller.getUser().getCourseById(Config.getProperty("actualCourse", -1));
+				Course course = controller.getUser().getCourseById(ConfigHelper.getProperty("actualCourse", -1));
 
 				listView.getSelectionModel().select(course);
 				listView.scrollTo(course);
@@ -194,15 +194,15 @@ public class WelcomeOfflineController implements Initializable {
 
 		Course selectedCourse = getSelectedCourse();
 		if (selectedCourse == null) {
-			lblNoSelect.setText(I18n.get("error.nocourse"));
+			lblNoSelect.setVisible(true);
 			return;
 		}
-
+		lblNoSelect.setVisible(false);
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getFullName());
 
-		Config.setProperty("courseList", Integer.toString(tabPane.getSelectionModel().getSelectedIndex()));
+		ConfigHelper.setProperty("courseList", Integer.toString(tabPane.getSelectionModel().getSelectedIndex()));
 
-		Config.setProperty("actualCourse", getSelectedCourse().getId());
+		ConfigHelper.setProperty("actualCourse", getSelectedCourse().getId());
 
 		// if loading cache
 		loadData(controller.getPassword());
@@ -244,9 +244,9 @@ public class WelcomeOfflineController implements Initializable {
 			isBBDDLoaded = true;
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			incorrectPasswordWindow();
-		} catch (InvalidClassException | ClassNotFoundException e) {
+		} catch (InvalidClassException | ClassNotFoundException | ClassCastException e) {
 			LOGGER.warn("Se ha modificado una de las clases serializables", e);
-			UtilMethods.errorWindow("Se ha modificado una de las clases serializables", e);
+			UtilMethods.errorWindow("error.invalidcache", e);
 		}
 
 	}

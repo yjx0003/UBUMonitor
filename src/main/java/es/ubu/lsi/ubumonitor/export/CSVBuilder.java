@@ -1,5 +1,7 @@
 package es.ubu.lsi.ubumonitor.export;
 
+import java.nio.charset.Charset;
+
 import es.ubu.lsi.ubumonitor.model.DataBase;
 
 /**
@@ -39,6 +41,6 @@ public interface CSVBuilder {
 	/**
 	 * Writes the data to csv file.
 	 */
-	public void writeCSV();
+	public void writeCSV(Charset charset);
 	
 }

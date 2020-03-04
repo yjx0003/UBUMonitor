@@ -1,7 +1,8 @@
 package es.ubu.lsi.ubumonitor;
 
-import static org.junit.Assert.assertFalse;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -96,10 +97,10 @@ public class WebServiceTest {
 	public void getLogs() throws IOException {
 		DownloadLogController downloadLogController = LogCreator.download();
 
-		Response response = downloadLogController.downloadLog();
+		Response response = downloadLogController.downloadLog(true);
 	
 		Logs logs = new Logs(downloadLogController.getServerTimeZone());
-		LogCreator.parserResponse(logs, response);
+		LogCreator.parserResponse(logs, response, CONTROLLER.getActualCourse().getEnrolledUsers());
 		CONTROLLER.getActualCourse().setLogs(logs);
 	}
 

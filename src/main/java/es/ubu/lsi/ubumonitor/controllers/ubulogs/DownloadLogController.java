@@ -1,7 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers.ubulogs;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -142,19 +141,20 @@ public class DownloadLogController {
 	 * 
 	 * @return csv del log
 	 */
-	public Response downloadLog() {
-		return downloadLog("");
+	public Response downloadLog(boolean web) {
+		return downloadLog("", web);
 	}
 
 	/**
 	 * Descarga un dia del log a partir del zonedDateTime
 	 * 
 	 * @param zonedDateTime zona horaria
+	 * @param web download only web
 	 * @return csv del log diario
 	 */
-	public Response downloadLog(ZonedDateTime zonedDateTime) {
+	public Response downloadLog(ZonedDateTime zonedDateTime, boolean web) {
 
-		return downloadLog(convertTimezone(zonedDateTime, userTimeZone).toEpochSecond());
+		return downloadLog(convertTimezone(zonedDateTime, userTimeZone).toEpochSecond(), web);
 	}
 
 	/**
@@ -164,20 +164,8 @@ public class DownloadLogController {
 	 * @param dateSeconds segundos desde 1 de enero de 1970
 	 * @return csv del log diario
 	 */
-	public Response downloadLog(long dateSeconds) {
-		return downloadLog(Long.toString(dateSeconds));
-	}
-
-	/**
-	 * Descarga un dia del log a partir del localDateTime usando la zona horaria del
-	 * atributo timezone
-	 * 
-	 * @param localDateTime localDateTime usando el timezone
-	 * @return csv del log diario
-	 */
-	public Response downloadLog(LocalDateTime localDateTime) {
-
-		return downloadLog(localDateTime.atZone(userTimeZone));
+	public Response downloadLog(long dateSeconds, boolean web) {
+		return downloadLog(Long.toString(dateSeconds), web);
 	}
 
 	/**
@@ -186,11 +174,11 @@ public class DownloadLogController {
 	 * @param dateSeconds los segundos
 	 * @return csv del log diario
 	 */
-	public Response downloadLog(String dateSeconds) {
+	public Response downloadLog(String dateSeconds, boolean web) {
 		try {
 			String url = host + "/report/log/index.php?lang=en&download=csv&id=" + idCourse + "&date=" + dateSeconds
-					+ "&modid=&chooselog=1&logreader=logstore_standard";
-			LOGGER.info("Descargando log con la URL {}: ", url);
+					+ "&modid=&chooselog=1&logreader=logstore_standard&origin=" + (web ? "web" : "");
+			LOGGER.info("Descargando log con la URL {} ", url);
 			return Connection.getResponse(url);
 
 		} catch (IOException e) {
@@ -198,8 +186,6 @@ public class DownloadLogController {
 		}
 		return null;
 	}
-
-
 
 	/**
 	 * Cambia el id del curso para descargar otros logs.

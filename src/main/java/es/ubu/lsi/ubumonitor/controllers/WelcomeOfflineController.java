@@ -104,7 +104,7 @@ public class WelcomeOfflineController implements Initializable {
 
 		try {
 			conexionLabel.setText(I18n.get("text.online_" + !controller.isOfflineMode()));
-			lblUser.setText(controller.getUser().getFullName());
+			lblUser.setText(I18n.get("label.welcome") + " " + controller.getUser().getFullName());
 			LOGGER.info("Cargando cursos...");
 
 			anchorPane.disableProperty().bind(btnEntrar.visibleProperty().not());
@@ -194,10 +194,10 @@ public class WelcomeOfflineController implements Initializable {
 
 		Course selectedCourse = getSelectedCourse();
 		if (selectedCourse == null) {
-			lblNoSelect.setText(I18n.get("error.nocourse"));
+			lblNoSelect.setVisible(true);
 			return;
 		}
-
+		lblNoSelect.setVisible(false);
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getFullName());
 
 		ConfigHelper.setProperty("courseList", Integer.toString(tabPane.getSelectionModel().getSelectedIndex()));

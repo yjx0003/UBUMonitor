@@ -208,7 +208,6 @@ public class TotalBar extends ChartjsLog {
 	protected String[] getCSVHeader() {
 		String selectedTab = mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
-		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
 		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
 
 		List<String> list = new ArrayList<>();
@@ -217,9 +216,6 @@ public class TotalBar extends ChartjsLog {
 		}
 		list.add(selectedTab);
 		list.add(I18n.get("text.selectedUsers"));
-		if (generalActive) {
-			list.add(I18n.get("text.filteredusers"));
-		}
 		if (groupActive) {
 			
 			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
@@ -273,7 +269,6 @@ public class TotalBar extends ChartjsLog {
 	protected String[] getCSVDesglosedHeader() {
 		String selectedTab = mainController.getTabPaneUbuLogs().getSelectionModel().getSelectedItem().getText();
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
-		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
 		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
 
 		List<String> list = new ArrayList<>();
@@ -286,9 +281,6 @@ public class TotalBar extends ChartjsLog {
 		list.add(selectedTab);
 		list.add("logs");
 		list.add(I18n.get("text.selectedUsers"));
-		if (generalActive) {
-			list.add(I18n.get("text.filteredusers"));
-		}
 		if (groupActive) {
 			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
 				list.add(group.getGroupName());

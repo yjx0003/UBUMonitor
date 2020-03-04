@@ -19,7 +19,7 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" styleClass="anchorpane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
 	<children>
-      <Label fx:id="lblNoSelect" alignment="CENTER" layoutX="139.0" layoutY="575.0" prefHeight="21.0" prefWidth="540.0" style="-fx-text-fill: #ff5050;" textAlignment="CENTER" textFill="#e11010">
+      <Label fx:id="lblNoSelect" alignment="CENTER" layoutX="139.0" layoutY="575.0" prefHeight="21.0" prefWidth="540.0" style="-fx-text-fill: #ff5050;" text="%error.nocourse" textAlignment="CENTER" textFill="#e11010" visible="false">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
@@ -34,16 +34,6 @@
             <Image url="@../img/logo_min.png" />
          </image>
       </ImageView>
-		<Label layoutX="310.0" layoutY="75.0" text="%label.welcome">
-			<font>
-				<Font size="22.0" />
-			</font>
-		</Label>
-		<Label fx:id="lblUser" layoutX="450.0" layoutY="75.0" text="Nombre de usuario">
-			<font>
-				<Font size="22.0" />
-			</font>
-		</Label>
       <AnchorPane fx:id="anchorPane" layoutX="75.0" layoutY="175.0" prefHeight="350.0" prefWidth="650.0">
          <children>
             <TabPane fx:id="tabPane" prefHeight="290.0" prefWidth="650.0" styleClass="tab-pane-class" tabClosingPolicy="UNAVAILABLE">
@@ -175,5 +165,10 @@
             <String fx:value="danger_button" />
          </styleClass>
       </Button>
+      <Label fx:id="lblUser" layoutX="310.0" layoutY="75.0" prefHeight="32.0" prefWidth="410.0" text="Nombre de usuario">
+         <font>
+            <Font size="22.0" />
+         </font>
+      </Label>
 	</children>
 </AnchorPane>

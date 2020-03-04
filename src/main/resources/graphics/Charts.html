@@ -398,22 +398,6 @@
         return colorHash.hex(color);
     }
 
-    // Plugin que nos permite establecer el color de fondo del gráfico
-    // el color se define en opciones->chartArea->backgroundColor
-    Chart.pluginService.register({
-        beforeDraw: function (chart, easing) {
-            if (chart.config.options.chartArea && chart.config.options.chartArea.backgroundColor) {
-                var helpers = Chart.helpers;
-                var ctx = chart.chart.ctx;
-                var canvas = document.getElementById('myChart');
-
-                ctx.save();
-                ctx.fillStyle = chart.config.options.chartArea.backgroundColor;
-                ctx.fillRect(0, 0, canvas.scrollWidth, canvas.scrollHeight);
-                ctx.restore();
-            }
-        }
-    });
 </script>
 
 </body>

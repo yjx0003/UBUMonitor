@@ -3,6 +3,7 @@ package clustering.controller;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -150,10 +151,10 @@ public class ClusteringController {
 		initCollectors();
 		initTable();
 		initContextMenu();
-		connector = new Connector(this);
 		webView.setContextMenuEnabled(false);
 		webEngine = webView.getEngine();
 
+		connector = new Connector(this);
 		webEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
 			if (Worker.State.SUCCEEDED != newState)
 				return;
@@ -253,7 +254,9 @@ public class ClusteringController {
 		contextMenu.setAutoHide(true);
 
 		exportCSV = new MenuItem("Export CSV");
+		exportCSV.setOnAction(e -> exportPoints());
 		exportPNG = new MenuItem("Export PNG");
+		exportPNG.setOnAction(e -> exportPNG());
 		contextMenu.getItems().setAll(exportCSV, exportPNG);
 		webView.setOnMouseClicked(e -> {
 			if (e.getButton() == MouseButton.SECONDARY)
@@ -371,25 +374,54 @@ public class ClusteringController {
 
 	@FXML
 	private void exportTable() {
+
 		try {
-			FileChooser fileChooser = new FileChooser();
-			fileChooser.getExtensionFilters().add(new ExtensionFilter("CSV (*.csv)", "*.csv"));
-			
-			
-			File file = new File(Config.getProperty("csvFolderPath", "./"));
-			if (file.exists() && file.isDirectory()) {
-				fileChooser.setInitialDirectory(file);
-			}
-			fileChooser.setInitialFileName("clustering.csv");
-			File selectedFile = fileChooser.showSaveDialog(mainController.getController().getStage());
-			if (selectedFile != null) {
-				CSVClustering.exportTable(clusters, selectedFile.toPath());
-				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + selectedFile.getAbsolutePath());
+			File file = selectFile(new ExtensionFilter("CSV (*.csv)", "*.csv"));
+			if (file != null) {
+				CSVClustering.exportTable(clusters, file.toPath());
+				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + file.getAbsolutePath());
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error al exportar ficheros CSV.", e);
 			UtilMethods.errorWindow(I18n.get("error.savecsvfiles"), e);
 		}
+	}
+
+	private void exportPoints() {
+		try {
+			File file = selectFile(new ExtensionFilter("CSV (*.csv)", "*.csv"));
+			if (file != null) {
+				CSVClustering.exportPoints(clusters, file.toPath());
+				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + file.getAbsolutePath());
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error al exportar ficheros CSV.", e);
+			UtilMethods.errorWindow(I18n.get("error.savecsvfiles"), e);
+		}
+	}
+
+	private void exportPNG() {
+		try {
+			File file = selectFile(new ExtensionFilter("PNG (*.png)", "*.png"));
+			if (file != null) {
+				connector.export(file);
+				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + file.getAbsolutePath());
+			}
+		} catch (IOException e) {
+			LOGGER.error("Error al exportar ficheros CSV.", e);
+			UtilMethods.errorWindow(I18n.get("error.savecsvfiles"), e);
+		}
+	}
+
+	private File selectFile(ExtensionFilter extension) {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.getExtensionFilters().add(extension);
+		File file = new File(Config.getProperty("csvFolderPath", "./"));
+		if (file.exists() && file.isDirectory()) {
+			fileChooser.setInitialDirectory(file);
+		}
+		fileChooser.setInitialFileName("clustering_" + CSVClustering.DTF.format(LocalDateTime.now()));
+		return fileChooser.showSaveDialog(mainController.getController().getStage());
 	}
 
 	/**

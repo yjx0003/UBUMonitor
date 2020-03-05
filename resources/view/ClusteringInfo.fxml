@@ -30,7 +30,7 @@
       <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <columns>
             <TableColumn fx:id="columnComponent" editable="false" prefWidth="75.0" text="Component" />
-            <TableColumn fx:id="columnValue" editable="false" prefWidth="75.0" text="Value" />
+            <TableColumn fx:id="columnValue" editable="false" prefWidth="20.0" text="Value" />
          </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

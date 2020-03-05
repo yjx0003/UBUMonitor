@@ -43,7 +43,7 @@ public class DownloadLogController {
 	 * Constructor privado que solo asigna atributos basicos. Evita la repeticion de
 	 * codigo en los otros constructores.
 	 * 
-	 * @param host host moodle
+	 * @param host     host moodle
 	 * @param idCourse id del curso que se quiere descargar el log
 	 * 
 	 */
@@ -56,10 +56,10 @@ public class DownloadLogController {
 	/**
 	 * Contructror
 	 * 
-	 * @param host host moodle
+	 * @param host     host moodle
 	 * @param idCourse id del curso que se quiere descargar el log
 	 * @param timezone zona horaria usada como referencia al descargar el log
-	 * @param cookies cookies
+	 * @param cookies  cookies
 	 * 
 	 */
 	public DownloadLogController(String host, int idCourse, ZoneId timezone) {
@@ -70,14 +70,14 @@ public class DownloadLogController {
 	/**
 	 * Contructror
 	 * 
-	 * @param host host moodle
+	 * @param host     host moodle
 	 * @param idCourse id del curso que se quiere descargar el log
 	 * @param timezone zona horaria usada como referencia al descargar el log, un
-	 * valor de 99 si es la hora del servidor o la nomenclatura IANA de tiempo. Por
-	 * ejemplo Europe/Madrid.
-	 * @param cookies cookies
+	 *                 valor de 99 si es la hora del servidor o la nomenclatura IANA
+	 *                 de tiempo. Por ejemplo Europe/Madrid.
+	 * @param cookies  cookies
 	 * @throws IOException si no ha encontrado la zona horaria del servidor de
-	 * moodle
+	 *                     moodle
 	 */
 	public DownloadLogController(String host, int idCourse, String timezone) throws IOException {
 
@@ -129,7 +129,7 @@ public class DownloadLogController {
 	 * Convierte un zonedDateTime a otro zonedDateTime con diferente zona horaria
 	 * 
 	 * @param zonedDateTime zonedDateTime
-	 * @param zoneId zoneId, zona horaria
+	 * @param zoneId        zoneId, zona horaria
 	 * @return otro zonedDateTime segun el zoneId
 	 */
 	public static ZonedDateTime convertTimezone(ZonedDateTime zonedDateTime, ZoneId zoneId) {
@@ -149,7 +149,7 @@ public class DownloadLogController {
 	 * Descarga un dia del log a partir del zonedDateTime
 	 * 
 	 * @param zonedDateTime zona horaria
-	 * @param web download only web
+	 * @param web           download only web
 	 * @return csv del log diario
 	 */
 	public Response downloadLog(ZonedDateTime zonedDateTime, boolean web) {
@@ -176,8 +176,9 @@ public class DownloadLogController {
 	 */
 	public Response downloadLog(String dateSeconds, boolean web) {
 		try {
-			String url = host + "/report/log/index.php?lang=en&download=csv&id=" + idCourse + "&date=" + dateSeconds
-					+ "&modid=&chooselog=1&logreader=logstore_standard&origin=" + (web ? "web" : "");
+			String url = host + "/report/log/index.php?lang=en&download=csv&id=" + idCourse
+					+ (dateSeconds == null || dateSeconds.isEmpty() ? "" : "&date=" + dateSeconds)
+					+ "&chooselog=1&logreader=logstore_standard" + (web ? "&origin=web" : "");
 			LOGGER.info("Descargando log con la URL {} ", url);
 			return Connection.getResponse(url);
 

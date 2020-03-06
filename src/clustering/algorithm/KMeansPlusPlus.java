@@ -11,7 +11,7 @@ public class KMeansPlusPlus extends Algorithm {
 
 	public KMeansPlusPlus() {
 		super(NAME);
-		addParameter("clustering.numberOfClusters", 4);
+		addParameter("clustering.numberOfClusters", 3);
 		addParameter("clustering.maxIterations", 10);
 		addParameter("clustering.distance", Algorithms.DISTANCES_LIST.get(0));
 	}

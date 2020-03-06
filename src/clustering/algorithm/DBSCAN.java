@@ -11,8 +11,8 @@ public class DBSCAN extends Algorithm {
 
 	public DBSCAN() {
 		super(NAME);
-		addParameter("clustering.eps", 1.5);
-		addParameter("clustering.minPts", 5);
+		addParameter("clustering.eps", 0.4);
+		addParameter("clustering.minPts", 1);
 		addParameter("clustering.distance", Algorithms.DISTANCES_LIST.get(0));
 	}
 

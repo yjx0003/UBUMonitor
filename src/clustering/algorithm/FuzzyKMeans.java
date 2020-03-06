@@ -11,7 +11,7 @@ public class FuzzyKMeans extends Algorithm {
 
 	public FuzzyKMeans() {
 		super(NAME);
-		addParameter("clustering.numberOfClusters", 4);
+		addParameter("clustering.numberOfClusters", 3);
 		addParameter("clustering.fuzziness", 2);
 		addParameter("clustering.maxIterations", 10);
 		addParameter("clustering.distance", Algorithms.DISTANCES_LIST.get(0));

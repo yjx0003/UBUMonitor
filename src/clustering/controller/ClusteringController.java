@@ -206,12 +206,14 @@ public class ClusteringController {
 		gradesCollector = new GradesCollector(mainController);
 		activityCollector = new ActivityCollector(mainController);
 		List<DataCollector> list = new ArrayList<>();
-		list.add(new LogCollector<>("component", mainController.getListViewComponents(),
-				DataSetComponent.getInstance()));
-		list.add(new LogCollector<>("event", mainController.getListViewEvents(), DataSetComponentEvent.getInstance()));
-		list.add(new LogCollector<>("section", mainController.getListViewSection(), DataSetSection.getInstance()));
+		list.add(new LogCollector<>("component", mainController.getListViewComponents(), DataSetComponent.getInstance(),
+				t -> t.name().toLowerCase()));
+		list.add(new LogCollector<>("event", mainController.getListViewEvents(), DataSetComponentEvent.getInstance(),
+				t -> t.getComponent().name().toLowerCase()));
+		list.add(new LogCollector<>("section", mainController.getListViewSection(), DataSetSection.getInstance(),
+				t -> t.isVisible() ? "visible" : "not_visible"));
 		list.add(new LogCollector<>("coursemodule", mainController.getListViewCourseModule(),
-				DatasSetCourseModule.getInstance()));
+				DatasSetCourseModule.getInstance(), t -> t.getModuleType().getModName()));
 		checkComboBoxLogs.getItems().setAll(list);
 	}
 

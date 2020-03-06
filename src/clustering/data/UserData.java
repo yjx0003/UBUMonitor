@@ -2,9 +2,7 @@ package clustering.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.math3.ml.clustering.Clusterable;
@@ -14,14 +12,14 @@ import model.EnrolledUser;
 public class UserData implements Clusterable {
 
 	private EnrolledUser user;
-	private List<Double> data;
-	private Map<String, Double> dataMap;
+	private List<Datum> data;
+	private List<Double> normalizedData;
 	private int cluster;
 
 	public UserData(EnrolledUser user) {
 		this.user = user;
 		data = new ArrayList<>();
-		dataMap = new LinkedHashMap<>();
+		normalizedData = new ArrayList<>();
 	}
 
 	public EnrolledUser getEnrolledUser() {
@@ -29,20 +27,20 @@ public class UserData implements Clusterable {
 	}
 
 	public void addNormalizedDatum(double datum) {
-		data.add(Double.isNaN(datum) ? 0 : datum);
+		normalizedData.add(Double.isNaN(datum) ? 0 : datum);
 	}
-	
-	public void addDatum(String name, double datum) {
-		dataMap.put(name, datum);
+
+	public void addDatum(Datum datum) {
+		data.add(datum);
 	}
 
 	public void setData(double[] data) {
-		this.data = Arrays.stream(data).boxed().collect(Collectors.toList());
+		this.normalizedData = Arrays.stream(data).boxed().collect(Collectors.toList());
 	}
 
 	@Override
 	public double[] getPoint() {
-		return data.stream().mapToDouble(Double::doubleValue).toArray();
+		return normalizedData.stream().mapToDouble(Double::doubleValue).toArray();
 	}
 
 	public void setCluster(int cluster) {
@@ -52,13 +50,9 @@ public class UserData implements Clusterable {
 	public int getCluster() {
 		return cluster;
 	}
-	
-	public double getDatum(String key) {
-		return dataMap.get(key);
-	}
-	
-	public Map<String, Double> getComponents(){
-		return dataMap;
+
+	public List<Datum> getData() {
+		return data;
 	}
 
 	@Override

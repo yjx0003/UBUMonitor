@@ -2,6 +2,7 @@ package clustering.controller.collector;
 
 import java.util.List;
 
+import clustering.data.Datum;
 import clustering.data.UserData;
 import controllers.MainController;
 import javafx.scene.control.TreeItem;
@@ -13,6 +14,7 @@ public class GradesCollector extends DataCollector {
 	private TreeView<GradeItem> gradeItems;
 
 	public GradesCollector(MainController mainController) {
+		super("clustering.type.grade");
 		gradeItems = mainController.getTvwGradeReport();
 	}
 
@@ -22,14 +24,15 @@ public class GradesCollector extends DataCollector {
 		for (UserData userData : users) {
 			for (TreeItem<GradeItem> treeItem : selected) {
 				GradeItem gradeItem = treeItem.getValue();
-				double datum = gradeItem.getEnrolledUserPercentage(userData.getEnrolledUser());
-				userData.addDatum(gradeItem.getItemname(), datum);
-				if (Double.isNaN(datum)) {
-					datum = 0.0;
+				double value = gradeItem.getEnrolledUserPercentage(userData.getEnrolledUser());
+				userData.addDatum(
+						new Datum(getType(), gradeItem.getItemname(), gradeItem.getItemModule().getModName(), value));
+				if (Double.isNaN(value)) {
+					value = 0.0;
 				} else {
-					datum /= 100.0;
+					value /= 100.0;
 				}
-				userData.addNormalizedDatum(datum);
+				userData.addNormalizedDatum(value);
 			}
 		}
 	}

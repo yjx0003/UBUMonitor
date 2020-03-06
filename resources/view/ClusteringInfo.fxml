@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clustering.controller.UserDataController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clustering.controller.UserDataController">
    <top>
       <BorderPane BorderPane.alignment="CENTER">
          <left>
@@ -29,7 +29,9 @@
    <center>
       <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <columns>
-            <TableColumn fx:id="columnComponent" editable="false" prefWidth="75.0" text="Component" />
+            <TableColumn fx:id="columnType" editable="false" prefWidth="75.0" text="Type" />
+            <TableColumn fx:id="columnIcon" editable="false" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" sortable="false" />
+            <TableColumn fx:id="columnItem" editable="false" prefWidth="75.0" text="Item" />
             <TableColumn fx:id="columnValue" editable="false" prefWidth="20.0" text="Value" />
          </columns>
          <columnResizePolicy>

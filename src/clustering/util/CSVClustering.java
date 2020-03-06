@@ -18,6 +18,7 @@ import com.opencsv.CSVWriter;
 
 import clustering.controller.AlgorithmExecuter;
 import clustering.data.ClusterWrapper;
+import clustering.data.Datum;
 import clustering.data.UserData;
 import model.EnrolledUser;
 
@@ -36,7 +37,7 @@ public class CSVClustering {
 				CSVWriter csvWriter = new CSVWriter(writer)) {
 
 			if (!clusters.isEmpty()) {
-				String[] columns = clusters.get(0).get(0).getComponents().keySet().toArray(new String[0]);
+				String[] columns = clusters.get(0).get(0).getData().stream().map(Datum::getItem).toArray(String[]::new);
 				String[] head = new String[HEAD_TABLE.length + columns.length];
 				System.arraycopy(HEAD_TABLE, 0, head, 0, HEAD_TABLE.length);
 				System.arraycopy(columns, 0, head, HEAD_TABLE.length, columns.length);
@@ -53,7 +54,7 @@ public class CSVClustering {
 					data.add(String.valueOf(enrolledUser.getId()));
 					data.add(enrolledUser.getFullName());
 					data.add(clusterWrapper.getName());
-					userData.getComponents().values().forEach(d -> data.add(String.valueOf(d)));
+					userData.getData().forEach(d -> data.add(String.valueOf(d.getValue())));
 					csvWriter.writeNext(data.toArray(new String[0]));
 				}
 			}

@@ -16,8 +16,8 @@ import org.apache.commons.math3.ml.distance.ManhattanDistance;
 public class Algorithms {
 
 	public static final List<DistanceMeasure> DISTANCES_LIST = Collections
-			.unmodifiableList(Arrays.asList(new CanberraDistance(), new ChebyshevDistance(), new EarthMoversDistance(),
-					new EuclideanDistance(), new ManhattanDistance()));
+			.unmodifiableList(Arrays.asList(new ManhattanDistance(), new EuclideanDistance(), new CanberraDistance(),
+					new ChebyshevDistance(), new EarthMoversDistance()));
 
 	private static List<Algorithm> algorithmList = new ArrayList<>();
 
@@ -33,5 +33,6 @@ public class Algorithms {
 	}
 
 	private Algorithms() {
+		throw new UnsupportedOperationException();
 	}
 }

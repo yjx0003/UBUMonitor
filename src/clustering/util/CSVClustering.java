@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,15 +35,26 @@ public class CSVClustering {
 		try (Writer writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
 				CSVWriter csvWriter = new CSVWriter(writer)) {
 
-			csvWriter.writeNext(HEAD_TABLE);
+			if (!clusters.isEmpty()) {
+				String[] columns = clusters.get(0).get(0).getComponents().keySet().toArray(new String[0]);
+				String[] head = new String[HEAD_TABLE.length + columns.length];
+				System.arraycopy(HEAD_TABLE, 0, head, 0, HEAD_TABLE.length);
+				System.arraycopy(columns, 0, head, HEAD_TABLE.length, columns.length);
+
+				csvWriter.writeNext(head);
+			} else {
+				csvWriter.writeNext(HEAD_TABLE);
+			}
+
 			for (ClusterWrapper clusterWrapper : clusters) {
 				for (UserData userData : clusterWrapper) {
 					EnrolledUser enrolledUser = userData.getEnrolledUser();
-					csvWriter.writeNext(new String[] { 
-							String.valueOf(enrolledUser.getId()), 
-							enrolledUser.getFullName(),
-							clusterWrapper.getName() 
-					});
+					List<String> data = new ArrayList<>();
+					data.add(String.valueOf(enrolledUser.getId()));
+					data.add(enrolledUser.getFullName());
+					data.add(clusterWrapper.getName());
+					userData.getComponents().values().forEach(d -> data.add(String.valueOf(d)));
+					csvWriter.writeNext(data.toArray(new String[0]));
 				}
 			}
 
@@ -63,13 +75,9 @@ public class CSVClustering {
 			for (ClusterWrapper clusterWrapper : clusters) {
 				for (UserData userData : clusterWrapper) {
 					EnrolledUser enrolledUser = userData.getEnrolledUser();
-					csvWriter.writeNext(new String[] {
-							String.valueOf(enrolledUser.getId()),
-							enrolledUser.getFullName(),
-							clusterWrapper.getName(),
-							String.valueOf(points.get(userData)[0]),
-							String.valueOf(points.get(userData)[1])
-					});
+					csvWriter.writeNext(new String[] { String.valueOf(enrolledUser.getId()), enrolledUser.getFullName(),
+							clusterWrapper.getName(), String.valueOf(points.get(userData)[0]),
+							String.valueOf(points.get(userData)[1]) });
 				}
 			}
 

@@ -85,7 +85,7 @@
                            <center>
                               <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                  <columns>
-                                    <TableColumn fx:id="columnImage" editable="false" prefWidth="54.0" resizable="false" sortable="false" />
+                                    <TableColumn fx:id="columnImage" editable="false" maxWidth="54.0" minWidth="54.0" prefWidth="54.0" resizable="false" sortable="false" />
                                     <TableColumn fx:id="columnName" editable="false" text="clustering.fullname" />
                                     <TableColumn fx:id="columnCluster" editable="false" text="clustering.clusterNumber" />
                                  </columns>

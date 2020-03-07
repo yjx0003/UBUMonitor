@@ -40,7 +40,14 @@ public class UserDataController {
 	@FXML
 	private TableColumn<Datum, Number> columnValue;
 
-	public void init(UserData userData) {
+	private TableView<UserData> table;
+
+	public void init(UserData userData, TableView<UserData> table) {
+		loadUser(userData);
+		this.table = table;
+	}
+
+	private void loadUser(UserData userData) {
 		EnrolledUser enrolledUser = userData.getEnrolledUser();
 		labelUser.setText(enrolledUser.getFullName());
 		imageView.setImage(new Image(new ByteArrayInputStream(enrolledUser.getImageBytes())));
@@ -51,6 +58,27 @@ public class UserDataController {
 
 		columnIcon.setCellValueFactory(
 				e -> new SimpleObjectProperty<>(new ImageView(AppInfo.IMG_DIR + e.getValue().getIconFile() + ".png")));
+	}
+	
+	private void load(int index) {
+		UserData user = table.getItems().get(index);
+		table.getSelectionModel().clearAndSelect(index);
+		table.scrollTo(index);
+		loadUser(user);
+	}
+
+	@FXML
+	private void loadNext() {
+		int actual = table.getSelectionModel().getSelectedIndex();
+		int next = (actual + 1) % table.getItems().size();
+		load(next);
+	}
+
+	@FXML
+	private void loadPrevious() {
+		int actual = table.getSelectionModel().getSelectedIndex();
+		int next = actual == 0 ? table.getItems().size() - 1 : actual - 1;
+		load(next);
 	}
 
 }

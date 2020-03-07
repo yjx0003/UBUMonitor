@@ -4,8 +4,12 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clustering.controller.UserDataController">
@@ -29,9 +33,9 @@
    <center>
       <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <columns>
-            <TableColumn fx:id="columnType" editable="false" prefWidth="75.0" text="Type" />
+            <TableColumn fx:id="columnType" editable="false" prefWidth="60.0" text="Type" />
             <TableColumn fx:id="columnIcon" editable="false" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" sortable="false" />
-            <TableColumn fx:id="columnItem" editable="false" prefWidth="75.0" text="Item" />
+            <TableColumn fx:id="columnItem" editable="false" text="Item" />
             <TableColumn fx:id="columnValue" editable="false" prefWidth="20.0" text="Value" />
          </columns>
          <columnResizePolicy>
@@ -41,4 +45,34 @@
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
          </BorderPane.margin></TableView>
    </center>
+   <bottom>
+      <GridPane BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints />
+            <RowConstraints vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <ImageView onMouseClicked="#loadPrevious" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+               <image>
+                  <Image url="@../img/font-awesome_4-7-0_arrow-left_50_0_000000_none.png" />
+               </image>
+               <GridPane.margin>
+                  <Insets bottom="20.0" right="10.0" top="10.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ImageView onMouseClicked="#loadNext" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <image>
+                  <Image url="@../img/font-awesome_4-7-0_arrow-right_50_0_000000_none.png" />
+               </image>
+               <GridPane.margin>
+                  <Insets bottom="20.0" left="10.0" top="10.0" />
+               </GridPane.margin>
+            </ImageView>
+         </children>
+      </GridPane>
+   </bottom>
 </BorderPane>

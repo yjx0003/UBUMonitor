@@ -140,9 +140,6 @@ public class ClusteringController {
 
 	private List<ClusterWrapper> clusters;
 
-	private MenuItem exportCSV;
-	private MenuItem exportPNG;
-
 	private static final Callback<Item, PropertyEditor<?>> DEFAULT_PROPERTY_EDITOR_FACTORY = new DefaultPropertyEditorFactory();
 
 	public void init(MainController controller) {
@@ -224,11 +221,23 @@ public class ClusteringController {
 		columnCluster
 				.setCellValueFactory(c -> new SimpleStringProperty(clusters.get(c.getValue().getCluster()).getName()));
 
+		ContextMenu contextMenu = new ContextMenu();
+		contextMenu.setAutoHide(true);
+		MenuItem info = new MenuItem();
+		contextMenu.getItems().setAll(info);
+
 		tableView.setRowFactory(tv -> {
 			TableRow<UserData> row = new TableRow<>();
 			row.setOnMouseClicked(e -> {
-				if (e.getButton() == MouseButton.PRIMARY && e.getClickCount() == 2 && !row.isEmpty())
+				if (e.getButton() == MouseButton.PRIMARY && e.getClickCount() == 2 && !row.isEmpty()) {
 					showUserDataInfo(row.getItem());
+				} else if (e.getButton() == MouseButton.SECONDARY && !row.isEmpty()) {
+					info.setOnAction(ev -> showUserDataInfo(row.getItem()));
+					info.setText(I18n.get("text.see") + row.getItem().getEnrolledUser().getFullName());
+					contextMenu.show(row, e.getScreenX(), e.getScreenY());
+				} else {
+					contextMenu.hide();
+				}
 			});
 			return row;
 		});
@@ -244,7 +253,7 @@ public class ClusteringController {
 			stage.initOwner(Controller.getInstance().getStage());
 			stage.setTitle(userData.getEnrolledUser().getFullName());
 			UserDataController controller = loader.getController();
-			controller.init(userData);
+			controller.init(userData, tableView);
 			stage.show();
 		} catch (IOException e) {
 			LOGGER.error("Error", e);
@@ -255,14 +264,17 @@ public class ClusteringController {
 		ContextMenu contextMenu = new ContextMenu();
 		contextMenu.setAutoHide(true);
 
-		exportCSV = new MenuItem("Export CSV");
+		MenuItem exportCSV = new MenuItem(I18n.get("text.exportcsv"));
 		exportCSV.setOnAction(e -> exportPoints());
-		exportPNG = new MenuItem("Export PNG");
+		MenuItem exportPNG = new MenuItem(I18n.get("text.exportpng"));
 		exportPNG.setOnAction(e -> exportPNG());
 		contextMenu.getItems().setAll(exportCSV, exportPNG);
 		webView.setOnMouseClicked(e -> {
-			if (e.getButton() == MouseButton.SECONDARY)
+			if (e.getButton() == MouseButton.SECONDARY) {
 				contextMenu.show(webView, e.getScreenX(), e.getScreenY());
+			} else {
+				contextMenu.hide();
+			}
 		});
 	}
 

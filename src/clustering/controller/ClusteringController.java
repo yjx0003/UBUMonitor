@@ -294,17 +294,6 @@ public class ClusteringController {
 
 		updateTable();
 		updateRename();
-
-		ObservableList<Integer> items = checkComboBoxCluster.getItems();
-		items.setAll(IntStream.range(-1, clusters.size()).boxed().collect(Collectors.toList()));
-		checkComboBoxCluster.getCheckModel().checkAll();
-		checkComboBoxCluster.getItemBooleanProperty(0).addListener((obs, oldValue, newValue) -> {
-			if (newValue.booleanValue()) {
-				checkComboBoxCluster.getCheckModel().checkAll();
-			} else {
-				checkComboBoxCluster.getCheckModel().clearChecks();
-			}
-		});
 		updateChart();
 	}
 
@@ -336,13 +325,23 @@ public class ClusteringController {
 				if (value.equals(-1))
 					return I18n.get("text.all");
 				Long n = count.get(value);
-				return clusters.get(value).getName() + "  (" + (n == null ? 0 : n) + "/"
-						+ count.values().stream().mapToLong(Long::longValue).sum() + ")";
+				return String.format("%s  (%d/%d)", clusters.get(value).getName(), n == null ? 0 : n,
+						count.values().stream().mapToLong(Long::longValue).sum());
 			}
 		});
 		checkComboBoxCluster.getCheckModel().getCheckedItems()
 				.addListener((ListChangeListener.Change<? extends Integer> c) -> filteredList.setPredicate(
 						o -> checkComboBoxCluster.getCheckModel().getCheckedItems().contains(o.getCluster())));
+		ObservableList<Integer> items = checkComboBoxCluster.getItems();
+		items.setAll(IntStream.range(-1, clusters.size()).boxed().collect(Collectors.toList()));
+		checkComboBoxCluster.getCheckModel().checkAll();
+		checkComboBoxCluster.getItemBooleanProperty(0).addListener((obs, oldValue, newValue) -> {
+			if (newValue.booleanValue()) {
+				checkComboBoxCluster.getCheckModel().checkAll();
+			} else {
+				checkComboBoxCluster.getCheckModel().clearChecks();
+			}
+		});
 		tableView.refresh();
 	}
 

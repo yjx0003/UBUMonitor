@@ -14,10 +14,12 @@
 <script type="text/javascript">
 	var colorHash = new ColorHash();
 	var ctx = document.getElementById("myChart");
+	var count = 0;
 	Chart.defaults.global.onClick = function (event, array) {
         let element = myChart.getElementsAtEventForMode(event, "point", { intersect: false });
+        let index = count++ % element.length;
         if (element.length > 0) {
-        	javaConnector.selectUser(element[0]._datasetIndex, element[0]._index);
+        	javaConnector.selectUser(element[index]._datasetIndex, element[index]._index);
         }
     }
 	var myChart = new Chart(

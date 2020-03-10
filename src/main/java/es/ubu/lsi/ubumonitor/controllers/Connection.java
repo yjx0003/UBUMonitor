@@ -21,7 +21,8 @@ public class Connection {
 	static {
 		CookieManager cookieManager = new CookieManager();
 		cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
-		CLIENT = new OkHttpClient.Builder().cookieJar(new JavaNetCookieJar(cookieManager)).readTimeout(Duration.ZERO)
+		CLIENT = new OkHttpClient.Builder().cookieJar(new JavaNetCookieJar(cookieManager))
+				.readTimeout(Duration.ofMinutes(5))
 				.addNetworkInterceptor(new Interceptor() {
 
 					@Override
@@ -33,12 +34,16 @@ public class Connection {
 
 						long t2 = System.nanoTime();
 						LOGGER.info(String.format("Received response in %.1fms for %s/%s %s", (t2 - t1) / 1e6d,
-								request.url().host(), String.join("/", request.url().pathSegments()),
+								request.url()
+										.host(),
+								String.join("/", request.url()
+										.pathSegments()),
 								request.method()));
 
 						return response;
 					}
-				}).build();
+				})
+				.build();
 	}
 
 	private Connection() {
@@ -52,11 +57,13 @@ public class Connection {
 	}
 
 	public static Response getResponse(String url) throws IOException {
-		return getResponse(new Request.Builder().url(url).build());
+		return getResponse(new Request.Builder().url(url)
+				.build());
 	}
 
 	public static Response getResponse(Request request) throws IOException {
-		return CLIENT.newCall(request).execute();
+		return CLIENT.newCall(request)
+				.execute();
 	}
 
 }

@@ -16,7 +16,7 @@ public class JSArray {
 	}
 
 	public void addWithQuote(Object element) {
-		stringJoiner.add("'" + element + "'");
+		stringJoiner.add("'" + UtilMethods.escapeJavaScriptText(element.toString()) + "'");
 	}
 
 	public void addAll(Collection<?> collection) {

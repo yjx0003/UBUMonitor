@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,11 +41,13 @@ import controllers.datasets.DataSetComponent;
 import controllers.datasets.DataSetComponentEvent;
 import controllers.datasets.DataSetSection;
 import controllers.datasets.DatasSetCourseModule;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ListChangeListener.Change;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Worker;
@@ -57,13 +60,17 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
@@ -74,6 +81,7 @@ import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import model.EnrolledUser;
+import model.GradeItem;
 import util.JSArray;
 import util.JSObject;
 import util.UtilMethods;
@@ -241,6 +249,40 @@ public class ClusteringController {
 			});
 			return row;
 		});
+		List<Color> colors = Arrays.asList(Color.RED, Color.ORANGE, Color.GREEN, Color.PURPLE);
+		TreeView<GradeItem> gradeItem = mainController.getTvwGradeReport();
+		gradeItem.getSelectionModel().getSelectedItems().addListener((Change<?> change) -> {
+			List<TreeItem<GradeItem>> selected = gradeItem.getSelectionModel().getSelectedItems();
+			ObservableList<TableColumn<UserData, ?>> columns = tableView.getColumns();
+			columns.remove(3, columns.size());
+			for (TreeItem<GradeItem> treeItem : selected) {
+				if (treeItem == null)
+					continue;
+				GradeItem item = treeItem.getValue();
+
+				TableColumn<UserData, Number> column = new TableColumn<>(item.getItemname());
+
+				column.setCellValueFactory(
+						c -> new SimpleDoubleProperty(item.getEnrolledUserPercentage(c.getValue().getEnrolledUser())));
+
+				column.setCellFactory(c -> new TableCell<UserData, Number>() {
+					@Override
+					protected void updateItem(Number item, boolean empty) {
+						super.updateItem(item, empty);
+
+						if (empty || item == null) {
+							setText(null);
+							setGraphic(null);
+						} else {
+							setText(item.toString());
+							setTextFill(colors.get(item.intValue() / 26));
+						}
+					}
+				});
+
+				columns.add(column);
+			}
+		});
 	}
 
 	private void showUserDataInfo(UserData userData) {
@@ -270,7 +312,7 @@ public class ClusteringController {
 		exportPNG.setOnAction(e -> exportPNG());
 		contextMenu.getItems().setAll(exportCSV, exportPNG);
 		webView.setOnMouseClicked(e -> {
-			if (e.getButton() == MouseButton.SECONDARY) {
+			if (e.getButton() == MouseButton.SECONDARY && clusters != null) {
 				contextMenu.show(webView, e.getScreenX(), e.getScreenY());
 			} else {
 				contextMenu.hide();

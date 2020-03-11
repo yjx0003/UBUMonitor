@@ -12,14 +12,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.math3.ml.clustering.Clusterer;
-import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.PropertySheet;
-import org.controlsfx.control.PropertySheet.Item;
-import org.controlsfx.property.editor.AbstractPropertyEditor;
-import org.controlsfx.property.editor.DefaultPropertyEditorFactory;
-import org.controlsfx.property.editor.Editors;
-import org.controlsfx.property.editor.PropertyEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +40,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.collections.ListChangeListener.Change;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Worker;
@@ -56,7 +50,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
@@ -77,8 +70,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Callback;
-import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import model.EnrolledUser;
 import model.GradeItem;
@@ -148,8 +139,6 @@ public class ClusteringController {
 
 	private List<ClusterWrapper> clusters;
 
-	private static final Callback<Item, PropertyEditor<?>> DEFAULT_PROPERTY_EDITOR_FACTORY = new DefaultPropertyEditorFactory();
-
 	public void init(MainController controller) {
 		mainController = controller;
 		initAlgorithms();
@@ -167,7 +156,6 @@ public class ClusteringController {
 			window.setMember("javaConnector", connector);
 		});
 		webEngine.load(getClass().getResource("/graphics/ClusterChart.html").toExternalForm());
-
 	}
 
 	private void initAlgorithms() {
@@ -182,29 +170,6 @@ public class ClusteringController {
 		algorithmList.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> propertySheet
 				.getItems().setAll(newValue.getParameters().getPropertyItems()));
 		algorithmList.getSelectionModel().selectFirst();
-		StringConverter<DistanceMeasure> stringConverter = new StringConverter<DistanceMeasure>() {
-
-			@Override
-			public String toString(DistanceMeasure object) {
-				return I18n.get("clustering." + object.getClass().getSimpleName());
-			}
-
-			@Override
-			public DistanceMeasure fromString(String string) {
-				return null;
-			}
-		};
-
-		propertySheet.setPropertyEditorFactory(item -> {
-			if (item.getValue() instanceof DistanceMeasure) {
-				@SuppressWarnings("unchecked")
-				AbstractPropertyEditor<DistanceMeasure, ComboBox<DistanceMeasure>> editor = (AbstractPropertyEditor<DistanceMeasure, ComboBox<DistanceMeasure>>) Editors
-						.createChoiceEditor(item, Algorithms.DISTANCES_LIST);
-				editor.getEditor().setConverter(stringConverter);
-				return editor;
-			}
-			return DEFAULT_PROPERTY_EDITOR_FACTORY.call(item);
-		});
 	}
 
 	private void initCollectors() {
@@ -249,6 +214,10 @@ public class ClusteringController {
 			});
 			return row;
 		});
+		initGradeColumns();
+	}
+
+	private void initGradeColumns() {
 		List<Color> colors = Arrays.asList(Color.RED, Color.ORANGE, Color.GREEN, Color.PURPLE);
 		TreeView<GradeItem> gradeItem = mainController.getTvwGradeReport();
 		gradeItem.getSelectionModel().getSelectedItems().addListener((Change<?> change) -> {
@@ -258,10 +227,9 @@ public class ClusteringController {
 			for (TreeItem<GradeItem> treeItem : selected) {
 				if (treeItem == null)
 					continue;
+
 				GradeItem item = treeItem.getValue();
-
 				TableColumn<UserData, Number> column = new TableColumn<>(item.getItemname());
-
 				column.setCellValueFactory(
 						c -> new SimpleDoubleProperty(item.getEnrolledUserPercentage(c.getValue().getEnrolledUser())));
 
@@ -270,16 +238,12 @@ public class ClusteringController {
 					protected void updateItem(Number item, boolean empty) {
 						super.updateItem(item, empty);
 
-						if (empty || item == null) {
-							setText(null);
-							setGraphic(null);
-						} else {
+						if (!empty && item != null) {
 							setText(item.toString());
 							setTextFill(colors.get(item.intValue() / 26));
 						}
 					}
 				});
-
 				columns.add(column);
 			}
 		});

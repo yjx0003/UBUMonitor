@@ -2,55 +2,7 @@ package es.ubu.lsi.ubumonitor.controllers.ubulogs.logtypes;
 
 
 
-import static es.ubu.lsi.ubumonitor.model.Component.ACTIVITY_REPORT;
-import static es.ubu.lsi.ubumonitor.model.Component.ASSIGNMENT;
-import static es.ubu.lsi.ubumonitor.model.Component.BOOK;
-import static es.ubu.lsi.ubumonitor.model.Component.BOOK_PRINTING;
-import static es.ubu.lsi.ubumonitor.model.Component.CHAT;
-import static es.ubu.lsi.ubumonitor.model.Component.CHOICE;
-import static es.ubu.lsi.ubumonitor.model.Component.COMMENTS;
-import static es.ubu.lsi.ubumonitor.model.Component.COURSE_COMPLETION;
-import static es.ubu.lsi.ubumonitor.model.Component.COURSE_PARTICIPATION;
-import static es.ubu.lsi.ubumonitor.model.Component.DATABASE;
-import static es.ubu.lsi.ubumonitor.model.Component.EVENT_MONITOR;
-import static es.ubu.lsi.ubumonitor.model.Component.EXCEL_SPREADSHEET;
-import static es.ubu.lsi.ubumonitor.model.Component.EXTERNAL_TOOL;
-import static es.ubu.lsi.ubumonitor.model.Component.FEEDBACK;
-import static es.ubu.lsi.ubumonitor.model.Component.FILE;
-import static es.ubu.lsi.ubumonitor.model.Component.FILE_SUBMISSIONS;
-import static es.ubu.lsi.ubumonitor.model.Component.FOLDER;
-import static es.ubu.lsi.ubumonitor.model.Component.FORUM;
-import static es.ubu.lsi.ubumonitor.model.Component.GLOSSARY;
-import static es.ubu.lsi.ubumonitor.model.Component.GRADER_REPORT;
-import static es.ubu.lsi.ubumonitor.model.Component.GUIA_DOCENTE;
-import static es.ubu.lsi.ubumonitor.model.Component.HOTPOT_MODULE;
-import static es.ubu.lsi.ubumonitor.model.Component.IMS_CONTENT_PACKAGE;
-import static es.ubu.lsi.ubumonitor.model.Component.JOURNAL;
-import static es.ubu.lsi.ubumonitor.model.Component.LESSON;
-import static es.ubu.lsi.ubumonitor.model.Component.LIVE_LOGS;
-import static es.ubu.lsi.ubumonitor.model.Component.LOGS;
-import static es.ubu.lsi.ubumonitor.model.Component.ONLINE_TEXT_SUBMISSIONS;
-import static es.ubu.lsi.ubumonitor.model.Component.OPENDOCUMENT_SPREADSHEET;
-import static es.ubu.lsi.ubumonitor.model.Component.OUTCOMES_REPORT;
-import static es.ubu.lsi.ubumonitor.model.Component.OVERVIEW_REPORT;
-import static es.ubu.lsi.ubumonitor.model.Component.PAGE;
-import static es.ubu.lsi.ubumonitor.model.Component.PLAIN_TEXT_FILE;
-import static es.ubu.lsi.ubumonitor.model.Component.QUIZ;
-import static es.ubu.lsi.ubumonitor.model.Component.RECYCLE_BIN;
-import static es.ubu.lsi.ubumonitor.model.Component.SCORM_PACKAGE;
-import static es.ubu.lsi.ubumonitor.model.Component.SINGLE_VIEW;
-import static es.ubu.lsi.ubumonitor.model.Component.STATISTICS;
-import static es.ubu.lsi.ubumonitor.model.Component.SUBMISSION_COMMENTS;
-import static es.ubu.lsi.ubumonitor.model.Component.SURVEY;
-import static es.ubu.lsi.ubumonitor.model.Component.SYSTEM;
-import static es.ubu.lsi.ubumonitor.model.Component.TAB_DISPLAY;
-import static es.ubu.lsi.ubumonitor.model.Component.TURNITIN_ASSIGNMENT_2;
-import static es.ubu.lsi.ubumonitor.model.Component.URL;
-import static es.ubu.lsi.ubumonitor.model.Component.USER_REPORT;
-import static es.ubu.lsi.ubumonitor.model.Component.USER_TOURS;
-import static es.ubu.lsi.ubumonitor.model.Component.WIKI;
-import static es.ubu.lsi.ubumonitor.model.Component.WORKSHOP;
-import static es.ubu.lsi.ubumonitor.model.Component.XML_FILE;
+import static es.ubu.lsi.ubumonitor.model.Component.*;
 import static es.ubu.lsi.ubumonitor.model.ComponentEvent.get;
 import static es.ubu.lsi.ubumonitor.model.Event.*;
 
@@ -145,7 +97,7 @@ public class LogTypes {
 		TYPES.put(get(FILE_SUBMISSIONS, SUBMISSION_CREATED), UserFilesCmid.getInstance());
 		TYPES.put(get(FILE_SUBMISSIONS, SUBMISSION_CREATED_), UserFilesCmid.getInstance());
 		TYPES.put(get(FILE_SUBMISSIONS, SUBMISSION_UPDATED), UserFilesCmid.getInstance());
-		TYPES.put(get(FILE_SUBMISSIONS, SUBMISSION_UPDATED_), UserFilesCmid.getInstance());
+		TYPES.put(get(FILE_SUBMISSIONS, SUBMISSION_UPDATED2), UserFilesCmid.getInstance());
 
 		TYPES.put(get(FOLDER, COURSE_MODULE_VIEWED), UserCmid.getInstance());
 		TYPES.put(get(FOLDER, FOLDER_UPDATED), UserCmid.getInstance());
@@ -218,7 +170,7 @@ public class LogTypes {
 		TYPES.put(get(ONLINE_TEXT_SUBMISSIONS, SUBMISSION_CREATED), UserWordsCmid.getInstance());
 		TYPES.put(get(ONLINE_TEXT_SUBMISSIONS, SUBMISSION_UPDATED), UserWordsCmid.getInstance());
 		TYPES.put(get(ONLINE_TEXT_SUBMISSIONS, SUBMISSION_CREATED_), UserWordsCmid.getInstance());
-		TYPES.put(get(ONLINE_TEXT_SUBMISSIONS, SUBMISSION_UPDATED_), UserWordsCmid.getInstance());
+		TYPES.put(get(ONLINE_TEXT_SUBMISSIONS, SUBMISSION_UPDATED2), UserWordsCmid.getInstance());
 
 		TYPES.put(get(OPENDOCUMENT_SPREADSHEET, OPENDOCUMENT_GRADE_EXPORTED), User.getInstance());
 
@@ -348,7 +300,10 @@ public class LogTypes {
 		TYPES.put(get(WIKI, WIKI_PAGE_MAP_VIEWED), UserPageCmid.getInstance());
 		TYPES.put(get(WIKI, WIKI_PAGE_UPDATED), UserPageCmid.getInstance());
 		TYPES.put(get(WIKI, WIKI_PAGE_VIEWED), UserPageCmid.getInstance());
-
+		
+		TYPES.put(get(KALTURA_MEDIA_ASSIGNMENT, ASSIGNMENT_DETAILS_VIEWED), UserCmid.getInstance());
+		TYPES.put(get(KALTURA_VIDEO_RESOURCE, VIDEO_RESOURCE_VIEWED), UserCmid.getInstance());
+		
 		TYPES.put(get(WORKSHOP, A_SUBMISSION_HAS_BEEN_UPLOADED), UserSubmissionCmid.getInstance());
 		TYPES.put(get(WORKSHOP, ASSESSMENT_EVALUATED), UserCmid.getInstance());
 		TYPES.put(get(WORKSHOP, COURSE_MODULE_INSTANCE_LIST_VIEWED), UserCourse.getInstance());

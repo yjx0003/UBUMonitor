@@ -6,6 +6,7 @@ import java.io.InvalidClassException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -473,12 +474,13 @@ public class WelcomeController implements Initializable {
 				CreatorUBUGradesController.createActivitiesCompletionStatus(actualCourse.getId(),
 						actualCourse.getEnrolledUsers());
 
-				int tries = 0;
+				int tries = 1;
 				int limitRelogin = 3;
 				while (tries < limitRelogin) {
 					try {
+						updateMessage(MessageFormat.format(I18n.get("label.downloadinglog"), tries, limitRelogin));
 						if (!isFileCacheExists) {
-							updateMessage(I18n.get("label.downloadinglog"));
+
 							DownloadLogController downloadLogController = LogCreator.download();
 
 							Response response = downloadLogController.downloadLog(chkOnlyWeb.isSelected());
@@ -490,17 +492,18 @@ public class WelcomeController implements Initializable {
 							actualCourse.setLogs(logs);
 
 						} else {
-							updateMessage(I18n.get("label.downloadinglog"));
+
 							LogCreator.createLogsMultipleDays(actualCourse.getLogs(), actualCourse.getEnrolledUsers(),
 									chkOnlyWeb.isSelected());
 
 						}
 						tries = limitRelogin;
 					} catch (RuntimeException e) {
-						tries++;
-						if (tries == limitRelogin) {
+						
+						if (tries >= limitRelogin) {
 							throw e;
 						}
+						tries++;
 						updateMessage(I18n.get("label.relogin"));
 						controller.reLogin();
 

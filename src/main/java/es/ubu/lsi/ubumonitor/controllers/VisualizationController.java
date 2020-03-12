@@ -83,10 +83,7 @@ public class VisualizationController implements MainAction {
 
 		progressBar.progressProperty().bind(webViewChartsEngine.getLoadWorker().progressProperty());
 
-		WebConsoleListener.setDefaultListener((webView, message, lineNumber, sourceId) -> {
-			LOGGER.error("{} [{} at {}] ", message, sourceId, lineNumber);
-			// errorWindow(message + "[" + sourceId + " at " + lineNumber, false);
-		});
+		
 		// Comprobamos cuando se carga la pagina para traducirla
 		webViewChartsEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
 			if (Worker.State.SUCCEEDED != newState)

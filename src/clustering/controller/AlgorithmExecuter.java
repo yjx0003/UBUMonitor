@@ -1,4 +1,4 @@
-package clustering.controller;
+package es.ubu.lsi.ubumonitor.clustering.controller;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -11,10 +11,10 @@ import org.apache.commons.math3.ml.clustering.Clusterer;
 
 import com.jujutsu.tsne.PrincipalComponentAnalysis;
 
-import clustering.controller.collector.DataCollector;
-import clustering.data.ClusterWrapper;
-import clustering.data.UserData;
-import model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.clustering.controller.collector.DataCollector;
+import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
+import es.ubu.lsi.ubumonitor.clustering.data.UserData;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 
 public class AlgorithmExecuter {
 

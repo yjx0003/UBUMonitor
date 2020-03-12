@@ -1,4 +1,4 @@
-package clustering.data;
+package es.ubu.lsi.ubumonitor.clustering.data;
 
 import java.util.Objects;
 

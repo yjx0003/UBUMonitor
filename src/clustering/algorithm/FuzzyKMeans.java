@@ -1,10 +1,10 @@
-package clustering.algorithm;
+package es.ubu.lsi.ubumonitor.clustering.algorithm;
 
 import org.apache.commons.math3.ml.clustering.Clusterable;
 import org.apache.commons.math3.ml.clustering.Clusterer;
 import org.apache.commons.math3.ml.clustering.FuzzyKMeansClusterer;
 
-import clustering.data.Distance;
+import es.ubu.lsi.ubumonitor.clustering.data.Distance;
 
 public class FuzzyKMeans extends Algorithm {
 

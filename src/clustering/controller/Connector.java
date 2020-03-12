@@ -1,4 +1,4 @@
-package clustering.controller;
+package es.ubu.lsi.ubumonitor.clustering.controller;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -9,14 +9,13 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 
-import clustering.data.ClusterWrapper;
-import clustering.data.UserData;
+import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
+import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import javafx.scene.web.WebEngine;
 
 public class Connector {
 
 	private ClusteringController clusteringController;
-	
 	private WebEngine webEngine;
 
 	private List<ClusterWrapper> clusters;
@@ -35,7 +34,6 @@ public class Connector {
 	public void setClusters(List<ClusterWrapper> clusters) {
 		this.clusters = clusters;
 	}
-	
 	public void export(File file) throws IOException {
 		String str = (String) webEngine.executeScript("exportGraphic()");
 		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));

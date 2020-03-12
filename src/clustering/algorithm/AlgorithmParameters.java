@@ -1,4 +1,4 @@
-package clustering.algorithm;
+package es.ubu.lsi.ubumonitor.clustering.algorithm;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.controlsfx.control.PropertySheet;
 
-import clustering.util.SimplePropertySheetItem;
+import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
 
 public class AlgorithmParameters {
 

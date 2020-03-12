@@ -1,4 +1,4 @@
-package clustering.util;
+package es.ubu.lsi.ubumonitor.clustering.util;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -16,11 +16,11 @@ import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVWriter;
 
-import clustering.controller.AlgorithmExecuter;
-import clustering.data.ClusterWrapper;
-import clustering.data.Datum;
-import clustering.data.UserData;
-import model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.clustering.controller.AlgorithmExecuter;
+import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
+import es.ubu.lsi.ubumonitor.clustering.data.Datum;
+import es.ubu.lsi.ubumonitor.clustering.data.UserData;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 
 public class CSVClustering {
 

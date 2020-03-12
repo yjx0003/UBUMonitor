@@ -1,8 +1,8 @@
-package clustering.controller.collector;
+package es.ubu.lsi.ubumonitor.clustering.controller.collector;
 
 import java.util.List;
 
-import clustering.data.UserData;
+import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 
 public abstract class DataCollector {
 

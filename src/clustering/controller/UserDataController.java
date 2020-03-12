@@ -1,11 +1,11 @@
-package clustering.controller;
+package es.ubu.lsi.ubumonitor.clustering.controller;
 
 import java.io.ByteArrayInputStream;
 
-import clustering.data.Datum;
-import clustering.data.UserData;
-import controllers.AppInfo;
-import controllers.I18n;
+import es.ubu.lsi.ubumonitor.clustering.data.Datum;
+import es.ubu.lsi.ubumonitor.clustering.data.UserData;
+import es.ubu.lsi.ubumonitor.controllers.AppInfo;
+import es.ubu.lsi.ubumonitor.controllers.I18n;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -15,7 +15,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 
 public class UserDataController {
 

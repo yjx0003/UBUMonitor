@@ -1,4 +1,4 @@
-package controllers;
+package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -7,7 +7,6 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -19,18 +18,35 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.StatusBar;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.TextFields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import clustering.controller.ClusteringController;
-import controllers.configuration.Config;
-import controllers.configuration.ConfigurationController;
-import controllers.configuration.MainConfiguration;
-import export.CSVBuilderAbstract;
-import export.CSVExport;
+import es.ubu.lsi.ubumonitor.clustering.controller.ClusteringController;
+import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
+import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigurationController;
+import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.export.CSVBuilderAbstract;
+import es.ubu.lsi.ubumonitor.export.CSVExport;
+import es.ubu.lsi.ubumonitor.model.Component;
+import es.ubu.lsi.ubumonitor.model.ComponentEvent;
+import es.ubu.lsi.ubumonitor.model.CourseModule;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.model.Group;
+import es.ubu.lsi.ubumonitor.model.LastActivity;
+import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
+import es.ubu.lsi.ubumonitor.model.ModuleType;
+import es.ubu.lsi.ubumonitor.model.Role;
+import es.ubu.lsi.ubumonitor.model.Section;
+import es.ubu.lsi.ubumonitor.model.Stats;
+import es.ubu.lsi.ubumonitor.util.Charsets;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
@@ -75,19 +91,6 @@ import javafx.stage.PopupWindow.AnchorLocation;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
-import model.Component;
-import model.ComponentEvent;
-import model.CourseModule;
-import model.EnrolledUser;
-import model.GradeItem;
-import model.Group;
-import model.LastActivity;
-import model.LastActivityFactory;
-import model.ModuleType;
-import model.Role;
-import model.Section;
-import model.Stats;
-import util.UtilMethods;
 
 /**
  * Clase controlador de la ventana principal
@@ -116,7 +119,7 @@ public class MainController implements Initializable {
 	private Label lblCountParticipants;
 	@FXML
 	private ListView<EnrolledUser> listParticipants;
-	FilteredList<EnrolledUser> filteredEnrolledList;
+	private FilteredList<EnrolledUser> filteredEnrolledList;
 
 	@FXML
 	private CheckComboBox<Role> checkComboBoxRole;
@@ -228,9 +231,6 @@ public class MainController implements Initializable {
 	@FXML
 	private VisualizationController visualizationController;
 	private Map<Tab, MainAction> tabMap = new HashMap<>();
-	
-	@FXML
-	private ClusteringController clusteringController;
 
 	@FXML
 	private ImageView userPhoto;
@@ -238,13 +238,19 @@ public class MainController implements Initializable {
 	@FXML
 	private Menu menuTheme;
 
+	private AutoCompletionBinding<EnrolledUser> autoCompletionBinding;
+
+	@FXML
+	private ClusteringController clusteringController;
+
+	
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades de
 	 * las que se compone.
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		CourseStatsController.logStatistics(controller.getActualCourse());
 		try {
 			LOGGER.info("Completada la carga del curso {}", controller.getActualCourse().getFullName());
 
@@ -258,7 +264,7 @@ public class MainController implements Initializable {
 					controller.getConfiguration(controller.getActualCourse()));
 			initWebViewTabs();
 			tabPane.getSelectionModel()
-					.select(Config.getProperty("tabPane", tabPane.getSelectionModel().getSelectedIndex()));
+					.select(ConfigHelper.getProperty("tabPane", tabPane.getSelectionModel().getSelectedIndex()));
 			initTabGrades();
 			initTabLogs();
 			initTabActivityCompletion();
@@ -284,7 +290,7 @@ public class MainController implements Initializable {
 			menuItem.setText(key);
 			menuItem.setToggleGroup(group);
 
-			if (key.equals(Config.getProperty("style", "Modena"))) {
+			if (key.equals(ConfigHelper.getProperty("style", "Modena"))) {
 				menuItem.setSelected(true);
 			}
 			menuItem.setOnAction(event -> {
@@ -293,19 +299,18 @@ public class MainController implements Initializable {
 				if (path != null) {
 					controller.getStage().getScene().getStylesheets().add(path);
 				}
-				Config.setProperty("style", key);
+				ConfigHelper.setProperty("style", key);
 			});
 			menuTheme.getItems().add(menuItem);
 		}
 	}
 
 	private void initUserPhoto() {
-
-		userPhoto.setImage(controller.getUser().getUserPhoto());
+		Image image = new Image(new ByteArrayInputStream(controller.getDataBase().getUserPhoto()));
+		userPhoto.setImage(image);
 
 		ContextMenu menu = new ContextMenu();
-		MenuItem user = new MenuItem(controller.getUser().getFullName(),
-				new ImageView(controller.getUser().getUserPhoto()));
+		MenuItem user = new MenuItem(controller.getDataBase().getFullName(), new ImageView(image));
 		MenuItem logout = new MenuItem(I18n.get("menu.logout"));
 		MenuItem exit = new MenuItem(I18n.get("menu.exit"));
 
@@ -358,8 +363,16 @@ public class MainController implements Initializable {
 	private void initWebViewTabs() {
 
 		webViewTabPane.getSelectionModel()
-				.select(Config.getProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex()));
-
+				.select(ConfigHelper.getProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex()));
+		webViewTabPane.getSelectionModel().selectedItemProperty().addListener((ob, old, newValue) -> {
+			if (tabUbuLogs.isSelected()) {
+				getActions().onSetTabLogs();
+			} else if (tabUbuGrades.isSelected()) {
+				getActions().onSetTabGrades();
+			} else if (tabActivity.isSelected()) {
+				getActions().onSetTabActivityCompletion();
+			}
+		});
 		visualizationController.init(this);
 		clusteringController.init(this);
 
@@ -421,8 +434,9 @@ public class MainController implements Initializable {
 		// Mostramos nº participantes
 
 		tfdParticipants.setOnAction(event -> filterParticipants());
-		initEnrolledUsersListView();
 
+		initEnrolledUsersListView();
+		autoCompletionBinding = TextFields.bindAutoCompletion(tfdParticipants, filteredEnrolledList);
 		checkComboBoxGroup.getItems().addAll(controller.getActualCourse().getGroups());
 		ObservableList<Group> groups = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL,
 				"initialGroups");
@@ -504,8 +518,9 @@ public class MainController implements Initializable {
 					Instant lastCourseAccess = user.getLastcourseaccess();
 					Instant lastAccess = user.getLastaccess();
 					Instant lastLogInstant = controller.getActualCourse().getLogs().getLastDatetime().toInstant();
-					setText(user + "\n" + I18n.get("label.course") + formatDates(lastCourseAccess, lastLogInstant)
-							+ " | " + I18n.get("text.moodle") + formatDates(lastAccess, lastLogInstant));
+					setText(user + "\n" + I18n.get("label.course")
+							+ UtilMethods.formatDates(lastCourseAccess, lastLogInstant) + " | "
+							+ I18n.get("text.moodle") + UtilMethods.formatDates(lastAccess, lastLogInstant));
 
 					setTextFill(LastActivityFactory.getColorActivity(lastCourseAccess, lastLogInstant));
 
@@ -517,58 +532,15 @@ public class MainController implements Initializable {
 						LOGGER.error("No se ha podido cargar la imagen de: {}", user);
 						setGraphic(new ImageView(new Image("/img/default_user.png")));
 					}
+					ContextMenu menu = new ContextMenu();
+					MenuItem seeUser = new MenuItem(I18n.get("text.see") + user);
+					seeUser.setOnAction(e -> userInfo(user));
+					menu.getItems().addAll(seeUser);
+					setContextMenu(menu);
 				}
 			}
 
 		});
-	}
-
-	/**
-	 * Devuelve la diferencia entre dos instantes, por dias, hora, minutos o
-	 * segundos siempre y cuando no sean 0. Si la diferencias de dias es 0 se busca
-	 * por horas, y asi consecutivamente.
-	 * 
-	 * @param lastCourseAccess fecha inicio
-	 * @param lastLogInstant fecha fin
-	 * @return texto con el numero y el tipo de tiempo
-	 */
-	private String formatDates(Instant lastCourseAccess, Instant lastLogInstant) {
-
-		if (lastCourseAccess == null || lastCourseAccess.getEpochSecond() == -1L) {
-			return " " + I18n.get("label.never");
-		}
-
-		if (lastCourseAccess.getEpochSecond() == 0L) {
-			return " " + I18n.get("text.never");
-		}
-
-		long time;
-
-		if ((time = betweenDates(ChronoUnit.DAYS, lastCourseAccess, lastLogInstant)) != 0L) {
-			return (time < 0 ? 0 : time) + " " + I18n.get("text.days");
-		}
-		if ((time = betweenDates(ChronoUnit.HOURS, lastCourseAccess, lastLogInstant)) != 0L) {
-			return (time < 0 ? 0 : time) + " " + I18n.get("text.hours");
-		}
-		if ((time = betweenDates(ChronoUnit.MINUTES, lastCourseAccess, lastLogInstant)) != 0L) {
-			return (time < 0 ? 0 : time) + " " + I18n.get("text.minutes");
-		}
-		time = betweenDates(ChronoUnit.SECONDS, lastCourseAccess, lastLogInstant);
-		long timeSeconds = time < 0 ? 0 : time;
-		return timeSeconds + " " + I18n.get("text.seconds");
-	}
-
-	/**
-	 * Devuelve la difernecia absoluta entre dos instantes dependiendo de que sea el
-	 * tipo
-	 * 
-	 * @param type dias, horas, minutos
-	 * @param lastCourseAccess instante inicio
-	 * @param lastLogInstant instante fin
-	 * @return numero de diferencia absoluta
-	 */
-	private long betweenDates(ChronoUnit type, Instant lastCourseAccess, Instant lastLogInstant) {
-		return type.between(lastCourseAccess, lastLogInstant);
 	}
 
 	private void initTabActivityCompletion() {
@@ -599,14 +571,31 @@ public class MainController implements Initializable {
 
 		ObservableList<ModuleType> observableListModuleTypes = FXCollections.observableArrayList();
 
-		observableListModuleTypes.addAll(controller.getActualCourse().getUniqueCourseModulesTypes());
+		observableListModuleTypes.addAll(
+				controller.getActualCourse().getModules().stream().filter(c -> !c.getActivitiesCompletion().isEmpty())
+						.map(CourseModule::getModuleType).distinct().collect(Collectors.toList()));
 		observableListModuleTypes.sort(Comparator.nullsFirst(Comparator.comparing(I18n::get)));
 		if (!observableListModuleTypes.isEmpty()) {
 			observableListModuleTypes.add(0, ModuleType.DUMMY);
-		}
+			checkComboBoxModuleType.getItems().addAll(observableListModuleTypes);
+			checkComboBoxModuleType.getCheckModel().checkAll();
+			checkComboBoxModuleType.getItemBooleanProperty(0).addListener((observable, oldValue, newValue) -> {
 
-		checkComboBoxModuleType.getItems().addAll(observableListModuleTypes);
-		checkComboBoxModuleType.getCheckModel().checkAll();
+				if (newValue.booleanValue()) {
+					checkComboBoxModuleType.getCheckModel().checkAll();
+				} else {
+					checkComboBoxModuleType.getCheckModel().clearChecks();
+
+				}
+
+			});
+			checkComboBoxModuleType.getCheckModel().getCheckedItems().addListener((Change<? extends ModuleType> c) -> {
+
+				filterCourseModules.setPredicate(getActivityPredicade());
+				listViewActivity.setCellFactory(getListCellCourseModule());
+
+			});
+		}
 
 		checkComboBoxModuleType.setConverter(new StringConverter<ModuleType>() {
 			@Override
@@ -617,7 +606,7 @@ public class MainController implements Initializable {
 			@Override
 			public String toString(ModuleType moduleType) {
 				if (moduleType == null || moduleType == ModuleType.DUMMY) {
-					return I18n.get(ALL);
+					return I18n.get("text.selectall");
 				}
 				return I18n.get(moduleType);
 			}
@@ -633,22 +622,6 @@ public class MainController implements Initializable {
 		checkBoxActivity.selectedProperty().addListener(c -> {
 			filterCourseModules.setPredicate(getActivityPredicade());
 			listViewActivity.setCellFactory(getListCellCourseModule());
-		});
-		checkComboBoxModuleType.getItemBooleanProperty(0).addListener((observable, oldValue, newValue) -> {
-
-			if (newValue.booleanValue()) {
-				checkComboBoxModuleType.getCheckModel().checkAll();
-			} else {
-				checkComboBoxModuleType.getCheckModel().clearChecks();
-
-			}
-
-		});
-		checkComboBoxModuleType.getCheckModel().getCheckedItems().addListener((Change<? extends ModuleType> c) -> {
-
-			filterCourseModules.setPredicate(getActivityPredicade());
-			listViewActivity.setCellFactory(getListCellCourseModule());
-
 		});
 
 		checkBoxActivity.selectedProperty().addListener(c -> {
@@ -897,34 +870,40 @@ public class MainController implements Initializable {
 		observableListModuleTypes.sort(Comparator.nullsFirst(Comparator.comparing(I18n::get)));
 		if (!observableListModuleTypes.isEmpty()) {
 			observableListModuleTypes.add(0, ModuleType.DUMMY);
-		}
+			checkComboBoxCourseModule.getItems().addAll(observableListModuleTypes);
+			checkComboBoxCourseModule.getCheckModel().checkAll();
+			checkComboBoxCourseModule.getItemBooleanProperty(0).addListener((observable, oldValue, newValue) -> {
 
-		checkComboBoxCourseModule.getItems().addAll(observableListModuleTypes);
-		checkComboBoxCourseModule.getCheckModel().checkAll();
-		checkComboBoxCourseModule.getItemBooleanProperty(0).addListener((observable, oldValue, newValue) -> {
+				if (newValue.booleanValue()) {
+					checkComboBoxCourseModule.getCheckModel().checkAll();
+				} else {
+					checkComboBoxCourseModule.getCheckModel().clearChecks();
 
-			if (newValue.booleanValue()) {
-				checkComboBoxCourseModule.getCheckModel().checkAll();
-			} else {
-				checkComboBoxCourseModule.getCheckModel().clearChecks();
-
-			}
-
-		});
-		checkComboBoxCourseModule.setConverter(new StringConverter<ModuleType>() {
-			@Override
-			public ModuleType fromString(String moduleType) {
-				return null;// no se va a usar en un choiceBox.
-			}
-
-			@Override
-			public String toString(ModuleType moduleType) {
-				if (moduleType == null || moduleType == ModuleType.DUMMY) {
-					return I18n.get(ALL);
 				}
-				return I18n.get(moduleType);
-			}
-		});
+
+			});
+			checkComboBoxCourseModule.setConverter(new StringConverter<ModuleType>() {
+				@Override
+				public ModuleType fromString(String moduleType) {
+					return null;// no se va a usar en un choiceBox.
+				}
+
+				@Override
+				public String toString(ModuleType moduleType) {
+					if (moduleType == null || moduleType == ModuleType.DUMMY) {
+						return I18n.get("text.selectall");
+					}
+					return I18n.get(moduleType);
+				}
+			});
+
+			checkComboBoxCourseModule.getCheckModel().getCheckedItems()
+					.addListener((Change<? extends ModuleType> c) -> {
+						filterCourseModules.setPredicate(getCourseModulePredicate());
+						listViewCourseModule.setCellFactory(getListCellCourseModule());
+
+					});
+		}
 
 		// ponemos un listener al cuadro de texto para que se filtre el list view en
 		// tiempo real
@@ -936,24 +915,6 @@ public class MainController implements Initializable {
 		checkBoxCourseModule.selectedProperty().addListener(c -> {
 			filterCourseModules.setPredicate(getCourseModulePredicate());
 			listViewCourseModule.setCellFactory(getListCellCourseModule());
-		});
-
-		checkComboBoxCourseModule.getCheckModel().getCheckedItems().addListener((Change<? extends ModuleType> c) -> {
-			c.next();
-			if (c.wasAdded() && c.getAddedSubList().get(0) == null) {
-				for (int i = 1; i < checkComboBoxCourseModule.getItems().size(); i++) {
-					checkComboBoxCourseModule.getCheckModel().check(i);
-				}
-
-			} else if (c.wasRemoved() && c.getRemoved().get(0) == null) {
-				for (int i = 1; i < checkComboBoxCourseModule.getItems().size(); i++) {
-					checkComboBoxCourseModule.getCheckModel().clearCheck(i);
-				}
-			} else {
-				filterCourseModules.setPredicate(getCourseModulePredicate());
-				listViewCourseModule.setCellFactory(getListCellCourseModule());
-			}
-
 		});
 
 		checkBoxActivityCompleted.selectedProperty().addListener(c -> {
@@ -1222,7 +1183,8 @@ public class MainController implements Initializable {
 		filteredEnrolledList.setPredicate(e -> (checkUserHasRole(rol, e)) && (checkUserHasGroup(group, e))
 				&& (textField.isEmpty() || e.getFullName().toLowerCase().contains(textField))
 				&& (lastActivity.contains(LastActivityFactory.getActivity(e.getLastcourseaccess(), lastLogInstant))));
-
+		autoCompletionBinding.dispose();
+		autoCompletionBinding = TextFields.bindAutoCompletion(tfdParticipants, filteredEnrolledList);
 	}
 
 	private boolean checkUserHasGroup(List<Group> groups, EnrolledUser user) {
@@ -1364,7 +1326,7 @@ public class MainController implements Initializable {
 		LOGGER.info("Exportando ficheros CSV");
 		try {
 			DirectoryChooser dir = new DirectoryChooser();
-			File file = new File(Config.getProperty("csvFolderPath", "./"));
+			File file = new File(ConfigHelper.getProperty("csvFolderPath", "./"));
 			if (file.exists() && file.isDirectory()) {
 				dir.setInitialDirectory(file);
 			}
@@ -1372,9 +1334,10 @@ public class MainController implements Initializable {
 			File selectedDir = dir.showDialog(controller.getStage());
 			if (selectedDir != null) {
 				CSVBuilderAbstract.setPath(selectedDir.toPath());
-				CSVExport.run();
+				Charsets charset = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL, "charset");
+				CSVExport.run(charset.get());
 				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + selectedDir.getAbsolutePath());
-				Config.setProperty("csvFolderPath", selectedDir.getAbsolutePath());
+				ConfigHelper.setProperty("csvFolderPath", selectedDir.getAbsolutePath());
 			}
 
 		} catch (Exception e) {
@@ -1456,7 +1419,7 @@ public class MainController implements Initializable {
 			LOGGER.error("Error", ex);
 			return;
 		}
-		Style.addStyle(Config.getProperty("style"), newScene.getStylesheets());
+		Style.addStyle(ConfigHelper.getProperty("style"), newScene.getStylesheets());
 		ConfigurationController configurationController = loader.getController();
 		Stage stage = new Stage();
 		configurationController.setMainController(this);
@@ -1471,13 +1434,13 @@ public class MainController implements Initializable {
 	}
 
 	public void importConfiguration() {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle(I18n.get("menu.importconfig"));
-		fileChooser.setInitialDirectory(new File(Config.getProperty("configurationFolderPath", "./")));
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
+		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("menu.importconfig"), null,
+				ConfigHelper.getProperty("configurationFolderPath", "./"),
+				new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
+
 		File file = fileChooser.showOpenDialog(controller.getStage());
 		if (file != null) {
-			Config.setProperty("configurationFolderPath", file.getParent());
+			ConfigHelper.setProperty("configurationFolderPath", file.getParent());
 			try {
 				ConfigurationController.loadConfiguration(controller.getMainConfiguration(), file.toPath());
 				changeConfiguration();
@@ -1490,16 +1453,15 @@ public class MainController implements Initializable {
 	}
 
 	public void exportConfiguration() {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle(I18n.get("menu.exportconfig"));
-		fileChooser.setInitialFileName(
-				UtilMethods.removeReservedChar(controller.getActualCourse().getFullName()) + ".json");
-		fileChooser.setInitialDirectory(new File(Config.getProperty("configurationFolderPath", "./")));
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
+		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("menu.exportconfig"),
+				UtilMethods.removeReservedChar(controller.getActualCourse().getFullName()) + ".json",
+				ConfigHelper.getProperty("configurationFolderPath", "./"),
+				new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
+
 		File file = fileChooser.showSaveDialog(controller.getStage());
 		if (file != null) {
 			ConfigurationController.saveConfiguration(controller.getMainConfiguration(), file.toPath());
-			Config.setProperty("configurationFolderPath", file.getParent());
+			ConfigHelper.setProperty("configurationFolderPath", file.getParent());
 		}
 	}
 
@@ -1508,35 +1470,31 @@ public class MainController implements Initializable {
 	 * 
 	 * @param actionEvent El ActionEvent.
 	 */
-	public void aboutApp(ActionEvent actionEvent) {
-	
-		
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AboutApp.fxml"),
-				I18n.getResourceBundle());
-		
-		Scene newScene;
-		try {
-			newScene = new Scene(loader.load());
-		} catch (IOException ex) {
-			LOGGER.error("Error", ex);
-			return;
-		}
-		Style.addStyle(Config.getProperty("style"), newScene.getStylesheets());
-		
-		Stage stage = new Stage();
-		stage.setScene(newScene);
-		stage.setResizable(false);
-		stage.initModality(Modality.APPLICATION_MODAL);
-		
-		stage.getIcons().add(new Image("/img/logo_min.png"));
-		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
+	public void aboutApp() {
 
-		stage.show();
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AboutApp.fxml"), I18n.getResourceBundle());
+
+		UtilMethods.createDialog(loader, controller.getStage());
 
 	}
-	
+
+	public void userInfo(EnrolledUser enrolledUser) {
+
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/UserInfo.fxml"), I18n.getResourceBundle());
+
+		UtilMethods.createDialog(loader, controller.getStage());
+		
+		UserInfoController userInfoController = loader.getController();
+		userInfoController.init(this, enrolledUser);
+
+	}
+
 	public void moreInfo() {
 		UtilMethods.openURL(AppInfo.GITHUB);
+	}
+	
+	public void courseStats() {
+		UtilMethods.createDialog(new FXMLLoader(getClass().getResource("/view/CourseStats.fxml"), I18n.getResourceBundle()), controller.getStage());
 	}
 
 	/**
@@ -1673,80 +1631,40 @@ public class MainController implements Initializable {
 		return tabPaneUbuLogs;
 	}
 
-	public void setTabPaneUbuLogs(TabPane tabPaneUbuLogs) {
-		this.tabPaneUbuLogs = tabPaneUbuLogs;
-	}
-
 	public CheckComboBox<Role> getCheckComboBoxRole() {
 		return checkComboBoxRole;
-	}
-
-	public void setCheckComboBoxRole(CheckComboBox<Role> checkComboBoxRole) {
-		this.checkComboBoxRole = checkComboBoxRole;
 	}
 
 	public CheckComboBox<Group> getCheckComboBoxGroup() {
 		return checkComboBoxGroup;
 	}
 
-	public void setCheckComboBoxGroup(CheckComboBox<Group> checkComboBoxGroup) {
-		this.checkComboBoxGroup = checkComboBoxGroup;
-	}
-
 	public CheckComboBox<LastActivity> getCheckComboBoxActivity() {
 		return checkComboBoxActivity;
-	}
-
-	public void setCheckComboBoxActivity(CheckComboBox<LastActivity> checkComboBoxActivity) {
-		this.checkComboBoxActivity = checkComboBoxActivity;
 	}
 
 	public VisualizationController getVisualizationTabPageController() {
 		return visualizationController;
 	}
 
-	public void setVisualizationTabPageController(VisualizationController visualizationTabPageController) {
-		this.visualizationController = visualizationTabPageController;
-	}
-
 	public CheckComboBox<ModuleType> getCheckComboBoxCourseModule() {
 		return checkComboBoxCourseModule;
-	}
-
-	public void setCheckComboBoxCourseModule(CheckComboBox<ModuleType> checkComboBoxCourseModule) {
-		this.checkComboBoxCourseModule = checkComboBoxCourseModule;
 	}
 
 	public CheckComboBox<ModuleType> getCheckComboBoxModuleType() {
 		return checkComboBoxModuleType;
 	}
 
-	public void setCheckComboBoxModuleType(CheckComboBox<ModuleType> checkComboBoxModuleType) {
-		this.checkComboBoxModuleType = checkComboBoxModuleType;
-	}
-
 	public TabPane getWebViewTabPane() {
 		return webViewTabPane;
-	}
-
-	public void setWebViewTabPane(TabPane webViewTabPane) {
-		this.webViewTabPane = webViewTabPane;
 	}
 
 	public Tab getVisualizationTab() {
 		return visualizationTab;
 	}
 
-	public void setVisualizationTab(Tab visualizationTab) {
-		this.visualizationTab = visualizationTab;
-	}
-
 	public Map<Tab, MainAction> getTabMap() {
 		return tabMap;
-	}
-
-	public void setTabMap(Map<Tab, MainAction> tabMap) {
-		this.tabMap = tabMap;
 	}
 
 	private MainAction getActions() {
@@ -1809,8 +1727,8 @@ public class MainController implements Initializable {
 	}
 
 	private void onClose() {
-		Config.setProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex());
-		Config.setProperty("tabPane", tabPane.getSelectionModel().getSelectedIndex());
+		ConfigHelper.setProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex());
+		ConfigHelper.setProperty("tabPane", tabPane.getSelectionModel().getSelectedIndex());
 	}
 
 }

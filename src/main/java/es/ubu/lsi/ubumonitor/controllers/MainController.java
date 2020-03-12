@@ -239,6 +239,8 @@ public class MainController implements Initializable {
 
 	private AutoCompletionBinding<EnrolledUser> autoCompletionBinding;
 
+	@FXML
+	private ClusteringController clusteringController;
 
 	
 	/**
@@ -371,6 +373,7 @@ public class MainController implements Initializable {
 			}
 		});
 		visualizationController.init(this);
+		clusteringController.init(this);
 
 		tabMap.put(visualizationTab, visualizationController);
 

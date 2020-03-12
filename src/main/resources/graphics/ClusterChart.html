@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Charts</title>
+<link rel="stylesheet" type="text/css" href="../css/chart.css" />
+<script type="text/javascript" src="./lib/Chart.js"></script>
+<script type="text/javascript" src="./lib/color-hash.js"></script>
+</head>
+
+
+<canvas id="myChart" style="height: 100vh"></canvas>
+
+
+<script type="text/javascript">
+	var colorHash = new ColorHash();
+	var ctx = document.getElementById("myChart");
+	var count = 0;
+	Chart.defaults.global.onClick = function (event, array) {
+        let element = myChart.getElementsAtEventForMode(event, "point", { intersect: false });
+        let index = count++ % element.length;
+        if (element.length > 0) {
+        	javaConnector.selectUser(element[index]._datasetIndex, element[index]._index);
+        }
+    }
+	var myChart = new Chart(
+			ctx,
+			{
+				type : "scatter",
+				data : {
+					labels : [],
+					datasets : []
+				},
+				options : {
+					responsive : true,
+					maintainAspectRatio : false,
+					tooltips : {
+						callbacks : {
+							label : function(tooltipItem, data) {
+								var label = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].user;
+								return label + ': ('
+										+ tooltipItem.xLabel.toFixed(2) + ', '
+										+ tooltipItem.yLabel.toFixed(2) + ')';
+							}
+						}
+					},
+					layout : {
+						padding : {
+							left : 50,
+							right : 50,
+							top : 30,
+							bottom : 50
+						}
+					}
+				}
+			});
+
+	function updateChart(data) {
+		myChart.data = data;
+		myChart.update();
+	}
+	
+	function exportGraphic() {
+		return myChart.toBase64Image();
+	}
+</script>
+</html>

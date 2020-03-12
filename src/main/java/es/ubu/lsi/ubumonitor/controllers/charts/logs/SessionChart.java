@@ -70,7 +70,7 @@ public class SessionChart extends ChartjsLog {
 
 		Map<EnrolledUser, Map<T, List<Session>>> sessionMap = createSession(selectedUsers, dateStart, dateEnd, groupBy,
 				timeInterval, groupByTime);
-		
+
 		Map<T, DescriptiveStatistics> sumSession = new HashMap<>();
 		for (Map<T, List<Session>> values : sessionMap.values()) {
 			for (Map.Entry<T, List<Session>> entry : values.entrySet()) {
@@ -98,10 +98,11 @@ public class SessionChart extends ChartjsLog {
 		JSArray datasets = new JSArray();
 		JSObject dataset = new JSObject();
 		dataset.putWithQuote("label", I18n.get("text.totalsession"));
-		dataset.put("backgroundColor","'#3e95cd'");
+		dataset.put("backgroundColor", "'#3e95cd'");
 		JSArray data = new JSArray();
-		for(T element: rangeDates) {
-			DescriptiveStatistics descriptiveStatistics  = sumSession.computeIfAbsent(element, k-> new DescriptiveStatistics());
+		for (T element : rangeDates) {
+			DescriptiveStatistics descriptiveStatistics = sumSession.computeIfAbsent(element,
+					k -> new DescriptiveStatistics());
 			data.add(descriptiveStatistics.getSum());
 		}
 		dataset.put("data", data);
@@ -113,12 +114,12 @@ public class SessionChart extends ChartjsLog {
 			List<EnrolledUser> selectedUsers, LocalDate dateStart, LocalDate dateEnd, GroupByAbstract<T> groupBy,
 			int timeInterval, Map<EnrolledUser, Map<T, List<LogLine>>> groupByTime) {
 		Map<EnrolledUser, Map<T, List<Session>>> userSessions = new HashMap<>();
-		
+
 		for (EnrolledUser enrolledUser : selectedUsers) {
 			Map<T, List<LogLine>> logLinesGrouped = groupByTime.get(enrolledUser);
 			Map<T, List<Session>> sessionsGrouped = new HashMap<>();
 			userSessions.put(enrolledUser, sessionsGrouped);
-			
+
 			for (T timeType : groupBy.getRange(dateStart, dateEnd)) {
 				List<Session> sessions = new ArrayList<>();
 				sessionsGrouped.put(timeType, sessions);
@@ -132,7 +133,7 @@ public class SessionChart extends ChartjsLog {
 						sessions.add(session);
 						actualTime = time;
 					} else {
-						
+
 						session.add(logLine);
 					}
 
@@ -171,7 +172,7 @@ public class SessionChart extends ChartjsLog {
 
 		JSObject jsObject = getDefaultOptions();
 		jsObject.putWithQuote("typeGraph", "bar");
-		jsObject.put("scales", "{yAxes:[{ticks:{stepSize:0}}]}");
+		jsObject.put("scales", "{yAxes:[{ticks:{suggestedMax:" + getSuggestedMax() + ",stepSize:0}}]}");
 		return jsObject.toString();
 	}
 

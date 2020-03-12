@@ -344,8 +344,8 @@ public class MenuController {
 				paragraph.setAlignment(ParagraphAlignment.CENTER);
 				run = paragraph.createRun();
 				run.addPicture(new ByteArrayInputStream(enrolledUsers.get(i).getImageBytes()),
-						Document.PICTURE_TYPE_PNG, enrolledUsers.get(i).getId() + ".png", Units.pixelToEMU(100),
-						Units.pixelToEMU(100));
+						Document.PICTURE_TYPE_PNG, enrolledUsers.get(i).getId() + ".png", Units.pixelToEMU(80),
+						Units.pixelToEMU(80));
 				run.addBreak();
 				run.setText(enrolledUsers.get(i).getFullName());
 

@@ -35,6 +35,8 @@ public enum Component {
 	HOTPOT_MODULE("HotPot module"),
 	IMS_CONTENT_PACKAGE("IMS content package"),
 	JOURNAL("Journal"),
+	KALTURA_MEDIA_ASSIGNMENT("Kaltura Media Assignment"),
+	KALTURA_VIDEO_RESOURCE("Kaltura Video Resource"),
 	LESSON("Lesson"),
 	LIVE_LOGS("Live logs"),
 	LOGS("Logs"),

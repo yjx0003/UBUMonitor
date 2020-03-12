@@ -26,6 +26,7 @@ import es.ubu.lsi.ubumonitor.controllers.charts.logs.Heatmap;
 import es.ubu.lsi.ubumonitor.controllers.charts.logs.MeanDiff;
 import es.ubu.lsi.ubumonitor.controllers.charts.logs.Scatter;
 import es.ubu.lsi.ubumonitor.controllers.charts.logs.ScatterUser;
+import es.ubu.lsi.ubumonitor.controllers.charts.logs.SessionChart;
 import es.ubu.lsi.ubumonitor.controllers.charts.logs.Stackedbar;
 import es.ubu.lsi.ubumonitor.controllers.charts.logs.TotalBar;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
@@ -84,6 +85,7 @@ public class JavaConnector {
 		addChart(new MeanDiff(mainController));
 		addChart(new ActivitiesStatusTable(mainController));
 		addChart(new CalificationBar(mainController));
+		addChart(new SessionChart(mainController));
 	}
 
 	private void addChart(Chart chart) {

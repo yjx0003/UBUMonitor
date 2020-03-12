@@ -1,14 +1,14 @@
-package clustering.controller.collector;
+package es.ubu.lsi.ubumonitor.clustering.controller.collector;
 
 import java.util.List;
 
-import clustering.data.Datum;
-import clustering.data.UserData;
-import controllers.MainController;
+import es.ubu.lsi.ubumonitor.clustering.data.Datum;
+import es.ubu.lsi.ubumonitor.clustering.data.UserData;
+import es.ubu.lsi.ubumonitor.controllers.MainController;
 import javafx.scene.control.ListView;
-import model.ActivityCompletion;
-import model.ActivityCompletion.State;
-import model.CourseModule;
+import es.ubu.lsi.ubumonitor.model.ActivityCompletion;
+import es.ubu.lsi.ubumonitor.model.ActivityCompletion.State;
+import es.ubu.lsi.ubumonitor.model.CourseModule;
 
 public class ActivityCollector extends DataCollector {
 

@@ -1,4 +1,4 @@
-package clustering.data;
+package es.ubu.lsi.ubumonitor.clustering.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.math3.ml.clustering.Clusterable;
 
-import model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 
 public class UserData implements Clusterable {
 

@@ -1,4 +1,4 @@
-package clustering.algorithm;
+package es.ubu.lsi.ubumonitor.clustering.algorithm;
 
 import java.util.ArrayList;
 import java.util.Collection;

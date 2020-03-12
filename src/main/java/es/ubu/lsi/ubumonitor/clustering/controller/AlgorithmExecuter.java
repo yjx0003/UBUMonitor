@@ -41,9 +41,9 @@ public class AlgorithmExecuter {
 		List<? extends Cluster<UserData>> clusters = clusterer.cluster(usersData);
 		List<ClusterWrapper> users = new ArrayList<>();
 		for (int i = 0; i < clusters.size(); i++) {
-			ClusterWrapper clusterWrapper = new ClusterWrapper(String.valueOf(i), clusters.get(i));
+			ClusterWrapper clusterWrapper = new ClusterWrapper(i, clusters.get(i));
 			for (UserData user : clusters.get(i).getPoints()) {
-				user.setCluster(i);
+				user.setCluster(clusterWrapper);
 			}
 			users.add(clusterWrapper);
 		}

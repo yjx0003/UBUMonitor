@@ -14,7 +14,7 @@ public class UserData implements Clusterable {
 	private EnrolledUser user;
 	private List<Datum> data;
 	private List<Double> normalizedData;
-	private int cluster;
+	private ClusterWrapper cluster;
 
 	public UserData(EnrolledUser user) {
 		this.user = user;
@@ -43,11 +43,11 @@ public class UserData implements Clusterable {
 		return normalizedData.stream().mapToDouble(Double::doubleValue).toArray();
 	}
 
-	public void setCluster(int cluster) {
+	public void setCluster(ClusterWrapper cluster) {
 		this.cluster = cluster;
 	}
 
-	public int getCluster() {
+	public ClusterWrapper getCluster() {
 		return cluster;
 	}
 
@@ -57,7 +57,7 @@ public class UserData implements Clusterable {
 
 	@Override
 	public String toString() {
-		return "UserData [user=" + user + ", data=" + data + ", cluster=" + cluster + "]";
+		return "UserData [user=" + user + ", data=" + data + "]";
 	}
 
 	@Override

@@ -6,12 +6,21 @@ import org.apache.commons.math3.ml.clustering.Cluster;
 
 public class ClusterWrapper extends AbstractList<UserData> {
 
+	private int id;
 	private String name;
 	private Cluster<UserData> cluster;
 
-	public ClusterWrapper(String name, Cluster<UserData> cluster) {
-		this.name = name;
+	public ClusterWrapper(int id, Cluster<UserData> cluster) {
+		this.id = id;
+		this.name = String.valueOf(id);
 		this.cluster = cluster;
+	}
+
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
 	}
 
 	/**

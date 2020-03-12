@@ -59,4 +59,9 @@ public class Datum {
 		return Objects.equals(item, other.item) && Objects.equals(type, other.type)
 				&& Objects.equals(value, other.value);
 	}
+
+	@Override
+	public String toString() {
+		return "Datum [type=" + type + ", item=" + item + ", value=" + value + "]";
+	}
 }

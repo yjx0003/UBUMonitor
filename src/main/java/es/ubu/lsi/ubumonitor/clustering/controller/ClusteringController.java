@@ -1,13 +1,10 @@
 package es.ubu.lsi.ubumonitor.clustering.controller;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -35,51 +32,25 @@ import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponent;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ListChangeListener.Change;
-import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
-import javafx.concurrent.Worker;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
-import javafx.scene.paint.Color;
-import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.util.converter.IntegerStringConverter;
-import es.ubu.lsi.ubumonitor.model.EnrolledUser;
-import es.ubu.lsi.ubumonitor.model.GradeItem;
-import es.ubu.lsi.ubumonitor.util.JSArray;
-import es.ubu.lsi.ubumonitor.util.JSObject;
-import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
 public class ClusteringController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringController.class);
+
+	private Controller controller = Controller.getInstance();
 
 	private MainController mainController;
 
@@ -91,7 +62,6 @@ public class ClusteringController {
 
 	@FXML
 	private WebView webView;
-	private WebEngine webEngine;
 
 	@FXML
 	private TableView<UserData> tableView;
@@ -133,29 +103,21 @@ public class ClusteringController {
 	private Button buttonRename;
 
 	private GradesCollector gradesCollector;
-	private ActivityCollector activityCollector;
 
-	private Connector connector;
+	private ActivityCollector activityCollector;
 
 	private List<ClusterWrapper> clusters;
 
+	private ClusteringTable table;
+
+	private ClusteringGraph graph;
+
 	public void init(MainController controller) {
 		mainController = controller;
+		table = new ClusteringTable(this);
+		graph = new ClusteringGraph(this);
 		initAlgorithms();
 		initCollectors();
-		initTable();
-		initContextMenu();
-		webView.setContextMenuEnabled(false);
-		webEngine = webView.getEngine();
-
-		connector = new Connector(this);
-		webEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
-			if (Worker.State.SUCCEEDED != newState)
-				return;
-			netscape.javascript.JSObject window = (netscape.javascript.JSObject) webEngine.executeScript("window");
-			window.setMember("javaConnector", connector);
-		});
-		webEngine.load(getClass().getResource("/graphics/ClusterChart.html").toExternalForm());
 	}
 
 	private void initAlgorithms() {
@@ -187,106 +149,6 @@ public class ClusteringController {
 		checkComboBoxLogs.getItems().setAll(list);
 	}
 
-	private void initTable() {
-		columnImage.setCellValueFactory(c -> new SimpleObjectProperty<>(new ImageView(new Image(
-				new ByteArrayInputStream(c.getValue().getEnrolledUser().getImageBytes()), 50, 50, true, false))));
-		columnName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEnrolledUser().getFullName()));
-		columnCluster
-				.setCellValueFactory(c -> new SimpleStringProperty(clusters.get(c.getValue().getCluster()).getName()));
-
-		ContextMenu contextMenu = new ContextMenu();
-		contextMenu.setAutoHide(true);
-		MenuItem info = new MenuItem();
-		contextMenu.getItems().setAll(info);
-
-		tableView.setRowFactory(tv -> {
-			TableRow<UserData> row = new TableRow<>();
-			row.setOnMouseClicked(e -> {
-				if (e.getButton() == MouseButton.PRIMARY && e.getClickCount() == 2 && !row.isEmpty()) {
-					showUserDataInfo(row.getItem());
-				} else if (e.getButton() == MouseButton.SECONDARY && !row.isEmpty()) {
-					info.setOnAction(ev -> showUserDataInfo(row.getItem()));
-					info.setText(I18n.get("text.see") + row.getItem().getEnrolledUser().getFullName());
-					contextMenu.show(row, e.getScreenX(), e.getScreenY());
-				} else {
-					contextMenu.hide();
-				}
-			});
-			return row;
-		});
-		initGradeColumns();
-	}
-
-	private void initGradeColumns() {
-		List<Color> colors = Arrays.asList(Color.RED, Color.ORANGE, Color.GREEN, Color.PURPLE);
-		TreeView<GradeItem> gradeItem = mainController.getTvwGradeReport();
-		gradeItem.getSelectionModel().getSelectedItems().addListener((Change<?> change) -> {
-			List<TreeItem<GradeItem>> selected = gradeItem.getSelectionModel().getSelectedItems();
-			ObservableList<TableColumn<UserData, ?>> columns = tableView.getColumns();
-			columns.remove(3, columns.size());
-			for (TreeItem<GradeItem> treeItem : selected) {
-				if (treeItem == null)
-					continue;
-
-				GradeItem item = treeItem.getValue();
-				TableColumn<UserData, Number> column = new TableColumn<>(item.getItemname());
-				column.setCellValueFactory(
-						c -> new SimpleDoubleProperty(item.getEnrolledUserPercentage(c.getValue().getEnrolledUser())));
-
-				column.setCellFactory(c -> new TableCell<UserData, Number>() {
-					@Override
-					protected void updateItem(Number item, boolean empty) {
-						super.updateItem(item, empty);
-
-						if (empty || item == null) {
-							setText(null);
-							setGraphic(null);
-						} else {
-							setText(item.toString());
-							setTextFill(colors.get(item.intValue() / 26));
-						}
-					}
-				});
-				columns.add(column);
-			}
-		});
-	}
-
-	private void showUserDataInfo(UserData userData) {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ClusteringInfo.fxml"));
-			Scene scene = new Scene(loader.load());
-			Stage stage = new Stage();
-			stage.setScene(scene);
-			stage.initModality(Modality.WINDOW_MODAL);
-			stage.initOwner(Controller.getInstance().getStage());
-			stage.setTitle(userData.getEnrolledUser().getFullName());
-			UserDataController controller = loader.getController();
-			controller.init(userData, tableView);
-			stage.show();
-		} catch (IOException e) {
-			LOGGER.error("Error", e);
-		}
-	}
-
-	private void initContextMenu() {
-		ContextMenu contextMenu = new ContextMenu();
-		contextMenu.setAutoHide(true);
-
-		MenuItem exportCSV = new MenuItem(I18n.get("text.exportcsv"));
-		exportCSV.setOnAction(e -> exportPoints());
-		MenuItem exportPNG = new MenuItem(I18n.get("text.exportpng"));
-		exportPNG.setOnAction(e -> exportPNG());
-		contextMenu.getItems().setAll(exportCSV, exportPNG);
-		webView.setOnMouseClicked(e -> {
-			if (e.getButton() == MouseButton.SECONDARY && clusters != null) {
-				contextMenu.show(webView, e.getScreenX(), e.getScreenY());
-			} else {
-				contextMenu.hide();
-			}
-		});
-	}
-
 	@FXML
 	private void execute() {
 		List<EnrolledUser> users = mainController.getListParticipants().getSelectionModel().getSelectedItems();
@@ -308,14 +170,13 @@ public class ClusteringController {
 
 		int dim = checkBoxReduce.isSelected() ? Integer.valueOf(textFieldReduce.getText()) : 0;
 		clusters = algorithmExecuter.execute(dim);
-		connector.setClusters(clusters);
 
 		LOGGER.debug("Parametros: {}", algorithm.getParameters());
 		LOGGER.debug("Clusters: {}", clusters);
 
-		updateTable();
+		table.updateTable(clusters);
 		updateRename();
-		updateChart();
+		graph.updateChart(clusters);
 	}
 
 	private void updateRename() {
@@ -327,123 +188,27 @@ public class ClusteringController {
 			for (int i = 0; i < items.size(); i++) {
 				clusters.get(i).setName(items.get(i).getValue().toString());
 			}
-			updateChart();
-			updateTable();
+			graph.updateChart(clusters);
+			table.updateTable(clusters);
 		});
-	}
-
-	private void updateTable() {
-		List<UserData> users = clusters.stream().flatMap(List::stream).collect(Collectors.toList());
-		FilteredList<UserData> filteredList = new FilteredList<>(FXCollections.observableList(users));
-		SortedList<UserData> sortedList = new SortedList<>(filteredList);
-		sortedList.comparatorProperty().bind(tableView.comparatorProperty());
-		tableView.setItems(sortedList);
-		Map<Integer, Long> count = users.stream()
-				.collect(Collectors.groupingBy(UserData::getCluster, Collectors.counting()));
-		checkComboBoxCluster.setConverter(new IntegerStringConverter() {
-			@Override
-			public String toString(Integer value) {
-				if (value.equals(-1))
-					return I18n.get("text.all");
-				Long n = count.get(value);
-				return String.format("%s  (%d/%d)", clusters.get(value).getName(), n == null ? 0 : n,
-						count.values().stream().mapToLong(Long::longValue).sum());
-			}
-		});
-		checkComboBoxCluster.getCheckModel().getCheckedItems()
-				.addListener((ListChangeListener.Change<? extends Integer> c) -> filteredList.setPredicate(
-						o -> checkComboBoxCluster.getCheckModel().getCheckedItems().contains(o.getCluster())));
-		ObservableList<Integer> items = checkComboBoxCluster.getItems();
-		items.setAll(IntStream.range(-1, clusters.size()).boxed().collect(Collectors.toList()));
-		checkComboBoxCluster.getCheckModel().checkAll();
-		checkComboBoxCluster.getItemBooleanProperty(0).addListener((obs, oldValue, newValue) -> {
-			if (newValue.booleanValue()) {
-				checkComboBoxCluster.getCheckModel().checkAll();
-			} else {
-				checkComboBoxCluster.getCheckModel().clearChecks();
-			}
-		});
-		tableView.refresh();
-	}
-
-	private void updateChart() {
-		List<Map<UserData, double[]>> points = AlgorithmExecuter.clustersTo2D(clusters);
-		LOGGER.debug("Puntos: {}", points);
-		JSObject root = new JSObject();
-		JSArray datasets = new JSArray();
-		for (int i = 0; i < points.size(); i++) {
-			JSObject group = new JSObject();
-			group.putWithQuote("label", clusters.get(i).getName());
-			group.put("backgroundColor", "colorHash.hex(" + i * i + ")");
-			group.put("pointRadius", 6);
-			group.put("pointHoverRadius", 8);
-			JSArray data = new JSArray();
-			for (Map.Entry<UserData, double[]> userEntry : points.get(i).entrySet()) {
-				JSObject coord = new JSObject();
-				coord.putWithQuote("user", userEntry.getKey().getEnrolledUser().getFullName());
-				coord.put("x", userEntry.getValue()[0]);
-				coord.put("y", userEntry.getValue()[1]);
-				data.add(coord);
-			}
-			group.put("data", data);
-			datasets.add(group);
-		}
-		root.put("datasets", datasets);
-		LOGGER.debug("Data: {}", root);
-		webEngine.executeScript("updateChart(" + root + ")");
-
 	}
 
 	@FXML
 	private void exportTable() {
-
 		try {
-			File file = selectFile(new ExtensionFilter("CSV (*.csv)", "*.csv"));
+			FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportcsv"),
+					String.format("%s_%s_CLUSTERING.csv", controller.getActualCourse().getId(),
+							LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss"))),
+					ConfigHelper.getProperty("csvFolderPath", "./"), new ExtensionFilter("CSV (*.csv)", "*.csv"));
+			File file = fileChooser.showSaveDialog(controller.getStage());
 			if (file != null) {
 				CSVClustering.exportTable(clusters, file.toPath());
 				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + file.getAbsolutePath());
 			}
 		} catch (Exception e) {
-			LOGGER.error("Error al exportar ficheros CSV.", e);
+			LOGGER.error("Error al exportar el fichero CSV.", e);
 			UtilMethods.errorWindow(I18n.get("error.savecsvfiles"), e);
 		}
-	}
-
-	private void exportPoints() {
-		try {
-			File file = selectFile(new ExtensionFilter("CSV (*.csv)", "*.csv"));
-			if (file != null) {
-				CSVClustering.exportPoints(clusters, file.toPath());
-				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + file.getAbsolutePath());
-			}
-		} catch (Exception e) {
-			LOGGER.error("Error al exportar ficheros CSV.", e);
-			UtilMethods.errorWindow(I18n.get("error.savecsvfiles"), e);
-		}
-	}
-
-	private void exportPNG() {
-		try {
-			File file = selectFile(new ExtensionFilter("PNG (*.png)", "*.png"));
-			if (file != null) {
-				connector.export(file);
-				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + file.getAbsolutePath());
-			}
-		} catch (IOException e) {
-			LOGGER.error("Error al exportar ficheros CSV.", e);
-			UtilMethods.errorWindow(I18n.get("error.savecsvfiles"), e);
-		}
-	}
-
-	private File selectFile(ExtensionFilter extension) {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().add(extension);
-		File file = new File(ConfigHelper.getProperty("csvFolderPath", "./"));
-		if (file.exists() && file.isDirectory()) {
-			fileChooser.setInitialDirectory(file);
-		}
-		fileChooser.setInitialFileName("clustering_" + CSVClustering.DTF.format(LocalDateTime.now()));
-		return fileChooser.showSaveDialog(mainController.getController().getStage());
 	}
 
 	/**
@@ -472,13 +237,6 @@ public class ClusteringController {
 	 */
 	public WebView getWebView() {
 		return webView;
-	}
-
-	/**
-	 * @return the webEngine
-	 */
-	public WebEngine getWebEngine() {
-		return webEngine;
 	}
 
 	/**

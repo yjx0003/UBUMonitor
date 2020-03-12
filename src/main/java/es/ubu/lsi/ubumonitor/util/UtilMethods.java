@@ -43,7 +43,10 @@ public class UtilMethods {
 	 * @return texto escapado
 	 */
 	public static String escapeJavaScriptText(String input) {
-		return input.replace("'", "\\\'");
+
+		return input.replace("'", "\\\'")
+				.replaceAll("\\R", "");
+
 	}
 
 	/**
@@ -53,7 +56,9 @@ public class UtilMethods {
 	 * @return
 	 */
 	public static <E> String join(List<E> datasets) {
-		return datasets.stream().map(E::toString).collect(Collectors.joining(","));
+		return datasets.stream()
+				.map(E::toString)
+				.collect(Collectors.joining(","));
 	}
 
 	/**
@@ -65,7 +70,9 @@ public class UtilMethods {
 	 */
 	public static <T> String joinWithQuotes(List<T> list) {
 		// https://stackoverflow.com/a/18229122
-		return list.stream().map(s -> "'" + escapeJavaScriptText(s.toString()) + "'").collect(Collectors.joining(","));
+		return list.stream()
+				.map(s -> "'" + escapeJavaScriptText(s.toString()) + "'")
+				.collect(Collectors.joining(","));
 	}
 
 	/**
@@ -92,7 +99,7 @@ public class UtilMethods {
 	 * Muestra una ventana de información.
 	 * 
 	 * @param message El mensaje que se quiere mostrar.
-	 * @param exit Indica si se quiere mostar el boton de salir o no.
+	 * @param exit    Indica si se quiere mostar el boton de salir o no.
 	 * @return
 	 */
 	public static ButtonType infoWindow(String contentText) {
@@ -130,7 +137,8 @@ public class UtilMethods {
 		expContent.add(textArea, 0, 1);
 
 		// Set expandable Exception into the dialog pane.
-		alert.getDialogPane().setExpandableContent(expContent);
+		alert.getDialogPane()
+				.setExpandableContent(expContent);
 		alert.showAndWait();
 		return alert.getResult();
 	}
@@ -145,8 +153,11 @@ public class UtilMethods {
 		Alert alert = new Alert(alertType);
 		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		alert.initModality(Modality.APPLICATION_MODAL);
-		Stage stageAlert = (Stage) alert.getDialogPane().getScene().getWindow();
-		stageAlert.getIcons().add(new Image("/img/logo_min.png"));
+		Stage stageAlert = (Stage) alert.getDialogPane()
+				.getScene()
+				.getWindow();
+		stageAlert.getIcons()
+				.add(new Image("/img/logo_min.png"));
 		alert.setHeaderText(headerText);
 		alert.setContentText(contentText);
 		return alert;
@@ -195,9 +206,8 @@ public class UtilMethods {
 		}
 
 	}
-	
+
 	public static void createDialog(FXMLLoader loader, Stage ownerStage) {
-		
 
 		Scene newScene;
 		try {
@@ -213,7 +223,8 @@ public class UtilMethods {
 		stage.initOwner(ownerStage);
 		stage.initModality(Modality.WINDOW_MODAL);
 
-		stage.getIcons().add(new Image("/img/logo_min.png"));
+		stage.getIcons()
+				.add(new Image("/img/logo_min.png"));
 		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 
 		stage.show();
@@ -229,17 +240,21 @@ public class UtilMethods {
 				Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] { String.class });
 				openURL.invoke(null, new Object[] { url });
 			} else if (osName.startsWith("Windows"))
-				Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
+				Runtime.getRuntime()
+						.exec("rundll32 url.dll,FileProtocolHandler " + url);
 			else { // assume Unix or Linux
 				String[] browsers = { "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" };
 				String browser = null;
 				for (int count = 0; count < browsers.length && browser == null; count++)
-					if (Runtime.getRuntime().exec(new String[] { "which", browsers[count] }).waitFor() == 0)
+					if (Runtime.getRuntime()
+							.exec(new String[] { "which", browsers[count] })
+							.waitFor() == 0)
 						browser = browsers[count];
 				if (browser == null)
 					throw new IllegalStateException("Could not find web browser");
 				else
-					Runtime.getRuntime().exec(new String[] { browser, url });
+					Runtime.getRuntime()
+							.exec(new String[] { browser, url });
 			}
 		} catch (Exception e) {
 			errorWindow("Cannot open " + url + " in web browser", e);
@@ -249,7 +264,8 @@ public class UtilMethods {
 	public static void mailTo(String mail) {
 		try {
 			if (Desktop.isDesktopSupported() && (Desktop.getDesktop()).isSupported(Desktop.Action.MAIL)) {
-				Desktop.getDesktop().mail(new URI("mailto:" + mail));
+				Desktop.getDesktop()
+						.mail(new URI("mailto:" + mail));
 			}
 		} catch (Exception e) {
 			errorWindow("Cannot open " + mail + " in the default mail client.");
@@ -262,7 +278,8 @@ public class UtilMethods {
 		fileChooser.setTitle(title);
 		fileChooser.setInitialFileName(initialFileName);
 		fileChooser.setInitialDirectory(new File(initialDirectory));
-		fileChooser.getExtensionFilters().addAll(extensionFilters);
+		fileChooser.getExtensionFilters()
+				.addAll(extensionFilters);
 		return fileChooser;
 	}
 
@@ -272,7 +289,7 @@ public class UtilMethods {
 	 * por horas, y asi consecutivamente.
 	 * 
 	 * @param lastCourseAccess fecha inicio
-	 * @param lastLogInstant fecha fin
+	 * @param lastLogInstant   fecha fin
 	 * @return texto con el numero y el tipo de tiempo
 	 */
 	public static String formatDates(Instant lastCourseAccess, Instant lastLogInstant) {
@@ -305,9 +322,9 @@ public class UtilMethods {
 	 * Devuelve la difernecia absoluta entre dos instantes dependiendo de que sea el
 	 * tipo
 	 * 
-	 * @param type dias, horas, minutos
+	 * @param type             dias, horas, minutos
 	 * @param lastCourseAccess instante inicio
-	 * @param lastLogInstant instante fin
+	 * @param lastLogInstant   instante fin
 	 * @return numero de diferencia absoluta
 	 */
 	private static long betweenDates(ChronoUnit type, Instant lastCourseAccess, Instant lastLogInstant) {

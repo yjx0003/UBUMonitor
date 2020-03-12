@@ -20,9 +20,9 @@ public class Connector {
 
 	private List<ClusterWrapper> clusters;
 
-	public Connector(ClusteringController controller) {
-		clusteringController = controller;
-		webEngine = controller.getWebEngine();
+	public Connector(ClusteringController controller, WebEngine webEngine) {
+		this.clusteringController = controller;
+		this.webEngine = webEngine;
 	}
 
 	public void selectUser(int clusterIndex, int index) {
@@ -34,6 +34,7 @@ public class Connector {
 	public void setClusters(List<ClusterWrapper> clusters) {
 		this.clusters = clusters;
 	}
+
 	public void export(File file) throws IOException {
 		String str = (String) webEngine.executeScript("exportGraphic()");
 		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));

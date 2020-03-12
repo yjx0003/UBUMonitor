@@ -1,4 +1,4 @@
-package clustering.algorithm;
+package es.ubu.lsi.ubumonitor.clustering.algorithm;
 
 import org.apache.commons.math3.ml.clustering.Clusterable;
 import org.apache.commons.math3.ml.clustering.Clusterer;

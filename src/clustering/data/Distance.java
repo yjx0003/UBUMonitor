@@ -1,4 +1,4 @@
-package clustering.data;
+package es.ubu.lsi.ubumonitor.clustering.data;
 
 import org.apache.commons.math3.ml.distance.CanberraDistance;
 import org.apache.commons.math3.ml.distance.ChebyshevDistance;

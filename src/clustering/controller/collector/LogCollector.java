@@ -1,4 +1,4 @@
-package clustering.controller.collector;
+package es.ubu.lsi.ubumonitor.clustering.controller.collector;
 
 import java.util.Collections;
 import java.util.List;
@@ -6,16 +6,16 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import clustering.data.Datum;
-import clustering.data.UserData;
-import controllers.Controller;
-import controllers.I18n;
-import controllers.datasets.DataSet;
-import controllers.ubulogs.GroupByAbstract;
-import controllers.ubulogs.TypeTimes;
+import es.ubu.lsi.ubumonitor.clustering.data.Datum;
+import es.ubu.lsi.ubumonitor.clustering.data.UserData;
+import es.ubu.lsi.ubumonitor.controllers.Controller;
+import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.controllers.datasets.DataSet;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
+import es.ubu.lsi.ubumonitor.controllers.ubulogs.TypeTimes;
 import javafx.scene.control.ListView;
-import model.Course;
-import model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.Course;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 
 public class LogCollector<T> extends DataCollector {
 
@@ -38,10 +38,10 @@ public class LogCollector<T> extends DataCollector {
 		Course couse = Controller.getInstance().getActualCourse();
 		GroupByAbstract<?> groupBy = couse.getLogStats().getByType(TypeTimes.ALL);
 		List<EnrolledUser> enrolledUsers = users.stream().map(UserData::getEnrolledUser).collect(Collectors.toList());
-		Map<EnrolledUser, Map<T, List<Long>>> result = dataSet.getUserCounts(groupBy, enrolledUsers, selected, null,
+		Map<EnrolledUser, Map<T, List<Integer>>> result = dataSet.getUserCounts(groupBy, enrolledUsers, selected, null,
 				null);
 		for (T logType : selected) {
-			List<Long> values = result.values().stream().map(m -> m.get(logType).get(0)).collect(Collectors.toList());
+			List<Integer> values = result.values().stream().map(m -> m.get(logType).get(0)).collect(Collectors.toList());
 			long min = Collections.min(values);
 			long max = Collections.max(values);
 			for (UserData userData : users) {

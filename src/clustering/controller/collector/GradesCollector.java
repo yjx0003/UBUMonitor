@@ -1,13 +1,13 @@
-package clustering.controller.collector;
+package es.ubu.lsi.ubumonitor.clustering.controller.collector;
 
 import java.util.List;
 
-import clustering.data.Datum;
-import clustering.data.UserData;
-import controllers.MainController;
+import es.ubu.lsi.ubumonitor.clustering.data.Datum;
+import es.ubu.lsi.ubumonitor.clustering.data.UserData;
+import es.ubu.lsi.ubumonitor.controllers.MainController;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import model.GradeItem;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
 
 public class GradesCollector extends DataCollector {
 

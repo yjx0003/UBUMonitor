@@ -1,4 +1,4 @@
-package clustering.controller;
+package es.ubu.lsi.ubumonitor.clustering.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -17,24 +17,24 @@ import org.controlsfx.control.PropertySheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import clustering.algorithm.Algorithm;
-import clustering.algorithm.Algorithms;
-import clustering.controller.collector.ActivityCollector;
-import clustering.controller.collector.DataCollector;
-import clustering.controller.collector.GradesCollector;
-import clustering.controller.collector.LogCollector;
-import clustering.data.ClusterWrapper;
-import clustering.data.UserData;
-import clustering.util.CSVClustering;
-import clustering.util.SimplePropertySheetItem;
-import controllers.Controller;
-import controllers.I18n;
-import controllers.MainController;
-import controllers.configuration.Config;
-import controllers.datasets.DataSetComponent;
-import controllers.datasets.DataSetComponentEvent;
-import controllers.datasets.DataSetSection;
-import controllers.datasets.DatasSetCourseModule;
+import es.ubu.lsi.ubumonitor.clustering.algorithm.Algorithm;
+import es.ubu.lsi.ubumonitor.clustering.algorithm.Algorithms;
+import es.ubu.lsi.ubumonitor.clustering.controller.collector.ActivityCollector;
+import es.ubu.lsi.ubumonitor.clustering.controller.collector.DataCollector;
+import es.ubu.lsi.ubumonitor.clustering.controller.collector.GradesCollector;
+import es.ubu.lsi.ubumonitor.clustering.controller.collector.LogCollector;
+import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
+import es.ubu.lsi.ubumonitor.clustering.data.UserData;
+import es.ubu.lsi.ubumonitor.clustering.util.CSVClustering;
+import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
+import es.ubu.lsi.ubumonitor.controllers.Controller;
+import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
+import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponent;
+import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;
+import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
+import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -71,11 +71,11 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
-import model.EnrolledUser;
-import model.GradeItem;
-import util.JSArray;
-import util.JSObject;
-import util.UtilMethods;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.util.JSArray;
+import es.ubu.lsi.ubumonitor.util.JSObject;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
 public class ClusteringController {
 
@@ -435,7 +435,7 @@ public class ClusteringController {
 	private File selectFile(ExtensionFilter extension) {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().add(extension);
-		File file = new File(Config.getProperty("csvFolderPath", "./"));
+		File file = new File(ConfigHelper.getProperty("csvFolderPath", "./"));
 		if (file.exists() && file.isDirectory()) {
 			fileChooser.setInitialDirectory(file);
 		}

@@ -22,7 +22,8 @@ public class Session {
 				.getTime();
 		ZonedDateTime end = logLines.get(logLines.size() - 1)
 				.getTime();
-		return start.until(end, ChronoUnit.MINUTES);
+
+		return Math.max(start.until(end, ChronoUnit.MINUTES), 1);
 	}
 
 }

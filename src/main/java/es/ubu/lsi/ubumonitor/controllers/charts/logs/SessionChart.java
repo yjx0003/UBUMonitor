@@ -2,6 +2,7 @@ package es.ubu.lsi.ubumonitor.controllers.charts.logs;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -14,7 +15,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
@@ -71,42 +71,44 @@ public class SessionChart extends ChartjsLog {
 		Map<EnrolledUser, Map<T, List<Session>>> sessionMap = createSession(selectedUsers, dateStart, dateEnd, groupBy,
 				timeInterval, groupByTime);
 
-		Map<T, DescriptiveStatistics> sumSession = new HashMap<>();
-		for (Map<T, List<Session>> values : sessionMap.values()) {
-			for (Map.Entry<T, List<Session>> entry : values.entrySet()) {
-				DescriptiveStatistics descriptiveStatistics = sumSession.computeIfAbsent(entry.getKey(),
-						k -> new DescriptiveStatistics());
-				descriptiveStatistics.addValue(entry.getValue()
-						.size());
-			}
-		}
 		List<String> rangeDatesString = groupBy.getRangeString(dateStart, dateEnd);
 		List<T> rangeDates = groupBy.getRange(dateStart, dateEnd);
 		JSObject data = new JSObject();
 
 		data.put("labels", createLabels(rangeDatesString));
 
-		JSArray datasets = createDatasets(sumSession, rangeDates);
+		JSArray datasets = createDatasets(sessionMap, selectedUsers, rangeDates);
 
 		data.put("datasets", datasets);
 		return data.toString();
 
 	}
 
-	private <T> JSArray createDatasets(Map<T, DescriptiveStatistics> sumSession, List<T> rangeDates) {
-		// TODO Auto-generated method stub
+	private <T> JSArray createDatasets(Map<EnrolledUser, Map<T, List<Session>>> sessionsMap,
+			List<EnrolledUser> selectedUsers, List<T> rangeDates) {
+
 		JSArray datasets = new JSArray();
-		JSObject dataset = new JSObject();
-		dataset.putWithQuote("label", I18n.get("text.totalsession"));
-		dataset.put("backgroundColor", "'#3e95cd'");
-		JSArray data = new JSArray();
-		for (T element : rangeDates) {
-			DescriptiveStatistics descriptiveStatistics = sumSession.computeIfAbsent(element,
-					k -> new DescriptiveStatistics());
-			data.add(descriptiveStatistics.getSum());
+
+		for (EnrolledUser enrolledUser : selectedUsers) {
+			JSArray data = new JSArray();
+			JSArray n = new JSArray();
+			JSObject dataset = new JSObject();
+			dataset.putWithQuote("label", enrolledUser.getFullName());
+			dataset.put("backgroundColor", hex(enrolledUser.getId()));
+			for (T element : rangeDates) {
+				List<Session> session = sessionsMap.get(enrolledUser)
+						.get(element);
+
+				data.add(session.stream()
+						.map(Session::getDiffMinutes)
+						.collect(Collectors.summingLong(Long::longValue)));
+				n.add(session.size());
+			}
+			dataset.put("data", data);
+			dataset.put("n", n);
+			datasets.add(dataset);
 		}
-		dataset.put("data", data);
-		datasets.add(dataset);
+
 		return datasets;
 	}
 
@@ -130,6 +132,7 @@ public class SessionChart extends ChartjsLog {
 					ZonedDateTime time = logLine.getTime();
 					if (actualTime == null || actualTime.until(time, ChronoUnit.MINUTES) > timeInterval) {
 						session = new Session(logLine);
+
 						sessions.add(session);
 						actualTime = time;
 					} else {
@@ -172,8 +175,25 @@ public class SessionChart extends ChartjsLog {
 
 		JSObject jsObject = getDefaultOptions();
 		jsObject.putWithQuote("typeGraph", "bar");
-		jsObject.put("scales", "{yAxes:[{ticks:{suggestedMax:" + getSuggestedMax() + ",stepSize:0}}]}");
+		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",stacked: true,ticks:{suggestedMax:" + getSuggestedMax()
+				+ ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + ",stacked: true}]}");
+		jsObject.put("tooltips",
+				"{callbacks:{label:function(a,e){return e.datasets[a.datasetIndex].label+': '+a.yLabel+' (avg: '+Math.round(a.yLabel/e.datasets[a.datasetIndex].n[a.index]*100)/100+')'},afterLabel:function(a,e){return'"
+						+ I18n.get("text.session") + "'+e.datasets[a.datasetIndex].n[a.index]}}}");
 		return jsObject.toString();
+	}
+
+	@Override
+	public String getXAxisTitle() {
+		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"), I18n.get(choiceBoxDate.getValue()
+				.getTypeTime()));
+	}
+	
+	@Override
+	public String getYAxisTitle() {
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		
+		return MessageFormat.format(I18n.get(getChartType() + ".yAxisTitle"), (int)mainConfiguration.getValue(chartType, "timeInterval"));
 	}
 
 }

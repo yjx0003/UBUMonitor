@@ -88,7 +88,7 @@ public class ClusteringGraph {
 			File file = fileChooser.showSaveDialog(controller.getStage());
 			if (file != null) {
 				CSVClustering.exportPoints(clusters, file.toPath());
-				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + file.getAbsolutePath());
+				UtilMethods.infoWindow(I18n.get("message.export_csv") + file.getAbsolutePath());
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error al exportar el fichero CSV.", e);
@@ -105,7 +105,7 @@ public class ClusteringGraph {
 			File file = fileChooser.showSaveDialog(controller.getStage());
 			if (file != null) {
 				connector.export(file);
-				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + file.getAbsolutePath());
+				UtilMethods.infoWindow(I18n.get("message.export_png") + file.getAbsolutePath());
 			}
 		} catch (IOException e) {
 			LOGGER.error("Error al exportar el fichero PNG.", e);

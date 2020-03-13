@@ -54,7 +54,7 @@ public class UserDataController {
 		tableView.getItems().setAll(userData.getData());
 		columnType.setCellValueFactory(e -> new SimpleStringProperty(I18n.get(e.getValue().getType())));
 		columnItem.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getItem()));
-		columnValue.setCellValueFactory(e -> new SimpleDoubleProperty(e.getValue().getValue()));
+		columnValue.setCellValueFactory(e -> new SimpleDoubleProperty(e.getValue().getValue().doubleValue()));
 
 		columnIcon.setCellValueFactory(
 				e -> new SimpleObjectProperty<>(new ImageView(AppInfo.IMG_DIR + e.getValue().getIconFile() + ".png")));

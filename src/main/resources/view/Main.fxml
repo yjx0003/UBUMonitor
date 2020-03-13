@@ -264,7 +264,7 @@
                            <fx:include fx:id="visualization" source="Visualization.fxml" />
                          
                       </Tab>
-                      <Tab fx:id="clusteringTab" text="\%tab.clustering">
+                      <Tab fx:id="clusteringTab" text="%tab.clustering">
 
                            <fx:include fx:id="clustering" source="Clustering.fxml" />
 

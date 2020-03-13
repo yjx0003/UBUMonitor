@@ -197,13 +197,13 @@ public class ClusteringController {
 	private void exportTable() {
 		try {
 			FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportcsv"),
-					String.format("%s_%s_CLUSTERING.csv", controller.getActualCourse().getId(),
+					String.format("%s_%s_CLUSTERING_TABLE.csv", controller.getActualCourse().getId(),
 							LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss"))),
 					ConfigHelper.getProperty("csvFolderPath", "./"), new ExtensionFilter("CSV (*.csv)", "*.csv"));
 			File file = fileChooser.showSaveDialog(controller.getStage());
 			if (file != null) {
 				CSVClustering.exportTable(clusters, file.toPath());
-				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + file.getAbsolutePath());
+				UtilMethods.infoWindow(I18n.get("message.export_csv") + file.getAbsolutePath());
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error al exportar el fichero CSV.", e);

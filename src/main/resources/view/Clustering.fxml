@@ -37,7 +37,7 @@
          <children>
 
             <PropertySheet fx:id="propertySheet" modeSwitcherVisible="false" prefHeight="59.0" prefWidth="137.0" searchBoxVisible="false" GridPane.columnIndex="1" GridPane.rowSpan="4" />
-            <Button mnemonicParsing="false" onAction="#execute" text="Button" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+            <Button mnemonicParsing="false" onAction="#execute" text="%clustering.execute" GridPane.columnIndex="3" GridPane.rowIndex="2" />
             <CheckBox fx:id="checkBoxGrades" mnemonicParsing="false" text="%tab.grades" GridPane.columnIndex="2" GridPane.rowIndex="2">
                <GridPane.margin>
                   <Insets left="10.0" />
@@ -51,13 +51,13 @@
                   <Insets left="10.0" />
                </GridPane.margin></CheckBox>
             <ListView fx:id="algorithmList" prefHeight="200.0" prefWidth="200.0" GridPane.rowSpan="4" />
-            <CheckComboBox fx:id="checkComboBoxLogs" title="\%clustering.logsTypes" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.hgrow="NEVER" GridPane.rowIndex="1">
+            <CheckComboBox fx:id="checkComboBoxLogs" title="%clustering.logsTypes" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.hgrow="NEVER" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin></CheckComboBox>
             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <children>
-                  <CheckBox fx:id="checkBoxReduce" mnemonicParsing="false" text="\%clustering.reduce" />
+                  <CheckBox fx:id="checkBoxReduce" mnemonicParsing="false" text="%clustering.reduce" />
                   <TextField fx:id="textFieldReduce" prefWidth="50.0">
                      <HBox.margin>
                         <Insets left="15.0" />
@@ -73,15 +73,15 @@
             <WebView fx:id="webView" minHeight="-1.0" minWidth="600.0" prefHeight="-1.0" />
             <TabPane maxWidth="1000.0" minWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
-                <Tab text="Tabla">
+                <Tab text="%clustering.table">
                      <content>
                         <BorderPane prefHeight="200.0" prefWidth="200.0">
                            <center>
                               <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                                  <columns>
                                     <TableColumn fx:id="columnImage" editable="false" maxWidth="54.0" minWidth="54.0" prefWidth="54.0" resizable="false" sortable="false" />
-                                    <TableColumn fx:id="columnName" editable="false" text="clustering.fullname" />
-                                    <TableColumn fx:id="columnCluster" editable="false" text="clustering.clusterNumber" />
+                                    <TableColumn fx:id="columnName" editable="false" text="%clustering.fullname" />
+                                    <TableColumn fx:id="columnCluster" editable="false" text="%clustering.cluster" />
                                  </columns>
                                  <columnResizePolicy>
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -97,17 +97,20 @@
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                    <CheckComboBox fx:id="checkComboBoxCluster" title="Clusters" />
-                                    <Button fx:id="buttonExport" mnemonicParsing="false" onAction="#exportTable" text="Export" GridPane.columnIndex="1" />
+                                    <CheckComboBox fx:id="checkComboBoxCluster" title="%clustering.clusters" />
+                                    <Button fx:id="buttonExport" mnemonicParsing="false" onAction="#exportTable" text="%text.exportcsv" GridPane.columnIndex="1" />
                                  </children>
+                                 <BorderPane.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </BorderPane.margin>
                               </GridPane>
                            </top>
                         </BorderPane>
                      </content>
                 </Tab>
-                <Tab text="Renombrado">
+                <Tab text="%clustering.rename">
                      <content>
-                        <BorderPane prefHeight="200.0" prefWidth="200.0">
+                        <BorderPane>
                            <center>
                               <PropertySheet fx:id="propertySheetRename" modeSwitcherVisible="false" searchBoxVisible="false" BorderPane.alignment="CENTER">
                                  <BorderPane.margin>
@@ -115,7 +118,7 @@
                                  </BorderPane.margin></PropertySheet>
                            </center>
                            <bottom>
-                              <Button fx:id="buttonRename" mnemonicParsing="false" text="Renombrar" BorderPane.alignment="CENTER">
+                              <Button fx:id="buttonRename" mnemonicParsing="false" text="%clustering.rename" BorderPane.alignment="CENTER">
                                  <BorderPane.margin>
                                     <Insets bottom="20.0" />
                                  </BorderPane.margin>

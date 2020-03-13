@@ -112,7 +112,7 @@ public class ClusteringTable {
 					@Override
 					protected void updateItem(Number item, boolean empty) {
 						super.updateItem(item, empty);
-
+						setStyle("-fx-alignment: center-right");
 						if (empty || item == null) {
 							setText(null);
 							setGraphic(null);

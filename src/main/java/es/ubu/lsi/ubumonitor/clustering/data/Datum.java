@@ -7,9 +7,9 @@ public class Datum {
 	private String type;
 	private String item;
 	private String iconFile;
-	private double value;
+	private Number value;
 
-	public Datum(String type, String item, String iconFile, double value) {
+	public Datum(String type, String item, String iconFile, Number value) {
 		this.type = type;
 		this.item = item;
 		this.iconFile = iconFile;
@@ -40,7 +40,7 @@ public class Datum {
 	/**
 	 * @return the value
 	 */
-	public double getValue() {
+	public Number getValue() {
 		return value;
 	}
 

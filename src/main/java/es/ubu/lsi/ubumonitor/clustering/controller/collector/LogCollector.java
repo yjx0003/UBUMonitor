@@ -42,13 +42,13 @@ public class LogCollector<T> extends DataCollector {
 				null);
 		for (T logType : selected) {
 			List<Integer> values = result.values().stream().map(m -> m.get(logType).get(0)).collect(Collectors.toList());
-			long min = Collections.min(values);
-			long max = Collections.max(values);
+			double min = Collections.min(values);
+			double max = Collections.max(values);
 			for (UserData userData : users) {
-				double value = result.get(userData.getEnrolledUser()).get(logType).get(0);
+				int value = result.get(userData.getEnrolledUser()).get(logType).get(0);
 				userData.addDatum(new Datum(getType(), dataSet.translate(logType), iconFunction.apply(logType), value));
-				value = (value - min) / (max - min);
-				userData.addNormalizedDatum(value);
+				double normalized = (value - min) / (max - min);
+				userData.addNormalizedDatum(normalized);
 
 			}
 		}

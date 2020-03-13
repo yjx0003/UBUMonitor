@@ -117,7 +117,7 @@ public class ClusteringTable {
 							setText(null);
 							setGraphic(null);
 						} else {
-							setText(item.toString());
+							setText(String.format("%.2f", item));
 							setTextFill(colors.get(item.intValue() / 26));
 						}
 					}

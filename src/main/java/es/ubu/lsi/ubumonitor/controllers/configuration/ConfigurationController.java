@@ -5,7 +5,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.ResourceBundle;
 
 import org.controlsfx.control.PropertySheet;
@@ -43,7 +42,6 @@ public class ConfigurationController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		
-		propertySheet.setCategoryComparator(Comparator.naturalOrder());
 		propertySheet.getItems().addAll(Controller.getInstance().getMainConfiguration().getProperties());
 		propertySheet.setPropertyEditorFactory(item -> {
 

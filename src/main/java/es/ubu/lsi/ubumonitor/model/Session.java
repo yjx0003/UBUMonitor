@@ -26,4 +26,15 @@ public class Session {
 		return Math.max(start.until(end, ChronoUnit.MINUTES), 1);
 	}
 
+	public ZonedDateTime getFirstLogTime() {
+		return logLines.get(0)
+				.getTime();
+	}
+
+	public ZonedDateTime getLastLogTime() {
+		return logLines.get(logLines.size() - 1)
+				.getTime();
+
+	}
+
 }

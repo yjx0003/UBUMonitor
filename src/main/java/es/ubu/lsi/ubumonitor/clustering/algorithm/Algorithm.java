@@ -3,6 +3,8 @@ package es.ubu.lsi.ubumonitor.clustering.algorithm;
 import org.apache.commons.math3.ml.clustering.Clusterable;
 import org.apache.commons.math3.ml.clustering.Clusterer;
 
+import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
+
 public abstract class Algorithm {
 
 	private String name;
@@ -25,8 +27,8 @@ public abstract class Algorithm {
 		return parameters;
 	}
 
-	protected void addParameter(String name, Object value) {
-		parameters.addParameter(name, value, name + ".tooltip");
+	protected void addParameter(ClusteringParameter parameter, Object value) {
+		parameters.addParameter(parameter, value);
 	}
 
 	public abstract <T extends Clusterable> Clusterer<T> getClusterer();

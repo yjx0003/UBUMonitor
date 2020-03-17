@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.controlsfx.control.PropertySheet;
 
-import es.ubu.lsi.ubumonitor.controllers.I18n;
 import javafx.beans.value.ObservableValue;
 
 public class SimplePropertySheetItem implements PropertySheet.Item {
@@ -39,12 +38,12 @@ public class SimplePropertySheetItem implements PropertySheet.Item {
 
 	@Override
 	public String getName() {
-		return I18n.get(name);
+		return name;
 	}
 
 	@Override
 	public String getDescription() {
-		return I18n.get(description);
+		return description;
 	}
 
 	@Override

@@ -22,6 +22,7 @@ import es.ubu.lsi.ubumonitor.clustering.controller.collector.GradesCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.LogCollector;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
+import es.ubu.lsi.ubumonitor.clustering.exception.IllegalParamenterException;
 import es.ubu.lsi.ubumonitor.clustering.util.CSVClustering;
 import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
@@ -153,7 +154,7 @@ public class ClusteringController {
 	private void execute() {
 		List<EnrolledUser> users = mainController.getListParticipants().getSelectionModel().getSelectedItems();
 		Algorithm algorithm = algorithmList.getSelectionModel().getSelectedItem();
-		Clusterer<UserData> clusterer = algorithm.getClusterer();
+
 
 		List<DataCollector> collectors = new ArrayList<>();
 		if (checkBoxLogs.isSelected()) {
@@ -165,18 +166,23 @@ public class ClusteringController {
 		if (checkBoxActivity.isSelected()) {
 			collectors.add(activityCollector);
 		}
+		
+		try {
+			Clusterer<UserData> clusterer = algorithm.getClusterer();
+			AlgorithmExecuter algorithmExecuter = new AlgorithmExecuter(clusterer, users, collectors);
 
-		AlgorithmExecuter algorithmExecuter = new AlgorithmExecuter(clusterer, users, collectors);
+			int dim = checkBoxReduce.isSelected() ? Integer.valueOf(textFieldReduce.getText()) : 0;
+			clusters = algorithmExecuter.execute(dim);
 
-		int dim = checkBoxReduce.isSelected() ? Integer.valueOf(textFieldReduce.getText()) : 0;
-		clusters = algorithmExecuter.execute(dim);
+			LOGGER.debug("Parametros: {}", algorithm.getParameters());
+			LOGGER.debug("Clusters: {}", clusters);
 
-		LOGGER.debug("Parametros: {}", algorithm.getParameters());
-		LOGGER.debug("Clusters: {}", clusters);
-
-		table.updateTable(clusters);
-		updateRename();
-		graph.updateChart(clusters);
+			table.updateTable(clusters);
+			updateRename();
+			graph.updateChart(clusters);
+		} catch (IllegalParamenterException e) {
+			UtilMethods.errorWindow(e.getMessage());
+		}
 	}
 
 	private void updateRename() {

@@ -63,8 +63,9 @@ public class AlgorithmExecuter {
 				.toArray(double[][]::new);
 		PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
 		List<Map<UserData, double[]>> points = new ArrayList<>();
-		matrix = pca.pca(matrix, 2);
-
+			if (matrix[0].length > 2) {
+			matrix = pca.pca(matrix, 2);
+		}
 		int i = 0;
 		for (List<UserData> list : clusters) {
 			Map<UserData, double[]> map = new LinkedHashMap<>();

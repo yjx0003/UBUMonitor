@@ -6,19 +6,20 @@ import java.util.Map;
 
 import org.controlsfx.control.PropertySheet;
 
+import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
 
 public class AlgorithmParameters {
 
-	private Map<String, PropertySheet.Item> parameters;
+	private Map<ClusteringParameter, PropertySheet.Item> parameters;
 
 	public AlgorithmParameters() {
 		parameters = new LinkedHashMap<>();
 	}
 
-	public void addParameter(String name, Object value, String tooltip) {
-		SimplePropertySheetItem c = new SimplePropertySheetItem(name, value, tooltip);
-		parameters.put(name, c);
+	public void addParameter(ClusteringParameter parameter, Object value) {
+		SimplePropertySheetItem c = new SimplePropertySheetItem(parameter.getName(), value, parameter.getDescription());
+		parameters.put(parameter, c);
 	}
 
 	public Collection<PropertySheet.Item> getPropertyItems() {
@@ -26,8 +27,8 @@ public class AlgorithmParameters {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <V> V getValue(String name) {
-		return (V) parameters.get(name).getValue();
+	public <V> V getValue(ClusteringParameter parameter) {
+		return (V) parameters.get(parameter).getValue();
 	}
 
 	@Override

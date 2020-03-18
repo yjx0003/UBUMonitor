@@ -189,6 +189,11 @@ public class ClusteringController {
 			silhouette.updateChart(clusters, algorithm.getParameters().getValue(ClusteringParameter.DISTANCE_TYPE));
 		} catch (IllegalParamenterException e) {
 			UtilMethods.errorWindow(e.getMessage());
+		} catch (IllegalStateException e) {
+			UtilMethods.errorWindow(I18n.get(e.getMessage()));
+		} catch (Exception e) {
+			UtilMethods.errorWindow("Error", e);
+			LOGGER.error("Error en la ejecucion", e);
 		}
 	}
 

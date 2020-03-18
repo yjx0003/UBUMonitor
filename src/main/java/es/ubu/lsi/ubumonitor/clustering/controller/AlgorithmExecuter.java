@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.math3.exception.NumberIsTooSmallException;
 import org.apache.commons.math3.ml.clustering.Cluster;
 import org.apache.commons.math3.ml.clustering.Clusterer;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
@@ -32,6 +33,13 @@ public class AlgorithmExecuter {
 	}
 
 	public List<ClusterWrapper> execute(int dimension) {
+
+		if (usersData.isEmpty())
+			throw new IllegalStateException("clustering.error.notUsers");
+
+		if (usersData.get(0).getData().isEmpty())
+			throw new IllegalStateException("clustering.error.notData");
+
 		PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
 		double[][] matrix = usersData.stream().map(UserData::getPoint).toArray(double[][]::new);
 		if (dimension > 0) {
@@ -40,16 +48,20 @@ public class AlgorithmExecuter {
 				usersData.get(i).setData(matrix[i]);
 			}
 		}
-		List<? extends Cluster<UserData>> clusters = clusterer.cluster(usersData);
-		List<ClusterWrapper> users = new ArrayList<>();
-		for (int i = 0; i < clusters.size(); i++) {
-			ClusterWrapper clusterWrapper = new ClusterWrapper(i, clusters.get(i));
-			for (UserData user : clusters.get(i).getPoints()) {
-				user.setCluster(clusterWrapper);
+		try {
+			List<? extends Cluster<UserData>> clusters = clusterer.cluster(usersData);
+			List<ClusterWrapper> users = new ArrayList<>();
+			for (int i = 0; i < clusters.size(); i++) {
+				ClusterWrapper clusterWrapper = new ClusterWrapper(i, clusters.get(i));
+				for (UserData user : clusters.get(i).getPoints()) {
+					user.setCluster(clusterWrapper);
+				}
+				users.add(clusterWrapper);
 			}
-			users.add(clusterWrapper);
+			return users;
+		} catch (NumberIsTooSmallException e) {
+			throw new IllegalStateException("clustering.error.lessUsersThanClusters", e);
 		}
-		return users;
 	}
 
 	public Clusterer<UserData> getClusterer() {

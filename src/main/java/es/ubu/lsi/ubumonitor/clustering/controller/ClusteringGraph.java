@@ -40,7 +40,7 @@ public class ClusteringGraph {
 	private Controller controller;
 
 	public ClusteringGraph(ClusteringController clusteringController) {
-		webView = clusteringController.getWebView();
+		webView = clusteringController.getWebViewScatter();
 		webEngine = webView.getEngine();
 		controller = Controller.getInstance();
 		connector = new Connector(clusteringController, webEngine);
@@ -49,7 +49,6 @@ public class ClusteringGraph {
 
 	private void init() {
 		webView.setContextMenuEnabled(false);
-		webEngine = webView.getEngine();
 
 		webEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
 			if (Worker.State.SUCCEEDED != newState)

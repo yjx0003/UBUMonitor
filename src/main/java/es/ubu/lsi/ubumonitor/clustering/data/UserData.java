@@ -57,7 +57,7 @@ public class UserData implements Clusterable {
 
 	@Override
 	public String toString() {
-		return "UserData [user=" + user + ", data=" + data + "]";
+		return "UserData [user=" + user + ", cluster=" + cluster.getName() + "]";
 	}
 
 	@Override

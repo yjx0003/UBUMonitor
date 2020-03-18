@@ -25,8 +25,8 @@ public class GradesCollector extends DataCollector {
 			for (TreeItem<GradeItem> treeItem : selected) {
 				GradeItem gradeItem = treeItem.getValue();
 				double value = gradeItem.getEnrolledUserPercentage(userData.getEnrolledUser());
-				userData.addDatum(
-						new Datum(getType(), gradeItem.getItemname(), gradeItem.getItemModule().getModName(), value));
+				String iconFile = gradeItem.getItemModule() == null ? null : gradeItem.getItemModule().getModName();
+				userData.addDatum(new Datum(getType(), gradeItem.getItemname(), iconFile, value));
 				if (Double.isNaN(value)) {
 					value = 0.0;
 				} else {

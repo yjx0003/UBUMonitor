@@ -21,6 +21,7 @@ import es.ubu.lsi.ubumonitor.clustering.controller.collector.DataCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.GradesCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.LogCollector;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
+import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.clustering.exception.IllegalParamenterException;
 import es.ubu.lsi.ubumonitor.clustering.util.CSVClustering;
@@ -62,7 +63,10 @@ public class ClusteringController {
 	private ListView<Algorithm> algorithmList;
 
 	@FXML
-	private WebView webView;
+	private WebView webViewScatter;
+
+	@FXML
+	private WebView webViewSilhouette;
 
 	@FXML
 	private TableView<UserData> tableView;
@@ -113,10 +117,13 @@ public class ClusteringController {
 
 	private ClusteringGraph graph;
 
+	private ClusteringSilhouette silhouette;
+
 	public void init(MainController controller) {
 		mainController = controller;
 		table = new ClusteringTable(this);
 		graph = new ClusteringGraph(this);
+		silhouette = new ClusteringSilhouette(this);
 		initAlgorithms();
 		initCollectors();
 	}
@@ -155,7 +162,6 @@ public class ClusteringController {
 		List<EnrolledUser> users = mainController.getListParticipants().getSelectionModel().getSelectedItems();
 		Algorithm algorithm = algorithmList.getSelectionModel().getSelectedItem();
 
-
 		List<DataCollector> collectors = new ArrayList<>();
 		if (checkBoxLogs.isSelected()) {
 			collectors.addAll(checkComboBoxLogs.getCheckModel().getCheckedItems());
@@ -166,7 +172,7 @@ public class ClusteringController {
 		if (checkBoxActivity.isSelected()) {
 			collectors.add(activityCollector);
 		}
-		
+
 		try {
 			Clusterer<UserData> clusterer = algorithm.getClusterer();
 			AlgorithmExecuter algorithmExecuter = new AlgorithmExecuter(clusterer, users, collectors);
@@ -180,6 +186,7 @@ public class ClusteringController {
 			table.updateTable(clusters);
 			updateRename();
 			graph.updateChart(clusters);
+			silhouette.updateChart(clusters, algorithm.getParameters().getValue(ClusteringParameter.DISTANCE_TYPE));
 		} catch (IllegalParamenterException e) {
 			UtilMethods.errorWindow(e.getMessage());
 		}
@@ -239,10 +246,17 @@ public class ClusteringController {
 	}
 
 	/**
-	 * @return the webView
+	 * @return the webViewScatter
 	 */
-	public WebView getWebView() {
-		return webView;
+	public WebView getWebViewScatter() {
+		return webViewScatter;
+	}
+	
+	/**
+	 * @return the webViewSilhouette
+	 */
+	public WebView getwebViewSilhouette() {
+		return webViewSilhouette;
 	}
 
 	/**

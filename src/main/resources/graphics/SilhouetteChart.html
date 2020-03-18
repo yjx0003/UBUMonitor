@@ -7,7 +7,7 @@
 <script type="text/javascript" src="./lib/color-hash.js"></script>
 </head>
 
-<canvas id="myChart" style="height: 100%;width: 100.0%;"></canvas>
+<canvas id="myChart" style="height: 100%; width: 100.0%;"></canvas>
 
 <script type="text/javascript">
 	var colorHash = new ColorHash();
@@ -20,7 +20,7 @@
 			datasets : []
 		},
 		options : {
-			animation: false,
+			animation : false,
 			responsive : true,
 			maintainAspectRatio : false,
 			scales : {
@@ -36,6 +36,12 @@
 					ticks : {
 						max : 1.1,
 						suggestedMin : 0
+					},
+					scaleLabel : {
+						display : true,
+						fontStyle: "bold",
+						fontSize: 14,
+						labelString : "Silhouette width"
 					}
 				} ]
 			},
@@ -43,9 +49,9 @@
 				point : {
 					radius : 0
 				},
-				line: {
-		            tension: 0
-		        }
+				line : {
+					tension : 0
+				}
 			},
 			layout : {
 				padding : {
@@ -57,9 +63,17 @@
 			}
 		}
 	});
-	
+
 	function updateChart(data) {
 		myChart.data = data;
+		myChart.update();
+	}
+
+	function rename(index, name) {
+		myChart.data.datasets[index].label = name;
+	}
+
+	function update() {
 		myChart.update();
 	}
 </script>

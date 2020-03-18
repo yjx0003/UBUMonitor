@@ -122,7 +122,7 @@ public class ClusteringGraph {
 		for (int i = 0; i < points.size(); i++) {
 			JSObject group = new JSObject();
 			group.putWithQuote("label", clusters.get(i).getName());
-			group.put("backgroundColor", "colorHash.hex(" + i * i + ")");
+			group.put("backgroundColor", "colorHash.hex(" + i + ")");
 			group.put("pointRadius", 6);
 			group.put("pointHoverRadius", 8);
 			JSArray data = new JSArray();
@@ -139,6 +139,14 @@ public class ClusteringGraph {
 		root.put("datasets", datasets);
 		LOGGER.debug("Data: {}", root);
 		webEngine.executeScript("updateChart(" + root + ")");
+	}
+	
+	public void rename(List<ClusterWrapper> clusters) {
+		for (int i = 0; i < clusters.size(); i++) {
+			webEngine.executeScript(
+					String.format("rename(%d,'%s')", i, UtilMethods.escapeJavaScriptText(clusters.get(i).getName())));
+		}
+		webEngine.executeScript("update()");
 	}
 
 }

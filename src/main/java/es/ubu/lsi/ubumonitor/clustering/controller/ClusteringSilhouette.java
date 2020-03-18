@@ -14,6 +14,7 @@ import es.ubu.lsi.ubumonitor.clustering.data.Distance;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
@@ -64,5 +65,13 @@ public class ClusteringSilhouette {
 
 		LOGGER.debug("Silhouette: {}", root);
 		webEngine.executeScript("updateChart(" + root + ")");
+	}
+
+	public void rename(List<ClusterWrapper> clusters) {
+		for (int i = 0; i < clusters.size(); i++) {
+			webEngine.executeScript(
+					String.format("rename(%d,'%s')", i, UtilMethods.escapeJavaScriptText(clusters.get(i).getName())));
+		}
+		webEngine.executeScript("update()");
 	}
 }

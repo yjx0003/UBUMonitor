@@ -68,9 +68,22 @@
       </GridPane>
    </top>
    <center>
-      <SplitPane dividerPositions="0.6" BorderPane.alignment="CENTER">
+      <SplitPane dividerPositions="0.8" BorderPane.alignment="CENTER">
          <items>
-            <WebView fx:id="webView" minHeight="-1.0" minWidth="600.0" prefHeight="-1.0" />
+            <TabPane minWidth="-Infinity" prefHeight="200.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab text="Tab 1">
+                     <content>
+                        <WebView fx:id="webViewScatter" minHeight="-1.0" minWidth="600.0" prefHeight="-1.0" />
+                     </content>
+                  </Tab>
+                <Tab text="Tab 2">
+                     <content>
+                        <WebView fx:id="webViewSilhouette" prefHeight="200.0" prefWidth="200.0" />
+                     </content>
+                  </Tab>
+              </tabs>
+            </TabPane>
             <TabPane maxWidth="1000.0" minWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab text="%clustering.table">

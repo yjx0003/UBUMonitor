@@ -12,7 +12,7 @@ public class Datum {
 	public Datum(String type, String item, String iconFile, Number value) {
 		this.type = type;
 		this.item = item;
-		this.iconFile = iconFile;
+		this.iconFile = iconFile == null ? "manual" : iconFile;
 		this.value = value;
 	}
 

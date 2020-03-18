@@ -20,8 +20,10 @@ public class JSArray {
 	}
 
 	public void addAll(Collection<?> collection) {
-		String string = collection.stream().map(Object::toString).collect(Collectors.joining(","));
-		stringJoiner.add(string);
+		if (collection.size() > 0) {
+			String string = collection.stream().map(Object::toString).collect(Collectors.joining(","));
+			stringJoiner.add(string);
+		}
 	}
 
 	public void addAllWithQuote(Collection<?> collection) {

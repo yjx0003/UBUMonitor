@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Charts</title>
+<link rel="stylesheet" type="text/css" href="../css/chart.css" />
+<script type="text/javascript" src="./lib/Chart.js"></script>
+<script type="text/javascript" src="./lib/color-hash.js"></script>
+</head>
+
+<canvas id="myChart" style="height: 100%;width: 100.0%;"></canvas>
+
+<script type="text/javascript">
+	var colorHash = new ColorHash();
+	var ctx = document.getElementById("myChart");
+
+	var myChart = new Chart(ctx, {
+		type : 'line',
+		data : {
+			labels : [],
+			datasets : []
+		},
+		options : {
+			responsive : true,
+			maintainAspectRatio : false,
+			scales : {
+				xAxes : [ {
+					ticks : {
+						display : false
+					},
+					gridLines : {
+						display : false
+					}
+				} ],
+				yAxes : [ {
+					ticks : {
+						max : 1.1,
+						suggestedMin : 0
+					}
+				} ]
+			},
+			elements : {
+				point : {
+					radius : 0
+				},
+				line: {
+		            tension: 0
+		        }
+			},
+			layout : {
+				padding : {
+					left : 50,
+					right : 50,
+					top : 30,
+					bottom : 50
+				}
+			}
+		}
+	});
+	
+	function updateChart(data) {
+		myChart.data = data;
+		myChart.update();
+	}
+</script>
+</html>

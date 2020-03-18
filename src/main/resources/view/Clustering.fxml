@@ -74,12 +74,12 @@
               <tabs>
                 <Tab text="Tab 1">
                      <content>
-                        <WebView fx:id="webViewScatter" minHeight="-1.0" minWidth="600.0" prefHeight="-1.0" />
+                        <WebView fx:id="webViewScatter" cache="true" cacheHint="SPEED" minHeight="-1.0" minWidth="600.0" prefHeight="-1.0" />
                      </content>
                   </Tab>
                 <Tab text="Tab 2">
                      <content>
-                        <WebView fx:id="webViewSilhouette" prefHeight="200.0" prefWidth="200.0" />
+                        <WebView fx:id="webViewSilhouette" cache="true" cacheHint="SPEED" prefHeight="200.0" prefWidth="200.0" />
                      </content>
                   </Tab>
               </tabs>

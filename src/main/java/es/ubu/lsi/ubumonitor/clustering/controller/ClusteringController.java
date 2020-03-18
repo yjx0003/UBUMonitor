@@ -206,8 +206,9 @@ public class ClusteringController {
 			for (int i = 0; i < items.size(); i++) {
 				clusters.get(i).setName(items.get(i).getValue().toString());
 			}
-			graph.updateChart(clusters);
+			graph.rename(clusters);
 			table.updateTable(clusters);
+			silhouette.rename(clusters);
 		});
 	}
 

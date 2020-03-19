@@ -170,7 +170,7 @@ public enum Event {
 	SUBMISSION_ASSESSED("Submission assessed"),
 	SUBMISSION_CONFIRMATION_FORM_VIEWED("Submission confirmation form viewed."),
 	SUBMISSION_CREATED("Submission created"),
-	SUBMISSION_CREATED_("Submission created."),
+	SUBMISSION_CREATED2("Submission created."),
 	SUBMISSION_DELETED("Submission deleted"),
 	SUBMISSION_FORM_VIEWED("Submission form viewed."),
 	SUBMISSION_REASSESSED("Submission re-assessed"),

@@ -2,7 +2,6 @@ package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InvalidClassException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -151,33 +150,52 @@ public class WelcomeController implements Initializable {
 
 		try {
 			conexionLabel.setText(I18n.get("text.online_" + !controller.isOfflineMode()));
-			lblUser.setText(I18n.get("label.welcome") + " " + controller.getUser().getFullName());
-			progressBar.visibleProperty().bind(btnEntrar.visibleProperty().not());
-			anchorPane.disableProperty().bind(btnEntrar.visibleProperty().not());
-			lblProgress.visibleProperty().bind(btnEntrar.visibleProperty().not());
-			btnRemove.visibleProperty().bind(btnEntrar.visibleProperty());
-			btnRemove.disableProperty().bind(chkUpdateData.disabledProperty());
-			chkOnlyWeb.visibleProperty().bind(chkUpdateData.selectedProperty());
+			lblUser.setText(I18n.get("label.welcome") + " " + controller.getUser()
+					.getFullName());
+			progressBar.visibleProperty()
+					.bind(btnEntrar.visibleProperty()
+							.not());
+			anchorPane.disableProperty()
+					.bind(btnEntrar.visibleProperty()
+							.not());
+			lblProgress.visibleProperty()
+					.bind(btnEntrar.visibleProperty()
+							.not());
+			btnRemove.visibleProperty()
+					.bind(btnEntrar.visibleProperty());
+			btnRemove.disableProperty()
+					.bind(chkUpdateData.disabledProperty());
+			chkOnlyWeb.visibleProperty()
+					.bind(chkUpdateData.selectedProperty());
 			chkOnlyWeb.setSelected(Boolean.parseBoolean(ConfigHelper.getProperty("onlyWeb", "false")));
-			labelLoggedIn.setText(controller.getLoggedIn().format(Controller.DATE_TIME_FORMATTER));
-			labelHost.setText(controller.getUrlHost().toString());
+			labelLoggedIn.setText(controller.getLoggedIn()
+					.format(Controller.DATE_TIME_FORMATTER));
+			labelHost.setText(controller.getUrlHost()
+					.toString());
 
 			initListViews();
 
-			tabPane.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
-				ListView<Course> listView = (ListView<Course>) value.getContent();
-				listView.getSelectionModel().clearSelection();
-				chkUpdateData.setDisable(true);
-				lblDateUpdate.setText(null);
-			});
-			tabPane.getSelectionModel().select(ConfigHelper.getProperty("courseList", 0));
+			tabPane.getSelectionModel()
+					.selectedItemProperty()
+					.addListener((ov, value, newValue) -> {
+						ListView<Course> listView = (ListView<Course>) value.getContent();
+						listView.getSelectionModel()
+								.clearSelection();
+						chkUpdateData.setDisable(true);
+						lblDateUpdate.setText(null);
+					});
+			tabPane.getSelectionModel()
+					.select(ConfigHelper.getProperty("courseList", 0));
 
 			Platform.runLater(() -> {
-				ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem()
+				ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel()
+						.getSelectedItem()
 						.getContent();
-				Course course = controller.getUser().getCourseById(ConfigHelper.getProperty("actualCourse", -1));
+				Course course = controller.getUser()
+						.getCourseById(ConfigHelper.getProperty("actualCourse", -1));
 
-				listView.getSelectionModel().select(course);
+				listView.getSelectionModel()
+						.select(course);
 				listView.scrollTo(course);
 				if (autoUpdate) {
 					chkUpdateData.setSelected(true);
@@ -193,14 +211,21 @@ public class WelcomeController implements Initializable {
 
 	private void initListViews() {
 		Comparator<Course> courseComparator = Comparator.comparing(Course::getFullName)
-				.thenComparing(c -> c.getCourseCategory().getName());
+				.thenComparing(c -> c.getCourseCategory()
+						.getName());
 
-		initListView(controller.getUser().getCourses(), listCourses, courseComparator);
-		initListView(controller.getUser().getFavoriteCourses(), listCoursesFavorite, courseComparator);
-		initListView(controller.getUser().getRecentCourses(), listCoursesRecent, null);
-		initListView(controller.getUser().getInProgressCourses(), listCoursesInProgress, courseComparator);
-		initListView(controller.getUser().getPastCourses(), listCoursesPast, courseComparator);
-		initListView(controller.getUser().getFutureCourses(), listCoursesFuture, courseComparator);
+		initListView(controller.getUser()
+				.getCourses(), listCourses, courseComparator);
+		initListView(controller.getUser()
+				.getFavoriteCourses(), listCoursesFavorite, courseComparator);
+		initListView(controller.getUser()
+				.getRecentCourses(), listCoursesRecent, null);
+		initListView(controller.getUser()
+				.getInProgressCourses(), listCoursesInProgress, courseComparator);
+		initListView(controller.getUser()
+				.getPastCourses(), listCoursesPast, courseComparator);
+		initListView(controller.getUser()
+				.getFutureCourses(), listCoursesFuture, courseComparator);
 	}
 
 	private void initListView(List<Course> courseList, ListView<Course> listView, Comparator<Course> comparator) {
@@ -209,14 +234,19 @@ public class WelcomeController implements Initializable {
 			observableList.sort(comparator);
 		}
 		listView.setItems(observableList);
-		listView.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> checkFile(newValue));
+		listView.getSelectionModel()
+				.selectedItemProperty()
+				.addListener((ov, value, newValue) -> checkFile(newValue));
 
 	}
 
 	private Course getSelectedCourse() {
 		@SuppressWarnings("unchecked")
-		ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem().getContent();
-		return listView.getSelectionModel().getSelectedItem();
+		ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel()
+				.getSelectedItem()
+				.getContent();
+		return listView.getSelectionModel()
+				.getSelectedItem();
 	}
 
 	private void checkFile(Course newValue) {
@@ -262,7 +292,8 @@ public class WelcomeController implements Initializable {
 		lblNoSelect.setVisible(false);
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getFullName());
 
-		ConfigHelper.setProperty("courseList", Integer.toString(tabPane.getSelectionModel().getSelectedIndex()));
+		ConfigHelper.setProperty("courseList", Integer.toString(tabPane.getSelectionModel()
+				.getSelectedIndex()));
 
 		ConfigHelper.setProperty("actualCourse", getSelectedCourse().getId());
 
@@ -273,8 +304,10 @@ public class WelcomeController implements Initializable {
 				loadData(controller.getPassword());
 			} else {
 				DataBase copyDataBase = new DataBase();
-				copyDataBase.setUserPhoto(controller.getUser().getUserPhoto());
-				copyDataBase.setFullName(controller.getUser().getFullName());
+				copyDataBase.setUserPhoto(controller.getUser()
+						.getUserPhoto());
+				copyDataBase.setFullName(controller.getUser()
+						.getFullName());
 				Course copyCourse = copyCourse(copyDataBase, selectedCourse);
 				controller.setDataBase(copyDataBase);
 				controller.setActualCourse(copyCourse);
@@ -293,30 +326,40 @@ public class WelcomeController implements Initializable {
 		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.setHeaderText(I18n.get("text.confirmation"));
-		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(new Image("/img/logo_min.png"));
+		Stage stage = (Stage) alert.getDialogPane()
+				.getScene()
+				.getWindow();
+		stage.getIcons()
+				.add(new Image("/img/logo_min.png"));
 
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.isPresent() && result.get() == ButtonType.OK) {
 			Files.delete(cacheFilePath);
 			@SuppressWarnings("unchecked")
-			ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem().getContent();
-			int index = listView.getSelectionModel().getSelectedIndex();
-			listView.getSelectionModel().clearSelection();
-			listView.getSelectionModel().select(index);
+			ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel()
+					.getSelectedItem()
+					.getContent();
+			int index = listView.getSelectionModel()
+					.getSelectedIndex();
+			listView.getSelectionModel()
+					.clearSelection();
+			listView.getSelectionModel()
+					.select(index);
 		}
 	}
 
 	private Course copyCourse(DataBase copyDataBase, Course selectedCourse) {
 
-		Course copyCourse = copyDataBase.getCourses().getById(selectedCourse.getId());
+		Course copyCourse = copyDataBase.getCourses()
+				.getById(selectedCourse.getId());
 		copyCourse.setStartDate(selectedCourse.getStartDate());
 		copyCourse.setEndDate(selectedCourse.getEndDate());
 		copyCourse.setSummary(selectedCourse.getSummary());
 		copyCourse.setSummaryformat(selectedCourse.getSummaryformat());
 
 		CourseCategory courseCategory = selectedCourse.getCourseCategory();
-		CourseCategory copyCourseCategory = copyDataBase.getCourseCategories().getById(courseCategory.getId());
+		CourseCategory copyCourseCategory = copyDataBase.getCourseCategories()
+				.getById(courseCategory.getId());
 
 		copyCourseCategory.setName(courseCategory.getName());
 
@@ -331,7 +374,8 @@ public class WelcomeController implements Initializable {
 			return;
 		}
 
-		File f = controller.getDirectoryCache().toFile();
+		File f = controller.getDirectoryCache()
+				.toFile();
 		if (!f.isDirectory()) {
 			LOGGER.info("No existe el directorio, se va a crear: {}", controller.getDirectoryCache());
 			f.mkdirs();
@@ -352,7 +396,10 @@ public class WelcomeController implements Initializable {
 			isBBDDLoaded = true;
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			previusPasswordWindow();
-		} catch (InvalidClassException | ClassNotFoundException | ClassCastException e) {
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+			UtilMethods.errorWindow(e.getMessage(), e);
+		} catch (Exception e) {
 			LOGGER.warn("Se ha modificado una de las clases serializables", e);
 			UtilMethods.errorWindow(I18n.get("error.invalidcache"), e);
 		}
@@ -366,24 +413,34 @@ public class WelcomeController implements Initializable {
 		dialog.setHeaderText(I18n.get("header.passwordChangedMessage") + "\n" + I18n.get("header.passwordDateTime")
 				+ lblDateUpdate.getText());
 
-		Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
-		dialogStage.getIcons().add(new Image("img/error.png"));
-		dialog.getDialogPane().setGraphic(new ImageView("img/error.png"));
-		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
+		Stage dialogStage = (Stage) dialog.getDialogPane()
+				.getScene()
+				.getWindow();
+		dialogStage.getIcons()
+				.add(new Image("img/error.png"));
+		dialog.getDialogPane()
+				.setGraphic(new ImageView("img/error.png"));
+		dialog.getDialogPane()
+				.getButtonTypes()
+				.addAll(ButtonType.OK);
 
 		PasswordField pwd = new PasswordField();
 		HBox content = new HBox();
 		content.setAlignment(Pos.CENTER);
 		content.setSpacing(10);
-		content.getChildren().addAll(new Label(I18n.get("label.oldPassword")), pwd);
-		dialog.getDialogPane().setContent(content);
+		content.getChildren()
+				.addAll(new Label(I18n.get("label.oldPassword")), pwd);
+		dialog.getDialogPane()
+				.setContent(content);
 
 		// desabilitamos el boton hasta que no escriba texto
-		Node accept = dialog.getDialogPane().lookupButton(ButtonType.OK);
+		Node accept = dialog.getDialogPane()
+				.lookupButton(ButtonType.OK);
 		accept.setDisable(true);
 
 		pwd.textProperty()
-				.addListener((observable, oldValue, newValue) -> accept.setDisable(newValue.trim().isEmpty()));
+				.addListener((observable, oldValue, newValue) -> accept.setDisable(newValue.trim()
+						.isEmpty()));
 		dialog.setResultConverter(dialogButton -> {
 			if (dialogButton == ButtonType.OK) {
 				return pwd.getText();
@@ -407,13 +464,16 @@ public class WelcomeController implements Initializable {
 
 		btnEntrar.setVisible(false);
 		Task<Void> task = getUserDataWorker();
-		lblProgress.textProperty().bind(task.messageProperty());
+		lblProgress.textProperty()
+				.bind(task.messageProperty());
 		task.setOnSucceeded(v -> loadNextWindow());
 		task.setOnFailed(e -> {
-			controller.getStage().getScene().setCursor(Cursor.DEFAULT);
+			controller.getStage()
+					.getScene()
+					.setCursor(Cursor.DEFAULT);
 			btnEntrar.setVisible(true);
-			UtilMethods.errorWindow("Error al actualizar los datos del curso: " + task.getException().getMessage(),
-					task.getException());
+			UtilMethods.errorWindow("Error al actualizar los datos del curso: " + task.getException()
+					.getMessage(), task.getException());
 			LOGGER.error("Error al actualizar los datos del curso: {}", task.getException());
 
 		});
@@ -430,9 +490,12 @@ public class WelcomeController implements Initializable {
 		}
 
 		UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), false);
-		controller.getStage().setMaximized(true);
-		controller.getStage().setResizable(true);
-		controller.getStage().show();
+		controller.getStage()
+				.setMaximized(true);
+		controller.getStage()
+				.setResizable(true);
+		controller.getStage()
+				.show();
 
 	}
 
@@ -468,8 +531,10 @@ public class WelcomeController implements Initializable {
 				CreatorUBUGradesController.createSectionsAndModules(actualCourse.getId());
 				updateMessage(I18n.get("label.loadingqualifier"));
 				// Establecemos calificador del curso
-				CreatorGradeItems creatorGradeItems = new CreatorGradeItems(new Locale(controller.getUser().getLang()));
-				creatorGradeItems.createGradeItems(controller.getActualCourse().getId());
+				CreatorGradeItems creatorGradeItems = new CreatorGradeItems(new Locale(controller.getUser()
+						.getLang()));
+				creatorGradeItems.createGradeItems(controller.getActualCourse()
+						.getId());
 				updateMessage(I18n.get("label.loadingActivitiesCompletion"));
 				CreatorUBUGradesController.createActivitiesCompletionStatus(actualCourse.getId(),
 						actualCourse.getEnrolledUsers());
@@ -499,7 +564,7 @@ public class WelcomeController implements Initializable {
 						}
 						tries = limitRelogin;
 					} catch (RuntimeException e) {
-						
+
 						if (tries >= limitRelogin) {
 							throw e;
 						}

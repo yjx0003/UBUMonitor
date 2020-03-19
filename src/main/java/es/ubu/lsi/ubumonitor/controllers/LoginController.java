@@ -282,9 +282,7 @@ public class LoginController implements Initializable {
 		});
 
 		loginTask.setOnFailed(e -> {
-			LOGGER.error("Error al recuperar los datos: ", e.getSource().getException());
 			controller.getStage().getScene().setCursor(Cursor.DEFAULT);
-			txtPassword.clear();
 			lblStatus.setText(e.getSource().getException().getMessage());
 		});
 		Thread th = new Thread(loginTask, "login");

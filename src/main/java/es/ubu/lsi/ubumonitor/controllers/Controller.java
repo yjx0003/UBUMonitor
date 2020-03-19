@@ -279,7 +279,7 @@ public class Controller {
 
 		} catch (Exception e) {
 			LOGGER.error("Error al intentar loguearse", e);
-			throw new IllegalStateException("No se ha podido loguear al servidor");
+			throw new IllegalStateException(I18n.get("error.host"));
 		}
 
 	}

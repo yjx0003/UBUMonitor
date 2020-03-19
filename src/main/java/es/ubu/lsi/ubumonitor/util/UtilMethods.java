@@ -1,7 +1,10 @@
 package es.ubu.lsi.ubumonitor.util;
 
+import java.awt.Color;
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -10,8 +13,23 @@ import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.apache.poi.ss.SpreadsheetVersion;
+import org.apache.poi.ss.util.AreaReference;
+import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFTable;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTTable;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTTableColumn;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTTableColumns;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTTableStyleInfo;
 
 import es.ubu.lsi.ubumonitor.controllers.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
@@ -34,6 +52,25 @@ import javafx.stage.Stage;
 
 public class UtilMethods {
 	private UtilMethods() {
+	}
+
+	/**
+	 * Selecciona colores pseudo-aleatorios a partir del HSV
+	 * 
+	 * @param <E>
+	 */
+	public static <E> Map<E, Color> getRandomColors(List<E> typeLogs) {
+		Map<E, Color> colors = new HashMap<>();
+
+		for (int i = 0; i < typeLogs.size(); i++) {
+
+			// generamos un color a partir de HSB, el hue(H) es el color, saturacion (S), y
+			// brillo(B)
+			Color c = new Color(Color.HSBtoRGB(i / (float) typeLogs.size(), 0.8f, 1.0f));
+			colors.put(typeLogs.get(i), c);
+		}
+		return colors;
+
 	}
 
 	/**
@@ -239,9 +276,11 @@ public class UtilMethods {
 				Class<?> fileMgr = Class.forName("com.apple.eio.FileManager");
 				Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] { String.class });
 				openURL.invoke(null, new Object[] { url });
-			} else if (osName.startsWith("Windows"))
+			} else if (osName.startsWith("Windows")) {
 				Runtime.getRuntime()
 						.exec("rundll32 url.dll,FileProtocolHandler " + url);
+			}
+
 			else { // assume Unix or Linux
 				String[] browsers = { "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" };
 				String browser = null;
@@ -329,5 +368,50 @@ public class UtilMethods {
 	 */
 	private static long betweenDates(ChronoUnit type, Instant lastCourseAccess, Instant lastLogInstant) {
 		return type.between(lastCourseAccess, lastLogInstant);
+	}
+
+	public static void main(String[] args) throws FileNotFoundException, IOException {
+
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		XSSFSheet sheet = workbook.createSheet("Architecture");
+
+		
+		XSSFTable table = sheet.getTables().get(0); //since apache poi 4.0.0
+		CTTable cttable = table.getCTTable();
+
+		cttable.setDisplayName("Table1");
+		cttable.setId(1);
+		cttable.setName("Test");
+		cttable.setRef("A1:C11");
+		cttable.setTotalsRowShown(false);
+
+		CTTableStyleInfo styleInfo = cttable.addNewTableStyleInfo();
+		styleInfo.setName("TableStyleMedium2");
+		styleInfo.setShowColumnStripes(false);
+		styleInfo.setShowRowStripes(true);
+
+		CTTableColumns columns = cttable.addNewTableColumns();
+		columns.setCount(3);
+		for (int i = 1; i <= 3; i++) {
+			CTTableColumn column = columns.addNewTableColumn();
+			column.setId(i);
+			column.setName("Column" + i);
+		}
+
+		for (int r = 0; r < 2; r++) {
+			XSSFRow row = sheet.createRow(r);
+			for (int c = 0; c < 3; c++) {
+				XSSFCell cell = row.createCell(c);
+				if (r == 0) { // first row is for column headers
+					cell.setCellValue("Column" + (c + 1)); // content **must** be here for table column names
+				} else {
+					// cell.setCellValue("Data R"+ (r+1) + "C" + (c+1));
+				}
+			}
+		}
+
+		try (FileOutputStream outputStream = new FileOutputStream("ExcelTableTest.xlsx")) {
+			workbook.write(outputStream);
+		}
 	}
 }

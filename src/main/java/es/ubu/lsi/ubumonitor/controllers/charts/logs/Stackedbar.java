@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -125,7 +124,7 @@ public class Stackedbar extends ChartjsLog {
 		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
 				dateStart, dateEnd);
 		
-		Map<E, Color> colors = getRandomColors(typeLogs);
+		Map<E, Color> colors = UtilMethods.getRandomColors(typeLogs);
  
 		Map<E, List<Double>> means = dataSet.getMeans(groupBy, enrolledUsers, typeLogs, dateStart, dateEnd);
 
@@ -189,23 +188,7 @@ public class Stackedbar extends ChartjsLog {
 	}
 	
 	
-	/**
-	 * Selecciona colores pseudo-aleatorios a partir del HSV
-	 * @param <E>
-	 */
-	private <E> Map<E, Color> getRandomColors(List<E> typeLogs) {
-		Map<E, Color>colors = new HashMap<>();
-
-		for (int i = 0; i < typeLogs.size(); i++) {
-
-			// generamos un color a partir de HSB, el hue(H) es el color, saturacion (S), y
-			// brillo(B)
-			Color c = new Color(Color.HSBtoRGB(i / (float) typeLogs.size(), 0.8f, 1.0f));
-			colors.put(typeLogs.get(i), c);
-		}
-		return colors;
-
-	}
+	
 
 	@Override
 	protected String[] getCSVHeader() {

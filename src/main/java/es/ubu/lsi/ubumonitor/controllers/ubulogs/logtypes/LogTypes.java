@@ -95,7 +95,7 @@ public class LogTypes {
 
 		TYPES.put(get(FILE_SUBMISSIONS, A_FILE_HAS_BEEN_UPLOADED), UserSubmissionCmid.getInstance());
 		TYPES.put(get(FILE_SUBMISSIONS, SUBMISSION_CREATED), UserFilesCmid.getInstance());
-		TYPES.put(get(FILE_SUBMISSIONS, SUBMISSION_CREATED_), UserFilesCmid.getInstance());
+		TYPES.put(get(FILE_SUBMISSIONS, SUBMISSION_CREATED2), UserFilesCmid.getInstance());
 		TYPES.put(get(FILE_SUBMISSIONS, SUBMISSION_UPDATED), UserFilesCmid.getInstance());
 		TYPES.put(get(FILE_SUBMISSIONS, SUBMISSION_UPDATED2), UserFilesCmid.getInstance());
 
@@ -169,7 +169,7 @@ public class LogTypes {
 		TYPES.put(get(ONLINE_TEXT_SUBMISSIONS, AN_ONLINE_TEXT_HAS_BEEN_UPLOADED), UserSubmissionCmid.getInstance());
 		TYPES.put(get(ONLINE_TEXT_SUBMISSIONS, SUBMISSION_CREATED), UserWordsCmid.getInstance());
 		TYPES.put(get(ONLINE_TEXT_SUBMISSIONS, SUBMISSION_UPDATED), UserWordsCmid.getInstance());
-		TYPES.put(get(ONLINE_TEXT_SUBMISSIONS, SUBMISSION_CREATED_), UserWordsCmid.getInstance());
+		TYPES.put(get(ONLINE_TEXT_SUBMISSIONS, SUBMISSION_CREATED2), UserWordsCmid.getInstance());
 		TYPES.put(get(ONLINE_TEXT_SUBMISSIONS, SUBMISSION_UPDATED2), UserWordsCmid.getInstance());
 
 		TYPES.put(get(OPENDOCUMENT_SPREADSHEET, OPENDOCUMENT_GRADE_EXPORTED), User.getInstance());

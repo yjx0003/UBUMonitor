@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers.charts.logs;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.MessageFormat;
@@ -28,6 +29,7 @@ import es.ubu.lsi.ubumonitor.model.LogLine;
 import es.ubu.lsi.ubumonitor.model.Session;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
 public class SessionChart extends ChartjsLog {
 
@@ -127,13 +129,20 @@ public class SessionChart extends ChartjsLog {
 			List<EnrolledUser> selectedUsers, List<T> rangeDates) {
 
 		JSArray datasets = new JSArray();
-
+		Map<EnrolledUser, Color> colors = UtilMethods.getRandomColors(selectedUsers);
 		for (EnrolledUser enrolledUser : selectedUsers) {
 			JSArray data = new JSArray();
 			JSArray n = new JSArray();
 			JSObject dataset = new JSObject();
+			Color c = colors.get(enrolledUser);
+			int r = c.getRed();
+			int g = c.getGreen();
+			int b = c.getBlue();
+			
+			
 			dataset.putWithQuote("label", enrolledUser.getFullName());
-			dataset.put("backgroundColor", hex(enrolledUser.getId()));
+			dataset.put("borderColor", String.format("'#%02x%02x%02x'", r, g, b));
+			dataset.put("backgroundColor", String.format("'rgba(%d,%d,%d,0.4)'", r,g,b));
 			for (T element : rangeDates) {
 				List<Session> session = sessionsMap.get(enrolledUser)
 						.get(element);

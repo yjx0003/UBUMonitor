@@ -1,5 +1,7 @@
 package es.ubu.lsi.ubumonitor.clustering.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -14,27 +16,14 @@ import es.ubu.lsi.ubumonitor.clustering.data.Distance;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
-import es.ubu.lsi.ubumonitor.util.UtilMethods;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 
-public class ClusteringSilhouette {
+public class ClusteringSilhouette extends ClusteringChart {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringSilhouette.class);
 
-	private WebView webView;
-	private WebEngine webEngine;
-
 	public ClusteringSilhouette(ClusteringController clusteringController) {
-		webView = clusteringController.getwebViewSilhouette();
-		webEngine = webView.getEngine();
-		init();
-	}
-
-	private void init() {
-		webView.setContextMenuEnabled(false);
-
-		webEngine.load(getClass().getResource("/graphics/SilhouetteChart.html").toExternalForm());
+		super(clusteringController.getwebViewSilhouette());
+		getWebEngine().load(getClass().getResource("/graphics/SilhouetteChart.html").toExternalForm());
 	}
 
 	public void updateChart(List<ClusterWrapper> clusters, Distance distanceType) {
@@ -64,14 +53,12 @@ public class ClusteringSilhouette {
 		root.put("labels", labels);
 
 		LOGGER.debug("Silhouette: {}", root);
-		webEngine.executeScript("updateChart(" + root + ")");
+		getWebEngine().executeScript("updateChart(" + root + ")");
 	}
 
-	public void rename(List<ClusterWrapper> clusters) {
-		for (int i = 0; i < clusters.size(); i++) {
-			webEngine.executeScript(
-					String.format("rename(%d,'%s')", i, UtilMethods.escapeJavaScriptText(clusters.get(i).getName())));
-		}
-		webEngine.executeScript("update()");
+
+	@Override
+	protected void exportData(File file) throws IOException {
+		
 	}
 }

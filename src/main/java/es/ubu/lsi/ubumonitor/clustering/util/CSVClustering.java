@@ -28,7 +28,7 @@ public class CSVClustering {
 
 	private static final String[] HEAD_TABLE = new String[] { "UserId", "FullName", "Cluster" };
 
-	private static final String[] HEAD_POINTS = new String[] { "UserId", "FullName", "X", "Y" };
+	private static final String[] HEAD_POINTS = new String[] { "UserId", "FullName", "Cluster", "X", "Y" };
 
 	public static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyyMMddhhmmss");
 

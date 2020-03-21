@@ -14,12 +14,14 @@ import org.slf4j.LoggerFactory;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.Distance;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
+import es.ubu.lsi.ubumonitor.clustering.util.CSVClustering;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 
 public class ClusteringSilhouette extends ClusteringChart {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringSilhouette.class);
+	private Map<UserData, Double> silhouette;
 
 	public ClusteringSilhouette(ClusteringController clusteringController) {
 		super(clusteringController.getwebViewSilhouette());
@@ -27,7 +29,7 @@ public class ClusteringSilhouette extends ClusteringChart {
 	}
 
 	public void updateChart(List<ClusterWrapper> clusters, Distance distanceType) {
-		Map<UserData, Double> silhouette = AlgorithmExecuter.silhouette(clusters, distanceType);
+		silhouette = AlgorithmExecuter.silhouette(clusters, distanceType);
 		JSObject root = new JSObject();
 		JSArray datasets = new JSArray();
 		int i = 0;
@@ -59,6 +61,6 @@ public class ClusteringSilhouette extends ClusteringChart {
 
 	@Override
 	protected void exportData(File file) throws IOException {
-		
+		CSVClustering.exportSilhouette(silhouette, file.toPath());
 	}
 }

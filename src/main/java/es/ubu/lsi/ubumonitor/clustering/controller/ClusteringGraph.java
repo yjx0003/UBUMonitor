@@ -21,7 +21,7 @@ public class ClusteringGraph extends ClusteringChart {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringGraph.class);
 
 	private Connector connector;
-	private List<ClusterWrapper> clusters;
+	List<Map<UserData, double[]>> points;
 
 	public ClusteringGraph(ClusteringController clusteringController) {
 		super(clusteringController.getWebViewScatter());
@@ -38,9 +38,8 @@ public class ClusteringGraph extends ClusteringChart {
 	}
 
 	public void updateChart(List<ClusterWrapper> clusters) {
-		this.clusters = clusters;
 		connector.setClusters(clusters);
-		List<Map<UserData, double[]>> points = AlgorithmExecuter.clustersTo2D(clusters);
+		points = AlgorithmExecuter.clustersTo2D(clusters);
 		LOGGER.debug("Puntos: {}", points);
 		JSObject root = new JSObject();
 		JSArray datasets = new JSArray();
@@ -68,7 +67,7 @@ public class ClusteringGraph extends ClusteringChart {
 
 	@Override
 	protected void exportData(File file) throws IOException {
-		CSVClustering.exportPoints(clusters, file.toPath());
+		CSVClustering.exportPoints(points, file.toPath());
 	}
 
 }

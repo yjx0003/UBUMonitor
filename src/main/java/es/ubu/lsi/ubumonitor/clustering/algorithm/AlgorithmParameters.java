@@ -21,6 +21,10 @@ public class AlgorithmParameters {
 		SimplePropertySheetItem c = new SimplePropertySheetItem(parameter.getName(), value, parameter.getDescription());
 		parameters.put(parameter, c);
 	}
+	
+	public void setParameter(ClusteringParameter parameter, Object value) {
+		parameters.get(parameter).setValue(value);
+	}
 
 	public Collection<PropertySheet.Item> getPropertyItems() {
 		return parameters.values();

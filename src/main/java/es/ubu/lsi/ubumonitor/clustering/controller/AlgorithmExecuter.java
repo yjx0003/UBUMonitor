@@ -127,8 +127,8 @@ public class AlgorithmExecuter {
 			double a = ai.get(userData);
 			double b = bi.getOrDefault(userData, Double.NaN);
 			double s;
-			if (Double.isNaN(b)) {
-				s = 1.0;
+			if (Double.isNaN(b) || userData.getCluster().size() == 1) {
+				s = 0.0;
 			} else {
 				s = (b - a) / Math.max(a, b);
 			}

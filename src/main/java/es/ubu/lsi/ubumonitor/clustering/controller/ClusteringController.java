@@ -11,6 +11,7 @@ import java.util.stream.IntStream;
 import org.apache.commons.math3.ml.clustering.Clusterer;
 import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.PropertySheet;
+import org.controlsfx.control.RangeSlider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,7 @@ import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
@@ -106,6 +108,9 @@ public class ClusteringController {
 
 	@FXML
 	private Button buttonRename;
+	
+	@FXML
+	private RangeSlider rangeSlider;
 
 	private GradesCollector gradesCollector;
 
@@ -124,6 +129,7 @@ public class ClusteringController {
 		table = new ClusteringTable(this);
 		graph = new ClusteringGraph(this);
 		silhouette = new ClusteringSilhouette(this);
+		rangeSlider.setHighValue(10.0);
 		initAlgorithms();
 		initCollectors();
 	}
@@ -228,6 +234,28 @@ public class ClusteringController {
 			LOGGER.error("Error al exportar el fichero CSV.", e);
 			UtilMethods.errorWindow(I18n.get("error.savecsvfiles"), e);
 		}
+	}
+	
+	@FXML
+	private void executeOptimal() {
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/OptimalClusters.fxml"));
+		UtilMethods.createDialog(loader, Controller.getInstance().getStage());
+		OptimalController controller = loader.getController();
+		int start = (int) rangeSlider.getLowValue();
+		int end = (int) rangeSlider.getHighValue();
+		Algorithm algorithm = algorithmList.getSelectionModel().getSelectedItem();
+		List<EnrolledUser> users = mainController.getListParticipants().getSelectionModel().getSelectedItems();
+		List<DataCollector> collectors = new ArrayList<>();
+		if (checkBoxLogs.isSelected()) {
+			collectors.addAll(checkComboBoxLogs.getCheckModel().getCheckedItems());
+		}
+		if (checkBoxGrades.isSelected()) {
+			collectors.add(gradesCollector);
+		}
+		if (checkBoxActivity.isSelected()) {
+			collectors.add(activityCollector);
+		}
+		controller.init(start, end, algorithm, users, collectors);
 	}
 
 	/**

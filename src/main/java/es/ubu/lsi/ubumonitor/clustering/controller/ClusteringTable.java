@@ -1,7 +1,6 @@
 package es.ubu.lsi.ubumonitor.clustering.controller;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -9,24 +8,22 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.controlsfx.control.CheckComboBox;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.collections.ListChangeListener.Change;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
@@ -39,13 +36,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 
 public class ClusteringTable {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringTable.class);
 
 	private TableView<UserData> tableView;
 	private TableColumn<UserData, ImageView> columnImage;
@@ -162,20 +155,10 @@ public class ClusteringTable {
 	}
 
 	public void showUserDataInfo(UserData userData) {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ClusteringInfo.fxml"));
-			Scene scene = new Scene(loader.load());
-			Stage stage = new Stage();
-			stage.setScene(scene);
-			stage.initModality(Modality.WINDOW_MODAL);
-			stage.initOwner(Controller.getInstance().getStage());
-			stage.setTitle(userData.getEnrolledUser().getFullName());
-			UserDataController controller = loader.getController();
-			controller.init(userData, tableView);
-			stage.show();
-		} catch (IOException e) {
-			LOGGER.error("Error", e);
-		}
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ClusteringInfo.fxml"));
+		UtilMethods.createDialog(loader, Controller.getInstance().getStage());
+		UserDataController controller = loader.getController();
+		controller.init(userData, tableView);
 	}
 
 }

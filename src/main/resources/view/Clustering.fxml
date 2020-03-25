@@ -25,9 +25,9 @@
       <GridPane BorderPane.alignment="CENTER">
         <columnConstraints>
             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="250.0" />
           <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="120.0" />
             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
         <rowConstraints>
@@ -38,7 +38,7 @@
         </rowConstraints>
          <children>
 
-            <PropertySheet fx:id="propertySheet" modeSwitcherVisible="false" prefHeight="59.0" prefWidth="137.0" searchBoxVisible="false" GridPane.columnIndex="1" GridPane.rowSpan="4" />
+            <PropertySheet fx:id="propertySheet" modeSwitcherVisible="false" searchBoxVisible="false" GridPane.columnIndex="1" GridPane.rowSpan="4" />
             <CheckBox fx:id="checkBoxGrades" mnemonicParsing="false" text="%tab.grades" GridPane.columnIndex="2" GridPane.rowIndex="2">
                <GridPane.margin>
                   <Insets left="10.0" />
@@ -57,7 +57,7 @@
                   <Insets left="10.0" />
                </GridPane.margin></CheckComboBox>
             <RangeSlider fx:id="rangeSlider" blockIncrement="1.0" highValue="10.0" lowValue="2.0" majorTickUnit="1.0" max="15.0" min="1.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-            <Button mnemonicParsing="false" onAction="#executeOptimal" text="Button" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+            <Button mnemonicParsing="false" onAction="#executeOptimal" text="%clustering.analize" GridPane.columnIndex="4" GridPane.rowIndex="2" />
             <GridPane GridPane.columnIndex="3">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -72,7 +72,7 @@
                </children>
             </GridPane>
             <Button mnemonicParsing="false" onAction="#execute" text="%clustering.execute" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-            <Label text="Label" GridPane.columnIndex="4" />
+            <Label text="%clustering.numberOfClusters" GridPane.columnIndex="4" />
          </children>
       </GridPane>
    </top>

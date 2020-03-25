@@ -7,6 +7,8 @@ import org.apache.commons.math3.ml.distance.EarthMoversDistance;
 import org.apache.commons.math3.ml.distance.EuclideanDistance;
 import org.apache.commons.math3.ml.distance.ManhattanDistance;
 
+import es.ubu.lsi.ubumonitor.controllers.I18n;
+
 public enum Distance {
 
 	MANHATTAN_DISTANCE(new ManhattanDistance()),
@@ -23,6 +25,11 @@ public enum Distance {
 
 	public DistanceMeasure getInstance() {
 		return instance;
+	}
+	
+	@Override
+	public String toString() {
+		return I18n.get("clustering.distance." + super.toString().toLowerCase());
 	}
 
 }

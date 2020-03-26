@@ -127,7 +127,9 @@ public class LogTypes {
 		TYPES.put(get(GLOSSARY, ENTRY_HAS_BEEN_CREATED), UserGlossaryCmid.getInstance());
 		TYPES.put(get(GLOSSARY, ENTRY_HAS_BEEN_UPDATED), UserGlossaryCmid.getInstance());
 		TYPES.put(get(GLOSSARY, ENTRY_HAS_BEEN_VIEWED), UserGlossaryCmid.getInstance());
-
+		
+		TYPES.put(get(GRADE_HISTORY, GRADE_HISTORY_REPORT_VIEWED), User.getInstance());
+		
 		TYPES.put(get(GRADER_REPORT, GRADER_REPORT_VIEWED), User.getInstance());
 
 		TYPES.put(get(GUIA_DOCENTE, EVALUATION_SYSTEM_CREATED), Ignore.getInstance());

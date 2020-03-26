@@ -38,6 +38,7 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -584,6 +585,19 @@ public class WelcomeController implements Initializable {
 				return null;
 			}
 		};
+	}
+
+	/**
+	 * Abre en el navegador el repositorio del proyecto.
+	 * 
+	 * @param actionEvent El ActionEvent.
+	 */
+	public void aboutApp() {
+
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AboutApp.fxml"), I18n.getResourceBundle());
+
+		UtilMethods.createDialog(loader, controller.getStage());
+
 	}
 
 }

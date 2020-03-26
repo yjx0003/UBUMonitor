@@ -32,6 +32,7 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.control.CheckBox;
@@ -348,6 +349,19 @@ public class LoginController implements Initializable {
 		txtUsername.setText("");
 		txtPassword.setText("");
 		txtHost.setText("");
+	}
+	
+	/**
+	 * Abre en el navegador el repositorio del proyecto.
+	 * 
+	 * @param actionEvent El ActionEvent.
+	 */
+	public void aboutApp() {
+
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AboutApp.fxml"), I18n.getResourceBundle());
+
+		UtilMethods.createDialog(loader, controller.getStage());
+
 	}
 
 }

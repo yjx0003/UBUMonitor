@@ -1,15 +1,8 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
-import org.apache.poi.ss.formula.BaseFormulaEvaluator;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,12 +64,6 @@ public class CourseStatsController implements Initializable {
 				.filter(cm -> !(cm.getActivitiesCompletion()
 						.isEmpty()))
 				.count());
-		try {
-			createExcel();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	private void setText(TextField textfield, Object value) {
@@ -113,55 +100,6 @@ public class CourseStatsController implements Initializable {
 				.filter(cm -> !(cm.getActivitiesCompletion()
 						.isEmpty()))
 				.count());
-	}
-
-	private void createExcel() throws IOException {
-		Course actualCourse = Controller.getInstance()
-				.getActualCourse();
-		Workbook workbook = new XSSFWorkbook(getClass().getResourceAsStream("/templates/Plantilla.xlsx"));
-
-		Sheet sheet = workbook.getSheet("Data");
-		int rowCount = -1;
-
-		setCellValue(sheet, ++rowCount, 0, actualCourse.getEnrolledUsersCount());
-		setCellValue(sheet, ++rowCount, 0, actualCourse.getLogs()
-				.getList()
-				.size());
-		setCellValue(sheet, ++rowCount, 0, actualCourse.getUniqueComponents()
-				.size());
-		workbook.getSheet("Dashboard").setForceFormulaRecalculation(true);
-		FileOutputStream outputStream = new FileOutputStream("./Plantilla2.xlsx");
-		workbook.write(outputStream);
-		workbook.close();
-		outputStream.close();
-	}
-
-	private void setCellValue(Sheet sheet, int rowIndex, int columnIndex, boolean value) {
-		sheet.createRow(rowIndex)
-				.createCell(columnIndex)
-				.setCellValue(value);
-
-	}
-
-	private void setCellValue(Sheet sheet, int rowIndex, int columnIndex, String value) {
-		sheet.createRow(rowIndex)
-				.createCell(columnIndex)
-				.setCellValue(value);
-
-	}
-
-	private void setCellValue(Sheet sheet, int rowIndex, int columnIndex, double value) {
-		sheet.createRow(rowIndex)
-				.createCell(columnIndex)
-				.setCellValue(value);
-
-	}
-
-	private void setCellValue(Sheet sheet, int rowIndex, int columnIndex, LocalDateTime value) {
-		sheet.createRow(rowIndex)
-				.createCell(columnIndex)
-				.setCellValue(value);
-
 	}
 
 }

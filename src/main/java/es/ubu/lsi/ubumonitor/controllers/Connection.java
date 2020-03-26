@@ -19,7 +19,6 @@ public class Connection {
 		cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
 		CLIENT = new OkHttpClient.Builder().cookieJar(new JavaNetCookieJar(cookieManager))
 				.readTimeout(Duration.ofMinutes(5))
-				.callTimeout(Duration.ofMinutes(5))
 				.build();
 	}
 

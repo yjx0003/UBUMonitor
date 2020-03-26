@@ -70,30 +70,47 @@ public class LogCreator {
 		dateTimeFormatter = dateTimeFormatter.withZone(zoneId);
 	}
 
-	public static void createLogsMultipleDays(Logs logs,Collection<EnrolledUser> enrolledUsers,  boolean onlyWeb) throws IOException {
-		ZoneId userZoneDateTime = "99".equals(CONTROLLER.getUser().getTimezone()) ? logs.getZoneId()
-				: ZoneId.of(CONTROLLER.getUser().getTimezone());
+	public static void createLogsMultipleDays(Logs logs, Collection<EnrolledUser> enrolledUsers, boolean onlyWeb)
+			throws IOException {
+		ZoneId userZoneDateTime = "99".equals(CONTROLLER.getUser()
+				.getTimezone()) ? logs.getZoneId()
+						: ZoneId.of(CONTROLLER.getUser()
+								.getTimezone());
 		LOGGER.info("Zona horaria del usuario: {}", userZoneDateTime);
 
-		DownloadLogController download = new DownloadLogController(CONTROLLER.getUrlHost().toString(),
-				CONTROLLER.getActualCourse().getId(), userZoneDateTime);
+		DownloadLogController download = new DownloadLogController(CONTROLLER.getUrlHost()
+				.toString(),
+				CONTROLLER.getActualCourse()
+						.getId(),
+				userZoneDateTime);
 
 		setDateTimeFormatter(download.getUserTimeZone());
 
 		ZonedDateTime lastDateTime = logs.getLastDatetime();
-		ZonedDateTime now = ZonedDateTime.now().withZoneSameInstant(lastDateTime.getZone());
+		ZonedDateTime now = ZonedDateTime.now()
+				.withZoneSameInstant(lastDateTime.getZone());
 		LOGGER.info("La fecha del ultimo log antes de actualizar es {}", lastDateTime);
 		while (now.isAfter(lastDateTime)) {
 			Response response = download.downloadLog(lastDateTime, onlyWeb);
 			parserResponse(logs, response, enrolledUsers);
 			lastDateTime = lastDateTime.plusDays(1);
 		}
+		if(!NOT_AVAIBLE_COMPONENTS.isEmpty()) {
+			LOGGER.warn("Not avaible components: {}", NOT_AVAIBLE_COMPONENTS);
+		}
+		if(!NOT_AVAIBLE_EVENTS.isEmpty()) {
+			LOGGER.warn("Not avaible events: {}", NOT_AVAIBLE_EVENTS);
+		}
 
 	}
 
 	public static DownloadLogController download() throws IOException {
-		DownloadLogController download = new DownloadLogController(CONTROLLER.getUrlHost().toString(),
-				CONTROLLER.getActualCourse().getId(), CONTROLLER.getUser().getTimezone());
+		DownloadLogController download = new DownloadLogController(CONTROLLER.getUrlHost()
+				.toString(),
+				CONTROLLER.getActualCourse()
+						.getId(),
+				CONTROLLER.getUser()
+						.getTimezone());
 
 		setDateTimeFormatter(download.getUserTimeZone());
 		return download;
@@ -102,10 +119,16 @@ public class LogCreator {
 	public static void parserResponse(Logs logs, Response response, Collection<EnrolledUser> enrolledUsers)
 			throws IOException {
 
-		try (CSVParser csvParser = new CSVParser(response.body().charStream(),
-				CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
+		try (CSVParser csvParser = new CSVParser(response.body()
+				.charStream(), CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
 			List<LogLine> logList = LogCreator.createLogs(csvParser, enrolledUsers);
 			logs.addAll(logList);
+		}
+		if(!NOT_AVAIBLE_COMPONENTS.isEmpty()) {
+			LOGGER.warn("Not avaible components: {}", NOT_AVAIBLE_COMPONENTS);
+		}
+		if(!NOT_AVAIBLE_EVENTS.isEmpty()) {
+			LOGGER.warn("Not avaible events: {}", NOT_AVAIBLE_EVENTS);
 		}
 
 	}
@@ -118,7 +141,8 @@ public class LogCreator {
 	 */
 	private static List<LogLine> createLogs(CSVParser csvParser, Collection<EnrolledUser> enrolledUsers) {
 		LinkedList<LogLine> logs = new LinkedList<>();
-		Set<String> headers = csvParser.getHeaderMap().keySet();
+		Set<String> headers = csvParser.getHeaderMap()
+				.keySet();
 		LOGGER.info("Los nombres de las columnas del csv son: {}", headers);
 		for (CSVRecord csvRecord : csvParser) {
 			LogLine logLine = createLog(headers, csvRecord);
@@ -127,7 +151,7 @@ public class LogCreator {
 
 			}
 		}
-
+		
 		return logs;
 	}
 
@@ -144,6 +168,9 @@ public class LogCreator {
 		Component component;
 		if (headers.contains(LogCreator.COMPONENT)) {
 			component = Component.get(csvRecord.get(LogCreator.COMPONENT));
+			if (component == Component.COMPONENT_NOT_AVAILABLE) {
+				NOT_AVAIBLE_COMPONENTS.add(csvRecord.get(LogCreator.COMPONENT));
+			}
 		} else {
 			component = Component.COMPONENT_NOT_AVAILABLE;
 		}
@@ -152,6 +179,9 @@ public class LogCreator {
 		Event event;
 		if (headers.contains(LogCreator.EVENT_NAME)) {
 			event = Event.get(csvRecord.get(LogCreator.EVENT_NAME));
+			if (event == Event.EVENT_NOT_AVAILABLE) {
+				NOT_AVAIBLE_EVENTS.add(csvRecord.get(LogCreator.EVENT_NAME));
+			}
 		} else {
 			event = Event.EVENT_NOT_AVAILABLE;
 		}

@@ -32,4 +32,8 @@ public enum Origin {
 		return originByString.getOrDefault(name, ORIGIN_NOT_DEFINED);
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
 }

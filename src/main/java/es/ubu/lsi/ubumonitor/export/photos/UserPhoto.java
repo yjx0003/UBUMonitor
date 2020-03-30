@@ -33,14 +33,18 @@ public class UserPhoto {
 	private static final int N_COLUMNS = 5;
 
 	public void exportEnrolledUsersPhoto(Course course, List<EnrolledUser> enrolledUsers, File file,
-			boolean defaultPhoto) throws IOException, InvalidFormatException, URISyntaxException {
+			boolean defaultPhoto) throws IOException {
 
 		byte[] defaultUser = null;
 
 		if (defaultPhoto) {
-			defaultUser = Files.readAllBytes(Paths.get(this.getClass()
-					.getResource("/img/default_user.png")
-					.toURI()));
+			try {
+				defaultUser = Files.readAllBytes(Paths.get(this.getClass()
+						.getResource("/img/default_user.png")
+						.toURI()));
+			} catch (URISyntaxException e) {
+				throw new IllegalStateException("Cannot read default user image");
+			}
 		}
 
 		try (FileOutputStream out = new FileOutputStream(file); XWPFDocument document = new XWPFDocument()) {
@@ -103,6 +107,8 @@ public class UserPhoto {
 			}
 			document.write(out);
 
+		} catch (InvalidFormatException e) {
+			throw new IllegalStateException("Invalid format exception");
 		}
 
 	}

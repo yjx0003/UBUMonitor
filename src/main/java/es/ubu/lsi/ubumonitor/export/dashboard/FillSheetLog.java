@@ -7,7 +7,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
-import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.LogLine;
 
 public class FillSheetLog extends FillSheetData {
@@ -36,11 +35,6 @@ public class FillSheetLog extends FillSheetData {
 			setCellValue(sheet, rowIndex, ++columnIndex, log.getIPAdress());
 			setCellValue(sheet, rowIndex, ++columnIndex, log.getUser()
 					.getId());
-			EnrolledUser affectedUser = log.getAffectedUser();
-			if (affectedUser != null) {
-				setCellValue(sheet, rowIndex, ++columnIndex, affectedUser.getId());
-
-			}
 			CourseModule cm = log.getCourseModule();
 			if (cm != null) {
 				setCellValue(sheet, rowIndex, ++columnIndex, cm.getCmid());

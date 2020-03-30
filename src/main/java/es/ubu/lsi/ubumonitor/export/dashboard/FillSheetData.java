@@ -65,9 +65,9 @@ public abstract class FillSheetData {
 	}
 
 	protected void setCellValue(Sheet sheet, int rowIndex, int columnIndex, LocalDateTime value, CellStyle cellStyle) {
-		Cell cell = getCell(sheet, rowIndex, columnIndex, CellType.NUMERIC);
-		// cell.setCellStyle(cellStyle);
+		Cell cell = getCell(sheet, rowIndex, columnIndex, CellType.BLANK);
 		cell.setCellValue(value);
+		cell.setCellStyle(cellStyle);
 
 	}
 

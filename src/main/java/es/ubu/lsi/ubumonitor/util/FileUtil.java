@@ -1,0 +1,43 @@
+package es.ubu.lsi.ubumonitor.util;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.function.BiFunction;
+
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Window;
+
+public class FileUtil {
+	public static final ExtensionFilter EXCEL = new FileChooser.ExtensionFilter("Excel 2013-2016(*.xlsx)", "*.xlsx");
+	public static final ExtensionFilter WORD = new FileChooser.ExtensionFilter("Word (*.docx)", "*.docx");
+	public static final ExtensionFilter PNG = new FileChooser.ExtensionFilter("Portable Network Graphics (*.png)",
+			"*.png");
+	public static final ExtensionFilter CSV = new FileChooser.ExtensionFilter("Comma-separated values (*.csv)",
+			"*.csv");
+	public static final ExtensionFilter JSON = new FileChooser.ExtensionFilter("JavaScript Object Notation (*.json)",
+			"*.json");
+
+	public enum FileChooserType {
+		OPEN(FileChooser::showOpenDialog), SAVE(FileChooser::showSaveDialog);
+
+		private BiFunction<FileChooser, Window, File> function;
+
+		private FileChooserType(BiFunction<FileChooser, Window, File> function) {
+			this.function = function;
+		}
+
+		public File getFile(FileChooser fileChooser, Window window) {
+			return function.apply(fileChooser, window);
+		}
+	}
+
+	@FunctionalInterface
+	public interface ThrowingConsumer<T, E extends IOException> {
+		void accept(T t) throws E;
+	}
+
+	private FileUtil() {
+		throw new UnsupportedOperationException();
+	}
+}

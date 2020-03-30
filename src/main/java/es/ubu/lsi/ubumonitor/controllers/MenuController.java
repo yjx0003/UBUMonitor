@@ -17,6 +17,7 @@ import es.ubu.lsi.ubumonitor.export.dashboard.Excel;
 import es.ubu.lsi.ubumonitor.export.photos.UserPhoto;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.util.Charsets;
+import es.ubu.lsi.ubumonitor.util.FileUtil;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -29,7 +30,6 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.PopupWindow.AnchorLocation;
 
 public class MenuController {
@@ -242,36 +242,25 @@ public class MenuController {
 	}
 
 	public void importConfiguration() {
-		FileChooser fileChooser = UtilMethods.createFileChooser(null,
-				ConfigHelper.getProperty("configurationFolderPath", "./"),
-				new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
 
-		File file = fileChooser.showOpenDialog(controller.getStage());
-		if (file != null) {
-			ConfigHelper.setProperty("configurationFolderPath", file.getParent());
-			try {
-				ConfigurationController.loadConfiguration(controller.getMainConfiguration(), file.toPath());
-				changeConfiguration();
-			} catch (RuntimeException e) {
-				UtilMethods.errorWindow(I18n.get("error.filenotvalid"), e);
-			}
-
-		}
+		UtilMethods.fileAction(null, ConfigHelper.getProperty("configurationFolderPath", "./"), controller.getStage(),
+				FileUtil.FileChooserType.OPEN, file -> {
+					ConfigurationController.loadConfiguration(controller.getMainConfiguration(), file.toPath());
+					changeConfiguration();
+					ConfigHelper.setProperty("configurationFolderPath", file.getParent());
+				}, FileUtil.JSON);
 
 	}
 
 	public void exportConfiguration() {
-		FileChooser fileChooser = UtilMethods.createFileChooser(
-				UtilMethods.removeReservedChar(controller.getActualCourse()
-						.getFullName()) + ".json",
-				ConfigHelper.getProperty("configurationFolderPath", "./"),
-				new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
+		Course course = controller.getActualCourse();
+		UtilMethods.fileAction(UtilMethods.removeReservedChar(course.getFullName() + "-" + course.getId()) + ".json",
+				ConfigHelper.getProperty("configurationFolderPath", "./"), controller.getStage(),
+				FileUtil.FileChooserType.SAVE, file -> {
+					ConfigurationController.saveConfiguration(controller.getMainConfiguration(), file.toPath());
+					ConfigHelper.setProperty("configurationFolderPath", file.getParent());
+				}, FileUtil.JSON);
 
-		File file = fileChooser.showSaveDialog(controller.getStage());
-		if (file != null) {
-			ConfigurationController.saveConfiguration(controller.getMainConfiguration(), file.toPath());
-			ConfigHelper.setProperty("configurationFolderPath", file.getParent());
-		}
 	}
 
 	/**
@@ -304,51 +293,32 @@ public class MenuController {
 	public void exportDefaultPhoto() {
 		exportPhoto(true);
 	}
-	
+
 	private void exportPhoto(boolean defaultPhoto) {
 		Course course = controller.getActualCourse();
-		FileChooser fileChooser = UtilMethods.createFileChooser(
-				UtilMethods.removeReservedChar(course.getFullName() + "-" + course.getId()) + ".docx",
-				ConfigHelper.getProperty("configurationFolderPath", "./"),
-				new FileChooser.ExtensionFilter("Word (*.docx)", "*.docx"));
+		UtilMethods.fileAction(UtilMethods.removeReservedChar(course.getFullName() + "-" + course.getId()) + ".docx",
+				ConfigHelper.getProperty("csvFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
+				file -> {
+					UserPhoto exportUserPhoto = new UserPhoto();
+					exportUserPhoto.exportEnrolledUsersPhoto(course, mainController.getSelectionUserController()
+							.getListParticipants()
+							.getSelectionModel()
+							.getSelectedItems(), file, defaultPhoto);
+				}, FileUtil.WORD);
 
-		File file = fileChooser.showSaveDialog(controller.getStage());
-		if (file == null)
-			return;
-
-		UserPhoto exportUserPhoto = new UserPhoto();
-		try {
-			exportUserPhoto.exportEnrolledUsersPhoto(course, mainController.getSelectionUserController()
-					.getListParticipants()
-					.getSelectionModel()
-					.getSelectedItems(), file, defaultPhoto);
-		} catch (Exception e) {
-			UtilMethods.errorWindow(e.getMessage(), e);
-			LOGGER.error("Error al exportar las fotos de los usuarios ", e);
-		}
-		UtilMethods.infoWindow("Exported");
 	}
+
 	public void exportDashboard() {
-		Course course = controller.getActualCourse();
-		FileChooser fileChooser = UtilMethods.createFileChooser(
-				UtilMethods.removeReservedChar(course.getFullName() + "-" + course.getId()) + ".xlsx",
-				ConfigHelper.getProperty("configurationFolderPath", "./"),
-				new FileChooser.ExtensionFilter("Excel (*.xlsx)", "*.xlsx"));
 
-		File file = fileChooser.showSaveDialog(controller.getStage());
-		if (file == null)
-			return;
-		try {
-			Excel excel = new Excel();
-			excel.createExcel(file.getAbsolutePath());
-		} catch (Exception e) {
-			UtilMethods.errorWindow(e.getMessage(), e);
-			LOGGER.error("Error al exportar el dashboard ", e);
-		}
-		UtilMethods.infoWindow("Exported");
+		Course course = controller.getActualCourse();
+		UtilMethods.fileAction(UtilMethods.removeReservedChar(course.getFullName() + "-" + course.getId()) + ".xlsx",
+				ConfigHelper.getProperty("csvFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
+				file -> {
+					Excel excel = new Excel();
+					excel.createExcel(file.getAbsolutePath());
+				}, FileUtil.EXCEL);
 	}
-	
-	
+
 	/**
 	 * Botón "Salir". Cierra la aplicación.
 	 * 

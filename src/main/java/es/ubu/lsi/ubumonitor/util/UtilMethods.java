@@ -3,6 +3,7 @@ package es.ubu.lsi.ubumonitor.util;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -34,6 +35,7 @@ import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class UtilMethods {
 	private UtilMethods() {
@@ -142,7 +144,7 @@ public class UtilMethods {
 		PrintWriter pw = new PrintWriter(sw);
 		ex.printStackTrace(pw);
 
-		Label label = new Label("The exception stacktrace was:");
+		Label label = new Label(I18n.get("exceptionTrace"));
 
 		TextArea textArea = new TextArea(sw.toString());
 		textArea.setEditable(false);
@@ -305,6 +307,26 @@ public class UtilMethods {
 		fileChooser.getExtensionFilters()
 				.addAll(extensionFilters);
 		return fileChooser;
+	}
+
+	public static void fileAction(String initialFileName, String initialDirectory, Window owner,
+			FileUtil.FileChooserType fileChooserType, FileUtil.ThrowingConsumer<File, IOException> consumer,
+			FileChooser.ExtensionFilter... extensionFilters) {
+		FileChooser fileChooser = createFileChooser(initialFileName, initialDirectory, extensionFilters);
+		File file = fileChooserType.getFile(fileChooser, owner);
+		if (file == null) {
+			return;
+		}
+
+		try {
+			consumer.accept(file);
+			infoWindow(I18n.get("message.export") + file.getAbsolutePath());
+		} catch (FileNotFoundException e) {
+			errorWindow(e.getMessage());
+		} catch (Exception e) {
+			errorWindow(e.getMessage(), e);
+		}
+
 	}
 
 	/**

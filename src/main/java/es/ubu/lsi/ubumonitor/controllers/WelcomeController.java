@@ -473,8 +473,7 @@ public class WelcomeController implements Initializable {
 					.getScene()
 					.setCursor(Cursor.DEFAULT);
 			btnEntrar.setVisible(true);
-			UtilMethods.errorWindow("Error al actualizar los datos del curso: " + task.getException()
-					.getMessage(), task.getException());
+			UtilMethods.errorWindow(I18n.get("error.downloadingdata"), task.getException());
 			LOGGER.error("Error al actualizar los datos del curso: {}", task.getException());
 
 		});

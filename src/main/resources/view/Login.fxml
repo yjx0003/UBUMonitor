@@ -75,7 +75,7 @@
             <Image url="@../img/insecure_protocol.png" />
          </image>
       </ImageView>
-      <Hyperlink layoutX="5.0" layoutY="15.0" onAction="#aboutApp" text="%about_app" />
+      <Hyperlink layoutX="5.0" layoutY="15.0" onAction="#aboutApp" prefWidth="116.0" text="%about_app" wrapText="true" />
       
       	</children>
 </AnchorPane>

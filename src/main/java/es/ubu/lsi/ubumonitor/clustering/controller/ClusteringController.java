@@ -98,6 +98,9 @@ public class ClusteringController {
 	private TableColumn<UserData, String> columnCluster;
 
 	@FXML
+	private CheckBox checkBoxExportGrades;
+
+	@FXML
 	private CheckBox checkBoxReduce;
 
 	@FXML
@@ -108,7 +111,7 @@ public class ClusteringController {
 
 	@FXML
 	private Button buttonRename;
-	
+
 	@FXML
 	private RangeSlider rangeSlider;
 
@@ -227,7 +230,12 @@ public class ClusteringController {
 					ConfigHelper.getProperty("csvFolderPath", "./"), new ExtensionFilter("CSV (*.csv)", "*.csv"));
 			File file = fileChooser.showSaveDialog(controller.getStage());
 			if (file != null) {
-				CSVClustering.exportTable(clusters, file.toPath());
+				boolean exportGrades = checkBoxExportGrades.isSelected();
+				if (exportGrades) {
+					CSVClustering.exportTable(clusters, file.toPath(), tableView);
+				} else {
+					CSVClustering.exportTable(clusters, file.toPath());
+				}
 				UtilMethods.infoWindow(I18n.get("message.export_csv") + file.getAbsolutePath());
 			}
 		} catch (Exception e) {
@@ -235,7 +243,7 @@ public class ClusteringController {
 			UtilMethods.errorWindow(I18n.get("error.savecsvfiles"), e);
 		}
 	}
-	
+
 	@FXML
 	private void executeOptimal() {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/OptimalClusters.fxml"));
@@ -285,7 +293,7 @@ public class ClusteringController {
 	public WebView getWebViewScatter() {
 		return webViewScatter;
 	}
-	
+
 	/**
 	 * @return the webViewSilhouette
 	 */

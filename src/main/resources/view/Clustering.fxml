@@ -119,6 +119,7 @@
                               <GridPane BorderPane.alignment="CENTER">
                                 <columnConstraints>
                                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                   <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                 </columnConstraints>
                                 <rowConstraints>
@@ -126,7 +127,8 @@
                                 </rowConstraints>
                                  <children>
                                     <CheckComboBox fx:id="checkComboBoxCluster" title="%clustering.clusters" />
-                                    <Button fx:id="buttonExport" mnemonicParsing="false" onAction="#exportTable" text="%text.exportcsv" GridPane.columnIndex="1" />
+                                    <CheckBox fx:id="checkBoxExportGrades" alignment="CENTER_RIGHT" mnemonicParsing="false" text="%clustering.exportGrades" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
+                                    <Button fx:id="buttonExport" mnemonicParsing="false" onAction="#exportTable" text="%text.exportcsv" GridPane.columnIndex="2" />
                                  </children>
                                  <BorderPane.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

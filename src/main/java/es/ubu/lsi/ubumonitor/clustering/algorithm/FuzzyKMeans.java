@@ -23,7 +23,7 @@ public class FuzzyKMeans extends Algorithm {
 	@Override
 	public <T extends Clusterable> Clusterer<T> getClusterer() {
 		int k = getParameters().getValue(ClusteringParameter.NUM_CLUSTER);
-		int fuzziness = getParameters().getValue(ClusteringParameter.FUZZINESS);
+		double fuzziness = getParameters().getValue(ClusteringParameter.FUZZINESS);
 		int max = getParameters().getValue(ClusteringParameter.MAX_ITERATIONS);
 		Distance distance = getParameters().getValue(ClusteringParameter.DISTANCE_TYPE);
 

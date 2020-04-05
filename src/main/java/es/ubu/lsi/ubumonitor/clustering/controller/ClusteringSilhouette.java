@@ -32,32 +32,36 @@ public class ClusteringSilhouette extends ClusteringChart {
 		silhouette = AlgorithmExecuter.silhouette(clusters, distanceType);
 		JSObject root = new JSObject();
 		JSArray datasets = new JSArray();
+		JSArray data = new JSArray();
+		JSArray backgroundColor = new JSArray();
 		int i = 0;
-		for (ClusterWrapper clusterWrapper : clusters) {
-			JSObject group = new JSObject();
-			group.putWithQuote("label", clusterWrapper.getName());
-			group.put("borderColor", "colorHash.hex(" + clusterWrapper.getId() + ")");
-			group.put("backgroundColor", "colorHash.hex(" + clusterWrapper.getId() + ")");
-			JSArray data = new JSArray();
-			data.addAll(Collections.nCopies(i, "null"));
-			List<UserData> sortedCluster = clusterWrapper.stream()
+		for (ClusterWrapper cluster : clusters) {
+			List<UserData> sortedCluster = cluster.stream()
 					.sorted(Comparator.comparingDouble(e -> silhouette.get(e)).reversed()).collect(Collectors.toList());
 			for (UserData userData : sortedCluster) {
 				data.add(silhouette.get(userData));
 			}
-			i += clusterWrapper.size();
-			group.put("data", data);
-			datasets.add(group);
+			i += cluster.size() + 1;
+			backgroundColor.addAll(Collections.nCopies(cluster.size(), "colorHash.hex(" + cluster.getId() + ")"));
+			data.add("null");
+			backgroundColor.add("null");
 		}
+		JSObject dataset = new JSObject();
+		dataset.put("data", data);
+		dataset.put("backgroundColor", backgroundColor);
+		datasets.add(dataset);
 		root.put("datasets", datasets);
 		JSArray labels = new JSArray();
 		labels.addAll(Collections.nCopies(i, "null"));
 		root.put("labels", labels);
 
-		LOGGER.debug("Silhouette: {}", root);
-		getWebEngine().executeScript("updateChart(" + root + ")");
-	}
+		JSArray clustersName = new JSArray();
+		clustersName.addAllWithQuote(clusters.stream().map(ClusterWrapper::getName).collect(Collectors.toList()));
 
+		LOGGER.debug("Silhouette: {}", root);
+		getWebEngine().executeScript("updateChart(" + root + "," + clustersName + ")");
+
+	}
 
 	@Override
 	protected void exportData(File file) throws IOException {

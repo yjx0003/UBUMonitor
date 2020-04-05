@@ -27,6 +27,7 @@ import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.clustering.exception.IllegalParamenterException;
 import es.ubu.lsi.ubumonitor.clustering.util.CSVClustering;
 import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
+import es.ubu.lsi.ubumonitor.clustering.util.TextFieldPropertyEditorFactory;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
@@ -127,12 +128,17 @@ public class ClusteringController {
 
 	private ClusteringSilhouette silhouette;
 
+	private TextFieldPropertyEditorFactory propertyEditor;
+
 	public void init(MainController controller) {
 		mainController = controller;
 		table = new ClusteringTable(this);
 		graph = new ClusteringGraph(this);
 		silhouette = new ClusteringSilhouette(this);
 		rangeSlider.setHighValue(10.0);
+
+		propertyEditor = new TextFieldPropertyEditorFactory();
+		propertySheetRename.setPropertyEditorFactory(propertyEditor);
 		initAlgorithms();
 		initCollectors();
 	}
@@ -213,7 +219,14 @@ public class ClusteringController {
 		propertySheetRename.getItems().setAll(items);
 		buttonRename.setOnAction(e -> {
 			for (int i = 0; i < items.size(); i++) {
-				clusters.get(i).setName(items.get(i).getValue().toString());
+				String name = items.get(i).getValue().toString();
+				clusters.get(i).setName(name);
+				List<String> array = ConfigHelper.getArray("labels");
+				if (!array.contains(name)) {
+					array.add(name);
+					ConfigHelper.setArray("labels", array);
+					propertyEditor.add(name);
+				}
 			}
 			graph.rename(clusters);
 			table.updateTable(clusters);

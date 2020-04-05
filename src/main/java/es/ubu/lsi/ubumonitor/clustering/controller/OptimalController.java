@@ -87,13 +87,22 @@ public class OptimalController {
 		root.put("labels", labels);
 
 		LOGGER.debug("Optimal: {}", root);
-		webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
-			if (newState == Worker.State.SUCCEEDED || newState == Worker.State.RUNNING) {
-				webEngine.executeScript("updateChart(" + root + ")");
-				progressIndicator.setVisible(false);
-				webView.toFront();
-			}
-		});
+
+		if (webEngine.getLoadWorker().getState() == Worker.State.SUCCEEDED) {
+			showChart(root);
+		} else {
+			webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+				if (newState == Worker.State.SUCCEEDED) {
+					showChart(root);
+				}
+			});
+		}
+	}
+
+	private void showChart(JSObject root) {
+		webEngine.executeScript("updateChart(" + root + ")");
+		progressIndicator.setVisible(false);
+		webView.toFront();
 	}
 
 }

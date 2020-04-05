@@ -12,9 +12,10 @@
 <script type="text/javascript">
 	var colorHash = new ColorHash();
 	var ctx = document.getElementById("myChart");
+	var clusterNames = [];
 
 	var myChart = new Chart(ctx, {
-		type : 'line',
+		type : 'bar',
 		data : {
 			labels : [],
 			datasets : []
@@ -25,6 +26,8 @@
 			maintainAspectRatio : false,
 			scales : {
 				xAxes : [ {
+					categoryPercentage : 1.1,
+					barPercentage : 1.0,
 					ticks : {
 						display : false
 					},
@@ -44,15 +47,22 @@
 						labelString : "Silhouette width"
 					}
 				} ]
+
 			},
-			elements : {
-				point : {
-					radius : 0
-				},
-				line : {
-					tension : 0
-				}
-			},
+			legend: {
+                onClick: (e) => e.stopPropagation(),
+                labels: {
+		            generateLabels: function(chart) {
+		                 return clusterNames.map((name, i) => {
+		                	 return {
+		                		 text : name,
+		                		 fillStyle: colorHash.hex(i),
+		                		 index : i
+		                	 }
+		                 })
+		            }
+		        }
+            },
 			tooltips : {
 				enabled : false
 			},
@@ -70,13 +80,14 @@
 		}
 	});
 
-	function updateChart(data) {
+	function updateChart(data, names) {
 		myChart.data = data;
+		clusterNames = names;
 		myChart.update();
 	}
 
 	function rename(index, name) {
-		myChart.data.datasets[index].label = name;
+		clusterNames[index] = name;
 	}
 
 	function update() {

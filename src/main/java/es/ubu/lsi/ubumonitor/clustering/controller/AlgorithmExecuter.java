@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.clustering.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,8 +95,8 @@ public class AlgorithmExecuter {
 	public static Map<UserData, Double> silhouette(List<ClusterWrapper> clusters, Distance distanceType) {
 
 		List<UserData> users = clusters.stream().flatMap(ClusterWrapper::stream).collect(Collectors.toList());
-		Map<UserData, Double> ai = new LinkedHashMap<>(users.size());
-		Map<UserData, Double> bi = new LinkedHashMap<>(users.size());
+		Map<UserData, Double> ai = new HashMap<>(users.size());
+		Map<UserData, Double> bi = new HashMap<>(users.size());
 		DistanceMeasure distance = distanceType.getInstance();
 
 		for (ClusterWrapper cluster : clusters) {

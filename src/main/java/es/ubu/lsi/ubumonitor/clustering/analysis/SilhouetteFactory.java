@@ -19,7 +19,7 @@ public class SilhouetteFactory extends AnalysisFactory {
 	
 	@Override
 	public String toString() {
-		return I18n.get("clustering.silhourtte");
+		return I18n.get("clustering.analyze.silhouette");
 	}
 
 }

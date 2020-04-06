@@ -26,17 +26,13 @@ public class OptimalController {
 	private WebView webView;
 	private WebEngine webEngine;
 
-	private int start;
-	private int end;
-
-	public void init(int start, int end) {
-		this.start = start;
-		this.end = end;
+	@FXML
+	public void initialize() {
 		webEngine = webView.getEngine();
 		webEngine.load(getClass().getResource("/graphics/OptimalChart.html").toExternalForm());
 	}
 
-	public void updateChart(List<Double> points) {
+	public void updateChart(List<Double> points, int start) {
 		JSObject root = new JSObject();
 		JSArray datasets = new JSArray();
 		JSObject data = new JSObject();
@@ -49,7 +45,7 @@ public class OptimalController {
 		root.put("datasets", datasets);
 
 		JSArray labels = new JSArray();
-		labels.addAll(IntStream.rangeClosed(start, end).boxed().collect(Collectors.toList()));
+		labels.addAll(IntStream.rangeClosed(start, start + points.size() - 1).boxed().collect(Collectors.toList()));
 		root.put("labels", labels);
 
 		LOGGER.debug("Optimal: {}", root);

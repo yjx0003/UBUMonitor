@@ -88,7 +88,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <ChoiceBox fx:id="choiceBoxAnalyze" prefWidth="100.0" />
+                  <ChoiceBox fx:id="choiceBoxAnalyze" />
                   <Button mnemonicParsing="false" onAction="#executeOptimal" text="%clustering.analyze" GridPane.columnIndex="1" />
                </children>
             </GridPane>

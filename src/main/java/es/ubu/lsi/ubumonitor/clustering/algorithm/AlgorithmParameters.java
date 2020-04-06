@@ -4,14 +4,14 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.controlsfx.control.PropertySheet;
+import org.controlsfx.control.PropertySheet.Item;
 
 import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
 
 public class AlgorithmParameters {
 
-	private Map<ClusteringParameter, PropertySheet.Item> parameters;
+	private Map<ClusteringParameter, Item> parameters;
 
 	public AlgorithmParameters() {
 		parameters = new LinkedHashMap<>();
@@ -21,18 +21,19 @@ public class AlgorithmParameters {
 		SimplePropertySheetItem c = new SimplePropertySheetItem(parameter.getName(), value, parameter.getDescription());
 		parameters.put(parameter, c);
 	}
-	
+
 	public void setParameter(ClusteringParameter parameter, Object value) {
 		parameters.get(parameter).setValue(value);
 	}
 
-	public Collection<PropertySheet.Item> getPropertyItems() {
+	public Collection<Item> getPropertyItems() {
 		return parameters.values();
 	}
 
 	@SuppressWarnings("unchecked")
 	public <V> V getValue(ClusteringParameter parameter) {
-		return (V) parameters.get(parameter).getValue();
+		Item item = parameters.get(parameter);
+		return item == null ? null : (V) item.getValue();
 	}
 
 	@Override

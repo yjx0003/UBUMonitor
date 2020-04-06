@@ -276,12 +276,14 @@ public class ClusteringController {
 
 	@FXML
 	private void executeOptimal() {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/OptimalClusters.fxml"));
-		UtilMethods.createDialog(loader, Controller.getInstance().getStage());
-		OptimalController controller = loader.getController();
+		Algorithm algorithm = algorithmList.getSelectionModel().getSelectedItem();
+		if (algorithm.getParameters().getValue(ClusteringParameter.NUM_CLUSTER) == null) {
+			UtilMethods.errorWindow(I18n.get("clustering.invalid"));
+			return;
+		}
 		int start = (int) rangeSlider.getLowValue();
 		int end = (int) rangeSlider.getHighValue();
-		Algorithm algorithm = algorithmList.getSelectionModel().getSelectedItem();
+
 		List<EnrolledUser> users = mainController.getListParticipants().getSelectionModel().getSelectedItems();
 		List<DataCollector> collectors = new ArrayList<>();
 		if (checkBoxLogs.isSelected()) {
@@ -294,11 +296,15 @@ public class ClusteringController {
 			collectors.add(activityCollector);
 		}
 		try {
-			controller.init(start, end);
+
 			AnalysisMethod analysisMethod = choiceBoxAnalyze.getSelectionModel().getSelectedItem()
 					.createAnalysis(algorithm, users, collectors);
 			List<Double> points = analysisMethod.analyze(start, end);
-			controller.updateChart(points);
+
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/OptimalClusters.fxml"));
+			UtilMethods.createDialog(loader, Controller.getInstance().getStage());
+			OptimalController controller = loader.getController();
+			controller.updateChart(points, start);
 		} catch (IllegalParamenterException e) {
 			UtilMethods.errorWindow(e.getMessage());
 		} catch (IllegalStateException e) {

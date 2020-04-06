@@ -45,7 +45,6 @@ public class TextFieldPropertyEditorFactory implements Callback<Item, PropertyEd
 		}
 		
 		private void addAutoCompletion(String string) {
-			System.out.println("TextFieldPropertyEditorFactory.Editor.addAutoCompletion()");
 			list.add(string);
 			suggestions.dispose();
 			suggestions = TextFields.bindAutoCompletion(getEditor(), list);

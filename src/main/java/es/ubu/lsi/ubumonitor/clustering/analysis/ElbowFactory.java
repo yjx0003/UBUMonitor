@@ -19,7 +19,7 @@ public class ElbowFactory extends AnalysisFactory {
 	
 	@Override
 	public String toString() {
-		return I18n.get("clustering.elbow");
+		return I18n.get("clustering.analyze.elbow");
 	}
 
 }

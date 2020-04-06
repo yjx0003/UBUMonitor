@@ -25,7 +25,7 @@ import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.clustering.exception.IllegalParamenterException;
-import es.ubu.lsi.ubumonitor.clustering.util.CSVClustering;
+import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
 import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
 import es.ubu.lsi.ubumonitor.clustering.util.TextFieldPropertyEditorFactory;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
@@ -37,6 +37,7 @@ import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -46,6 +47,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
@@ -245,9 +247,13 @@ public class ClusteringController {
 			if (file != null) {
 				boolean exportGrades = checkBoxExportGrades.isSelected();
 				if (exportGrades) {
-					CSVClustering.exportTable(clusters, file.toPath(), tableView);
+					List<TreeItem<GradeItem>> treeItems = mainController.getTvwGradeReport().getSelectionModel()
+							.getSelectedItems();
+					List<GradeItem> grades = treeItems.stream().map(TreeItem<GradeItem>::getValue)
+							.collect(Collectors.toList());
+					ExportUtil.exportClustering(file, clusters, grades.toArray(new GradeItem[0]));
 				} else {
-					CSVClustering.exportTable(clusters, file.toPath());
+					ExportUtil.exportClustering(file, clusters);
 				}
 				UtilMethods.infoWindow(I18n.get("message.export_csv") + file.getAbsolutePath());
 			}

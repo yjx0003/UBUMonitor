@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
-import es.ubu.lsi.ubumonitor.clustering.util.CSVClustering;
+import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import javafx.concurrent.Worker;
@@ -67,7 +67,7 @@ public class ClusteringGraph extends ClusteringChart {
 
 	@Override
 	protected void exportData(File file) throws IOException {
-		CSVClustering.exportPoints(points, file.toPath());
+		ExportUtil.exportPoints(file, points);
 	}
 
 }

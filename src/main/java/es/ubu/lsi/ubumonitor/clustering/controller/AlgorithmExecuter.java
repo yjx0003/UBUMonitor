@@ -123,7 +123,7 @@ public class AlgorithmExecuter {
 			}
 		}
 
-		Map<UserData, Double> sihouette = new LinkedHashMap<>(users.size());
+		Map<UserData, Double> sihouette = new HashMap<>(users.size());
 		for (UserData userData : users) {
 			double a = ai.get(userData);
 			double b = bi.getOrDefault(userData, Double.NaN);

@@ -17,6 +17,10 @@ import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.clustering.algorithm.Algorithm;
 import es.ubu.lsi.ubumonitor.clustering.algorithm.Algorithms;
+import es.ubu.lsi.ubumonitor.clustering.analysis.AnalysisFactory;
+import es.ubu.lsi.ubumonitor.clustering.analysis.ElbowFactory;
+import es.ubu.lsi.ubumonitor.clustering.analysis.SilhouetteFactory;
+import es.ubu.lsi.ubumonitor.clustering.analysis.methods.AnalysisMethod;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.ActivityCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.DataCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.GradesCollector;
@@ -43,6 +47,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -118,6 +123,9 @@ public class ClusteringController {
 	@FXML
 	private RangeSlider rangeSlider;
 
+	@FXML
+	private ChoiceBox<AnalysisFactory> choiceBoxAnalyze;
+
 	private GradesCollector gradesCollector;
 
 	private ActivityCollector activityCollector;
@@ -141,6 +149,9 @@ public class ClusteringController {
 
 		propertyEditor = new TextFieldPropertyEditorFactory();
 		propertySheetRename.setPropertyEditorFactory(propertyEditor);
+
+		choiceBoxAnalyze.getItems().setAll(new ElbowFactory(), new SilhouetteFactory());
+		choiceBoxAnalyze.getSelectionModel().selectFirst();
 		initAlgorithms();
 		initCollectors();
 	}
@@ -282,7 +293,20 @@ public class ClusteringController {
 		if (checkBoxActivity.isSelected()) {
 			collectors.add(activityCollector);
 		}
-		controller.init(start, end, algorithm, users, collectors);
+		try {
+			controller.init(start, end);
+			AnalysisMethod analysisMethod = choiceBoxAnalyze.getSelectionModel().getSelectedItem()
+					.createAnalysis(algorithm, users, collectors);
+			List<Double> points = analysisMethod.analyze(start, end);
+			controller.updateChart(points);
+		} catch (IllegalParamenterException e) {
+			UtilMethods.errorWindow(e.getMessage());
+		} catch (IllegalStateException e) {
+			UtilMethods.errorWindow(I18n.get(e.getMessage()));
+		} catch (Exception e) {
+			UtilMethods.errorWindow("Error", e);
+			LOGGER.error("Error en la ejecucion", e);
+		}
 	}
 
 	/**

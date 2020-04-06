@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
+import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import javafx.concurrent.Worker;
@@ -21,7 +22,7 @@ public class ClusteringGraph extends ClusteringChart {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringGraph.class);
 
 	private Connector connector;
-	List<Map<UserData, double[]>> points;
+	private List<Map<UserData, double[]>> points;
 
 	public ClusteringGraph(ClusteringController clusteringController) {
 		super(clusteringController.getWebViewScatter());
@@ -43,25 +44,41 @@ public class ClusteringGraph extends ClusteringChart {
 		LOGGER.debug("Puntos: {}", points);
 		JSObject root = new JSObject();
 		JSArray datasets = new JSArray();
+		JSObject centers = new JSObject();
+		centers.putWithQuote("label", I18n.get("clustering.centroids"));
+		centers.putWithQuote("backgroundColor", "#FFFF00");
+		JSArray centersData = new JSArray();
 		for (int i = 0; i < points.size(); i++) {
 			JSObject group = new JSObject();
 			group.putWithQuote("label", clusters.get(i).getName());
 			group.put("backgroundColor", "colorHash.hex(" + i + ")");
-			group.put("pointRadius", 6);
-			group.put("pointHoverRadius", 8);
 			JSArray data = new JSArray();
 			for (Map.Entry<UserData, double[]> userEntry : points.get(i).entrySet()) {
+				UserData user = userEntry.getKey();
 				JSObject coord = new JSObject();
-				coord.putWithQuote("user", userEntry.getKey().getEnrolledUser().getFullName());
-				coord.put("x", userEntry.getValue()[0]);
-				coord.put("y", userEntry.getValue()[1]);
-				data.add(coord);
+				if (user == null) {
+					coord.putWithQuote("user", I18n.get("clustering.centroid"));
+					coord.put("x", userEntry.getValue()[0]);
+					coord.put("y", userEntry.getValue()[1]);
+					centersData.add(coord);
+				} else {
+					coord.putWithQuote("user", user.getEnrolledUser().getFullName());
+					coord.put("x", userEntry.getValue()[0]);
+					coord.put("y", userEntry.getValue()[1]);
+					data.add(coord);
+				}
 			}
 			group.put("data", data);
 			datasets.add(group);
 		}
+		
+		if (!centersData.isEmpty()) {
+			centers.put("data", centersData);
+			datasets.add(centers);
+		}
 		root.put("datasets", datasets);
 		LOGGER.debug("Data: {}", root);
+
 		getWebEngine().executeScript("updateChart(" + root + ")");
 	}
 

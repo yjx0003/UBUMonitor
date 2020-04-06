@@ -2,6 +2,7 @@ package es.ubu.lsi.ubumonitor.clustering.data;
 
 import java.util.AbstractList;
 
+import org.apache.commons.math3.ml.clustering.CentroidCluster;
 import org.apache.commons.math3.ml.clustering.Cluster;
 
 public class ClusterWrapper extends AbstractList<UserData> {
@@ -14,6 +15,14 @@ public class ClusterWrapper extends AbstractList<UserData> {
 		this.id = id;
 		this.name = String.valueOf(id);
 		this.cluster = cluster;
+	}
+
+	public double[] getCenter() {
+		if (cluster instanceof CentroidCluster) {
+			CentroidCluster<?> centroidCluster = (CentroidCluster<?>) cluster;
+			return centroidCluster.getCenter().getPoint();
+		}
+		return null;
 	}
 
 	/**

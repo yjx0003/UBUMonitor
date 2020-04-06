@@ -16,9 +16,11 @@ public class Connector {
 	}
 
 	public void selectUser(int clusterIndex, int index) {
-		UserData userData = clusters.get(clusterIndex).get(index);
-		clusteringController.getTableView().getSelectionModel().select(userData);
-		clusteringController.getTableView().scrollTo(userData);
+		if (clusterIndex < clusters.size()) {
+			UserData userData = clusters.get(clusterIndex).get(index);
+			clusteringController.getTableView().getSelectionModel().select(userData);
+			clusteringController.getTableView().scrollTo(userData);
+		}
 	}
 
 	public void setClusters(List<ClusterWrapper> clusters) {

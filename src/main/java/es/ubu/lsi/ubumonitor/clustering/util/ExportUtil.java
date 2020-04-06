@@ -33,7 +33,7 @@ public class ExportUtil {
 			printer.printRecords(data);
 		} catch (IOException e) {
 			LOGGER.error("Error writing csv file: {}.csv", file);
-			throw new IllegalStateException("Error exporting CSV file" + file, e);
+			throw new IllegalStateException("Error exporting CSV file: " + file, e);
 		}
 	}
 

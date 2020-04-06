@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.math3.exception.NumberIsTooSmallException;
 import org.apache.commons.math3.ml.clustering.Cluster;
@@ -74,10 +75,20 @@ public class AlgorithmExecuter {
 	}
 
 	public static List<Map<UserData, double[]>> clustersTo2D(List<ClusterWrapper> clusters) {
-		double[][] matrix = clusters.stream().flatMap(ClusterWrapper::stream).map(UserData::getPoint)
+		List<double[]> centers = new ArrayList<>();
+		for (ClusterWrapper clusterWrapper : clusters) {
+			double[] center = clusterWrapper.getCenter();
+			if (center != null) {
+				centers.add(center);
+			}
+		}
+		double[][] matrix = Stream
+				.concat(clusters.stream().flatMap(ClusterWrapper::stream).map(UserData::getPoint), centers.stream())
 				.toArray(double[][]::new);
+
 		PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
 		List<Map<UserData, double[]>> points = new ArrayList<>();
+
 		if (matrix[0].length > 2) {
 			matrix = pca.pca(matrix, 2);
 		}
@@ -89,6 +100,11 @@ public class AlgorithmExecuter {
 			}
 			points.add(map);
 		}
+
+		for (int j = 0; i < matrix.length; i++, j++) {
+			points.get(j).put(null, matrix[i]);
+		}
+
 		return points;
 	}
 

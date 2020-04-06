@@ -15,13 +15,17 @@
 	var colorHash = new ColorHash();
 	var ctx = document.getElementById("myChart");
 	var count = 0;
-	Chart.defaults.global.onClick = function (event, array) {
-        let element = myChart.getElementsAtEventForMode(event, "point", { intersect: false });
-        let index = count++ % element.length;
-        if (element.length > 0) {
-        	javaConnector.selectUser(element[index]._datasetIndex, element[index]._index);
-        }
-    }
+	Chart.defaults.global.onClick = function(event, array) {
+		let element = myChart.getElementsAtEventForMode(event, "point", {
+			intersect : false
+		});
+		let index = count++ % element.length;
+		if (element.length > 0) {
+			javaConnector.selectUser(element[index]._datasetIndex,
+					element[index]._index);
+		}
+	}
+
 	var myChart = new Chart(
 			ctx,
 			{
@@ -31,7 +35,7 @@
 					datasets : []
 				},
 				options : {
-					animation: false,
+					animation : false,
 					responsive : true,
 					maintainAspectRatio : false,
 					tooltips : {
@@ -42,6 +46,12 @@
 										+ tooltipItem.xLabel.toFixed(2) + ', '
 										+ tooltipItem.yLabel.toFixed(2) + ')';
 							}
+						}
+					},
+					elements : {
+						point : {
+							radius : 6,
+							hoverRadius : 8
 						}
 					},
 					layout : {
@@ -59,7 +69,7 @@
 		myChart.data = data;
 		myChart.update();
 	}
-	
+
 	function rename(index, name) {
 		myChart.data.datasets[index].label = name;
 	}
@@ -67,7 +77,7 @@
 	function update() {
 		myChart.update();
 	}
-	
+
 	function exportGraphic() {
 		return myChart.toBase64Image();
 	}

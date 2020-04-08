@@ -33,18 +33,16 @@ public abstract class ClusteringChart {
 	private static final ExtensionFilter EXTENSION_PNG = new ExtensionFilter("PNG (*.png)", "*.png");
 
 	private Controller controller;
-	private WebView webView;
 	private WebEngine webEngine;
 
 	protected ClusteringChart(WebView webView) {
-		this.webView = webView;
 		webEngine = webView.getEngine();
 		controller = Controller.getInstance();
 		webView.setContextMenuEnabled(false);
-		initContextMenu();
+		initContextMenu(webView);
 	}
 
-	private void initContextMenu() {
+	private void initContextMenu(WebView webView) {
 		ContextMenu contextMenu = new ContextMenu();
 		contextMenu.setAutoHide(true);
 
@@ -52,6 +50,7 @@ public abstract class ClusteringChart {
 		exportCSV.setOnAction(e -> exportCSV());
 		MenuItem exportPNG = new MenuItem(I18n.get("text.exportpng"));
 		exportPNG.setOnAction(e -> exportPNG());
+		
 		contextMenu.getItems().setAll(exportCSV, exportPNG);
 		webView.setOnMouseClicked(e -> {
 			if (e.getButton() == MouseButton.SECONDARY) {

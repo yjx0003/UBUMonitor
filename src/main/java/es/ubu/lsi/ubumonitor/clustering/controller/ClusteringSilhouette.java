@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.ubu.lsi.ubumonitor.clustering.analysis.methods.SilhouetteMethod;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.Distance;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
@@ -29,7 +30,7 @@ public class ClusteringSilhouette extends ClusteringChart {
 	}
 
 	public void updateChart(List<ClusterWrapper> clusters, Distance distanceType) {
-		silhouette = AlgorithmExecuter.silhouette(clusters, distanceType);
+		silhouette = SilhouetteMethod.silhouette(clusters, distanceType);
 		JSObject root = new JSObject();
 		JSArray datasets = new JSArray();
 		JSArray data = new JSArray();

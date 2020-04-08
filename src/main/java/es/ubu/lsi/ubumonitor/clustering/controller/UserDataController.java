@@ -60,7 +60,7 @@ public class UserDataController {
 				e -> new SimpleObjectProperty<>(new ImageView(AppInfo.IMG_DIR + e.getValue().getIconFile() + ".png")));
 	}
 	
-	private void load(int index) {
+	private void change(int index) {
 		UserData user = table.getItems().get(index);
 		table.getSelectionModel().clearAndSelect(index);
 		table.scrollTo(index);
@@ -71,14 +71,14 @@ public class UserDataController {
 	private void loadNext() {
 		int actual = table.getSelectionModel().getSelectedIndex();
 		int next = (actual + 1) % table.getItems().size();
-		load(next);
+		change(next);
 	}
 
 	@FXML
 	private void loadPrevious() {
 		int actual = table.getSelectionModel().getSelectedIndex();
 		int next = actual == 0 ? table.getItems().size() - 1 : actual - 1;
-		load(next);
+		change(next);
 	}
 
 }

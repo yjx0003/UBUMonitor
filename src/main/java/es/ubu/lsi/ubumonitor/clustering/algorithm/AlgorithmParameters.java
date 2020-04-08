@@ -18,22 +18,22 @@ public class AlgorithmParameters {
 	}
 
 	public void addParameter(ClusteringParameter parameter, Object value) {
-		SimplePropertySheetItem c = new SimplePropertySheetItem(parameter.getName(), value, parameter.getDescription());
-		parameters.put(parameter, c);
+		Item item = new SimplePropertySheetItem(parameter.getName(), value, parameter.getDescription());
+		parameters.put(parameter, item);
 	}
 
 	public void setParameter(ClusteringParameter parameter, Object value) {
 		parameters.get(parameter).setValue(value);
 	}
 
-	public Collection<Item> getPropertyItems() {
-		return parameters.values();
-	}
-
 	@SuppressWarnings("unchecked")
 	public <V> V getValue(ClusteringParameter parameter) {
 		Item item = parameters.get(parameter);
 		return item == null ? null : (V) item.getValue();
+	}
+	
+	public Collection<Item> getPropertyItems() {
+		return parameters.values();
 	}
 
 	@Override

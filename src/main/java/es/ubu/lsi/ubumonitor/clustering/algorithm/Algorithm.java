@@ -11,8 +11,8 @@ public abstract class Algorithm {
 	private AlgorithmParameters parameters;
 
 	protected Algorithm(String name) {
-		this.name = name;
 		parameters = new AlgorithmParameters();
+		setName(name);
 	}
 
 	public void setName(String name) {

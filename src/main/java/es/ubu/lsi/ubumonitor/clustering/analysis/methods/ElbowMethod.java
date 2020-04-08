@@ -5,15 +5,13 @@ import java.util.List;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
 
 import es.ubu.lsi.ubumonitor.clustering.algorithm.Algorithm;
-import es.ubu.lsi.ubumonitor.clustering.controller.collector.DataCollector;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
-import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 
 public class ElbowMethod extends AnalysisMethod {
 
-	public ElbowMethod(Algorithm algorithm, List<EnrolledUser> users, List<DataCollector> collectors) {
-		super(algorithm, users, collectors);
+	public ElbowMethod(Algorithm algorithm) {
+		super(algorithm);
 	}
 
 	@Override

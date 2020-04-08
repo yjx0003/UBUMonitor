@@ -10,7 +10,7 @@ import es.ubu.lsi.ubumonitor.clustering.exception.IllegalParamenterException;
 
 public class KMeansPlusPlus extends Algorithm {
 
-	public static final String NAME = "KMeansPlusPlus";
+	private static final String NAME = "KMeansPlusPlus";
 
 	public KMeansPlusPlus() {
 		super(NAME);

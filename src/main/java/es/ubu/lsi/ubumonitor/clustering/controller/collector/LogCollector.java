@@ -13,9 +13,9 @@ import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSet;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.controllers.ubulogs.TypeTimes;
-import javafx.scene.control.ListView;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import javafx.scene.control.ListView;
 
 public class LogCollector<T> extends DataCollector {
 
@@ -47,9 +47,9 @@ public class LogCollector<T> extends DataCollector {
 			for (UserData userData : users) {
 				int value = result.get(userData.getEnrolledUser()).get(logType).get(0);
 				userData.addDatum(new Datum(getType(), dataSet.translate(logType), iconFunction.apply(logType), value));
+				
 				double normalized = (value - min) / (max - min);
 				userData.addNormalizedDatum(normalized);
-
 			}
 		}
 	}

@@ -56,22 +56,25 @@ public class ClusteringGraph extends ClusteringChart {
 			for (Map.Entry<UserData, double[]> userEntry : points.get(i).entrySet()) {
 				UserData user = userEntry.getKey();
 				JSObject coord = new JSObject();
+				coord.put("x", userEntry.getValue()[0]);
+				if (userEntry.getValue().length == 2) {
+					coord.put("y", userEntry.getValue()[1]);
+				} else {
+					coord.put("y", 0.0);
+				}
+
 				if (user == null) {
 					coord.putWithQuote("user", I18n.get("clustering.centroid"));
-					coord.put("x", userEntry.getValue()[0]);
-					coord.put("y", userEntry.getValue()[1]);
 					centersData.add(coord);
 				} else {
 					coord.putWithQuote("user", user.getEnrolledUser().getFullName());
-					coord.put("x", userEntry.getValue()[0]);
-					coord.put("y", userEntry.getValue()[1]);
 					data.add(coord);
 				}
 			}
 			group.put("data", data);
 			datasets.add(group);
 		}
-		
+
 		if (!centersData.isEmpty()) {
 			centers.put("data", centersData);
 			datasets.add(centers);

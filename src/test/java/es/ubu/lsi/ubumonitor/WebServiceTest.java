@@ -14,12 +14,10 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import es.ubu.lsi.ubumonitor.controllers.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
-import es.ubu.lsi.ubumonitor.controllers.ubugrades.CreatorGradeItems;
-import es.ubu.lsi.ubumonitor.controllers.ubugrades.CreatorUBUGradesController;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.DownloadLogController;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.LogCreator;
+import es.ubu.lsi.ubumonitor.controllers.load.CreatorGradeItems;
+import es.ubu.lsi.ubumonitor.controllers.load.CreatorUBUGradesController;
+import es.ubu.lsi.ubumonitor.controllers.load.DownloadLogController;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.DataBase;
@@ -27,6 +25,7 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Logs;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
+import es.ubu.lsi.ubumonitor.model.log.LogCreator;
 import okhttp3.Response;
 
 @TestMethodOrder(OrderAnnotation.class)

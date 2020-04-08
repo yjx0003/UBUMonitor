@@ -19,10 +19,12 @@ import javax.crypto.IllegalBlockSizeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.DataBase;
 import es.ubu.lsi.ubumonitor.persistence.Serialization;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;

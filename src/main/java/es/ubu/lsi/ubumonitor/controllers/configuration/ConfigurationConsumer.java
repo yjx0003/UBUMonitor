@@ -10,12 +10,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.TypeTimes;
 import es.ubu.lsi.ubumonitor.model.Group;
 import es.ubu.lsi.ubumonitor.model.LastActivity;
 import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
 import es.ubu.lsi.ubumonitor.model.Role;
 import es.ubu.lsi.ubumonitor.model.SubDataBase;
+import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import javafx.collections.FXCollections;
 import javafx.scene.paint.Color;
 

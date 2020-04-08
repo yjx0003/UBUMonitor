@@ -7,6 +7,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.model.Group;
+import es.ubu.lsi.ubumonitor.util.ManageDuplicate;
 
 public class FillSheetGroup extends FillSheetData {
 
@@ -20,10 +21,11 @@ public class FillSheetGroup extends FillSheetData {
 				.getActualCourse()
 				.getGroups();
 		int rowIndex = 1;
+		ManageDuplicate manageDuplicate = new ManageDuplicate();
 		for (Group group : groups) {
 			int columnIndex = -1;
 			setCellValue(sheet, rowIndex, ++columnIndex, group.getGroupId());
-			setCellValue(sheet, rowIndex, ++columnIndex, group.getGroupName());
+			setCellValue(sheet, rowIndex, ++columnIndex, manageDuplicate.getValue(group.getGroupName()));
 			setCellValue(sheet, rowIndex, ++columnIndex, group.getDescription());
 			++rowIndex;
 		}

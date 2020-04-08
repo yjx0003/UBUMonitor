@@ -202,7 +202,7 @@
 						<manifest>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-							<mainClass>es.ubu.lsi.ubumonitor.controllers.UBUMonitor</mainClass>
+							<mainClass>es.ubu.lsi.ubumonitor.UBUMonitor</mainClass>
 						</manifest>
 					</archive>
 

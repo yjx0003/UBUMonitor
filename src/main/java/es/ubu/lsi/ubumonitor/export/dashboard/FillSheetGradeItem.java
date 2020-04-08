@@ -8,6 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.util.ManageDuplicate;
 
 public class FillSheetGradeItem extends FillSheetData {
 
@@ -21,10 +22,11 @@ public class FillSheetGradeItem extends FillSheetData {
 				.getActualCourse()
 				.getGradeItems();
 		int rowIndex = 1;
+		ManageDuplicate manageDuplicate = new ManageDuplicate();
 		for (GradeItem gradeItem : gradeItems) {
 			int columnIndex = -1;
 			setCellValue(sheet, rowIndex, ++columnIndex, gradeItem.getId());
-			setCellValue(sheet, rowIndex, ++columnIndex, gradeItem.getItemname());
+			setCellValue(sheet, rowIndex, ++columnIndex, manageDuplicate.getValue(gradeItem.getItemname()));
 			setCellValue(sheet, rowIndex, ++columnIndex, gradeItem.getLevel());
 			CourseModule cm = gradeItem.getModule();
 			if (cm != null) {

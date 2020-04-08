@@ -25,11 +25,17 @@ public class FillSheetEnrolledUserGradeItem extends FillSheetData {
 			for (EnrolledUser user : Controller.getInstance()
 					.getActualCourse()
 					.getEnrolledUsers()) {
-				int columnIndex = -1;
-				setCellValue(sheet, rowIndex, ++columnIndex, user.getId());
-				setCellValue(sheet, rowIndex, ++columnIndex, gradeItem.getId());
-				setCellValue(sheet, rowIndex, ++columnIndex, gradeItem.getEnrolledUserPercentage(user));
-				++rowIndex;
+				
+				
+				if(!Double.isNaN(gradeItem.getEnrolledUserPercentage(user))) {
+					int columnIndex = -1;
+					setCellValue(sheet, rowIndex, ++columnIndex, user.getId());
+					setCellValue(sheet, rowIndex, ++columnIndex, gradeItem.getId());
+					setCellValue(sheet, rowIndex, ++columnIndex, gradeItem.getEnrolledUserPercentage(user)/10);
+					++rowIndex;
+				}
+			
+				
 			}
 
 		}

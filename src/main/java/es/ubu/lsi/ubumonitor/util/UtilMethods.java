@@ -17,9 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import es.ubu.lsi.ubumonitor.controllers.AppInfo;
-import es.ubu.lsi.ubumonitor.controllers.I18n;
-import es.ubu.lsi.ubumonitor.controllers.Style;
+import es.ubu.lsi.ubumonitor.AppInfo;
+import es.ubu.lsi.ubumonitor.Style;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

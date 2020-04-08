@@ -18,6 +18,7 @@ import es.ubu.lsi.ubumonitor.model.Group;
 import es.ubu.lsi.ubumonitor.model.LastActivity;
 import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
 import es.ubu.lsi.ubumonitor.model.Role;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;

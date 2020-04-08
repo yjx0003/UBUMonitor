@@ -16,7 +16,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public abstract class FillSheetData {
 
-	private String sheetName;
+	protected String sheetName;
 	public FillSheetData(String sheetName) {
 		this.sheetName = sheetName;
 	}

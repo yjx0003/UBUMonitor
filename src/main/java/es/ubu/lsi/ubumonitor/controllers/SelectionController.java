@@ -13,6 +13,7 @@ import org.controlsfx.control.CheckComboBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.model.Component;
 import es.ubu.lsi.ubumonitor.model.ComponentEvent;
@@ -20,6 +21,7 @@ import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.ModuleType;
 import es.ubu.lsi.ubumonitor.model.Section;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;

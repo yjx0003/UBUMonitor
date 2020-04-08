@@ -13,8 +13,10 @@ public enum Origin {
 	ORIGIN_NOT_DEFINED("Origin not defined"),
 	
 	CLI("cli"),
+	RESTORE("restore"),
 	WEB("web"),
 	WS("ws");
+	
 	
 	private String name;
 	private static Map<String, Origin> originByString = new HashMap<>();

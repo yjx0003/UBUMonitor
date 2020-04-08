@@ -19,13 +19,17 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.controllers.load.Connection;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.DataBase;
 import es.ubu.lsi.ubumonitor.model.LogStats;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
 import es.ubu.lsi.ubumonitor.model.Stats;
+import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.util.Languages;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.webservice.WebService;
 import javafx.stage.Stage;

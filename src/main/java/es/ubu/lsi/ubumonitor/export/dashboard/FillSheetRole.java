@@ -7,6 +7,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.model.Role;
+import es.ubu.lsi.ubumonitor.util.ManageDuplicate;
 
 public class FillSheetRole extends FillSheetData {
 
@@ -22,10 +23,11 @@ public class FillSheetRole extends FillSheetData {
 				.getActualCourse()
 				.getRoles();
 		int rowIndex = 1;
+		ManageDuplicate manageDuplicate = new ManageDuplicate();
 		for (Role role : roles) {
 			int columnIndex = -1;
 			setCellValue(sheet, rowIndex, ++columnIndex, role.getRoleId());
-			setCellValue(sheet, rowIndex, ++columnIndex, role.getRoleName());
+			setCellValue(sheet, rowIndex, ++columnIndex, manageDuplicate.getValue(role.getRoleName()));
 			setCellValue(sheet, rowIndex, ++columnIndex, role.getRoleShortName());
 			++rowIndex;
 		}

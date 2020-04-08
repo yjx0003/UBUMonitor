@@ -6,7 +6,7 @@ import java.util.Set;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import es.ubu.lsi.ubumonitor.controllers.Connection;
+import es.ubu.lsi.ubumonitor.controllers.load.Connection;
 import es.ubu.lsi.ubumonitor.webservice.core.CoreUserGetUsersByField.Field;
 import okhttp3.FormBody;
 import okhttp3.Request;

@@ -17,14 +17,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
-import es.ubu.lsi.ubumonitor.controllers.I18n;
-import es.ubu.lsi.ubumonitor.controllers.charts.ChartType;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.TypeTimes;
 import es.ubu.lsi.ubumonitor.model.Group;
 import es.ubu.lsi.ubumonitor.model.LastActivity;
 import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
 import es.ubu.lsi.ubumonitor.model.Role;
+import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.util.Charsets;
+import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

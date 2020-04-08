@@ -3,6 +3,7 @@ package es.ubu.lsi.ubumonitor.controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.application.Platform;
 import javafx.fxml.FXML;

@@ -8,6 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.util.ManageDuplicate;
 
 public class FillSheetEnrolledUser extends FillSheetData {
 	private static final String SHEET_NAME = "Enrolled User";
@@ -22,6 +23,7 @@ public class FillSheetEnrolledUser extends FillSheetData {
 		Set<EnrolledUser> enrolledUsers = Controller.getInstance()
 				.getActualCourse()
 				.getEnrolledUsers();
+		ManageDuplicate manageDuplicate = new ManageDuplicate();
 
 		int rowIndex = 1;
 		for (EnrolledUser enrolledUser : enrolledUsers) {
@@ -29,7 +31,7 @@ public class FillSheetEnrolledUser extends FillSheetData {
 			setCellValue(sheet, rowIndex, ++columnIndex, enrolledUser.getId());
 			setCellValue(sheet, rowIndex, ++columnIndex, enrolledUser.getLastname());
 			setCellValue(sheet, rowIndex, ++columnIndex, enrolledUser.getFirstname());
-			setCellValue(sheet, rowIndex, ++columnIndex, enrolledUser.getFullName());
+			setCellValue(sheet, rowIndex, ++columnIndex, manageDuplicate.getValue(enrolledUser.getFullName()));
 			setCellValue(sheet, rowIndex, ++columnIndex, enrolledUser.getEmail());
 			setCellValue(sheet, rowIndex, ++columnIndex, enrolledUser.getLastaccess()
 					.atZone(ZoneId.systemDefault())

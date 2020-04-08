@@ -8,6 +8,8 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.ubu.lsi.ubumonitor.AppInfo;
+import es.ubu.lsi.ubumonitor.Style;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigurationController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
@@ -18,6 +20,7 @@ import es.ubu.lsi.ubumonitor.export.photos.UserPhoto;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.FileUtil;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -56,7 +59,7 @@ public class MenuController {
 	private void initMenuBar() {
 
 		ToggleGroup group = new ToggleGroup();
-		for (Entry<String, String> entry : Style.STYLES.entrySet()) {
+		for (Entry<String, String> entry : Style.getStyles().entrySet()) {
 			String key = entry.getKey();
 			String path = entry.getValue();
 			RadioMenuItem menuItem = new RadioMenuItem();

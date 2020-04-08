@@ -9,13 +9,15 @@ import java.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.ubumonitor.controllers.charts.Tabs;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.TypeTimes;
 import es.ubu.lsi.ubumonitor.model.LogStats;
+import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
+import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.view.chart.JavaConnector;
+import es.ubu.lsi.ubumonitor.view.chart.Tabs;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;

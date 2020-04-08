@@ -5,9 +5,9 @@ import java.util.List;
 import es.ubu.lsi.ubumonitor.clustering.data.Datum;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import es.ubu.lsi.ubumonitor.model.GradeItem;
 
 public class GradesCollector extends DataCollector {
 
@@ -27,12 +27,9 @@ public class GradesCollector extends DataCollector {
 				double value = gradeItem.getEnrolledUserPercentage(userData.getEnrolledUser());
 				String iconFile = gradeItem.getItemModule() == null ? null : gradeItem.getItemModule().getModName();
 				userData.addDatum(new Datum(getType(), gradeItem.getItemname(), iconFile, value));
-				if (Double.isNaN(value)) {
-					value = 0.0;
-				} else {
-					value /= 100.0;
-				}
-				userData.addNormalizedDatum(value);
+				
+				double nomalized = Double.isNaN(value) ? 0.0 : value / 100.0;
+				userData.addNormalizedDatum(nomalized);
 			}
 		}
 	}

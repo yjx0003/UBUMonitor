@@ -297,9 +297,8 @@ public class ClusteringController {
 		}
 		try {
 
-			AnalysisMethod analysisMethod = choiceBoxAnalyze.getSelectionModel().getSelectedItem()
-					.createAnalysis(algorithm, users, collectors);
-			List<Double> points = analysisMethod.analyze(start, end);
+			AnalysisMethod analysisMethod = choiceBoxAnalyze.getValue().createAnalysis(algorithm);
+			List<Double> points = analysisMethod.analyze(start, end, users, collectors);
 
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/OptimalClusters.fxml"));
 			UtilMethods.createDialog(loader, Controller.getInstance().getStage());

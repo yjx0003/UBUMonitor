@@ -10,7 +10,7 @@ import es.ubu.lsi.ubumonitor.clustering.exception.IllegalParamenterException;
 
 public class DBSCAN extends Algorithm {
 
-	public static final String NAME = "DBSCAN";
+	private static final String NAME = "DBSCAN";
 
 	public DBSCAN() {
 		super(NAME);

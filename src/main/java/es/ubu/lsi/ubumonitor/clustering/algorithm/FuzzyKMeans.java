@@ -10,7 +10,7 @@ import es.ubu.lsi.ubumonitor.clustering.exception.IllegalParamenterException;
 
 public class FuzzyKMeans extends Algorithm {
 
-	public static final String NAME = "FuzzyKMeans";
+	private static final String NAME = "FuzzyKMeans";
 
 	public FuzzyKMeans() {
 		super(NAME);

@@ -1,7 +1,6 @@
 package es.ubu.lsi.ubumonitor.clustering.algorithm;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class Algorithms {
@@ -15,7 +14,7 @@ public class Algorithms {
 		algorithmList.add(new MultiKMeansPlusPlus());
 	}
 
-	public static Collection<Algorithm> getAlgorithms() {
+	public static List<Algorithm> getAlgorithms() {
 		return algorithmList;
 	}
 

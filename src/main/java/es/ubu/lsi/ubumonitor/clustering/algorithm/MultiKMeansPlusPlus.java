@@ -10,7 +10,7 @@ import es.ubu.lsi.ubumonitor.clustering.exception.IllegalParamenterException;
 
 public class MultiKMeansPlusPlus extends KMeansPlusPlus {
 
-	public static final String NAME = "MultiKMeansPlusPlus";
+	private static final String NAME = "MultiKMeansPlusPlus";
 
 	public MultiKMeansPlusPlus() {
 		super();

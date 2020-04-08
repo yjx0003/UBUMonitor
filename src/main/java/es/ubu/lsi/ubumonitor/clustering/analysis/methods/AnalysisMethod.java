@@ -14,21 +14,17 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 public abstract class AnalysisMethod {
 
 	private Algorithm algorithm;
-	private List<EnrolledUser> enrolledUsers;
-	private List<DataCollector> collectors;
 
-	protected AnalysisMethod(Algorithm algorithm, List<EnrolledUser> users, List<DataCollector> collectors) {
+	protected AnalysisMethod(Algorithm algorithm) {
 		this.algorithm = algorithm;
-		this.enrolledUsers = users;
-		this.collectors = collectors;
 	}
 
-	public List<Double> analyze(int start, int end) {
+	public List<Double> analyze(int start, int end, List<EnrolledUser> users, List<DataCollector> collectors) {
 		List<Double> result = new ArrayList<>();
 		int initial = algorithm.getParameters().getValue(ClusteringParameter.NUM_CLUSTER);
 		for (int i = start; i <= end; i++) {
 			algorithm.getParameters().setParameter(ClusteringParameter.NUM_CLUSTER, i);
-			AlgorithmExecuter executer = new AlgorithmExecuter(algorithm.getClusterer(), enrolledUsers, collectors);
+			AlgorithmExecuter executer = new AlgorithmExecuter(algorithm.getClusterer(), users, collectors);
 			List<ClusterWrapper> clusters = executer.execute(0);
 			double value = calculate(clusters);
 			result.add(value);

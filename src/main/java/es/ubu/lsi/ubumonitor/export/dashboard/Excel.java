@@ -19,7 +19,8 @@ public class Excel {
 		
 			
 			
-			new FillShetHomepage().fillData(workbook, cellStyle);
+			new FillSheetHomepage().fillData(workbook, cellStyle);
+			new FillSheetSession().fillData(workbook, cellStyle);
 			new FillSheetGeneralData().fillData(workbook, cellStyle);
 			new FillSheetEnrolledUser().fillData(workbook, cellStyle);
 			new FillSheetEnrolledUserCourse().fillData(workbook, cellStyle);

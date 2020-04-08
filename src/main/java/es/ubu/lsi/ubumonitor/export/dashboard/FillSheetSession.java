@@ -16,9 +16,9 @@ import es.ubu.lsi.ubumonitor.model.LogLine;
 import es.ubu.lsi.ubumonitor.model.Session;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 
-public class FillSheetSessiom extends FillSheetData {
+public class FillSheetSession extends FillSheetData {
 
-	public FillSheetSessiom() {
+	public FillSheetSession() {
 		super("Session");
 	}
 

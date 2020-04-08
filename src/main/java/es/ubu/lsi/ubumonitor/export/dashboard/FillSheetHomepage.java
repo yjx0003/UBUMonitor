@@ -9,9 +9,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 
-public class FillShetHomepage extends FillSheetData {
+public class FillSheetHomepage extends FillSheetData {
 
-	public FillShetHomepage() {
+	public FillSheetHomepage() {
 		super("Homepage");
 	}
 

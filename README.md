@@ -1,6 +1,5 @@
 # UBUMonitor
 [![GitHub release](https://img.shields.io/github/release/yjx0003/UBUMonitor.svg)](https://github.com/yjx0003/UBUMonitor/releases/)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=UBUMonitor&metric=alert_status)](https://sonarcloud.io/dashboard?id=UBUMonitor)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f79d51e496b3495690aa6480269536b8)](https://www.codacy.com/app/yjx0003/UBUMonitor?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yjx0003/UBUMonitor&amp;utm_campaign=Badge_Grade)
 [![HitCount](http://hits.dwyl.io/yjx0003/UBUMonitor.svg)](http://hits.dwyl.io/yjx0003/UBUMonitor)
 <p align="center"><img height="300" src="src/main/resources/img/logo.png" />
@@ -36,6 +35,10 @@ Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), d
   * Versión: **1.2.17**
   * [Github](https://github.com/apache/log4j)
   * [Maven Repository](https://mvnrepository.com/artifact/log4j/log4j)
+* [Apache POI](https://poi.apache.org/)
+  * Versión: **4.1.1**
+  * [Github](https://github.com/apache/poi)
+  * [Maven Repository](https://mvnrepository.com/artifact/org.apache.poi/poi)  
 * [Gson](https://sites.google.com/site/gson/)
   * Version: **2.8.5**
   * [Github](https://github.com/google/gson)
@@ -48,6 +51,10 @@ Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), d
   * Versión: **1.11.3**
   * [Github](https://github.com/jhy/jsoup)
   * [Maven Repository](https://mvnrepository.com/artifact/org.jsoup/jsoup/1.11.3)
+* [OkHttp](https://square.github.io/okhttp/)
+  * Versión: **4.4.1**
+  * [Github](https://github.com/square/okhttp/)
+  * [Maven Repository](https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp)
 * [OpenCSV](http://opencsv.sourceforge.net/)
   * Versión: **4.6**
   * [GitHub](https://github.com/jlawrie/opencsv)

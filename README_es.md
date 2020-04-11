@@ -1,4 +1,4 @@
-<a href="README_en.md">
+<a href="README.md">
 <img align="right" src="src/main/resources/img/countries_flags/GB.png">
 </a>
 

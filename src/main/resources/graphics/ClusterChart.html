@@ -25,6 +25,9 @@
 					element[index]._index);
 		}
 	}
+	
+	var flagX = false;
+	var flagY = false;
 
 	var myChart = new Chart(
 			ctx,
@@ -54,6 +57,22 @@
 							hoverRadius : 8
 						}
 					},
+					scales : {
+						xAxes : [ {
+							ticks : {
+								callback : function(value, index, values) {
+									return value;
+								}
+							}
+						} ],
+						yAxes : [ {
+							ticks : {
+								callback : function(value, index, values) {
+									return value;
+								}
+							}
+						} ]
+					},
 					layout : {
 						padding : {
 							left : 50,
@@ -64,10 +83,47 @@
 					}
 				}
 			});
+	
+	
+	
+	function resetTicks() {
+		delete myChart.options.scales.xAxes[0].ticks.suggestedMin;
+		delete myChart.options.scales.xAxes[0].ticks.suggestedMax;
+		delete myChart.options.scales.yAxes[0].ticks.suggestedMin;
+		delete myChart.options.scales.yAxes[0].ticks.suggestedMax;
+		
+		myChart.options.scales.xAxes[0].ticks.callback = function(value, index, values) {
+			return value;
+		}
+		myChart.options.scales.yAxes[0].ticks.callback = function(value, index, values) {
+			return value;
+		}
+		myChart.update();
+		myChart.options.scales.xAxes[0].ticks.callback = function(value, index, values) {
+		    if (flagX) {
+		        myChart.options.scales.xAxes[0].ticks.suggestedMin = values[0];
+				myChart.options.scales.xAxes[0].ticks.suggestedMax = values[values.length - 1];
+		        flagX = false;
+		    }
+		    return value;
+		}
+
+		myChart.options.scales.yAxes[0].ticks.callback = function(value, index, values) {
+		    if (flagY) {
+		        myChart.options.scales.yAxes[0].ticks.suggestedMin = values[values.length - 1];
+				myChart.options.scales.yAxes[0].ticks.suggestedMax = values[0];
+		        flagY = false;
+		    }
+		    return value;
+		}
+		flagX = true;
+		flagY = true;
+		myChart.update();
+	}
 
 	function updateChart(data) {
 		myChart.data = data;
-		myChart.update();
+		resetTicks();
 	}
 
 	function rename(index, name) {

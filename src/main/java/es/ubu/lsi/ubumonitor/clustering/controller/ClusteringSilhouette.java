@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.clustering.controller;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -18,6 +19,7 @@ import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
 public class ClusteringSilhouette extends ClusteringChart {
 
@@ -31,6 +33,7 @@ public class ClusteringSilhouette extends ClusteringChart {
 
 	public void updateChart(List<ClusterWrapper> clusters, Distance distanceType) {
 		silhouette = SilhouetteMethod.silhouette(clusters, distanceType);
+		Map<ClusterWrapper, Color> colors = UtilMethods.getRandomColors(clusters);
 		JSObject root = new JSObject();
 		JSArray datasets = new JSArray();
 		JSArray data = new JSArray();
@@ -43,7 +46,7 @@ public class ClusteringSilhouette extends ClusteringChart {
 				data.add(silhouette.get(userData));
 			}
 			i += cluster.size() + 1;
-			backgroundColor.addAll(Collections.nCopies(cluster.size(), "colorHash.hex(" + cluster.getId() + ")"));
+			backgroundColor.addAll(Collections.nCopies(cluster.size(), UtilMethods.colorToRGB(colors.get(cluster))));
 			data.add("null");
 			backgroundColor.add("null");
 		}
@@ -60,7 +63,10 @@ public class ClusteringSilhouette extends ClusteringChart {
 		clustersName.addAllWithQuote(clusters.stream().map(ClusterWrapper::getName).collect(Collectors.toList()));
 
 		LOGGER.debug("Silhouette: {}", root);
-		getWebEngine().executeScript("updateChart(" + root + "," + clustersName + ")");
+		JSArray jsColors = new JSArray();
+		jsColors.addAll(colors.values().stream().map(UtilMethods::colorToRGB).collect(Collectors.toList()));
+		LOGGER.debug("Colors: {}", jsColors);
+		getWebEngine().executeScript("updateChart(" + root + "," + clustersName + "," + jsColors + ")");
 
 	}
 

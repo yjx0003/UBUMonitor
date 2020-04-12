@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.util;
 
+import java.awt.Color;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -10,7 +11,9 @@ import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import es.ubu.lsi.ubumonitor.controllers.AppInfo;
@@ -37,6 +40,31 @@ public class UtilMethods {
 	}
 
 	/**
+	 * Selecciona colores pseudo-aleatorios a partir del HSV
+	 * 
+	 * @param <E>
+	 */
+	public static <E> Map<E, Color> getRandomColors(List<E> typeLogs) {
+		Map<E, Color> colors = new HashMap<>();
+
+		for (int i = 0; i < typeLogs.size(); i++) {
+
+			// generamos un color a partir de HSB, el hue(H) es el color, saturacion (S), y
+			// brillo(B)
+			Color c = new Color(Color.HSBtoRGB(i / (float) typeLogs.size(), 0.8f, 1.0f));
+			colors.put(typeLogs.get(i), c);
+		}
+		return colors;
+
+	}
+
+	public static String colorToRGB(Color color) {
+
+		return String.format("'rgba(%s,%s,%s,%s)'", color.getRed(), color.getGreen(), color.getBlue(),
+				color.getAlpha());
+	}
+
+	/**
 	 * Escapa las comillas simples de un texto añadiendo un \
 	 * 
 	 * @param input texto
@@ -44,8 +72,7 @@ public class UtilMethods {
 	 */
 	public static String escapeJavaScriptText(String input) {
 
-		return input.replace("'", "\\\'")
-				.replaceAll("\\R", "");
+		return input.replace("'", "\\\'").replaceAll("\\R", "");
 
 	}
 
@@ -56,9 +83,7 @@ public class UtilMethods {
 	 * @return
 	 */
 	public static <E> String join(List<E> datasets) {
-		return datasets.stream()
-				.map(E::toString)
-				.collect(Collectors.joining(","));
+		return datasets.stream().map(E::toString).collect(Collectors.joining(","));
 	}
 
 	/**
@@ -70,9 +95,7 @@ public class UtilMethods {
 	 */
 	public static <T> String joinWithQuotes(List<T> list) {
 		// https://stackoverflow.com/a/18229122
-		return list.stream()
-				.map(s -> "'" + escapeJavaScriptText(s.toString()) + "'")
-				.collect(Collectors.joining(","));
+		return list.stream().map(s -> "'" + escapeJavaScriptText(s.toString()) + "'").collect(Collectors.joining(","));
 	}
 
 	/**
@@ -137,8 +160,7 @@ public class UtilMethods {
 		expContent.add(textArea, 0, 1);
 
 		// Set expandable Exception into the dialog pane.
-		alert.getDialogPane()
-				.setExpandableContent(expContent);
+		alert.getDialogPane().setExpandableContent(expContent);
 		alert.showAndWait();
 		return alert.getResult();
 	}
@@ -153,11 +175,8 @@ public class UtilMethods {
 		Alert alert = new Alert(alertType);
 		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		alert.initModality(Modality.APPLICATION_MODAL);
-		Stage stageAlert = (Stage) alert.getDialogPane()
-				.getScene()
-				.getWindow();
-		stageAlert.getIcons()
-				.add(new Image("/img/logo_min.png"));
+		Stage stageAlert = (Stage) alert.getDialogPane().getScene().getWindow();
+		stageAlert.getIcons().add(new Image("/img/logo_min.png"));
 		alert.setHeaderText(headerText);
 		alert.setContentText(contentText);
 		return alert;
@@ -223,8 +242,7 @@ public class UtilMethods {
 		stage.initOwner(ownerStage);
 		stage.initModality(Modality.WINDOW_MODAL);
 
-		stage.getIcons()
-				.add(new Image("/img/logo_min.png"));
+		stage.getIcons().add(new Image("/img/logo_min.png"));
 		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 
 		stage.show();
@@ -240,21 +258,17 @@ public class UtilMethods {
 				Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] { String.class });
 				openURL.invoke(null, new Object[] { url });
 			} else if (osName.startsWith("Windows"))
-				Runtime.getRuntime()
-						.exec("rundll32 url.dll,FileProtocolHandler " + url);
+				Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
 			else { // assume Unix or Linux
 				String[] browsers = { "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" };
 				String browser = null;
 				for (int count = 0; count < browsers.length && browser == null; count++)
-					if (Runtime.getRuntime()
-							.exec(new String[] { "which", browsers[count] })
-							.waitFor() == 0)
+					if (Runtime.getRuntime().exec(new String[] { "which", browsers[count] }).waitFor() == 0)
 						browser = browsers[count];
 				if (browser == null)
 					throw new IllegalStateException("Could not find web browser");
 				else
-					Runtime.getRuntime()
-							.exec(new String[] { browser, url });
+					Runtime.getRuntime().exec(new String[] { browser, url });
 			}
 		} catch (Exception e) {
 			errorWindow("Cannot open " + url + " in web browser", e);
@@ -264,8 +278,7 @@ public class UtilMethods {
 	public static void mailTo(String mail) {
 		try {
 			if (Desktop.isDesktopSupported() && (Desktop.getDesktop()).isSupported(Desktop.Action.MAIL)) {
-				Desktop.getDesktop()
-						.mail(new URI("mailto:" + mail));
+				Desktop.getDesktop().mail(new URI("mailto:" + mail));
 			}
 		} catch (Exception e) {
 			errorWindow("Cannot open " + mail + " in the default mail client.");
@@ -278,8 +291,7 @@ public class UtilMethods {
 		fileChooser.setTitle(title);
 		fileChooser.setInitialFileName(initialFileName);
 		fileChooser.setInitialDirectory(new File(initialDirectory));
-		fileChooser.getExtensionFilters()
-				.addAll(extensionFilters);
+		fileChooser.getExtensionFilters().addAll(extensionFilters);
 		return fileChooser;
 	}
 

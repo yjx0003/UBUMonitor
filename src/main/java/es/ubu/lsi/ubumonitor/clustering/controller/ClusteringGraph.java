@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.clustering.controller;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -14,6 +15,7 @@ import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
 
@@ -41,17 +43,19 @@ public class ClusteringGraph extends ClusteringChart {
 	public void updateChart(List<ClusterWrapper> clusters) {
 		connector.setClusters(clusters);
 		points = AlgorithmExecuter.clustersTo2D(clusters);
-		LOGGER.debug("Puntos: {}", points);
+
+		Map<ClusterWrapper, Color> colors = UtilMethods.getRandomColors(clusters);
+
 		JSObject root = new JSObject();
 		JSArray datasets = new JSArray();
 		JSObject centers = new JSObject();
 		centers.putWithQuote("label", I18n.get("clustering.centroids"));
-		centers.putWithQuote("backgroundColor", "#FFFF00");
+		centers.putWithQuote("backgroundColor", "black");
 		JSArray centersData = new JSArray();
 		for (int i = 0; i < points.size(); i++) {
 			JSObject group = new JSObject();
 			group.putWithQuote("label", clusters.get(i).getName());
-			group.put("backgroundColor", "colorHash.hex(" + i + ")");
+			group.put("backgroundColor", UtilMethods.colorToRGB(colors.get(clusters.get(i))));
 			JSArray data = new JSArray();
 			for (Map.Entry<UserData, double[]> userEntry : points.get(i).entrySet()) {
 				UserData user = userEntry.getKey();

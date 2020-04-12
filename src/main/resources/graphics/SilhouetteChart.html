@@ -13,7 +13,8 @@
 	var colorHash = new ColorHash();
 	var ctx = document.getElementById("myChart");
 	var clusterNames = [];
-
+	var colors = [];
+	
 	var myChart = new Chart(ctx, {
 		type : 'bar',
 		data : {
@@ -56,7 +57,7 @@
 		                 return clusterNames.map((name, i) => {
 		                	 return {
 		                		 text : name,
-		                		 fillStyle: colorHash.hex(i),
+		                		 fillStyle: colors[i],
 		                		 index : i
 		                	 }
 		                 })
@@ -80,9 +81,10 @@
 		}
 	});
 
-	function updateChart(data, names) {
+	function updateChart(data, names, c) {
 		myChart.data = data;
 		clusterNames = names;
+		colors = c;
 		myChart.update();
 	}
 

@@ -1,5 +1,7 @@
 package es.ubu.lsi.ubumonitor.clustering.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -7,6 +9,7 @@ import java.util.stream.IntStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import javafx.concurrent.Worker;
@@ -15,9 +18,9 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
-public class OptimalController {
+public class AnalysisController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(OptimalController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AnalysisController.class);
 
 	@FXML
 	private ProgressIndicator progressIndicator;
@@ -26,13 +29,20 @@ public class OptimalController {
 	private WebView webView;
 	private WebEngine webEngine;
 
+
+	private List<Double> points;
+	private int start;
+
 	@FXML
 	public void initialize() {
 		webEngine = webView.getEngine();
 		webEngine.load(getClass().getResource("/graphics/OptimalChart.html").toExternalForm());
+		new AnalysisChart(webView);
 	}
 
 	public void updateChart(List<Double> points, int start) {
+		this.points = points;
+		this.start = start;
 		JSObject root = new JSObject();
 		JSArray datasets = new JSArray();
 		JSObject data = new JSObject();
@@ -67,4 +77,16 @@ public class OptimalController {
 		webView.toFront();
 	}
 
+	private class AnalysisChart extends AbstractChart {
+
+		protected AnalysisChart(WebView webView) {
+			super(webView);
+		}
+
+		@Override
+		protected void exportData(File file) throws IOException {
+			ExportUtil.exportAnalysis(file, points, start);
+		}
+
+	}
 }

@@ -1,121 +1,97 @@
 package es.ubu.lsi.ubumonitor.clustering.controller;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
-import javax.imageio.ImageIO;
-import javax.xml.bind.DatatypeConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
-import es.ubu.lsi.ubumonitor.controllers.Controller;
+import es.ubu.lsi.ubumonitor.clustering.data.UserData;
+import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
-import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
+import es.ubu.lsi.ubumonitor.util.JSArray;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.input.MouseButton;
+import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 
-public abstract class ClusteringChart {
+public class ClusteringChart extends AbstractChart {
 
-	private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyyMMddhhmmss");
-	private static final String FILE_NAME_CSV = "%s_%s_CLUSTERING.csv";
-	private static final String FILE_NAME_PNG = "%s_%s_CLUSTERING.png";
-	private static final ExtensionFilter EXTENSION_CSV = new ExtensionFilter("CSV (*.csv)", "*.csv");
-	private static final ExtensionFilter EXTENSION_PNG = new ExtensionFilter("PNG (*.png)", "*.png");
+	private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringChart.class);
 
-	private Controller controller;
-	private WebEngine webEngine;
+	private Connector connector;
+	private List<Map<UserData, double[]>> points;
 
-	protected ClusteringChart(WebView webView) {
-		webEngine = webView.getEngine();
-		controller = Controller.getInstance();
-		webView.setContextMenuEnabled(false);
-		initContextMenu(webView);
-	}
+	public ClusteringChart(ClusteringController clusteringController) {
+		super(clusteringController.getWebViewScatter());
 
-	private void initContextMenu(WebView webView) {
-		ContextMenu contextMenu = new ContextMenu();
-		contextMenu.setAutoHide(true);
-
-		MenuItem exportCSV = new MenuItem(I18n.get("text.exportcsv"));
-		exportCSV.setOnAction(e -> exportCSV());
-		MenuItem exportPNG = new MenuItem(I18n.get("text.exportpng"));
-		exportPNG.setOnAction(e -> exportPNG());
-		
-		contextMenu.getItems().setAll(exportCSV, exportPNG);
-		webView.setOnMouseClicked(e -> {
-			if (e.getButton() == MouseButton.SECONDARY) {
-				contextMenu.show(webView, e.getScreenX(), e.getScreenY());
-			} else {
-				contextMenu.hide();
-			}
+		WebEngine webEngine = getWebEngine();
+		connector = new Connector(clusteringController, webEngine);
+		webEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
+			if (Worker.State.SUCCEEDED != newState)
+				return;
+			netscape.javascript.JSObject window = (netscape.javascript.JSObject) webEngine.executeScript("window");
+			window.setMember("javaConnector", connector);
 		});
+		webEngine.load(getClass().getResource("/graphics/ClusterChart.html").toExternalForm());
 	}
 
-	public void rename(List<ClusterWrapper> clusters) {
-		for (int i = 0; i < clusters.size(); i++) {
-			webEngine.executeScript(
-					String.format("rename(%d,'%s')", i, UtilMethods.escapeJavaScriptText(clusters.get(i).getName())));
-		}
-		webEngine.executeScript("update()");
-	}
+	public void updateChart(List<ClusterWrapper> clusters) {
+		connector.setClusters(clusters);
+		points = AlgorithmExecuter.clustersTo2D(clusters);
 
-	private void exportCSV() {
-		try {
-			String fileName = String.format(FILE_NAME_CSV, controller.getActualCourse().getId(),
-					LocalDateTime.now().format(DTF));
+		Map<ClusterWrapper, Color> colors = UtilMethods.getRandomColors(clusters);
 
-			FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportcsv"), fileName,
-					ConfigHelper.getProperty("csvFolderPath", "./"), EXTENSION_CSV);
+		JSObject root = new JSObject();
+		JSArray datasets = new JSArray();
+		JSObject centers = new JSObject();
+		centers.putWithQuote("label", I18n.get("clustering.centroids"));
+		centers.putWithQuote("backgroundColor", "black");
+		JSArray centersData = new JSArray();
+		for (int i = 0; i < points.size(); i++) {
+			JSObject group = new JSObject();
+			group.putWithQuote("label", clusters.get(i).getName());
+			group.put("backgroundColor", UtilMethods.colorToRGB(colors.get(clusters.get(i))));
+			JSArray data = new JSArray();
+			for (Map.Entry<UserData, double[]> userEntry : points.get(i).entrySet()) {
+				UserData user = userEntry.getKey();
+				JSObject coord = new JSObject();
+				coord.put("x", userEntry.getValue()[0]);
+				if (userEntry.getValue().length == 2) {
+					coord.put("y", userEntry.getValue()[1]);
+				} else {
+					coord.put("y", 0.0);
+				}
 
-			File file = fileChooser.showSaveDialog(controller.getStage());
-			if (file != null) {
-				exportData(file);
-				UtilMethods.infoWindow(I18n.get("message.export_csv") + file.getAbsolutePath());
+				if (user == null) {
+					coord.putWithQuote("user", I18n.get("clustering.centroid"));
+					centersData.add(coord);
+				} else {
+					coord.putWithQuote("user", user.getEnrolledUser().getFullName());
+					data.add(coord);
+				}
 			}
-		} catch (IOException e) {
-			UtilMethods.errorWindow(I18n.get("error.savecsvfiles"), e);
+			group.put("data", data);
+			datasets.add(group);
 		}
-	}
 
-	protected abstract void exportData(File file) throws IOException;
-
-	private void exportPNG() {
-		try {
-			String fileName = String.format(FILE_NAME_PNG, controller.getActualCourse().getId(),
-					LocalDateTime.now().format(DTF));
-
-			FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportcsv"), fileName,
-					ConfigHelper.getProperty("csvFolderPath", "./"), EXTENSION_PNG);
-
-			File file = fileChooser.showSaveDialog(controller.getStage());
-			if (file != null) {
-				exportImage(file);
-				UtilMethods.infoWindow(I18n.get("message.export_png") + file.getAbsolutePath());
-			}
-		} catch (IOException e) {
-			UtilMethods.errorWindow(I18n.get("error.savechart"), e);
+		if (!centersData.isEmpty()) {
+			centers.put("data", centersData);
+			datasets.add(centers);
 		}
+		root.put("datasets", datasets);
+		LOGGER.debug("Data: {}", root);
+
+		getWebEngine().executeScript("updateChart(" + root + ")");
 	}
 
-	private void exportImage(File file) throws IOException {
-		String str = (String) webEngine.executeScript("exportGraphic()");
-		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
-		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
-		ImageIO.write(bufferedImage, "png", file);
-	}
-	
-	protected WebEngine getWebEngine() {
-		return webEngine;
+	@Override
+	protected void exportData(File file) throws IOException {
+		ExportUtil.exportPoints(file, points);
 	}
 
 }

@@ -134,7 +134,7 @@ public class ClusteringController {
 
 	private ClusteringTable table;
 
-	private ClusteringGraph graph;
+	private ClusteringChart graph;
 
 	private ClusteringSilhouette silhouette;
 
@@ -143,7 +143,7 @@ public class ClusteringController {
 	public void init(MainController controller) {
 		mainController = controller;
 		table = new ClusteringTable(this);
-		graph = new ClusteringGraph(this);
+		graph = new ClusteringChart(this);
 		silhouette = new ClusteringSilhouette(this);
 		rangeSlider.setHighValue(10.0);
 
@@ -302,7 +302,7 @@ public class ClusteringController {
 
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/OptimalClusters.fxml"));
 			UtilMethods.createDialog(loader, Controller.getInstance().getStage());
-			OptimalController controller = loader.getController();
+			AnalysisController controller = loader.getController();
 			controller.updateChart(points, start);
 		} catch (IllegalParamenterException e) {
 			UtilMethods.errorWindow(e.getMessage());

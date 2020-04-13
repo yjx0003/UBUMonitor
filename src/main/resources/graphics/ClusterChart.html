@@ -25,7 +25,7 @@
 					element[index]._index);
 		}
 	}
-	
+
 	var flagX = false;
 	var flagY = false;
 
@@ -83,38 +83,40 @@
 					}
 				}
 			});
-	
-	
-	
+
 	function resetTicks() {
 		delete myChart.options.scales.xAxes[0].ticks.suggestedMin;
 		delete myChart.options.scales.xAxes[0].ticks.suggestedMax;
 		delete myChart.options.scales.yAxes[0].ticks.suggestedMin;
 		delete myChart.options.scales.yAxes[0].ticks.suggestedMax;
-		
-		myChart.options.scales.xAxes[0].ticks.callback = function(value, index, values) {
+
+		myChart.options.scales.xAxes[0].ticks.callback = function(value, index,
+				values) {
 			return value;
 		}
-		myChart.options.scales.yAxes[0].ticks.callback = function(value, index, values) {
+		myChart.options.scales.yAxes[0].ticks.callback = function(value, index,
+				values) {
 			return value;
 		}
 		myChart.update();
-		myChart.options.scales.xAxes[0].ticks.callback = function(value, index, values) {
-		    if (flagX) {
-		        myChart.options.scales.xAxes[0].ticks.suggestedMin = values[0];
+		myChart.options.scales.xAxes[0].ticks.callback = function(value, index,
+				values) {
+			if (flagX) {
+				myChart.options.scales.xAxes[0].ticks.suggestedMin = values[0];
 				myChart.options.scales.xAxes[0].ticks.suggestedMax = values[values.length - 1];
-		        flagX = false;
-		    }
-		    return value;
+				flagX = false;
+			}
+			return value;
 		}
 
-		myChart.options.scales.yAxes[0].ticks.callback = function(value, index, values) {
-		    if (flagY) {
-		        myChart.options.scales.yAxes[0].ticks.suggestedMin = values[values.length - 1];
+		myChart.options.scales.yAxes[0].ticks.callback = function(value, index,
+				values) {
+			if (flagY) {
+				myChart.options.scales.yAxes[0].ticks.suggestedMin = values[values.length - 1];
 				myChart.options.scales.yAxes[0].ticks.suggestedMax = values[0];
-		        flagY = false;
-		    }
-		    return value;
+				flagY = false;
+			}
+			return value;
 		}
 		flagX = true;
 		flagY = true;
@@ -126,12 +128,8 @@
 		resetTicks();
 	}
 
-	function rename(index, name) {
-		myChart.data.datasets[index].label = name;
-	}
-
-	function update() {
-		myChart.update();
+	function rename(names) {
+		names.forEach((value,index,array) => myChart.data.datasets[index].label = value)
 	}
 
 	function exportGraphic() {

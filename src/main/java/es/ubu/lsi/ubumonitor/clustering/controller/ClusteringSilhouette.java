@@ -21,7 +21,7 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
-public class ClusteringSilhouette extends ClusteringChart {
+public class ClusteringSilhouette extends AbstractChart {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringSilhouette.class);
 	private Map<UserData, Double> silhouette;

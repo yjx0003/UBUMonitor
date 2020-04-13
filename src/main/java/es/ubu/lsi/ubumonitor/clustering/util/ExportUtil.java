@@ -28,8 +28,7 @@ public class ExportUtil {
 	private static void exportCSV(File file, String[] head, List<List<Object>> data) {
 		CSVFormat format = CSVFormat.DEFAULT.withHeader(head);
 
-		try (FileWriter out = new FileWriter(file);
-			 CSVPrinter printer = new CSVPrinter(out, format)) {
+		try (FileWriter out = new FileWriter(file); CSVPrinter printer = new CSVPrinter(out, format)) {
 			printer.printRecords(data);
 		} catch (IOException e) {
 			LOGGER.error("Error writing csv file: {}.csv", file);
@@ -98,6 +97,18 @@ public class ExportUtil {
 			row.add(enrolledUser.getFullName());
 			row.add(userData.getCluster().getName());
 			row.add(silhouette.get(userData));
+			data.add(row);
+		}
+		exportCSV(file, head, data);
+	}
+
+	public static void exportAnalysis(File file, List<Double> values, int start) {
+		String[] head = new String[] { "Number of clusters", "Value" };
+		List<List<Object>> data = new ArrayList<>();
+		for (int i = 0; i < values.size(); i++) {
+			List<Object> row = new ArrayList<>();
+			row.add(start + i);
+			row.add(values.get(i));
 			data.add(row);
 		}
 		exportCSV(file, head, data);

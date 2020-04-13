@@ -18,7 +18,6 @@ public class FillSheetGeneralData extends FillSheetData {
 		Course course = Controller.getInstance().getActualCourse();
 		setCellValue(sheet, ++rowIndex, 1, course.getUniqueComponents().size());
 		setCellValue(sheet, ++rowIndex, 1, course.getUniqueComponentsEvents().size());
-		setCellValue(sheet, ++rowIndex, 1, course.getUniqueComponents().size());
 		setCellValue(sheet, ++rowIndex, 1, course.getSections().size());
 		setCellValue(sheet, ++rowIndex, 1, course.getModules().size());
 		setCellValue(sheet, ++rowIndex, 1, course.getGradeItems().size());

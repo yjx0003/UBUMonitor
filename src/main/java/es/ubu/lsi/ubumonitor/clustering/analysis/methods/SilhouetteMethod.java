@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.clustering.analysis.methods;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 public class SilhouetteMethod extends AnalysisMethod {
 
 	public SilhouetteMethod(Algorithm algorithm) {
-		super(algorithm);
+		super(algorithm, Comparator.<Double>naturalOrder().reversed());
 	}
 
 	@Override
@@ -27,12 +28,12 @@ public class SilhouetteMethod extends AnalysisMethod {
 	}
 
 	public static Map<UserData, Double> silhouette(List<ClusterWrapper> clusters, Distance distanceType) {
-	
+
 		List<UserData> users = clusters.stream().flatMap(ClusterWrapper::stream).collect(Collectors.toList());
 		Map<UserData, Double> ai = new HashMap<>(users.size());
 		Map<UserData, Double> bi = new HashMap<>(users.size());
 		DistanceMeasure distance = distanceType.getInstance();
-	
+
 		for (ClusterWrapper cluster : clusters) {
 			for (UserData userData : cluster) {
 				double selfDissimilarity = 0.0;
@@ -41,7 +42,7 @@ public class SilhouetteMethod extends AnalysisMethod {
 				}
 				selfDissimilarity /= cluster.size();
 				ai.put(userData, selfDissimilarity);
-	
+
 				for (ClusterWrapper otherCluster : clusters) {
 					if (!otherCluster.equals(userData.getCluster())) {
 						double otherDissimilarity = 0.0;
@@ -56,7 +57,7 @@ public class SilhouetteMethod extends AnalysisMethod {
 				}
 			}
 		}
-	
+
 		Map<UserData, Double> sihouette = new HashMap<>(users.size());
 		for (UserData userData : users) {
 			double a = ai.get(userData);
@@ -69,7 +70,7 @@ public class SilhouetteMethod extends AnalysisMethod {
 			}
 			sihouette.put(userData, s);
 		}
-	
+
 		return sihouette;
 	}
 

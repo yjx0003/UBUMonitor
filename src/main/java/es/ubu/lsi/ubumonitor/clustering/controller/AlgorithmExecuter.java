@@ -71,7 +71,7 @@ public class AlgorithmExecuter {
 		return usersData;
 	}
 
-	public static List<Map<UserData, double[]>> clustersTo2D(List<ClusterWrapper> clusters) {
+	public static List<Map<UserData, double[]>> clustersTo(int dim, List<ClusterWrapper> clusters) {
 		List<double[]> centers = new ArrayList<>();
 		for (ClusterWrapper clusterWrapper : clusters) {
 			double[] center = clusterWrapper.getCenter();
@@ -86,8 +86,8 @@ public class AlgorithmExecuter {
 		PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
 		List<Map<UserData, double[]>> points = new ArrayList<>();
 
-		if (matrix[0].length > 2) {
-			matrix = pca.pca(matrix, 2);
+		if (matrix[0].length > dim) {
+			matrix = pca.pca(matrix, dim);
 		}
 		int i = 0;
 		for (List<UserData> list : clusters) {
@@ -97,7 +97,8 @@ public class AlgorithmExecuter {
 			}
 			points.add(map);
 		}
-
+		
+		// Add centroides
 		for (int j = 0; i < matrix.length; i++, j++) {
 			points.get(j).put(null, matrix[i]);
 		}

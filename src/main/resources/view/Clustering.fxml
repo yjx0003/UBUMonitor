@@ -105,6 +105,11 @@
                         <WebView fx:id="webViewScatter" cache="true" cacheHint="SPEED" minHeight="-1.0" minWidth="600.0" prefHeight="-1.0" />
                      </content>
                   </Tab>
+                  <Tab text="3D">
+                     <content>
+                        <WebView fx:id="webView3DScatter" prefHeight="200.0" prefWidth="200.0" />
+                     </content>
+                  </Tab>
                 <Tab text="%clustering.silhouetteAnalysis">
                      <content>
                         <WebView fx:id="webViewSilhouette" cache="true" cacheHint="SPEED" prefHeight="200.0" prefWidth="200.0" />

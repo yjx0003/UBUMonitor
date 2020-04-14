@@ -74,6 +74,9 @@ public class ClusteringController {
 
 	@FXML
 	private WebView webViewScatter;
+	
+	@FXML
+	private WebView webView3DScatter;
 
 	@FXML
 	private WebView webViewSilhouette;
@@ -140,11 +143,14 @@ public class ClusteringController {
 
 	private TextFieldPropertyEditorFactory propertyEditor;
 
+	private Clustering3DChart graph3D;
+
 	public void init(MainController controller) {
 		mainController = controller;
 		table = new ClusteringTable(this);
 		graph = new ClusteringChart(this);
 		silhouette = new ClusteringSilhouette(this);
+		graph3D = new Clustering3DChart(this);
 		rangeSlider.setHighValue(10.0);
 
 		propertyEditor = new TextFieldPropertyEditorFactory();
@@ -214,6 +220,7 @@ public class ClusteringController {
 			table.updateTable(clusters);
 			updateRename();
 			graph.updateChart(clusters);
+			graph3D.updateChart(clusters);
 			silhouette.updateChart(clusters, algorithm.getParameters().getValue(ClusteringParameter.DISTANCE_TYPE));
 		} catch (IllegalParamenterException e) {
 			UtilMethods.errorWindow(e.getMessage());
@@ -340,6 +347,10 @@ public class ClusteringController {
 	 */
 	public WebView getWebViewScatter() {
 		return webViewScatter;
+	}
+
+	public WebView getWebView3DScatter() {
+		return webView3DScatter;
 	}
 
 	/**

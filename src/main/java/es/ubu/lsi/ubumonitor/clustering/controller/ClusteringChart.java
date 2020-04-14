@@ -42,7 +42,7 @@ public class ClusteringChart extends AbstractChart {
 
 	public void updateChart(List<ClusterWrapper> clusters) {
 		connector.setClusters(clusters);
-		points = AlgorithmExecuter.clustersTo2D(clusters);
+		points = AlgorithmExecuter.clustersTo(2, clusters);
 
 		Map<ClusterWrapper, Color> colors = UtilMethods.getRandomColors(clusters);
 

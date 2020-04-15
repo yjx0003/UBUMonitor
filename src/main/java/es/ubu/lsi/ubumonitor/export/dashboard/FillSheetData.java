@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.export.dashboard;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.apache.poi.ss.SpreadsheetVersion;
@@ -65,6 +66,13 @@ public abstract class FillSheetData {
 	}
 
 	protected void setCellValue(Sheet sheet, int rowIndex, int columnIndex, LocalDateTime value, CellStyle cellStyle) {
+		Cell cell = getCell(sheet, rowIndex, columnIndex, CellType.BLANK);
+		cell.setCellValue(value);
+		cell.setCellStyle(cellStyle);
+
+	}
+	
+	protected void setCellValue(Sheet sheet, int rowIndex, int columnIndex, LocalDate value, CellStyle cellStyle) {
 		Cell cell = getCell(sheet, rowIndex, columnIndex, CellType.BLANK);
 		cell.setCellValue(value);
 		cell.setCellStyle(cellStyle);

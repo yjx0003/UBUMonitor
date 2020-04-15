@@ -2,8 +2,11 @@ package es.ubu.lsi.ubumonitor.export.dashboard;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalField;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -24,6 +27,8 @@ public class FillSheetSession extends FillSheetData {
 
 	@Override
 	protected void fillTable(XSSFSheet sheet, CellStyle dateStyle) {
+		TemporalField firstDayWeek = WeekFields.of(Locale.getDefault())
+				.dayOfWeek();
 		int timeInterval = Controller.getInstance()
 				.getMainConfiguration()
 				.getValue(ChartType.SESSION, "timeInterval");
@@ -37,16 +42,22 @@ public class FillSheetSession extends FillSheetData {
 		int rowIndex = 0;
 		for (Map.Entry<EnrolledUser, List<LogLine>> entry : map.entrySet()) {
 			List<Session> sessions = createSessions(timeInterval, entry.getValue());
-			for(Session session: sessions) {
+			for (Session session : sessions) {
 				int columnIndex = -1;
 				++rowIndex;
-				setCellValue(sheet, rowIndex, ++columnIndex, entry.getKey().getId());
-				setCellValue(sheet, rowIndex, ++columnIndex, session.getFirstLogTime().toLocalDateTime(), dateStyle);
-				setCellValue(sheet, rowIndex, ++columnIndex, session.getLastLogTime().toLocalDateTime(), dateStyle);
+				setCellValue(sheet, rowIndex, ++columnIndex, entry.getKey()
+						.getId());
+				setCellValue(sheet, rowIndex, ++columnIndex, session.getFirstLogTime()
+						.toLocalDateTime(), dateStyle);
+				setCellValue(sheet, rowIndex, ++columnIndex, session.getFirstLogTime()
+						.toLocalDate()
+						.with(firstDayWeek, 1), dateStyle);
+				setCellValue(sheet, rowIndex, ++columnIndex, session.getLastLogTime()
+						.toLocalDateTime(), dateStyle);
 				setCellValue(sheet, rowIndex, ++columnIndex, session.getDiffMinutes());
 			}
 		}
-	
+
 	}
 
 	public List<Session> createSessions(int timeInterval, List<LogLine> logLines) {

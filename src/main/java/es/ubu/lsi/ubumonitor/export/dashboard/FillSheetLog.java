@@ -1,6 +1,9 @@
 package es.ubu.lsi.ubumonitor.export.dashboard;
 
+import java.time.temporal.TemporalField;
+import java.time.temporal.WeekFields;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -17,6 +20,8 @@ public class FillSheetLog extends FillSheetData {
 
 	@Override
 	protected void fillTable(XSSFSheet sheet, CellStyle dateStyle) {
+		
+		TemporalField firstDayWeek  = WeekFields.of(Locale.getDefault()).dayOfWeek();
 		List<LogLine> logs = Controller.getInstance()
 				.getActualCourse()
 				.getLogs()
@@ -26,6 +31,8 @@ public class FillSheetLog extends FillSheetData {
 			int columnIndex = -1;
 			setCellValue(sheet, rowIndex, ++columnIndex, log.getTime()
 					.toLocalDateTime(), dateStyle);
+			setCellValue(sheet, rowIndex, ++columnIndex, log.getTime()
+					.toLocalDate().with(firstDayWeek,1), dateStyle);
 			setCellValue(sheet, rowIndex, ++columnIndex, log.getComponent()
 					.getName());
 			setCellValue(sheet, rowIndex, ++columnIndex, log.getEventName()

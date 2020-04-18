@@ -129,7 +129,8 @@
 	}
 
 	function rename(names) {
-		names.forEach((value,index,array) => myChart.data.datasets[index].label = value)
+		names.forEach((value,index,array) => myChart.data.datasets[index].label = value);
+		myChart.update();
 	}
 
 	function exportGraphic() {

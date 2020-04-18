@@ -88,8 +88,9 @@
 		myChart.update();
 	}
 
-	function rename(index, name) {
-		clusterNames[index] = name;
+	function rename(names) {
+		clusterNames = names;
+		myChart.update();
 	}
 
 	function update() {

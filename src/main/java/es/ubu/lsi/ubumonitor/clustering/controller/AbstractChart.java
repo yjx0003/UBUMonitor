@@ -15,6 +15,7 @@ import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
+import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -50,7 +51,7 @@ public abstract class AbstractChart {
 		exportCSV.setOnAction(e -> exportCSV());
 		MenuItem exportPNG = new MenuItem(I18n.get("text.exportpng"));
 		exportPNG.setOnAction(e -> exportPNG());
-		
+
 		contextMenu.getItems().setAll(exportCSV, exportPNG);
 		webView.setOnMouseClicked(e -> {
 			if (e.getButton() == MouseButton.SECONDARY) {
@@ -62,11 +63,9 @@ public abstract class AbstractChart {
 	}
 
 	public void rename(List<ClusterWrapper> clusters) {
-		for (int i = 0; i < clusters.size(); i++) {
-			webEngine.executeScript(
-					String.format("rename(%d,'%s')", i, UtilMethods.escapeJavaScriptText(clusters.get(i).getName())));
-		}
-		webEngine.executeScript("update()");
+		JSArray names = new JSArray();
+		clusters.forEach(c -> names.addWithQuote(c.getName()));
+		webEngine.executeScript("rename(" + names + ")");
 	}
 
 	private void exportCSV() {
@@ -113,7 +112,7 @@ public abstract class AbstractChart {
 		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
 		ImageIO.write(bufferedImage, "png", file);
 	}
-	
+
 	protected WebEngine getWebEngine() {
 		return webEngine;
 	}

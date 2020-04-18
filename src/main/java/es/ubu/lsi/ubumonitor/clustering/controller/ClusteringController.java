@@ -74,7 +74,7 @@ public class ClusteringController {
 
 	@FXML
 	private WebView webViewScatter;
-	
+
 	@FXML
 	private WebView webView3DScatter;
 
@@ -158,6 +158,10 @@ public class ClusteringController {
 
 		choiceBoxAnalyze.getItems().setAll(new ElbowFactory(), new SilhouetteFactory());
 		choiceBoxAnalyze.getSelectionModel().selectFirst();
+
+		checkBoxExportGrades.disableProperty()
+				.bind(controller.getTvwGradeReport().getSelectionModel().selectedItemProperty().isNull());
+
 		initAlgorithms();
 		initCollectors();
 	}

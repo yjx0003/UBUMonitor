@@ -310,7 +310,7 @@ public class UtilMethods {
 
 	public static void fileAction(String initialFileName, String initialDirectory, Window owner,
 			FileUtil.FileChooserType fileChooserType, FileUtil.ThrowingConsumer<File, IOException> consumer,
-			FileChooser.ExtensionFilter... extensionFilters) {
+			boolean confirmationWindow, FileChooser.ExtensionFilter... extensionFilters) {
 		FileChooser fileChooser = createFileChooser(initialFileName, initialDirectory, extensionFilters);
 		File file = fileChooserType.getFile(fileChooser, owner);
 		if (file == null) {
@@ -319,13 +319,22 @@ public class UtilMethods {
 
 		try {
 			consumer.accept(file);
-			infoWindow(I18n.get("message.export") + file.getAbsolutePath());
+			if (confirmationWindow) {
+				infoWindow(I18n.get("message.export") + file.getAbsolutePath());
+			}
 		} catch (FileNotFoundException e) {
 			errorWindow(e.getMessage());
 		} catch (Exception e) {
 			errorWindow(e.getMessage(), e);
 		}
 
+	}
+
+	public static void fileAction(String initialFileName, String initialDirectory, Window owner,
+			FileUtil.FileChooserType fileChooserType, FileUtil.ThrowingConsumer<File, IOException> consumer,
+			FileChooser.ExtensionFilter... extensionFilters) {
+		fileAction(initialFileName, initialDirectory, owner, fileChooserType, consumer, true, extensionFilters);
+		
 	}
 
 	/**

@@ -6,18 +6,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.LogStats;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
+import es.ubu.lsi.ubumonitor.util.FileUtil;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
-import es.ubu.lsi.ubumonitor.view.chart.JavaConnector;
 import es.ubu.lsi.ubumonitor.view.chart.Tabs;
+import es.ubu.lsi.ubumonitor.view.chart.VisualizationJavaConnector;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
@@ -38,11 +36,10 @@ import javafx.util.StringConverter;
 import netscape.javascript.JSObject;
 
 public class VisualizationController implements MainAction {
-	private static final Logger LOGGER = LoggerFactory.getLogger(VisualizationController.class);
 
 	private Controller controller = Controller.getInstance();
 	private MainController mainController;
-	private JavaConnector javaConnector;
+	private VisualizationJavaConnector javaConnector;
 	@FXML
 	private WebView webViewCharts;
 	private WebEngine webViewChartsEngine;
@@ -79,7 +76,7 @@ public class VisualizationController implements MainAction {
 		// Cargamos el html de los graficos y calificaciones
 		webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
 		webViewChartsEngine = webViewCharts.getEngine();
-		javaConnector = new JavaConnector(this);
+		javaConnector = new VisualizationJavaConnector(this);
 
 		progressBar.progressProperty()
 				.bind(webViewChartsEngine.getLoadWorker()
@@ -208,28 +205,24 @@ public class VisualizationController implements MainAction {
 
 	@Override
 	public void save() {
-		FileChooser fileChooser = UtilMethods.createFileChooser(
-				String.format("%s_%s_%s.png", controller.getActualCourse()
-						.getId(),
-						LocalDateTime.now()
-								.format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
-						javaConnector.getCurrentType()
-								.getChartType()),
-				ConfigHelper.getProperty("imageFolderPath", "./"), new FileChooser.ExtensionFilter(".png", "*.png"));
 
-		try {
-			File file = fileChooser.showSaveDialog(controller.getStage());
-			if (file != null) {
-				String str = javaConnector.export(file);
-				if (str == null)
-					return;
-				javaConnector.saveImage(str);
-				ConfigHelper.setProperty("imageFolderPath", file.getParent());
-			}
-		} catch (Exception e) {
-			LOGGER.error("Error al guardar el gráfico: {}", e);
-			UtilMethods.errorWindow(I18n.get("error.savechart"), e);
-		}
+		UtilMethods.fileAction(String.format("%s_%s_%s.png", controller.getActualCourse()
+				.getId(),
+				LocalDateTime.now()
+						.format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
+				javaConnector.getCurrentType()
+						.getChartType()),
+				ConfigHelper.getProperty("imageFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
+				file -> {
+					if (file != null) {
+						String str = javaConnector.export(file);
+						if (str == null)
+							return;
+						javaConnector.saveImage(str);
+						ConfigHelper.setProperty("imageFolderPath", file.getParent());
+					
+					}
+				}, false, FileUtil.PNG);
 
 	}
 
@@ -394,6 +387,12 @@ public class VisualizationController implements MainAction {
 	}
 
 	@Override
+	public void onWebViewTabChange() {
+		javaConnector.updateTabImages();
+
+	}
+
+	@Override
 	public void applyConfiguration() {
 		javaConnector.updateChart();
 
@@ -411,11 +410,11 @@ public class VisualizationController implements MainAction {
 		this.controller = controller;
 	}
 
-	public JavaConnector getJavaConnector() {
+	public VisualizationJavaConnector getJavaConnector() {
 		return javaConnector;
 	}
 
-	public void setJavaConnector(JavaConnector javaConnector) {
+	public void setJavaConnector(VisualizationJavaConnector javaConnector) {
 		this.javaConnector = javaConnector;
 	}
 

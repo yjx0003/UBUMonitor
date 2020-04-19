@@ -36,7 +36,7 @@ import javafx.concurrent.Worker.State;
 import javafx.scene.control.Tab;
 import javafx.scene.web.WebEngine;
 
-public class JavaConnector {
+public class VisualizationJavaConnector {
 
 	private WebEngine webViewChartsEngine;
 
@@ -63,7 +63,7 @@ public class JavaConnector {
 
 	private static final ChartType DEFAULT_ACTIVITY_COMPLETION_CHART = ChartType.ACTIVITIES_TABLE;
 
-	public JavaConnector(VisualizationController visualizationController) {
+	public VisualizationJavaConnector(VisualizationController visualizationController) {
 		this.visualizationController = visualizationController;
 		this.mainController = visualizationController.getMainController();
 		webViewChartsEngine = visualizationController.getWebViewChartsEngine();
@@ -224,13 +224,7 @@ public class JavaConnector {
 			webViewChartsEngine.executeScript("manageButtons('" + Tabs.ACTIVITY_COMPLETION + "')");
 			setCurrentType(getCurrentTypeActivityCompletion());
 		}
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
-		boolean legendActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "legendActive");
-		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
-		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
-		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnLegend", legendActive));
-		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnMean", generalActive));
-		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnGroupMean", groupActive));
+		updateTabImages();
 
 	}
 
@@ -301,6 +295,20 @@ public class JavaConnector {
 
 	public Chart getCurrentTypeActivityCompletion() {
 		return currentTypeActivityCompletion;
+	}
+	
+	
+	
+
+	public void updateTabImages() {
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		boolean legendActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "legendActive");
+		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
+		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
+		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnLegend", legendActive));
+		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnMean", generalActive));
+		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnGroupMean", groupActive));
+		
 	}
 
 }

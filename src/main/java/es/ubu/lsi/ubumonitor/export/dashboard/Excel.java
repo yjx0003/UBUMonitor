@@ -16,15 +16,14 @@ public class Excel {
 			CellStyle cellStyle = workbook.createCellStyle();
 
 			cellStyle.setDataFormat((short) 14);
-		
-			
-			
+
 			new FillSheetHomepage().fillData(workbook, cellStyle);
 			new FillSheetSession().fillData(workbook, cellStyle);
 			new FillSheetGeneralData().fillData(workbook, cellStyle);
 			new FillSheetEnrolledUser().fillData(workbook, cellStyle);
 			new FillSheetEnrolledUserCourse().fillData(workbook, cellStyle);
 			new FillSheetEnrolledUserGradeItem().fillData(workbook, cellStyle);
+			new FillSheetGradeItemGrade().fillData(workbook, cellStyle);
 			new FillSheetEnrolledUserRole().fillData(workbook, cellStyle);
 			new FillSheetEnrolledUserGroup().fillData(workbook, cellStyle);
 			new FillSheetActivityCompletion().fillData(workbook, cellStyle);
@@ -35,6 +34,7 @@ public class Excel {
 			new FillSheetGroup().fillData(workbook, cellStyle);
 			new FillSheetCourse().fillData(workbook, cellStyle);
 			new FillSheetLog().fillData(workbook, cellStyle);
+			
 			workbook.write(outputStream);
 		}
 

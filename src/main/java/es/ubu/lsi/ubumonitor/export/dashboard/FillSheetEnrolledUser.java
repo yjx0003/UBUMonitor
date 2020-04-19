@@ -1,6 +1,8 @@
 package es.ubu.lsi.ubumonitor.export.dashboard;
 
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.Temporal;
 import java.util.Set;
 
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -8,6 +10,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
 import es.ubu.lsi.ubumonitor.util.ManageDuplicate;
 
 public class FillSheetEnrolledUser extends FillSheetData {
@@ -19,7 +22,7 @@ public class FillSheetEnrolledUser extends FillSheetData {
 
 	@Override
 	protected void fillTable(XSSFSheet sheet, CellStyle dateStyle) {
-
+		//ZonedDateTime lasLogDate = Controller.getInstance().getActualCourse().getLogs().getLastDatetime();
 		Set<EnrolledUser> enrolledUsers = Controller.getInstance()
 				.getActualCourse()
 				.getEnrolledUsers();
@@ -39,9 +42,12 @@ public class FillSheetEnrolledUser extends FillSheetData {
 			setCellValue(sheet, rowIndex, ++columnIndex, enrolledUser.getLastcourseaccess()
 					.atZone(ZoneId.systemDefault())
 					.toLocalDateTime(), dateStyle);
+			//setCellValue(sheet, rowIndex, ++columnIndex, getDifferenceDays(enrolledUser.getLastcourseaccess(), lasLogDate));
 			++rowIndex;
 		}
 
 	}
-
+	private String getDifferenceDays(Temporal inclusive, Temporal exclusive) {
+		return LastActivityFactory.getActivity(inclusive, exclusive).toString();
+	}
 }

@@ -48,7 +48,7 @@ public abstract class ChartjsLog extends ChartLogs {
 	public String getXScaleLabel() {
 		MainConfiguration mainConfiguration = controller.getMainConfiguration();
 		JSObject jsObject = new JSObject();
-		jsObject.put("display", (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "displayXScaleTitle"));
+		jsObject.put("display", mainConfiguration.getValue(MainConfiguration.GENERAL, "displayXScaleTitle"));
 		jsObject.putWithQuote("labelString", getXAxisTitle());
 		jsObject.put("fontColor",
 				colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorXScaleTitle")));

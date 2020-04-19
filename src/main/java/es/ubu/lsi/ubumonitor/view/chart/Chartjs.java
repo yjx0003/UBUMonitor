@@ -8,7 +8,6 @@ public abstract class Chartjs extends Chart {
 
 	public Chartjs(MainController mainController, ChartType chartType, Tabs tabName) {
 		super(mainController, chartType, tabName);
-
 	}
 
 	@Override
@@ -31,7 +30,7 @@ public abstract class Chartjs extends Chart {
 	public String getXScaleLabel() {
 		MainConfiguration mainConfiguration = controller.getMainConfiguration();
 		JSObject jsObject = new JSObject();
-		jsObject.put("display", (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "displayXScaleTitle"));
+		jsObject.put("display", mainConfiguration.getValue(MainConfiguration.GENERAL, "displayXScaleTitle"));
 		jsObject.putWithQuote("labelString", getXAxisTitle());
 		jsObject.put("fontColor",
 				colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorXScaleTitle")));
@@ -44,7 +43,7 @@ public abstract class Chartjs extends Chart {
 	public String getYScaleLabel() {
 		MainConfiguration mainConfiguration = controller.getMainConfiguration();
 		JSObject jsObject = new JSObject();
-		jsObject.put("display", (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "displayYScaleTitle"));
+		jsObject.put("display", mainConfiguration.getValue(MainConfiguration.GENERAL, "displayYScaleTitle"));
 		jsObject.putWithQuote("labelString", getYAxisTitle());
 		jsObject.putWithQuote("fontSize", 14);
 		jsObject.put("fontColor",

@@ -64,6 +64,13 @@ public class MainController implements Initializable {
 
 	@FXML
 	private VisualizationController visualizationController;
+	
+	@FXML
+	private Tab riskTab;
+	@FXML
+	private RiskController riskController;
+	
+	
 	private Map<Tab, MainAction> tabMap = new HashMap<>();
 
 	@FXML
@@ -104,6 +111,28 @@ public class MainController implements Initializable {
 			LOGGER.error("Error en la inicialización.", e);
 		}
 	}
+	
+	private void initWebViewTabs() {
+
+		webViewTabPane.getSelectionModel()
+				.select(ConfigHelper.getProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex()));
+		webViewTabPane.getSelectionModel().selectedItemProperty().addListener((ob, old, newValue) -> {
+			onWebViewTabChange();
+			if (selectionController.getTabUbuLogs().isSelected()) {
+				onSetTabLogs();
+			} else if (selectionController.getTabUbuGrades().isSelected()) {
+				onSetTabGrades();
+			} else if (selectionController.getTabActivity().isSelected()) {
+				onSetTabActivityCompletion();
+			}
+		});
+		visualizationController.init(this);
+		riskController.init(this);
+
+		tabMap.put(visualizationTab, visualizationController);
+		tabMap.put(riskTab, riskController);
+	}
+	
 
 	private void initStatusBar() {
 
@@ -141,24 +170,7 @@ public class MainController implements Initializable {
 
 	}
 
-	private void initWebViewTabs() {
 
-		webViewTabPane.getSelectionModel()
-				.select(ConfigHelper.getProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex()));
-		webViewTabPane.getSelectionModel().selectedItemProperty().addListener((ob, old, newValue) -> {
-			if (selectionController.getTabUbuLogs().isSelected()) {
-				onSetTabLogs();
-			} else if (selectionController.getTabUbuGrades().isSelected()) {
-				onSetTabGrades();
-			} else if (selectionController.getTabActivity().isSelected()) {
-				onSetTabActivityCompletion();
-			}
-		});
-		visualizationController.init(this);
-
-		tabMap.put(visualizationTab, visualizationController);
-
-	}
 
 	/**
 	 * Exporta el gráfico. Se exportara como imagen en formato png.
@@ -247,6 +259,9 @@ public class MainController implements Initializable {
 
 	public void updateListViewCourseModule() {
 		getActions().updateListViewCourseModule();
+	}
+	public void onWebViewTabChange() {
+		getActions().onWebViewTabChange();
 	}
 
 	public void applyConfiguration() {

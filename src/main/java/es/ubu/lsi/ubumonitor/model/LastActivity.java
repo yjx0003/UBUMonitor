@@ -3,7 +3,7 @@ package es.ubu.lsi.ubumonitor.model;
 import javafx.scene.paint.Color;
 
 public class LastActivity {
-	
+
 	private int index;
 
 	private int previusDays;
@@ -56,5 +56,31 @@ public class LastActivity {
 	public void setIndex(int index) {
 		this.index = index;
 	}
+	
+	@Override
+	public int hashCode() {
+		return index;
+	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		LastActivity other = (LastActivity) obj;
+		if (index != other.index)
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		if (Integer.MAX_VALUE == limitDaysConnection) {
+			return (char) (index + 65) + ". " + previusDays + "+";
+		}
+		return (char) (index + 65) + ". " + previusDays + "-" + limitDaysConnection;
+	}
 }

@@ -67,7 +67,6 @@ public abstract class Chart implements ExportableChart {
 	protected boolean useGeneralButton;
 	protected boolean useGroupButton;
 	protected boolean useGroupBy;
-	
 
 	protected boolean useRangeDate;
 
@@ -129,7 +128,8 @@ public abstract class Chart implements ExportableChart {
 	}
 
 	public List<EnrolledUser> getSelectedEnrolledUser() {
-		List<EnrolledUser> selectedUsers = new ArrayList<>(listParticipants.getSelectionModel().getSelectedItems());
+		List<EnrolledUser> selectedUsers = new ArrayList<>(listParticipants.getSelectionModel()
+				.getSelectedItems());
 		selectedUsers.removeAll(Collections.singletonList(null));
 		return selectedUsers;
 	}
@@ -140,12 +140,17 @@ public abstract class Chart implements ExportableChart {
 
 	public int onClick(int index) {
 
-		if (listParticipants.getSelectionModel().getSelectedItems().size() < index) {
+		if (listParticipants.getSelectionModel()
+				.getSelectedItems()
+				.size() < index) {
 			return -1;
 		}
 
-		EnrolledUser selectedUser = listParticipants.getSelectionModel().getSelectedItems().get(index);
-		return listParticipants.getItems().indexOf(selectedUser);
+		EnrolledUser selectedUser = listParticipants.getSelectionModel()
+				.getSelectedItems()
+				.get(index);
+		return listParticipants.getItems()
+				.indexOf(selectedUser);
 	}
 
 	public <T> String rgba(T hash, double alpha) {
@@ -167,8 +172,12 @@ public abstract class Chart implements ExportableChart {
 	}
 
 	public List<GradeItem> getSelectedGradeItems() {
-		return tvwGradeReport.getSelectionModel().getSelectedItems().stream().filter(Objects::nonNull)
-				.map(TreeItem::getValue).collect(Collectors.toList());
+		return tvwGradeReport.getSelectionModel()
+				.getSelectedItems()
+				.stream()
+				.filter(Objects::nonNull)
+				.map(TreeItem::getValue)
+				.collect(Collectors.toList());
 	}
 
 	public abstract String getOptions();
@@ -182,17 +191,17 @@ public abstract class Chart implements ExportableChart {
 	public abstract String export();
 
 	public JSObject getDefaultOptions() {
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		MainConfiguration mainConfiguration = Controller.getInstance()
+				.getMainConfiguration();
 		JSObject jsObject = new JSObject();
 		jsObject.put("useLegend", useLegend);
 		jsObject.put("useGroup", useGroupButton);
 		jsObject.put("useGeneral", useGeneralButton);
 		jsObject.putWithQuote("tab", tabName);
 		jsObject.putWithQuote("button", getChartType().name());
-		jsObject.put("legendActive", (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "legendActive"));
-		jsObject.put("generalActive", (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive"));
-		jsObject.put("groupActive",
-				(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive"));
+		jsObject.put("legendActive", mainConfiguration.getValue(MainConfiguration.GENERAL, "legendActive"));
+		jsObject.put("generalActive", mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive"));
+		jsObject.put("groupActive", mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive"));
 
 		return jsObject;
 
@@ -207,11 +216,14 @@ public abstract class Chart implements ExportableChart {
 	}
 
 	public boolean isCalculateMaxActivated() {
-		return Controller.getInstance().getMainConfiguration().getValue(getChartType(), "calculateMax", false);
+		return Controller.getInstance()
+				.getMainConfiguration()
+				.getValue(getChartType(), "calculateMax", false);
 	}
 
 	public long getSuggestedMax() {
-		String maxString = visualizationController.getTextFieldMax().getText();
+		String maxString = visualizationController.getTextFieldMax()
+				.getText();
 		if (maxString == null || maxString.isEmpty()) {
 			return 0;
 		}
@@ -238,9 +250,10 @@ public abstract class Chart implements ExportableChart {
 	}
 
 	public void setMax(String max) {
-		// TODO Auto-generated method stub
+		// do nothing
 
 	}
+
 	public boolean isUseGroupBy() {
 		return useGroupBy;
 	}
@@ -248,11 +261,17 @@ public abstract class Chart implements ExportableChart {
 	public boolean isUseRangeDate() {
 		return useRangeDate;
 	}
-	
+
 	@Override
 	public Writer getWritter(String path) throws IOException {
-		Charsets charset = Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL, "charset");
+		Charsets charset = Controller.getInstance()
+				.getMainConfiguration()
+				.getValue(MainConfiguration.GENERAL, "charset");
 		return new OutputStreamWriter(new FileOutputStream(path), charset.get());
+	}
+
+	public void setWebViewChartsEngine(WebEngine webViewChartsEngine) {
+		this.webViewChartsEngine = webViewChartsEngine;
 	}
 
 }

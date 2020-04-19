@@ -63,6 +63,13 @@
 										source="Visualization.fxml" />
 
 								</Tab>
+								<Tab fx:id="riskTab" closable="false"
+									text="%tab.risk">
+
+									<fx:include fx:id="risk"
+										source="Risk.fxml" />
+
+								</Tab>
 
 							</tabs>
 						</TabPane>

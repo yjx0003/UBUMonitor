@@ -108,6 +108,14 @@ public class RiskJavaConnector {
 	public String getI18n(String key) {
 		return I18n.get(key);
 	}
-	
+	public void dataPointSelection(int selectedIndex) {
+
+		int index = currentType.onClick(selectedIndex);
+		if (index >= 0) {
+			currentType.mainController.getSelectionUserController().getListParticipants().scrollTo(index);
+			currentType.mainController.getSelectionUserController().getListParticipants().getFocusModel().focus(index);
+		}
+
+	}
 
 }

@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.view.chart.risk;
 
 import java.io.IOException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -8,9 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
@@ -28,36 +33,47 @@ public class Bubble extends Chartjs {
 
 	@Override
 	public void exportCSV(String path) throws IOException {
-		// TODO Auto-generated method stub
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
+				CSVFormat.DEFAULT.withHeader("userid", "fullname", "lastCourseAccess", "lastMoodleAcess"))) {
+			for (EnrolledUser enrolledUser : getSelectedEnrolledUser()) {
+				printer.printRecord(enrolledUser.getId(), enrolledUser.getFullName(),
+						Controller.DATE_TIME_FORMATTER.format(enrolledUser.getLastcourseaccess()
+								.atZone(ZoneId.systemDefault())),
+						Controller.DATE_TIME_FORMATTER.format(enrolledUser.getLastaccess()
+								.atZone(ZoneId.systemDefault())));
+
+			}
+		}
 
 	}
 
 	@Override
 	public String getOptions() {
 
-		int limit = 14;
+		int limit = Controller.getInstance()
+				.getMainConfiguration()
+				.getValue(this.chartType, "limitDays");
 
 		JSObject jsObject = getDefaultOptions();
 		jsObject.putWithQuote("typeGraph", "bubble");
 		JSObject callbacks = new JSObject();
 
-		callbacks.put("beforeTitle", "function(e,t){return'Course: '+e[0].xLabel}");
-		callbacks.put("title", "function(e,t){return'Moodle: '+e[0].yLabel}");
+		callbacks.put("beforeTitle", String.format("function(e,t){return'%s'+(%d==e[0].xLabel?'>'+%d:e[0].xLabel)}", I18n.get("label.course"), limit, limit));
+		callbacks.put("title", String.format("function(e,t){return'%s'+(%d==e[0].yLabel?'>'+%d:e[0].yLabel)}", I18n.get("text.moodle"), limit, limit));
 		callbacks.put("label", "function(e,t){return t.datasets[e.datasetIndex].data[e.index].users}");
 		jsObject.put("tooltips", "{callbacks:" + callbacks + "}");
 
 		JSObject scales = new JSObject();
-		
+
 		JSObject ticks = new JSObject();
 		ticks.put("min", 0);
 		ticks.put("max", limit + 2);
 		ticks.put("callback", "function(e,t,n){return " + limit + "==e?'>'+e:e>" + limit + "?'':e}");
-		
-		
-		scales.put("yAxes", "[{"+getYScaleLabel()+",ticks:"+ticks+"}]");
-		scales.put("xAxes", "[{"+getXScaleLabel()+",ticks:"+ticks+"}]");
-		jsObject.put("scales", scales);
 
+		scales.put("yAxes", "[{" + getYScaleLabel() + ",ticks:" + ticks + "}]");
+		scales.put("xAxes", "[{" + getXScaleLabel() + ",ticks:" + ticks + "}]");
+		jsObject.put("scales", scales);
+		//jsObject.put("onClick", "function(t,e){let a=myChart.getElementsAtEventForMode(t,'point',{intersect:!1});if(a.length>0){let t=a[0];t._chart.config.data.datasets[t._datasetIndex].data[t._index].usersId[counter%usersId.length]}}");
 		return jsObject.toString();
 	}
 
@@ -71,7 +87,9 @@ public class Bubble extends Chartjs {
 	}
 
 	private String createDataset(List<EnrolledUser> selectedEnrolledUser) {
-		int limit = 14;
+		int limit = Controller.getInstance()
+				.getMainConfiguration()
+				.getValue(this.chartType, "limitDays");
 		Map<Long, Map<Long, List<EnrolledUser>>> lastAccess = createLastAccess(selectedEnrolledUser, limit);
 		JSObject data = new JSObject();
 
@@ -91,8 +109,14 @@ public class Bubble extends Chartjs {
 				jsObject.put("r", entryUsers.getValue()
 						.size() * 10);
 				JSArray users = new JSArray();
-				entryUsers.getValue().forEach(u->users.addWithQuote(u.getFullName()));
+				JSArray usersId = new JSArray();
+				entryUsers.getValue()
+						.forEach(u -> {
+							users.addWithQuote(u.getFullName());
+							usersId.add(u.getId());
+						});
 				jsObject.put("users", users);
+				jsObject.put("usersId", usersId);
 				datasetData.add(jsObject);
 			}
 
@@ -123,5 +147,10 @@ public class Bubble extends Chartjs {
 		}
 		return lastAccess;
 	}
-
+	@Override
+	public int onClick(int userid) {
+		EnrolledUser user = Controller.getInstance().getDataBase().getUsers().getById(userid);
+		return listParticipants.getItems()
+		.indexOf(user);
+	}
 }

@@ -99,6 +99,8 @@ public class MainConfiguration {
 		createItem(ChartType.ACTIVITIES_TABLE, "thirdInterval", Color.web("#fff033"));
 		createItem(ChartType.ACTIVITIES_TABLE, "fourthInterval",  Color.web("#b5ff33"));
 		createItem(ChartType.ACTIVITIES_TABLE, "moreMax", Color.web("#38e330"));
+		
+		createItem(ChartType.BUBBLE, "limitDays", 14);
 	}
 
 	@SuppressWarnings("unchecked")

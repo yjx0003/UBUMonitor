@@ -31,16 +31,16 @@ public class RiskController implements MainAction {
 
 	public void init(MainController mainController) {
 		this.mainController = mainController;
-
 		initTabPaneWebView();
 		initContextMenu();
+		
+		
 
 	}
 
 	private void initTabPaneWebView() {
 
-		com.sun.javafx.webkit.WebConsoleListener.setDefaultListener((webView, message, lineNumber,
-				sourceId) -> System.out.println("Console: [" + sourceId + ":" + lineNumber + "] " + message));
+	
 
 		// Cargamos el html de los graficos y calificaciones
 		webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
@@ -56,17 +56,20 @@ public class RiskController implements MainAction {
 				.addListener((ov, oldState, newState) -> {
 					if (Worker.State.SUCCEEDED != newState)
 						return;
+					
 					progressBar.setVisible(false);
 					JSObject window = (JSObject) webViewChartsEngine.executeScript("window");
 					window.setMember("javaConnector", javaConnector);
-					webViewChartsEngine.executeScript("setLanguage()");
+					System.out.println(webViewChartsEngine.executeScript("document.documentElement.innerHTML"));
 					webViewCharts.toFront();
 					javaConnector.setDefaultValues();
 
 					javaConnector.updateChart();
+				
 				});
 		webViewChartsEngine.load(getClass().getResource("/graphics/RiskCharts.html")
 				.toExternalForm());
+		
 
 	}
 

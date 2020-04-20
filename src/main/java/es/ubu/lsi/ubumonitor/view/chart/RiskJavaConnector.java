@@ -39,6 +39,8 @@ public class RiskJavaConnector {
 	}
 
 	public void setDefaultValues() {
+		System.out.println(webViewChartsEngine);
+		webViewChartsEngine.executeScript("setLanguage()");
 		webViewChartsEngine.executeScript("manageButtons('" + Tabs.RISK + "')");
 		webViewChartsEngine.executeScript("setLocale('" + Locale.getDefault().toLanguageTag() + "')");
 		

@@ -77,7 +77,6 @@ public class VisualizationController implements MainAction {
 		webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
 		webViewChartsEngine = webViewCharts.getEngine();
 		javaConnector = new VisualizationJavaConnector(this);
-
 		progressBar.progressProperty()
 				.bind(webViewChartsEngine.getLoadWorker()
 						.progressProperty());

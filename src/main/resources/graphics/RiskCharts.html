@@ -52,6 +52,17 @@
     Chart.defaults.scale.ticks.beginAtZero = true;
     Chart.defaults.scale.autoSkip = true;
     Chart.defaults.global.plugins.datalabels.display = false;
+    
+    Chart.defaults.global.onClick = function (t,e) {
+        let element = myChart.getElementsAtEventForMode(t, "nearest", { intersect: true });
+        if (element.length > 0) {
+     		let e = element[0];
+     		let usersId = e._chart.config.data.datasets[e._datasetIndex].data[e._index].usersId;   
+            javaConnector.dataPointSelection(usersId[counter%usersId.length]);
+            counter++;
+        }
+    };
+    
    	Chart.plugins.register({
 	    beforeDraw: function(chartInstance) {
 	      var ctx = chartInstance.chart.ctx;

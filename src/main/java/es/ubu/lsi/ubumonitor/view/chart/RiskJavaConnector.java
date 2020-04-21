@@ -119,5 +119,9 @@ public class RiskJavaConnector {
 		}
 
 	}
+	
+	public void log(String text) {
+		System.out.println(text);
+	}
 
 }

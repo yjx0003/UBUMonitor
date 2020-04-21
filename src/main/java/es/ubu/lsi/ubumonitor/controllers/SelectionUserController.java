@@ -155,7 +155,7 @@ public class SelectionUserController {
 				} else {
 					Instant lastCourseAccess = user.getLastcourseaccess();
 					Instant lastAccess = user.getLastaccess();
-					Instant lastLogInstant = CONTROLLER.getActualCourse().getLogs().getLastDatetime().toInstant();
+					Instant lastLogInstant = CONTROLLER.getUpdateCourse().toInstant();
 					setText(user + "\n" + I18n.get("label.course")
 							+ UtilMethods.formatDates(lastCourseAccess, lastLogInstant) + " | "
 							+ I18n.get("text.moodle") + UtilMethods.formatDates(lastAccess, lastLogInstant));
@@ -200,7 +200,7 @@ public class SelectionUserController {
 		List<Group> group = checkComboBoxGroup.getCheckModel().getCheckedItems();
 		List<LastActivity> lastActivity = checkComboBoxActivity.getCheckModel().getCheckedItems();
 		String textField = tfdParticipants.getText().toLowerCase();
-		Instant lastLogInstant = CONTROLLER.getActualCourse().getLogs().getLastDatetime().toInstant();
+		Instant lastLogInstant = CONTROLLER.getUpdateCourse().toInstant();
 		filteredEnrolledList.setPredicate(e -> (checkUserHasRole(rol, e)) && (checkUserHasGroup(group, e))
 				&& (textField.isEmpty() || e.getFullName().toLowerCase().contains(textField))
 				&& (lastActivity.contains(LastActivityFactory.getActivity(e.getLastcourseaccess(), lastLogInstant))));

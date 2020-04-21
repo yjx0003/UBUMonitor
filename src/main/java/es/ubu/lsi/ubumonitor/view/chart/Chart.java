@@ -167,8 +167,13 @@ public abstract class Chart implements ExportableChart {
 
 	public String colorToRGB(Color color) {
 
+		return colorToRGB(color, color.getOpacity());
+	}
+
+	public String colorToRGB(Color color, double opacity) {
+
 		return String.format("'rgba(%s,%s,%s,%s)'", (int) (color.getRed() * 255), (int) (color.getGreen() * 255),
-				(int) (color.getBlue() * 255), color.getOpacity());
+				(int) (color.getBlue() * 255), opacity);
 	}
 
 	public List<GradeItem> getSelectedGradeItems() {

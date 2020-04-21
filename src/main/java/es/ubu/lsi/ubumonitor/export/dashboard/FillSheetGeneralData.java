@@ -24,10 +24,7 @@ public class FillSheetGeneralData extends FillSheetData {
 	@Override
 	protected void fillTable(XSSFSheet sheet, CellStyle dateStyle) {
 		fillCourseStructureTable(sheet);
-		ZonedDateTime lastLogDate = Controller.getInstance()
-				.getActualCourse()
-				.getLogs()
-				.getLastDatetime();
+		ZonedDateTime lastLogDate = Controller.getInstance().getUpdateCourse();
 		Set<EnrolledUser> enrolledUsers = Controller.getInstance()
 				.getActualCourse()
 				.getEnrolledUsers();

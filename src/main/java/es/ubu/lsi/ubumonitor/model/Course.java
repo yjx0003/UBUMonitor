@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -53,6 +54,7 @@ public class Course implements Serializable {
 	private LogStats logStats;
 	private byte[] userPhoto;
 	private String userFullName;
+	private ZonedDateTime updatedCourse;
 
 	public Course() {
 		this.enrolledUsers = new HashSet<>();
@@ -582,6 +584,20 @@ public class Course implements Serializable {
 	 */
 	public void setUserFullName(String userFullName) {
 		this.userFullName = userFullName;
+	}
+
+	/**
+	 * @return the updatedCourse
+	 */
+	public ZonedDateTime getUpdatedCourse() {
+		return updatedCourse;
+	}
+
+	/**
+	 * @param updatedCourse the updatedCourse to set
+	 */
+	public void setUpdatedCourse(ZonedDateTime updatedCourse) {
+		this.updatedCourse = updatedCourse;
 	}
 
 }

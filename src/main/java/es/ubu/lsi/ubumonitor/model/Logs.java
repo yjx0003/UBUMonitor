@@ -63,7 +63,7 @@ public class Logs implements Serializable {
 	 * 
 	 * @return última linea del log o null si está vacio
 	 */
-	public ZonedDateTime getLastDatetime() {
+	public ZonedDateTime getLastZonedDatetime() {
 		return isEmpty(logLines) ? null : logLines.get(logLines.size() - 1).getTime();
 	}
 

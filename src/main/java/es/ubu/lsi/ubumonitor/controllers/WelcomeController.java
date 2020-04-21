@@ -9,6 +9,7 @@ import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -579,6 +580,7 @@ public class WelcomeController implements Initializable {
 				updateMessage(I18n.get("label.loadingstats"));
 				// Establecemos las estadisticas
 				controller.createStats();
+				actualCourse.setUpdatedCourse(ZonedDateTime.now());
 
 				updateMessage(I18n.get("label.savelocal"));
 				saveData();

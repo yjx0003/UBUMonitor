@@ -33,9 +33,6 @@ public class RiskController implements MainAction {
 		this.mainController = mainController;
 		initTabPaneWebView();
 		initContextMenu();
-		
-		
-
 	}
 
 	private void initTabPaneWebView() {

@@ -83,19 +83,19 @@ public class UserInfoController {
 		labelUser.setText(enrolledUser.toString());
 		hyperlinkEmail.setText(enrolledUser.getEmail());
 		hyperlinkEmail.setOnAction(e -> UtilMethods.mailTo(enrolledUser.getEmail()));
-		Instant reference = Controller.getInstance().getActualCourse().getLogs().getLastDatetime().toInstant();
+		Instant reference = Controller.getInstance().getUpdateCourse().toInstant();
 		labelFirstAccess.setText(getDifferenceTime(enrolledUser.getFirstaccess(), reference));
 		labelLastAccess.setText(getDifferenceTime(enrolledUser.getLastaccess(), reference));
 		Circle circleLastAccees = new Circle(10);
 		circleLastAccees.setFill(LastActivityFactory.getColorActivity(enrolledUser.getLastaccess(),
-				Controller.getInstance().getActualCourse().getLogs().getLastDatetime().toInstant()));
+				Controller.getInstance().getUpdateCourse().toInstant()));
 		labelLastAccess.setGraphic(circleLastAccees);
 		
 		
 		labelLastCourseAccess.setText(getDifferenceTime(enrolledUser.getLastcourseaccess(), reference));
 		Circle circle = new Circle(10);
 		circle.setFill(LastActivityFactory.getColorActivity(enrolledUser.getLastcourseaccess(),
-				Controller.getInstance().getActualCourse().getLogs().getLastDatetime().toInstant()));
+				Controller.getInstance().getUpdateCourse().toInstant()));
 		labelLastCourseAccess.setGraphic(circle);
 		labelRoles.setText(Controller.getInstance().getActualCourse().getRoles().stream()
 				.filter(r -> r.contains(enrolledUser)).map(Role::getRoleName).collect(Collectors.joining(", ")));

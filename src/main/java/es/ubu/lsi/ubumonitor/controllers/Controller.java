@@ -5,6 +5,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
@@ -93,8 +94,8 @@ public class Controller {
 		ConfigHelper.initialize(AppInfo.PROPERTIES_PATH);
 		setDataBase(new DataBase());
 		// Si no existe el recurso de idioma especificado cargamos el Español
-		Languages lang = Languages
-				.getLanguageByTag(ConfigHelper.getProperty("language", Locale.getDefault().toLanguageTag()));
+		Languages lang = Languages.getLanguageByTag(ConfigHelper.getProperty("language", Locale.getDefault()
+				.toLanguageTag()));
 		try {
 
 			if (lang == null) {
@@ -200,7 +201,7 @@ public class Controller {
 	 * Intenta buscar el token de acceso a la REST API de moodle e iniciar sesion en
 	 * la pagina de moodle.
 	 * 
-	 * @param host servidor moodle
+	 * @param host     servidor moodle
 	 * @param username nombre de usuario
 	 * @param password contraseña
 	 * @throws IOException si no ha podido conectarse o la contraseña es erronea
@@ -210,7 +211,6 @@ public class Controller {
 		URL hostURL = new URL(host);
 
 		WebService.initialize(hostURL.toString(), username, password);
-
 
 		sesskey = findSesskey(loginWebScraping(hostURL.toString(), username, password));
 
@@ -244,7 +244,8 @@ public class Controller {
 		Stats stats = new Stats(getActualCourse());
 		getActualCourse().setStats(stats);
 
-		LogStats logStats = new LogStats(getActualCourse().getLogs().getList());
+		LogStats logStats = new LogStats(getActualCourse().getLogs()
+				.getList());
 		getActualCourse().setLogStats(logStats);
 	}
 
@@ -263,7 +264,7 @@ public class Controller {
 	 * @param username nombre de usuario de la cuenta
 	 * @param password password contraseña
 	 * @return las cookies que se usan para navegar dentro del servidor despues de
-	 * loguearse
+	 *         loguearse
 	 * @throws IllegalStateException si no ha podido loguearse
 	 */
 	private Response loginWebScraping(String host, String username, String password) {
@@ -272,14 +273,19 @@ public class Controller {
 			LOGGER.info("Logeandose para web scraping");
 			String hostLogin = host + "/login/index.php";
 			Response response = Connection.getResponse(hostLogin);
-			Document loginDoc = Jsoup.parse(response.body().byteStream(), null, hostLogin);
+			Document loginDoc = Jsoup.parse(response.body()
+					.byteStream(), null, hostLogin);
 			response.close();
 			Element e = loginDoc.selectFirst("input[name=logintoken]");
 			String logintoken = (e == null) ? "" : e.attr("value");
 
-			RequestBody formBody = new FormBody.Builder().add("username", username).add("password", password)
-					.add("logintoken", logintoken).build();
-			return Connection.getResponse(new Request.Builder().url(hostLogin).post(formBody).build());
+			RequestBody formBody = new FormBody.Builder().add("username", username)
+					.add("password", password)
+					.add("logintoken", logintoken)
+					.build();
+			return Connection.getResponse(new Request.Builder().url(hostLogin)
+					.post(formBody)
+					.build());
 
 		} catch (Exception e) {
 			LOGGER.error("Error al intentar loguearse", e);
@@ -291,7 +297,8 @@ public class Controller {
 	public String findSesskey(Response html) throws IOException {
 
 		Pattern pattern = Pattern.compile("sesskey=([\\w]+)");
-		Matcher m = pattern.matcher(html.body().string());
+		Matcher m = pattern.matcher(html.body()
+				.string());
 		if (m.find()) {
 			return m.group(1);
 		}
@@ -345,10 +352,11 @@ public class Controller {
 
 	public void setDirectory() {
 
-		String host = UtilMethods.removeReservedChar(this.getUrlHost().getHost());
-		String username = UtilMethods.removeReservedChar(this.getUsername());
-		this.directoryCache = Paths.get(AppInfo.CACHE_DIR, host, username);
-		this.configuration = Paths.get(AppInfo.CONFIGURATION_DIR, host, username);
+		String hostName = UtilMethods.removeReservedChar(this.getUrlHost()
+				.getHost());
+		String userName = UtilMethods.removeReservedChar(this.getUsername());
+		this.directoryCache = Paths.get(AppInfo.CACHE_DIR, hostName, userName);
+		this.configuration = Paths.get(AppInfo.CONFIGURATION_DIR, hostName, userName);
 	}
 
 	/**
@@ -374,6 +382,21 @@ public class Controller {
 	 */
 	public void setMainConfiguration(MainConfiguration mainConfiguration) {
 		this.mainConfiguration = mainConfiguration;
+	}
+
+	/**
+	 * @return the updateCourse
+	 */
+	public ZonedDateTime getUpdateCourse() {
+		return getActualCourse().getUpdatedCourse() == null ? getActualCourse().getLogs()
+				.getLastZonedDatetime() : getActualCourse().getUpdatedCourse();
+	}
+
+	/**
+	 * @param updateCourse the updateCourse to set
+	 */
+	public void setUpdateCourse(ZonedDateTime updateCourse) {
+		getActualCourse().setUpdatedCourse(updateCourse);
 	}
 
 }

@@ -60,7 +60,6 @@ public class RiskController implements MainAction {
 					progressBar.setVisible(false);
 					JSObject window = (JSObject) webViewChartsEngine.executeScript("window");
 					window.setMember("javaConnector", javaConnector);
-					System.out.println(webViewChartsEngine.executeScript("document.documentElement.innerHTML"));
 					webViewCharts.toFront();
 					javaConnector.setDefaultValues();
 

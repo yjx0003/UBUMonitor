@@ -35,8 +35,11 @@ public class FillSheetGeneralData extends FillSheetData {
 				.map(e -> LastActivityFactory.getActivity(e.getLastcourseaccess(), lastLogDate))
 				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 		int rowIndex = 0;
-		for(LastActivity lastActivity : LastActivityFactory.getAllLastActivity()) {
-			setCellValue(sheet, ++rowIndex, 3, lastActivities.get(lastActivity));
+		for (LastActivity lastActivity : LastActivityFactory.getAllLastActivity()) {
+			if (lastActivities.get(lastActivity) != null) {
+				setCellValue(sheet, ++rowIndex, 3, lastActivities.get(lastActivity));
+
+			}
 		}
 	}
 

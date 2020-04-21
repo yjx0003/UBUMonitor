@@ -50,7 +50,6 @@
 
     Chart.defaults.scale.ticks.beginAtZero = true;
     Chart.defaults.scale.autoSkip = true;
-    Chart.defaults.global.plugins.datalabels.display = false;
     
     Chart.defaults.global.onClick = function (t,e) {
         let element = myChart.getElementsAtEventForMode(t, "nearest", { intersect: true });

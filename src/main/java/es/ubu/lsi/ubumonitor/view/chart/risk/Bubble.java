@@ -67,13 +67,14 @@ public class Bubble extends Chartjs {
 
 		JSObject ticks = new JSObject();
 		ticks.put("min", 0);
-		ticks.put("max", limit + 2);
-		ticks.put("callback", "function(e,t,n){return " + limit + "==e?'>'+e:e>" + limit + "?'':e}");
+		ticks.put("max", limit);
+		ticks.put("callback", "function(e,t,n){return " + limit + "==e?'>'+e:e}");
 
 		scales.put("yAxes", "[{" + getYScaleLabel() + ",ticks:" + ticks + "}]");
 		scales.put("xAxes", "[{" + getXScaleLabel() + ",ticks:" + ticks + "}]");
 		jsObject.put("scales", scales);
-		//jsObject.put("onClick", "function(t,e){let a=myChart.getElementsAtEventForMode(t,'point',{intersect:!1});if(a.length>0){let t=a[0];t._chart.config.data.datasets[t._datasetIndex].data[t._index].usersId[counter%usersId.length]}}");
+		jsObject.put("layout", "{padding:{right:50,left:50,top:50,bottom:50}}");
+		jsObject.put("plugins", "{datalabels:{formatter:function(a,t){return a.r/10}}}");
 		return jsObject.toString();
 	}
 

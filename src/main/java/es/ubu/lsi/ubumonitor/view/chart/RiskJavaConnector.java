@@ -4,7 +4,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.EnumMap;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
@@ -15,6 +17,7 @@ import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.risk.Bubble;
+import es.ubu.lsi.ubumonitor.view.chart.risk.RiskBar;
 import javafx.concurrent.Worker.State;
 import javafx.scene.web.WebEngine;
 
@@ -23,11 +26,21 @@ public class RiskJavaConnector {
 	private Chart currentType;
 	private WebEngine webViewChartsEngine;
 	private File file;
+	private Map<ChartType, Chart> mapChart;
 	
 	public RiskJavaConnector(RiskController riskController) {
 		webViewChartsEngine = riskController.getWebViewChartsEngine();
 		currentType = new Bubble(riskController.getMainController());
-		currentType.setWebViewChartsEngine(webViewChartsEngine)  ;
+		currentType.setWebViewChartsEngine(webViewChartsEngine);
+		
+		mapChart = new EnumMap<>(ChartType.class);
+		addChart(new Bubble(riskController.getMainController()));
+		addChart(new RiskBar(riskController.getMainController()));
+	}
+	
+	public void addChart(Chart chart) {
+		chart.setWebViewChartsEngine(webViewChartsEngine);
+		mapChart.put(chart.chartType, chart);
 	}
 
 	public void updateChart() {
@@ -35,6 +48,21 @@ public class RiskJavaConnector {
 			return;
 		}
 		currentType.update();
+		
+	}
+	
+	public void updateCharts(String typeChart) {
+		Chart chart = mapChart.get(ChartType.valueOf(typeChart));
+		if (currentType.getChartType() != chart.getChartType()) {
+			currentType.clear();
+			currentType = chart;
+		}
+		manageOptions();
+		currentType.update();
+	}
+
+	private void manageOptions() {
+		// TODO Auto-generated method stub
 		
 	}
 

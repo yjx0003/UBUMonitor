@@ -21,7 +21,8 @@
 
 <div id="all_tabs" class="controles">
     <div class="pestañas" id="RISK">
-        <input type="button" class="btn" id="BUBBLE" onclick='javaConnector.updateChart("BUBBLE");' />
+        <input type="button" class="btn" id="BUBBLE" onclick='javaConnector.updateCharts("BUBBLE");' />
+        <input type="button" class="btn" id="RISK_BAR" onclick='javaConnector.updateCharts("RISK_BAR");' />
     </div>
 
     <div class="opciones">
@@ -47,27 +48,11 @@
     Chart.defaults.global.hover.animationDuration = 0;
     Chart.defaults.global.legend.labels.usePointStyle = true;
     Chart.defaults.global.legend.position = "top";
-
+	Chart.defaults.global.plugins.datalabels.display = false
     Chart.defaults.scale.ticks.beginAtZero = true;
     Chart.defaults.scale.autoSkip = true;
+  
     
-    Chart.defaults.global.onClick = function (t,e) {
-        let element = myChart.getElementsAtEventForMode(t, "nearest", { intersect: true });
-        if (element.length > 0) {
-     		let e = element[0];
-     		let usersId = e._chart.config.data.datasets[e._datasetIndex].data[e._index].usersId;   
-            javaConnector.dataPointSelection(usersId[counter%usersId.length]);
-            counter++;
-        }
-    };
-    
-   	Chart.plugins.register({
-	    beforeDraw: function(chartInstance) {
-	      var ctx = chartInstance.chart.ctx;
-	      ctx.fillStyle = "white";
-	      ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height);
-	    }
-	});
 
     var counter = 0;
     var height = "93%";

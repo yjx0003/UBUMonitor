@@ -87,7 +87,7 @@ public class CalificationBar extends ChartjsGradeItem {
 		jsObject.put("tooltips", "{mode:'label'}");
 		jsObject.put("onClick", "function(event, array){}");
 		jsObject.put("plugins",
-				"{datalabels:{display:!0,font:{weight:\"bold\"},formatter:function(t,a){if(0===t)return\"\";let e=a.chart.data.datasets,l=0;for(i=0;i<e.length;i++)l+=e[i].data[a.dataIndex];return t+\"/\"+l+\" (\"+(t/l).toLocaleString(locale,{style:\"percent\",maximumFractionDigits:2})+\")\"}}}");
+				"{datalabels:{display:!0,font:{weight:'bold'},formatter:function(t,a){if(0===t)return'';let e=a.chart.data.datasets,l=0;for(i=0;i<e.length;i++)l+=e[i].data[a.dataIndex];return t+'/'+l+' ('+(t/l).toLocaleString(locale,{style:'percent',maximumFractionDigits:2})+')'}}}");
 		return jsObject.toString();
 	}
 

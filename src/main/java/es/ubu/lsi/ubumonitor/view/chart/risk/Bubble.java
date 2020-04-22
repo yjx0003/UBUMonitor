@@ -35,14 +35,18 @@ public class Bubble extends Chartjs {
 
 	@Override
 	public void exportCSV(String path) throws IOException {
-		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
-				CSVFormat.DEFAULT.withHeader("userid", "fullname", "lastCourseAccess", "lastMoodleAcess"))) {
+		ZonedDateTime updateTime = Controller.getInstance()
+				.getUpdateCourse();
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader("userid", "fullname",
+				"lastCourseAccess", "lastMoodleAcess", "diffCourseAccess", "diffMoodleAccess"))) {
 			for (EnrolledUser enrolledUser : getSelectedEnrolledUser()) {
 				printer.printRecord(enrolledUser.getId(), enrolledUser.getFullName(),
 						Controller.DATE_TIME_FORMATTER.format(enrolledUser.getLastcourseaccess()
 								.atZone(ZoneId.systemDefault())),
 						Controller.DATE_TIME_FORMATTER.format(enrolledUser.getLastaccess()
-								.atZone(ZoneId.systemDefault())));
+								.atZone(ZoneId.systemDefault())),
+						ChronoUnit.DAYS.between(enrolledUser.getLastcourseaccess(), updateTime),
+						ChronoUnit.DAYS.between(enrolledUser.getLastaccess(), updateTime));
 
 			}
 		}
@@ -80,7 +84,10 @@ public class Bubble extends Chartjs {
 		jsObject.put("scales", scales);
 		jsObject.put("layout", "{padding:{right:50,left:50,top:50,bottom:50}}");
 		jsObject.put("plugins",
-				"{datalabels:{font:{style:'italic',weight:'bold'},formatter:function(a,t){return a.users.length}}}");
+				"{datalabels:{display:true,font:{style:'italic',weight:'bold'},formatter:function(a,t){return a.users.length}}}");
+
+		jsObject.put("onClick",
+				"function(t,e){let n=myChart.getElementsAtEventForMode(t,'nearest',{intersect:!0});if(n.length>0){let t=n[0],e=t._chart.config.data.datasets[t._datasetIndex].data[t._index].usersId;javaConnector.dataPointSelection(e[counter%e.length]),counter++}}");
 		return jsObject.toString();
 	}
 

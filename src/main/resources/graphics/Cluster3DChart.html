@@ -9,36 +9,18 @@
 <div id="container" style="height: 90vh"></div>
 
 <script type="text/javascript">
-	var chart = Highcharts.chart('container', {
-		chart : {
-			type : 'scatter3d',
-			tooltip : {
-				valueDecimals: 2
+	function generateChart(data) {
+		return Highcharts.chart('container', {
+			title : {
+				text : ''
 			},
-			options3d : {
-				enabled : true,
-				alpha : 20,
-				beta : 30,
-				depth : 500,
-				viewDistance : 10,
-				frame : {
-					bottom : {
-						size : 1,
-						color : 'rgba(0,0,0,0.05)'
-					}
-				}
-			}
-		},
-		series : []
-	});;
-	
-	function updateChart(series){
-		chart.destroy();
-		chart = Highcharts.chart('container', {
+			legend : {
+				verticalAlign : 'top'
+			},
 			chart : {
 				type : 'scatter3d',
 				tooltip : {
-					valueDecimals: 2
+					valueDecimals : 2
 				},
 				options3d : {
 					enabled : true,
@@ -54,8 +36,15 @@
 					}
 				}
 			},
-			series : series
+			series : data
 		});
+	}
+
+	var chart = generateChart([]);
+
+	function updateChart(series) {
+		chart.destroy();
+		chart = generateChart(series);
 	}
 </script>
 </html>

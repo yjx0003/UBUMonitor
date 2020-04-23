@@ -24,13 +24,13 @@ public class KMeansPlusPlus extends Algorithm {
 		int k = getParameters().getValue(ClusteringParameter.NUM_CLUSTER);
 		int max = getParameters().getValue(ClusteringParameter.MAX_ITERATIONS);
 		Distance distance = getParameters().getValue(ClusteringParameter.DISTANCE_TYPE);
-		
+
 		if (!ClusteringParameter.NUM_CLUSTER.isValid(k))
 			throw new IllegalParamenterException(ClusteringParameter.NUM_CLUSTER, k);
-		
+
 		if (!ClusteringParameter.MAX_ITERATIONS.isValid(max))
 			throw new IllegalParamenterException(ClusteringParameter.MAX_ITERATIONS, max);
-		
+
 		return new KMeansPlusPlusClusterer<>(k, max, distance.getInstance());
 	}
 }

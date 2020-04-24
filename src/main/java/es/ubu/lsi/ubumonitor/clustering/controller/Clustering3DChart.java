@@ -34,11 +34,12 @@ public class Clustering3DChart extends AbstractChart {
 			serie.putWithQuote("name", clusters.get(i).getName());
 			JSArray data = new JSArray();
 			for (Entry<UserData, double[]> entry : points.get(i).entrySet()) {
-				JSArray p = new JSArray();
-				p.add(entry.getValue()[0]);
-				p.add(entry.getValue()[1]);
-				p.add(entry.getValue()[2]);
-				data.add(p);
+				double[] value = entry.getValue();
+				JSArray point = new JSArray();
+				point.add(value[0]);
+				point.add(value.length > 1 ? value[1] : 0.0);
+				point.add(value.length > 2 ? value[2] : 0.0);
+				data.add(point);
 			}
 			serie.put("data", data);
 			series.add(serie);

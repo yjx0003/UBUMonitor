@@ -51,6 +51,7 @@ public class RiskJavaConnector {
 		if (webViewChartsEngine.getLoadWorker().getState() != State.SUCCEEDED) {
 			return;
 		}
+		manageOptions();
 		currentType.update();
 		
 	}
@@ -67,7 +68,7 @@ public class RiskJavaConnector {
 
 	private void manageOptions() {
 		riskController.getGridPaneOptions().setVisible(currentType.getChartType() == ChartType.RISK_BAR_TEMPORAL);
-		
+		riskController.getGridPaneOptions().setManaged(currentType.getChartType() == ChartType.RISK_BAR_TEMPORAL);
 	}
 
 	public void setDefaultValues() {

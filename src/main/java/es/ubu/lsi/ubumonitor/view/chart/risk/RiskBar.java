@@ -17,11 +17,9 @@ import org.apache.commons.csv.CSVPrinter;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.LastActivity;
 import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
-import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
@@ -32,6 +30,12 @@ public class RiskBar extends Chartjs {
 
 	public RiskBar(MainController mainController) {
 		super(mainController, ChartType.RISK_BAR, Tabs.RISK);
+		useGeneralButton = false;
+		useLegend = true;
+		useGroupButton = false;
+	}
+	public RiskBar(MainController mainController, ChartType chartType, Tabs tab) {
+		super(mainController, chartType, tab);
 		useGeneralButton = false;
 		useLegend = true;
 		useGroupButton = false;
@@ -70,7 +74,6 @@ public class RiskBar extends Chartjs {
 		JSObject scales = new JSObject();
 
 		JSObject ticks = new JSObject();
-		ticks.put("precision", 0);
 
 		scales.put("yAxes", "[{" + getYScaleLabel() + ",ticks:" + ticks + "}]");
 		scales.put("xAxes", "[{" + getXScaleLabel() + ",ticks:" + ticks + "}]");
@@ -92,7 +95,7 @@ public class RiskBar extends Chartjs {
 
 	}
 
-	private String createDataset(List<EnrolledUser> selectedEnrolledUser) {
+	protected String createDataset(List<EnrolledUser> selectedEnrolledUser) {
 		
 		ZonedDateTime lastUpdate = Controller.getInstance()
 				.getUpdateCourse();
@@ -123,7 +126,7 @@ public class RiskBar extends Chartjs {
 		return data.toString();
 	}
 
-	public JSObject createDataset(String label, Map<LastActivity, List<EnrolledUser>> lastCourseAccess,
+	public JSObject createDataset(String label, Map<LastActivity, List<EnrolledUser>> lastAccess,
 			Set<LastActivity> lastActivities) {
 		JSObject dataset = new JSObject();
 		dataset.putWithQuote("label", label);
@@ -137,7 +140,7 @@ public class RiskBar extends Chartjs {
 			borderColor.add(colorToRGB(lastActivity.getColor()));
 			JSArray users = new JSArray();
 			JSArray usersId = new JSArray();
-			List<EnrolledUser> listUsers = lastCourseAccess.computeIfAbsent(lastActivity, k -> Collections.emptyList());
+			List<EnrolledUser> listUsers = lastAccess.computeIfAbsent(lastActivity, k -> Collections.emptyList());
 			datasetData.add(listUsers.size());
 			listUsers.forEach(e -> {
 				usersId.add(e.getId());

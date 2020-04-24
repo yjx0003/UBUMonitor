@@ -81,9 +81,15 @@ public class CalificationBar extends ChartjsGradeItem {
 	@Override
 	public String getOptions() {
 		JSObject jsObject = getDefaultOptions();
-		jsObject.putWithQuote("typeGraph", "bar");
-		jsObject.put("scales", "{xAxes:[{" + getXScaleLabel() + ",stacked: true}],yAxes:[{" + getYScaleLabel()
-				+ ",stacked:true,ticks:{stepSize:0}}]}");
+		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
+		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBar" : "bar");
+		
+		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
+		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
+		
+		jsObject.put("scales", "{xAxes:[{" + xLabel + ",stacked: true}],yAxes:[{" + yLabel
+				+ ",stacked:true}]}");
 		jsObject.put("tooltips", "{mode:'label'}");
 		jsObject.put("onClick", "function(event, array){}");
 		jsObject.put("plugins",

@@ -23,6 +23,7 @@
     <div class="pestañas" id="RISK">
         <input type="button" class="btn" id="BUBBLE" onclick='javaConnector.updateCharts("BUBBLE");' />
         <input type="button" class="btn" id="RISK_BAR" onclick='javaConnector.updateCharts("RISK_BAR");' />
+        <input type="button" class="btn" id="RISK_BAR_TEMPORAL" onclick='javaConnector.updateCharts("RISK_BAR_TEMPORAL");' />
     </div>
 
     <div class="opciones">
@@ -50,8 +51,15 @@
     Chart.defaults.global.legend.position = "top";
 	Chart.defaults.global.plugins.datalabels.display = false
     Chart.defaults.scale.ticks.beginAtZero = true;
+    Chart.defaults.scale.ticks.precision = 0;
     Chart.defaults.scale.autoSkip = true;
-  
+	Chart.plugins.register({
+	  beforeDraw: function(chartInstance) {
+	    var ctx = chartInstance.chart.ctx;
+	    ctx.fillStyle = chartInstance.config.options.chartBackgroundColor;
+	    ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height);
+	  }
+	});
     
 
     var counter = 0;

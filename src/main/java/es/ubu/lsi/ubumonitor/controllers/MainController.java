@@ -191,8 +191,9 @@ public class MainController implements Initializable {
 		return stats;
 	}
 
-	public VisualizationController getVisualizationTabPageController() {
-		return visualizationController;
+
+	public RiskController getRiskController() {
+		return riskController;
 	}
 
 	public TabPane getWebViewTabPane() {

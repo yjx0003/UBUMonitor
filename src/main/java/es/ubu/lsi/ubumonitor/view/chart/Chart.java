@@ -79,7 +79,7 @@ public abstract class Chart implements ExportableChart {
 	protected static final double OPACITY = 0.2;
 
 	public Chart(MainController mainController, ChartType chartType, Tabs tabName) {
-		this.visualizationController = mainController.getVisualizationTabPageController();
+		this.visualizationController = mainController.getVisualizationController();
 		this.selectionController = mainController.getSelectionController();
 		this.selectionUserController = mainController.getSelectionUserController();
 		this.slcGroup = selectionUserController.getCheckComboBoxGroup();
@@ -199,6 +199,7 @@ public abstract class Chart implements ExportableChart {
 		MainConfiguration mainConfiguration = Controller.getInstance()
 				.getMainConfiguration();
 		JSObject jsObject = new JSObject();
+		jsObject.put("chartBackgroundColor", colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "chartBackgroundColor") ));
 		jsObject.put("useLegend", useLegend);
 		jsObject.put("useGroup", useGroupButton);
 		jsObject.put("useGeneral", useGeneralButton);

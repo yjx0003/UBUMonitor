@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -11,18 +12,29 @@ import es.ubu.lsi.ubumonitor.view.chart.RiskJavaConnector;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 
 public class RiskController implements MainAction {
+
 	@FXML
 	private ProgressBar progressBar;
 	@FXML
 	private WebView webViewCharts;
+	
+	@FXML
+	private DatePicker datePicker;
+	
+	@FXML
+	private GridPane gridPaneOptions;
+	
 	private WebEngine webViewChartsEngine;
 	private MainController mainController;
 	private Controller controller = Controller.getInstance();
@@ -31,6 +43,15 @@ public class RiskController implements MainAction {
 
 	public void init(MainController mainController) {
 		this.mainController = mainController;
+		datePicker.setValue(Controller.getInstance().getUpdateCourse().toLocalDate());
+		datePicker.setDayCellFactory(picker -> new DateCell() {
+			@Override
+			public void updateItem(LocalDate date, boolean empty) {
+				super.updateItem(date, empty);
+				setDisable(empty || date.isAfter(Controller.getInstance().getUpdateCourse().toLocalDate()));
+			}
+		});
+		datePicker.setOnAction(e-> javaConnector.updateChart());
 		initTabPaneWebView();
 		initContextMenu();
 	}
@@ -234,5 +255,15 @@ public class RiskController implements MainAction {
 	public MainController getMainController() {
 		return mainController;
 	}
+
+	
+	public DatePicker getDatePicker() {
+		return datePicker;
+	}
+
+	public GridPane getGridPaneOptions() {
+		return gridPaneOptions;
+	}
+
 
 }

@@ -74,7 +74,6 @@ public class Bubble extends Chartjs {
 		JSObject scales = new JSObject();
 
 		JSObject ticks = new JSObject();
-		ticks.put("precision", 0);
 		ticks.put("min", 0);
 		ticks.put("max", limit);
 		ticks.put("callback", "function(e,t,n){return " + limit + "==e?'>'+e:e}");

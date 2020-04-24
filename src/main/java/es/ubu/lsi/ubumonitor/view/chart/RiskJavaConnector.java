@@ -18,6 +18,7 @@ import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.risk.Bubble;
 import es.ubu.lsi.ubumonitor.view.chart.risk.RiskBar;
+import es.ubu.lsi.ubumonitor.view.chart.risk.RiskBarTemporal;
 import javafx.concurrent.Worker.State;
 import javafx.scene.web.WebEngine;
 
@@ -25,10 +26,12 @@ public class RiskJavaConnector {
 	
 	private Chart currentType;
 	private WebEngine webViewChartsEngine;
+	private RiskController riskController;
 	private File file;
 	private Map<ChartType, Chart> mapChart;
 	
 	public RiskJavaConnector(RiskController riskController) {
+		this.riskController = riskController;
 		webViewChartsEngine = riskController.getWebViewChartsEngine();
 		currentType = new Bubble(riskController.getMainController());
 		currentType.setWebViewChartsEngine(webViewChartsEngine);
@@ -36,6 +39,7 @@ public class RiskJavaConnector {
 		mapChart = new EnumMap<>(ChartType.class);
 		addChart(new Bubble(riskController.getMainController()));
 		addChart(new RiskBar(riskController.getMainController()));
+		addChart(new RiskBarTemporal(riskController.getMainController()));
 	}
 	
 	public void addChart(Chart chart) {
@@ -62,7 +66,7 @@ public class RiskJavaConnector {
 	}
 
 	private void manageOptions() {
-		// TODO Auto-generated method stub
+		riskController.getGridPaneOptions().setVisible(currentType.getChartType() == ChartType.RISK_BAR_TEMPORAL);
 		
 	}
 

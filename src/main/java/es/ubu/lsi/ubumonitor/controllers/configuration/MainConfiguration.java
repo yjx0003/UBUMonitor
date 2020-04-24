@@ -46,6 +46,7 @@ public class MainConfiguration {
 		properties.clear();
 		categories.clear();
 		createItem(GENERAL, "charset", Charsets.UTF_8);
+		createItem(GENERAL, "chartBackgroundColor", Color.web("#FFFFFF", 0.0));
 		createItem(GENERAL, "cutGrade", 5.0);
 		createItem(GENERAL, "borderLength", 10);
 		createItem(GENERAL, "borderSpace", 5);
@@ -90,6 +91,8 @@ public class MainConfiguration {
 
 		createItem(ChartType.GRADE_REPORT_TABLE, "failGradeColor", Color.web("#DC143C"));
 		createItem(ChartType.GRADE_REPORT_TABLE, "passGradeColor", Color.web("#2DC214"));
+		
+		createItem(ChartType.CALIFICATION_BAR, "horizontalMode", false);
 		createItem(ChartType.CALIFICATION_BAR, "emptyGradeColor", Color.web("#D3D3D3", 0.3));
 		createItem(ChartType.CALIFICATION_BAR, "failGradeColor", Color.web("#DC143C", 0.3));
 		createItem(ChartType.CALIFICATION_BAR, "passGradeColor", Color.web("#2DC214", 0.3));

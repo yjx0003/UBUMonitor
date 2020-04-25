@@ -23,6 +23,8 @@ public class ClusteringChart extends AbstractChart {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringChart.class);
 
+	private static final String LEGEND_FORMAT = "%s (%d/%d)";
+
 	private Connector connector;
 	private List<Map<UserData, double[]>> points;
 
@@ -52,20 +54,21 @@ public class ClusteringChart extends AbstractChart {
 		centers.putWithQuote("label", I18n.get("clustering.centroids"));
 		centers.putWithQuote("backgroundColor", "black");
 		JSArray centersData = new JSArray();
+
+		int total = clusters.stream().mapToInt(ClusterWrapper::size).sum();
+
 		for (int i = 0; i < points.size(); i++) {
 			JSObject group = new JSObject();
-			group.putWithQuote("label", clusters.get(i).getName());
+			group.putWithQuote("label",
+					String.format(LEGEND_FORMAT, clusters.get(i).getName(), clusters.get(i).size(), total));
 			group.put("backgroundColor", UtilMethods.colorToRGB(colors.get(clusters.get(i))));
 			JSArray data = new JSArray();
 			for (Map.Entry<UserData, double[]> userEntry : points.get(i).entrySet()) {
 				UserData user = userEntry.getKey();
 				JSObject coord = new JSObject();
-				coord.put("x", userEntry.getValue()[0]);
-				if (userEntry.getValue().length == 2) {
-					coord.put("y", userEntry.getValue()[1]);
-				} else {
-					coord.put("y", 0.0);
-				}
+				double[] point = userEntry.getValue();
+				coord.put("x", point[0]);
+				coord.put("y", point.length == 2 ? point[1] : 0.0);
 
 				if (user == null) {
 					coord.putWithQuote("user", I18n.get("clustering.centroid"));
@@ -87,6 +90,14 @@ public class ClusteringChart extends AbstractChart {
 		LOGGER.debug("Data: {}", root);
 
 		getWebEngine().executeScript("updateChart(" + root + ")");
+	}
+
+	@Override
+	public void rename(List<ClusterWrapper> clusters) {
+		JSArray names = new JSArray();
+		int total = clusters.stream().mapToInt(ClusterWrapper::size).sum();
+		clusters.forEach(c -> names.addWithQuote(String.format(LEGEND_FORMAT, c.getName(), c.size(), total)));
+		getWebEngine().executeScript("rename(" + names + ")");
 	}
 
 	@Override

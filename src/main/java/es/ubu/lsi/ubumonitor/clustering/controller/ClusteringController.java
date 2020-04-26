@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.clustering.algorithm.Algorithm;
 import es.ubu.lsi.ubumonitor.clustering.algorithm.Algorithms;
-import es.ubu.lsi.ubumonitor.clustering.algorithm.HierarchicalClustering;
 import es.ubu.lsi.ubumonitor.clustering.analysis.AnalysisFactory;
 import es.ubu.lsi.ubumonitor.clustering.analysis.ElbowFactory;
 import es.ubu.lsi.ubumonitor.clustering.analysis.SilhouetteFactory;
@@ -152,7 +151,7 @@ public class ClusteringController {
 		graph = new ClusteringChart(this);
 		silhouette = new ClusteringSilhouette(this);
 		graph3D = new Clustering3DChart(this);
-		
+
 		rangeSlider.setHighValue(10.0);
 
 		propertyEditor = new TextFieldPropertyEditorFactory();
@@ -166,24 +165,6 @@ public class ClusteringController {
 
 		initAlgorithms();
 		initCollectors();
-	}
-	
-	@FXML
-	private void executeHierarchical() {
-		List<EnrolledUser> users = mainController.getListParticipants().getSelectionModel().getSelectedItems();
-
-		List<DataCollector> collectors = new ArrayList<>();
-		if (checkBoxLogs.isSelected()) {
-			collectors.addAll(checkComboBoxLogs.getCheckModel().getCheckedItems());
-		}
-		if (checkBoxGrades.isSelected()) {
-			collectors.add(gradesCollector);
-		}
-		if (checkBoxActivity.isSelected()) {
-			collectors.add(activityCollector);
-		}
-		
-		new HierarchicalClustering().execute(users, collectors);
 	}
 
 	private void initAlgorithms() {

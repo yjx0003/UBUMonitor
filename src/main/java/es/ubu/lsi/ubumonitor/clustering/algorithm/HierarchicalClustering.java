@@ -28,7 +28,7 @@ public class HierarchicalClustering {
 		List<UserData> usersData = enrolledUsers.stream().map(UserData::new).collect(Collectors.toList());
 		dataCollectors.forEach(collector -> collector.collect(usersData));
 
-		String[] names = enrolledUsers.stream().map(EnrolledUser::getFirstname).toArray(String[]::new);
+		String[] names = enrolledUsers.stream().map(EnrolledUser::getFullName).toArray(String[]::new);
 		double[][] distances = new double[usersData.size()][usersData.size()];
 
 		for (int i = 0; i < distances.length; i++) {

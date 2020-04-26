@@ -27,7 +27,7 @@ import org.controlsfx.control.textfield.TextFields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.ubumonitor.clustering.controller.ClusteringController;
+import es.ubu.lsi.ubumonitor.clustering.controller.GeneralController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigurationController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
@@ -239,11 +239,10 @@ public class MainController implements Initializable {
 	private Menu menuTheme;
 
 	private AutoCompletionBinding<EnrolledUser> autoCompletionBinding;
-
-	@FXML
-	private ClusteringController clusteringController;
-
 	
+	@FXML
+	private GeneralController clusteringController;
+
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades de
 	 * las que se compone.
@@ -374,6 +373,7 @@ public class MainController implements Initializable {
 			}
 		});
 		visualizationController.init(this);
+
 		clusteringController.init(this);
 
 		tabMap.put(visualizationTab, visualizationController);

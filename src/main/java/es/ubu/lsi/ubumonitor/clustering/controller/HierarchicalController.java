@@ -4,23 +4,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.controlsfx.control.CheckComboBox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.clustering.algorithm.HierarchicalClustering;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.ActivityCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.DataCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.GradesCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.LogCollector;
+import es.ubu.lsi.ubumonitor.clustering.util.Tree;
+import es.ubu.lsi.ubumonitor.clustering.util.Tree.Node;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponent;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.util.JSArray;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 
 public class HierarchicalController {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(HierarchicalController.class);
+
+	@FXML
+	private WebView webView;
+	private WebEngine webEngine;
 
 	@FXML
 	private CheckComboBox<DataCollector> checkComboBoxLogs;
@@ -41,9 +55,9 @@ public class HierarchicalController {
 	private ListView<EnrolledUser> listParticipants;
 
 	public void init(MainController mainController) {
-		
+
 		listParticipants = mainController.getListParticipants();
-		
+
 		gradesCollector = new GradesCollector(mainController);
 		activityCollector = new ActivityCollector(mainController);
 		List<DataCollector> list = new ArrayList<>();
@@ -56,6 +70,9 @@ public class HierarchicalController {
 		list.add(new LogCollector<>("coursemodule", mainController.getListViewCourseModule(),
 				DatasSetCourseModule.getInstance(), t -> t.getModuleType().getModName()));
 		checkComboBoxLogs.getItems().setAll(list);
+
+		webEngine = webView.getEngine();
+		webEngine.load(getClass().getResource("/graphics/DendogramChart.html").toExternalForm());
 	}
 
 	@FXML
@@ -73,7 +90,40 @@ public class HierarchicalController {
 			collectors.add(activityCollector);
 		}
 
-		new HierarchicalClustering().execute(users, collectors);
+		Tree<String> tree = new HierarchicalClustering().execute(users, collectors);
+		updateChart(tree);
+	}
+
+	private void updateChart(Tree<String> tree) {
+		JSObject data = new JSObject();
+		JSArray labels = new JSArray();
+		JSArray datasets = new JSArray();
+
+		JSArray points = new JSArray();
+		Node<String> node = tree.getRoot();
+		nodeToJS(points, labels, node);
+		JSObject dataset = new JSObject();
+		dataset.put("data", points);
+		datasets.add(dataset);
+		data.put("labels", labels);
+		data.put("datasets", datasets);
+
+		LOGGER.debug("Herarchical: {}", data);
+		webEngine.executeScript("updateChart(" + data + ")");
+	}
+
+	private void nodeToJS(JSArray points, JSArray labels, Node<String> node) {
+		labels.addWithQuote(node.getValue());
+
+		JSObject object = new JSObject();
+		object.putWithQuote("name", node.getValue());
+		if (node.getParentNode() != null)
+			object.putWithQuote("parent", node.getParentNode());
+		points.add(object);
+
+		for (Node<String> children : node.getChildrens()) {
+			nodeToJS(points, labels, children);
+		}
 	}
 
 }

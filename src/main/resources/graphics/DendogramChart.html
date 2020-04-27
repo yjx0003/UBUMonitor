@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Cluster Chart</title>
+<link rel="stylesheet" type="text/css" href="../css/chart.css" />
+<script type="text/javascript" src="./lib/Chart.js"></script>
+<script type="text/javascript" src="./lib/Chart.Graphs.js"></script>
+</head>
+
+<canvas id="chart" style="height: 100vh"></canvas>
+
+<script type="text/javascript">
+	var ctx = document.getElementById("chart");
+	var chart = new Chart(ctx, {
+		type : 'dendogram',
+		data : {
+			labels : [],
+			datasets : []
+		},
+		options : {
+			responsive : true,
+			maintainAspectRatio : false,
+			legend : {
+				display : false
+			},
+			elements : {
+				point : {
+					backgroundColor : 'steelblue',
+					radius : 6,
+					hoverRadius : 8
+				}
+			},
+			layout : {
+				padding : {
+					left : 50,
+					right : 50,
+					top : 30,
+					bottom : 50
+				}
+			}
+		}
+	});
+
+	function updateChart(data) {
+		chart.data = data;
+		chart.update();
+	}
+</script>
+
+
+</html>

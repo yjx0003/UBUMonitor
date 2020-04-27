@@ -3,20 +3,18 @@ package es.ubu.lsi.ubumonitor.clustering.algorithm;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.swing.JFrame;
-
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
 
 import com.apporiented.algorithm.clustering.AverageLinkageStrategy;
 import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.ClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.DefaultClusteringAlgorithm;
-import com.apporiented.algorithm.clustering.visualization.DendrogramPanel;
 
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.DataCollector;
 import es.ubu.lsi.ubumonitor.clustering.data.Distance;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.clustering.util.Tree;
+import es.ubu.lsi.ubumonitor.clustering.util.Tree.Node;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 
 public class HierarchicalClustering {
@@ -36,23 +34,29 @@ public class HierarchicalClustering {
 				distances[i][j] = distance.compute(usersData.get(i).getPoint(), usersData.get(j).getPoint());
 			}
 		}
-		
-		Cluster cluster = algorithm.performClustering(distances, names, new AverageLinkageStrategy());
-		
-		DendrogramPanel dp = new DendrogramPanel();
-		dp.setModel(cluster);
-		JFrame frame = new JFrame();
-		frame.setSize(500, 500);
-		frame.add(dp);
-		frame.setVisible(true);
-		frame.toFront();
 
-		return generateTree(cluster);
+		Cluster cluster = algorithm.performClustering(distances, names, new AverageLinkageStrategy());
+
+//		DendrogramPanel dp = new DendrogramPanel();
+//		dp.setModel(cluster);
+//		JFrame frame = new JFrame();
+//		frame.setSize(500, 500);
+//		frame.add(dp);
+//		frame.setVisible(true);
+//		frame.toFront();
+
+		Tree<String> tree = new Tree<>(cluster.getName());
+
+		generateTree(cluster, tree.getRoot());
+
+		return tree;
 
 	}
 
-	private Tree<String> generateTree(Cluster cluster) {
-		return null;
+	private void generateTree(Cluster cluster, Node<String> node) {
+		for (Cluster children : cluster.getChildren()) {
+			generateTree(children, node.addChildren(children.getName()));
+		}
 	}
 
 }

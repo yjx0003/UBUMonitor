@@ -67,8 +67,8 @@ public class RiskJavaConnector {
 	}
 
 	private void manageOptions() {
-		riskController.getGridPaneOptions().setVisible(currentType.getChartType() == ChartType.RISK_BAR_TEMPORAL);
-		riskController.getGridPaneOptions().setManaged(currentType.getChartType() == ChartType.RISK_BAR_TEMPORAL);
+		riskController.getGridPaneOptionLogs().setVisible(currentType.getChartType() == ChartType.RISK_BAR_TEMPORAL);
+		riskController.getGridPaneOptionLogs().setManaged(currentType.getChartType() == ChartType.RISK_BAR_TEMPORAL);
 	}
 
 	public void setDefaultValues() {

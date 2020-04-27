@@ -178,24 +178,27 @@ public class SelectionController {
 		// Establecemos la estructura en árbol del calificador
 		GradeItem grcl = CONTROLLER.getActualCourse().getRootGradeItem();
 		// Establecemos la raiz del Treeview
-		TreeItem<GradeItem> root = new TreeItem<>(grcl);
-		setIcon(root);
-		// Llamamos recursivamente para llenar el Treeview
-		for (int k = 0; k < grcl.getChildren().size(); k++) {
-			TreeItem<GradeItem> item = new TreeItem<>(grcl.getChildren().get(k));
-			setIcon(item);
-			root.getChildren().add(item);
-			root.setExpanded(true);
-			setTreeview(item, grcl.getChildren().get(k));
+		if(grcl != null) {
+			TreeItem<GradeItem> root = new TreeItem<>(grcl);
+			setIcon(root);
+			// Llamamos recursivamente para llenar el Treeview
+			for (int k = 0; k < grcl.getChildren().size(); k++) {
+				TreeItem<GradeItem> item = new TreeItem<>(grcl.getChildren().get(k));
+				setIcon(item);
+				root.getChildren().add(item);
+				root.setExpanded(true);
+				setTreeview(item, grcl.getChildren().get(k));
+			}
+			// Establecemos la raiz en el TreeView
+			tvwGradeReport.setRoot(root);
+			tvwGradeReport.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+			// Asignamos el manejador de eventos de la lista
+			// Al clickar en la lista, se recalcula el nº de elementos seleccionados
+			// Generamos el gráfico con los elementos selecionados
+			tvwGradeReport.getSelectionModel().getSelectedItems()
+					.addListener((Change<? extends TreeItem<GradeItem>> g) -> mainController.updateTreeViewGradeItem());
 		}
-		// Establecemos la raiz en el TreeView
-		tvwGradeReport.setRoot(root);
-		tvwGradeReport.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		// Asignamos el manejador de eventos de la lista
-		// Al clickar en la lista, se recalcula el nº de elementos seleccionados
-		// Generamos el gráfico con los elementos selecionados
-		tvwGradeReport.getSelectionModel().getSelectedItems()
-				.addListener((Change<? extends TreeItem<GradeItem>> g) -> mainController.updateTreeViewGradeItem());
+		
 	}
 
 	private void onSetTabActivityCompletion(Event event) {

@@ -37,7 +37,7 @@ public class RiskBarTemporal extends RiskBar {
 	public RiskBarTemporal(MainController mainController) {
 		super(mainController, ChartType.RISK_BAR_TEMPORAL, Tabs.RISK);
 		datePicker = mainController.getRiskController()
-				.getDatePicker();
+				.getDatePickerEnd();
 	}
 
 	@Override

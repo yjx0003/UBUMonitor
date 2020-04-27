@@ -5,12 +5,19 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
+import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.model.LogStats;
+import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
+import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.util.FileUtil;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.RiskJavaConnector;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
@@ -20,6 +27,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.util.StringConverter;
 import netscape.javascript.JSObject;
 
 public class RiskController implements MainAction {
@@ -30,10 +38,20 @@ public class RiskController implements MainAction {
 	private WebView webViewCharts;
 	
 	@FXML
-	private DatePicker datePicker;
-	
+	private GridPane optionsUbuLogs;
 	@FXML
-	private GridPane gridPaneOptions;
+	private ChoiceBox<GroupByAbstract<?>> choiceBoxDate;
+
+	@FXML
+	private GridPane dateGridPane;
+	@FXML
+	private GridPane gridPaneOptionLogs;
+
+	@FXML
+	private DatePicker datePickerStart;
+
+	@FXML
+	private DatePicker datePickerEnd;
 	
 	private WebEngine webViewChartsEngine;
 	private MainController mainController;
@@ -43,16 +61,10 @@ public class RiskController implements MainAction {
 
 	public void init(MainController mainController) {
 		this.mainController = mainController;
-		datePicker.setValue(Controller.getInstance().getUpdateCourse().toLocalDate());
-		datePicker.setDayCellFactory(picker -> new DateCell() {
-			@Override
-			public void updateItem(LocalDate date, boolean empty) {
-				super.updateItem(date, empty);
-				setDisable(empty || date.isAfter(Controller.getInstance().getUpdateCourse().toLocalDate()));
-			}
-		});
-		datePicker.setOnAction(e-> javaConnector.updateChart());
+		
+		
 		initTabPaneWebView();
+		initOptions();
 		initContextMenu();
 	}
 
@@ -87,6 +99,62 @@ public class RiskController implements MainAction {
 		webViewChartsEngine.load(getClass().getResource("/graphics/RiskCharts.html")
 				.toExternalForm());
 		
+
+	}
+	
+	private void initOptions() {
+		LogStats logStats = controller.getActualCourse()
+				.getLogStats();
+		TypeTimes typeTime = controller.getMainConfiguration()
+				.getValue(MainConfiguration.GENERAL, "initialTypeTimes");
+		// añadimos los elementos de la enumeracion en el choicebox
+		ObservableList<GroupByAbstract<?>> typeTimes = FXCollections.observableArrayList(logStats.getList());
+		choiceBoxDate.setItems(typeTimes);
+		choiceBoxDate.getSelectionModel()
+				.select(logStats.getByType(typeTime));
+
+		choiceBoxDate.valueProperty()
+				.addListener((ov, oldValue, newValue) -> javaConnector.updateChart());
+
+		// traduccion de los elementos del choicebox
+		choiceBoxDate.setConverter(new StringConverter<GroupByAbstract<?>>() {
+			@Override
+			public GroupByAbstract<?> fromString(String typeTimes) {
+				return null;// no se va a usar en un choiceBox.
+			}
+
+			@Override
+			public String toString(GroupByAbstract<?> typeTimes) {
+				return I18n.get(typeTimes.getTypeTime());
+			}
+		});
+
+		datePickerStart.setValue(controller.getActualCourse()
+				.getStart());
+		datePickerEnd.setValue(controller.getActualCourse()
+				.getEnd());
+
+		datePickerStart.setOnAction(event -> javaConnector.updateChart());
+		datePickerEnd.setOnAction(event -> javaConnector.updateChart());
+
+		datePickerStart.setDayCellFactory(picker -> new DateCell() {
+			@Override
+			public void updateItem(LocalDate date, boolean empty) {
+				super.updateItem(date, empty);
+				setDisable(empty || date.isAfter(datePickerEnd.getValue()));
+			}
+		});
+
+		datePickerEnd.setDayCellFactory(picker -> new DateCell() {
+			@Override
+			public void updateItem(LocalDate date, boolean empty) {
+				super.updateItem(date, empty);
+				setDisable(empty || date.isBefore(datePickerStart.getValue()) || date.isAfter(LocalDate.now()));
+			}
+		});
+
+		optionsUbuLogs.managedProperty()
+				.bind(optionsUbuLogs.visibleProperty());
 
 	}
 
@@ -256,14 +324,32 @@ public class RiskController implements MainAction {
 		return mainController;
 	}
 
-	
-	public DatePicker getDatePicker() {
-		return datePicker;
+	public GridPane getOptionsUbuLogs() {
+		return optionsUbuLogs;
 	}
 
-	public GridPane getGridPaneOptions() {
-		return gridPaneOptions;
+	public ChoiceBox<GroupByAbstract<?>> getChoiceBoxDate() {
+		return choiceBoxDate;
 	}
+
+	public GridPane getDateGridPane() {
+		return dateGridPane;
+	}
+
+	public GridPane getGridPaneOptionLogs() {
+		return gridPaneOptionLogs;
+	}
+
+	public DatePicker getDatePickerStart() {
+		return datePickerStart;
+	}
+
+	public DatePicker getDatePickerEnd() {
+		return datePickerEnd;
+	}
+
+	
+
 
 
 }

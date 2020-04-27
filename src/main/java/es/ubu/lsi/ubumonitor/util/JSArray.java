@@ -1,37 +1,20 @@
 package es.ubu.lsi.ubumonitor.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
-public class JSArray {
-	private StringJoiner stringJoiner;
+public class JSArray extends ArrayList<Object> {
 
-	public JSArray() {
-		stringJoiner = new StringJoiner(",", "[", "]");
+	private static final long serialVersionUID = 1L;
+
+	public boolean addWithQuote(Object object) {
+		return add("'" + UtilMethods.escapeJavaScriptText(object.toString()) + "'");
 	}
-
-	public void add(Object element) {
-		stringJoiner.add(element.toString());
-	}
-
-	public void addWithQuote(Object element) {
-		stringJoiner.add("'" + UtilMethods.escapeJavaScriptText(element.toString()) + "'");
-	}
-
-	public void addAll(Collection<?> collection) {
-		String string = collection.stream().map(Object::toString).collect(Collectors.joining(","));
-		stringJoiner.add(string);
-	}
-
+	
 	public void addAllWithQuote(Collection<?> collection) {
-		String string = collection.stream().map(e -> "'" + UtilMethods.escapeJavaScriptText(e.toString()) + "'")
-				.collect(Collectors.joining(","));
-		stringJoiner.add(string);
+		for (Object object : collection) {
+			addWithQuote(object);
+		}
 	}
-
-	@Override
-	public String toString() {
-		return stringJoiner.toString();
-	}
+	
 }

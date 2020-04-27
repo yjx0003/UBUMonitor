@@ -16,10 +16,10 @@
 	var colors = [];
 	
 	var myChart = new Chart(ctx, {
-		type : 'bar',
+		type : 'line',
 		data : {
-			labels : [],
-			datasets : []
+			datasets : [],
+			labels : []
 		},
 		options : {
 			animation : false,
@@ -64,6 +64,14 @@
 		            }
 		        }
             },
+            elements : {
+				line : {
+					fill : false
+				},
+        		point : {
+					radius : 0
+				}
+			},
 			tooltips : {
 				enabled : false
 			},

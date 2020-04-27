@@ -187,8 +187,7 @@ public class Course implements Serializable {
 			if (gradeItem.getFather() == null)
 				return gradeItem;
 		}
-		throw new IllegalStateException(
-				"No existe el nodo raíz, no hay un nodo que tenga como atributo 'father' en null");
+		return null;
 	}
 
 	/**

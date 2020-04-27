@@ -94,8 +94,6 @@ public class Bubble extends Chartjs {
 	public void update() {
 		String dataset = createDataset(getSelectedEnrolledUser());
 		String options = getOptions();
-		System.out.println(dataset);
-		System.out.println(options);
 		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, options));
 
 	}
@@ -119,26 +117,28 @@ public class Bubble extends Chartjs {
 		Color c75 = mainConfiguration.getValue(chartType, "thirdInterval");
 		Color c100 = mainConfiguration.getValue(chartType, "fourthInterval");
 
+		JSObject dataset25 = contructDataset(I18n.get("firstInterval"), c25);
+		JSObject dataset50 = contructDataset(I18n.get("secondInterval"), c50);
+		JSObject dataset75 = contructDataset(I18n.get("thirdInterval"), c75);
+		JSObject dataset100 = contructDataset(I18n.get("fourthInterval"), c100);
+
 		for (Map.Entry<Long, Map<Long, List<EnrolledUser>>> entry : lastAccess.entrySet()) {
 			long x = entry.getKey();
 			Map<Long, List<EnrolledUser>> map = entry.getValue();
 			for (Map.Entry<Long, List<EnrolledUser>> entryUsers : map.entrySet()) {
 				long y = entryUsers.getKey();
-				JSObject dataset = new JSObject();
 
-				Color color;
+				JSArray dataArray;
+
 				if (x < p25) {
-					color = c25;
+					dataArray = (JSArray) dataset25.get("data");
 				} else if (x < p50) {
-					color = c50;
+					dataArray = (JSArray) dataset50.get("data");
 				} else if (x < p75) {
-					color = c75;
+					dataArray = (JSArray) dataset75.get("data");
 				} else {
-					color = c100;
+					dataArray = (JSArray) dataset100.get("data");
 				}
-				dataset.putWithQuote("label", (x == limit ? ">" + x : x) + "," + (y == limit ? ">" + y : y));
-				dataset.put("backgroundColor", colorToRGB(color, 0.2));
-				dataset.put("borderColor", colorToRGB(color));
 
 				JSObject jsObject = new JSObject();
 				jsObject.put("x", x);
@@ -154,14 +154,29 @@ public class Bubble extends Chartjs {
 						});
 				jsObject.put("users", users);
 				jsObject.put("usersId", usersId);
-				dataset.put("data", "[" + jsObject + "]");
-				datasets.add(dataset);
+				dataArray.add(jsObject);
 			}
 
 		}
-
+		if (!((JSArray)dataset25.get("data")).isEmpty())
+			datasets.add(dataset25);
+		if (!((JSArray)dataset50.get("data")).isEmpty())
+			datasets.add(dataset50);
+		if (!((JSArray)dataset75.get("data")).isEmpty())
+			datasets.add(dataset75);
+		if (!((JSArray)dataset100.get("data")).isEmpty())
+			datasets.add(dataset100);
 		data.put("datasets", datasets);
 		return data.toString();
+	}
+
+	private JSObject contructDataset(String label, Color color) {
+		JSObject dataset = new JSObject();
+		dataset.putWithQuote("label", label);
+		dataset.put("backgroundColor", colorToRGB(color, 0.2));
+		dataset.put("borderColor", colorToRGB(color));
+		dataset.put("data", new JSArray());
+		return dataset;
 	}
 
 	public Map<Long, Map<Long, List<EnrolledUser>>> createLastAccess(List<EnrolledUser> selectedEnrolledUser,

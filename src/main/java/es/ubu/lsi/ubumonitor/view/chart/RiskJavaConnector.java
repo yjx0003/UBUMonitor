@@ -34,12 +34,15 @@ public class RiskJavaConnector {
 	public RiskJavaConnector(RiskController riskController) {
 		this.riskController = riskController;
 		webViewChartsEngine = riskController.getWebViewChartsEngine();
-		currentType.setWebViewChartsEngine(webViewChartsEngine);
+		
+		
 		
 		mapChart = new EnumMap<>(ChartType.class);
 		addChart(new Bubble(riskController.getMainController()));
 		addChart(new RiskBar(riskController.getMainController()));
 		addChart(new RiskBarTemporal(riskController.getMainController()));
+		currentType = mapChart.get(ChartType.RISK_BAR_TEMPORAL);
+		currentType.setWebViewChartsEngine(webViewChartsEngine);
 	}
 	
 	public void addChart(Chart chart) {
@@ -75,7 +78,7 @@ public class RiskJavaConnector {
 		webViewChartsEngine.executeScript("setLanguage()");
 		webViewChartsEngine.executeScript("manageButtons('" + Tabs.RISK + "')");
 		webViewChartsEngine.executeScript("setLocale('" + Locale.getDefault().toLanguageTag() + "')");
-		currentType = mapChart.get(ChartType.RISK_BAR_TEMPORAL);
+		
 	}
 	
 	public void hideLegend() {

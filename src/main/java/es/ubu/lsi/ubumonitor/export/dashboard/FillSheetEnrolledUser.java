@@ -1,7 +1,6 @@
 package es.ubu.lsi.ubumonitor.export.dashboard;
 
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 import java.util.Set;
 

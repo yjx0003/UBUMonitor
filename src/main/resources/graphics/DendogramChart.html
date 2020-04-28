@@ -5,41 +5,65 @@
 <link rel="stylesheet" type="text/css" href="../css/chart.css" />
 <script type="text/javascript" src="./lib/Chart.js"></script>
 <script type="text/javascript" src="./lib/Chart.Graphs.js"></script>
+<script type="text/javascript" src="./lib/chartjs-plugin-datalabels.js"></script>
 </head>
 
 <canvas id="chart" style="height: 100vh"></canvas>
 
 <script type="text/javascript">
 	var ctx = document.getElementById("chart");
-	var chart = new Chart(ctx, {
-		type : 'dendogram',
-		data : {
-			labels : [],
-			datasets : []
-		},
-		options : {
-			responsive : true,
-			maintainAspectRatio : false,
-			legend : {
-				display : false
-			},
-			elements : {
-				point : {
-					backgroundColor : 'steelblue',
-					radius : 6,
-					hoverRadius : 8
+	var chart = new Chart(
+			ctx,
+			{
+				type : 'dendogram',
+				data : {
+					labels : [],
+					datasets : []
+				},
+				options : {
+					animation : false,
+					responsive : true,
+					maintainAspectRatio : false,
+					legend : {
+						display : false
+					},
+					tooltips : {
+						callbacks : {
+							label : function(tooltipItem, data) {
+								var labels = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].users;
+								return labels;
+							}
+						}
+					},
+					elements : {
+						point : {
+							backgroundColor : 'steelblue',
+							radius : 6,
+							hoverRadius : 6.5
+						}
+					},
+					plugins : {
+						datalabels : {
+							formatter : function(value, context) {
+								var users = context.chart.data.datasets[context.datasetIndex].data[context.dataIndex].users;
+								if (users.length == 1)
+									return users[0];
+								return '';
+							},
+							align : 25,
+							anchor : 'end',
+						}
+					},
+					layout : {
+						padding : {
+							left : 50,
+							right : 240,
+							top : 30,
+							bottom : 50
+						}
+					}
 				}
-			},
-			layout : {
-				padding : {
-					left : 50,
-					right : 50,
-					top : 30,
-					bottom : 50
-				}
-			}
-		}
-	});
+			});
 
 	function updateChart(data) {
 		chart.data = data;

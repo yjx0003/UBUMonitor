@@ -77,7 +77,7 @@ public class Bubble extends Chartjs {
 		ticks.put("min", 0);
 		ticks.put("max", limit);
 		ticks.put("callback", "function(e,t,n){return " + limit + "==e?'>'+e:e}");
-
+		
 		scales.put("yAxes", "[{" + getYScaleLabel() + ",ticks:" + ticks + "}]");
 		scales.put("xAxes", "[{" + getXScaleLabel() + ",ticks:" + ticks + "}]");
 		jsObject.put("scales", scales);
@@ -87,6 +87,8 @@ public class Bubble extends Chartjs {
 
 		jsObject.put("onClick",
 				"function(t,e){let n=myChart.getElementsAtEventForMode(t,'nearest',{intersect:!0});if(n.length>0){let t=n[0],e=t._chart.config.data.datasets[t._datasetIndex].data[t._index].usersId;javaConnector.dataPointSelection(e[counter%e.length]),counter++}}");
+		
+		jsObject.put("elements", "{point:{radius:function(a){var t=a.dataset.data[a.dataIndex];return a.chart.width/24*t.v/100+5}}}");
 		return jsObject.toString();
 	}
 
@@ -143,7 +145,7 @@ public class Bubble extends Chartjs {
 				JSObject jsObject = new JSObject();
 				jsObject.put("x", x);
 				jsObject.put("y", y);
-				jsObject.put("r", entryUsers.getValue()
+				jsObject.put("v", entryUsers.getValue()
 						.size() * 5);
 				JSArray users = new JSArray();
 				JSArray usersId = new JSArray();

@@ -36,7 +36,7 @@ public class RiskController implements MainAction {
 	private ProgressBar progressBar;
 	@FXML
 	private WebView webViewCharts;
-	
+
 	@FXML
 	private GridPane optionsUbuLogs;
 	@FXML
@@ -52,7 +52,7 @@ public class RiskController implements MainAction {
 
 	@FXML
 	private DatePicker datePickerEnd;
-	
+
 	private WebEngine webViewChartsEngine;
 	private MainController mainController;
 	private Controller controller = Controller.getInstance();
@@ -61,16 +61,13 @@ public class RiskController implements MainAction {
 
 	public void init(MainController mainController) {
 		this.mainController = mainController;
-		
-		
+
 		initTabPaneWebView();
 		initOptions();
 		initContextMenu();
 	}
 
 	private void initTabPaneWebView() {
-
-	
 
 		// Cargamos el html de los graficos y calificaciones
 		webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
@@ -86,7 +83,7 @@ public class RiskController implements MainAction {
 				.addListener((ov, oldState, newState) -> {
 					if (Worker.State.SUCCEEDED != newState)
 						return;
-					
+
 					progressBar.setVisible(false);
 					JSObject window = (JSObject) webViewChartsEngine.executeScript("window");
 					window.setMember("javaConnector", javaConnector);
@@ -94,21 +91,22 @@ public class RiskController implements MainAction {
 					javaConnector.setDefaultValues();
 
 					javaConnector.updateChart();
-				
+
 				});
 		webViewChartsEngine.load(getClass().getResource("/graphics/RiskCharts.html")
 				.toExternalForm());
-		
 
 	}
-	
+
 	private void initOptions() {
 		LogStats logStats = controller.getActualCourse()
 				.getLogStats();
 		TypeTimes typeTime = controller.getMainConfiguration()
 				.getValue(MainConfiguration.GENERAL, "initialTypeTimes");
 		// añadimos los elementos de la enumeracion en el choicebox
-		ObservableList<GroupByAbstract<?>> typeTimes = FXCollections.observableArrayList(logStats.getList());
+		ObservableList<GroupByAbstract<?>> typeTimes = FXCollections.observableArrayList(
+				logStats.getByType(TypeTimes.DAY), logStats.getByType(TypeTimes.YEAR_MONTH),
+				logStats.getByType(TypeTimes.YEAR_WEEK));
 		choiceBoxDate.setItems(typeTimes);
 		choiceBoxDate.getSelectionModel()
 				.select(logStats.getByType(typeTime));
@@ -155,6 +153,19 @@ public class RiskController implements MainAction {
 
 		optionsUbuLogs.managedProperty()
 				.bind(optionsUbuLogs.visibleProperty());
+		datePickerStart.valueProperty()
+				.bindBidirectional(mainController.getVisualizationController()
+						.getDatePickerStart()
+						.valueProperty());
+		datePickerEnd.valueProperty()
+				.bindBidirectional(mainController.getVisualizationController()
+						.getDatePickerEnd()
+						.valueProperty());
+
+		choiceBoxDate.valueProperty()
+				.bindBidirectional(mainController.getVisualizationController()
+						.getChoiceBoxDate()
+						.valueProperty());
 
 	}
 
@@ -292,7 +303,7 @@ public class RiskController implements MainAction {
 							return;
 						javaConnector.saveImage(str);
 						ConfigHelper.setProperty("imageFolderPath", file.getParent());
-					
+
 					}
 				}, false, FileUtil.PNG);
 
@@ -310,7 +321,7 @@ public class RiskController implements MainAction {
 					javaConnector.getCurrentType()
 							.exportCSV(file.getAbsolutePath());
 					ConfigHelper.setProperty("csvFolderPath", file.getParent());
-				},  FileUtil.CSV);
+				}, FileUtil.CSV);
 
 	}
 
@@ -347,9 +358,5 @@ public class RiskController implements MainAction {
 	public DatePicker getDatePickerEnd() {
 		return datePickerEnd;
 	}
-
-	
-
-
 
 }

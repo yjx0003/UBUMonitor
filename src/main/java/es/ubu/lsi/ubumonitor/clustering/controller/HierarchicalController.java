@@ -14,6 +14,7 @@ import es.ubu.lsi.ubumonitor.clustering.controller.collector.GradesCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.LogCollector;
 import es.ubu.lsi.ubumonitor.clustering.util.Tree;
 import es.ubu.lsi.ubumonitor.clustering.util.Tree.Node;
+import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponent;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;
@@ -54,6 +55,8 @@ public class HierarchicalController {
 
 	private ListView<EnrolledUser> listParticipants;
 
+	private Controller controller = Controller.getInstance();
+
 	public void init(MainController mainController) {
 
 		listParticipants = mainController.getListParticipants();
@@ -70,6 +73,8 @@ public class HierarchicalController {
 		list.add(new LogCollector<>("coursemodule", mainController.getListViewCourseModule(),
 				DatasSetCourseModule.getInstance(), t -> t.getModuleType().getModName()));
 		checkComboBoxLogs.getItems().setAll(list);
+
+		checkComboBoxLogs.disableProperty().bind(checkBoxLogs.selectedProperty().not());
 
 		webEngine = webView.getEngine();
 		webEngine.load(getClass().getResource("/graphics/DendogramChart.html").toExternalForm());
@@ -119,10 +124,28 @@ public class HierarchicalController {
 		object.putWithQuote("name", node.getValue());
 		if (node.getParentNode() != null)
 			object.putWithQuote("parent", node.getParentNode());
+
+		JSArray users = new JSArray();
+		addChildrens(users, node);
+		object.put("users", users);
+
 		points.add(object);
 
 		for (Node<String> children : node.getChildrens()) {
 			nodeToJS(points, labels, children);
+		}
+	}
+
+	private void addChildrens(JSArray array, Node<String> node) {
+		if (node.getChildrens().isEmpty()) {
+			array.addWithQuote(node.getValue());
+		}
+		for (Node<String> children : node.getChildrens()) {
+			if (children.getChildrens().isEmpty()) {
+				array.addWithQuote(children.getValue());
+			} else {
+				addChildrens(array, children);
+			}
 		}
 	}
 

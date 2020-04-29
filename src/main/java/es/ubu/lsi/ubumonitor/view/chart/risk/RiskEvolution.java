@@ -73,21 +73,23 @@ public class RiskEvolution extends RiskBarTemporal {
 		data.put("labels", labels);
 		JSArray datasets = new JSArray();
 
-		for (LastActivity lastActivity : LastActivityFactory.getAllLastActivity()) {
-
+		for (int i = 0; i < LastActivityFactory.getAllLastActivity()
+				.size(); i++) {
+			LastActivity lastActivity = LastActivityFactory.getActivity(i);
 			JSObject dataset = new JSObject();
 			dataset.putWithQuote("label", lastActivity);
 			dataset.put("borderColor", colorToRGB(lastActivity.getColor()));
 			dataset.put("backgroundColor", colorToRGB(lastActivity.getColor(), 0.5));
-			dataset.put("fill", true);
+			dataset.put("fill", i == 0 ? "'origin'" : "'-1'");
 			JSArray dataArray = new JSArray();
-			Map<LocalDateTime, List<EnrolledUser>> mapData = map.computeIfAbsent(lastActivity, k-> new HashMap<>());
-			for(LocalDateTime dateTime: dateTimes) {
-				List<EnrolledUser> users = mapData.computeIfAbsent(dateTime, k->new ArrayList<>());
+			Map<LocalDateTime, List<EnrolledUser>> mapData = map.computeIfAbsent(lastActivity, k -> new HashMap<>());
+			for (LocalDateTime dateTime : dateTimes) {
+				List<EnrolledUser> users = mapData.computeIfAbsent(dateTime, k -> new ArrayList<>());
 				dataArray.add(users.size());
 			}
 			dataset.put("data", dataArray);
 			datasets.add(dataset);
+
 		}
 		data.put("datasets", datasets);
 		return data.toString();
@@ -104,8 +106,10 @@ public class RiskEvolution extends RiskBarTemporal {
 		scales.put("xAxes", "[{" + getXScaleLabel() + "}]");
 		jsObject.put("scales", scales);
 
-		//jsObject.put("onClick",
-			//	"function(t,e){let n=myChart.getElementsAtEventForMode(t,'nearest',{intersect:!0});if(n.length>0){let t=n[0],e=t._chart.config.data.datasets[t._datasetIndex].usersId[t._index];javaConnector.dataPointSelection(e[counter%e.length]),counter++}}");
+		// jsObject.put("onClick",
+		// "function(t,e){let
+		// n=myChart.getElementsAtEventForMode(t,'nearest',{intersect:!0});if(n.length>0){let
+		// t=n[0],e=t._chart.config.data.datasets[t._datasetIndex].usersId[t._index];javaConnector.dataPointSelection(e[counter%e.length]),counter++}}");
 		return jsObject.toString();
 
 	}

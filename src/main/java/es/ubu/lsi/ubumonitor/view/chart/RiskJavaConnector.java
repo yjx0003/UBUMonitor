@@ -19,46 +19,57 @@ import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.risk.Bubble;
 import es.ubu.lsi.ubumonitor.view.chart.risk.RiskBar;
 import es.ubu.lsi.ubumonitor.view.chart.risk.RiskBarTemporal;
+import es.ubu.lsi.ubumonitor.view.chart.risk.RiskEvolution;
 import javafx.concurrent.Worker.State;
 import javafx.scene.web.WebEngine;
 
 public class RiskJavaConnector {
-	
+
 	private Chart currentType;
 	private WebEngine webViewChartsEngine;
 	private RiskController riskController;
 	private File file;
 	private Map<ChartType, Chart> mapChart;
-	
-	
+	private static final ChartType DEFAULT_CHART = ChartType.RISK_BAR_TEMPORAL;
+
 	public RiskJavaConnector(RiskController riskController) {
 		this.riskController = riskController;
 		webViewChartsEngine = riskController.getWebViewChartsEngine();
-		
-		
-		
+
 		mapChart = new EnumMap<>(ChartType.class);
 		addChart(new Bubble(riskController.getMainController()));
 		addChart(new RiskBar(riskController.getMainController()));
-		addChart(new RiskBarTemporal(riskController.getMainController()));
-		currentType = mapChart.get(ChartType.RISK_BAR_TEMPORAL);
-		currentType.setWebViewChartsEngine(webViewChartsEngine);
+		addChart(new RiskBarTemporal(riskController.getMainController(), riskController.getDatePickerStart(),
+				riskController.getDatePickerEnd()));
+		addChart(new RiskEvolution(riskController.getMainController(), riskController.getDatePickerStart(),
+				riskController.getDatePickerEnd(), riskController.getChoiceBoxDate()));
+
 	}
-	
+
 	public void addChart(Chart chart) {
 		chart.setWebViewChartsEngine(webViewChartsEngine);
 		mapChart.put(chart.chartType, chart);
 	}
 
+	private void manageOptions() {
+		riskController.getGridPaneOptionLogs()
+				.setVisible(currentType.isUseGroupBy());
+		riskController.getDateGridPane()
+				.setVisible(currentType.isUseRangeDate());
+		riskController.getOptionsUbuLogs()
+				.setVisible(currentType.isUseOptions());
+	}
+
 	public void updateChart() {
-		if (webViewChartsEngine.getLoadWorker().getState() != State.SUCCEEDED) {
+		if (webViewChartsEngine.getLoadWorker()
+				.getState() != State.SUCCEEDED) {
 			return;
 		}
 		manageOptions();
 		currentType.update();
-		
+
 	}
-	
+
 	public void updateCharts(String typeChart) {
 		Chart chart = mapChart.get(ChartType.valueOf(typeChart));
 		if (currentType.getChartType() != chart.getChartType()) {
@@ -69,18 +80,14 @@ public class RiskJavaConnector {
 		currentType.update();
 	}
 
-	private void manageOptions() {
-		riskController.getGridPaneOptionLogs().setVisible(currentType.getChartType() == ChartType.RISK_BAR_TEMPORAL);
-		riskController.getGridPaneOptionLogs().setManaged(currentType.getChartType() == ChartType.RISK_BAR_TEMPORAL);
-	}
-
 	public void setDefaultValues() {
 		webViewChartsEngine.executeScript("setLanguage()");
 		webViewChartsEngine.executeScript("manageButtons('" + Tabs.RISK + "')");
-		webViewChartsEngine.executeScript("setLocale('" + Locale.getDefault().toLanguageTag() + "')");
-		
+		webViewChartsEngine.executeScript("setLocale('" + Locale.getDefault()
+				.toLanguageTag() + "')");
+		currentType = mapChart.get(DEFAULT_CHART);
 	}
-	
+
 	public void hideLegend() {
 
 		currentType.hideLegend();
@@ -90,20 +97,22 @@ public class RiskJavaConnector {
 		currentType.clear();
 
 	}
+
 	public void updateTabImages() {
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		MainConfiguration mainConfiguration = Controller.getInstance()
+				.getMainConfiguration();
 		boolean legendActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "legendActive");
 		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
 		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
 		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnLegend", legendActive));
 		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnMean", generalActive));
 		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnGroupMean", groupActive));
-		
+
 	}
 
 	public void save() {
 		currentType.export();
-		
+
 	}
 
 	public Chart getCurrentType() {
@@ -116,14 +125,14 @@ public class RiskJavaConnector {
 	}
 
 	public void saveImage(String str) throws IOException {
-		
+
 		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
 		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
 
 		ImageIO.write(bufferedImage, "png", file);
 		UtilMethods.infoWindow(I18n.get("message.export_png") + file.getAbsolutePath());
 	}
-	
+
 	public boolean swapLegend() {
 		return swap(MainConfiguration.GENERAL, "legendActive");
 	}
@@ -137,23 +146,32 @@ public class RiskJavaConnector {
 	}
 
 	private boolean swap(String category, String name) {
-		boolean active = Controller.getInstance().getMainConfiguration().getValue(category, name);
-		Controller.getInstance().getMainConfiguration().setValue(category, name, !active);
+		boolean active = Controller.getInstance()
+				.getMainConfiguration()
+				.getValue(category, name);
+		Controller.getInstance()
+				.getMainConfiguration()
+				.setValue(category, name, !active);
 		return !active;
 	}
-	
+
 	public String getI18n(String key) {
 		return I18n.get(key);
 	}
+
 	public void dataPointSelection(int selectedIndex) {
 
 		int index = currentType.onClick(selectedIndex);
 		if (index >= 0) {
-			currentType.mainController.getSelectionUserController().getListParticipants().scrollTo(index);
-			currentType.mainController.getSelectionUserController().getListParticipants().getFocusModel().focus(index);
+			currentType.mainController.getSelectionUserController()
+					.getListParticipants()
+					.scrollTo(index);
+			currentType.mainController.getSelectionUserController()
+					.getListParticipants()
+					.getFocusModel()
+					.focus(index);
 		}
 
 	}
-	
 
 }

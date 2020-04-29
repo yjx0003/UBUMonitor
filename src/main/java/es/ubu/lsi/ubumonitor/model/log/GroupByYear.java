@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.model.log;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,5 +79,20 @@ public class GroupByYear extends GroupByAbstract<Year> {
 	@Override
 	public boolean useDatePicker() {
 		return true;
+	}
+
+	@Override
+	public List<LocalDateTime> getRangeLocalDateTime(LocalDate start, LocalDate end) {
+		List<LocalDateTime> list = new ArrayList<>();
+
+		for (Year yearStart = Year.from(start),
+				yearEnd = Year.from(end);
+				!yearStart.isAfter(yearEnd);
+				yearStart = yearStart.plusYears(1)) {
+			
+			list.add(yearStart.atDay(0).atStartOfDay());
+			
+		}
+		return list;
 	}
 }

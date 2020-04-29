@@ -359,4 +359,8 @@ public class RiskController implements MainAction {
 		return datePickerEnd;
 	}
 
+	public Controller getController() {
+		return controller;
+	}
+
 }

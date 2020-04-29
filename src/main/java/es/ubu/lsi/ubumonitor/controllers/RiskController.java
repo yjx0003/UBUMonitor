@@ -105,8 +105,8 @@ public class RiskController implements MainAction {
 				.getValue(MainConfiguration.GENERAL, "initialTypeTimes");
 		// añadimos los elementos de la enumeracion en el choicebox
 		ObservableList<GroupByAbstract<?>> typeTimes = FXCollections.observableArrayList(
-				logStats.getByType(TypeTimes.DAY), logStats.getByType(TypeTimes.YEAR_MONTH),
-				logStats.getByType(TypeTimes.YEAR_WEEK));
+				logStats.getByType(TypeTimes.DAY), logStats.getByType(TypeTimes.YEAR_WEEK),
+				logStats.getByType(TypeTimes.YEAR_MONTH));
 		choiceBoxDate.setItems(typeTimes);
 		choiceBoxDate.getSelectionModel()
 				.select(logStats.getByType(typeTime));

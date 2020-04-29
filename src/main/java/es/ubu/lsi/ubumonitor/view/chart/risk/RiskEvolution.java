@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.ComponentEvent;
@@ -40,35 +43,43 @@ public class RiskEvolution extends RiskBarTemporal {
 
 	@Override
 	public void exportCSV(String path) throws IOException {
+		List<EnrolledUser> selectedEnrolledUser = getSelectedEnrolledUser();
+		LocalDate start = datePickerStart.getValue();
+		LocalDate end = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
+		List<LocalDateTime> dateTimes = groupBy.getRangeLocalDateTime(start, end);
+		Map<LastActivity, Map<LocalDateTime, List<EnrolledUser>>> map = classify(selectedEnrolledUser, dateTimes);
+
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
+				CSVFormat.DEFAULT.withHeader("userid", "fullname", "date", "group"))) {
+			for(Map.Entry<LastActivity, Map<LocalDateTime,List<EnrolledUser>>> entry: map.entrySet()) {
+				LastActivity lastActivity = entry.getKey();
+				for(Map.Entry<LocalDateTime, List<EnrolledUser>> entryUser: entry.getValue().entrySet()) {
+					for(EnrolledUser user: entryUser.getValue()) {
+						printer.print(user.getId());
+						printer.print(user.getFullName());
+						printer.print(entryUser.getKey().format(Controller.DATE_FORMATTER));
+						printer.print(lastActivity);
+						printer.println();
+					}
+				}
+			}
+		}
 
 	}
 
 	@Override
 	protected String createDataset(List<EnrolledUser> selectedEnrolledUser) {
-
 		LocalDate start = datePickerStart.getValue();
 		LocalDate end = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
-
-		Map<EnrolledUser, Map<ComponentEvent, List<LogLine>>> logs = getUserLogs(selectedEnrolledUser);
 		List<LocalDateTime> dateTimes = groupBy.getRangeLocalDateTime(start, end);
-		Map<LastActivity, Map<LocalDateTime, List<EnrolledUser>>> map = new HashMap<>();
-
-		for (LocalDateTime localDateTime : dateTimes) {
-			ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
-			for (EnrolledUser user : selectedEnrolledUser) {
-				ZonedDateTime lastDateTime = getLastLog(l -> l.getTime()
-						.isBefore(zonedDateTime), logs, user);
-				map.computeIfAbsent(LastActivityFactory.getActivity(lastDateTime, zonedDateTime), k -> new HashMap<>())
-						.computeIfAbsent(localDateTime, k -> new ArrayList<>())
-						.add(user);
-			}
-		}
+		Map<LastActivity, Map<LocalDateTime, List<EnrolledUser>>> map = classify(selectedEnrolledUser, dateTimes);
 
 		JSObject data = new JSObject();
 		JSArray labels = new JSArray();
 		labels.addAllWithQuote(dateTimes.stream()
-				.map(l -> l.format(Controller.DATE_TIME_FORMATTER))
+				.map(l -> l.format(Controller.DATE_FORMATTER))
 				.collect(Collectors.toList()));
 		data.put("labels", labels);
 		JSArray datasets = new JSArray();
@@ -79,7 +90,7 @@ public class RiskEvolution extends RiskBarTemporal {
 			JSObject dataset = new JSObject();
 			dataset.putWithQuote("label", lastActivity);
 			dataset.put("borderColor", colorToRGB(lastActivity.getColor()));
-			dataset.put("backgroundColor", colorToRGB(lastActivity.getColor(), 0.5));
+			dataset.put("backgroundColor", colorToRGB(lastActivity.getColor(), 0.2));
 			dataset.put("fill", i == 0 ? "'origin'" : "'-1'");
 			JSArray dataArray = new JSArray();
 			Map<LocalDateTime, List<EnrolledUser>> mapData = map.computeIfAbsent(lastActivity, k -> new HashMap<>());
@@ -106,12 +117,28 @@ public class RiskEvolution extends RiskBarTemporal {
 		scales.put("xAxes", "[{" + getXScaleLabel() + "}]");
 		jsObject.put("scales", scales);
 
-		// jsObject.put("onClick",
-		// "function(t,e){let
-		// n=myChart.getElementsAtEventForMode(t,'nearest',{intersect:!0});if(n.length>0){let
-		// t=n[0],e=t._chart.config.data.datasets[t._datasetIndex].usersId[t._index];javaConnector.dataPointSelection(e[counter%e.length]),counter++}}");
 		return jsObject.toString();
 
+	}
+
+	public Map<LastActivity, Map<LocalDateTime, List<EnrolledUser>>> classify(List<EnrolledUser> selectedEnrolledUser,
+			List<LocalDateTime> dateTimes) {
+
+		Map<EnrolledUser, Map<ComponentEvent, List<LogLine>>> logs = getUserLogs(selectedEnrolledUser);
+
+		Map<LastActivity, Map<LocalDateTime, List<EnrolledUser>>> map = new HashMap<>();
+
+		for (LocalDateTime localDateTime : dateTimes) {
+			ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+			for (EnrolledUser user : selectedEnrolledUser) {
+				ZonedDateTime lastDateTime = getLastLog(l -> l.getTime()
+						.isBefore(zonedDateTime), logs, user);
+				map.computeIfAbsent(LastActivityFactory.getActivity(lastDateTime, zonedDateTime), k -> new HashMap<>())
+						.computeIfAbsent(localDateTime, k -> new ArrayList<>())
+						.add(user);
+			}
+		}
+		return map;
 	}
 
 }

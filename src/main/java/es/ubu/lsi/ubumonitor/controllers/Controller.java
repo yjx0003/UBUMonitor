@@ -45,6 +45,9 @@ public class Controller {
 	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
 			.ofLocalizedDateTime(FormatStyle.SHORT);
 
+	public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter
+			.ofLocalizedDate(FormatStyle.SHORT);
+	
 	private Languages selectedLanguage;
 
 	private DataBase dataBase;

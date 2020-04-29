@@ -71,6 +71,7 @@ public abstract class Chart implements ExportableChart {
 	protected boolean useRangeDate;
 
 	protected boolean useNegativeValues;
+	protected boolean useOptions;
 	protected VisualizationController visualizationController;
 	protected Controller controller = Controller.getInstance();
 	protected MainController mainController;
@@ -278,6 +279,110 @@ public abstract class Chart implements ExportableChart {
 
 	public void setWebViewChartsEngine(WebEngine webViewChartsEngine) {
 		this.webViewChartsEngine = webViewChartsEngine;
+	}
+
+	public WebEngine getWebViewChartsEngine() {
+		return webViewChartsEngine;
+	}
+
+	public CheckComboBox<Group> getSlcGroup() {
+		return slcGroup;
+	}
+
+	public ListView<EnrolledUser> getListParticipants() {
+		return listParticipants;
+	}
+
+	public TabPane getTabPaneUbuLogs() {
+		return tabPaneUbuLogs;
+	}
+
+	public Tab getTabUbuLogs() {
+		return tabUbuLogs;
+	}
+
+	public Tab getTabUbuLogsComponent() {
+		return tabUbuLogsComponent;
+	}
+
+	public Tab getTabUbuLogsEvent() {
+		return tabUbuLogsEvent;
+	}
+
+	public Tab getTabUbuLogsSection() {
+		return tabUbuLogsSection;
+	}
+
+	public Tab getTabUbuLogsCourseModule() {
+		return tabUbuLogsCourseModule;
+	}
+
+	public ListView<Component> getListViewComponents() {
+		return listViewComponents;
+	}
+
+	public ListView<ComponentEvent> getListViewEvents() {
+		return listViewEvents;
+	}
+
+	public ListView<Section> getListViewSection() {
+		return listViewSection;
+	}
+
+	public ListView<CourseModule> getListViewCourseModule() {
+		return listViewCourseModule;
+	}
+
+	public ChoiceBox<GroupByAbstract<?>> getChoiceBoxDate() {
+		return choiceBoxDate;
+	}
+
+	public DatePicker getDatePickerStart() {
+		return datePickerStart;
+	}
+
+	public DatePicker getDatePickerEnd() {
+		return datePickerEnd;
+	}
+
+	public TreeView<GradeItem> getTvwGradeReport() {
+		return tvwGradeReport;
+	}
+
+	public Stats getStats() {
+		return stats;
+	}
+
+	public Tabs getTabName() {
+		return tabName;
+	}
+
+	public VisualizationController getVisualizationController() {
+		return visualizationController;
+	}
+
+	public Controller getController() {
+		return controller;
+	}
+
+	public MainController getMainController() {
+		return mainController;
+	}
+
+	public SelectionController getSelectionController() {
+		return selectionController;
+	}
+
+	public SelectionUserController getSelectionUserController() {
+		return selectionUserController;
+	}
+
+	public static double getOpacity() {
+		return OPACITY;
+	}
+
+	public boolean isUseOptions() {
+		return useOptions;
 	}
 
 }

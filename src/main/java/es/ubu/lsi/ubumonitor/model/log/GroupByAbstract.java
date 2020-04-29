@@ -2,6 +2,7 @@ package es.ubu.lsi.ubumonitor.model.log;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -135,5 +136,8 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 	 * @return true si lo usa, false en caso contrario
 	 */
 	public abstract boolean useDatePicker();
+	
+	public abstract List<LocalDateTime> getRangeLocalDateTime(LocalDate start, LocalDate end);
+
 
 }

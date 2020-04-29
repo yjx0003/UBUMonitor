@@ -1,6 +1,8 @@
 package es.ubu.lsi.ubumonitor.model.log;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.WeekFields;
@@ -85,6 +87,20 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 	@Override
 	public boolean useDatePicker() {
 		return true;
+	}
+
+	@Override
+	public List<LocalDateTime> getRangeLocalDateTime(LocalDate start, LocalDate end) {
+		DayOfWeek dayOfWeek = WeekFields.of(Locale.getDefault()).getFirstDayOfWeek().minus(1);
+		List<LocalDateTime> list = new ArrayList<>();
+
+		for (YearWeek yearWeekStart = YearWeek.from(start), yearWeekEnd = YearWeek.from(end); !yearWeekStart
+				.isAfter(yearWeekEnd); yearWeekStart = yearWeekStart.plusWeeks(1)) {
+
+			list.add(yearWeekStart.atDay(dayOfWeek).atStartOfDay());
+
+		}
+		return list;
 	}
 
 }

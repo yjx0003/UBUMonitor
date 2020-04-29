@@ -2,14 +2,15 @@ package es.ubu.lsi.ubumonitor.model;
 
 import java.time.Duration;
 import java.time.temporal.Temporal;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javafx.scene.paint.Color;
 
 public class LastActivityFactory {
 
-	private static final Set<LastActivity> SPAN_TIME = new LinkedHashSet<>();
+	private static final List<LastActivity> SPAN_TIME = new ArrayList<>();
 
 	static {
 		SPAN_TIME.add(new LastActivity(SPAN_TIME.size(), 0, 3, Color.GREEN));
@@ -19,7 +20,8 @@ public class LastActivityFactory {
 	}
 
 	public static Color getColorActivity(Temporal startInclusive, Temporal endInclusive) {
-		long days = Duration.between(startInclusive, endInclusive).toDays();
+		long days = Duration.between(startInclusive, endInclusive)
+				.toDays();
 
 		for (LastActivity lastActivity : SPAN_TIME) {
 			if (days < lastActivity.getLimitDaysConnection()) {
@@ -30,7 +32,11 @@ public class LastActivityFactory {
 	}
 
 	public static LastActivity getActivity(Temporal startInclusive, Temporal endInclusive) {
-		long days = Duration.between(startInclusive, endInclusive).toDays();
+		if (startInclusive == null || endInclusive == null) {
+			return SPAN_TIME.get(SPAN_TIME.size() - 1);
+		}
+		long days = Duration.between(startInclusive, endInclusive)
+				.toDays();
 		for (LastActivity lastActivity : SPAN_TIME) {
 			if (days < lastActivity.getLimitDaysConnection()) {
 				return lastActivity;
@@ -39,7 +45,7 @@ public class LastActivityFactory {
 		throw new IllegalArgumentException();
 	}
 
-	public static Set<LastActivity> getAllLastActivity() {
+	public static List<LastActivity> getAllLastActivity() {
 		return SPAN_TIME;
 	}
 
@@ -48,14 +54,12 @@ public class LastActivityFactory {
 	}
 
 	public static LastActivity getActivity(int index) {
-		for(LastActivity activity: SPAN_TIME) {
-			if(activity.getIndex() == index) {
+		for (LastActivity activity : SPAN_TIME) {
+			if (activity.getIndex() == index) {
 				return activity;
 			}
 		}
 		return null;
 	}
-	
-	
 
 }

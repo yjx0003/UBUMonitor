@@ -1,6 +1,8 @@
 package es.ubu.lsi.ubumonitor.model.log;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -65,5 +67,13 @@ public class GroupByHour extends GroupByAbstract<Integer> {
 	@Override
 	public boolean useDatePicker() {
 		return false;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<LocalDateTime> getRangeLocalDateTime(LocalDate start, LocalDate end) {
+		return Collections.emptyList();
 	}
 }

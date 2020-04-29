@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.model.log;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
@@ -74,6 +75,18 @@ public class GroupByDay extends GroupByAbstract<LocalDate> {
 	@Override
 	public boolean useDatePicker() {
 		return true;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<LocalDateTime> getRangeLocalDateTime(LocalDate start, LocalDate end) {
+		List<LocalDateTime> list = new ArrayList<>();
+
+		for (LocalDate lStart = start; !lStart.isAfter(end); lStart = lStart.plusDays(1)) {
+			list.add(lStart.atStartOfDay());
+		}
+		return list;
 	}
 
 }

@@ -2,8 +2,10 @@ package es.ubu.lsi.ubumonitor.model.log;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.TextStyle;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
@@ -66,6 +68,14 @@ public class GroupByDayOfWeek extends GroupByAbstract<DayOfWeek> {
 	@Override
 	public boolean useDatePicker() {
 		return false;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<LocalDateTime> getRangeLocalDateTime(LocalDate start, LocalDate end) {
+		return Collections.emptyList();
 	}
 
 }

@@ -4,7 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import es.ubu.lsi.ubumonitor.model.LogLine;
@@ -82,17 +84,7 @@ public class GroupByYear extends GroupByAbstract<Year> {
 	}
 
 	@Override
-	public List<LocalDateTime> getRangeLocalDateTime(LocalDate start, LocalDate end) {
-		List<LocalDateTime> list = new ArrayList<>();
-
-		for (Year yearStart = Year.from(start),
-				yearEnd = Year.from(end);
-				!yearStart.isAfter(yearEnd);
-				yearStart = yearStart.plusYears(1)) {
-			
-			list.add(yearStart.atDay(0).atStartOfDay());
-			
-		}
-		return list;
+	public Map<Year, List<LocalDateTime>> getRangeLocalDateTime(LocalDate start, LocalDate end) {
+		return Collections.emptyMap();
 	}
 }

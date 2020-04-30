@@ -90,7 +90,7 @@ public class RiskController implements MainAction {
 					webViewCharts.toFront();
 					javaConnector.setDefaultValues();
 
-					javaConnector.updateChart();
+					updateChart();
 
 				});
 		webViewChartsEngine.load(getClass().getResource("/graphics/RiskCharts.html")
@@ -112,7 +112,7 @@ public class RiskController implements MainAction {
 				.select(logStats.getByType(typeTime));
 
 		choiceBoxDate.valueProperty()
-				.addListener((ov, oldValue, newValue) -> javaConnector.updateChart());
+				.addListener((ov, oldValue, newValue) -> updateChart());
 
 		// traduccion de los elementos del choicebox
 		choiceBoxDate.setConverter(new StringConverter<GroupByAbstract<?>>() {
@@ -132,8 +132,8 @@ public class RiskController implements MainAction {
 		datePickerEnd.setValue(controller.getActualCourse()
 				.getEnd());
 
-		datePickerStart.setOnAction(event -> javaConnector.updateChart());
-		datePickerEnd.setOnAction(event -> javaConnector.updateChart());
+		datePickerStart.setOnAction(event -> updateChart());
+		datePickerEnd.setOnAction(event -> updateChart());
 
 		datePickerStart.setDayCellFactory(picker -> new DateCell() {
 			@Override
@@ -190,6 +190,13 @@ public class RiskController implements MainAction {
 		});
 
 	}
+	
+	public void updateChart() {
+		if(mainController.getRiskTab().isSelected()) {
+			javaConnector.updateChart();
+		}
+		
+	}
 
 	public ProgressBar getProgressBar() {
 		return progressBar;
@@ -211,7 +218,7 @@ public class RiskController implements MainAction {
 	public void onWebViewTabChange() {
 
 		javaConnector.updateTabImages();
-		javaConnector.updateChart();
+		updateChart();
 
 	}
 
@@ -223,13 +230,13 @@ public class RiskController implements MainAction {
 
 	@Override
 	public void updateListViewEnrolledUser() {
-		javaConnector.updateChart();
+		updateChart();
 
 	}
 
 	@Override
 	public void updatePredicadeEnrolledList() {
-		javaConnector.updateChart();
+		updateChart();
 	}
 
 	@Override
@@ -327,7 +334,7 @@ public class RiskController implements MainAction {
 
 	@Override
 	public void applyConfiguration() {
-		javaConnector.updateChart();
+		updateChart();
 
 	}
 

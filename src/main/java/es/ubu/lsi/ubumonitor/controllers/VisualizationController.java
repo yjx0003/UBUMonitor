@@ -295,7 +295,10 @@ public class VisualizationController implements MainAction {
 	 * @param event evento
 	 */
 	public void applyFilterLogs() {
-		findMaxaAndUpdateChart();
+		if(mainController.getVisualizationTab().isSelected()) {
+			findMaxaAndUpdateChart();
+		}
+		
 
 	}
 

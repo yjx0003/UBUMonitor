@@ -3,7 +3,9 @@ package es.ubu.lsi.ubumonitor.model.log;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.threeten.extra.YearQuarter;
@@ -85,16 +87,7 @@ public class GroupByYearQuarter extends GroupByAbstract<YearQuarter> {
 	}
 
 	@Override
-	public List<LocalDateTime> getRangeLocalDateTime(LocalDate start, LocalDate end) {
-		List<LocalDateTime> list = new ArrayList<>();
-
-		for (YearQuarter YearQuarterStart = YearQuarter.from(start), YearQuarterEnd = YearQuarter.from(end);
-				!YearQuarterStart.isAfter(YearQuarterEnd);
-				YearQuarterStart = YearQuarterStart.plusQuarters(1)) {
-
-			list.add(YearQuarterStart.atEndOfQuarter().atStartOfDay());
-
-		}
-		return list;
+	public Map<YearQuarter, List<LocalDateTime>> getRangeLocalDateTime(LocalDate start, LocalDate end) {
+		return Collections.emptyMap();
 	}
 }

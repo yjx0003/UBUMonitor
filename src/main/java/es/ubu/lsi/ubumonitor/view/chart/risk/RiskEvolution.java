@@ -6,13 +6,20 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
+import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.ComponentEvent;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
@@ -20,6 +27,7 @@ import es.ubu.lsi.ubumonitor.model.LastActivity;
 import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
 import es.ubu.lsi.ubumonitor.model.LogLine;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
+import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
@@ -41,30 +49,48 @@ public class RiskEvolution extends RiskBarTemporal {
 
 	@Override
 	public void exportCSV(String path) throws IOException {
-//		List<EnrolledUser> selectedEnrolledUser = getSelectedEnrolledUser();
-//		LocalDate start = datePickerStart.getValue();
-//		LocalDate end = datePickerEnd.getValue();
-//		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
-//		List<LocalDateTime> dateTimes = groupBy.getRangeLocalDateTime(start, end);
-//		Map<LastActivity, Map<LocalDateTime, List<EnrolledUser>>> map = classify(selectedEnrolledUser, dateTimes);
-//
-//		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
-//				CSVFormat.DEFAULT.withHeader("userid", "fullname", "date", "group"))) {
-//			for (Map.Entry<LastActivity, Map<LocalDateTime, List<EnrolledUser>>> entry : map.entrySet()) {
-//				LastActivity lastActivity = entry.getKey();
-//				for (Map.Entry<LocalDateTime, List<EnrolledUser>> entryUser : entry.getValue()
-//						.entrySet()) {
-//					for (EnrolledUser user : entryUser.getValue()) {
-//						printer.print(user.getId());
-//						printer.print(user.getFullName());
-//						printer.print(entryUser.getKey()
-//								.format(Controller.DATE_FORMATTER));
-//						printer.print(lastActivity);
-//						printer.println();
-//					}
-//				}
-//			}
-//		}
+
+		LocalDate start = datePickerStart.getValue();
+		LocalDate end = datePickerEnd.getValue();
+		List<EnrolledUser> users = getSelectedEnrolledUser();
+		GroupByAbstract<?> groupBy = Controller.getInstance()
+				.getActualCourse()
+				.getLogStats()
+				.getByType(TypeTimes.DAY);
+		List<String> range = groupBy.getRangeString(start, end);
+		List<String> header = Stream.of("userid", "fullname")
+				.collect(Collectors.toList());
+		header.addAll(range);
+
+		List<LocalDateTime> dateTimes = groupBy.getRangeLocalDateTime(start, end)
+				.values()
+				.stream()
+				.flatMap(List::stream)
+				.sorted()
+				.collect(Collectors.toList());
+
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
+				CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
+			Map<EnrolledUser, Map<ComponentEvent, List<LogLine>>> logs = getUserLogs(users);
+
+			for (EnrolledUser user : users) {
+				printer.print(user.getId());
+				printer.print(user.getFullName());
+				for (LocalDateTime dateTime : dateTimes) {
+					ZonedDateTime zonedDateTime = dateTime
+							.atZone(ZoneId.systemDefault());
+					ZonedDateTime lastDateTime = getLastLog(l -> l.getTime()
+							.isBefore(zonedDateTime), logs, user);
+					if (lastDateTime == null) {
+						printer.print(null);
+					} else {
+						printer.print(ChronoUnit.DAYS.between(lastDateTime, zonedDateTime));
+					}
+				}
+				printer.println();
+			}
+
+		}
 
 	}
 

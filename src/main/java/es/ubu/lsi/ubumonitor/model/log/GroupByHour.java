@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -69,11 +70,8 @@ public class GroupByHour extends GroupByAbstract<Integer> {
 		return false;
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public List<LocalDateTime> getRangeLocalDateTime(LocalDate start, LocalDate end) {
-		return Collections.emptyList();
+	public Map<Integer, List<LocalDateTime>> getRangeLocalDateTime(LocalDate start, LocalDate end) {
+		return Collections.emptyMap();
 	}
 }

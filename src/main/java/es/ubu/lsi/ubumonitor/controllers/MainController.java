@@ -299,4 +299,10 @@ public class MainController implements Initializable {
 		return selectionUserController;
 	}
 
+	public Tab getRiskTab() {
+		return riskTab;
+	}
+
+	
+
 }

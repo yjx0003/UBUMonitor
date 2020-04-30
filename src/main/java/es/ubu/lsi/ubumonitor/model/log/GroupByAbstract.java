@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -18,8 +19,7 @@ import es.ubu.lsi.ubumonitor.model.Section;
  * 
  * @author Yi Peng Ji
  *
- * @param <T>
- *            tipo de agrupamiento
+ * @param <T> tipo de agrupamiento
  */
 public abstract class GroupByAbstract<T extends Serializable> implements Serializable {
 
@@ -33,62 +33,50 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 	/**
 	 * Constructor para agrupar la lineas de log en funcion de los usuarios.
 	 * 
-	 * @param logLines
-	 *            las lineas de log
+	 * @param logLines las lineas de log
 	 */
 	public GroupByAbstract(List<LogLine> logLines) {
-		
-		
-		
-		components = new FirstGroupBy<>(this, logLines, LogLine::hasUser, LogLine::getComponent,
+
+		components = new FirstGroupBy<>(this, logLines, LogLine::hasUser, LogLine::getComponent, getGroupByFunction());
+		componentsEvents = new FirstGroupBy<>(this, logLines, LogLine::hasUser, LogLine::getComponentEvent,
 				getGroupByFunction());
-		componentsEvents = new FirstGroupBy<>(this,logLines, LogLine::hasUser, LogLine::getComponentEvent,
+		sections = new FirstGroupBy<>(this, logLines, l -> l.hasUser() && l.hasSection(), LogLine::getSection,
 				getGroupByFunction());
-		sections = new FirstGroupBy<>(this,logLines, l -> l.hasUser() && l.hasSection(),
-				LogLine::getSection, getGroupByFunction());
-		courseModules = new FirstGroupBy<>(this,logLines, l -> l.hasUser() && l.hasCourseModule(), LogLine::getCourseModule,
-				getGroupByFunction());
+		courseModules = new FirstGroupBy<>(this, logLines, l -> l.hasUser() && l.hasCourseModule(),
+				LogLine::getCourseModule, getGroupByFunction());
 	}
-	
 
 	public FirstGroupBy<Component, T> getComponents() {
 		return components;
 	}
 
-
 	public FirstGroupBy<ComponentEvent, T> getComponentsEvents() {
 		return componentsEvents;
 	}
-
 
 	public FirstGroupBy<Section, T> getSections() {
 		return sections;
 	}
 
-
 	public FirstGroupBy<CourseModule, T> getCourseModules() {
 		return courseModules;
 	}
 
-
 	/**
 	 * Devuelve los rangos en formato string
 	 * 
-	 * @param start
-	 *            fecha de inico
-	 * @param end
-	 *            fecha de fin
+	 * @param start fecha de inico
+	 * @param end   fecha de fin
 	 * @return rangos de un tipo de fecha en formato string
 	 */
 	public List<String> getRangeString(LocalDate start, LocalDate end) {
 		return getRangeString(getRange(start, end));
 	}
-	
+
 	/**
 	 * Devuelve los rangos en formato string
 	 * 
-	 * @param rangeList
-	 *            lista de rangos
+	 * @param rangeList lista de rangos
 	 * @return rangos de un tipo de fecha en formato string
 	 */
 	public List<String> getRangeString(List<T> rangeList) {
@@ -97,14 +85,11 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 				.collect(Collectors.toList());
 	}
 
-
 	/**
 	 * Devuelve el rango entre dos local date
 	 * 
-	 * @param start
-	 *            fecha de inicio
-	 * @param end
-	 *            fecha de fin
+	 * @param start fecha de inicio
+	 * @param end   fecha de fin
 	 * @return rango del tipo de tiempo entre dos fechas
 	 */
 	public abstract List<T> getRange(LocalDate start, LocalDate end);
@@ -136,8 +121,7 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 	 * @return true si lo usa, false en caso contrario
 	 */
 	public abstract boolean useDatePicker();
-	
-	public abstract List<LocalDateTime> getRangeLocalDateTime(LocalDate start, LocalDate end);
 
+	public abstract Map<T, List<LocalDateTime>> getRangeLocalDateTime(LocalDate start, LocalDate end);
 
 }

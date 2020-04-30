@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import es.ubu.lsi.ubumonitor.model.LogLine;
@@ -73,8 +74,8 @@ public class GroupByAll extends GroupByAbstract<Boolean> {
 	}
 
 	@Override
-	public List<LocalDateTime> getRangeLocalDateTime(LocalDate start, LocalDate end) {
-		return Collections.emptyList();
+	public Map<Boolean, List<LocalDateTime>> getRangeLocalDateTime(LocalDate start, LocalDate end) {
+		return Collections.emptyMap();
 	}
 
 }

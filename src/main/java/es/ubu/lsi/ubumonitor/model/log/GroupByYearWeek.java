@@ -7,8 +7,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.threeten.extra.YearWeek;
@@ -90,17 +92,22 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 	}
 
 	@Override
-	public List<LocalDateTime> getRangeLocalDateTime(LocalDate start, LocalDate end) {
-		DayOfWeek dayOfWeek = WeekFields.of(Locale.getDefault()).getFirstDayOfWeek().minus(1);
-		List<LocalDateTime> list = new ArrayList<>();
+	public Map<YearWeek, List<LocalDateTime>> getRangeLocalDateTime(LocalDate start, LocalDate end) {
+		DayOfWeek dayOfWeek = WeekFields.of(Locale.getDefault()).getFirstDayOfWeek();
+		Map<YearWeek, List<LocalDateTime>> map = new HashMap<>();
 
 		for (YearWeek yearWeekStart = YearWeek.from(start), yearWeekEnd = YearWeek.from(end); !yearWeekStart
 				.isAfter(yearWeekEnd); yearWeekStart = yearWeekStart.plusWeeks(1)) {
 
-			list.add(yearWeekStart.atDay(dayOfWeek).atStartOfDay());
+			for(LocalDate day = yearWeekStart.atDay(dayOfWeek); !day.isAfter(yearWeekStart.atDay(dayOfWeek.minus(1))); day = day.plusDays(1)) {
+				if (!start.isAfter(day) && !end.isBefore(day)) {
+					map.computeIfAbsent(yearWeekStart, k -> new ArrayList<>())
+							.add(day.atStartOfDay());
+				}
+			}
 
 		}
-		return list;
+		return map;
 	}
 
 }

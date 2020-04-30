@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.function.Function;
 
 import es.ubu.lsi.ubumonitor.model.LogLine;
@@ -70,12 +71,9 @@ public class GroupByDayOfWeek extends GroupByAbstract<DayOfWeek> {
 		return false;
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public List<LocalDateTime> getRangeLocalDateTime(LocalDate start, LocalDate end) {
-		return Collections.emptyList();
+	public Map<DayOfWeek, List<LocalDateTime>> getRangeLocalDateTime(LocalDate start, LocalDate end) {
+		return Collections.emptyMap();
 	}
 
 }

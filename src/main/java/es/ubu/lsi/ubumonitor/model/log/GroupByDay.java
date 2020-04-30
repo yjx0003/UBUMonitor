@@ -5,7 +5,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import es.ubu.lsi.ubumonitor.model.LogLine;
@@ -80,13 +82,13 @@ public class GroupByDay extends GroupByAbstract<LocalDate> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<LocalDateTime> getRangeLocalDateTime(LocalDate start, LocalDate end) {
-		List<LocalDateTime> list = new ArrayList<>();
+	public Map<LocalDate, List<LocalDateTime>> getRangeLocalDateTime(LocalDate start, LocalDate end) {
+		Map<LocalDate, List<LocalDateTime>> map = new HashMap<>();
 
 		for (LocalDate lStart = start; !lStart.isAfter(end); lStart = lStart.plusDays(1)) {
-			list.add(lStart.atStartOfDay());
+			map.computeIfAbsent(lStart, k-> new ArrayList<>()).add(lStart.atStartOfDay());
 		}
-		return list;
+		return map;
 	}
 
 }

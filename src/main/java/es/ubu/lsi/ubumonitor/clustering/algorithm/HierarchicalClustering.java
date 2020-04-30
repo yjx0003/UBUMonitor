@@ -21,6 +21,10 @@ public class HierarchicalClustering {
 
 	private ClusteringAlgorithm algorithm = new DefaultClusteringAlgorithm();
 	private DistanceMeasure distance = Distance.MANHATTAN_DISTANCE.getInstance();
+	
+	public void setDistance(Distance distance) {
+		this.distance = distance.getInstance();
+	}
 
 	public Tree<String> execute(List<EnrolledUser> enrolledUsers, List<DataCollector> dataCollectors) {
 		List<UserData> usersData = enrolledUsers.stream().map(UserData::new).collect(Collectors.toList());

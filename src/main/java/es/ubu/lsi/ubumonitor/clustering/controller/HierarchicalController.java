@@ -12,9 +12,9 @@ import es.ubu.lsi.ubumonitor.clustering.controller.collector.ActivityCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.DataCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.GradesCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.LogCollector;
+import es.ubu.lsi.ubumonitor.clustering.data.Distance;
 import es.ubu.lsi.ubumonitor.clustering.util.Tree;
 import es.ubu.lsi.ubumonitor.clustering.util.Tree.Node;
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponent;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;
@@ -25,6 +25,7 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -49,17 +50,24 @@ public class HierarchicalController {
 	@FXML
 	private CheckBox checkBoxActivity;
 
+	@FXML
+	private ChoiceBox<Distance> choiceBoxDistance;
+
 	private GradesCollector gradesCollector;
 
 	private ActivityCollector activityCollector;
 
 	private ListView<EnrolledUser> listParticipants;
 
-	private Controller controller = Controller.getInstance();
+	private HierarchicalClustering hierarchical = new HierarchicalClustering();
 
 	public void init(MainController mainController) {
-
 		listParticipants = mainController.getListParticipants();
+
+		choiceBoxDistance.getItems().setAll(Distance.values());
+		choiceBoxDistance.getSelectionModel().selectFirst();
+		choiceBoxDistance.getSelectionModel().selectedItemProperty()
+				.addListener((obs, oldValue, newValue) -> hierarchical.setDistance(newValue));
 
 		gradesCollector = new GradesCollector(mainController);
 		activityCollector = new ActivityCollector(mainController);
@@ -95,7 +103,7 @@ public class HierarchicalController {
 			collectors.add(activityCollector);
 		}
 
-		Tree<String> tree = new HierarchicalClustering().execute(users, collectors);
+		Tree<String> tree = hierarchical.execute(users, collectors);
 		updateChart(tree);
 	}
 

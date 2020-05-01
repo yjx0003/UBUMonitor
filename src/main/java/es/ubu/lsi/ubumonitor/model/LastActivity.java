@@ -81,6 +81,6 @@ public class LastActivity {
 		if (Integer.MAX_VALUE == limitDaysConnection) {
 			return (char) (index + 65) + ". " + previusDays + "+";
 		}
-		return (char) (index + 65) + ". " + previusDays + "-" + limitDaysConnection;
+		return (char) (index + 65) + ". [" + previusDays + "-" + limitDaysConnection+ ")";
 	}
 }

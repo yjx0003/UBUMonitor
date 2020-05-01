@@ -2,13 +2,13 @@ package es.ubu.lsi.ubumonitor.view.chart.risk;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +28,7 @@ import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
 import es.ubu.lsi.ubumonitor.model.LogLine;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
@@ -191,5 +192,13 @@ public class RiskEvolution extends RiskBarTemporal {
 
 		}
 		return datasets;
+	}
+	
+	@Override
+	public String getXAxisTitle() {
+		String start = datePickerStart.getValue().atStartOfDay().format(Controller.DATE_TIME_FORMATTER);
+		String end = datePickerEnd.getValue().atStartOfDay().format(Controller.DATE_TIME_FORMATTER);
+		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"),
+				I18n.get(choiceBoxDate.getValue().getTypeTime()), start, end);
 	}
 }

@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.view.chart.risk;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -122,14 +123,14 @@ public class RiskBar extends Chartjs {
 		labels.addAllWithQuote(lastActivities);
 		data.put("labels", labels);
 		JSArray datasets = new JSArray();
-		datasets.add(createDataset(I18n.get("label.lastcourseaccess"), lastCourseAccess, lastActivities));
-		datasets.add(createDataset(I18n.get("label.lastaccess"), lastAccess, lastActivities));
+		datasets.add(createDataset(I18n.get("label.lastcourseaccess"), lastCourseAccess, lastActivities, 0.2));
+		datasets.add(createDataset(I18n.get("label.lastaccess"), lastAccess, lastActivities, 0.5));
 		data.put("datasets", datasets);
 		return data.toString();
 	}
 
 	public JSObject createDataset(String label, Map<LastActivity, List<EnrolledUser>> lastAccess,
-			List<LastActivity> lastActivities) {
+			List<LastActivity> lastActivities, double opacity) {
 		JSObject dataset = new JSObject();
 		dataset.putWithQuote("label", label);
 		JSArray backgroundColor = new JSArray();
@@ -138,7 +139,7 @@ public class RiskBar extends Chartjs {
 		JSArray usersArray = new JSArray();
 		JSArray usersIdArray = new JSArray();
 		for (LastActivity lastActivity : lastActivities) {
-			backgroundColor.add(colorToRGB(lastActivity.getColor(), 0.2));
+			backgroundColor.add(colorToRGB(lastActivity.getColor(), opacity));
 			borderColor.add(colorToRGB(lastActivity.getColor()));
 			JSArray users = new JSArray();
 			JSArray usersId = new JSArray();
@@ -169,5 +170,13 @@ public class RiskBar extends Chartjs {
 				.getById(userid);
 		return listParticipants.getItems()
 				.indexOf(user);
+	}
+
+	@Override
+	public String getXAxisTitle() {
+
+		return MessageFormat.format(super.getXAxisTitle(), Controller.getInstance()
+				.getUpdateCourse()
+				.format(Controller.DATE_TIME_FORMATTER));
 	}
 }

@@ -2,6 +2,7 @@ package es.ubu.lsi.ubumonitor.view.chart.risk;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -108,7 +109,6 @@ public class RiskBarTemporal extends RiskBar {
 		ZonedDateTime start = datePickerStart.getValue()
 				.atStartOfDay(ZoneId.systemDefault());
 		ZonedDateTime lastUpdate = datePickerEnd.getValue()
-				.plusDays(1)
 				.atStartOfDay(ZoneId.systemDefault());
 
 		Map<LastActivity, List<EnrolledUser>> lastCourseAccess = new TreeMap<>(
@@ -140,7 +140,7 @@ public class RiskBarTemporal extends RiskBar {
 		labels.addWithQuote(I18n.get("text.noActivity"));
 		data.put("labels", labels);
 		JSArray datasets = new JSArray();
-		JSObject dataset = createDataset(I18n.get("label.lastcourseaccess"), lastCourseAccess, lastActivities);
+		JSObject dataset = createDataset(I18n.get("label.lastcourseaccess"), lastCourseAccess, lastActivities, 0.2);
 		addNoActivity(dataset, noActivity);
 		datasets.add(dataset);
 		data.put("datasets", datasets);
@@ -164,12 +164,13 @@ public class RiskBarTemporal extends RiskBar {
 
 	@Override
 	public String getXAxisTitle() {
-		ZonedDateTime start = datePickerStart.getValue()
-				.atStartOfDay(ZoneId.systemDefault());
-		ZonedDateTime lastUpdate = datePickerEnd.getValue()
-				.plusDays(1)
-				.atStartOfDay(ZoneId.systemDefault());
-		return MessageFormat.format(super.getXAxisTitle(), start.format(Controller.DATE_TIME_FORMATTER),
+		LocalDateTime start = datePickerStart.getValue()
+				.atStartOfDay();
+
+		LocalDateTime lastUpdate = datePickerEnd.getValue()
+				.atStartOfDay();
+	
+		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"), start.format(Controller.DATE_TIME_FORMATTER),
 				lastUpdate.format(Controller.DATE_TIME_FORMATTER));
 	}
 

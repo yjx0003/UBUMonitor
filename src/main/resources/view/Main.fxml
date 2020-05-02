@@ -45,7 +45,7 @@
 
 								<fx:include fx:id="selectionUser"
 									source="SelectionUser.fxml" />
-								<fx:include fx:id="selection" source="selection.fxml" />
+								<fx:include fx:id="selection" source="Selection.fxml" />
 							</items>
 						</SplitPane>
 					</center>
@@ -83,6 +83,6 @@
 			BorderPane.alignment="CENTER" />
 	</bottom>
 	<top>
-		<fx:include fx:id="menu" source="menu.fxml" />
+		<fx:include fx:id="menu" source="Menu.fxml" />
 	</top>
 </BorderPane>

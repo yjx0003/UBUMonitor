@@ -218,7 +218,7 @@ public class RiskController implements MainAction {
 	public void onWebViewTabChange() {
 
 		javaConnector.updateTabImages();
-		updateChart();
+		javaConnector.updateChart();
 
 	}
 

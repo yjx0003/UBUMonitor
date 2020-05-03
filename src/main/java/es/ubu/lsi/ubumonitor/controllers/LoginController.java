@@ -219,12 +219,15 @@ public class LoginController implements Initializable {
 			lblStatus.setText(I18n.get("error.fields"));
 		} else {
 			controller.getStage().getScene().setCursor(Cursor.WAIT);
+			
 			if (chkOfflineMode.isSelected()) {
 				try {
+					lblStatus.setText(null);
 					offlineMode();
 					UtilMethods.changeScene(getClass().getResource("/view/WelcomeOffline.fxml"), controller.getStage(),
 							new WelcomeOfflineController());
 				} catch (MalformedURLException | RuntimeException e) {
+					
 					lblStatus.setText(e.getMessage());
 				}
 
@@ -275,7 +278,7 @@ public class LoginController implements Initializable {
 
 	private void onlineMode() {
 		Task<Void> loginTask = getUserDataWorker();
-
+		lblStatus.setText(null);
 		loginTask.setOnSucceeded(s -> {
 			onSuccessLogin();
 			if (!controller.getDirectoryCache().toFile().exists()) {
@@ -287,6 +290,7 @@ public class LoginController implements Initializable {
 
 		loginTask.setOnFailed(e -> {
 			controller.getStage().getScene().setCursor(Cursor.DEFAULT);
+			
 			lblStatus.setText(e.getSource().getException().getMessage());
 		});
 		Thread th = new Thread(loginTask, "login");

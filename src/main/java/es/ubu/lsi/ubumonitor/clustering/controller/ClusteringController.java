@@ -21,12 +21,14 @@ import es.ubu.lsi.ubumonitor.clustering.analysis.AnalysisFactory;
 import es.ubu.lsi.ubumonitor.clustering.analysis.ElbowFactory;
 import es.ubu.lsi.ubumonitor.clustering.analysis.SilhouetteFactory;
 import es.ubu.lsi.ubumonitor.clustering.analysis.methods.AnalysisMethod;
+import es.ubu.lsi.ubumonitor.clustering.analysis.methods.SilhouetteMethod;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.ActivityCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.DataCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.GradesCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.LogCollector;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
+import es.ubu.lsi.ubumonitor.clustering.data.Distance;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.clustering.exception.IllegalParamenterException;
 import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
@@ -214,22 +216,32 @@ public class ClusteringController {
 
 		try {
 			Clusterer<UserData> clusterer = algorithm.getClusterer();
-			AlgorithmExecuter algorithmExecuter = new AlgorithmExecuter(clusterer, users, collectors);
 
 			int dim = checkBoxReduce.isSelected() ? Integer.valueOf(textFieldReduce.getText()) : 0;
 			if (dim > users.size())
 				throw new IllegalStateException("clustering.error.invalidDimension");
-				
-			clusters = algorithmExecuter.execute(dim);
+
+			List<ClusterWrapper> ls = null;
+			double best = 0.0;
+			for (int i = 0; i < 20; i++) {
+				AlgorithmExecuter algorithmExecuter = new AlgorithmExecuter(clusterer, users, collectors);
+				ls = algorithmExecuter.execute(dim);
+				double mean = SilhouetteMethod.silhouette(ls, Distance.MANHATTAN_DISTANCE).values().stream()
+						.mapToDouble(Double::doubleValue).sum();
+				if (mean > best) {
+					best = mean;
+					clusters = ls;
+				}
+			}
 
 			LOGGER.debug("Parametros: {}", algorithm.getParameters());
 			LOGGER.debug("Clusters: {}", clusters);
 
+			silhouette.updateChart(clusters, algorithm.getParameters().getValue(ClusteringParameter.DISTANCE_TYPE));
 			table.updateTable(clusters);
 			updateRename();
 			graph.updateChart(clusters);
 			graph3D.updateChart(clusters);
-			silhouette.updateChart(clusters, algorithm.getParameters().getValue(ClusteringParameter.DISTANCE_TYPE));
 
 		} catch (IllegalParamenterException e) {
 			UtilMethods.errorWindow(e.getMessage());

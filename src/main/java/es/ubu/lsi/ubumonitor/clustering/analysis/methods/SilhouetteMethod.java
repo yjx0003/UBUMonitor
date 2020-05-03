@@ -58,7 +58,7 @@ public class SilhouetteMethod extends AnalysisMethod {
 			}
 		}
 
-		Map<UserData, Double> sihouette = new HashMap<>(users.size());
+		Map<UserData, Double> silhouette = new HashMap<>(users.size());
 		for (UserData userData : users) {
 			double a = ai.get(userData);
 			double b = bi.getOrDefault(userData, Double.NaN);
@@ -68,10 +68,10 @@ public class SilhouetteMethod extends AnalysisMethod {
 			} else {
 				s = (b - a) / Math.max(a, b);
 			}
-			sihouette.put(userData, s);
+			silhouette.put(userData, s);
 		}
-
-		return sihouette;
+		System.out.println(silhouette);
+		return silhouette;
 	}
 
 }

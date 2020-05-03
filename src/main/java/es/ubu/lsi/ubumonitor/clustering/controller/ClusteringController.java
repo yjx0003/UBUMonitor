@@ -217,6 +217,9 @@ public class ClusteringController {
 			AlgorithmExecuter algorithmExecuter = new AlgorithmExecuter(clusterer, users, collectors);
 
 			int dim = checkBoxReduce.isSelected() ? Integer.valueOf(textFieldReduce.getText()) : 0;
+			if (dim > users.size())
+				throw new IllegalStateException("clustering.error.invalidDimension");
+				
 			clusters = algorithmExecuter.execute(dim);
 
 			LOGGER.debug("Parametros: {}", algorithm.getParameters());
@@ -227,6 +230,7 @@ public class ClusteringController {
 			graph.updateChart(clusters);
 			graph3D.updateChart(clusters);
 			silhouette.updateChart(clusters, algorithm.getParameters().getValue(ClusteringParameter.DISTANCE_TYPE));
+
 		} catch (IllegalParamenterException e) {
 			UtilMethods.errorWindow(e.getMessage());
 		} catch (IllegalStateException e) {

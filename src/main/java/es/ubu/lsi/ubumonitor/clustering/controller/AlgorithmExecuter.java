@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.clustering.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,12 +37,18 @@ public class AlgorithmExecuter {
 		if (usersData.isEmpty())
 			throw new IllegalStateException("clustering.error.notUsers");
 
+		if (usersData.size() < 2)
+			throw new IllegalStateException("clustering.error.notUsers");
+
 		if (usersData.get(0).getData().isEmpty())
 			throw new IllegalStateException("clustering.error.notData");
 
-		PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
-		double[][] matrix = usersData.stream().map(UserData::getPoint).toArray(double[][]::new);
+		if (usersData.get(0).getData().size() < dimension)
+			throw new IllegalStateException("clustering.error.invalidDimension");
+
 		if (dimension > 0) {
+			PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
+			double[][] matrix = usersData.stream().map(UserData::getPoint).toArray(double[][]::new);
 			matrix = pca.pca(matrix, dimension);
 			for (int i = 0; i < matrix.length; i++) {
 				usersData.get(i).setData(matrix[i]);
@@ -72,6 +79,10 @@ public class AlgorithmExecuter {
 	}
 
 	public static List<Map<UserData, double[]>> clustersTo(int dim, List<ClusterWrapper> clusters) {
+		if (clusters.isEmpty()) {
+			return Collections.emptyList();
+		}
+
 		List<double[]> centers = new ArrayList<>();
 		for (ClusterWrapper clusterWrapper : clusters) {
 			double[] center = clusterWrapper.getCenter();
@@ -97,7 +108,7 @@ public class AlgorithmExecuter {
 			}
 			points.add(map);
 		}
-		
+
 		// Add centroides
 		for (int j = 0; i < matrix.length; i++, j++) {
 			points.get(j).put(null, matrix[i]);

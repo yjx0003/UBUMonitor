@@ -61,7 +61,7 @@ public class ClusteringSilhouette extends AbstractChart {
 
 		JSArray average = new JSArray();
 		List<Double> list = Collections.nCopies(i,
-				silhouette.values().stream().mapToDouble(Double::doubleValue).average().getAsDouble());
+				silhouette.values().stream().mapToDouble(Double::doubleValue).average().orElse(0.0));
 		average.addAll(list);
 		
 		lineDataset.put("data", average);

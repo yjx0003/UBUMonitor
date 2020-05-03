@@ -33,6 +33,7 @@ public class ClusteringSilhouette extends AbstractChart {
 
 	public void updateChart(List<ClusterWrapper> clusters, Distance distanceType) {
 		silhouette = SilhouetteMethod.silhouette(clusters, distanceType);
+		System.out.println("**" + silhouette);
 		Map<ClusterWrapper, Color> colors = UtilMethods.getRandomColors(clusters);
 		JSObject root = new JSObject();
 		JSArray datasets = new JSArray();

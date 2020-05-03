@@ -1,7 +1,6 @@
 package es.ubu.lsi.ubumonitor.export.dashboard;
 
 import java.time.ZoneId;
-import java.time.temporal.Temporal;
 import java.util.Set;
 
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -9,7 +8,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
-import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
 import es.ubu.lsi.ubumonitor.util.ManageDuplicate;
 
 public class FillSheetEnrolledUser extends FillSheetData {
@@ -46,7 +44,7 @@ public class FillSheetEnrolledUser extends FillSheetData {
 		}
 
 	}
-	private String getDifferenceDays(Temporal inclusive, Temporal exclusive) {
-		return LastActivityFactory.getActivity(inclusive, exclusive).toString();
-	}
+//	private String getDifferenceDays(Temporal inclusive, Temporal exclusive) {
+//		return LastActivityFactory.getActivity(inclusive, exclusive).toString();
+//	}
 }

@@ -476,7 +476,8 @@ public class WelcomeController implements Initializable {
 					.getScene()
 					.setCursor(Cursor.DEFAULT);
 			btnEntrar.setVisible(true);
-			UtilMethods.errorWindow(I18n.get("error.downloadingdata"), task.getException());
+			UtilMethods.errorWindow(I18n.get("error.downloadingdata") + " " + task.getException()
+					.getMessage(), task.getException());
 			LOGGER.error("Error al actualizar los datos del curso: {}", task.getException());
 
 		});
@@ -544,8 +545,9 @@ public class WelcomeController implements Initializable {
 
 				int tries = 1;
 				int limitRelogin = 3;
-				while (tries < limitRelogin) {
+				while (tries <= limitRelogin) {
 					try {
+
 						updateMessage(MessageFormat.format(I18n.get("label.downloadinglog"), tries, limitRelogin));
 						if (!isFileCacheExists) {
 
@@ -565,9 +567,13 @@ public class WelcomeController implements Initializable {
 									chkOnlyWeb.isSelected());
 
 						}
-						tries = limitRelogin;
-					} catch (RuntimeException e) {
-
+						tries = limitRelogin + 1;
+					} catch (IllegalStateException e) {
+						if (tries >= limitRelogin) {
+							throw new IllegalStateException(I18n.get("error.csvparsing"));
+						}
+						tries++;
+					} catch (Exception e) {
 						if (tries >= limitRelogin) {
 							throw e;
 						}

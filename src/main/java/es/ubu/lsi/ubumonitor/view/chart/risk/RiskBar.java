@@ -92,8 +92,6 @@ public class RiskBar extends Chartjs {
 	public void update() {
 		String dataset = createDataset(getSelectedEnrolledUser());
 		String options = getOptions();
-		System.out.println(dataset);
-		System.out.println(options);
 		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, options));
 
 	}

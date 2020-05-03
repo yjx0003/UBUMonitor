@@ -71,6 +71,9 @@ public abstract class WebService {
 
 		JSONObject jsonObject = new JSONObject(new JSONTokener(response.body().byteStream()));
 		response.close();
+		if(jsonObject.has("error")) {
+			throw new IllegalAccessError(jsonObject.getString("error"));
+		}
 		String token = jsonObject.getString("token");
 
 		initialize(host, token);

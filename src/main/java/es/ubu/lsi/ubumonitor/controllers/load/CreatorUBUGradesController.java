@@ -315,7 +315,7 @@ public class CreatorUBUGradesController {
 		List<Role> roles = createRoles(user.optJSONArray("roles"));
 		roles.forEach(role -> role.addEnrolledUser(enrolledUser));
 
-		List<Group> groups = createGroups(user.getJSONArray("groups"));
+		List<Group> groups = createGroups(user.optJSONArray("groups"));
 		groups.forEach(group -> group.addEnrolledUser(enrolledUser));
 
 		return enrolledUser;

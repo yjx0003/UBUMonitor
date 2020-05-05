@@ -20,8 +20,8 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 public class HierarchicalClustering {
 
 	private ClusteringAlgorithm algorithm = new DefaultClusteringAlgorithm();
-	private DistanceMeasure distance = Distance.MANHATTAN_DISTANCE.getInstance();
-	
+	private DistanceMeasure distance;
+
 	public void setDistance(Distance distance) {
 		this.distance = distance.getInstance();
 	}
@@ -40,21 +40,10 @@ public class HierarchicalClustering {
 		}
 
 		Cluster cluster = algorithm.performClustering(distances, names, new AverageLinkageStrategy());
-
-//		DendrogramPanel dp = new DendrogramPanel();
-//		dp.setModel(cluster);
-//		JFrame frame = new JFrame();
-//		frame.setSize(500, 500);
-//		frame.add(dp);
-//		frame.setVisible(true);
-//		frame.toFront();
-
+		
 		Tree<String> tree = new Tree<>(cluster.getName());
-
 		generateTree(cluster, tree.getRoot());
-
 		return tree;
-
 	}
 
 	private void generateTree(Cluster cluster, Node<String> node) {

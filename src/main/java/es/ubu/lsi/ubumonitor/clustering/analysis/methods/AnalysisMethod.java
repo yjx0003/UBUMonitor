@@ -31,7 +31,7 @@ public abstract class AnalysisMethod {
 			double best = Double.NaN;
 			for (int j = 0; j < TRIALS; j++) {
 				algorithm.getParameters().setParameter(ClusteringParameter.NUM_CLUSTER, i);
-				AlgorithmExecuter executer = new AlgorithmExecuter(algorithm.getClusterer(), users, collectors);
+				AlgorithmExecuter executer = new AlgorithmExecuter(algorithm, users, collectors);
 				List<ClusterWrapper> clusters = executer.execute(0);
 				double value = calculate(clusters);
 				if (Double.isNaN(best) || comparator.compare(best, value) > 0)

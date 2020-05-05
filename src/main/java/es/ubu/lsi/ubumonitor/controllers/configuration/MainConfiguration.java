@@ -65,7 +65,9 @@ public class MainConfiguration {
 		createItem(GENERAL, "displayXScaleTitle", true);
 		createItem(GENERAL, "fontColorYScaleTitle", Color.BLACK);
 		createItem(GENERAL, "fontColorXScaleTitle", Color.BLACK);
-
+		
+		
+		createItem(ChartType.TOTAL_BAR, "horizontalMode", false);
 		createItem(ChartType.STACKED_BAR, "calculateMax", false);
 		createItem(ChartType.HEAT_MAP, "calculateMax", true);
 		createItem(ChartType.HEAT_MAP, "useQuartile", false);
@@ -75,10 +77,9 @@ public class MainConfiguration {
 		createItem(ChartType.HEAT_MAP, "thirdInterval", Color.web("#b5ff33"));
 		createItem(ChartType.HEAT_MAP, "fourthInterval", Color.web("#38e330"));
 		createItem(ChartType.HEAT_MAP, "moreMax", Color.web("#67b92e"));
-		createItem(ChartType.TOTAL_BAR, "horizontalMode", false);
-		createItem(ChartType.SESSION, "timeInterval", 60);
-
 		createItem(ChartType.CUM_LINE, "calculateMax", false);
+		createItem(ChartType.SESSION, "timeInterval", 60);
+		
 
 		createItem(ChartType.MEAN_DIFF, "calculateMax", false);
 		createItem(ChartType.MEAN_DIFF, "zeroLineColor", Color.web("#DC143C"));

@@ -28,7 +28,7 @@
             <Image url="@../img/titulo.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="161.0" fitWidth="161.0" layoutX="135.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="161.0" fitWidth="161.0" layoutX="110.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../img/logo_min.png" />
          </image>
@@ -103,6 +103,6 @@
             <Cursor fx:constant="DEFAULT" />
          </cursor>
       </GridPane>
-      <Hyperlink layoutX="5.0" layoutY="15.0" onAction="#aboutApp" text="%about_app" />
+      <Hyperlink layoutX="5.0" layoutY="15.0" onAction="#aboutApp" prefWidth="115.0" text="%about_app" wrapText="true" />
 	</children>
 </AnchorPane>

@@ -33,7 +33,6 @@ public class ClusteringSilhouette extends AbstractChart {
 
 	public void updateChart(List<ClusterWrapper> clusters, Distance distanceType) {
 		silhouette = SilhouetteMethod.silhouette(clusters, distanceType);
-		System.out.println("**" + silhouette);
 		Map<ClusterWrapper, Color> colors = UtilMethods.getRandomColors(clusters);
 		JSObject root = new JSObject();
 		JSArray datasets = new JSArray();
@@ -55,7 +54,7 @@ public class ClusteringSilhouette extends AbstractChart {
 		dataset.putWithQuote("type", "bar");
 		dataset.put("data", data);
 		dataset.put("backgroundColor", backgroundColor);
-		
+
 		// Average
 		JSObject lineDataset = new JSObject();
 		lineDataset.putWithQuote("borderColor", "rgba(0,0,0,0.5)");
@@ -64,14 +63,14 @@ public class ClusteringSilhouette extends AbstractChart {
 		List<Double> list = Collections.nCopies(i,
 				silhouette.values().stream().mapToDouble(Double::doubleValue).average().orElse(0.0));
 		average.addAll(list);
-		
+
 		lineDataset.put("data", average);
-		
+
 		datasets.add(lineDataset);
 		datasets.add(dataset);
 
 		root.put("datasets", datasets);
-		
+
 		JSArray labels = new JSArray();
 		labels.addAll(Collections.nCopies(i, "null"));
 		root.put("labels", labels);

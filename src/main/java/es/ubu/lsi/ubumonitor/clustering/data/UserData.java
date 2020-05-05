@@ -21,6 +21,12 @@ public class UserData implements Clusterable {
 		data = new ArrayList<>();
 		normalizedData = new ArrayList<>();
 	}
+	
+	public UserData(UserData userData) {
+		this.user = userData.user;
+		this.data = userData.data;
+		this.normalizedData = userData.normalizedData;
+	}
 
 	public EnrolledUser getEnrolledUser() {
 		return user;

@@ -14,25 +14,34 @@ import org.apache.commons.math3.ml.clustering.Clusterer;
 
 import com.jujutsu.tsne.PrincipalComponentAnalysis;
 
+import es.ubu.lsi.ubumonitor.clustering.algorithm.Algorithm;
+import es.ubu.lsi.ubumonitor.clustering.analysis.methods.SilhouetteMethod;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.DataCollector;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
+import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
+import es.ubu.lsi.ubumonitor.clustering.data.Distance;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 
 public class AlgorithmExecuter {
 
 	private Clusterer<UserData> clusterer;
-
+	private Distance distance;
 	private List<UserData> usersData;
 
-	public AlgorithmExecuter(Clusterer<UserData> clusterer, List<EnrolledUser> enrolledUsers,
+	public AlgorithmExecuter(Algorithm algorithm, List<EnrolledUser> enrolledUsers,
 			List<DataCollector> dataCollectors) {
-		this.clusterer = clusterer;
+		this.clusterer = algorithm.getClusterer();
+		this.distance = algorithm.getParameters().getValue(ClusteringParameter.DISTANCE_TYPE);
 		usersData = enrolledUsers.stream().map(UserData::new).collect(Collectors.toList());
 		dataCollectors.forEach(collector -> collector.collect(usersData));
 	}
 
-	public List<ClusterWrapper> execute(int dimension) {
+	public List<ClusterWrapper> execute(int dim) {
+		return execute(1, dim);
+	}
+
+	public List<ClusterWrapper> execute(int iterations, int dimension) {
 
 		if (usersData.isEmpty())
 			throw new IllegalStateException("clustering.error.notUsers");
@@ -55,16 +64,30 @@ public class AlgorithmExecuter {
 			}
 		}
 		try {
-			List<? extends Cluster<UserData>> clusters = clusterer.cluster(usersData);
-			List<ClusterWrapper> users = new ArrayList<>();
-			for (int i = 0; i < clusters.size(); i++) {
-				ClusterWrapper clusterWrapper = new ClusterWrapper(i, clusters.get(i));
-				for (UserData user : clusters.get(i).getPoints()) {
-					user.setCluster(clusterWrapper);
+
+			List<ClusterWrapper> result = null;
+			double best = 0.0;
+			for (int count = 0; count < iterations; count++) {
+				List<UserData> copy = usersData.stream().map(UserData::new).collect(Collectors.toList());
+				List<? extends Cluster<UserData>> clusters = clusterer.cluster(copy);
+				List<ClusterWrapper> users = new ArrayList<>();
+				for (int i = 0; i < clusters.size(); i++) {
+					ClusterWrapper clusterWrapper = new ClusterWrapper(i, clusters.get(i));
+					for (UserData user : clusters.get(i).getPoints()) {
+						user.setCluster(clusterWrapper);
+					}
+					users.add(clusterWrapper);
 				}
-				users.add(clusterWrapper);
+
+				double mean = SilhouetteMethod.silhouette(users, distance).values().stream()
+						.mapToDouble(Double::doubleValue).sum();
+				if (mean >= best) {
+					best = mean;
+					result = users;
+				}
 			}
-			return users;
+
+			return result;
 		} catch (NumberIsTooSmallException e) {
 			throw new IllegalStateException("clustering.error.lessUsersThanClusters", e);
 		}
@@ -116,4 +139,5 @@ public class AlgorithmExecuter {
 
 		return points;
 	}
+
 }

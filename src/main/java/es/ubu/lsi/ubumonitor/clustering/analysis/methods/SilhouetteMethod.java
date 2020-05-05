@@ -70,7 +70,6 @@ public class SilhouetteMethod extends AnalysisMethod {
 			}
 			silhouette.put(userData, s);
 		}
-		System.out.println(silhouette);
 		return silhouette;
 	}
 

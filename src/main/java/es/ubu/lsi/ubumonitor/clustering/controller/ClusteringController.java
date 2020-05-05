@@ -131,6 +131,9 @@ public class ClusteringController {
 	@FXML
 	private ChoiceBox<AnalysisFactory> choiceBoxAnalyze;
 
+	@FXML
+	private TextField textFieldIterations;
+
 	private GradesCollector gradesCollector;
 
 	private ActivityCollector activityCollector;
@@ -172,6 +175,11 @@ public class ClusteringController {
 	private void initAlgorithms() {
 		textFieldReduce.disableProperty().bind(checkBoxReduce.selectedProperty().not());
 		textFieldReduce.textProperty().addListener((obs, oldValue, newValue) -> {
+			if (!newValue.isEmpty() && !newValue.matches("[1-9]\\d*")) {
+				textFieldReduce.setText(oldValue);
+			}
+		});
+		textFieldIterations.textProperty().addListener((obs, oldValue, newValue) -> {
 			if (!newValue.isEmpty() && !newValue.matches("[1-9]\\d*")) {
 				textFieldReduce.setText(oldValue);
 			}
@@ -223,7 +231,8 @@ public class ClusteringController {
 
 			List<ClusterWrapper> ls = null;
 			double best = 0.0;
-			for (int i = 0; i < 20; i++) {
+			int iter = Integer.valueOf(textFieldIterations.getText());
+			for (int i = 0; i < iter; i++) {
 				AlgorithmExecuter algorithmExecuter = new AlgorithmExecuter(clusterer, users, collectors);
 				ls = algorithmExecuter.execute(dim);
 				double mean = SilhouetteMethod.silhouette(ls, Distance.MANHATTAN_DISTANCE).values().stream()

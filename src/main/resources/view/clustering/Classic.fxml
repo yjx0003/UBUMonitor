@@ -74,7 +74,7 @@
                   <TextField fx:id="textFieldReduce" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="30.0" GridPane.columnIndex="1" />
                </children>
             </GridPane>
-            <Button mnemonicParsing="false" onAction="#execute" text="%clustering.execute" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+            <Button mnemonicParsing="false" onAction="#execute" text="%clustering.execute" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
             <Label text="%clustering.numberOfClusters" GridPane.columnIndex="4">
                <GridPane.margin>
                   <Insets right="10.0" />
@@ -90,6 +90,23 @@
                <children>
                   <ChoiceBox fx:id="choiceBoxAnalyze" />
                   <Button mnemonicParsing="false" onAction="#executeOptimal" text="%clustering.analyze" GridPane.columnIndex="1" />
+               </children>
+            </GridPane>
+            <GridPane GridPane.columnIndex="3" GridPane.rowIndex="2">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label text="Iteraciones" GridPane.halignment="RIGHT">
+                     <GridPane.margin>
+                        <Insets right="10.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <TextField fx:id="textFieldIterations" maxWidth="-Infinity" prefWidth="30.0" promptText="10" text="10" GridPane.columnIndex="1" />
                </children>
             </GridPane>
          </children>

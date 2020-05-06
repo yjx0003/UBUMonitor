@@ -1,29 +1,33 @@
+<a href="README_es.md" >
+<img align="right" src="src/main/resources/img/countries_flags/ES.png">
+</a>
+
+
 # UBUMonitor
 [![GitHub release](https://img.shields.io/github/release/yjx0003/UBUMonitor.svg)](https://github.com/yjx0003/UBUMonitor/releases/)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=UBUMonitor&metric=alert_status)](https://sonarcloud.io/dashboard?id=UBUMonitor)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f79d51e496b3495690aa6480269536b8)](https://www.codacy.com/app/yjx0003/UBUMonitor?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yjx0003/UBUMonitor&amp;utm_campaign=Badge_Grade)
 [![HitCount](http://hits.dwyl.io/yjx0003/UBUMonitor.svg)](http://hits.dwyl.io/yjx0003/UBUMonitor)
 <p align="center"><img height="300" src="src/main/resources/img/logo.png" />
 
-## Monitorización de alumnos en la plataforma Moodle
-### Descripción:
+## Monitoring of students on the Moodle platform
+### Description:
 
-Herramienta de visualización de calificaciones y registros (logs) del curso en diferentes tipos de gráficas.
+Tool for displaying grades and course records (logs) on different types of charts.
 
-Esta aplicación está dirigida a docentes que usen los servicios de Moodle.
+This application is aimed at teachers who use Moodle services.
 
-Esta versión es la continuación de [UBUGrades](https://github.com/huco95/UBUGrades) de [Félix Nogal Santamaría](https://github.com/huco95).
+This version is the continuation of [Félix Nogal Santamaría](https://github.com/huco95) [UBUGrades](https://github.com/huco95/UBUGrades) application.
 <p align="center"><img src="/latex/img/ejemplo_barras_apiladas.png" />
 
-## Manual de usuario:
+## User's manual:
 <!--* https://ubumonitor.gitbook.io/ubumonitor/-->
 * https://ubumonitordocs.readthedocs.io/es/latest/
 
-## Dependencias:
-La aplicación requiere **Java 8**.
-Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), de **JavaScript** en [resources/graphics/lib/](resources/graphics/lib/) y un pack de iconos.
+## Dependencies:
+The application requires **Java 8**.
+External **JavaScript** libraries are included in  [resources/graphics/lib/](resources/graphics/lib/).
 
-### Dependencias de Java:
+### Java dependencies:
 * [Apache Commons CSV](https://commons.apache.org/proper/commons-csv/)
   * Versión: **1.6**
   * [Github](https://github.com/apache/commons-csv)
@@ -36,6 +40,10 @@ Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), d
   * Versión: **1.2.17**
   * [Github](https://github.com/apache/log4j)
   * [Maven Repository](https://mvnrepository.com/artifact/log4j/log4j)
+* [Apache POI](https://poi.apache.org/)
+  * Versión: **4.1.1**
+  * [Github](https://github.com/apache/poi)
+  * [Maven Repository](https://mvnrepository.com/artifact/org.apache.poi/poi)  
 * [Gson](https://sites.google.com/site/gson/)
   * Version: **2.8.5**
   * [Github](https://github.com/google/gson)
@@ -48,6 +56,10 @@ Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), d
   * Versión: **1.11.3**
   * [Github](https://github.com/jhy/jsoup)
   * [Maven Repository](https://mvnrepository.com/artifact/org.jsoup/jsoup/1.11.3)
+* [OkHttp](https://square.github.io/okhttp/)
+  * Versión: **4.4.1**
+  * [Github](https://github.com/square/okhttp/)
+  * [Maven Repository](https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp)
 * [OpenCSV](http://opencsv.sourceforge.net/)
   * Versión: **4.6**
   * [GitHub](https://github.com/jlawrie/opencsv)
@@ -65,7 +77,7 @@ Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), d
   * [Github](https://github.com/ThreeTen/threeten-extra)
   * [Maven Repository](https://mvnrepository.com/artifact/org.threeten/threeten-extra)
   
-### Dependencias de JavaScript:
+### JavaScript dependencies:
 * [ApexCharts](https://apexcharts.com/)
   * Versión: **3.10.1**
   * [Github](https://github.com/apexcharts/apexcharts.js)
@@ -90,19 +102,19 @@ Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), d
   * Versión: **1.0.0-rc.5**
   * [Github](https://github.com/niklasvh/html2canvas/)
   
-### Pack de iconos:
+### Icon packs:
 * [Font Awesome](https://fontawesome.com/)
   * Versión: **4.7.0**
   * [Github](https://github.com/FortAwesome/Font-Awesome/)
   * [fa2png](http://fa2png.io/r/font-awesome/)
 
-## Autor
+## Author
 
 - Yi Peng Ji
 
-## Tutores
+## Tutors
 - Raúl Marticorena Sánchez
 - Carlos Pardo Aguilar
 
-## Licencia
-Este proyecto está licenciado bajo la licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
+## License
+This project is licensed under the MIT license - see the [LICENSE](LICENSE) file for details.

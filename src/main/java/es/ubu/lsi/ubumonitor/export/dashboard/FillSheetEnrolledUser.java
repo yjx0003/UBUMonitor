@@ -22,7 +22,7 @@ public class FillSheetEnrolledUser extends FillSheetData {
 
 	@Override
 	protected void fillTable(XSSFSheet sheet, CellStyle dateStyle) {
-		ZonedDateTime lasLogDate = Controller.getInstance().getUpdateCourse();
+		ZonedDateTime lasLogDate = Controller.getInstance().getUpdatedLog();
 		Set<EnrolledUser> enrolledUsers = Controller.getInstance()
 				.getActualCourse()
 				.getEnrolledUsers();

@@ -162,7 +162,7 @@ public class MainController implements Initializable {
 		HBox right = new HBox();
 		right.setAlignment(Pos.CENTER);
 		right.setSpacing(5);
-		ZonedDateTime lastLogDateTime = controller.getUpdateCourse();
+		ZonedDateTime lastLogDateTime = controller.getUpdatedLog();
 		Label lblLastUpdate = new Label(
 				I18n.get("label.lastupdate") + " " + lastLogDateTime.format(Controller.DATE_TIME_FORMATTER));
 		right.getChildren().addAll(lblLastUpdate);

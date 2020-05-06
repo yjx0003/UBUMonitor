@@ -26,7 +26,7 @@ public class CoreCourseSearchCourses extends WSFunctionAbstract {
 	public void addToMapParemeters() {
 		parameters.put("criterianame", "search");
 		parameters.put("criteriavalue", value);
-		parameters.put("page", Integer.toString(perpage));
+		parameters.put("page", Integer.toString(page));
 		parameters.put("perpage", Integer.toString(perpage));
 
 	}

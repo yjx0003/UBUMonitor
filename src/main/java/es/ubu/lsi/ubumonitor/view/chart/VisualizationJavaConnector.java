@@ -58,7 +58,7 @@ public class VisualizationJavaConnector {
 	private MainController mainController;
 	private VisualizationController visualizationController;
 
-	private static final ChartType DEFAULT_LOG_CHART = ChartType.HEAT_MAP;
+	private static final ChartType DEFAULT_LOG_CHART = ChartType.TOTAL_BAR;
 	private static final ChartType DEFAULT_GRADE_CHART = ChartType.LINE;
 
 	private static final ChartType DEFAULT_ACTIVITY_COMPLETION_CHART = ChartType.ACTIVITIES_TABLE;

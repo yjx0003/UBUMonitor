@@ -28,8 +28,8 @@ import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.ModuleType;
-import es.ubu.lsi.ubumonitor.webservice.WebService;
-import es.ubu.lsi.ubumonitor.webservice.gradereport.GradereportUserGetGradesTable;
+import es.ubu.lsi.ubumonitor.webservice.api.gradereport.GradereportUserGetGradesTable;
+import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
 import okhttp3.Response;
 
 /**
@@ -83,12 +83,11 @@ public class CreatorGradeItems {
 	 * @throws IOException   error de conexion con moodle
 	 */
 	public List<GradeItem> createGradeItems(int courseid) throws IOException {
-		WebService ws = new GradereportUserGetGradesTable(courseid);
-		Response response = ws.getResponse();
+
+		Response response = WebService.getResponse(new GradereportUserGetGradesTable(courseid));
 		JSONObject jsonObject;
 		try {
-			jsonObject = new JSONObject(new JSONTokener(response.body()
-					.byteStream()));
+			jsonObject = new JSONObject(new JSONTokener(response.body().byteStream()));
 		} catch (JSONException e) {
 			LOGGER.error("Error al parsear las calificaciones.", e);
 			return Collections.emptyList();
@@ -304,7 +303,7 @@ public class CreatorGradeItems {
 	 */
 	private void setEnrolledUserGrades(JSONObject jsonObject, List<GradeItem> gradeItems) {
 		JSONArray jsonArray = jsonObject.optJSONArray("tables");
-		if(jsonArray == null ) {
+		if (jsonArray == null) {
 			return;
 		}
 		for (int i = 0; i < jsonArray.length(); i++) {

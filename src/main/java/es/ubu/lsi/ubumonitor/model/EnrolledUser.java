@@ -19,8 +19,7 @@ public class EnrolledUser implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	public static final Comparator<EnrolledUser> NAME_COMPARATOR = Comparator
-			.comparing(EnrolledUser::getLastname, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
-			.thenComparing(EnrolledUser::getFirstname, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+			.comparing(EnrolledUser::getFullName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
 
 	
 	/**
@@ -409,7 +408,7 @@ public class EnrolledUser implements Serializable {
 
 	@Override
 	public String toString() {
-		return lastname + ", " + firstname;
+		return fullName;
 	}
 
 

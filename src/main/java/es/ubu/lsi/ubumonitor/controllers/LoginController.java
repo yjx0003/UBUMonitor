@@ -289,6 +289,7 @@ public class LoginController implements Initializable {
 		});
 
 		loginTask.setOnFailed(e -> {
+			LOGGER.info("Failed task", e.getSource().getException());
 			controller.getStage().getScene().setCursor(Cursor.DEFAULT);
 			
 			lblStatus.setText(e.getSource().getException().getMessage());
@@ -299,6 +300,7 @@ public class LoginController implements Initializable {
 	}
 
 	private void onSuccessLogin() {
+		LOGGER.info("Login success");
 		saveProperties();
 		controller.getStage().getScene().setCursor(Cursor.DEFAULT);
 		controller.setLoggedIn(LocalDateTime.now());
@@ -334,6 +336,7 @@ public class LoginController implements Initializable {
 				}
 
 				try {
+					LOGGER.info("Recogiendo info del usuario");
 					MoodleUser moodleUser = CreatorUBUGradesController.createMoodleUser(controller.getUsername());
 					controller.setUser(moodleUser);
 				} catch (IOException e) {

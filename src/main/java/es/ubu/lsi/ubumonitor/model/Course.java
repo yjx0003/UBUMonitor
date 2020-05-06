@@ -31,6 +31,12 @@ public class Course implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Course.class);
+
+	public static final Comparator<Course> COURSE_COMPARATOR = Comparator
+			.comparing(Course::getFullName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
+			.thenComparing(c -> c.getCourseCategory()
+					.getName(), Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+
 	private int id;
 	private String shortName;
 	private String fullName;
@@ -453,7 +459,9 @@ public class Course implements Serializable {
 	 * @return los tipos de modulo sin repetición
 	 */
 	public Set<ModuleType> getUniqueGradeModuleTypes() {
-		return gradeItems.stream().map(GradeItem::getItemModule).filter(Objects::nonNull)
+		return gradeItems.stream()
+				.map(GradeItem::getItemModule)
+				.filter(Objects::nonNull)
 				.collect(Collectors.toCollection(TreeSet::new));
 
 	}
@@ -464,10 +472,13 @@ public class Course implements Serializable {
 	 * @return componentes de logs realizados por usuario actuales del curso
 	 */
 	public List<Component> getUniqueComponents() {
-		return logs.getList().stream()
+		return logs.getList()
+				.stream()
 				// cogemos las lineas de log de los usuarios que pertenecen al curso actual
 				.filter(logLine -> logLine.getUser() != null && enrolledUsers.contains(logLine.getUser()))
-				.map(LogLine::getComponent).distinct().collect(Collectors.toList());
+				.map(LogLine::getComponent)
+				.distinct()
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -477,15 +488,20 @@ public class Course implements Serializable {
 	 * @return componente-evento unicos de los logs de usuarios actuales del curso
 	 */
 	public List<ComponentEvent> getUniqueComponentsEvents() {
-		return logs.getList().stream()
+		return logs.getList()
+				.stream()
 				// cogemos las lineas de log de los usuarios que pertenecen al curso actual
 				.filter(logLine -> logLine.getUser() != null && enrolledUsers.contains(logLine.getUser()))
-				.map(l -> ComponentEvent.get(l.getComponent(), l.getEventName())).distinct()
+				.map(l -> ComponentEvent.get(l.getComponent(), l.getEventName()))
+				.distinct()
 				.collect(Collectors.toList());
 	}
 
 	public List<ModuleType> getUniqueCourseModulesTypes() {
-		return modules.stream().map(CourseModule::getModuleType).distinct().collect(Collectors.toList());
+		return modules.stream()
+				.map(CourseModule::getModuleType)
+				.distinct()
+				.collect(Collectors.toList());
 	}
 
 	public LocalDate getStart() {
@@ -494,8 +510,8 @@ public class Course implements Serializable {
 			return getEnd();
 		}
 
-		return startDate.isBefore(Instant.now()) ? LocalDateTime.ofInstant(startDate, logs.getZoneId()).toLocalDate()
-				: LocalDate.now();
+		return startDate.isBefore(Instant.now()) ? LocalDateTime.ofInstant(startDate, logs.getZoneId())
+				.toLocalDate() : LocalDate.now();
 	}
 
 	public LocalDate getEnd() {
@@ -504,8 +520,8 @@ public class Course implements Serializable {
 			return LocalDate.now();
 		}
 
-		return endDate.isBefore(Instant.now()) ? LocalDateTime.ofInstant(endDate, logs.getZoneId()).toLocalDate()
-				: LocalDate.now();
+		return endDate.isBefore(Instant.now()) ? LocalDateTime.ofInstant(endDate, logs.getZoneId())
+				.toLocalDate() : LocalDate.now();
 
 	}
 
@@ -516,8 +532,11 @@ public class Course implements Serializable {
 	 * @return student role or null
 	 */
 	public Role getStudentRole() {
-		return roles.stream().filter(r -> "student".equals(r.getRoleShortName()))
-				.max(Comparator.comparingInt(r -> r.getEnrolledUsers().size())).orElse(null);
+		return roles.stream()
+				.filter(r -> "student".equals(r.getRoleShortName()))
+				.max(Comparator.comparingInt(r -> r.getEnrolledUsers()
+						.size()))
+				.orElse(null);
 
 	}
 

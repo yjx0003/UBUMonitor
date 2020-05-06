@@ -46,7 +46,7 @@ public abstract class ChartjsGradeItem extends Chartjs {
 			JSObject dataset = new JSObject();
 			dataset.putWithQuote("label", user.getFullName());
 			dataset.put("borderColor", hex(user.getId()));
-			dataset.put("backgrounColor", rgba(user.getId(), OPACITY));
+			dataset.put("backgroundColor", rgba(user.getId(), OPACITY));
 			JSArray dataArray = new JSArray();
 			for (GradeItem gradeItem : selectedGradeItems) {
 				double grade = gradeItem.getEnrolledUserPercentage(user);

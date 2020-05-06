@@ -60,7 +60,13 @@ public class Course implements Serializable {
 	private LogStats logStats;
 	private byte[] userPhoto;
 	private String userFullName;
-	private ZonedDateTime updatedCourse;
+	private boolean courseAccess;
+	private boolean reportAccess;
+	private boolean gradeItemAccess;
+	private ZonedDateTime updatedCourseData;
+	private ZonedDateTime updatedGradeItem;
+	private ZonedDateTime updatedActivityCompletion;
+	private ZonedDateTime updatedLog;
 
 	public Course() {
 		this.enrolledUsers = new HashSet<>();
@@ -605,17 +611,77 @@ public class Course implements Serializable {
 	}
 
 	/**
-	 * @return the updatedCourse
+	 * @return the courseAccess
 	 */
-	public ZonedDateTime getUpdatedCourse() {
-		return updatedCourse;
+	public boolean isCourseAccess() {
+		return courseAccess;
 	}
 
 	/**
-	 * @param updatedCourse the updatedCourse to set
+	 * @param courseAccess the courseAccess to set
 	 */
-	public void setUpdatedCourse(ZonedDateTime updatedCourse) {
-		this.updatedCourse = updatedCourse;
+	public void setCourseAccess(boolean courseAccess) {
+		this.courseAccess = courseAccess;
+	}
+
+	/**
+	 * @return the reportAccess
+	 */
+	public boolean isReportAccess() {
+		return reportAccess;
+	}
+
+	/**
+	 * @param reportAccess the reportAccess to set
+	 */
+	public void setReportAccess(boolean reportAccess) {
+		this.reportAccess = reportAccess;
+	}
+
+	/**
+	 * @return the gradeItemAccess
+	 */
+	public boolean isGradeItemAccess() {
+		return gradeItemAccess;
+	}
+
+	/**
+	 * @param gradeItemAccess the gradeItemAccess to set
+	 */
+	public void setGradeItemAccess(boolean gradeItemAccess) {
+		this.gradeItemAccess = gradeItemAccess;
+	}
+
+	public ZonedDateTime getUpdatedCourseData() {
+		return updatedCourseData;
+	}
+
+	public void setUpdatedCourseData(ZonedDateTime updatedCourseData) {
+		this.updatedCourseData = updatedCourseData;
+	}
+
+	public ZonedDateTime getUpdatedGradeItem() {
+		return updatedGradeItem;
+	}
+
+	public void setUpdatedGradeItem(ZonedDateTime updatedGradeItem) {
+		this.updatedGradeItem = updatedGradeItem;
+	}
+
+	public ZonedDateTime getUpdatedActivityCompletion() {
+		return updatedActivityCompletion;
+	}
+
+	public void setUpdatedActivityCompletion(ZonedDateTime updatedActivityCompletion) {
+		this.updatedActivityCompletion = updatedActivityCompletion;
+	}
+
+	public ZonedDateTime getUpdatedLog() {
+		return updatedLog;
+	}
+
+	public void setUpdatedLog(ZonedDateTime updatedLog) {
+		this.updatedLog = updatedLog;
 	}
 
 }

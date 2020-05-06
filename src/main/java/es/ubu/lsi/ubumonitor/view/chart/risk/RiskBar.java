@@ -47,7 +47,7 @@ public class RiskBar extends Chartjs {
 	@Override
 	public void exportCSV(String path) throws IOException {
 		ZonedDateTime updateTime = Controller.getInstance()
-				.getUpdateCourse();
+				.getUpdatedCourseData();
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader("userid", "fullname",
 				"lastCourseAccess", "lastMoodleAcess", "diffCourseAccess", "diffMoodleAccess"))) {
 			for (EnrolledUser enrolledUser : getSelectedEnrolledUser()) {
@@ -99,7 +99,7 @@ public class RiskBar extends Chartjs {
 	protected String createDataset(List<EnrolledUser> selectedEnrolledUser) {
 
 		ZonedDateTime lastUpdate = Controller.getInstance()
-				.getUpdateCourse();
+				.getUpdatedCourseData();
 		Map<LastActivity, List<EnrolledUser>> lastCourseAccess = new TreeMap<>(
 				Comparator.comparing(LastActivity::getIndex));
 		Map<LastActivity, List<EnrolledUser>> lastAccess = new TreeMap<>(Comparator.comparing(LastActivity::getIndex));
@@ -174,7 +174,7 @@ public class RiskBar extends Chartjs {
 	public String getXAxisTitle() {
 
 		return MessageFormat.format(super.getXAxisTitle(), Controller.getInstance()
-				.getUpdateCourse()
+				.getUpdatedCourseData()
 				.format(Controller.DATE_TIME_FORMATTER));
 	}
 }

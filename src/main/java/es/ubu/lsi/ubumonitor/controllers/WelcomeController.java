@@ -191,7 +191,8 @@ public class WelcomeController implements Initializable {
 			btnRemove.disableProperty()
 					.bind(chkUpdateData.disabledProperty());
 			buttonLogout.disableProperty()
-					.bind(btnEntrar.visibleProperty().not());
+					.bind(btnEntrar.visibleProperty()
+							.not());
 
 			manageCheckBox(checkBoxCourseData, chkUpdateData);
 			manageCheckBox(checkBoxGradeItem, chkUpdateData);
@@ -214,7 +215,7 @@ public class WelcomeController implements Initializable {
 							listView = (ListView<Course>) value.getContent();
 
 						} else {
-							
+
 							listView = listViewSearch;
 						}
 						listView.getSelectionModel()
@@ -322,9 +323,8 @@ public class WelcomeController implements Initializable {
 
 		File f = cacheFilePath.toFile();
 
-		if (f.exists() && f.isFile()) {
-			chkUpdateData.setSelected(false);
-			chkUpdateData.setDisable(false);
+		if (f.exists() && f.isFile()) { // exist local file
+
 			long lastModified = f.lastModified();
 
 			LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastModified),
@@ -332,11 +332,15 @@ public class WelcomeController implements Initializable {
 			lblDateUpdate.setText(localDateTime.format(Controller.DATE_TIME_FORMATTER));
 			isFileCacheExists = true;
 		} else {
-			chkUpdateData.setSelected(true);
-			chkUpdateData.setDisable(true);
+
 			lblDateUpdate.setText(I18n.get("label.never"));
 			isFileCacheExists = false;
 		}
+		chkUpdateData.setSelected(!isFileCacheExists);
+		chkUpdateData.setDisable(!isFileCacheExists);
+		checkBoxCourseData.setSelected(true); // always selected for default in course data
+		checkBoxActivityCompletion.setSelected(true);
+		checkBoxCourseData.setDisable(!isFileCacheExists);
 	}
 
 	/**
@@ -455,6 +459,7 @@ public class WelcomeController implements Initializable {
 			copyCourse(dataBase, getSelectedCourse());
 			controller.setDataBase(dataBase);
 			isBBDDLoaded = true;
+
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			previusPasswordWindow();
 		} catch (IOException e) {
@@ -587,63 +592,74 @@ public class WelcomeController implements Initializable {
 				actualCourse.clear();
 				LOGGER.info("Cargando datos del curso: {}", actualCourse.getFullName());
 				// Establecemos los usuarios matriculados
-				updateMessage(I18n.get("label.loadingstudents"));
-				CreatorUBUGradesController.createEnrolledUsers(actualCourse.getId());
-				CreatorUBUGradesController.createSectionsAndModules(actualCourse.getId());
-				updateMessage(I18n.get("label.loadingqualifier"));
-				// Establecemos calificador del curso
-				CreatorGradeItems creatorGradeItems = new CreatorGradeItems(new Locale(controller.getUser()
-						.getLang()));
-				creatorGradeItems.createGradeItems(controller.getActualCourse()
-						.getId());
-				updateMessage(I18n.get("label.loadingActivitiesCompletion"));
-				CreatorUBUGradesController.createActivitiesCompletionStatus(actualCourse.getId(),
-						actualCourse.getEnrolledUsers());
+				if (checkBoxCourseData.isSelected()) {
+					updateMessage(I18n.get("label.loadingstudents"));
+					CreatorUBUGradesController.createEnrolledUsers(actualCourse.getId());
+					CreatorUBUGradesController.createSectionsAndModules(actualCourse.getId());
+					actualCourse.setUpdatedCourseData(ZonedDateTime.now());
+				}
+				if (checkBoxGradeItem.isSelected()) {
+					updateMessage(I18n.get("label.loadingqualifier"));
+					// Establecemos calificador del curso
+					CreatorGradeItems creatorGradeItems = new CreatorGradeItems(new Locale(controller.getUser()
+							.getLang()));
+					creatorGradeItems.createGradeItems(controller.getActualCourse()
+							.getId());
+					actualCourse.setUpdatedGradeItem(ZonedDateTime.now());
+				}
+				if (checkBoxActivityCompletion.isSelected()) {
+					updateMessage(I18n.get("label.loadingActivitiesCompletion"));
+					CreatorUBUGradesController.createActivitiesCompletionStatus(actualCourse.getId(),
+							actualCourse.getEnrolledUsers());
+					actualCourse.setUpdatedActivityCompletion(ZonedDateTime.now());
+				}
+				if (checkBoxLogs.isSelected()) {
+					int tries = 1;
+					int limitRelogin = 3;
+					while (tries <= limitRelogin) {
+						try {
 
-				int tries = 1;
-				int limitRelogin = 3;
-				while (tries <= limitRelogin) {
-					try {
+							updateMessage(MessageFormat.format(I18n.get("label.downloadinglog"), tries, limitRelogin));
+							if (!isFileCacheExists) {
 
-						updateMessage(MessageFormat.format(I18n.get("label.downloadinglog"), tries, limitRelogin));
-						if (!isFileCacheExists) {
+								DownloadLogController downloadLogController = LogCreator.download();
 
-							DownloadLogController downloadLogController = LogCreator.download();
+								Response response = downloadLogController.downloadLog(false);
+								LOGGER.info("Log descargado");
+								updateMessage(I18n.get("label.parselog"));
 
-							Response response = downloadLogController.downloadLog(false);
-							LOGGER.info("Log descargado");
-							updateMessage(I18n.get("label.parselog"));
+								Logs logs = new Logs(downloadLogController.getServerTimeZone());
+								LogCreator.parserResponse(logs, response, actualCourse.getEnrolledUsers());
+								actualCourse.setLogs(logs);
 
-							Logs logs = new Logs(downloadLogController.getServerTimeZone());
-							LogCreator.parserResponse(logs, response, actualCourse.getEnrolledUsers());
-							actualCourse.setLogs(logs);
+							} else {
 
-						} else {
+								LogCreator.createLogsMultipleDays(actualCourse.getLogs(),
+										actualCourse.getEnrolledUsers(), false);
 
-							LogCreator.createLogsMultipleDays(actualCourse.getLogs(), actualCourse.getEnrolledUsers(),
-									false);
+							}
+							tries = limitRelogin + 1;
+							actualCourse.setUpdatedLog(ZonedDateTime.now());
+						} catch (IllegalStateException e) {
+							if (tries >= limitRelogin) {
+								throw new IllegalStateException(I18n.get("error.csvparsing"));
+							}
+							tries++;
+						} catch (Exception e) {
+							if (tries >= limitRelogin) {
+								throw e;
+							}
+							tries++;
+							updateMessage(I18n.get("label.relogin"));
+							controller.reLogin();
 
 						}
-						tries = limitRelogin + 1;
-					} catch (IllegalStateException e) {
-						if (tries >= limitRelogin) {
-							throw new IllegalStateException(I18n.get("error.csvparsing"));
-						}
-						tries++;
-					} catch (Exception e) {
-						if (tries >= limitRelogin) {
-							throw e;
-						}
-						tries++;
-						updateMessage(I18n.get("label.relogin"));
-						controller.reLogin();
-
 					}
 				}
+
 				updateMessage(I18n.get("label.loadingstats"));
 				// Establecemos las estadisticas
 				controller.createStats();
-				actualCourse.setUpdatedCourse(ZonedDateTime.now());
 
 				updateMessage(I18n.get("label.savelocal"));
 				saveData();
@@ -679,7 +695,6 @@ public class WelcomeController implements Initializable {
 			if (courses.isEmpty()) {
 				UtilMethods.warningWindow(I18n.get("warning.nofound"));
 			} else {
-				System.out.println(courses);
 				Collections.sort(courses, Course.COURSE_COMPARATOR);
 				listViewSearch.getItems()
 						.setAll(courses);

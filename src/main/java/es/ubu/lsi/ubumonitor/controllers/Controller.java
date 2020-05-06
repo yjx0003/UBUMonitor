@@ -45,9 +45,8 @@ public class Controller {
 	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
 			.ofLocalizedDateTime(FormatStyle.SHORT);
 
-	public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter
-			.ofLocalizedDate(FormatStyle.SHORT);
-	
+	public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
+
 	private Languages selectedLanguage;
 
 	private DataBase dataBase;
@@ -247,9 +246,12 @@ public class Controller {
 		Stats stats = new Stats(getActualCourse());
 		getActualCourse().setStats(stats);
 
-		LogStats logStats = new LogStats(getActualCourse().getLogs()
-				.getList());
-		getActualCourse().setLogStats(logStats);
+		if (getActualCourse().getLogs() != null) {
+			LogStats logStats = new LogStats(getActualCourse().getLogs()
+					.getList());
+			getActualCourse().setLogStats(logStats);
+		}
+
 	}
 
 	/**
@@ -289,7 +291,7 @@ public class Controller {
 			return Connection.getResponse(new Request.Builder().url(hostLogin)
 					.post(formBody)
 					.build());
-			
+
 		} catch (Exception e) {
 			LOGGER.error("Error al intentar loguearse", e);
 			throw new IllegalStateException(I18n.get("error.host"));
@@ -387,19 +389,41 @@ public class Controller {
 		this.mainConfiguration = mainConfiguration;
 	}
 
-	/**
-	 * @return the updateCourse
-	 */
-	public ZonedDateTime getUpdateCourse() {
-		return getActualCourse().getUpdatedCourse() == null ? getActualCourse().getLogs()
-				.getLastZonedDatetime() : getActualCourse().getUpdatedCourse();
+	public ZonedDateTime getUpdatedCourseData() {
+		if (dataBase.getActualCourse()
+				.getUpdatedCourseData() == null) {
+			return ZonedDateTime.now();
+		}
+		return dataBase.getActualCourse()
+				.getUpdatedCourseData();
 	}
 
-	/**
-	 * @param updateCourse the updateCourse to set
-	 */
-	public void setUpdateCourse(ZonedDateTime updateCourse) {
-		getActualCourse().setUpdatedCourse(updateCourse);
+	public ZonedDateTime getUpdatedGradeItem() {
+		if (dataBase.getActualCourse()
+				.getUpdatedGradeItem() == null) {
+			return ZonedDateTime.now();
+		}
+		return dataBase.getActualCourse()
+				.getUpdatedGradeItem();
+	}
+
+	public ZonedDateTime getUpdatedActivityCompletion() {
+		if (dataBase.getActualCourse()
+				.getUpdatedActivityCompletion() == null) {
+			return ZonedDateTime.now();
+		}
+		return dataBase.getActualCourse()
+				.getUpdatedActivityCompletion();
+	}
+
+	public ZonedDateTime getUpdatedLog() {
+		if (dataBase.getActualCourse()
+				.getUpdatedLog() == null) {
+			return ZonedDateTime.now();
+		}
+
+		return dataBase.getActualCourse()
+				.getUpdatedLog();
 	}
 
 }

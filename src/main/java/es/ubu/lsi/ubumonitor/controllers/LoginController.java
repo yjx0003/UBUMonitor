@@ -105,11 +105,12 @@ public class LoginController implements Initializable {
 											// password
 			}
 		});
-
 		Tooltip.install(insecureProtocol, new Tooltip(I18n.get("tooltip.insecureprotocol")));
 		initLanguagesList();
 
 	}
+	
+
 
 	/**
 	 * Initialize languages list choice box from Languages enum class.

@@ -36,7 +36,7 @@ public class Bubble extends Chartjs {
 	@Override
 	public void exportCSV(String path) throws IOException {
 		ZonedDateTime updateTime = Controller.getInstance()
-				.getUpdateCourse();
+				.getUpdatedCourseData();
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader("userid", "fullname",
 				"lastCourseAccess", "lastMoodleAcess", "diffCourseAccess", "diffMoodleAccess"))) {
 			for (EnrolledUser enrolledUser : getSelectedEnrolledUser()) {
@@ -185,7 +185,7 @@ public class Bubble extends Chartjs {
 	public Map<Long, Map<Long, List<EnrolledUser>>> createLastAccess(List<EnrolledUser> selectedEnrolledUser,
 			int limit) {
 		ZonedDateTime lastLogTime = Controller.getInstance()
-				.getUpdateCourse();
+				.getUpdatedCourseData();
 		Map<Long, Map<Long, List<EnrolledUser>>> lastAccess = new TreeMap<>();
 
 		for (EnrolledUser user : selectedEnrolledUser) {

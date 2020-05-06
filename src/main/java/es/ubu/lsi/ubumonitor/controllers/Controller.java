@@ -32,7 +32,7 @@ import es.ubu.lsi.ubumonitor.model.Stats;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.Languages;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
-import es.ubu.lsi.ubumonitor.webservice.WebService;
+import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
 import javafx.stage.Stage;
 import okhttp3.FormBody;
 import okhttp3.Request;
@@ -289,7 +289,7 @@ public class Controller {
 			return Connection.getResponse(new Request.Builder().url(hostLogin)
 					.post(formBody)
 					.build());
-
+			
 		} catch (Exception e) {
 			LOGGER.error("Error al intentar loguearse", e);
 			throw new IllegalStateException(I18n.get("error.host"));

@@ -115,7 +115,7 @@ public class UtilMethods {
 	 * @return
 	 */
 	public static ButtonType errorWindow(String contentText) {
-		return dialogWindow(AlertType.ERROR, "Information", contentText);
+		return dialogWindow(AlertType.ERROR, "Error", contentText);
 	}
 
 	/**
@@ -134,6 +134,10 @@ public class UtilMethods {
 		return dialogWindow(AlertType.CONFIRMATION, "Confirmation", contentText);
 	}
 
+	
+	public static ButtonType warningWindow(String contentText) {
+		return dialogWindow(AlertType.WARNING, "Warning", contentText);
+	}
 	public static ButtonType errorWindow(String contentText, Throwable ex) {
 
 		Alert alert = createAlert(AlertType.ERROR, "Error", contentText);

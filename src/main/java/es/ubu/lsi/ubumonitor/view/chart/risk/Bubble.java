@@ -55,7 +55,7 @@ public class Bubble extends Chartjs {
 
 	@Override
 	public String getOptions() {
-
+		
 		int limit = Controller.getInstance()
 				.getMainConfiguration()
 				.getValue(this.chartType, "limitDays");
@@ -97,8 +97,8 @@ public class Bubble extends Chartjs {
 	public void update() {
 		String dataset = createDataset(getSelectedEnrolledUser());
 		String options = getOptions();
+		
 		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, options));
-
 	}
 
 	private String createDataset(List<EnrolledUser> selectedEnrolledUser) {

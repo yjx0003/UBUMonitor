@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -57,6 +58,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -105,6 +107,8 @@ public class WelcomeController implements Initializable {
 
 	@FXML
 	private ListView<Course> listCoursesFuture;
+	@FXML
+	private ListView<Course> listViewSearch;
 
 	@FXML
 	private TabPane tabPane;
@@ -129,13 +133,30 @@ public class WelcomeController implements Initializable {
 	private Label lblDateUpdate;
 	@FXML
 	private CheckBox chkUpdateData;
-	@FXML
-	private CheckBox chkOnlyWeb;
+
 	private boolean isBBDDLoaded;
 
 	@FXML
 	private Label conexionLabel;
 	private boolean autoUpdate;
+
+	@FXML
+	private CheckBox checkBoxCourseData;
+	@FXML
+	private CheckBox checkBoxGradeItem;
+	@FXML
+	private CheckBox checkBoxActivityCompletion;
+	@FXML
+	private CheckBox checkBoxLogs;
+
+	@FXML
+	private TextField textFieldSearch;
+
+	@FXML
+	private Button buttonSearch;
+
+	@FXML
+	private Button buttonLogout;
 
 	public WelcomeController() {
 		this(false);
@@ -169,9 +190,14 @@ public class WelcomeController implements Initializable {
 					.bind(btnEntrar.visibleProperty());
 			btnRemove.disableProperty()
 					.bind(chkUpdateData.disabledProperty());
-			chkOnlyWeb.visibleProperty()
-					.bind(chkUpdateData.selectedProperty());
-			chkOnlyWeb.setSelected(Boolean.parseBoolean(ConfigHelper.getProperty("onlyWeb", "false")));
+			buttonLogout.disableProperty()
+					.bind(btnEntrar.visibleProperty().not());
+
+			manageCheckBox(checkBoxCourseData, chkUpdateData);
+			manageCheckBox(checkBoxGradeItem, chkUpdateData);
+			manageCheckBox(checkBoxActivityCompletion, chkUpdateData);
+			manageCheckBox(checkBoxLogs, chkUpdateData);
+
 			labelLoggedIn.setText(controller.getLoggedIn()
 					.format(Controller.DATE_TIME_FORMATTER));
 			labelHost.setText(controller.getUrlHost()
@@ -182,19 +208,34 @@ public class WelcomeController implements Initializable {
 			tabPane.getSelectionModel()
 					.selectedItemProperty()
 					.addListener((ov, value, newValue) -> {
-						ListView<Course> listView = (ListView<Course>) value.getContent();
+
+						ListView<Course> listView;
+						if (value.getContent() instanceof ListView<?>) {
+							listView = (ListView<Course>) value.getContent();
+
+						} else {
+							
+							listView = listViewSearch;
+						}
 						listView.getSelectionModel()
 								.clearSelection();
 						chkUpdateData.setDisable(true);
 						lblDateUpdate.setText(null);
+						if (!(newValue.getContent() instanceof ListView<?>)) {
+							Platform.runLater(() -> textFieldSearch.requestFocus());
+							buttonSearch.setDefaultButton(true);
+							btnEntrar.setDefaultButton(false);
+						} else {
+							btnEntrar.setDefaultButton(true);
+							buttonSearch.setDefaultButton(false);
+						}
 					});
 			tabPane.getSelectionModel()
 					.select(ConfigHelper.getProperty("courseList", 0));
 
 			Platform.runLater(() -> {
-				ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel()
-						.getSelectedItem()
-						.getContent();
+				ListView<Course> listView = getActualListView();
+
 				Course course = controller.getUser()
 						.getCourseById(ConfigHelper.getProperty("actualCourse", -1));
 
@@ -213,10 +254,30 @@ public class WelcomeController implements Initializable {
 
 	}
 
+	@SuppressWarnings("unchecked")
+	private ListView<Course> getActualListView() {
+		ListView<Course> listView;
+		if (tabPane.getSelectionModel()
+				.getSelectedItem()
+				.getContent() instanceof ListView<?>) {
+			listView = (ListView<Course>) tabPane.getSelectionModel()
+					.getSelectedItem()
+					.getContent();
+
+		} else {
+			listView = listViewSearch;
+		}
+		return listView;
+	}
+
+	private void manageCheckBox(CheckBox checkBox1, CheckBox checkBox2) {
+		checkBox1.visibleProperty()
+				.bind(checkBox2.selectedProperty());
+
+	}
+
 	private void initListViews() {
-		Comparator<Course> courseComparator = Comparator.comparing(Course::getFullName)
-				.thenComparing(c -> c.getCourseCategory()
-						.getName());
+		Comparator<Course> courseComparator = Course.COURSE_COMPARATOR;
 
 		initListView(controller.getUser()
 				.getCourses(), listCourses, courseComparator);
@@ -230,6 +291,10 @@ public class WelcomeController implements Initializable {
 				.getPastCourses(), listCoursesPast, courseComparator);
 		initListView(controller.getUser()
 				.getFutureCourses(), listCoursesFuture, courseComparator);
+		listViewSearch.getSelectionModel()
+				.selectedItemProperty()
+				.addListener((ov, value, newValue) -> checkFile(newValue));
+
 	}
 
 	private void initListView(List<Course> courseList, ListView<Course> listView, Comparator<Course> comparator) {
@@ -245,11 +310,7 @@ public class WelcomeController implements Initializable {
 	}
 
 	private Course getSelectedCourse() {
-		@SuppressWarnings("unchecked")
-		ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel()
-				.getSelectedItem()
-				.getContent();
-		return listView.getSelectionModel()
+		return getActualListView().getSelectionModel()
 				.getSelectedItem();
 	}
 
@@ -301,8 +362,6 @@ public class WelcomeController implements Initializable {
 
 		ConfigHelper.setProperty("actualCourse", getSelectedCourse().getId());
 
-		ConfigHelper.setProperty("onlyWeb", Boolean.toString(chkOnlyWeb.isSelected()));
-
 		if (chkUpdateData.isSelected()) {
 			if (isFileCacheExists) {
 				loadData(controller.getPassword());
@@ -339,10 +398,8 @@ public class WelcomeController implements Initializable {
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.isPresent() && result.get() == ButtonType.OK) {
 			Files.delete(cacheFilePath);
-			@SuppressWarnings("unchecked")
-			ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel()
-					.getSelectedItem()
-					.getContent();
+
+			ListView<Course> listView = getActualListView();
 			int index = listView.getSelectionModel()
 					.getSelectedIndex();
 			listView.getSelectionModel()
@@ -553,7 +610,7 @@ public class WelcomeController implements Initializable {
 
 							DownloadLogController downloadLogController = LogCreator.download();
 
-							Response response = downloadLogController.downloadLog(chkOnlyWeb.isSelected());
+							Response response = downloadLogController.downloadLog(false);
 							LOGGER.info("Log descargado");
 							updateMessage(I18n.get("label.parselog"));
 
@@ -564,7 +621,7 @@ public class WelcomeController implements Initializable {
 						} else {
 
 							LogCreator.createLogsMultipleDays(actualCourse.getLogs(), actualCourse.getEnrolledUsers(),
-									chkOnlyWeb.isSelected());
+									false);
 
 						}
 						tries = limitRelogin + 1;
@@ -606,6 +663,30 @@ public class WelcomeController implements Initializable {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AboutApp.fxml"), I18n.getResourceBundle());
 
 		UtilMethods.createDialog(loader, controller.getStage());
+
+	}
+
+	public void onActionSearch() {
+		String text = textFieldSearch.getText();
+		if (text == null || text.trim()
+				.isEmpty()) {
+			UtilMethods.errorWindow(I18n.get("error.emptytextfield"));
+			return;
+		}
+
+		try {
+			List<Course> courses = CreatorUBUGradesController.searchCourse(text);
+			if (courses.isEmpty()) {
+				UtilMethods.warningWindow(I18n.get("warning.nofound"));
+			} else {
+				System.out.println(courses);
+				Collections.sort(courses, Course.COURSE_COMPARATOR);
+				listViewSearch.getItems()
+						.setAll(courses);
+			}
+		} catch (Exception e) {
+			UtilMethods.errorWindow("Error when searching", e);
+		}
 
 	}
 

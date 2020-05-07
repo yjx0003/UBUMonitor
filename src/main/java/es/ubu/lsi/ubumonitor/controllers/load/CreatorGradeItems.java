@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,8 +28,6 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.ModuleType;
 import es.ubu.lsi.ubumonitor.webservice.api.gradereport.GradereportUserGetGradesTable;
-import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
-import okhttp3.Response;
 
 /**
  * Metodo alternativo de busqueda grade item al no funcionar la funcion
@@ -82,17 +79,19 @@ public class CreatorGradeItems {
 	 * @throws JSONException error en el json
 	 * @throws IOException   error de conexion con moodle
 	 */
-	public List<GradeItem> createGradeItems(int courseid) throws IOException {
+	public List<GradeItem> createGradeItems(int courseid, int userid) throws IOException {
 
-		Response response = WebService.getResponse(new GradereportUserGetGradesTable(courseid));
 		JSONObject jsonObject;
 		try {
-			jsonObject = new JSONObject(new JSONTokener(response.body().byteStream()));
+			jsonObject = CreatorUBUGradesController.getJSONObjectResponse(new GradereportUserGetGradesTable(courseid));
+			if (!jsonObject.has("tables")) {
+
+				jsonObject = CreatorUBUGradesController
+						.getJSONObjectResponse(new GradereportUserGetGradesTable(courseid, userid));
+			}
 		} catch (JSONException e) {
 			LOGGER.error("Error al parsear las calificaciones.", e);
 			return Collections.emptyList();
-		} finally {
-			response.close();
 		}
 
 		List<GradeItem> gradeItems = createHierarchyGradeItems(jsonObject);

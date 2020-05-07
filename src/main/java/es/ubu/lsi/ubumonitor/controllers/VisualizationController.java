@@ -66,6 +66,11 @@ public class VisualizationController implements MainAction {
 
 	public void init(MainController mainController) {
 		this.mainController = mainController;
+		
+		if(mainController.getSelectionController().getTabPane().getTabs().isEmpty()) {
+			mainController.getWebViewTabPane().getTabs().remove(mainController.getVisualizationTab());
+	
+		}
 		initLogOptionsFilter();
 		initTabPaneWebView();
 		initContextMenu();

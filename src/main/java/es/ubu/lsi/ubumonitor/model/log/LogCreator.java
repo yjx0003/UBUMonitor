@@ -73,17 +73,17 @@ public class LogCreator {
 
 	public static void createLogsMultipleDays(Logs logs, Collection<EnrolledUser> enrolledUsers, boolean onlyWeb)
 			throws IOException {
-		ZoneId userZoneDateTime = "99".equals(CONTROLLER.getUser()
-				.getTimezone()) ? logs.getZoneId()
-						: ZoneId.of(CONTROLLER.getUser()
-								.getTimezone());
-		LOGGER.info("Zona horaria del usuario: {}", userZoneDateTime);
-
+		ZoneId userZone = CONTROLLER.getUser()
+				.getTimezone();
+		ZoneId serverZone = CONTROLLER.getUser()
+				.getServerTimezone();
+		LOGGER.info("Zona horaria del usuario: {}", userZone);
+		LOGGER.info("Zona horaria del servidor: {}", serverZone);
 		DownloadLogController download = new DownloadLogController(CONTROLLER.getUrlHost()
 				.toString(),
 				CONTROLLER.getActualCourse()
 						.getId(),
-				userZoneDateTime);
+				userZone, serverZone);
 
 		setDateTimeFormatter(download.getUserTimeZone());
 
@@ -96,22 +96,24 @@ public class LogCreator {
 			parserResponse(logs, response, enrolledUsers);
 			lastDateTime = lastDateTime.plusDays(1);
 		}
-		if(!NOT_AVAIBLE_COMPONENTS.isEmpty()) {
+		if (!NOT_AVAIBLE_COMPONENTS.isEmpty()) {
 			LOGGER.warn("Not avaible components: {}", NOT_AVAIBLE_COMPONENTS);
 		}
-		if(!NOT_AVAIBLE_EVENTS.isEmpty()) {
+		if (!NOT_AVAIBLE_EVENTS.isEmpty()) {
 			LOGGER.warn("Not avaible events: {}", NOT_AVAIBLE_EVENTS);
 		}
 
 	}
 
-	public static DownloadLogController download() throws IOException {
+	public static DownloadLogController download() {
 		DownloadLogController download = new DownloadLogController(CONTROLLER.getUrlHost()
 				.toString(),
 				CONTROLLER.getActualCourse()
 						.getId(),
 				CONTROLLER.getUser()
-						.getTimezone());
+						.getTimezone(),
+				CONTROLLER.getUser()
+						.getServerTimezone());
 
 		setDateTimeFormatter(download.getUserTimeZone());
 		return download;
@@ -125,10 +127,10 @@ public class LogCreator {
 			List<LogLine> logList = LogCreator.createLogs(csvParser, enrolledUsers);
 			logs.addAll(logList);
 		}
-		if(!NOT_AVAIBLE_COMPONENTS.isEmpty()) {
+		if (!NOT_AVAIBLE_COMPONENTS.isEmpty()) {
 			LOGGER.warn("Not avaible components: {}", NOT_AVAIBLE_COMPONENTS);
 		}
-		if(!NOT_AVAIBLE_EVENTS.isEmpty()) {
+		if (!NOT_AVAIBLE_EVENTS.isEmpty()) {
 			LOGGER.warn("Not avaible events: {}", NOT_AVAIBLE_EVENTS);
 		}
 
@@ -152,7 +154,7 @@ public class LogCreator {
 
 			}
 		}
-		
+
 		return logs;
 	}
 

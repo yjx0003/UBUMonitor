@@ -2,11 +2,13 @@ package es.ubu.lsi.ubumonitor.controllers.load;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -40,7 +42,8 @@ import es.ubu.lsi.ubumonitor.webservice.api.core.completion.CoreCompletionGetAct
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetCategories;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetContents;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetEnrolledCoursesByTimelineClassification;
-import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseSearchCourses;
+import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetUserAdministrationOptions;
+import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetUserNavigationOptions;
 import es.ubu.lsi.ubumonitor.webservice.api.core.enrol.CoreEnrolGetEnrolledUsers;
 import es.ubu.lsi.ubumonitor.webservice.api.core.enrol.CoreEnrolGetUsersCourses;
 import es.ubu.lsi.ubumonitor.webservice.api.core.users.CoreUserGetUsersByField;
@@ -86,7 +89,7 @@ public class CreatorUBUGradesController {
 	 */
 	private static final Pattern NIVEL = Pattern.compile("level(\\d+)");
 
-	private static JSONArray getJSONArrayResponse(WSFunctionAbstract webServiceFunction) throws IOException {
+	public static JSONArray getJSONArrayResponse(WSFunctionAbstract webServiceFunction) throws IOException {
 		try (Response response = WebService.getResponse(webServiceFunction)) {
 			return new JSONArray(new JSONTokener(response.body()
 					.byteStream()));
@@ -95,7 +98,7 @@ public class CreatorUBUGradesController {
 
 	}
 
-	private static JSONObject getJSONObjectResponse(WSFunctionAbstract webServiceFunction) throws IOException {
+	public static JSONObject getJSONObjectResponse(WSFunctionAbstract webServiceFunction) throws IOException {
 		try (Response response = WebService.getResponse(webServiceFunction)) {
 			return new JSONObject(new JSONTokener(response.body()
 					.byteStream()));
@@ -113,8 +116,9 @@ public class CreatorUBUGradesController {
 	 */
 	public static List<Course> getUserCourses(int userid) throws IOException {
 		JSONArray jsonArray = getJSONArrayResponse(new CoreEnrolGetUsersCourses(userid));
-		return createCourses(jsonArray, true);
-
+		List<Course> courses = createCourses(jsonArray, true);
+		createCourseAdministrationOptions(courses);
+		return courses;
 	}
 
 	/**
@@ -147,7 +151,13 @@ public class CreatorUBUGradesController {
 
 		moodleUser.setLang(jsonObject.optString("lang"));
 
-		moodleUser.setTimezone(jsonObject.optString("timezone"));
+		moodleUser.setServerTimezone(findServerTimezone(CONTROLLER.getUrlHost()
+				.toString()));
+		// 99 significa que el usuario esta usando la zona horaria del servidor
+		ZoneId userTimeZone = "99".equals(jsonObject.optString("timezone")) ? moodleUser.getServerTimezone()
+				: ZoneId.of(jsonObject.optString("timezone", "UTC"));
+
+		moodleUser.setTimezone(userTimeZone);
 
 		List<Course> courses = getUserCourses(moodleUser.getId());
 		moodleUser.setCourses(courses);
@@ -168,6 +178,33 @@ public class CreatorUBUGradesController {
 		moodleUser.setRecentCourses(getRecentCourses(moodleUser.getId()));
 
 		return moodleUser;
+	}
+
+	/**
+	 * Busca la zona horaria del servidor a partir del perfil del usuario.
+	 * 
+	 * @return zona horaria del servidor.
+	 * @throws IOException si no puede conectarse con el servidor
+	 */
+	public static ZoneId findServerTimezone(String host) throws IOException {
+
+		LOGGER.info("Buscando el tiempo del servidor desde el perfil del usuario.");
+		// vamos a la edicion del perfil de usuario para ver la zona horaria del
+		// servidor
+		Document d = Jsoup.parse(Connection.getResponse(host + "/user/edit.php?lang=en")
+				.body()
+				.string());
+
+		// timezone tendra una estructuctura parecida a: Server timezone (Europe/Madrid)
+		// lo unico que nos interesa es lo que hay dentro de los parentesis:
+		// Europe/Madrid
+		String timezone = d.selectFirst("select#id_timezone option[value=99]")
+				.text();
+
+		String timezoneParsed = timezone.substring(17, timezone.length() - 1);
+		LOGGER.info("Timezone del servidor: {}", timezoneParsed);
+		return ZoneId.of(timezoneParsed);
+
 	}
 
 	private static List<Course> coursesByTimeline(String classification) {
@@ -358,7 +395,7 @@ public class CreatorUBUGradesController {
 		List<Course> courses = new ArrayList<>();
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject jsonObject = jsonArray.getJSONObject(i);
-			courses.add(userCourses ? createUserCourse(jsonObject) : createEnrolleduCourse(jsonObject));
+			courses.add(userCourses ? createUserCourse(jsonObject) : createEnrolledCourse(jsonObject));
 		}
 		return courses;
 
@@ -418,7 +455,7 @@ public class CreatorUBUGradesController {
 	 *                   {@link webservice.WSFunctions#CORE_ENROL_GET_ENROLLED_USERS}
 	 * @return curso creado
 	 */
-	public static Course createEnrolleduCourse(JSONObject jsonObject) {
+	public static Course createEnrolledCourse(JSONObject jsonObject) {
 		if (jsonObject == null)
 			return null;
 
@@ -683,7 +720,7 @@ public class CreatorUBUGradesController {
 	}
 
 	/**
-	 * Crea los grade item y su jerarquia de niveles
+	 * Crea los grade item y su jerarquia de niveles, not using at the moment
 	 * {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADES_TABLE} y
 	 * {@link webservice.WSFunctions#GRADEREPORT_USER_GET_GRADE_ITEMS}
 	 * 
@@ -800,10 +837,12 @@ public class CreatorUBUGradesController {
 		return gradeItems;
 	}
 
-	public static List<Course> searchCourse(String value) throws IOException {
-		JSONArray coursesArray = getJSONObjectResponse(new CoreCourseSearchCourses(value)).getJSONArray("courses");
-		SubDataBase<Course> dataBaseCourse = CONTROLLER.getDataBase().getCourses();
-		SubDataBase<CourseCategory> dataBaseCategory = CONTROLLER.getDataBase().getCourseCategories();
+	public static List<Course> searchCourse(JSONObject object) throws IOException {
+		JSONArray coursesArray = object.getJSONArray("courses");
+		SubDataBase<Course> dataBaseCourse = CONTROLLER.getDataBase()
+				.getCourses();
+		SubDataBase<CourseCategory> dataBaseCategory = CONTROLLER.getDataBase()
+				.getCourseCategories();
 		List<Course> list = new ArrayList<>();
 		for (int i = 0; i < coursesArray.length(); ++i) {
 			JSONObject jsObject = coursesArray.getJSONObject(i);
@@ -812,14 +851,51 @@ public class CreatorUBUGradesController {
 			course.setShortName(jsObject.optString(SHORTNAME));
 			course.setSummary(jsObject.optString("summary"));
 			course.setSummaryformat(DescriptionFormat.get(jsObject.optInt("summaryformat")));
-			
+
 			CourseCategory category = dataBaseCategory.getById(jsObject.getInt("categoryid"));
 			category.setName(jsObject.getString("categoryname"));
 			course.setCourseCategory(category);
 			list.add(course);
 		}
-		
+		createCourseAdministrationOptions(list);
 		return list;
+	}
+
+	public static void createCourseAdministrationOptions(Collection<Course> courses) throws IOException {
+		if (courses == null || courses.isEmpty()) {
+			return;
+		}
+		List<Integer> courseids = courses.stream()
+				.map(Course::getId)
+				.collect(Collectors.toList());
+
+		SubDataBase<Course> dataBaseCourse = CONTROLLER.getDataBase()
+				.getCourses();
+		JSONArray jsonArray = getJSONObjectResponse(new CoreCourseGetUserAdministrationOptions(courseids))
+				.getJSONArray("courses");
+		findPermission(jsonArray, dataBaseCourse, "reports", Course::setReportAccess);
+
+		jsonArray = getJSONObjectResponse(new CoreCourseGetUserNavigationOptions(courseids)).getJSONArray("courses");
+		findPermission(jsonArray, dataBaseCourse, "grades", Course::setGradeItemAccess);
+
+	}
+
+	public static void findPermission(JSONArray jsonArray, SubDataBase<Course> dataBaseCourse, String permission,
+			BiConsumer<Course, Boolean> consumer) {
+		for (int i = 0; i < jsonArray.length(); ++i) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+			Course course = dataBaseCourse.getById(jsonObject.getInt("id"));
+			course.setCourseAccess(true);
+			JSONArray options = jsonObject.getJSONArray("options");
+			for (int j = 0; j < options.length(); ++j) {
+				JSONObject option = options.getJSONObject(j);
+
+				if (permission.equals(option.getString("name"))) {
+					consumer.accept(course, option.getBoolean("available"));
+				}
+			}
+		}
+
 	}
 
 	/**

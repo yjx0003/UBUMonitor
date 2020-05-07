@@ -22,6 +22,7 @@ import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.ModuleType;
 import es.ubu.lsi.ubumonitor.model.Section;
 import es.ubu.lsi.ubumonitor.util.I18n;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
@@ -139,24 +140,39 @@ public class SelectionController {
 	public void init(MainController mainController) {
 		this.mainController = mainController;
 		tabPane.getSelectionModel()
-				.select(ConfigHelper.getProperty("tabPane", tabPane.getSelectionModel().getSelectedIndex()));
+				.select(ConfigHelper.getProperty("tabPane", tabPane.getSelectionModel()
+						.getSelectedIndex()));
 		initTabGrades();
 		initTabLogs();
 		initTabActivityCompletion();
 
 		initiGradeItems();
+		if(tabPane.getTabs().isEmpty()) {
+			tabPane.setVisible(false);
+			Platform.runLater(() -> {
+				mainController.getSplitPaneLeft().setDividerPositions(1.0);
+			});
+		}
 
 	}
 
 	private void initiGradeItems() {
 
+		if (CONTROLLER.getActualCourse()
+				.getUpdatedGradeItem() == null) {
+			tabPane.getTabs().remove(tabUbuGrades);
+			return;
+		}
 		ObservableList<ModuleType> observableListModules = FXCollections.observableArrayList();
 		observableListModules.add(null); // opción por si no se filtra por grupo
-		observableListModules.addAll(CONTROLLER.getActualCourse().getUniqueGradeModuleTypes());
+		observableListModules.addAll(CONTROLLER.getActualCourse()
+				.getUniqueGradeModuleTypes());
 
 		slcType.setItems(observableListModules);
-		slcType.getSelectionModel().selectFirst(); // seleccionamos el nulo
-		slcType.valueProperty().addListener((ov, oldValue, newValue) -> filterCalifications());
+		slcType.getSelectionModel()
+				.selectFirst(); // seleccionamos el nulo
+		slcType.valueProperty()
+				.addListener((ov, oldValue, newValue) -> filterCalifications());
 
 		slcType.setConverter(new StringConverter<ModuleType>() {
 			@Override
@@ -176,29 +192,36 @@ public class SelectionController {
 		// Inicializamos el listener del textField del calificador
 		tfdItems.setOnAction((ActionEvent event) -> filterCalifications());
 		// Establecemos la estructura en árbol del calificador
-		GradeItem grcl = CONTROLLER.getActualCourse().getRootGradeItem();
+		GradeItem grcl = CONTROLLER.getActualCourse()
+				.getRootGradeItem();
 		// Establecemos la raiz del Treeview
-		if(grcl != null) {
+		if (grcl != null) {
 			TreeItem<GradeItem> root = new TreeItem<>(grcl);
 			setIcon(root);
 			// Llamamos recursivamente para llenar el Treeview
-			for (int k = 0; k < grcl.getChildren().size(); k++) {
-				TreeItem<GradeItem> item = new TreeItem<>(grcl.getChildren().get(k));
+			for (int k = 0; k < grcl.getChildren()
+					.size(); k++) {
+				TreeItem<GradeItem> item = new TreeItem<>(grcl.getChildren()
+						.get(k));
 				setIcon(item);
-				root.getChildren().add(item);
+				root.getChildren()
+						.add(item);
 				root.setExpanded(true);
-				setTreeview(item, grcl.getChildren().get(k));
+				setTreeview(item, grcl.getChildren()
+						.get(k));
 			}
 			// Establecemos la raiz en el TreeView
 			tvwGradeReport.setRoot(root);
-			tvwGradeReport.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+			tvwGradeReport.getSelectionModel()
+					.setSelectionMode(SelectionMode.MULTIPLE);
 			// Asignamos el manejador de eventos de la lista
 			// Al clickar en la lista, se recalcula el nº de elementos seleccionados
 			// Generamos el gráfico con los elementos selecionados
-			tvwGradeReport.getSelectionModel().getSelectedItems()
+			tvwGradeReport.getSelectionModel()
+					.getSelectedItems()
 					.addListener((Change<? extends TreeItem<GradeItem>> g) -> mainController.updateTreeViewGradeItem());
 		}
-		
+
 	}
 
 	private void onSetTabActivityCompletion(Event event) {
@@ -209,21 +232,29 @@ public class SelectionController {
 	}
 
 	private void initTabActivityCompletion() {
+		if (CONTROLLER.getActualCourse()
+				.getUpdatedActivityCompletion() == null) {
+			tabPane.getTabs().remove(tabActivity);
+			return;
+		}
 		tabActivity.setOnSelectionChanged(this::onSetTabActivityCompletion);
 
 		// cada vez que se seleccione nuevos elementos del list view actualizamos la
 		// grafica y la escala
-		listViewActivity.getSelectionModel().getSelectedItems()
+		listViewActivity.getSelectionModel()
+				.getSelectedItems()
 				.addListener((Change<? extends CourseModule> courseModule) -> {
 					mainController.updateListViewActivity();
 				});
 
 		listViewActivity.setCellFactory(getListCellCourseModule());
 
-		Set<CourseModule> courseModules = CONTROLLER.getActualCourse().getModules();
+		Set<CourseModule> courseModules = CONTROLLER.getActualCourse()
+				.getModules();
 		Set<CourseModule> courseModuleWithActivityCompletion = new LinkedHashSet<>();
 		for (CourseModule courseModule : courseModules) {
-			if (!courseModule.getActivitiesCompletion().isEmpty()) {
+			if (!courseModule.getActivitiesCompletion()
+					.isEmpty()) {
 				courseModuleWithActivityCompletion.add(courseModule);
 			}
 		}
@@ -232,34 +263,47 @@ public class SelectionController {
 				.observableArrayList(courseModuleWithActivityCompletion);
 		FilteredList<CourseModule> filterCourseModules = new FilteredList<>(observableListComponents);
 		listViewActivity.setItems(filterCourseModules);
-		listViewActivity.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		listViewActivity.getSelectionModel()
+				.setSelectionMode(SelectionMode.MULTIPLE);
 
 		ObservableList<ModuleType> observableListModuleTypes = FXCollections.observableArrayList();
 
-		observableListModuleTypes.addAll(
-				CONTROLLER.getActualCourse().getModules().stream().filter(c -> !c.getActivitiesCompletion().isEmpty())
-						.map(CourseModule::getModuleType).distinct().collect(Collectors.toList()));
+		observableListModuleTypes.addAll(CONTROLLER.getActualCourse()
+				.getModules()
+				.stream()
+				.filter(c -> !c.getActivitiesCompletion()
+						.isEmpty())
+				.map(CourseModule::getModuleType)
+				.distinct()
+				.collect(Collectors.toList()));
 		observableListModuleTypes.sort(Comparator.nullsFirst(Comparator.comparing(I18n::get)));
 		if (!observableListModuleTypes.isEmpty()) {
 			observableListModuleTypes.add(0, ModuleType.DUMMY);
-			checkComboBoxModuleType.getItems().addAll(observableListModuleTypes);
-			checkComboBoxModuleType.getCheckModel().checkAll();
-			checkComboBoxModuleType.getItemBooleanProperty(0).addListener((observable, oldValue, newValue) -> {
+			checkComboBoxModuleType.getItems()
+					.addAll(observableListModuleTypes);
+			checkComboBoxModuleType.getCheckModel()
+					.checkAll();
+			checkComboBoxModuleType.getItemBooleanProperty(0)
+					.addListener((observable, oldValue, newValue) -> {
 
-				if (newValue.booleanValue()) {
-					checkComboBoxModuleType.getCheckModel().checkAll();
-				} else {
-					checkComboBoxModuleType.getCheckModel().clearChecks();
+						if (newValue.booleanValue()) {
+							checkComboBoxModuleType.getCheckModel()
+									.checkAll();
+						} else {
+							checkComboBoxModuleType.getCheckModel()
+									.clearChecks();
 
-				}
+						}
 
-			});
-			checkComboBoxModuleType.getCheckModel().getCheckedItems().addListener((Change<? extends ModuleType> c) -> {
+					});
+			checkComboBoxModuleType.getCheckModel()
+					.getCheckedItems()
+					.addListener((Change<? extends ModuleType> c) -> {
 
-				filterCourseModules.setPredicate(getActivityPredicade());
-				listViewActivity.setCellFactory(getListCellCourseModule());
+						filterCourseModules.setPredicate(getActivityPredicade());
+						listViewActivity.setCellFactory(getListCellCourseModule());
 
-			});
+					});
 		}
 
 		checkComboBoxModuleType.setConverter(new StringConverter<ModuleType>() {
@@ -279,34 +323,42 @@ public class SelectionController {
 
 		// ponemos un listener al cuadro de texto para que se filtre el list view en
 		// tiempo real
-		activityTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			filterCourseModules.setPredicate(getActivityPredicade());
-			listViewActivity.setCellFactory(getListCellCourseModule());
-		});
+		activityTextField.textProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					filterCourseModules.setPredicate(getActivityPredicade());
+					listViewActivity.setCellFactory(getListCellCourseModule());
+				});
 
-		checkBoxActivity.selectedProperty().addListener(c -> {
-			filterCourseModules.setPredicate(getActivityPredicade());
-			listViewActivity.setCellFactory(getListCellCourseModule());
-		});
+		checkBoxActivity.selectedProperty()
+				.addListener(c -> {
+					filterCourseModules.setPredicate(getActivityPredicade());
+					listViewActivity.setCellFactory(getListCellCourseModule());
+				});
 
-		checkBoxActivity.selectedProperty().addListener(c -> {
-			filterCourseModules.setPredicate(getActivityPredicade());
-			listViewActivity.setCellFactory(getListCellCourseModule());
-		});
+		checkBoxActivity.selectedProperty()
+				.addListener(c -> {
+					filterCourseModules.setPredicate(getActivityPredicade());
+					listViewActivity.setCellFactory(getListCellCourseModule());
+				});
 		filterCourseModules.setPredicate(getActivityPredicade());
 	}
 
 	private Predicate<? super CourseModule> getActivityPredicade() {
 		return cm -> containsTextField(activityTextField.getText(), cm.getModuleName())
-				&& (checkBoxActivity.isSelected() || cm.isVisible())
-				&& (checkComboBoxModuleType.getCheckModel().getCheckedItems().contains(cm.getModuleType()));
+				&& (checkBoxActivity.isSelected() || cm.isVisible()) && (checkComboBoxModuleType.getCheckModel()
+						.getCheckedItems()
+						.contains(cm.getModuleType()));
 	}
 
 	/**
 	 * Inicializa la lista de componentes de la pestaña Registros
 	 */
 	public void initTabLogs() {
-
+		if (CONTROLLER.getActualCourse()
+				.getUpdatedLog() == null) {
+			tabPane.getTabs().remove(tabUbuLogs);
+			return;
+		}
 		tabUbuLogs.setOnSelectionChanged(this::setTablogs);
 
 		initTabLogs(tabUbuLogsComponent, tabUbuLogsEvent, tabUbuLogsSection, tabUbuLogsCourseModule);
@@ -336,10 +388,12 @@ public class SelectionController {
 	public void initListViewComponents() {
 		// cada vez que se seleccione nuevos elementos del list view actualizamos la
 		// grafica y la escala
-		listViewComponents.getSelectionModel().getSelectedItems().addListener((Change<? extends Component> c) -> {
-			mainController.updateListViewComponents();
+		listViewComponents.getSelectionModel()
+				.getSelectedItems()
+				.addListener((Change<? extends Component> c) -> {
+					mainController.updateListViewComponents();
 
-		});
+				});
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
@@ -353,7 +407,8 @@ public class SelectionController {
 				} else {
 					setText(I18n.get(component));
 					try {
-						Image image = new Image(AppInfo.IMG_DIR + component.name().toLowerCase() + ".png");
+						Image image = new Image(AppInfo.IMG_DIR + component.name()
+								.toLowerCase() + ".png");
 						setGraphic(new ImageView(image));
 					} catch (Exception e) {
 						setGraphic(null);
@@ -362,7 +417,8 @@ public class SelectionController {
 			}
 		});
 
-		List<Component> uniqueComponents = CONTROLLER.getActualCourse().getUniqueComponents();
+		List<Component> uniqueComponents = CONTROLLER.getActualCourse()
+				.getUniqueComponents();
 
 		// Ordenamos los componentes segun los nombres internacionalizados
 		uniqueComponents.sort(Comparator.comparing(I18n::get));
@@ -370,7 +426,8 @@ public class SelectionController {
 		ObservableList<Component> observableListComponents = FXCollections.observableArrayList(uniqueComponents);
 		FilteredList<Component> filterComponents = new FilteredList<>(observableListComponents);
 		listViewComponents.setItems(filterComponents);
-		listViewComponents.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		listViewComponents.getSelectionModel()
+				.setSelectionMode(SelectionMode.MULTIPLE);
 
 		// ponemos un listener al cuadro de texto para que se filtre el list view en
 		// tiempo real
@@ -380,7 +437,9 @@ public class SelectionController {
 						return true;
 					}
 					String textField = newValue.toLowerCase();
-					return I18n.get(component).toLowerCase().contains(textField);
+					return I18n.get(component)
+							.toLowerCase()
+							.contains(textField);
 				})));
 
 	}
@@ -389,7 +448,8 @@ public class SelectionController {
 	 * Inicializa los elementos de la pestaña eventos.
 	 */
 	public void initListViewComponentsEvents() {
-		listViewEvents.getSelectionModel().getSelectedItems()
+		listViewEvents.getSelectionModel()
+				.getSelectedItems()
 				.addListener((Change<? extends ComponentEvent> c) -> mainController.updateListViewEvents());
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
@@ -405,8 +465,9 @@ public class SelectionController {
 				} else {
 					setText(I18n.get(componentEvent.getComponent()) + " - " + I18n.get(componentEvent.getEventName()));
 					try {
-						Image image = new Image(
-								AppInfo.IMG_DIR + componentEvent.getComponent().name().toLowerCase() + ".png");
+						Image image = new Image(AppInfo.IMG_DIR + componentEvent.getComponent()
+								.name()
+								.toLowerCase() + ".png");
 						setGraphic(new ImageView(image));
 					} catch (Exception e) {
 						setGraphic(null);
@@ -415,7 +476,8 @@ public class SelectionController {
 			}
 		});
 
-		List<ComponentEvent> uniqueComponentsEvents = CONTROLLER.getActualCourse().getUniqueComponentsEvents();
+		List<ComponentEvent> uniqueComponentsEvents = CONTROLLER.getActualCourse()
+				.getUniqueComponentsEvents();
 
 		// Ordenamos los componentes segun los nombres internacionalizados
 		uniqueComponentsEvents.sort(Comparator.comparing((ComponentEvent c) -> I18n.get(c.getComponent()))
@@ -425,17 +487,23 @@ public class SelectionController {
 				.observableArrayList(uniqueComponentsEvents);
 		FilteredList<ComponentEvent> filterComponentsEvents = new FilteredList<>(observableListComponents);
 		listViewEvents.setItems(filterComponentsEvents);
-		listViewEvents.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		listViewEvents.getSelectionModel()
+				.setSelectionMode(SelectionMode.MULTIPLE);
 
-		componentEventTextField.textProperty().addListener(
-				((observable, oldValue, newValue) -> filterComponentsEvents.setPredicate(componentEvent -> {
-					if (newValue == null || newValue.isEmpty()) {
-						return true;
-					}
-					String textField = newValue.toLowerCase();
-					return I18n.get(componentEvent.getComponent()).toLowerCase().contains(textField)
-							|| I18n.get(componentEvent.getEventName()).toLowerCase().contains(textField);
-				})));
+		componentEventTextField.textProperty()
+				.addListener(
+						((observable, oldValue, newValue) -> filterComponentsEvents.setPredicate(componentEvent -> {
+							if (newValue == null || newValue.isEmpty()) {
+								return true;
+							}
+							String textField = newValue.toLowerCase();
+							return I18n.get(componentEvent.getComponent())
+									.toLowerCase()
+									.contains(textField)
+									|| I18n.get(componentEvent.getEventName())
+											.toLowerCase()
+											.contains(textField);
+						})));
 
 	}
 
@@ -445,31 +513,36 @@ public class SelectionController {
 	public void initListViewSections() {
 		// cada vez que se seleccione nuevos elementos del list view actualizamos la
 		// grafica y la escala
-		listViewSection.getSelectionModel().getSelectedItems()
+		listViewSection.getSelectionModel()
+				.getSelectedItems()
 				.addListener((Change<? extends Section> section) -> mainController.updateListViewSection());
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
 		listViewSection.setCellFactory(getListCellSection());
 
-		Set<Section> sections = CONTROLLER.getActualCourse().getSections();
+		Set<Section> sections = CONTROLLER.getActualCourse()
+				.getSections();
 
 		ObservableList<Section> observableListComponents = FXCollections.observableArrayList(sections);
 		FilteredList<Section> filterSections = new FilteredList<>(observableListComponents, getSectionPredicate());
 		listViewSection.setItems(filterSections);
-		listViewSection.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		listViewSection.getSelectionModel()
+				.setSelectionMode(SelectionMode.MULTIPLE);
 
 		// ponemos un listener al cuadro de texto para que se filtre el list view en
 		// tiempo real
-		sectionTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			filterSections.setPredicate(getSectionPredicate());
-			listViewSection.setCellFactory(getListCellSection());
-		});
+		sectionTextField.textProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					filterSections.setPredicate(getSectionPredicate());
+					listViewSection.setCellFactory(getListCellSection());
+				});
 
-		checkBoxSection.selectedProperty().addListener(section -> {
-			filterSections.setPredicate(getSectionPredicate());
-			listViewSection.setCellFactory(getListCellSection());
-		});
+		checkBoxSection.selectedProperty()
+				.addListener(section -> {
+					filterSections.setPredicate(getSectionPredicate());
+					listViewSection.setCellFactory(getListCellSection());
+				});
 	}
 
 	private Callback<ListView<Section>, ListCell<Section>> getListCellSection() {
@@ -483,8 +556,8 @@ public class SelectionController {
 					return;
 				}
 				String sectionName = section.getName();
-				setText(sectionName == null || sectionName.trim().isEmpty() ? I18n.get("text.sectionplaceholder")
-						: sectionName);
+				setText(sectionName == null || sectionName.trim()
+						.isEmpty() ? I18n.get("text.sectionplaceholder") : sectionName);
 
 				try {
 					if (!section.isVisible()) {
@@ -517,36 +590,46 @@ public class SelectionController {
 
 		// cada vez que se seleccione nuevos elementos del list view actualizamos la
 		// grafica y la escala
-		listViewCourseModule.getSelectionModel().getSelectedItems().addListener(
-				(Change<? extends CourseModule> courseModule) -> mainController.updateListViewCourseModule());
+		listViewCourseModule.getSelectionModel()
+				.getSelectedItems()
+				.addListener(
+						(Change<? extends CourseModule> courseModule) -> mainController.updateListViewCourseModule());
 
 		listViewCourseModule.setCellFactory(getListCellCourseModule());
 
-		Set<CourseModule> courseModules = CONTROLLER.getActualCourse().getModules();
+		Set<CourseModule> courseModules = CONTROLLER.getActualCourse()
+				.getModules();
 
 		ObservableList<CourseModule> observableListComponents = FXCollections.observableArrayList(courseModules);
 
 		FilteredList<CourseModule> filterCourseModules = new FilteredList<>(observableListComponents);
 		listViewCourseModule.setItems(filterCourseModules);
-		listViewCourseModule.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		listViewCourseModule.getSelectionModel()
+				.setSelectionMode(SelectionMode.MULTIPLE);
 
 		ObservableList<ModuleType> observableListModuleTypes = FXCollections
-				.observableArrayList(CONTROLLER.getActualCourse().getUniqueCourseModulesTypes());
+				.observableArrayList(CONTROLLER.getActualCourse()
+						.getUniqueCourseModulesTypes());
 		observableListModuleTypes.sort(Comparator.nullsFirst(Comparator.comparing(I18n::get)));
 		if (!observableListModuleTypes.isEmpty()) {
 			observableListModuleTypes.add(0, ModuleType.DUMMY);
-			checkComboBoxCourseModule.getItems().addAll(observableListModuleTypes);
-			checkComboBoxCourseModule.getCheckModel().checkAll();
-			checkComboBoxCourseModule.getItemBooleanProperty(0).addListener((observable, oldValue, newValue) -> {
+			checkComboBoxCourseModule.getItems()
+					.addAll(observableListModuleTypes);
+			checkComboBoxCourseModule.getCheckModel()
+					.checkAll();
+			checkComboBoxCourseModule.getItemBooleanProperty(0)
+					.addListener((observable, oldValue, newValue) -> {
 
-				if (newValue.booleanValue()) {
-					checkComboBoxCourseModule.getCheckModel().checkAll();
-				} else {
-					checkComboBoxCourseModule.getCheckModel().clearChecks();
+						if (newValue.booleanValue()) {
+							checkComboBoxCourseModule.getCheckModel()
+									.checkAll();
+						} else {
+							checkComboBoxCourseModule.getCheckModel()
+									.clearChecks();
 
-				}
+						}
 
-			});
+					});
 			checkComboBoxCourseModule.setConverter(new StringConverter<ModuleType>() {
 				@Override
 				public ModuleType fromString(String moduleType) {
@@ -562,7 +645,8 @@ public class SelectionController {
 				}
 			});
 
-			checkComboBoxCourseModule.getCheckModel().getCheckedItems()
+			checkComboBoxCourseModule.getCheckModel()
+					.getCheckedItems()
 					.addListener((Change<? extends ModuleType> c) -> {
 						filterCourseModules.setPredicate(getCourseModulePredicate());
 						listViewCourseModule.setCellFactory(getListCellCourseModule());
@@ -572,20 +656,23 @@ public class SelectionController {
 
 		// ponemos un listener al cuadro de texto para que se filtre el list view en
 		// tiempo real
-		courseModuleTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			filterCourseModules.setPredicate(getCourseModulePredicate());
-			listViewCourseModule.setCellFactory(getListCellCourseModule());
-		});
+		courseModuleTextField.textProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					filterCourseModules.setPredicate(getCourseModulePredicate());
+					listViewCourseModule.setCellFactory(getListCellCourseModule());
+				});
 
-		checkBoxCourseModule.selectedProperty().addListener(c -> {
-			filterCourseModules.setPredicate(getCourseModulePredicate());
-			listViewCourseModule.setCellFactory(getListCellCourseModule());
-		});
+		checkBoxCourseModule.selectedProperty()
+				.addListener(c -> {
+					filterCourseModules.setPredicate(getCourseModulePredicate());
+					listViewCourseModule.setCellFactory(getListCellCourseModule());
+				});
 
-		checkBoxActivityCompleted.selectedProperty().addListener(c -> {
-			filterCourseModules.setPredicate(getCourseModulePredicate());
-			listViewCourseModule.setCellFactory(getListCellCourseModule());
-		});
+		checkBoxActivityCompleted.selectedProperty()
+				.addListener(c -> {
+					filterCourseModules.setPredicate(getCourseModulePredicate());
+					listViewCourseModule.setCellFactory(getListCellCourseModule());
+				});
 		filterCourseModules.setPredicate(getCourseModulePredicate());
 	}
 
@@ -605,7 +692,8 @@ public class SelectionController {
 						setTextFill(Color.BLACK);
 					}
 					try {
-						Image image = new Image(AppInfo.IMG_DIR + courseModule.getModuleType().getModName() + ".png");
+						Image image = new Image(AppInfo.IMG_DIR + courseModule.getModuleType()
+								.getModName() + ".png");
 						setGraphic(new ImageView(image));
 					} catch (Exception e) {
 						setGraphic(null);
@@ -618,9 +706,11 @@ public class SelectionController {
 	private Predicate<CourseModule> getCourseModulePredicate() {
 
 		return cm -> containsTextField(courseModuleTextField.getText(), cm.getModuleName())
-				&& (checkBoxCourseModule.isSelected() || cm.isVisible())
-				&& (checkComboBoxCourseModule.getCheckModel().getCheckedItems().contains(cm.getModuleType()))
-				&& (!checkBoxActivityCompleted.isSelected() || !cm.getActivitiesCompletion().isEmpty());
+				&& (checkBoxCourseModule.isSelected() || cm.isVisible()) && (checkComboBoxCourseModule.getCheckModel()
+						.getCheckedItems()
+						.contains(cm.getModuleType()))
+				&& (!checkBoxActivityCompleted.isSelected() || !cm.getActivitiesCompletion()
+						.isEmpty());
 	}
 
 	private boolean containsTextField(String newValue, String element) {
@@ -628,7 +718,8 @@ public class SelectionController {
 			return true;
 		}
 		String textField = newValue.toLowerCase();
-		return element.toLowerCase().contains(textField);
+		return element.toLowerCase()
+				.contains(textField);
 	}
 
 	/**
@@ -673,12 +764,16 @@ public class SelectionController {
 	 * @param line   La linea con los elementos a añadir.
 	 */
 	public void setTreeview(TreeItem<GradeItem> parent, GradeItem line) {
-		for (int j = 0; j < line.getChildren().size(); j++) {
-			TreeItem<GradeItem> item = new TreeItem<>(line.getChildren().get(j));
+		for (int j = 0; j < line.getChildren()
+				.size(); j++) {
+			TreeItem<GradeItem> item = new TreeItem<>(line.getChildren()
+					.get(j));
 			setIcon(item);
-			parent.getChildren().add(item);
+			parent.getChildren()
+					.add(item);
 			parent.setExpanded(true);
-			setTreeview(item, line.getChildren().get(j));
+			setTreeview(item, line.getChildren()
+					.get(j));
 		}
 	}
 
@@ -690,7 +785,9 @@ public class SelectionController {
 	public static void setIcon(TreeItem<GradeItem> item) {
 		String path = null;
 		try {
-			path = AppInfo.IMG_DIR + item.getValue().getItemModule().getModName() + ".png";
+			path = AppInfo.IMG_DIR + item.getValue()
+					.getItemModule()
+					.getModName() + ".png";
 			item.setGraphic(new ImageView(new Image(path)));
 		} catch (Exception e) {
 			item.setGraphic(new ImageView(NONE_ICON));
@@ -704,8 +801,10 @@ public class SelectionController {
 	 */
 	public void filterCalifications() {
 		try {
-			GradeItem root = CONTROLLER.getActualCourse().getRootGradeItem();
-			Set<GradeItem> gradeItems = CONTROLLER.getActualCourse().getGradeItems();
+			GradeItem root = CONTROLLER.getActualCourse()
+					.getRootGradeItem();
+			Set<GradeItem> gradeItems = CONTROLLER.getActualCourse()
+					.getGradeItems();
 			// Establecemos la raiz del Treeview
 			TreeItem<GradeItem> treeItemRoot = new TreeItem<>(root);
 			setIcon(treeItemRoot);
@@ -715,12 +814,16 @@ public class SelectionController {
 
 			if (filterType == null && patternCalifications.isEmpty()) {
 				// Sin filtro y sin patrón
-				for (int k = 0; k < root.getChildren().size(); k++) {
-					TreeItem<GradeItem> item = new TreeItem<>(root.getChildren().get(k));
+				for (int k = 0; k < root.getChildren()
+						.size(); k++) {
+					TreeItem<GradeItem> item = new TreeItem<>(root.getChildren()
+							.get(k));
 					setIcon(item);
-					treeItemRoot.getChildren().add(item);
+					treeItemRoot.getChildren()
+							.add(item);
 					treeItemRoot.setExpanded(true);
-					setTreeview(item, root.getChildren().get(k));
+					setTreeview(item, root.getChildren()
+							.get(k));
 				}
 			} else { // Con filtro
 				for (GradeItem gradeItem : gradeItems) {
@@ -730,14 +833,16 @@ public class SelectionController {
 						activityYes = true;
 					}
 					Pattern pattern = Pattern.compile(patternCalifications.toLowerCase());
-					Matcher match = pattern.matcher(gradeItem.getItemname().toLowerCase());
+					Matcher match = pattern.matcher(gradeItem.getItemname()
+							.toLowerCase());
 					boolean patternYes = false;
 					if (patternCalifications.isEmpty() || match.find()) {
 						patternYes = true;
 					}
 					if (activityYes && patternYes) {
 						setIcon(item);
-						treeItemRoot.getChildren().add(item);
+						treeItemRoot.getChildren()
+								.add(item);
 					}
 					treeItemRoot.setExpanded(true);
 				}

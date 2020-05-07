@@ -14,6 +14,11 @@ public class GradereportUserGetGradesTable extends WSFunctionAbstract{
 		super(WSFunctionEnum.GRADEREPORT_USER_GET_GRADES_TABLE);
 		this.courseid = courseid;
 	}
+	
+	public GradereportUserGetGradesTable(Integer courseid, int userid) {
+		this(courseid);
+		this.userid = userid;
+	}
 
 	public Integer getCourseid() {
 		return courseid;

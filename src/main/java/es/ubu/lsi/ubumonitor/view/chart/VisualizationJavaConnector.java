@@ -70,7 +70,7 @@ public class VisualizationJavaConnector {
 		tabLogs = mainController.getSelectionController().getTabUbuLogs();
 		tabGrades = mainController.getSelectionController().getTabUbuGrades();
 		tabActivityCompletion = mainController.getSelectionController().getTabActivity();
-
+		
 		mapChart = new EnumMap<>(ChartType.class);
 		addChart(new Heatmap(mainController));
 		addChart(new Stackedbar(mainController));
@@ -87,6 +87,7 @@ public class VisualizationJavaConnector {
 		addChart(new ActivitiesStatusTable(mainController));
 		addChart(new CalificationBar(mainController));
 		addChart(new SessionChart(mainController));
+		currentType = mapChart.get(DEFAULT_LOG_CHART);
 	}
 
 	private void addChart(Chart chart) {

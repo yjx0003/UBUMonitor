@@ -61,10 +61,10 @@ public class RiskController implements MainAction {
 
 	public void init(MainController mainController) {
 		this.mainController = mainController;
-
-		initTabPaneWebView();
 		initOptions();
+		initTabPaneWebView();
 		initContextMenu();
+
 	}
 
 	private void initTabPaneWebView() {
@@ -99,33 +99,8 @@ public class RiskController implements MainAction {
 	}
 
 	private void initOptions() {
-		LogStats logStats = controller.getActualCourse()
-				.getLogStats();
-		TypeTimes typeTime = controller.getMainConfiguration()
-				.getValue(MainConfiguration.GENERAL, "initialTypeTimes");
-		// añadimos los elementos de la enumeracion en el choicebox
-		ObservableList<GroupByAbstract<?>> typeTimes = FXCollections.observableArrayList(
-				logStats.getByType(TypeTimes.DAY), logStats.getByType(TypeTimes.YEAR_WEEK),
-				logStats.getByType(TypeTimes.YEAR_MONTH));
-		choiceBoxDate.setItems(typeTimes);
-		choiceBoxDate.getSelectionModel()
-				.select(logStats.getByType(typeTime));
-
-		choiceBoxDate.valueProperty()
-				.addListener((ov, oldValue, newValue) -> updateChart());
-
-		// traduccion de los elementos del choicebox
-		choiceBoxDate.setConverter(new StringConverter<GroupByAbstract<?>>() {
-			@Override
-			public GroupByAbstract<?> fromString(String typeTimes) {
-				return null;// no se va a usar en un choiceBox.
-			}
-
-			@Override
-			public String toString(GroupByAbstract<?> typeTimes) {
-				return I18n.get(typeTimes.getTypeTime());
-			}
-		});
+		
+		
 
 		datePickerStart.setValue(controller.getActualCourse()
 				.getStart());
@@ -150,6 +125,32 @@ public class RiskController implements MainAction {
 				setDisable(empty || date.isBefore(datePickerStart.getValue()) || date.isAfter(LocalDate.now()));
 			}
 		});
+		
+		LogStats logStats = controller.getActualCourse()
+				.getLogStats();
+		TypeTimes typeTime = controller.getMainConfiguration()
+				.getValue(MainConfiguration.GENERAL, "initialTypeTimes");
+		// añadimos los elementos de la enumeracion en el choicebox
+		ObservableList<GroupByAbstract<?>> typeTimes = FXCollections.observableArrayList(
+				logStats.getByType(TypeTimes.DAY), logStats.getByType(TypeTimes.YEAR_WEEK),
+				logStats.getByType(TypeTimes.YEAR_MONTH));
+		choiceBoxDate.setItems(typeTimes);
+		choiceBoxDate.getSelectionModel()
+				.select(logStats.getByType(typeTime));
+
+		// traduccion de los elementos del choicebox
+		choiceBoxDate.setConverter(new StringConverter<GroupByAbstract<?>>() {
+			@Override
+			public GroupByAbstract<?> fromString(String typeTimes) {
+				return null;// no se va a usar en un choiceBox.
+			}
+
+			@Override
+			public String toString(GroupByAbstract<?> typeTimes) {
+				return I18n.get(typeTimes.getTypeTime());
+			}
+		});
+
 
 		optionsUbuLogs.managedProperty()
 				.bind(optionsUbuLogs.visibleProperty());
@@ -166,6 +167,8 @@ public class RiskController implements MainAction {
 				.bindBidirectional(mainController.getVisualizationController()
 						.getChoiceBoxDate()
 						.valueProperty());
+		choiceBoxDate.valueProperty()
+				.addListener((ov, oldValue, newValue) -> updateChart());
 
 	}
 
@@ -190,12 +193,13 @@ public class RiskController implements MainAction {
 		});
 
 	}
-	
+
 	public void updateChart() {
-		if(mainController.getRiskTab().isSelected()) {
+		if (mainController.getRiskTab()
+				.isSelected()) {
 			javaConnector.updateChart();
 		}
-		
+
 	}
 
 	public ProgressBar getProgressBar() {

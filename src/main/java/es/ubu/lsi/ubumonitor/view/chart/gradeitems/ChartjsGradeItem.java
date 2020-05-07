@@ -33,8 +33,8 @@ public abstract class ChartjsGradeItem extends Chartjs {
 	}
 
 	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
-
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		MainConfiguration mainConfiguration = Controller.getInstance()
+				.getMainConfiguration();
 		int borderLength = mainConfiguration.getValue(MainConfiguration.GENERAL, "borderLength");
 		int borderSpace = mainConfiguration.getValue(MainConfiguration.GENERAL, "borderSpace");
 		JSObject data = new JSObject();
@@ -57,47 +57,45 @@ public abstract class ChartjsGradeItem extends Chartjs {
 			dataset.put("data", dataArray);
 			datasets.add(dataset);
 		}
-		
 
-			JSObject dataset = new JSObject();
-			dataset.putWithQuote("label", I18n.get("chartlabel.generalMean"));
-			dataset.put("borderColor", hex(I18n.get("chartlabel.generalMean")));
-			dataset.put("backgroundColor", rgba(I18n.get("chartlabel.generalMean"), OPACITY));
-			dataset.put("hidden", !(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive"));
-			dataset.put("borderDash", "["+ borderLength + "," + borderSpace +"]");
-			
-			JSArray dataArray = new JSArray();
-			Map<GradeItem, DescriptiveStatistics> descriptiveStats = stats.getGeneralStats();
+		JSObject dataset = new JSObject();
+		dataset.putWithQuote("label", I18n.get("chartlabel.generalMean"));
+		dataset.put("borderColor", hex(I18n.get("chartlabel.generalMean")));
+		dataset.put("backgroundColor", rgba(I18n.get("chartlabel.generalMean"), OPACITY));
+		dataset.put("hidden", !(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive"));
+		dataset.put("borderDash", "[" + borderLength + "," + borderSpace + "]");
+
+		JSArray dataArray = new JSArray();
+		Map<GradeItem, DescriptiveStatistics> descriptiveStats = stats.getGeneralStats();
+		
+		for (GradeItem gradeItem : selectedGradeItems) {
+			double grade = descriptiveStats.computeIfAbsent(gradeItem, k -> new DescriptiveStatistics())
+					.getMean();
+			dataArray.add(adjustTo10(grade));
+		}
+		dataset.put("data", dataArray);
+		datasets.add(dataset);
+		for (Group group : slcGroup.getCheckModel()
+				.getCheckedItems()) {
+			if (group == null)
+				continue;
+			dataset = new JSObject();
+			dataset.putWithQuote("label", I18n.get("chart.mean") + " " + group.getGroupName());
+
+			dataset.put("borderColor", hex(group.getGroupName()));
+			dataset.put("backgroundColor", rgba(group.getGroupName(), OPACITY));
+			dataset.put("hidden", !(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive"));
+			dataset.put("borderDash", "[" + borderLength + "," + borderSpace + "]");
+			dataArray = new JSArray();
+			descriptiveStats = stats.getGroupStats(group);
 			for (GradeItem gradeItem : selectedGradeItems) {
-				double grade = descriptiveStats.get(gradeItem).getMean();
+				double grade = descriptiveStats.computeIfAbsent(gradeItem, k -> new DescriptiveStatistics())
+						.getMean();
 				dataArray.add(adjustTo10(grade));
 			}
 			dataset.put("data", dataArray);
 			datasets.add(dataset);
-		
-
-		
-			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
-				if (group == null)
-					continue;
-				dataset = new JSObject();
-				dataset.putWithQuote("label", I18n.get("chart.mean") + " " + group.getGroupName());
-			
-				dataset.put("borderColor", hex(group.getGroupName()));
-				dataset.put("backgroundColor", rgba(group.getGroupName(), OPACITY));
-				dataset.put("hidden", !(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL,"groupActive"));
-				dataset.put("borderDash", "["+ borderLength + "," + borderSpace +"]");
-				dataArray = new JSArray();
-				descriptiveStats = stats.getGroupStats(group);
-				for (GradeItem gradeItem : selectedGradeItems) {
-					double grade = descriptiveStats.get(gradeItem).getMean();
-					dataArray.add(adjustTo10(grade));
-				}
-				dataset.put("data", dataArray);
-				datasets.add(dataset);
-			}
-
-		
+		}
 
 		data.put("datasets", datasets);
 

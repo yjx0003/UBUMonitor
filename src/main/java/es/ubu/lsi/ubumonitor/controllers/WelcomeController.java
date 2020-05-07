@@ -20,6 +20,7 @@ import java.util.ResourceBundle;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,16 +32,20 @@ import es.ubu.lsi.ubumonitor.controllers.load.DownloadLogController;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.CourseCategory;
 import es.ubu.lsi.ubumonitor.model.DataBase;
+import es.ubu.lsi.ubumonitor.model.LogStats;
 import es.ubu.lsi.ubumonitor.model.Logs;
+import es.ubu.lsi.ubumonitor.model.Stats;
 import es.ubu.lsi.ubumonitor.model.log.LogCreator;
 import es.ubu.lsi.ubumonitor.persistence.Serialization;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseSearchCourses;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -54,6 +59,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressBar;
@@ -157,6 +163,9 @@ public class WelcomeController implements Initializable {
 
 	@FXML
 	private Button buttonLogout;
+
+	@FXML
+	private Label totalLabel;
 
 	public WelcomeController() {
 		this(false);
@@ -295,6 +304,21 @@ public class WelcomeController implements Initializable {
 		listViewSearch.getSelectionModel()
 				.selectedItemProperty()
 				.addListener((ov, value, newValue) -> checkFile(newValue));
+		listViewSearch.setCellFactory(callback -> new ListCell<Course>() {
+			@Override
+			protected void updateItem(Course course, boolean empty) {
+				super.updateItem(course, empty);
+				if (!empty && course != null) {
+					setMouseTransparent(!course.hasCourseAccess());
+					setDisabled(!course.hasCourseAccess());
+					setFocusTraversable(course.hasCourseAccess());
+					setText(course.toString());
+				}
+
+			}
+		});
+
+		listViewSearch.setOnKeyPressed(Event::consume);
 
 	}
 
@@ -315,10 +339,10 @@ public class WelcomeController implements Initializable {
 				.getSelectedItem();
 	}
 
-	private void checkFile(Course newValue) {
-		if (newValue == null)
+	private void checkFile(Course course) {
+		if (course == null)
 			return;
-		cacheFilePath = controller.getDirectoryCache(newValue);
+		cacheFilePath = controller.getDirectoryCache(course);
 		LOGGER.debug("Buscando si existe {}", cacheFilePath);
 
 		File f = cacheFilePath.toFile();
@@ -339,8 +363,12 @@ public class WelcomeController implements Initializable {
 		chkUpdateData.setSelected(!isFileCacheExists);
 		chkUpdateData.setDisable(!isFileCacheExists);
 		checkBoxCourseData.setSelected(true); // always selected for default in course data
-		checkBoxActivityCompletion.setSelected(true);
 		checkBoxCourseData.setDisable(!isFileCacheExists);
+		checkBoxActivityCompletion.setSelected(true);
+		checkBoxGradeItem.setSelected(course.hasGradeItemAccess());
+		checkBoxGradeItem.setDisable(!course.hasGradeItemAccess());
+		checkBoxLogs.setSelected(course.hasReportAccess());
+		checkBoxLogs.setDisable(!course.hasReportAccess());
 	}
 
 	/**
@@ -459,7 +487,8 @@ public class WelcomeController implements Initializable {
 			copyCourse(dataBase, getSelectedCourse());
 			controller.setDataBase(dataBase);
 			isBBDDLoaded = true;
-
+			controller.setDefaultUpdate(ZonedDateTime.ofInstant(Instant.ofEpochSecond(cacheFilePath.toFile()
+					.lastModified()), ZoneId.systemDefault()));
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			previusPasswordWindow();
 		} catch (IOException e) {
@@ -532,7 +561,10 @@ public class WelcomeController implements Initializable {
 		Task<Void> task = getUserDataWorker();
 		lblProgress.textProperty()
 				.bind(task.messageProperty());
-		task.setOnSucceeded(v -> loadNextWindow());
+		task.setOnSucceeded(v -> {
+			controller.setDefaultUpdate(ZonedDateTime.now());
+			loadNextWindow();
+		});
 		task.setOnFailed(e -> {
 			controller.getStage()
 					.getScene()
@@ -589,22 +621,24 @@ public class WelcomeController implements Initializable {
 			protected Void call() throws Exception {
 
 				Course actualCourse = controller.getActualCourse();
-				actualCourse.clear();
+				
 				LOGGER.info("Cargando datos del curso: {}", actualCourse.getFullName());
 				// Establecemos los usuarios matriculados
 				if (checkBoxCourseData.isSelected()) {
+					actualCourse.clearCourseData();
 					updateMessage(I18n.get("label.loadingstudents"));
 					CreatorUBUGradesController.createEnrolledUsers(actualCourse.getId());
 					CreatorUBUGradesController.createSectionsAndModules(actualCourse.getId());
 					actualCourse.setUpdatedCourseData(ZonedDateTime.now());
 				}
 				if (checkBoxGradeItem.isSelected()) {
+					actualCourse.getGradeItems().clear();
 					updateMessage(I18n.get("label.loadingqualifier"));
 					// Establecemos calificador del curso
 					CreatorGradeItems creatorGradeItems = new CreatorGradeItems(new Locale(controller.getUser()
 							.getLang()));
 					creatorGradeItems.createGradeItems(controller.getActualCourse()
-							.getId());
+							.getId(), controller.getUser().getId());
 					actualCourse.setUpdatedGradeItem(ZonedDateTime.now());
 				}
 				if (checkBoxActivityCompletion.isSelected()) {
@@ -620,7 +654,7 @@ public class WelcomeController implements Initializable {
 						try {
 
 							updateMessage(MessageFormat.format(I18n.get("label.downloadinglog"), tries, limitRelogin));
-							if (!isFileCacheExists) {
+							if (actualCourse.getUpdatedLog() == null) {
 
 								DownloadLogController downloadLogController = LogCreator.download();
 
@@ -640,11 +674,7 @@ public class WelcomeController implements Initializable {
 							}
 							tries = limitRelogin + 1;
 							actualCourse.setUpdatedLog(ZonedDateTime.now());
-						} catch (IllegalStateException e) {
-							if (tries >= limitRelogin) {
-								throw new IllegalStateException(I18n.get("error.csvparsing"));
-							}
-							tries++;
+
 						} catch (Exception e) {
 							if (tries >= limitRelogin) {
 								throw e;
@@ -659,8 +689,12 @@ public class WelcomeController implements Initializable {
 
 				updateMessage(I18n.get("label.loadingstats"));
 				// Establecemos las estadisticas
-				controller.createStats();
+				Stats stats = new Stats(actualCourse);
+				actualCourse.setStats(stats);
 
+				LogStats logStats = new LogStats(actualCourse.getLogs()
+						.getList());
+				actualCourse.setLogStats(logStats);
 				updateMessage(I18n.get("label.savelocal"));
 				saveData();
 
@@ -691,14 +725,21 @@ public class WelcomeController implements Initializable {
 		}
 
 		try {
-			List<Course> courses = CreatorUBUGradesController.searchCourse(text);
+
+			JSONObject jsonObject = CreatorUBUGradesController
+					.getJSONObjectResponse(new CoreCourseSearchCourses(text, 0, 50));
+			List<Course> courses = CreatorUBUGradesController.searchCourse(jsonObject);
+			totalLabel.setText(Integer.toString(jsonObject.getInt("total")));
 			if (courses.isEmpty()) {
 				UtilMethods.warningWindow(I18n.get("warning.nofound"));
+
 			} else {
-				Collections.sort(courses, Course.COURSE_COMPARATOR);
-				listViewSearch.getItems()
-						.setAll(courses);
+				Collections.sort(courses, Comparator.comparing(Course::hasCourseAccess, Comparator.reverseOrder())
+						.thenComparing(Course.COURSE_COMPARATOR));
+
 			}
+			listViewSearch.getItems()
+					.setAll(courses);
 		} catch (Exception e) {
 			UtilMethods.errorWindow("Error when searching", e);
 		}

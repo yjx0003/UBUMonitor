@@ -24,12 +24,12 @@ public enum WSFunctionEnum {
 	 * Fetch the upcoming view data for a calendar
 	 */
 	CORE_CALENDAR_GET_CALENDAR_UPCOMING_VIEW("core_calendar_get_calendar_upcoming_view", 3.4),
-	
+
 	/**
-	 * Return the activities completion status for a user in a course. 
+	 * Return the activities completion status for a user in a course.
 	 */
 	CORE_COMPLETION_GET_ACTIVITIES_COMPLETION_STATUS("core_completion_get_activities_completion_status", 2.9),
-	
+
 	/**
 	 * Get categories.
 	 */
@@ -41,10 +41,10 @@ public enum WSFunctionEnum {
 	CORE_COURSE_GET_CONTENTS("core_course_get_contents", 2.2),
 
 	/**
-	 * Search courses by (name, module, block, tag). 
+	 * Search courses by (name, module, block, tag).
 	 */
 	CORE_COURSE_SEARCH_COURSES("core_course_search_courses", 3.0),
-	
+
 	/**
 	 * Get enrolled users by course id.
 	 */
@@ -61,6 +61,18 @@ public enum WSFunctionEnum {
 	 * List of courses a user has accessed most recently.
 	 */
 	CORE_COURSE_GET_RECENT_COURSES("core_course_get_recent_courses", 3.6),
+
+	/**
+	 * Return a list of administration options in a set of courses that are
+	 * avaialable or not for the current user.
+	 */
+	CORE_COURSE_GET_USER_ADMINISTRATION_OPTIONS("core_course_get_user_administration_options", 3.2),
+
+	/**
+	 * Return a list of navigation options in a set of courses that are avaialable
+	 * or not for the current user.
+	 */
+	CORE_COURSE_GET_USER_NAVIGATION_OPTIONS("core_course_get_user_navigation_options", 3.2),
 
 	/**
 	 * Get list of course ids that a user is enrolled in (if you are allowed to see

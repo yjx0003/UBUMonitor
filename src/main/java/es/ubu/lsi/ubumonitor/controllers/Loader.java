@@ -34,7 +34,7 @@ public class Loader extends Application {
 	public void start(Stage primaryStage) {
 
 		try {
-			//Thread.setDefaultUncaughtExceptionHandler((t, e) -> LOGGER.error("Uncaughted error:", t, e));
+			Thread.setDefaultUncaughtExceptionHandler((t, e) -> LOGGER.error("Uncaughted error:", t, e));
 			controller.initialize();
 
 			LOGGER.info("[Bienvenido a {}]", AppInfo.APPLICATION_NAME_WITH_VERSION);

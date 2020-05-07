@@ -26,7 +26,6 @@ import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.controllers.load.Connection;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.DataBase;
-import es.ubu.lsi.ubumonitor.model.LogStats;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
 import es.ubu.lsi.ubumonitor.model.Stats;
 import es.ubu.lsi.ubumonitor.util.I18n;
@@ -57,7 +56,7 @@ public class Controller {
 	private String password;
 	private String username;
 	private String sesskey;
-
+	
 	private boolean offlineMode;
 
 	private MainConfiguration mainConfiguration;
@@ -68,6 +67,8 @@ public class Controller {
 	private MoodleUser user;
 
 	private Path configuration;
+
+	private ZonedDateTime defaultUpdate;
 
 	/**
 	 * Instacia única de la clase Controller.
@@ -239,20 +240,6 @@ public class Controller {
 		return getActualCourse().getStats();
 	}
 
-	/**
-	 * Crea las estadisticas del curso tanto de calificaciones como de logs.
-	 */
-	public void createStats() {
-		Stats stats = new Stats(getActualCourse());
-		getActualCourse().setStats(stats);
-
-		if (getActualCourse().getLogs() != null) {
-			LogStats logStats = new LogStats(getActualCourse().getLogs()
-					.getList());
-			getActualCourse().setLogStats(logStats);
-		}
-
-	}
 
 	/**
 	 * Selecciona el curso en la base de datos.
@@ -392,7 +379,7 @@ public class Controller {
 	public ZonedDateTime getUpdatedCourseData() {
 		if (dataBase.getActualCourse()
 				.getUpdatedCourseData() == null) {
-			return ZonedDateTime.now();
+			return defaultUpdate;
 		}
 		return dataBase.getActualCourse()
 				.getUpdatedCourseData();
@@ -401,7 +388,7 @@ public class Controller {
 	public ZonedDateTime getUpdatedGradeItem() {
 		if (dataBase.getActualCourse()
 				.getUpdatedGradeItem() == null) {
-			return ZonedDateTime.now();
+			return defaultUpdate;
 		}
 		return dataBase.getActualCourse()
 				.getUpdatedGradeItem();
@@ -410,7 +397,7 @@ public class Controller {
 	public ZonedDateTime getUpdatedActivityCompletion() {
 		if (dataBase.getActualCourse()
 				.getUpdatedActivityCompletion() == null) {
-			return ZonedDateTime.now();
+			return defaultUpdate;
 		}
 		return dataBase.getActualCourse()
 				.getUpdatedActivityCompletion();
@@ -419,11 +406,19 @@ public class Controller {
 	public ZonedDateTime getUpdatedLog() {
 		if (dataBase.getActualCourse()
 				.getUpdatedLog() == null) {
-			return ZonedDateTime.now();
+			return defaultUpdate;
 		}
 
 		return dataBase.getActualCourse()
 				.getUpdatedLog();
+	}
+
+	public ZonedDateTime getDefaultUpdate() {
+		return defaultUpdate;
+	}
+
+	public void setDefaultUpdate(ZonedDateTime defaultUpdate) {
+		this.defaultUpdate = defaultUpdate;
 	}
 
 }

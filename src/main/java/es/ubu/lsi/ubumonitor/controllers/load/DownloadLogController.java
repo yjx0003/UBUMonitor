@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,62 +59,17 @@ public class DownloadLogController {
 	 * @param cookies  cookies
 	 * 
 	 */
-	public DownloadLogController(String host, int idCourse, ZoneId timezone) {
+	public DownloadLogController(String host, int idCourse, ZoneId timezone, ZoneId serverTimezone) {
 		this(host, idCourse);
 		this.userTimeZone = timezone;
-	}
-
-	/**
-	 * Contructror
-	 * 
-	 * @param host     host moodle
-	 * @param idCourse id del curso que se quiere descargar el log
-	 * @param timezone zona horaria usada como referencia al descargar el log, un
-	 *                 valor de 99 si es la hora del servidor o la nomenclatura IANA
-	 *                 de tiempo. Por ejemplo Europe/Madrid.
-	 * @param cookies  cookies
-	 * @throws IOException si no ha encontrado la zona horaria del servidor de
-	 *                     moodle
-	 */
-	public DownloadLogController(String host, int idCourse, String timezone) throws IOException {
-
-		this(host, idCourse);
-		// 99 significa que el usuario esta usando la zona horaria del servidor
-		this.userTimeZone = ("99".equals(timezone)) ? findServerTimezone() : ZoneId.of(timezone);
+		this.serverTimeZone = serverTimezone;
 	}
 
 	public ZoneId getUserTimeZone() {
 		return userTimeZone;
 	}
 
-	/**
-	 * Busca la zona horaria del servidor a partir del perfil del usuario.
-	 * 
-	 * @return zona horaria del servidor.
-	 * @throws IOException si no puede conectarse con el servidor
-	 */
-	public ZoneId findServerTimezone() throws IOException {
-
-		LOGGER.info("Buscando el tiempo del servidor desde el perfil del usuario.");
-		// vamos a la edicion del perfil de usuario para ver la zona horaria del
-		// servidor
-		Document d = Jsoup.parse(Connection.getResponse(host + "/user/edit.php?lang=en").body().string());
-
-		// timezone tendra una estructuctura parecida a: Server timezone (Europe/Madrid)
-		// lo unico que nos interesa es lo que hay dentro de los parentesis:
-		// Europe/Madrid
-		String timezone = d.selectFirst("select#id_timezone option[value=99]").text();
-		LOGGER.info("Timezone del servidor: {}", timezone);
-		String timezoneParsed = timezone.substring(17, timezone.length() - 1);
-		serverTimeZone = ZoneId.of(timezoneParsed);
-		return serverTimeZone;
-
-	}
-
-	public ZoneId getServerTimeZone() throws IOException {
-		if (serverTimeZone == null) {
-			return findServerTimezone();
-		}
+	public ZoneId getServerTimeZone() {
 		return serverTimeZone;
 	}
 
@@ -132,7 +85,8 @@ public class DownloadLogController {
 	 * @return otro zonedDateTime segun el zoneId
 	 */
 	public static ZonedDateTime convertTimezone(ZonedDateTime zonedDateTime, ZoneId zoneId) {
-		return zonedDateTime.getZone().equals(zoneId) ? zonedDateTime : zonedDateTime.withZoneSameInstant(zoneId);
+		return zonedDateTime.getZone()
+				.equals(zoneId) ? zonedDateTime : zonedDateTime.withZoneSameInstant(zoneId);
 	}
 
 	/**

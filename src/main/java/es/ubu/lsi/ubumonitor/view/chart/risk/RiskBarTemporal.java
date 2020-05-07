@@ -108,8 +108,9 @@ public class RiskBarTemporal extends RiskBar {
 
 		ZonedDateTime start = datePickerStart.getValue()
 				.atStartOfDay(ZoneId.systemDefault());
-		ZonedDateTime lastUpdate = datePickerEnd.getValue()
-				.atStartOfDay(ZoneId.systemDefault());
+		ZonedDateTime lastUpdate = datePickerEnd.getValue() == null ? start
+				: datePickerEnd.getValue()
+						.atStartOfDay(ZoneId.systemDefault());
 
 		Map<LastActivity, List<EnrolledUser>> lastCourseAccess = new TreeMap<>(
 				Comparator.comparing(LastActivity::getIndex));
@@ -169,9 +170,9 @@ public class RiskBarTemporal extends RiskBar {
 
 		LocalDateTime lastUpdate = datePickerEnd.getValue()
 				.atStartOfDay();
-	
-		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"), start.format(Controller.DATE_TIME_FORMATTER),
-				lastUpdate.format(Controller.DATE_TIME_FORMATTER));
+
+		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"),
+				start.format(Controller.DATE_TIME_FORMATTER), lastUpdate.format(Controller.DATE_TIME_FORMATTER));
 	}
 
 }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -75,6 +76,7 @@ public class Course implements Serializable {
 		this.gradeItems = new HashSet<>();
 		this.modules = new LinkedHashSet<>();
 		this.sections = new LinkedHashSet<>();
+		this.logs = new Logs(ZoneId.systemDefault());
 	}
 
 	public Course(int id) {
@@ -431,14 +433,13 @@ public class Course implements Serializable {
 	/**
 	 * Elimina todos los elementos del curso excepto los logs.
 	 */
-	public void clear() {
+	public void clearCourseData() {
 		this.enrolledUsers.clear();
 		this.roles.forEach(Role::clear); // eliminamos los usuarios de ese rol
 		this.roles.clear();
 		this.groups.forEach(Group::clear); // eliminamos los usuarios de ese grupo
 		this.groups.clear();
 		this.modules.clear();
-		this.gradeItems.clear();
 		this.sections.clear();
 	}
 
@@ -613,7 +614,7 @@ public class Course implements Serializable {
 	/**
 	 * @return the courseAccess
 	 */
-	public boolean isCourseAccess() {
+	public boolean hasCourseAccess() {
 		return courseAccess;
 	}
 
@@ -627,7 +628,7 @@ public class Course implements Serializable {
 	/**
 	 * @return the reportAccess
 	 */
-	public boolean isReportAccess() {
+	public boolean hasReportAccess() {
 		return reportAccess;
 	}
 
@@ -641,7 +642,7 @@ public class Course implements Serializable {
 	/**
 	 * @return the gradeItemAccess
 	 */
-	public boolean isGradeItemAccess() {
+	public boolean hasGradeItemAccess() {
 		return gradeItemAccess;
 	}
 

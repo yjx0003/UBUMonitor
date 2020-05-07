@@ -98,7 +98,6 @@ public class WebService {
 			httpBuilder.addQueryParameter(param.getKey(), param.getValue());
 
 		}
-		System.out.println(httpBuilder.build().url());
 		return Connection.getResponse(new Request.Builder().url(httpBuilder.build())
 				.build());
 

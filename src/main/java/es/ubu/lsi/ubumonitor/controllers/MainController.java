@@ -64,13 +64,12 @@ public class MainController implements Initializable {
 
 	@FXML
 	private VisualizationController visualizationController;
-	
+
 	@FXML
 	private Tab riskTab;
 	@FXML
 	private RiskController riskController;
-	
-	
+
 	private Map<Tab, MainAction> tabMap = new HashMap<>();
 
 	@FXML
@@ -89,17 +88,17 @@ public class MainController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		CourseStatsController.logStatistics(controller.getActualCourse());
 		try {
-			LOGGER.info("Completada la carga del curso {}", controller.getActualCourse().getFullName());
+			LOGGER.info("Completada la carga del curso {}", controller.getActualCourse()
+					.getFullName());
 
-			controller.getStage().setOnHiding(event -> onClose());
+			controller.getStage()
+					.setOnHiding(event -> onClose());
 
-			
 			stats = controller.getStats();
 
 			controller.setMainConfiguration(new MainConfiguration());
 			ConfigurationController.loadConfiguration(controller.getMainConfiguration(),
 					controller.getConfiguration(controller.getActualCourse()));
-			
 
 			menuController.init(this);
 			selectionUserController.init(this);
@@ -111,40 +110,49 @@ public class MainController implements Initializable {
 			LOGGER.error("Error en la inicialización.", e);
 		}
 	}
-	
+
 	private void initWebViewTabs() {
 
 		webViewTabPane.getSelectionModel()
-				.select(ConfigHelper.getProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex()));
-		webViewTabPane.getSelectionModel().selectedItemProperty().addListener((ob, old, newValue) -> {
-			onWebViewTabChange();
-			if (selectionController.getTabUbuLogs().isSelected()) {
-				onSetTabLogs();
-			} else if (selectionController.getTabUbuGrades().isSelected()) {
-				onSetTabGrades();
-			} else if (selectionController.getTabActivity().isSelected()) {
-				onSetTabActivityCompletion();
-			}
-		});
+				.select(ConfigHelper.getProperty("webViewTab", webViewTabPane.getSelectionModel()
+						.getSelectedIndex()));
+		webViewTabPane.getSelectionModel()
+				.selectedItemProperty()
+				.addListener((ob, old, newValue) -> {
+					onWebViewTabChange();
+					if (selectionController.getTabUbuLogs()
+							.isSelected()) {
+						onSetTabLogs();
+					} else if (selectionController.getTabUbuGrades()
+							.isSelected()) {
+						onSetTabGrades();
+					} else if (selectionController.getTabActivity()
+							.isSelected()) {
+						onSetTabActivityCompletion();
+					}
+				});
+
 		visualizationController.init(this);
+		tabMap.put(visualizationTab, visualizationController);
+
 		riskController.init(this);
 
-		tabMap.put(visualizationTab, visualizationController);
 		tabMap.put(riskTab, riskController);
 	}
-	
 
 	private void initStatusBar() {
 
 		// Mostramos Host actual
-		Hyperlink actualHost = new Hyperlink(controller.getUrlHost().toString());
+		Hyperlink actualHost = new Hyperlink(controller.getUrlHost()
+				.toString());
 		ImageView linkImage = new ImageView("/img/link.png");
 		linkImage.setFitHeight(20);
 		linkImage.setFitWidth(20);
 		actualHost.setGraphic(linkImage);
 		actualHost.setOnAction(event -> UtilMethods.openURL(actualHost.getText()));
 		// Mostramos Curso actual
-		Label lblActualCourse = new Label(controller.getActualCourse().getFullName());
+		Label lblActualCourse = new Label(controller.getActualCourse()
+				.getFullName());
 
 		ImageView online = new ImageView(
 				controller.isOfflineMode() ? "/img/circle_offline.png" : "/img/circle_online.png");
@@ -154,23 +162,25 @@ public class MainController implements Initializable {
 		HBox left = new HBox();
 		left.setAlignment(Pos.CENTER);
 		left.setSpacing(5);
-		left.getChildren().addAll(online, new Separator(Orientation.VERTICAL), lblActualCourse,
-				new Separator(Orientation.VERTICAL), actualHost);
+		left.getChildren()
+				.addAll(online, new Separator(Orientation.VERTICAL), lblActualCourse,
+						new Separator(Orientation.VERTICAL), actualHost);
 
-		statusBar.getLeftItems().add(left);
+		statusBar.getLeftItems()
+				.add(left);
 
 		HBox right = new HBox();
 		right.setAlignment(Pos.CENTER);
 		right.setSpacing(5);
-		ZonedDateTime lastLogDateTime = controller.getUpdatedLog();
+		ZonedDateTime lastLogDateTime = controller.getUpdatedCourseData();
 		Label lblLastUpdate = new Label(
 				I18n.get("label.lastupdate") + " " + lastLogDateTime.format(Controller.DATE_TIME_FORMATTER));
-		right.getChildren().addAll(lblLastUpdate);
-		statusBar.getRightItems().add(right);
+		right.getChildren()
+				.addAll(lblLastUpdate);
+		statusBar.getRightItems()
+				.add(right);
 
 	}
-
-
 
 	/**
 	 * Exporta el gráfico. Se exportara como imagen en formato png.
@@ -191,7 +201,6 @@ public class MainController implements Initializable {
 		return stats;
 	}
 
-
 	public RiskController getRiskController() {
 		return riskController;
 	}
@@ -209,7 +218,8 @@ public class MainController implements Initializable {
 	}
 
 	private MainAction getActions() {
-		return tabMap.getOrDefault(webViewTabPane.getSelectionModel().getSelectedItem(), NullMainAction.getInstance());
+		return tabMap.getOrDefault(webViewTabPane.getSelectionModel()
+				.getSelectedItem(), NullMainAction.getInstance());
 	}
 
 	public void updateTreeViewGradeItem() {
@@ -261,6 +271,7 @@ public class MainController implements Initializable {
 	public void updateListViewCourseModule() {
 		getActions().updateListViewCourseModule();
 	}
+
 	public void onWebViewTabChange() {
 		getActions().onWebViewTabChange();
 	}
@@ -271,8 +282,11 @@ public class MainController implements Initializable {
 	}
 
 	private void onClose() {
-		ConfigHelper.setProperty("webViewTab", webViewTabPane.getSelectionModel().getSelectedIndex());
-		ConfigHelper.setProperty("tabPane", selectionController.getTabPane().getSelectionModel().getSelectedIndex());
+		ConfigHelper.setProperty("webViewTab", webViewTabPane.getSelectionModel()
+				.getSelectedIndex());
+		ConfigHelper.setProperty("tabPane", selectionController.getTabPane()
+				.getSelectionModel()
+				.getSelectedIndex());
 	}
 
 	public StatusBar getStatusBar() {
@@ -294,7 +308,7 @@ public class MainController implements Initializable {
 	public SelectionController getSelectionController() {
 		return selectionController;
 	}
- 
+
 	public SelectionUserController getSelectionUserController() {
 		return selectionUserController;
 	}
@@ -302,7 +316,5 @@ public class MainController implements Initializable {
 	public Tab getRiskTab() {
 		return riskTab;
 	}
-
-	
 
 }

@@ -82,7 +82,7 @@ public class WebServiceTest {
 	@Order(6)
 	public void getGradeItems() throws IOException {
 		CreatorGradeItems creatorGradeItems = new CreatorGradeItems(new Locale(CONTROLLER.getUser().getLang()));
-		List<GradeItem> gradeItems = creatorGradeItems.createGradeItems(COURSE_ID);
+		List<GradeItem> gradeItems = creatorGradeItems.createGradeItems(COURSE_ID, CONTROLLER.getUser().getId());
 		assertFalse(gradeItems.isEmpty());
 	}
 	@Test

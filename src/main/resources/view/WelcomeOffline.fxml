@@ -82,9 +82,9 @@
       </Button>
       <GridPane layoutX="310.0" layoutY="110.0" prefHeight="55.0" prefWidth="410.0">
          <columnConstraints>
-            <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="170.0" minWidth="10.0" prefWidth="170.0" />
-            <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="140.0" minWidth="10.0" prefWidth="140.0" />
+            <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" />
+            <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" />
+            <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" />
          </columnConstraints>
          <rowConstraints>
             <RowConstraints />

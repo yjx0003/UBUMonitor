@@ -11,10 +11,12 @@ import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
+import org.jsoup.helper.W3CDom;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
@@ -32,6 +34,9 @@ import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.Languages;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
+import javafx.application.Platform;
+import javafx.scene.Scene;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import okhttp3.FormBody;
 import okhttp3.Request;
@@ -56,7 +61,7 @@ public class Controller {
 	private String password;
 	private String username;
 	private String sesskey;
-	
+
 	private boolean offlineMode;
 
 	private MainConfiguration mainConfiguration;
@@ -213,10 +218,9 @@ public class Controller {
 
 		URL hostURL = new URL(host);
 
+		
 		WebService.initialize(hostURL.toString(), username, password);
-
-		sesskey = findSesskey(loginWebScraping(hostURL.toString(), username, password));
-
+		loginWebScraping(hostURL.toString(), username, password);
 		setURLHost(hostURL);
 
 		setUsername(username);
@@ -224,9 +228,9 @@ public class Controller {
 
 	}
 
-	public void reLogin() throws IOException {
+	public void reLogin() {
 
-		sesskey = findSesskey(loginWebScraping(host.toString(), username, password));
+		loginWebScraping(host.toString(), username, password);
 
 	}
 
@@ -239,7 +243,6 @@ public class Controller {
 
 		return getActualCourse().getStats();
 	}
-
 
 	/**
 	 * Selecciona el curso en la base de datos.
@@ -259,39 +262,79 @@ public class Controller {
 	 *         loguearse
 	 * @throws IllegalStateException si no ha podido loguearse
 	 */
-	private Response loginWebScraping(String host, String username, String password) {
+	private void loginWebScraping(String host, String username, String password) {
+		LOGGER.info("Logeandose para web scraping");
+		String hostLogin = host + "/login/index.php";
+		try (Response response = Connection.getResponse(hostLogin)) {
 
-		try {
-			LOGGER.info("Logeandose para web scraping");
-			String hostLogin = host + "/login/index.php";
-			Response response = Connection.getResponse(hostLogin);
-			Document loginDoc = Jsoup.parse(response.body()
-					.byteStream(), null, hostLogin);
-			response.close();
-			Element e = loginDoc.selectFirst("input[name=logintoken]");
-			String logintoken = (e == null) ? "" : e.attr("value");
+			if (response.isRedirect()) {
+				CompletableFuture.runAsync(() -> {
+					WebView webView = new WebView();
+					webView.getEngine()
+							.load(response.header("location"));
+					Stage webViewStage = new Stage();
 
-			RequestBody formBody = new FormBody.Builder().add("username", username)
-					.add("password", password)
-					.add("logintoken", logintoken)
-					.build();
-			return Connection.getResponse(new Request.Builder().url(hostLogin)
-					.post(formBody)
-					.build());
+					webView.getEngine()
+							.documentProperty()
+							.addListener(ov -> {
 
-		} catch (Exception e) {
+								if (webView.getEngine()
+										.getDocument() != null) {
+
+									String html = new W3CDom().asString(webView.getEngine()
+											.getDocument());
+
+									String key = findSesskey(html);
+									if (key != null) {
+										sesskey = key;
+										webViewStage.close();
+									}
+
+								}
+							});
+
+					webViewStage.initOwner(getStage());
+					webViewStage.setScene(new Scene(webView, 960, 600));
+					webViewStage.showAndWait();
+				}, Platform::runLater)
+						.join();
+
+			} else {
+				Document loginDoc = Jsoup.parse(response.body()
+						.byteStream(), null, hostLogin);
+				Element e = loginDoc.selectFirst("input[name=logintoken]");
+				String logintoken = (e == null) ? "" : e.attr("value");
+
+				RequestBody formBody = new FormBody.Builder().add("username", username)
+						.add("password", password)
+						.add("logintoken", logintoken)
+						.build();
+				Connection.getResponse(new Request.Builder().url(hostLogin)
+						.post(formBody)
+						.build()).close();
+
+				String html = Connection.getResponse(host)
+						.body()
+						.string();
+
+				sesskey = findSesskey(html);
+			}
+
+		} catch (
+
+		Exception e) {
 			LOGGER.error("Error al intentar loguearse", e);
 			throw new IllegalStateException(I18n.get("error.host"));
 		}
 
 	}
 
-	public String findSesskey(Response html) throws IOException {
+	public String findSesskey(String html) {
 
 		Pattern pattern = Pattern.compile("sesskey=([\\w]+)");
-		Matcher m = pattern.matcher(html.body()
-				.string());
+		Matcher m = pattern.matcher(html);
 		if (m.find()) {
+			LOGGER.info("Sesskey found");
 			return m.group(1);
 		}
 		LOGGER.warn("Didn't found a sesskey in principal page after login.");

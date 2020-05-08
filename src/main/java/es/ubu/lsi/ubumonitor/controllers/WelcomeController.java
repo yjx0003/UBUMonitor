@@ -69,6 +69,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import okhttp3.Response;
@@ -309,10 +310,17 @@ public class WelcomeController implements Initializable {
 			protected void updateItem(Course course, boolean empty) {
 				super.updateItem(course, empty);
 				if (!empty && course != null) {
-					setMouseTransparent(!course.hasCourseAccess());
-					setDisabled(!course.hasCourseAccess());
-					setFocusTraversable(course.hasCourseAccess());
+					if(!course.hasCourseAccess()) {
+						setMouseTransparent(!course.hasCourseAccess());
+						setDisabled(!course.hasCourseAccess());
+						setFocusTraversable(course.hasCourseAccess());
+						setTextFill(Color.GRAY);
+					}
+				
 					setText(course.toString());
+					
+				}else {
+					setText(null);
 				}
 
 			}
@@ -369,6 +377,8 @@ public class WelcomeController implements Initializable {
 		checkBoxGradeItem.setDisable(!course.hasGradeItemAccess());
 		checkBoxLogs.setSelected(course.hasReportAccess());
 		checkBoxLogs.setDisable(!course.hasReportAccess());
+		checkBoxActivityCompletion.setSelected(course.hasActivityCompletion());
+		checkBoxActivityCompletion.setDisable(!course.hasActivityCompletion());
 	}
 
 	/**
@@ -621,7 +631,7 @@ public class WelcomeController implements Initializable {
 			protected Void call() throws Exception {
 
 				Course actualCourse = controller.getActualCourse();
-				
+
 				LOGGER.info("Cargando datos del curso: {}", actualCourse.getFullName());
 				// Establecemos los usuarios matriculados
 				if (checkBoxCourseData.isSelected()) {
@@ -632,13 +642,20 @@ public class WelcomeController implements Initializable {
 					actualCourse.setUpdatedCourseData(ZonedDateTime.now());
 				}
 				if (checkBoxGradeItem.isSelected()) {
-					actualCourse.getGradeItems().clear();
+					actualCourse.getGradeItems()
+							.clear();
 					updateMessage(I18n.get("label.loadingqualifier"));
 					// Establecemos calificador del curso
 					CreatorGradeItems creatorGradeItems = new CreatorGradeItems(new Locale(controller.getUser()
 							.getLang()));
 					creatorGradeItems.createGradeItems(controller.getActualCourse()
-							.getId(), controller.getUser().getId());
+							.getId(),
+							controller.getUser()
+									.getId());
+
+					// Establecemos las estadisticas
+					Stats stats = new Stats(actualCourse);
+					actualCourse.setStats(stats);
 					actualCourse.setUpdatedGradeItem(ZonedDateTime.now());
 				}
 				if (checkBoxActivityCompletion.isSelected()) {
@@ -672,9 +689,12 @@ public class WelcomeController implements Initializable {
 										actualCourse.getEnrolledUsers(), false);
 
 							}
-							tries = limitRelogin + 1;
-							actualCourse.setUpdatedLog(ZonedDateTime.now());
 
+							LogStats logStats = new LogStats(actualCourse.getLogs()
+									.getList());
+							actualCourse.setLogStats(logStats);
+							actualCourse.setUpdatedLog(ZonedDateTime.now());
+							tries = limitRelogin + 1;
 						} catch (Exception e) {
 							if (tries >= limitRelogin) {
 								throw e;
@@ -687,14 +707,6 @@ public class WelcomeController implements Initializable {
 					}
 				}
 
-				updateMessage(I18n.get("label.loadingstats"));
-				// Establecemos las estadisticas
-				Stats stats = new Stats(actualCourse);
-				actualCourse.setStats(stats);
-
-				LogStats logStats = new LogStats(actualCourse.getLogs()
-						.getList());
-				actualCourse.setLogStats(logStats);
 				updateMessage(I18n.get("label.savelocal"));
 				saveData();
 

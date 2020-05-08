@@ -469,6 +469,7 @@ public class CreatorUBUGradesController {
 
 		course.setShortName(shortName);
 		course.setFullName(fullName);
+		course.setHasActivityCompletion(jsonObject.optBoolean("enablecompletion", true));
 
 		return course;
 

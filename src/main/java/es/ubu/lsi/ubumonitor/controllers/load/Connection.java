@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.controllers.load;
 
 import java.io.IOException;
+import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.time.Duration;
@@ -13,14 +14,19 @@ import okhttp3.Response;
 public class Connection {
 	
 	private static final OkHttpClient CLIENT;
+	private static final CookieManager COOKIE_MANAGER;
 
 	static {
-		CookieManager cookieManager = new CookieManager();
-		cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
-		CLIENT = new OkHttpClient.Builder().cookieJar(new JavaNetCookieJar(cookieManager))
+		COOKIE_MANAGER = new CookieManager();
+		COOKIE_MANAGER.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+		CookieHandler.setDefault(COOKIE_MANAGER);
+		CLIENT = new OkHttpClient.Builder().cookieJar(new JavaNetCookieJar(COOKIE_MANAGER))
+				.followRedirects(false)
 				.readTimeout(Duration.ofMinutes(5))
 				.build();
 	}
+
+
 
 	private Connection() {
 	}
@@ -40,6 +46,10 @@ public class Connection {
 	public static Response getResponse(Request request) throws IOException {
 		return CLIENT.newCall(request)
 				.execute();
+	}
+	
+	public static CookieManager getCookieManager() {
+		return COOKIE_MANAGER;
 	}
 
 }

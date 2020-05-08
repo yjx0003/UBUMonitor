@@ -64,11 +64,11 @@ public class Course implements Serializable {
 	private boolean courseAccess;
 	private boolean reportAccess;
 	private boolean gradeItemAccess;
+	private boolean hasActivityCompletion;
 	private ZonedDateTime updatedCourseData;
 	private ZonedDateTime updatedGradeItem;
 	private ZonedDateTime updatedActivityCompletion;
 	private ZonedDateTime updatedLog;
-
 	public Course() {
 		this.enrolledUsers = new HashSet<>();
 		this.roles = new HashSet<>();
@@ -77,6 +77,7 @@ public class Course implements Serializable {
 		this.modules = new LinkedHashSet<>();
 		this.sections = new LinkedHashSet<>();
 		this.logs = new Logs(ZoneId.systemDefault());
+		this.logStats = new LogStats(logs.getList());
 	}
 
 	public Course(int id) {
@@ -684,5 +685,14 @@ public class Course implements Serializable {
 	public void setUpdatedLog(ZonedDateTime updatedLog) {
 		this.updatedLog = updatedLog;
 	}
+
+	public boolean hasActivityCompletion() {
+		return hasActivityCompletion;
+	}
+
+	public void setHasActivityCompletion(boolean hasActivityCompletion) {
+		this.hasActivityCompletion = hasActivityCompletion;
+	}
+
 
 }

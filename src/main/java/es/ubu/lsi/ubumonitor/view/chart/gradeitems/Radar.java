@@ -15,7 +15,7 @@ import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 
 public class Radar extends ChartjsGradeItem {
 
-	private static final GradeItem DUMMY = new GradeItem("");
+	private static final GradeItem DUMMY = new GradeItem(-1);
 
 	public Radar(MainController mainController) {
 		super(mainController, ChartType.RADAR);

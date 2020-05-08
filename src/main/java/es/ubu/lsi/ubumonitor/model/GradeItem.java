@@ -57,7 +57,7 @@ public class GradeItem implements Serializable {
 	 *            id de grade item
 	 */
 	public GradeItem(int id) {
-		this();
+		this("");
 		this.id = id;
 	}
 

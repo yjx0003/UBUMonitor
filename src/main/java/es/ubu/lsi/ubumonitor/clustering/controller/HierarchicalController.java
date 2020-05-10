@@ -65,9 +65,9 @@ public class HierarchicalController {
 		listParticipants = mainController.getListParticipants();
 
 		choiceBoxDistance.getItems().setAll(Distance.values());
-		choiceBoxDistance.getSelectionModel().selectFirst();
 		choiceBoxDistance.getSelectionModel().selectedItemProperty()
 				.addListener((obs, oldValue, newValue) -> hierarchical.setDistance(newValue));
+		choiceBoxDistance.getSelectionModel().selectFirst();
 
 		gradesCollector = new GradesCollector(mainController);
 		activityCollector = new ActivityCollector(mainController);

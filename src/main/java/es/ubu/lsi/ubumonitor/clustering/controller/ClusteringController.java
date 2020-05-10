@@ -268,6 +268,7 @@ public class ClusteringController {
 			}
 			graph.rename(clusters);
 			table.updateTable(clusters);
+			graph3D.rename(clusters);
 			silhouette.rename(clusters);
 		});
 	}

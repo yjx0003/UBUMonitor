@@ -6,7 +6,7 @@
 <script type="text/javascript" src="./lib/highcharts-3d.js"></script>
 </head>
 
-<div id="container" style="height: 90vh"></div>
+<div id="container" style="height: 95vh"></div>
 
 <script type="text/javascript">
 	function generateChart(data) {
@@ -41,10 +41,17 @@
 	}
 
 	var chart = generateChart([]);
+	var data = [];
 
 	function updateChart(series) {
 		chart.destroy();
+		data = series;
 		chart = generateChart(series);
+	}
+	
+	function rename(names) {
+		data.forEach((value, index, array) => value.name = names[index]);
+		chart = generateChart(data);
 	}
 </script>
 </html>

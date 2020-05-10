@@ -69,7 +69,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import okhttp3.Response;
@@ -305,24 +304,25 @@ public class WelcomeController implements Initializable {
 		listViewSearch.getSelectionModel()
 				.selectedItemProperty()
 				.addListener((ov, value, newValue) -> checkFile(newValue));
+
 		listViewSearch.setCellFactory(callback -> new ListCell<Course>() {
 			@Override
 			protected void updateItem(Course course, boolean empty) {
 				super.updateItem(course, empty);
-				if (!empty && course != null) {
-					if(!course.hasCourseAccess()) {
-						setMouseTransparent(!course.hasCourseAccess());
-						setDisabled(!course.hasCourseAccess());
-						setFocusTraversable(course.hasCourseAccess());
-						setTextFill(Color.GRAY);
-					}
-				
-					setText(course.toString());
-					
-				}else {
-					setText(null);
+
+				if (empty || course == null || !course.hasCourseAccess()) {
+					setDisable(true);
+
+				} else {
+					setDisable(false);
+
+					setFocusTraversable(course.hasCourseAccess());
+
 				}
 
+				setText(course == null ? null : course.toString());
+				setMouseTransparent(isDisable());
+				setFocusTraversable(!isDisable());
 			}
 		});
 
@@ -377,6 +377,7 @@ public class WelcomeController implements Initializable {
 		checkBoxGradeItem.setDisable(!course.hasGradeItemAccess());
 		checkBoxLogs.setSelected(course.hasReportAccess());
 		checkBoxLogs.setDisable(!course.hasReportAccess());
+		System.out.println(course.hasActivityCompletion());
 		checkBoxActivityCompletion.setSelected(course.hasActivityCompletion());
 		checkBoxActivityCompletion.setDisable(!course.hasActivityCompletion());
 	}
@@ -387,7 +388,7 @@ public class WelcomeController implements Initializable {
 	 * @param event El evento.
 	 */
 
-	public void enterCourse(ActionEvent event) {
+	public void enterCourse() {
 
 		// Guardamos en una variable el curso seleccionado por el usuario
 

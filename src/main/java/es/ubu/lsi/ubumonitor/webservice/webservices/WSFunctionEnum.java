@@ -39,11 +39,11 @@ public enum WSFunctionEnum {
 	 * Get course content (modules + web service file urls).
 	 */
 	CORE_COURSE_GET_CONTENTS("core_course_get_contents", 2.2),
-
+	
 	/**
-	 * Search courses by (name, module, block, tag).
+	 * Get courses matching a specific field (id/s, shortname, idnumber, category) 
 	 */
-	CORE_COURSE_SEARCH_COURSES("core_course_search_courses", 3.0),
+	CORE_COURSE_GET_COURSES_BY_FIELD("core_course_get_courses_by_field", 3.2),
 
 	/**
 	 * Get enrolled users by course id.
@@ -73,6 +73,11 @@ public enum WSFunctionEnum {
 	 * or not for the current user.
 	 */
 	CORE_COURSE_GET_USER_NAVIGATION_OPTIONS("core_course_get_user_navigation_options", 3.2),
+
+	/**
+	 * Search courses by (name, module, block, tag).
+	 */
+	CORE_COURSE_SEARCH_COURSES("core_course_search_courses", 3.0),
 
 	/**
 	 * Get list of course ids that a user is enrolled in (if you are allowed to see

@@ -41,6 +41,7 @@ import es.ubu.lsi.ubumonitor.model.SubDataBase;
 import es.ubu.lsi.ubumonitor.webservice.api.core.completion.CoreCompletionGetActivitiesCompletionStatus;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetCategories;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetContents;
+import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetCoursesByField;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetEnrolledCoursesByTimelineClassification;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetUserAdministrationOptions;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetUserNavigationOptions;
@@ -426,7 +427,7 @@ public class CreatorUBUGradesController {
 		Instant startDate = Instant.ofEpochSecond(jsonObject.optLong("startdate"));
 		Instant endDate = Instant.ofEpochSecond(jsonObject.optLong("enddate"));
 		boolean isFavorite = jsonObject.optBoolean("isfavourite");
-
+		course.setHasActivityCompletion(jsonObject.optBoolean("enablecompletion", true));
 		int categoryId = jsonObject.optInt("category");
 		if (categoryId != 0) {
 			CourseCategory courseCategory = CONTROLLER.getDataBase()
@@ -469,7 +470,6 @@ public class CreatorUBUGradesController {
 
 		course.setShortName(shortName);
 		course.setFullName(fullName);
-		course.setHasActivityCompletion(jsonObject.optBoolean("enablecompletion", true));
 
 		return course;
 
@@ -878,6 +878,14 @@ public class CreatorUBUGradesController {
 
 		jsonArray = getJSONObjectResponse(new CoreCourseGetUserNavigationOptions(courseids)).getJSONArray("courses");
 		findPermission(jsonArray, dataBaseCourse, "grades", Course::setGradeItemAccess);
+
+		jsonArray = getJSONObjectResponse(new CoreCourseGetCoursesByField(courseids)).getJSONArray("courses");
+
+		for (int i = 0; i < jsonArray.length(); ++i) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+			Course course = dataBaseCourse.getById(jsonObject.getInt("id"));
+			course.setHasActivityCompletion(jsonObject.optBoolean("enablecompletion", true));
+		}
 
 	}
 

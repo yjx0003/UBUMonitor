@@ -3,8 +3,10 @@ package es.ubu.lsi.ubumonitor.controllers;
 import java.io.ByteArrayInputStream;
 import java.text.MessageFormat;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
@@ -75,37 +77,51 @@ public class SelectionUserController {
 
 		initEnrolledUsersListView();
 		autoCompletionBinding = TextFields.bindAutoCompletion(tfdParticipants, filteredEnrolledList);
-		checkComboBoxGroup.getItems().addAll(CONTROLLER.getActualCourse().getGroups());
-		ObservableList<Group> groups = CONTROLLER.getMainConfiguration().getValue(MainConfiguration.GENERAL,
-				"initialGroups");
+		checkComboBoxGroup.getItems()
+				.setAll(CONTROLLER.getActualCourse()
+						.getGroups()
+						.stream()
+						.sorted(Comparator.comparing(Group::getGroupName,
+								Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)))
+						.collect(Collectors.toList()));
+		ObservableList<Group> groups = CONTROLLER.getMainConfiguration()
+				.getValue(MainConfiguration.GENERAL, "initialGroups");
 		if (groups != null) {
 			groups.forEach(checkComboBoxGroup.getCheckModel()::check);
 		}
 
-		checkComboBoxGroup.getCheckModel().getCheckedItems()
+		checkComboBoxGroup.getCheckModel()
+				.getCheckedItems()
 				.addListener((Change<? extends Group> g) -> filterParticipants());
 
-		checkComboBoxRole.getItems().addAll(CONTROLLER.getActualCourse().getRoles());
-		ObservableList<Role> roles = CONTROLLER.getMainConfiguration().getValue(MainConfiguration.GENERAL,
-				"initialRoles");
+		checkComboBoxRole.getItems()
+				.addAll(CONTROLLER.getActualCourse()
+						.getRoles());
+		ObservableList<Role> roles = CONTROLLER.getMainConfiguration()
+				.getValue(MainConfiguration.GENERAL, "initialRoles");
 		if (roles != null) {
 			roles.forEach(checkComboBoxRole.getCheckModel()::check);
 		}
-		checkComboBoxRole.getCheckModel().getCheckedItems()
+		checkComboBoxRole.getCheckModel()
+				.getCheckedItems()
 				.addListener((Change<? extends Role> r) -> filterParticipants());
 
-		checkComboBoxActivity.getItems().addAll(LastActivityFactory.getAllLastActivity());
+		checkComboBoxActivity.getItems()
+				.addAll(LastActivityFactory.getAllLastActivity());
 		ObservableList<LastActivity> lastActivities = CONTROLLER.getMainConfiguration()
 				.getValue(MainConfiguration.GENERAL, "initialLastActivity");
 		if (lastActivities != null) {
 			lastActivities.forEach(checkComboBoxActivity.getCheckModel()::check);
 		}
 
-		checkComboBoxActivity.getCheckModel().getCheckedItems()
+		checkComboBoxActivity.getCheckModel()
+				.getCheckedItems()
 				.addListener((Change<? extends LastActivity> l) -> filterParticipants());
 
 		checkComboBoxActivity.setConverter(getActivityConverter());
-		lblCountParticipants.textProperty().bind(Bindings.size(filteredEnrolledList).asString());
+		lblCountParticipants.textProperty()
+				.bind(Bindings.size(filteredEnrolledList)
+						.asString());
 		filterParticipants();
 	}
 
@@ -130,17 +146,22 @@ public class SelectionUserController {
 	 */
 	private void initEnrolledUsersListView() {
 
-		Set<EnrolledUser> users = CONTROLLER.getActualCourse().getEnrolledUsers();
+		Set<EnrolledUser> users = CONTROLLER.getActualCourse()
+				.getEnrolledUsers();
 
 		ObservableList<EnrolledUser> observableUsers = FXCollections.observableArrayList(users);
 		observableUsers.sort(EnrolledUser.NAME_COMPARATOR);
 		filteredEnrolledList = new FilteredList<>(observableUsers);
-		filteredEnrolledList.predicateProperty().addListener(p -> mainController.updatePredicadeEnrolledList());
+		filteredEnrolledList.predicateProperty()
+				.addListener(p -> mainController.updatePredicadeEnrolledList());
 		// Activamos la selección múltiple en la lista de participantes
-		listParticipants.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		listParticipants.getSelectionModel()
+				.setSelectionMode(SelectionMode.MULTIPLE);
 
-		listParticipants.getSelectionModel().getSelectedItems().addListener(
-				(Change<? extends EnrolledUser> usersSelected) -> mainController.updateListViewEnrolledUser());
+		listParticipants.getSelectionModel()
+				.getSelectedItems()
+				.addListener(
+						(Change<? extends EnrolledUser> usersSelected) -> mainController.updateListViewEnrolledUser());
 
 		/// Mostramos la lista de participantes
 		listParticipants.setItems(filteredEnrolledList);
@@ -155,7 +176,8 @@ public class SelectionUserController {
 				} else {
 					Instant lastCourseAccess = user.getLastcourseaccess();
 					Instant lastAccess = user.getLastaccess();
-					Instant lastLogInstant = CONTROLLER.getUpdatedCourseData().toInstant();
+					Instant lastLogInstant = CONTROLLER.getUpdatedCourseData()
+							.toInstant();
 					setText(user + "\n" + I18n.get("label.course")
 							+ UtilMethods.formatDates(lastCourseAccess, lastLogInstant) + " | "
 							+ I18n.get("text.moodle") + UtilMethods.formatDates(lastAccess, lastLogInstant));
@@ -173,7 +195,8 @@ public class SelectionUserController {
 					ContextMenu menu = new ContextMenu();
 					MenuItem seeUser = new MenuItem(I18n.get("text.see") + user);
 					seeUser.setOnAction(e -> userInfo(user));
-					menu.getItems().addAll(seeUser);
+					menu.getItems()
+							.addAll(seeUser);
 					setContextMenu(menu);
 				}
 			}
@@ -196,13 +219,20 @@ public class SelectionUserController {
 	 * Filtra los participantes según el rol, el grupo y el patrón indicados
 	 */
 	public void filterParticipants() {
-		List<Role> rol = checkComboBoxRole.getCheckModel().getCheckedItems();
-		List<Group> group = checkComboBoxGroup.getCheckModel().getCheckedItems();
-		List<LastActivity> lastActivity = checkComboBoxActivity.getCheckModel().getCheckedItems();
-		String textField = tfdParticipants.getText().toLowerCase();
-		Instant lastLogInstant = CONTROLLER.getUpdatedCourseData().toInstant();
+		List<Role> rol = checkComboBoxRole.getCheckModel()
+				.getCheckedItems();
+		List<Group> group = checkComboBoxGroup.getCheckModel()
+				.getCheckedItems();
+		List<LastActivity> lastActivity = checkComboBoxActivity.getCheckModel()
+				.getCheckedItems();
+		String textField = tfdParticipants.getText()
+				.toLowerCase();
+		Instant lastLogInstant = CONTROLLER.getUpdatedCourseData()
+				.toInstant();
 		filteredEnrolledList.setPredicate(e -> (checkUserHasRole(rol, e)) && (checkUserHasGroup(group, e))
-				&& (textField.isEmpty() || e.getFullName().toLowerCase().contains(textField))
+				&& (textField.isEmpty() || e.getFullName()
+						.toLowerCase()
+						.contains(textField))
 				&& (lastActivity.contains(LastActivityFactory.getActivity(e.getLastcourseaccess(), lastLogInstant))));
 		autoCompletionBinding.dispose();
 		autoCompletionBinding = TextFields.bindAutoCompletion(tfdParticipants, filteredEnrolledList);

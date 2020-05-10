@@ -250,5 +250,9 @@ public class CourseModule implements Serializable {
 	public void setActivitiesCompletion(Map<EnrolledUser, ActivityCompletion> activitiesCompletion) {
 		this.activitiesCompletion = activitiesCompletion;
 	}
+	
+	public void clear() {
+		activitiesCompletion.clear();
+	}
 
 }

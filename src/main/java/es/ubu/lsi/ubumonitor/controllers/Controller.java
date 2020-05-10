@@ -218,9 +218,9 @@ public class Controller {
 
 		URL hostURL = new URL(host);
 
-		
-		WebService.initialize(hostURL.toString(), username, password);
 		loginWebScraping(hostURL.toString(), username, password);
+		WebService.initialize(hostURL.toString(), username, password);
+
 		setURLHost(hostURL);
 
 		setUsername(username);
@@ -277,7 +277,6 @@ public class Controller {
 					webView.getEngine()
 							.documentProperty()
 							.addListener(ov -> {
-
 								if (webView.getEngine()
 										.getDocument() != null) {
 
@@ -311,7 +310,8 @@ public class Controller {
 						.build();
 				Connection.getResponse(new Request.Builder().url(hostLogin)
 						.post(formBody)
-						.build()).close();
+						.build())
+						.close();
 
 				String html = Connection.getResponse(host)
 						.body()

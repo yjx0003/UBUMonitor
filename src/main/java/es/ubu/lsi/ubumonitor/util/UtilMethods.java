@@ -134,10 +134,10 @@ public class UtilMethods {
 		return dialogWindow(AlertType.CONFIRMATION, "Confirmation", contentText);
 	}
 
-	
 	public static ButtonType warningWindow(String contentText) {
 		return dialogWindow(AlertType.WARNING, "Warning", contentText);
 	}
+
 	public static ButtonType errorWindow(String contentText, Throwable ex) {
 
 		Alert alert = createAlert(AlertType.ERROR, "Error", contentText);
@@ -244,15 +244,10 @@ public class UtilMethods {
 			return;
 		}
 		Style.addStyle(ConfigHelper.getProperty("style"), newScene.getStylesheets());
-		Stage stage = new Stage();
+
+		Stage stage = createStage(ownerStage, Modality.WINDOW_MODAL);
 		stage.setScene(newScene);
 		stage.setResizable(false);
-		stage.initOwner(ownerStage);
-		stage.initModality(Modality.WINDOW_MODAL);
-
-		stage.getIcons()
-				.add(new Image("/img/logo_min.png"));
-		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 
 		stage.show();
 	}
@@ -264,8 +259,8 @@ public class UtilMethods {
 		try {
 			if (osName.startsWith("Mac OS")) {
 				Class<?> fileMgr = Class.forName("com.apple.eio.FileManager");
-				Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] { String.class });
-				openURL.invoke(null, new Object[] { url });
+				Method openURL = fileMgr.getDeclaredMethod("openURL", String.class);
+				openURL.invoke(null, url);
 			} else if (osName.startsWith("Windows")) {
 				Runtime.getRuntime()
 						.exec("rundll32 url.dll,FileProtocolHandler " + url);
@@ -338,7 +333,7 @@ public class UtilMethods {
 			FileUtil.FileChooserType fileChooserType, FileUtil.ThrowingConsumer<File, IOException> consumer,
 			FileChooser.ExtensionFilter... extensionFilters) {
 		fileAction(initialFileName, initialDirectory, owner, fileChooserType, consumer, true, extensionFilters);
-		
+
 	}
 
 	/**
@@ -387,5 +382,17 @@ public class UtilMethods {
 	 */
 	private static long betweenDates(ChronoUnit type, Instant lastCourseAccess, Instant lastLogInstant) {
 		return type.between(lastCourseAccess, lastLogInstant);
+	}
+
+	public static Stage createStage(Window owner, Modality modality) {
+		Stage stage = new Stage();
+
+		stage.initOwner(owner);
+		stage.initModality(modality);
+
+		stage.getIcons()
+				.add(new Image("/img/logo_min.png"));
+		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
+		return stage;
 	}
 }

@@ -54,6 +54,8 @@ public class AppInfo {
 
 	public static final String USER_NAME = System.getProperty("user.name");
 
+	public static final String JAVA_FX_VERSION = System.getProperty("javafx.runtime.version");
+
 	private AppInfo() {
 		throw new UnsupportedOperationException();
 	}

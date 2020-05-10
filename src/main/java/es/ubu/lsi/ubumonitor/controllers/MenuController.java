@@ -59,7 +59,8 @@ public class MenuController {
 	private void initMenuBar() {
 
 		ToggleGroup group = new ToggleGroup();
-		for (Entry<String, String> entry : Style.getStyles().entrySet()) {
+		for (Entry<String, String> entry : Style.getStyles()
+				.entrySet()) {
 			String key = entry.getKey();
 			String path = entry.getValue();
 			RadioMenuItem menuItem = new RadioMenuItem();
@@ -228,6 +229,9 @@ public class MenuController {
 				.getSelectionModel()
 				.clearSelection();
 		selectionController.getListViewCourseModule()
+				.getSelectionModel()
+				.clearSelection();
+		selectionController.getListViewActivity()
 				.getSelectionModel()
 				.clearSelection();
 	}

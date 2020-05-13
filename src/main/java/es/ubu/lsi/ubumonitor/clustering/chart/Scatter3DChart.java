@@ -1,4 +1,4 @@
-package es.ubu.lsi.ubumonitor.clustering.controller;
+package es.ubu.lsi.ubumonitor.clustering.chart;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,18 +9,20 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.ubu.lsi.ubumonitor.clustering.controller.AlgorithmExecuter;
+import es.ubu.lsi.ubumonitor.clustering.controller.ClusteringController;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 
-public class Clustering3DChart extends AbstractChart {
+public class Scatter3DChart extends ClusteringChart {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Clustering3DChart.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Scatter3DChart.class);
 
 	private List<Map<UserData, double[]>> points;
 
-	public Clustering3DChart(ClusteringController controller) {
+	public Scatter3DChart(ClusteringController controller) {
 		super(controller.getWebView3DScatter());
 		getWebEngine().load(getClass().getResource("/graphics/Cluster3DChart.html").toExternalForm());
 	}

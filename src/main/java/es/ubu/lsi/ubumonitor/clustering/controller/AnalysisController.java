@@ -2,6 +2,7 @@ package es.ubu.lsi.ubumonitor.clustering.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -9,6 +10,7 @@ import java.util.stream.IntStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.ubu.lsi.ubumonitor.clustering.chart.AbstractChart;
 import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
@@ -85,7 +87,15 @@ public class AnalysisController {
 
 		@Override
 		protected void exportData(File file) throws IOException {
-			ExportUtil.exportAnalysis(file, points, start);
+			String[] head = new String[] { "Number of clusters", "Value" };
+			List<List<Object>> data = new ArrayList<>();
+			for (int i = 0; i < points.size(); i++) {
+				List<Object> row = new ArrayList<>();
+				row.add(start + i);
+				row.add(points.get(i));
+				data.add(row);
+			}
+			ExportUtil.exportCSV(file, head, data);
 		}
 
 	}

@@ -1,15 +1,12 @@
 package es.ubu.lsi.ubumonitor.clustering.util;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -18,17 +15,24 @@ import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
+import es.ubu.lsi.ubumonitor.controllers.Controller;
+import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.util.Charsets;
 
 public class ExportUtil {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExportUtil.class);
 
-	private static void exportCSV(File file, String[] head, List<List<Object>> data) {
+	public static void exportCSV(File file, String[] head, List<List<Object>> data) {
+		Charsets charset = Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL,
+				"charset");
+
 		CSVFormat format = CSVFormat.DEFAULT.withHeader(head);
 
-		try (FileWriter out = new FileWriter(file); CSVPrinter printer = new CSVPrinter(out, format)) {
+		try (OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(file), charset.get());
+				CSVPrinter printer = new CSVPrinter(out, format)) {
 			printer.printRecords(data);
 		} catch (IOException e) {
 			LOGGER.error("Error writing csv file: {}.csv", file);
@@ -61,57 +65,6 @@ public class ExportUtil {
 			}
 		}
 		exportCSV(file, head.toArray(new String[0]), data);
-	}
-
-	public static void exportPoints(File file, List<Map<UserData, double[]>> points) {
-		String[] head = new String[] { "UserId", "FullName", "Cluster", "X", "Y" };
-		List<List<Object>> data = new ArrayList<>();
-		for (Map<UserData, double[]> cluster : points) {
-			for (Entry<UserData, double[]> entry : cluster.entrySet()) {
-				UserData userData = entry.getKey();
-				EnrolledUser enrolledUser = userData.getEnrolledUser();
-				List<Object> row = new ArrayList<>();
-				row.add(enrolledUser.getId());
-				row.add(enrolledUser.getFullName());
-				row.add(userData.getCluster().getName());
-				row.add(entry.getValue()[0]);
-				row.add(entry.getValue()[1]);
-				data.add(row);
-			}
-		}
-		exportCSV(file, head, data);
-	}
-
-	public static void exportSilhouette(File file, Map<UserData, Double> silhouette) {
-		String[] head = new String[] { "UserId", "FullName", "Cluster", "Silhouette width" };
-		Comparator<UserData> id = Comparator.comparingInt(u -> u.getCluster().getId());
-		Comparator<UserData> width = Comparator.comparingDouble((UserData u) -> silhouette.get(u)).reversed();
-		List<UserData> usersData = silhouette.keySet().stream().sorted(id.thenComparing(width))
-				.collect(Collectors.toList());
-
-		List<List<Object>> data = new ArrayList<>();
-		for (UserData userData : usersData) {
-			EnrolledUser enrolledUser = userData.getEnrolledUser();
-			List<Object> row = new ArrayList<>();
-			row.add(enrolledUser.getId());
-			row.add(enrolledUser.getFullName());
-			row.add(userData.getCluster().getName());
-			row.add(silhouette.get(userData));
-			data.add(row);
-		}
-		exportCSV(file, head, data);
-	}
-
-	public static void exportAnalysis(File file, List<Double> values, int start) {
-		String[] head = new String[] { "Number of clusters", "Value" };
-		List<List<Object>> data = new ArrayList<>();
-		for (int i = 0; i < values.size(); i++) {
-			List<Object> row = new ArrayList<>();
-			row.add(start + i);
-			row.add(values.get(i));
-			data.add(row);
-		}
-		exportCSV(file, head, data);
 	}
 
 }

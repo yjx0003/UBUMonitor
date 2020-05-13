@@ -1,24 +1,21 @@
-package es.ubu.lsi.ubumonitor.clustering.controller;
+package es.ubu.lsi.ubumonitor.clustering.chart;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.xml.bind.DatatypeConverter;
 
-import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
-import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -34,9 +31,11 @@ public abstract class AbstractChart {
 	private static final ExtensionFilter EXTENSION_PNG = new ExtensionFilter("PNG (*.png)", "*.png");
 
 	private Controller controller;
+	private WebView webView;
 	private WebEngine webEngine;
 
 	protected AbstractChart(WebView webView) {
+		this.webView = webView;
 		webEngine = webView.getEngine();
 		controller = Controller.getInstance();
 		webView.setContextMenuEnabled(false);
@@ -60,12 +59,6 @@ public abstract class AbstractChart {
 				contextMenu.hide();
 			}
 		});
-	}
-
-	public void rename(List<ClusterWrapper> clusters) {
-		JSArray names = new JSArray();
-		clusters.forEach(c -> names.addWithQuote(c.getName()));
-		webEngine.executeScript("rename(" + names + ")");
 	}
 
 	private void exportCSV() {
@@ -107,10 +100,8 @@ public abstract class AbstractChart {
 	}
 
 	private void exportImage(File file) throws IOException {
-		String str = (String) webEngine.executeScript("exportGraphic()");
-		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
-		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
-		ImageIO.write(bufferedImage, "png", file);
+		WritableImage image = webView.snapshot(new SnapshotParameters(), null);
+		ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
 	}
 
 	protected WebEngine getWebEngine() {

@@ -1,34 +1,40 @@
-package es.ubu.lsi.ubumonitor.clustering.controller;
+package es.ubu.lsi.ubumonitor.clustering.chart;
 
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.ubu.lsi.ubumonitor.clustering.controller.AlgorithmExecuter;
+import es.ubu.lsi.ubumonitor.clustering.controller.ClusteringController;
+import es.ubu.lsi.ubumonitor.clustering.controller.Connector;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
 
-public class ClusteringChart extends AbstractChart {
+public class Scatter2DChart extends ClusteringChart {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringChart.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Scatter2DChart.class);
 
 	private static final String LEGEND_FORMAT = "%s (%d/%d)";
 
 	private Connector connector;
 	private List<Map<UserData, double[]>> points;
 
-	public ClusteringChart(ClusteringController clusteringController) {
+	public Scatter2DChart(ClusteringController clusteringController) {
 		super(clusteringController.getWebViewScatter());
 
 		WebEngine webEngine = getWebEngine();
@@ -42,6 +48,7 @@ public class ClusteringChart extends AbstractChart {
 		webEngine.load(getClass().getResource("/graphics/ClusterChart.html").toExternalForm());
 	}
 
+	@Override
 	public void updateChart(List<ClusterWrapper> clusters) {
 		connector.setClusters(clusters);
 		points = AlgorithmExecuter.clustersTo(2, clusters);
@@ -102,7 +109,22 @@ public class ClusteringChart extends AbstractChart {
 
 	@Override
 	protected void exportData(File file) throws IOException {
-		ExportUtil.exportPoints(file, points);
+		String[] head = new String[] { "UserId", "FullName", "Cluster", "X", "Y" };
+		List<List<Object>> data = new ArrayList<>();
+		for (Map<UserData, double[]> cluster : points) {
+			for (Entry<UserData, double[]> entry : cluster.entrySet()) {
+				UserData userData = entry.getKey();
+				EnrolledUser enrolledUser = userData.getEnrolledUser();
+				List<Object> row = new ArrayList<>();
+				row.add(enrolledUser.getId());
+				row.add(enrolledUser.getFullName());
+				row.add(userData.getCluster().getName());
+				row.add(entry.getValue()[0]);
+				row.add(entry.getValue()[1]);
+				data.add(row);
+			}
+		}
+		ExportUtil.exportCSV(file, head, data);
 	}
 
 }

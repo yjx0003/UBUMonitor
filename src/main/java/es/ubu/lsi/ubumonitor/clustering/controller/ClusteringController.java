@@ -20,6 +20,9 @@ import es.ubu.lsi.ubumonitor.clustering.analysis.AnalysisFactory;
 import es.ubu.lsi.ubumonitor.clustering.analysis.ElbowFactory;
 import es.ubu.lsi.ubumonitor.clustering.analysis.SilhouetteFactory;
 import es.ubu.lsi.ubumonitor.clustering.analysis.methods.AnalysisMethod;
+import es.ubu.lsi.ubumonitor.clustering.chart.Scatter2DChart;
+import es.ubu.lsi.ubumonitor.clustering.chart.Scatter3DChart;
+import es.ubu.lsi.ubumonitor.clustering.chart.SilhouetteChart;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.ActivityCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.DataCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.GradesCollector;
@@ -139,20 +142,20 @@ public class ClusteringController {
 
 	private ClusteringTable table;
 
-	private ClusteringChart graph;
+	private Scatter2DChart graph;
 
-	private ClusteringSilhouette silhouette;
+	private SilhouetteChart silhouette;
 
 	private TextFieldPropertyEditorFactory propertyEditor;
 
-	private Clustering3DChart graph3D;
+	private Scatter3DChart graph3D;
 
 	public void init(MainController controller) {
 		mainController = controller;
 		table = new ClusteringTable(this);
-		graph = new ClusteringChart(this);
-		silhouette = new ClusteringSilhouette(this);
-		graph3D = new Clustering3DChart(this);
+		graph = new Scatter2DChart(this);
+		silhouette = new SilhouetteChart(this);
+		graph3D = new Scatter3DChart(this);
 
 		rangeSlider.setHighValue(10.0);
 
@@ -234,7 +237,8 @@ public class ClusteringController {
 			LOGGER.debug("Parametros: {}", algorithm.getParameters());
 			LOGGER.debug("Clusters: {}", clusters);
 
-			silhouette.updateChart(clusters, algorithm.getParameters().getValue(ClusteringParameter.DISTANCE_TYPE));
+			silhouette.setDistanceType(algorithm.getParameters().getValue(ClusteringParameter.DISTANCE_TYPE));
+			silhouette.updateChart(clusters);
 			table.updateTable(clusters);
 			updateRename();
 			graph.updateChart(clusters);

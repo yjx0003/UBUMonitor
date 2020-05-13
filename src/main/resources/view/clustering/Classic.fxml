@@ -27,7 +27,7 @@
         <columnConstraints>
             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="250.0" />
-          <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="120.0" />
             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
@@ -71,7 +71,7 @@
               </rowConstraints>
                <children>
                   <CheckBox fx:id="checkBoxReduce" mnemonicParsing="false" text="%clustering.reduce" />
-                  <TextField fx:id="textFieldReduce" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="30.0" GridPane.columnIndex="1" />
+                  <TextField fx:id="textFieldReduce" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="60.0" GridPane.columnIndex="1" />
                </children>
             </GridPane>
             <Button mnemonicParsing="false" onAction="#execute" text="%clustering.execute" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
@@ -106,7 +106,7 @@
                         <Insets right="10.0" />
                      </GridPane.margin>
                   </Label>
-                  <TextField fx:id="textFieldIterations" maxWidth="-Infinity" prefWidth="30.0" promptText="10" text="10" GridPane.columnIndex="1" />
+                  <TextField fx:id="textFieldIterations" maxWidth="-Infinity" prefWidth="60.0" promptText="10" text="10" GridPane.columnIndex="1" />
                </children>
             </GridPane>
          </children>

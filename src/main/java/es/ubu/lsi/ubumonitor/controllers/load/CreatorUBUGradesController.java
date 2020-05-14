@@ -53,7 +53,6 @@ import es.ubu.lsi.ubumonitor.webservice.api.gradereport.GradereportUserGetGradeI
 import es.ubu.lsi.ubumonitor.webservice.api.gradereport.GradereportUserGetGradesTable;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionAbstract;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionEnum;
-import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -91,7 +90,8 @@ public class CreatorUBUGradesController {
 	private static final Pattern NIVEL = Pattern.compile("level(\\d+)");
 
 	public static JSONArray getJSONArrayResponse(WSFunctionAbstract webServiceFunction) throws IOException {
-		try (Response response = WebService.getResponse(webServiceFunction)) {
+		try (Response response = CONTROLLER.getWebService()
+				.getResponse(webServiceFunction)) {
 			return new JSONArray(new JSONTokener(response.body()
 					.byteStream()));
 
@@ -100,7 +100,8 @@ public class CreatorUBUGradesController {
 	}
 
 	public static JSONObject getJSONObjectResponse(WSFunctionAbstract webServiceFunction) throws IOException {
-		try (Response response = WebService.getResponse(webServiceFunction)) {
+		try (Response response = CONTROLLER.getWebService()
+				.getResponse(webServiceFunction)) {
 			return new JSONObject(new JSONTokener(response.body()
 					.byteStream()));
 

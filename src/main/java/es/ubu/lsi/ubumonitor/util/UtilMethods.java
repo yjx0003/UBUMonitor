@@ -15,6 +15,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import es.ubu.lsi.ubumonitor.AppInfo;
@@ -37,6 +38,8 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 public class UtilMethods {
+	private static final Random RANDOM = new Random();
+
 	private UtilMethods() {
 	}
 
@@ -395,4 +398,22 @@ public class UtilMethods {
 		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		return stage;
 	}
+
+	/**
+	 * https://www.baeldung.com/java-random-string
+	 * @return
+	 */
+	public static String ranmdomAlphanumeric() {
+		int leftLimit = 97; // letter 'a'
+		int rightLimit = 122; // letter 'z'
+		int targetStringLength = 10;
+
+		return RANDOM.ints(leftLimit, rightLimit + 1)
+			      .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+			      .limit(targetStringLength)
+			      .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+			      .toString();
+
+	}
+
 }

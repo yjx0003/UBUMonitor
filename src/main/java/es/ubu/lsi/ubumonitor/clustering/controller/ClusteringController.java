@@ -45,16 +45,20 @@ import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
@@ -68,23 +72,13 @@ public class ClusteringController {
 
 	private MainController mainController;
 
-	@FXML
-	private PropertySheet propertySheet;
+	/* Componentes de seleccion */
 
 	@FXML
 	private ListView<Algorithm> algorithmList;
 
 	@FXML
-	private WebView webViewScatter;
-
-	@FXML
-	private WebView webView3DScatter;
-
-	@FXML
-	private WebView webViewSilhouette;
-
-	@FXML
-	private TableView<UserData> tableView;
+	private PropertySheet propertySheet;
 
 	@FXML
 	private CheckComboBox<DataCollector> checkComboBoxLogs;
@@ -99,7 +93,34 @@ public class ClusteringController {
 	private CheckBox checkBoxActivity;
 
 	@FXML
-	private CheckComboBox<Integer> checkComboBoxCluster;
+	private CheckBox checkBoxReduce;
+
+	@FXML
+	private TextField textFieldReduce;
+
+	@FXML
+	private RangeSlider rangeSlider;
+
+	@FXML
+	private ChoiceBox<AnalysisFactory> choiceBoxAnalyze;
+
+	@FXML
+	private TextField textFieldIterations;
+
+	/* Graficas */
+
+	@FXML
+	private WebView webViewScatter;
+
+	@FXML
+	private WebView webView3DScatter;
+
+	@FXML
+	private WebView webViewSilhouette;
+
+	/* Tabla */
+	@FXML
+	private TableView<UserData> tableView;
 
 	@FXML
 	private TableColumn<UserData, ImageView> columnImage;
@@ -111,28 +132,20 @@ public class ClusteringController {
 	private TableColumn<UserData, String> columnCluster;
 
 	@FXML
+	private CheckComboBox<Integer> checkComboBoxCluster;
+
+	@FXML
 	private CheckBox checkBoxExportGrades;
 
+	/* Etiquetar */
 	@FXML
-	private CheckBox checkBoxReduce;
+	private PropertySheet propertySheetLabel;
 
 	@FXML
-	private TextField textFieldReduce;
+	private Button buttonLabel;
 
 	@FXML
-	private PropertySheet propertySheetRename;
-
-	@FXML
-	private Button buttonRename;
-
-	@FXML
-	private RangeSlider rangeSlider;
-
-	@FXML
-	private ChoiceBox<AnalysisFactory> choiceBoxAnalyze;
-
-	@FXML
-	private TextField textFieldIterations;
+	private ListView<String> listViewLabels;
 
 	private GradesCollector gradesCollector;
 
@@ -146,7 +159,7 @@ public class ClusteringController {
 
 	private SilhouetteChart silhouette;
 
-	private TextFieldPropertyEditorFactory propertyEditor;
+	private TextFieldPropertyEditorFactory propertyEditorLabel;
 
 	private Scatter3DChart graph3D;
 
@@ -159,9 +172,6 @@ public class ClusteringController {
 
 		rangeSlider.setHighValue(10.0);
 
-		propertyEditor = new TextFieldPropertyEditorFactory();
-		propertySheetRename.setPropertyEditorFactory(propertyEditor);
-
 		choiceBoxAnalyze.getItems().setAll(new ElbowFactory(), new SilhouetteFactory());
 		choiceBoxAnalyze.getSelectionModel().selectFirst();
 
@@ -170,6 +180,7 @@ public class ClusteringController {
 
 		initAlgorithms();
 		initCollectors();
+		initLabels();
 	}
 
 	private void initAlgorithms() {
@@ -204,6 +215,37 @@ public class ClusteringController {
 		list.add(new LogCollector<>("coursemodule", mainController.getListViewCourseModule(),
 				DatasSetCourseModule.getInstance(), t -> t.getModuleType().getModName()));
 		checkComboBoxLogs.getItems().setAll(list);
+	}
+
+	private void initLabels() {
+
+		propertyEditorLabel = new TextFieldPropertyEditorFactory(listViewLabels.getItems());
+		propertySheetLabel.setPropertyEditorFactory(propertyEditorLabel);
+
+		listViewLabels.getItems().setAll(ConfigHelper.getArray("labels"));
+		FXCollections.sort(listViewLabels.getItems(), String.CASE_INSENSITIVE_ORDER);
+		listViewLabels.getItems().addListener(new ListChangeListener<String>() {
+			private boolean flag = true;
+
+			@Override
+			public void onChanged(Change<? extends String> c) {
+				if (flag) {
+					flag = false;
+					FXCollections.sort(listViewLabels.getItems(), String.CASE_INSENSITIVE_ORDER);
+					propertyEditorLabel.refresh();
+					ConfigHelper.setArray("labels", listViewLabels.getItems());
+					flag = true;
+				}
+			}
+		});
+
+		listViewLabels.setCellFactory(TextFieldListCell.forListView());
+		listViewLabels.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+	}
+
+	@FXML
+	private void deleteLabels() {
+		listViewLabels.getItems().removeAll(listViewLabels.getSelectionModel().getSelectedItems());
 	}
 
 	@FXML
@@ -258,17 +300,12 @@ public class ClusteringController {
 		List<PropertySheet.Item> items = IntStream.range(0, clusters.size())
 				.mapToObj(i -> new SimplePropertySheetItem(String.valueOf(i), String.valueOf(i)))
 				.collect(Collectors.toList());
-		propertySheetRename.getItems().setAll(items);
-		buttonRename.setOnAction(e -> {
+		propertySheetLabel.getItems().setAll(items);
+		buttonLabel.setOnAction(e -> {
 			for (int i = 0; i < items.size(); i++) {
 				String name = items.get(i).getValue().toString();
 				clusters.get(i).setName(name);
-				List<String> array = ConfigHelper.getArray("labels");
-				if (!array.contains(name)) {
-					array.add(name);
-					ConfigHelper.setArray("labels", array);
-					propertyEditor.add(name);
-				}
+				propertyEditorLabel.add(name);
 			}
 			graph.rename(clusters);
 			table.updateTable(clusters);

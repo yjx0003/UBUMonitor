@@ -9,7 +9,6 @@ import org.controlsfx.control.textfield.TextFields;
 import org.controlsfx.property.editor.AbstractPropertyEditor;
 import org.controlsfx.property.editor.PropertyEditor;
 
-import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
 import javafx.util.Callback;
@@ -17,37 +16,50 @@ import javafx.util.Callback;
 public class TextFieldPropertyEditorFactory implements Callback<Item, PropertyEditor<?>> {
 
 	private List<Editor> editors = new ArrayList<>();
+	private List<String> suggestions;
+
+	public TextFieldPropertyEditorFactory(List<String> suggestions) {
+		this.suggestions = suggestions;
+	}
 
 	@Override
 	public PropertyEditor<?> call(Item param) {
 		TextField textField = new TextField();
-		List<String> suggestions = ConfigHelper.getArray("labels");
 		Editor editor = new Editor(param, textField, suggestions);
 		editors.add(editor);
 		return editor;
 	}
 
 	public void add(String string) {
-		for (Editor editor : editors) {
-			editor.addAutoCompletion(string);
+		if (!suggestions.contains(string)) {
+			suggestions.add(string);
+			refresh();
 		}
 	}
 
-	private static class Editor extends AbstractPropertyEditor<String, TextField> {
-		
-		private AutoCompletionBinding<String> suggestions;
-		private List<String> list;
+	public void refresh() {
+		for (Editor editor : editors) {
+			editor.refresh();
+		}
+	}
+
+	private class Editor extends AbstractPropertyEditor<String, TextField> {
+
+		private AutoCompletionBinding<String> autoCompletion;
 
 		public Editor(Item property, TextField control, List<String> list) {
 			super(property, control);
-			this.suggestions = TextFields.bindAutoCompletion(getEditor(), list);
-			this.list = list;
+			setup(list);
 		}
-		
-		private void addAutoCompletion(String string) {
-			list.add(string);
-			suggestions.dispose();
-			suggestions = TextFields.bindAutoCompletion(getEditor(), list);
+
+		private void setup(List<String> list) {
+			autoCompletion = TextFields.bindAutoCompletion(getEditor(), list);
+			autoCompletion.setDelay(0);
+		}
+
+		private void refresh() {
+			autoCompletion.dispose();
+			setup(suggestions);
 		}
 
 		@Override

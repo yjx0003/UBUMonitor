@@ -177,13 +177,13 @@
                      <content>
                         <BorderPane>
                            <center>
-                              <PropertySheet fx:id="propertySheetRename" modeSwitcherVisible="false" searchBoxVisible="false" BorderPane.alignment="CENTER">
+                              <PropertySheet fx:id="propertySheetLabel" modeSwitcherVisible="false" searchBoxVisible="false" BorderPane.alignment="CENTER">
                                  <BorderPane.margin>
                                     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                                  </BorderPane.margin></PropertySheet>
                            </center>
                            <bottom>
-                              <Button fx:id="buttonRename" mnemonicParsing="false" text="%clustering.label" BorderPane.alignment="CENTER">
+                              <Button fx:id="buttonLabel" mnemonicParsing="false" text="%clustering.label" BorderPane.alignment="CENTER">
                                  <BorderPane.margin>
                                     <Insets bottom="20.0" />
                                  </BorderPane.margin>
@@ -192,6 +192,26 @@
                         </BorderPane>
                      </content>
                 </Tab>
+                  <Tab text="%clustering.manageLabels">
+                     <content>
+                        <BorderPane prefHeight="200.0" prefWidth="200.0">
+                           <center>
+                              <ListView fx:id="listViewLabels" editable="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                                 <BorderPane.margin>
+                                    <Insets bottom="20.0" />
+                                 </BorderPane.margin>
+                              </ListView>
+                           </center>
+                           <bottom>
+                              <Button mnemonicParsing="false" onAction="#deleteLabels" text="Button" BorderPane.alignment="CENTER">
+                                 <BorderPane.margin>
+                                    <Insets bottom="20.0" />
+                                 </BorderPane.margin>
+                              </Button>
+                           </bottom>
+                        </BorderPane>
+                     </content>
+                  </Tab>
               </tabs>
             </TabPane>
          </items>

@@ -340,7 +340,7 @@ public class LoginController implements Initializable {
 					LOGGER.info("Recogiendo info del usuario");
 					MoodleUser moodleUser = CreatorUBUGradesController.createMoodleUser(controller.getUsername());
 					controller.setUser(moodleUser);
-				} catch (IOException e) {
+				} catch (Exception e) {
 					LOGGER.error("Error al recuperar los datos del usuario.", e);
 					throw new IllegalStateException(I18n.get("error.user"));
 				}

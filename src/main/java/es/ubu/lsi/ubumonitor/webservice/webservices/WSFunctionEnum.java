@@ -121,6 +121,11 @@ public enum WSFunctionEnum {
 	 * provided all quizzes that the user can view will be returned.
 	 */
 	MOD_QUIZ_GET_QUIZZES_BY_COURSES("mod_quiz_get_quizzes_by_courses", 3.1),
+	
+	/**
+	 * Returns a list of the site public settings, those not requiring authentication. 
+	 */
+	TOOL_MOBILE_GET_PUBLIC_CONFIG("tool_mobile_get_public_config", 3.2),
 
 	/**
 	 * Return the user token.

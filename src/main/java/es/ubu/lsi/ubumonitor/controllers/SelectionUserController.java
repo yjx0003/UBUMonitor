@@ -178,6 +178,7 @@ public class SelectionUserController {
 					Instant lastAccess = user.getLastaccess();
 					Instant lastLogInstant = CONTROLLER.getUpdatedCourseData()
 							.toInstant();
+					
 					setText(user + "\n" + I18n.get("label.course")
 							+ UtilMethods.formatDates(lastCourseAccess, lastLogInstant) + " | "
 							+ I18n.get("text.moodle") + UtilMethods.formatDates(lastAccess, lastLogInstant));

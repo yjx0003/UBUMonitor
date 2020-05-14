@@ -14,10 +14,7 @@ import javafx.scene.web.WebEngine;
 
 public class AboutAppController implements Initializable {
 
-	private  final StringBuilder appInfo = new StringBuilder();
-	
-		
-	
+	private StringBuilder appInfo;
 
 	@FXML
 	private Label labelJre;
@@ -27,25 +24,21 @@ public class AboutAppController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
-		
-		
-		
+		appInfo = new StringBuilder();
 		append("Installation directory for Java Runtime Environment (JRE): ", AppInfo.JAVA_HOME);
 		append("JRE vendor name: ", AppInfo.JAVA_VENDOR);
 		append("JRE version number: ", AppInfo.JAVA_VERSION);
 		append("JFX version number: ", AppInfo.JAVA_FX_VERSION);
-		append("Webview User Agent: ",  new WebEngine().getUserAgent());
+		append("Webview User Agent: ", new WebEngine().getUserAgent());
 		append("Operating system architecture: ", AppInfo.OS_ARCH);
 		append("Operating system name: ", AppInfo.OS_NAME);
 		append("Operating system version: ", AppInfo.OS_VERSION);
 		append("User working directory: ", AppInfo.USER_DIR);
 		append("User home directory: ", AppInfo.USER_HOME);
 		append("User account name: ", AppInfo.USER_NAME);
-		append("User account name: ", AppInfo.USER_NAME);
 		textArea.setText(appInfo.toString());
 		Platform.runLater(() -> textArea.requestFocus());
-		
+
 	}
 
 	public void openLicense() {

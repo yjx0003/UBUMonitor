@@ -21,7 +21,6 @@ public class Connection {
 		COOKIE_MANAGER.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
 		CookieHandler.setDefault(COOKIE_MANAGER);
 		CLIENT = new OkHttpClient.Builder().cookieJar(new JavaNetCookieJar(COOKIE_MANAGER))
-				.followRedirects(false)
 				.readTimeout(Duration.ofMinutes(5))
 				.build();
 	}

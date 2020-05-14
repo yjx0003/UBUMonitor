@@ -11,21 +11,14 @@ import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.jsoup.Jsoup;
-import org.jsoup.helper.W3CDom;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
-import es.ubu.lsi.ubumonitor.controllers.load.Connection;
+import es.ubu.lsi.ubumonitor.controllers.load.Login;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.DataBase;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
@@ -34,14 +27,7 @@ import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.Languages;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
-import javafx.application.Platform;
-import javafx.scene.Scene;
-import javafx.scene.web.WebView;
 import javafx.stage.Stage;
-import okhttp3.FormBody;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class Controller {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Controller.class);
@@ -58,10 +44,9 @@ public class Controller {
 	private Path directoryCache;
 	private URL host;
 	private Stage stage;
-	private String password;
+	private Login login;
 	private String username;
-	private String sesskey;
-
+	private String password;
 	private boolean offlineMode;
 
 	private MainConfiguration mainConfiguration;
@@ -118,6 +103,7 @@ public class Controller {
 			LOGGER.error("No se ha podido encontrar el recurso de idioma, cargando idioma " + lang + ": {}", e);
 			setSelectedLanguage(Languages.ENGLISH_UK);
 		}
+		
 
 	}
 
@@ -206,35 +192,6 @@ public class Controller {
 	}
 
 	/**
-	 * Intenta buscar el token de acceso a la REST API de moodle e iniciar sesion en
-	 * la pagina de moodle.
-	 * 
-	 * @param host     servidor moodle
-	 * @param username nombre de usuario
-	 * @param password contraseña
-	 * @throws IOException si no ha podido conectarse o la contraseña es erronea
-	 */
-	public void tryLogin(String host, String username, String password) throws IOException {
-
-		URL hostURL = new URL(host);
-
-		loginWebScraping(hostURL.toString(), username, password);
-		WebService.initialize(hostURL.toString(), username, password);
-
-		setURLHost(hostURL);
-
-		setUsername(username);
-		setPassword(password);
-
-	}
-
-	public void reLogin() {
-
-		loginWebScraping(host.toString(), username, password);
-
-	}
-
-	/**
 	 * Devuelve las estadisticas de calificaciones del curso.
 	 * 
 	 * @return estadistica de calificaciones del curso
@@ -253,100 +210,8 @@ public class Controller {
 		dataBase.setActualCourse(selectedCourse);
 	}
 
-	/**
-	 * Se loguea en el servidor de moodle mediante web scraping.
-	 * 
-	 * @param username nombre de usuario de la cuenta
-	 * @param password password contraseña
-	 * @return las cookies que se usan para navegar dentro del servidor despues de
-	 *         loguearse
-	 * @throws IllegalStateException si no ha podido loguearse
-	 */
-	private void loginWebScraping(String host, String username, String password) {
-		LOGGER.info("Logeandose para web scraping");
-		String hostLogin = host + "/login/index.php";
-		try (Response response = Connection.getResponse(hostLogin)) {
-
-			if (response.isRedirect()) {
-				CompletableFuture.runAsync(() -> {
-					WebView webView = new WebView();
-					webView.getEngine()
-							.load(response.header("location"));
-					Stage webViewStage = new Stage();
-
-					webView.getEngine()
-							.documentProperty()
-							.addListener(ov -> {
-								if (webView.getEngine()
-										.getDocument() != null) {
-
-									String html = new W3CDom().asString(webView.getEngine()
-											.getDocument());
-
-									String key = findSesskey(html);
-									if (key != null) {
-										sesskey = key;
-										webViewStage.close();
-									}
-
-								}
-							});
-
-					webViewStage.initOwner(getStage());
-					webViewStage.setScene(new Scene(webView, 960, 600));
-					webViewStage.showAndWait();
-				}, Platform::runLater)
-						.join();
-
-			} else {
-				Document loginDoc = Jsoup.parse(response.body()
-						.byteStream(), null, hostLogin);
-				Element e = loginDoc.selectFirst("input[name=logintoken]");
-				String logintoken = (e == null) ? "" : e.attr("value");
-
-				RequestBody formBody = new FormBody.Builder().add("username", username)
-						.add("password", password)
-						.add("logintoken", logintoken)
-						.build();
-				Connection.getResponse(new Request.Builder().url(hostLogin)
-						.post(formBody)
-						.build())
-						.close();
-
-				String html = Connection.getResponse(host)
-						.body()
-						.string();
-
-				sesskey = findSesskey(html);
-			}
-
-		} catch (
-
-		Exception e) {
-			LOGGER.error("Error al intentar loguearse", e);
-			throw new IllegalStateException(I18n.get("error.host"));
-		}
-
-	}
-
-	public String findSesskey(String html) {
-
-		Pattern pattern = Pattern.compile("sesskey=([\\w]+)");
-		Matcher m = pattern.matcher(html);
-		if (m.find()) {
-			LOGGER.info("Sesskey found");
-			return m.group(1);
-		}
-		LOGGER.warn("Didn't found a sesskey in principal page after login.");
-		return null;
-	}
-
 	public String getSesskey() {
-		return sesskey;
-	}
-
-	public void setSesskey(String sesskey) {
-		this.sesskey = sesskey;
+		return login.getSesskey();
 	}
 
 	public LocalDateTime getLoggedIn() {
@@ -462,6 +327,30 @@ public class Controller {
 
 	public void setDefaultUpdate(ZonedDateTime defaultUpdate) {
 		this.defaultUpdate = defaultUpdate;
+	}
+
+	/**
+	 * @return the webService
+	 */
+	public WebService getWebService() {
+		return login.getWebService();
+	}
+
+	public Login getLogin() {
+		return login;
+	}
+
+	public void setLogin(Login login) {
+		this.login = login;
+	}
+
+	public void tryLogin(String host, String username, String password) throws IOException {
+		this.host = new URL(host); 
+		login = new Login();
+		login.tryLogin(host, username, password);
+		this.password = password;
+		this.username = username;
+		
 	}
 
 }

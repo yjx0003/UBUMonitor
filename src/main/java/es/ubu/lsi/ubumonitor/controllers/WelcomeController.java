@@ -377,7 +377,6 @@ public class WelcomeController implements Initializable {
 		checkBoxGradeItem.setDisable(!course.hasGradeItemAccess());
 		checkBoxLogs.setSelected(course.hasReportAccess());
 		checkBoxLogs.setDisable(!course.hasReportAccess());
-		System.out.println(course.hasActivityCompletion());
 		checkBoxActivityCompletion.setSelected(course.hasActivityCompletion());
 		checkBoxActivityCompletion.setDisable(!course.hasActivityCompletion());
 	}
@@ -702,7 +701,9 @@ public class WelcomeController implements Initializable {
 							}
 							tries++;
 							updateMessage(I18n.get("label.relogin"));
-							controller.reLogin();
+							controller.getLogin()
+									.reLogin(controller.getUrlHost()
+											.toString(), controller.getUsername(), controller.getPassword());
 
 						}
 					}

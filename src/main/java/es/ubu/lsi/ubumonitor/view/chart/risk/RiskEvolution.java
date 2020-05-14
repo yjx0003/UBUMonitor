@@ -78,7 +78,7 @@ public class RiskEvolution extends RiskBarTemporal {
 				printer.print(user.getId());
 				printer.print(user.getFullName());
 				for (LocalDateTime dateTime : dateTimes) {
-					ZonedDateTime zonedDateTime = dateTime
+					ZonedDateTime zonedDateTime = dateTime.plusDays(1)
 							.atZone(ZoneId.systemDefault());
 					ZonedDateTime lastDateTime = getLastLog(l -> l.getTime()
 							.isBefore(zonedDateTime), logs, user);
@@ -140,7 +140,7 @@ public class RiskEvolution extends RiskBarTemporal {
 
 		for (Map.Entry<T, List<LocalDateTime>> entry : mapTimes.entrySet()) {
 			for (LocalDateTime localDateTime : entry.getValue()) {
-				ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+				ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault()).plusDays(1);
 				Map<LastActivity, List<EnrolledUser>> users = new HashMap<>();
 				for (EnrolledUser user : selectedEnrolledUser) {
 					ZonedDateTime lastDateTime = getLastLog(l -> l.getTime()
@@ -197,7 +197,7 @@ public class RiskEvolution extends RiskBarTemporal {
 	@Override
 	public String getXAxisTitle() {
 		String start = datePickerStart.getValue().atStartOfDay().format(Controller.DATE_TIME_FORMATTER);
-		String end = datePickerEnd.getValue().atStartOfDay().format(Controller.DATE_TIME_FORMATTER);
+		String end = datePickerEnd.getValue().plusDays(1).atStartOfDay().format(Controller.DATE_TIME_FORMATTER);
 		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"),
 				I18n.get(choiceBoxDate.getValue().getTypeTime()), start, end);
 	}

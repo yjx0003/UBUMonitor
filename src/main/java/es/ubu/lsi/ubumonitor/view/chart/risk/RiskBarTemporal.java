@@ -109,7 +109,7 @@ public class RiskBarTemporal extends RiskBar {
 		ZonedDateTime start = datePickerStart.getValue()
 				.atStartOfDay(ZoneId.systemDefault());
 		ZonedDateTime lastUpdate = datePickerEnd.getValue() == null ? start
-				: datePickerEnd.getValue()
+				: datePickerEnd.getValue().plusDays(1)
 						.atStartOfDay(ZoneId.systemDefault());
 
 		Map<LastActivity, List<EnrolledUser>> lastCourseAccess = new TreeMap<>(

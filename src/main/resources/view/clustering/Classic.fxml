@@ -203,7 +203,7 @@
                               </ListView>
                            </center>
                            <bottom>
-                              <Button mnemonicParsing="false" onAction="#deleteLabels" text="Button" BorderPane.alignment="CENTER">
+                              <Button mnemonicParsing="false" onAction="#deleteLabels" text="%clustering.removeLabels" BorderPane.alignment="CENTER">
                                  <BorderPane.margin>
                                     <Insets bottom="20.0" />
                                  </BorderPane.margin>

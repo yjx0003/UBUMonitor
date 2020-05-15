@@ -21,6 +21,7 @@ import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.data.Distance;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
+import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 
 public class AlgorithmExecuter {
@@ -44,16 +45,16 @@ public class AlgorithmExecuter {
 	public List<ClusterWrapper> execute(int iterations, int dimension) {
 
 		if (usersData.isEmpty())
-			throw new IllegalStateException("clustering.error.notUsers");
+			throw new IllegalStateException(I18n.get("clustering.error.notUsers"));
 
 		if (usersData.size() < 2)
-			throw new IllegalStateException("clustering.error.notUsers");
+			throw new IllegalStateException(I18n.get("clustering.error.notUsers"));
 
 		if (usersData.get(0).getData().isEmpty())
-			throw new IllegalStateException("clustering.error.notData");
+			throw new IllegalStateException(I18n.get("clustering.error.notData"));
 
 		if (usersData.get(0).getData().size() < dimension)
-			throw new IllegalStateException("clustering.error.invalidDimension");
+			throw new IllegalStateException(I18n.get("clustering.error.invalidDimension"));
 
 		if (dimension > 0) {
 			PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();

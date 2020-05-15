@@ -6,6 +6,7 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -15,6 +16,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.web.WebView?>
 <?import org.controlsfx.control.CheckComboBox?>
@@ -74,7 +76,6 @@
                   <TextField fx:id="textFieldReduce" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="60.0" GridPane.columnIndex="1" />
                </children>
             </GridPane>
-            <Button mnemonicParsing="false" onAction="#execute" text="%clustering.execute" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
             <Label text="%clustering.numberOfClusters" GridPane.columnIndex="4">
                <GridPane.margin>
                   <Insets right="10.0" />
@@ -109,6 +110,16 @@
                   <TextField fx:id="textFieldIterations" maxWidth="-Infinity" prefWidth="60.0" promptText="10" text="10" GridPane.columnIndex="1" />
                </children>
             </GridPane>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="3">
+               <children>
+                  <Button fx:id="buttonExecute" mnemonicParsing="false" onAction="#execute" text="%clustering.execute" />
+                  <ProgressIndicator fx:id="progressExecute" prefHeight="30.0" prefWidth="30.0" visible="false">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </ProgressIndicator>
+               </children>
+            </HBox>
          </children>
       </GridPane>
    </top>

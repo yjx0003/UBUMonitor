@@ -47,12 +47,15 @@ import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -106,6 +109,12 @@ public class ClusteringController {
 
 	@FXML
 	private TextField textFieldIterations;
+	
+	@FXML
+	private Button buttonExecute;
+
+	@FXML
+	private ProgressIndicator progressExecute;
 
 	/* Graficas */
 
@@ -163,6 +172,8 @@ public class ClusteringController {
 
 	private Scatter3DChart graph3D;
 
+	private Service<Void> service;
+
 	public void init(MainController controller) {
 		mainController = controller;
 		table = new ClusteringTable(this);
@@ -181,6 +192,7 @@ public class ClusteringController {
 		initAlgorithms();
 		initCollectors();
 		initLabels();
+		initTask();
 	}
 
 	private void initAlgorithms() {
@@ -217,8 +229,67 @@ public class ClusteringController {
 		checkComboBoxLogs.getItems().setAll(list);
 	}
 
-	private void initLabels() {
+	private void initTask() {
+		service = new Service<Void>() {
 
+			@Override
+			protected Task<Void> createTask() {
+				return new Task<Void>() {
+
+					@Override
+					protected Void call() throws Exception {
+						List<EnrolledUser> users = mainController.getListParticipants().getSelectionModel()
+								.getSelectedItems();
+						Algorithm algorithm = algorithmList.getSelectionModel().getSelectedItem();
+
+						List<DataCollector> collectors = new ArrayList<>();
+						if (checkBoxLogs.isSelected()) {
+							collectors.addAll(checkComboBoxLogs.getCheckModel().getCheckedItems());
+						}
+						if (checkBoxGrades.isSelected()) {
+							collectors.add(gradesCollector);
+						}
+						if (checkBoxActivity.isSelected()) {
+							collectors.add(activityCollector);
+						}
+
+						AlgorithmExecuter algorithmExecuter = new AlgorithmExecuter(algorithm, users, collectors);
+
+						int dim = checkBoxReduce.isSelected() ? Integer.valueOf(textFieldReduce.getText()) : 0;
+						if (dim > users.size())
+							throw new IllegalStateException("clustering.error.invalidDimension");
+
+						int iter = 10;
+						if (!textFieldIterations.getText().isEmpty())
+							iter = Integer.valueOf(textFieldIterations.getText());
+						clusters = algorithmExecuter.execute(iter, dim);
+
+						silhouette
+								.setDistanceType(algorithm.getParameters().getValue(ClusteringParameter.DISTANCE_TYPE));
+						LOGGER.debug("Parametros: {}", algorithm.getParameters());
+						LOGGER.debug("Clusters: {}", clusters);
+						return null;
+					}
+				};
+			}
+		};
+		buttonExecute.disableProperty().bind(service.runningProperty());
+		progressExecute.visibleProperty().bind(service.runningProperty());
+		service.setOnSucceeded(e -> {
+			silhouette.updateChart(clusters);
+			table.updateTable(clusters);
+			updateRename();
+			graph.updateChart(clusters);
+			graph3D.updateChart(clusters);
+			service.reset();
+		});
+		service.setOnFailed(e -> {
+			UtilMethods.errorWindow(service.getException().getMessage());
+			service.reset();
+		});
+	}
+
+	private void initLabels() {
 		propertyEditorLabel = new TextFieldPropertyEditorFactory(listViewLabels.getItems());
 		propertySheetLabel.setPropertyEditorFactory(propertyEditorLabel);
 
@@ -250,50 +321,7 @@ public class ClusteringController {
 
 	@FXML
 	private void execute() {
-		List<EnrolledUser> users = mainController.getListParticipants().getSelectionModel().getSelectedItems();
-		Algorithm algorithm = algorithmList.getSelectionModel().getSelectedItem();
-
-		List<DataCollector> collectors = new ArrayList<>();
-		if (checkBoxLogs.isSelected()) {
-			collectors.addAll(checkComboBoxLogs.getCheckModel().getCheckedItems());
-		}
-		if (checkBoxGrades.isSelected()) {
-			collectors.add(gradesCollector);
-		}
-		if (checkBoxActivity.isSelected()) {
-			collectors.add(activityCollector);
-		}
-
-		try {
-			AlgorithmExecuter algorithmExecuter = new AlgorithmExecuter(algorithm, users, collectors);
-
-			int dim = checkBoxReduce.isSelected() ? Integer.valueOf(textFieldReduce.getText()) : 0;
-			if (dim > users.size())
-				throw new IllegalStateException("clustering.error.invalidDimension");
-
-			int iter = 10;
-			if (!textFieldIterations.getText().isEmpty())
-				iter = Integer.valueOf(textFieldIterations.getText());
-			clusters = algorithmExecuter.execute(iter, dim);
-
-			LOGGER.debug("Parametros: {}", algorithm.getParameters());
-			LOGGER.debug("Clusters: {}", clusters);
-
-			silhouette.setDistanceType(algorithm.getParameters().getValue(ClusteringParameter.DISTANCE_TYPE));
-			silhouette.updateChart(clusters);
-			table.updateTable(clusters);
-			updateRename();
-			graph.updateChart(clusters);
-			graph3D.updateChart(clusters);
-
-		} catch (IllegalParamenterException e) {
-			UtilMethods.errorWindow(e.getMessage());
-		} catch (IllegalStateException e) {
-			UtilMethods.errorWindow(I18n.get(e.getMessage()));
-		} catch (Exception e) {
-			UtilMethods.errorWindow("Error", e);
-			LOGGER.error("Error en la ejecucion", e);
-		}
+		service.start();
 	}
 
 	private void updateRename() {

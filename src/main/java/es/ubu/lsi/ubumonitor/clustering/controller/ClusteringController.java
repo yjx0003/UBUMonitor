@@ -203,7 +203,7 @@ public class ClusteringController {
 			}
 		});
 		textFieldIterations.textProperty().addListener((obs, oldValue, newValue) -> {
-			if (!newValue.isEmpty() && !newValue.matches("[1-9]\\d*")) {
+			if (!newValue.isEmpty() && !newValue.matches("^[1-9]\\d{0,4}")) {
 				textFieldIterations.setText(oldValue);
 			}
 		});

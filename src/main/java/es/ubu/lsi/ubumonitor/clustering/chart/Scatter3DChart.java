@@ -31,9 +31,12 @@ public class Scatter3DChart extends ClusteringChart {
 		points = AlgorithmExecuter.clustersTo(3, clusters);
 
 		JSArray series = new JSArray();
+		int total = clusters.stream().mapToInt(ClusterWrapper::size).sum();
 		for (int i = 0; i < clusters.size(); i++) {
+			ClusterWrapper cluster = clusters.get(i);
 			JSObject serie = new JSObject();
-			serie.putWithQuote("name", clusters.get(i).getName());
+			serie.putWithQuote("name",
+					String.format(ClusteringChart.LEGEND_FORMAT, cluster.getName(), cluster.size(), total));
 			JSArray data = new JSArray();
 			for (Entry<UserData, double[]> entry : points.get(i).entrySet()) {
 				double[] value = entry.getValue();

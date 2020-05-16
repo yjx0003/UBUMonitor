@@ -8,6 +8,8 @@ import javafx.scene.web.WebView;
 
 public abstract class ClusteringChart extends AbstractChart{
 
+	public static final String LEGEND_FORMAT = "%s (%d/%d)";
+
 	protected ClusteringChart(WebView webView) {
 		super(webView);
 	}

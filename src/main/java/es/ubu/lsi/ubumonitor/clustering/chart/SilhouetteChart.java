@@ -34,7 +34,7 @@ public class SilhouetteChart extends ClusteringChart {
 		super(clusteringController.getwebViewSilhouette());
 		getWebEngine().load(getClass().getResource("/graphics/SilhouetteChart.html").toExternalForm());
 	}
-	
+
 	public void setDistanceType(Distance distanceType) {
 		this.distanceType = distanceType;
 	}
@@ -85,7 +85,11 @@ public class SilhouetteChart extends ClusteringChart {
 		root.put("labels", labels);
 
 		JSArray clustersName = new JSArray();
-		clustersName.addAllWithQuote(clusters.stream().map(ClusterWrapper::getName).collect(Collectors.toList()));
+		int total = clusters.stream().mapToInt(ClusterWrapper::size).sum();
+		List<String> names = clusters.stream()
+				.map(c -> String.format(ClusteringChart.LEGEND_FORMAT, c.getName(), c.size(), total))
+				.collect(Collectors.toList());
+		clustersName.addAllWithQuote(names);
 
 		LOGGER.debug("Silhouette: {}", root);
 		JSArray jsColors = new JSArray();

@@ -29,8 +29,6 @@ public class Scatter2DChart extends ClusteringChart {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Scatter2DChart.class);
 
-	private static final String LEGEND_FORMAT = "%s (%d/%d)";
-
 	private Connector connector;
 	private List<Map<UserData, double[]>> points;
 
@@ -67,7 +65,7 @@ public class Scatter2DChart extends ClusteringChart {
 		for (int i = 0; i < points.size(); i++) {
 			JSObject group = new JSObject();
 			group.putWithQuote("label",
-					String.format(LEGEND_FORMAT, clusters.get(i).getName(), clusters.get(i).size(), total));
+					String.format(ClusteringChart.LEGEND_FORMAT, clusters.get(i).getName(), clusters.get(i).size(), total));
 			group.put("backgroundColor", UtilMethods.colorToRGB(colors.get(clusters.get(i))));
 			JSArray data = new JSArray();
 			for (Map.Entry<UserData, double[]> userEntry : points.get(i).entrySet()) {
@@ -103,7 +101,7 @@ public class Scatter2DChart extends ClusteringChart {
 	public void rename(List<ClusterWrapper> clusters) {
 		JSArray names = new JSArray();
 		int total = clusters.stream().mapToInt(ClusterWrapper::size).sum();
-		clusters.forEach(c -> names.addWithQuote(String.format(LEGEND_FORMAT, c.getName(), c.size(), total)));
+		clusters.forEach(c -> names.addWithQuote(String.format(ClusteringChart.LEGEND_FORMAT, c.getName(), c.size(), total)));
 		getWebEngine().executeScript("rename(" + names + ")");
 	}
 

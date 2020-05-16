@@ -20,6 +20,10 @@ public abstract class ClusteringChart extends AbstractChart{
 		getWebEngine().executeScript("rename(" + names + ")");
 	}
 	
+	protected String getLegend(ClusterWrapper cluster, int total) {
+		return String.format(ClusteringChart.LEGEND_FORMAT, cluster.getName(), cluster.size(), total);
+	}
+	
 	public abstract void updateChart(List<ClusterWrapper> clusters);
 
 }

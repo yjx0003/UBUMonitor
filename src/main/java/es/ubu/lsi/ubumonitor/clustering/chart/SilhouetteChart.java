@@ -86,9 +86,7 @@ public class SilhouetteChart extends ClusteringChart {
 
 		JSArray clustersName = new JSArray();
 		int total = clusters.stream().mapToInt(ClusterWrapper::size).sum();
-		List<String> names = clusters.stream()
-				.map(c -> String.format(ClusteringChart.LEGEND_FORMAT, c.getName(), c.size(), total))
-				.collect(Collectors.toList());
+		List<String> names = clusters.stream().map(c -> getLegend(c, total)).collect(Collectors.toList());
 		clustersName.addAllWithQuote(names);
 
 		LOGGER.debug("Silhouette: {}", root);

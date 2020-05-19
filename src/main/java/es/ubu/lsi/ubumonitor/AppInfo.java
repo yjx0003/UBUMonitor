@@ -30,7 +30,7 @@ public class AppInfo {
 
 	public static final String IMG_FLAGS = IMG_DIR + "countries_flags/";
 
-	public static final String PROPERTIES_PATH = "config.properties";
+	public static final String PROPERTIES_PATH = "configuration.json";
 
 	// Info del usuario
 

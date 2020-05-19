@@ -166,8 +166,7 @@ public class RiskBar extends Chartjs {
 				.getDataBase()
 				.getUsers()
 				.getById(userid);
-		return listParticipants.getItems()
-				.indexOf(user);
+		return getUsers().indexOf(user);
 	}
 
 	@Override

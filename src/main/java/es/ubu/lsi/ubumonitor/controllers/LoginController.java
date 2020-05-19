@@ -7,7 +7,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -29,9 +28,11 @@ import es.ubu.lsi.ubumonitor.model.MoodleUser;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.Languages;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.webservice.api.core.webservice.CoreWebserviceGetSiteInfo;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -48,6 +49,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 
 /**
@@ -59,10 +61,16 @@ import javafx.util.Callback;
  */
 public class LoginController implements Initializable {
 
+	private static final String HOSTS = "hosts";
+
+	private static final String USERNAMES = "usernames";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
 
 	private Controller controller = Controller.getInstance();
 
+	@FXML
+	private AnchorPane anchorPane;
 	@FXML
 	private Label lblStatus;
 	@FXML
@@ -93,13 +101,18 @@ public class LoginController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		txtHost.textProperty().addListener((observable, oldValue, newValue) -> insecureProtocol
-				.setVisible(Optional.ofNullable(newValue).orElse("").startsWith("http://")));
+		txtHost.textProperty()
+				.addListener((observable, oldValue,
+						newValue) -> insecureProtocol.setVisible(Optional.ofNullable(newValue)
+								.orElse("")
+								.startsWith("http://")));
 
 		initializeProperties();
 
 		Platform.runLater(() -> {
-			if (!Optional.ofNullable(txtUsername.getText()).orElse("").isEmpty()) {
+			if (!Optional.ofNullable(txtUsername.getText())
+					.orElse("")
+					.isEmpty()) {
 
 				txtPassword.requestFocus(); // si hay texto cargado del usuario cambiamos el focus al texto de
 											// password
@@ -109,8 +122,6 @@ public class LoginController implements Initializable {
 		initLanguagesList();
 
 	}
-	
-
 
 	/**
 	 * Initialize languages list choice box from Languages enum class.
@@ -147,14 +158,17 @@ public class LoginController implements Initializable {
 		languageSelector.setValue(controller.getSelectedLanguage());
 
 		// Carga la interfaz con el idioma seleccionado
-		languageSelector.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
+		languageSelector.getSelectionModel()
+				.selectedItemProperty()
+				.addListener((ov, value, newValue) -> {
 
-			controller.setSelectedLanguage(newValue);
-			LOGGER.info("Idioma de la aplicación: {}", newValue);
-			LOGGER.info("Idioma cargado del resource bundle: {}", I18n.getResourceBundle().getLocale());
-			LOGGER.info("[Bienvenido a " + AppInfo.APPLICATION_NAME_WITH_VERSION + "]");
-			UtilMethods.changeScene(getClass().getResource("/view/Login.fxml"), controller.getStage());
-		});
+					controller.setSelectedLanguage(newValue);
+					LOGGER.info("Idioma de la aplicación: {}", newValue);
+					LOGGER.info("Idioma cargado del resource bundle: {}", I18n.getResourceBundle()
+							.getLocale());
+					LOGGER.info("[Bienvenido a " + AppInfo.APPLICATION_NAME_WITH_VERSION + "]");
+					UtilMethods.changeScene(getClass().getResource("/view/Login.fxml"), controller.getStage());
+				});
 
 	}
 
@@ -169,13 +183,14 @@ public class LoginController implements Initializable {
 
 		txtUsername.setText(ConfigHelper.getProperty("username", ""));
 		txtPassword.setText(System.getProperty(AppInfo.APPLICATION_NAME + ".password", ""));
-		chkSaveUsername.setSelected(Boolean.parseBoolean(ConfigHelper.getProperty("saveUsername")));
-		chkSaveHost.setSelected(Boolean.parseBoolean(ConfigHelper.getProperty("saveHost")));
-		chkOfflineMode.setSelected(Boolean.parseBoolean(ConfigHelper.getProperty("offlineMode")));
-		String[] hosts = ConfigHelper.getProperty("hosts", ConfigHelper.getProperty("host", "")).split("\t");
-		String[] usernames = ConfigHelper.getProperty("usernames", ConfigHelper.getProperty("username", "")).split("\t");
-		TextFields.bindAutoCompletion(txtUsername, usernames);
-		TextFields.bindAutoCompletion(txtHost, hosts);
+		chkSaveUsername.setSelected(ConfigHelper.getProperty("saveUsername", false));
+		chkSaveHost.setSelected(ConfigHelper.getProperty("saveHost", false));
+		chkOfflineMode.setSelected(ConfigHelper.getProperty("offlineMode", false));
+
+		TextFields.bindAutoCompletion(txtUsername, ConfigHelper.getArray(USERNAMES)
+				.toList());
+		TextFields.bindAutoCompletion(txtHost, ConfigHelper.getArray(HOSTS)
+				.toList());
 
 	}
 
@@ -186,24 +201,28 @@ public class LoginController implements Initializable {
 
 		String username = chkSaveUsername.isSelected() ? txtUsername.getText() : "";
 		ConfigHelper.setProperty("username", username);
-		ConfigHelper.setProperty("saveUsername", Boolean.toString(chkSaveUsername.isSelected()));
+		ConfigHelper.setProperty("saveUsername", chkSaveUsername.isSelected());
 
 		String host = chkSaveHost.isSelected() ? txtHost.getText() : "";
 		ConfigHelper.setProperty("host", host);
-		ConfigHelper.setProperty("saveHost", Boolean.toString(chkSaveHost.isSelected()));
+		ConfigHelper.setProperty("saveHost", chkSaveHost.isSelected());
 
-		ConfigHelper.setProperty("offlineMode", Boolean.toString(chkOfflineMode.isSelected()));
+		ConfigHelper.setProperty("offlineMode", chkOfflineMode.isSelected());
 		if (chkSaveUsername.isSelected()) {
-			String[] usernames = ConfigHelper.getProperty("usernames", "").split("\t");
-			if (Arrays.stream(usernames).noneMatch(username::equals)) {
-				ConfigHelper.setProperty("usernames", username + "\t" + String.join("\t", usernames));
+			List<Object> array = ConfigHelper.getArray(USERNAMES)
+					.toList();
+			if (!array.contains(username)) {
+
+				ConfigHelper.appendArray(USERNAMES, username);
 			}
 		}
 		if (chkSaveHost.isSelected()) {
 
-			String[] hosts = ConfigHelper.getProperty("hosts", "").split("\t");
-			if (Arrays.stream(hosts).noneMatch(host::equals)) {
-				ConfigHelper.setProperty("hosts", host + "\t" + String.join("\t", hosts));
+			List<Object> array = ConfigHelper.getArray(HOSTS)
+					.toList();
+			if (!array.contains(host)) {
+
+				ConfigHelper.appendArray(HOSTS, host);
 			}
 		}
 
@@ -216,11 +235,18 @@ public class LoginController implements Initializable {
 	 * @param event El ActionEvent.
 	 */
 	public void login(ActionEvent event) {
-		if (txtHost.getText().isEmpty() || txtPassword.getText().isEmpty() || txtUsername.getText().isEmpty()) {
+		if (txtHost.getText()
+				.isEmpty()
+				|| txtPassword.getText()
+						.isEmpty()
+				|| txtUsername.getText()
+						.isEmpty()) {
 			lblStatus.setText(I18n.get("error.fields"));
 		} else {
-			controller.getStage().getScene().setCursor(Cursor.WAIT);
-			
+			controller.getStage()
+					.getScene()
+					.setCursor(Cursor.WAIT);
+
 			if (chkOfflineMode.isSelected()) {
 				try {
 					lblStatus.setText(null);
@@ -228,7 +254,7 @@ public class LoginController implements Initializable {
 					UtilMethods.changeScene(getClass().getResource("/view/WelcomeOffline.fxml"), controller.getStage(),
 							new WelcomeOfflineController());
 				} catch (MalformedURLException | RuntimeException e) {
-					
+
 					lblStatus.setText(e.getMessage());
 				}
 
@@ -240,7 +266,8 @@ public class LoginController implements Initializable {
 
 	private List<Course> findCacheCourses() {
 
-		File dir = controller.getDirectoryCache().toFile();
+		File dir = controller.getDirectoryCache()
+				.toFile();
 		if (!dir.exists() || !dir.isDirectory()) {
 			return Collections.emptyList();
 		}
@@ -273,37 +300,55 @@ public class LoginController implements Initializable {
 		if (courses.isEmpty()) {
 			throw new IllegalArgumentException(I18n.get("error.nocacheavaible"));
 		}
-		user.getCourses().addAll(courses);
+		user.getCourses()
+				.addAll(courses);
 
 	}
 
 	private void onlineMode() {
-		Task<Void> loginTask = getUserDataWorker();
+		Service<Void> service = new Service<Void>() {
+
+			@Override
+			protected Task<Void> createTask() {
+				return getUserDataWorker();
+			}
+		};
+
 		lblStatus.setText(null);
-		loginTask.setOnSucceeded(s -> {
+		service.setOnSucceeded(s -> {
 			onSuccessLogin();
-			if (!controller.getDirectoryCache().toFile().exists()) {
-				controller.getDirectoryCache().toFile().mkdirs();
+			if (!controller.getDirectoryCache()
+					.toFile()
+					.exists()) {
+				controller.getDirectoryCache()
+						.toFile()
+						.mkdirs();
 			}
 			UtilMethods.changeScene(getClass().getResource("/view/Welcome.fxml"), controller.getStage(),
 					new WelcomeController());
 		});
 
-		loginTask.setOnFailed(e -> {
-			LOGGER.info("Failed task", e.getSource().getException());
-			controller.getStage().getScene().setCursor(Cursor.DEFAULT);
-			
-			lblStatus.setText(e.getSource().getException().getMessage());
+		service.setOnFailed(e -> {
+			LOGGER.info("Failed task", e.getSource()
+					.getException());
+			controller.getStage()
+					.getScene()
+					.setCursor(Cursor.DEFAULT);
+
+			lblStatus.setText(e.getSource()
+					.getException()
+					.getMessage());
 		});
-		Thread th = new Thread(loginTask, "login");
-		th.setDaemon(true);
-		th.start();
+		anchorPane.disableProperty().bind(service.runningProperty());
+		service.start();
 	}
 
 	private void onSuccessLogin() {
 		LOGGER.info("Login success");
 		saveProperties();
-		controller.getStage().getScene().setCursor(Cursor.DEFAULT);
+		controller.getStage()
+				.getScene()
+				.setCursor(Cursor.DEFAULT);
 		controller.setLoggedIn(LocalDateTime.now());
 		controller.setDirectory();
 
@@ -322,8 +367,7 @@ public class LoginController implements Initializable {
 				try {
 
 					controller.tryLogin(txtHost.getText(), txtUsername.getText(), txtPassword.getText());
-					controller.setDirectory();
-			
+
 				} catch (MalformedURLException e) {
 					LOGGER.error("URL mal formada. ¿Has añadido protocolo http(s)?", e);
 					throw new IllegalArgumentException(I18n.get("error.malformedurl"));
@@ -338,8 +382,16 @@ public class LoginController implements Initializable {
 
 				try {
 					LOGGER.info("Recogiendo info del usuario");
-					MoodleUser moodleUser = CreatorUBUGradesController.createMoodleUser(controller.getUsername());
+					String validUsername = CreatorUBUGradesController
+							.getJSONObjectResponse(new CoreWebserviceGetSiteInfo())
+							.getString("username");
+					txtUsername.setText(validUsername);
+
+					MoodleUser moodleUser = CreatorUBUGradesController.createMoodleUser(validUsername);
 					controller.setUser(moodleUser);
+					controller.setUsername(validUsername);
+					controller.setPassword(txtPassword.getText());
+					controller.setDirectory();
 				} catch (Exception e) {
 					LOGGER.error("Error al recuperar los datos del usuario.", e);
 					throw new IllegalStateException(I18n.get("error.user"));
@@ -361,7 +413,7 @@ public class LoginController implements Initializable {
 		txtPassword.setText("");
 		txtHost.setText("");
 	}
-	
+
 	/**
 	 * Abre en el navegador el repositorio del proyecto.
 	 * 

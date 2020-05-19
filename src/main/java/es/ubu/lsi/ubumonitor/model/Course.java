@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -51,6 +52,7 @@ public class Course implements Serializable {
 	private CourseCategory courseCategory;
 
 	private Set<EnrolledUser> enrolledUsers;
+	private Set<EnrolledUser> notEnrolledUsers;
 	private Set<Role> roles; // roles que hay en el curso
 	private Set<Group> groups; // grupos que hay en el curso
 	private Set<CourseModule> modules;
@@ -69,8 +71,11 @@ public class Course implements Serializable {
 	private ZonedDateTime updatedGradeItem;
 	private ZonedDateTime updatedActivityCompletion;
 	private ZonedDateTime updatedLog;
+
+	
 	public Course() {
 		this.enrolledUsers = new HashSet<>();
+		this.notEnrolledUsers = new HashSet<>();
 		this.roles = new HashSet<>();
 		this.groups = new HashSet<>();
 		this.gradeItems = new HashSet<>();
@@ -435,6 +440,7 @@ public class Course implements Serializable {
 	 * Elimina todos los elementos del curso excepto los logs.
 	 */
 	public void clearCourseData() {
+		this.notEnrolledUsers.clear();
 		this.enrolledUsers.clear();
 		this.roles.forEach(Role::clear); // eliminamos los usuarios de ese rol
 		this.roles.clear();
@@ -693,6 +699,19 @@ public class Course implements Serializable {
 
 	public void setHasActivityCompletion(boolean hasActivityCompletion) {
 		this.hasActivityCompletion = hasActivityCompletion;
+	}
+
+	public void setNotEnrolledUser(Set<EnrolledUser> notEnrolled) {
+		this.notEnrolledUsers = notEnrolled;
+		
+	}
+	public void addNotEnrolledUser(Collection<EnrolledUser> notEnrolled) {
+		this.notEnrolledUsers.addAll(notEnrolled);
+		
+	}
+
+	public Set<EnrolledUser> getNotEnrolledUser() {
+		return this.notEnrolledUsers;
 	}
 
 

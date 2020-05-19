@@ -33,7 +33,7 @@ public class CumLine extends ChartjsLog {
 	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet) {
 
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-		List<EnrolledUser> enrolledUsers = new ArrayList<>(listParticipants.getItems());
+		List<EnrolledUser> enrolledUsers = getUsers();
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
@@ -67,12 +67,15 @@ public class CumLine extends ChartjsLog {
 		dataset.putWithQuote("label", generalMeanTranslate);
 		dataset.put("borderColor", hex(generalMeanTranslate));
 		dataset.put("backgroundColor", rgba(generalMeanTranslate, OPACITY));
-		dataset.put("borderDash", "["
-				+ Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL, "borderLength")
-				+ ","
-				+ Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL, "borderSpace")
+		dataset.put("borderDash", "[" + Controller.getInstance()
+				.getMainConfiguration()
+				.getValue(MainConfiguration.GENERAL, "borderLength") + ","
+				+ Controller.getInstance()
+						.getMainConfiguration()
+						.getValue(MainConfiguration.GENERAL, "borderSpace")
 				+ "]");
-		dataset.put("hidden", !(boolean) Controller.getInstance().getMainConfiguration()
+		dataset.put("hidden", !(boolean) Controller.getInstance()
+				.getMainConfiguration()
 				.getValue(MainConfiguration.GENERAL, "generalActive"));
 		JSArray results = new JSArray();
 		double cumResult = 0;
@@ -121,22 +124,27 @@ public class CumLine extends ChartjsLog {
 	@Override
 	public String calculateMax() {
 		long maxYAxis = 1L;
+		List<EnrolledUser> users = getUsers();
 		if (tabUbuLogsComponent.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getComponents().getCumulativeMax(listParticipants.getItems(),
-					listViewComponents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
-					datePickerEnd.getValue());
+			maxYAxis = choiceBoxDate.getValue()
+					.getComponents()
+					.getCumulativeMax(users, listViewComponents.getSelectionModel()
+							.getSelectedItems(), datePickerStart.getValue(), datePickerEnd.getValue());
 		} else if (tabUbuLogsEvent.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getCumulativeMax(listParticipants.getItems(),
-					listViewEvents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
-					datePickerEnd.getValue());
+			maxYAxis = choiceBoxDate.getValue()
+					.getComponentsEvents()
+					.getCumulativeMax(users, listViewEvents.getSelectionModel()
+							.getSelectedItems(), datePickerStart.getValue(), datePickerEnd.getValue());
 		} else if (tabUbuLogsSection.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getSections().getCumulativeMax(listParticipants.getItems(),
-					listViewSection.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
-					datePickerEnd.getValue());
+			maxYAxis = choiceBoxDate.getValue()
+					.getSections()
+					.getCumulativeMax(users, listViewSection.getSelectionModel()
+							.getSelectedItems(), datePickerStart.getValue(), datePickerEnd.getValue());
 		} else if (tabUbuLogsCourseModule.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getCourseModules().getCumulativeMax(listParticipants.getItems(),
-					listViewCourseModule.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
-					datePickerEnd.getValue());
+			maxYAxis = choiceBoxDate.getValue()
+					.getCourseModules()
+					.getCumulativeMax(users, listViewCourseModule.getSelectionModel()
+							.getSelectedItems(), datePickerStart.getValue(), datePickerEnd.getValue());
 		}
 		return Long.toString(maxYAxis);
 	}
@@ -155,8 +163,8 @@ public class CumLine extends ChartjsLog {
 
 	@Override
 	public String getXAxisTitle() {
-		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"),
-				I18n.get(choiceBoxDate.getValue().getTypeTime()));
+		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"), I18n.get(choiceBoxDate.getValue()
+				.getTypeTime()));
 	}
 
 	@Override
@@ -203,8 +211,7 @@ public class CumLine extends ChartjsLog {
 	}
 
 	@Override
-	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs)
-			throws IOException {
+	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
@@ -244,8 +251,10 @@ public class CumLine extends ChartjsLog {
 		List<String> list = new ArrayList<>();
 		list.add("userid");
 		list.add("fullname");
-		String selectedTab = tabPaneUbuLogs.getSelectionModel().getSelectedItem().getText();
-		if(hasId()) {
+		String selectedTab = tabPaneUbuLogs.getSelectionModel()
+				.getSelectedItem()
+				.getText();
+		if (hasId()) {
 			list.add(selectedTab + "_id");
 		}
 		list.add(selectedTab);

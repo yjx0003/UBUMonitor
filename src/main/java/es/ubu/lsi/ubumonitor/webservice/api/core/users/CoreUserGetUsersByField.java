@@ -1,8 +1,7 @@
 package es.ubu.lsi.ubumonitor.webservice.api.core.users;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
 
 import es.ubu.lsi.ubumonitor.webservice.webservices.Util;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionAbstract;
@@ -15,7 +14,7 @@ public class CoreUserGetUsersByField extends WSFunctionAbstract {
 	 */
 	private Field field;
 
-	private Set<String> values;
+	private Collection<String> values;
 
 	public enum Field {
 		ID("id"), IDNUMBER("idnumber"), USERNAME("username"), EMAIL("email");
@@ -36,21 +35,20 @@ public class CoreUserGetUsersByField extends WSFunctionAbstract {
 		super(WSFunctionEnum.CORE_USER_GET_USERS_BY_FIELD);
 	}
 
-	public CoreUserGetUsersByField(Field field, Set<String> values) {
+	public CoreUserGetUsersByField(Field field, Collection<String> values) {
 		this();
 		this.field = field;
 		this.values = values;
 	}
 	
 	public CoreUserGetUsersByField(Field field, String ...values) {
-		this(field, new HashSet<String>(Arrays.asList(values)));
+		this(field, Arrays.asList(values));
 	}
 
 	@Override
 	public void addToMapParemeters() {
 		parameters.put("field", field.fieldName);
 		Util.putIfNotNull(parameters, "values", values);
-
 	}
 
 }

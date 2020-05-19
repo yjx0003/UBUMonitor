@@ -155,38 +155,22 @@
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="325.0" />
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="325.0" />
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="325.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="325.0" />
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
                 <RowConstraints vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <GridPane GridPane.columnSpan="3">
-                    <columnConstraints>
-                      <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="220.0" minWidth="10.0" prefWidth="171.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="325.0" minWidth="10.0" prefWidth="192.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="325.0" minWidth="10.0" prefWidth="125.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                     <children>
-                        <CheckBox fx:id="chkUpdateData" disable="true" mnemonicParsing="false" prefHeight="21.0" prefWidth="165.0" text="%checkbox.updatedata" wrapText="true" />
-                        <Label text="%label.lastupdate" wrapText="true" GridPane.columnIndex="1">
-                           <GridPane.margin>
-                              <Insets />
-                           </GridPane.margin>
-                           <padding>
-                              <Insets right="10.0" />
-                           </padding></Label>
-                        <Label fx:id="lblDateUpdate" GridPane.columnIndex="2" />
-                     </children>
-                  </GridPane>
-                  <CheckBox fx:id="checkBoxCourseData" mnemonicParsing="false" text="%text.coursedata" GridPane.rowIndex="1" />
-                  <CheckBox fx:id="checkBoxGradeItem" mnemonicParsing="false" text="%text.gradeitems" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <CheckBox fx:id="checkBoxActivityCompletion" mnemonicParsing="false" text="%label.withcompletion" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                  <CheckBox fx:id="checkBoxLogs" mnemonicParsing="false" text="%text.logs" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                  <CheckBox fx:id="chkUpdateData" disable="true" mnemonicParsing="false" prefHeight="21.0" prefWidth="165.0" text="%checkbox.updatedata" wrapText="true" />
+                  <Label text="%label.lastupdate" wrapText="true" GridPane.columnIndex="1">
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin>
+                  </Label>
+                  <Label fx:id="lblDateUpdate" GridPane.columnIndex="2" />
+                  <CheckBox fx:id="checkBoxGradeItem" mnemonicParsing="false" text="%text.gradeitems" GridPane.rowIndex="1" />
+                  <CheckBox fx:id="checkBoxActivityCompletion" mnemonicParsing="false" text="%label.withcompletion" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <CheckBox fx:id="checkBoxLogs" mnemonicParsing="false" text="%text.logs" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                </children>
             </GridPane>
          </children>

@@ -33,13 +33,17 @@ import okhttp3.Response;
 
 public class Login {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Login.class);
-
+	private static final Pattern PATTERN_TOKEN = Pattern.compile("^\\w+:::(\\w+)(:::(\\w+))?");
+	private static final int DEFAULT_TYPE_OF_LOGIN = 1;
+	
 	private String sesskey;
 	private WebService webService;
 	private int typeoflogin;
 	private String launchurl;
-	private static final int DEFAULT_TYPE_OF_LOGIN =1;
+	
+
 	public Login() {
+		webService = new WebService();
 		typeoflogin = DEFAULT_TYPE_OF_LOGIN;
 	}
 
@@ -60,8 +64,8 @@ public class Login {
 							.optJSONObject("data");
 			if (data != null) {
 				// The type of login. 1 for app, 2 for browser, 3 for embedded.
-				typeoflogin = data.optInt("typeoflogin", DEFAULT_TYPE_OF_LOGIN); 
-				launchurl = data.optString("launchurl"); 
+				typeoflogin = data.optInt("typeoflogin", DEFAULT_TYPE_OF_LOGIN);
+				launchurl = data.optString("launchurl");
 			}
 		}
 
@@ -92,8 +96,8 @@ public class Login {
 		if (typeoflogin == 1) {
 			normalLogin(host, username, password);
 		} else {
-			loginWebView(host, launchurl + "?service=local_mobile&urlscheme=moodlemobile&passport="
-					+ UtilMethods.ranmdomAlphanumeric(), Controller.getInstance().getStage());
+			loginSSO(host, launchurl, Controller.getInstance()
+					.getStage());
 		}
 
 	}
@@ -124,8 +128,35 @@ public class Login {
 		}
 	}
 
-	public void loginWebView(String host, String launchurl, Window owner) {
+	public void loginSSO(String host, String launchurl, Window owner)  {
+	
+//		if (webService.getPrivateToken() != null) {
+//			LOGGER.info("Logueandose con el token privado");
+//			RequestBody formBody = new FormBody.Builder().add("privatetoken", webService.getPrivateToken())
+//					.build();
+//			try (Response response = webService.getResponse(new ToolMobileGetAutologinKey(), formBody)) {
+//				JSONObject jsonObject = new JSONObject(response.body()
+//						.string());
+//				String autologinurl = jsonObject.getString("autologinurl");
+//				String key = jsonObject.getString("key");
+//				Response responseLogin = Connection.getResponse(autologinurl + "?userid=" + Controller.getInstance()
+//						.getUser()
+//						.getId() + "&key=" + key);
+//				sesskey = findSesskey(responseLogin.body()
+//						.string());
+//
+//			} catch (Exception e) {
+//				LOGGER.error("Cannot login with private token");
+//			}
+//
+//		}
 
+		loginWebView(host, launchurl + "?service=local_mobile&urlscheme=moodlemobile&passport="
+				+ UtilMethods.ranmdomAlphanumeric(), owner);
+
+	}
+
+	public void loginWebView(String host, String launchurl, Window owner) {
 		CompletableFuture.runAsync(() -> {
 
 			Pattern pattern = Pattern.compile("^moodlemobile://token=(\\w+)");
@@ -142,18 +173,19 @@ public class Login {
 							if (matcher.find()) {
 								byte[] decode = Base64.getDecoder()
 										.decode(matcher.group(1));
-								Pattern patternToken = Pattern.compile("^\\w+:::(\\w+)");
-								matcher = patternToken.matcher(new String(decode));
+
+								matcher = PATTERN_TOKEN.matcher(new String(decode));
 								if (matcher.find()) {
-									webService = new WebService(host, matcher.group(1));
+									
+									webService.setData(host, matcher.group(1), matcher.group(3));
 								} else {
-									throw new IllegalAccessError(
-											"Cannot get the token in the decoded: " + matcher);
+									throw new IllegalAccessError("Cannot get the token in the decoded: " + matcher);
 								}
 
 								try (Response sesskeyResponse = Connection.getResponse(host)) {
 									sesskey = findSesskey(sesskeyResponse.body()
 											.string());
+
 									popup.close();
 								}
 
@@ -170,6 +202,7 @@ public class Login {
 			popup.showAndWait();
 		}, Platform::runLater)
 				.join();
+
 		if (webService == null) {
 			throw new IllegalStateException(I18n.get("error.windowclosed"));
 		}

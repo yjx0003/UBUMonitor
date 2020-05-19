@@ -39,9 +39,9 @@ public enum WSFunctionEnum {
 	 * Get course content (modules + web service file urls).
 	 */
 	CORE_COURSE_GET_CONTENTS("core_course_get_contents", 2.2),
-	
+
 	/**
-	 * Get courses matching a specific field (id/s, shortname, idnumber, category) 
+	 * Get courses matching a specific field (id/s, shortname, idnumber, category)
 	 */
 	CORE_COURSE_GET_COURSES_BY_FIELD("core_course_get_courses_by_field", 3.2),
 
@@ -121,9 +121,15 @@ public enum WSFunctionEnum {
 	 * provided all quizzes that the user can view will be returned.
 	 */
 	MOD_QUIZ_GET_QUIZZES_BY_COURSES("mod_quiz_get_quizzes_by_courses", 3.1),
-	
+
 	/**
-	 * Returns a list of the site public settings, those not requiring authentication. 
+	 * Creates an auto-login key for the current user. Is created only in https
+	 * sites and is restricted by time and ip address.
+	 */
+	TOOL_MOBILE_GET_AUTOLOGIN_KEY("tool_mobile_get_autologin_key", 3.2),
+	/**
+	 * Returns a list of the site public settings, those not requiring
+	 * authentication.
 	 */
 	TOOL_MOBILE_GET_PUBLIC_CONFIG("tool_mobile_get_public_config", 3.2),
 

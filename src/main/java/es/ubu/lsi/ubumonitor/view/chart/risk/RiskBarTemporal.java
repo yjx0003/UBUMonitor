@@ -108,7 +108,7 @@ public class RiskBarTemporal extends RiskBar {
 
 		ZonedDateTime start = datePickerStart.getValue()
 				.atStartOfDay(ZoneId.systemDefault());
-		ZonedDateTime lastUpdate = datePickerEnd.getValue() == null ? start
+		ZonedDateTime lastUpdate = datePickerEnd.getValue() == null ? start.plusDays(1)
 				: datePickerEnd.getValue().plusDays(1)
 						.atStartOfDay(ZoneId.systemDefault());
 
@@ -168,7 +168,7 @@ public class RiskBarTemporal extends RiskBar {
 		LocalDateTime start = datePickerStart.getValue()
 				.atStartOfDay();
 
-		LocalDateTime lastUpdate = datePickerEnd.getValue()
+		LocalDateTime lastUpdate = datePickerEnd.getValue().plusDays(1)
 				.atStartOfDay();
 
 		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"),

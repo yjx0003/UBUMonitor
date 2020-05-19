@@ -1,11 +1,10 @@
-package es.ubu.lsi.ubumonitor.model.log;
+package es.ubu.lsi.ubumonitor.controllers.load;
 
 import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -20,9 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
-import es.ubu.lsi.ubumonitor.controllers.load.DownloadLogController;
 import es.ubu.lsi.ubumonitor.model.Component;
-import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.Event;
 import es.ubu.lsi.ubumonitor.model.LogLine;
 import es.ubu.lsi.ubumonitor.model.Logs;
@@ -71,8 +68,7 @@ public class LogCreator {
 		dateTimeFormatter = dateTimeFormatter.withZone(zoneId);
 	}
 
-	public static void createLogsMultipleDays(Logs logs, Collection<EnrolledUser> enrolledUsers, boolean onlyWeb)
-			throws IOException {
+	public static void createLogsMultipleDays(Logs logs) throws IOException {
 		ZoneId userZone = CONTROLLER.getUser()
 				.getTimezone();
 		ZoneId serverZone = CONTROLLER.getUser()
@@ -92,8 +88,8 @@ public class LogCreator {
 				.withZoneSameInstant(lastDateTime.getZone());
 		LOGGER.info("La fecha del ultimo log antes de actualizar es {}", lastDateTime);
 		while (now.isAfter(lastDateTime)) {
-			Response response = download.downloadLog(lastDateTime, onlyWeb);
-			parserResponse(logs, response, enrolledUsers);
+			Response response = download.downloadLog(lastDateTime, false);
+			parserResponse(logs, response);
 			lastDateTime = lastDateTime.plusDays(1);
 		}
 		if (!NOT_AVAIBLE_COMPONENTS.isEmpty()) {
@@ -119,12 +115,11 @@ public class LogCreator {
 		return download;
 	}
 
-	public static void parserResponse(Logs logs, Response response, Collection<EnrolledUser> enrolledUsers)
-			throws IOException {
+	public static void parserResponse(Logs logs, Response response) throws IOException {
 
 		try (CSVParser csvParser = new CSVParser(response.body()
 				.charStream(), CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
-			List<LogLine> logList = LogCreator.createLogs(csvParser, enrolledUsers);
+			List<LogLine> logList = LogCreator.createLogs(csvParser);
 			logs.addAll(logList);
 		}
 		if (!NOT_AVAIBLE_COMPONENTS.isEmpty()) {
@@ -142,17 +137,16 @@ public class LogCreator {
 	 * @param allLogs los logs listados en mapas con clave la columna del logline
 	 * @return los logs creados
 	 */
-	private static List<LogLine> createLogs(CSVParser csvParser, Collection<EnrolledUser> enrolledUsers) {
+	private static List<LogLine> createLogs(CSVParser csvParser) {
 		LinkedList<LogLine> logs = new LinkedList<>();
 		Set<String> headers = csvParser.getHeaderMap()
 				.keySet();
 		LOGGER.info("Los nombres de las columnas del csv son: {}", headers);
 		for (CSVRecord csvRecord : csvParser) {
 			LogLine logLine = createLog(headers, csvRecord);
-			if (enrolledUsers.contains(logLine.getUser())) {
-				logs.addFirst(logLine);
 
-			}
+			logs.addFirst(logLine);
+
 		}
 
 		return logs;

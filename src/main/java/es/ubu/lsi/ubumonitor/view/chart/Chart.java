@@ -4,8 +4,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -45,7 +43,6 @@ public abstract class Chart implements ExportableChart {
 
 	protected WebEngine webViewChartsEngine;
 	protected CheckComboBox<Group> slcGroup;
-	protected ListView<EnrolledUser> listParticipants;
 	protected TabPane tabPaneUbuLogs;
 	protected Tab tabUbuLogs;
 	protected Tab tabUbuLogsComponent;
@@ -84,7 +81,7 @@ public abstract class Chart implements ExportableChart {
 		this.selectionController = mainController.getSelectionController();
 		this.selectionUserController = mainController.getSelectionUserController();
 		this.slcGroup = selectionUserController.getCheckComboBoxGroup();
-		this.listParticipants = selectionUserController.getListParticipants();
+
 		this.tabUbuLogs = selectionController.getTabUbuLogs();
 		this.tabUbuLogsComponent = selectionController.getTabUbuLogsComponent();
 		this.tabUbuLogsEvent = selectionController.getTabUbuLogsEvent();
@@ -129,10 +126,11 @@ public abstract class Chart implements ExportableChart {
 	}
 
 	public List<EnrolledUser> getSelectedEnrolledUser() {
-		List<EnrolledUser> selectedUsers = new ArrayList<>(listParticipants.getSelectionModel()
-				.getSelectedItems());
-		selectedUsers.removeAll(Collections.singletonList(null));
-		return selectedUsers;
+		return selectionUserController.getSelectedUsers();
+	}
+
+	public List<EnrolledUser> getUsers() {
+		return selectionUserController.getUsers();
 	}
 
 	public double adjustTo10(double value) {
@@ -141,17 +139,12 @@ public abstract class Chart implements ExportableChart {
 
 	public int onClick(int index) {
 
-		if (listParticipants.getSelectionModel()
-				.getSelectedItems()
-				.size() < index) {
+		if (getSelectedEnrolledUser().size() < index) {
 			return -1;
 		}
 
-		EnrolledUser selectedUser = listParticipants.getSelectionModel()
-				.getSelectedItems()
-				.get(index);
-		return listParticipants.getItems()
-				.indexOf(selectedUser);
+		EnrolledUser selectedUser = getSelectedEnrolledUser().get(index);
+		return getUsers().indexOf(selectedUser);
 	}
 
 	public <T> String rgba(T hash, double alpha) {
@@ -200,7 +193,8 @@ public abstract class Chart implements ExportableChart {
 		MainConfiguration mainConfiguration = Controller.getInstance()
 				.getMainConfiguration();
 		JSObject jsObject = new JSObject();
-		jsObject.put("chartBackgroundColor", colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "chartBackgroundColor") ));
+		jsObject.put("chartBackgroundColor",
+				colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "chartBackgroundColor")));
 		jsObject.put("useLegend", useLegend);
 		jsObject.put("useGroup", useGroupButton);
 		jsObject.put("useGeneral", useGeneralButton);
@@ -287,10 +281,6 @@ public abstract class Chart implements ExportableChart {
 
 	public CheckComboBox<Group> getSlcGroup() {
 		return slcGroup;
-	}
-
-	public ListView<EnrolledUser> getListParticipants() {
-		return listParticipants;
 	}
 
 	public TabPane getTabPaneUbuLogs() {

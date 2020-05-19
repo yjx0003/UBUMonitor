@@ -107,7 +107,7 @@ public class VisualizationJavaConnector {
 		}
 
 		if (currentType.getChartType() != chart.getChartType()) {
-			currentType.clear();
+			//currentType.clear();
 			currentType = chart;
 		}
 
@@ -159,10 +159,6 @@ public class VisualizationJavaConnector {
 		currentType.hideLegend();
 	}
 
-	public void clear() {
-		currentType.clear();
-
-	}
 
 	public Chart getCurrentTypeLogs() {
 		return currentTypeLogs;

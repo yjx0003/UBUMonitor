@@ -15,9 +15,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import org.controlsfx.control.CheckComboBox?>
 
-<TabPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.controllers.SelectionUserController">
+<TabPane fx:id="tabPane" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.controllers.SelectionUserController">
    <tabs>
-      <Tab closable="false" text="%tab.enrolleduser">
+      <Tab fx:id="tabEnrolled" closable="false" text="%tab.enrolleduser">
          <content>
             <BorderPane prefHeight="200.0" prefWidth="200.0">
             	<center>
@@ -101,7 +101,7 @@
             </BorderPane>
          </content>
       </Tab>
-      <Tab closable="false" text="Untitled Tab">
+      <Tab fx:id="tabNotEnrolled" closable="false" text="%tab.noenrolleduser">
          <content>
             <BorderPane prefHeight="200.0" prefWidth="200.0">
                <center>
@@ -115,7 +115,6 @@
                   <GridPane BorderPane.alignment="CENTER">
                      <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="NEVER" maxWidth="100.0" minWidth="10.0" prefWidth="30.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
                      </columnConstraints>
                      <rowConstraints>

@@ -9,10 +9,15 @@ public class GradereportUserGetGradeItems extends WSFunctionAbstract{
 	private Integer courseid;
 	private Integer userid;
 	private Integer groupid;
-
+	
 	public GradereportUserGetGradeItems(Integer courseid) {
+		this(courseid, null);
+	}
+
+	public GradereportUserGetGradeItems(Integer courseid, Integer userid) {
 		super(WSFunctionEnum.GRADEREPORT_USER_GET_GRADE_ITEMS);
 		this.courseid = courseid;
+		this.userid = userid;
 	}
 
 	public Integer getCourseid() {

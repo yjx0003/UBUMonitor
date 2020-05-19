@@ -113,7 +113,7 @@ public class VisualizationController implements MainAction {
 
 		textFieldMax.textProperty()
 				.addListener((ov, oldValue, newValue) -> {
-					if (newValue == null || newValue.isEmpty() || newValue.matches("\\d+")) {
+					if (newValue == null || newValue.isEmpty() || newValue.matches("^[1-9]\\d{0,5}$")) {
 						updateMaxScale();
 
 					} else { // si no es un numero volvemos al valor anterior
@@ -500,5 +500,7 @@ public class VisualizationController implements MainAction {
 	public void setMainController(MainController mainController) {
 		this.mainController = mainController;
 	}
+
+
 
 }

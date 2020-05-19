@@ -2,13 +2,10 @@ package es.ubu.lsi.ubumonitor.controllers.load;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -66,8 +63,8 @@ public class CreatorGradeItems {
 	 * 
 	 * @param locale locale
 	 */
-	public CreatorGradeItems(Locale locale) {
-		decimalFormat = new DecimalFormat("###.#####", new DecimalFormatSymbols(locale));
+	public CreatorGradeItems() {
+		decimalFormat = new DecimalFormat("###.#####");
 	}
 
 	/**
@@ -79,15 +76,14 @@ public class CreatorGradeItems {
 	 * @throws JSONException error en el json
 	 * @throws IOException   error de conexion con moodle
 	 */
-	public List<GradeItem> createGradeItems(int courseid, int userid) throws IOException {
+	public List<GradeItem> createGradeItems(int courseid, JSONObject userTable) throws IOException {
 
 		JSONObject jsonObject;
 		try {
 			jsonObject = CreatorUBUGradesController.getJSONObjectResponse(new GradereportUserGetGradesTable(courseid));
 			if (!jsonObject.has("tables")) {
 
-				jsonObject = CreatorUBUGradesController
-						.getJSONObjectResponse(new GradereportUserGetGradesTable(courseid, userid));
+				jsonObject = userTable;
 			}
 		} catch (JSONException e) {
 			LOGGER.error("Error al parsear las calificaciones.", e);
@@ -97,8 +93,7 @@ public class CreatorGradeItems {
 		List<GradeItem> gradeItems = createHierarchyGradeItems(jsonObject);
 
 		setEnrolledUserGrades(jsonObject, gradeItems);
-		CONTROLLER.getActualCourse()
-				.setGradeItems(new HashSet<>(gradeItems));
+
 		return gradeItems;
 	}
 

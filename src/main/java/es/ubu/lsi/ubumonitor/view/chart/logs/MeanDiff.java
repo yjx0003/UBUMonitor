@@ -32,7 +32,7 @@ public class MeanDiff extends ChartjsLog {
 	@Override
 	public <T> String createData(List<T> typeLogs, DataSet<T> dataSet) {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-		List<EnrolledUser> enrolledUsers = new ArrayList<>(listParticipants.getItems());
+		List<EnrolledUser> enrolledUsers = getUsers();
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
@@ -105,20 +105,21 @@ public class MeanDiff extends ChartjsLog {
 	@Override
 	public String calculateMax() {
 		long maxYAxis = 1L;
+		List<EnrolledUser> users = getUsers();
 		if (tabUbuLogsComponent.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getComponents().getMeanDifferenceMax(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getComponents().getMeanDifferenceMax(users,
 					listViewComponents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		} else if (tabUbuLogsEvent.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getMeanDifferenceMax(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getMeanDifferenceMax(users,
 					listViewEvents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		} else if (tabUbuLogsSection.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getSections().getMeanDifferenceMax(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getSections().getMeanDifferenceMax(users,
 					listViewSection.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		} else if (tabUbuLogsCourseModule.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getCourseModules().getMeanDifferenceMax(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getCourseModules().getMeanDifferenceMax(users,
 					listViewCourseModule.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		}
@@ -157,7 +158,7 @@ public class MeanDiff extends ChartjsLog {
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<E, List<Double>> means = dataSet.getMeans(groupBy, listParticipants.getItems(), selecteds, dateStart,
+		Map<E, List<Double>> means = dataSet.getMeans(groupBy, getUsers(), selecteds, dateStart,
 				dateEnd);
 
 		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
@@ -206,7 +207,7 @@ public class MeanDiff extends ChartjsLog {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
-		Map<E, List<Double>> means = dataSet.getMeans(groupBy, listParticipants.getItems(), selecteds, dateStart,
+		Map<E, List<Double>> means = dataSet.getMeans(groupBy, getUsers(), selecteds, dateStart,
 				dateEnd);
 		boolean hasId = hasId();
 		for (EnrolledUser selectedUser : enrolledUsers) {

@@ -103,7 +103,6 @@ public class Controller {
 			LOGGER.error("No se ha podido encontrar el recurso de idioma, cargando idioma " + lang + ": {}", e);
 			setSelectedLanguage(Languages.ENGLISH_UK);
 		}
-		
 
 	}
 
@@ -345,12 +344,10 @@ public class Controller {
 	}
 
 	public void tryLogin(String host, String username, String password) throws IOException {
-		this.host = new URL(host); 
+		this.host = new URL(host);
 		login = new Login();
 		login.tryLogin(host, username, password);
-		this.password = password;
-		this.username = username;
-		
+
 	}
 
 }

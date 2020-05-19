@@ -24,6 +24,10 @@ public class WebService {
 	private String sesskey;
 
 	private String token;
+	private String privateToken;
+
+	public WebService() {
+	}
 
 	/**
 	 * Intenta conectarse al servicio de moodle para recuperar el token del usuario
@@ -41,27 +45,33 @@ public class WebService {
 				.add("password", password)
 				.add("service", WSFunctionEnum.MOODLE_MOBILE_APP.toString())
 				.build();
-		Response response = Connection.getResponse(new Request.Builder().url(url)
+		try (Response response = Connection.getResponse(new Request.Builder().url(url)
 				.post(formBody)
-				.build());
+				.build())) {
+			JSONObject jsonObject = new JSONObject(new JSONTokener(response.body()
+					.byteStream()));
 
-		JSONObject jsonObject = new JSONObject(new JSONTokener(response.body()
-				.byteStream()));
-		response.close();
-		if (jsonObject.has("error")) {
-			throw new IllegalAccessError(jsonObject.getString("error"));
+			if (jsonObject.has("error")) {
+				throw new IllegalAccessError(jsonObject.getString("error"));
+			}
+
+			setData(host, jsonObject.getString("token"), jsonObject.optString("privatetoken"));
 		}
 
-		setData(host, jsonObject.getString("token"));
 	}
 
-	public WebService(String host, String token) {
-		setData(host, token);
+	public String getPrivateToken() {
+		return privateToken;
+	}
+
+	public void setPrivateToken(String privateToken) {
+		this.privateToken = privateToken;
 
 	}
 
-	private void setData(String host, String token) {
+	public void setData(String host, String token, String privateToken) {
 		this.token = token;
+		this.privateToken = privateToken;
 
 		this.hostWithWS = host + "/webservice/rest/server.php";
 		this.hostWithAjax = host + "/lib/ajax/service.php";
@@ -88,6 +98,10 @@ public class WebService {
 	}
 
 	public Response getResponse(WSFunction wsFunction) throws IOException {
+		return getResponse(wsFunction, null);
+	}
+
+	public Response getResponse(WSFunction wsFunction, RequestBody requestBody) throws IOException {
 
 		wsFunction.clearParameters();
 		wsFunction.addToMapParemeters();
@@ -104,8 +118,13 @@ public class WebService {
 			httpBuilder.addQueryParameter(param.getKey(), param.getValue());
 
 		}
-		return Connection.getResponse(new Request.Builder().url(httpBuilder.build())
-				.build());
+		Request.Builder builder = new Request.Builder().url(httpBuilder.build());
+
+		if (requestBody != null) {
+			builder.post(requestBody);
+		}
+
+		return Connection.getResponse(builder.build());
 
 	}
 

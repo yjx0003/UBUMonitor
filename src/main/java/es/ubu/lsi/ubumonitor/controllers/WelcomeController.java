@@ -12,10 +12,12 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -26,16 +28,17 @@ import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
-import es.ubu.lsi.ubumonitor.controllers.load.CreatorGradeItems;
 import es.ubu.lsi.ubumonitor.controllers.load.CreatorUBUGradesController;
 import es.ubu.lsi.ubumonitor.controllers.load.DownloadLogController;
+import es.ubu.lsi.ubumonitor.controllers.load.LogCreator;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.CourseCategory;
 import es.ubu.lsi.ubumonitor.model.DataBase;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.LogStats;
 import es.ubu.lsi.ubumonitor.model.Logs;
 import es.ubu.lsi.ubumonitor.model.Stats;
-import es.ubu.lsi.ubumonitor.model.log.LogCreator;
 import es.ubu.lsi.ubumonitor.persistence.Serialization;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
@@ -43,6 +46,7 @@ import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseSearchCourses;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -147,8 +151,6 @@ public class WelcomeController implements Initializable {
 	private boolean autoUpdate;
 
 	@FXML
-	private CheckBox checkBoxCourseData;
-	@FXML
 	private CheckBox checkBoxGradeItem;
 	@FXML
 	private CheckBox checkBoxActivityCompletion;
@@ -203,7 +205,6 @@ public class WelcomeController implements Initializable {
 					.bind(btnEntrar.visibleProperty()
 							.not());
 
-			manageCheckBox(checkBoxCourseData, chkUpdateData);
 			manageCheckBox(checkBoxGradeItem, chkUpdateData);
 			manageCheckBox(checkBoxActivityCompletion, chkUpdateData);
 			manageCheckBox(checkBoxLogs, chkUpdateData);
@@ -370,9 +371,6 @@ public class WelcomeController implements Initializable {
 		}
 		chkUpdateData.setSelected(!isFileCacheExists);
 		chkUpdateData.setDisable(!isFileCacheExists);
-		checkBoxCourseData.setSelected(true); // always selected for default in course data
-		checkBoxCourseData.setDisable(!isFileCacheExists);
-		checkBoxActivityCompletion.setSelected(true);
 		checkBoxGradeItem.setSelected(course.hasGradeItemAccess());
 		checkBoxGradeItem.setDisable(!course.hasGradeItemAccess());
 		checkBoxLogs.setSelected(course.hasReportAccess());
@@ -399,8 +397,8 @@ public class WelcomeController implements Initializable {
 		lblNoSelect.setVisible(false);
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getFullName());
 
-		ConfigHelper.setProperty("courseList", Integer.toString(tabPane.getSelectionModel()
-				.getSelectedIndex()));
+		ConfigHelper.setProperty("courseList", tabPane.getSelectionModel()
+				.getSelectedIndex());
 
 		ConfigHelper.setProperty("actualCourse", getSelectedCourse().getId());
 
@@ -567,28 +565,35 @@ public class WelcomeController implements Initializable {
 			return;
 		}
 
-		btnEntrar.setVisible(false);
-		Task<Void> task = getUserDataWorker();
+		Service<Void> service = new Service<Void>() {
+
+			@Override
+			protected Task<Void> createTask() {
+				return getUserDataWorker();
+			}
+
+		};
 		lblProgress.textProperty()
-				.bind(task.messageProperty());
-		task.setOnSucceeded(v -> {
+				.bind(service.messageProperty());
+		service.setOnSucceeded(v -> {
 			controller.setDefaultUpdate(ZonedDateTime.now());
 			loadNextWindow();
 		});
-		task.setOnFailed(e -> {
+		service.setOnFailed(e -> {
 			controller.getStage()
 					.getScene()
 					.setCursor(Cursor.DEFAULT);
-			btnEntrar.setVisible(true);
-			UtilMethods.errorWindow(I18n.get("error.downloadingdata") + " " + task.getException()
-					.getMessage(), task.getException());
-			LOGGER.error("Error al actualizar los datos del curso: {}", task.getException());
+
+			UtilMethods.errorWindow(I18n.get("error.downloadingdata") + " " + service.getException()
+					.getMessage(), service.getException());
+			LOGGER.error("Error al actualizar los datos del curso: {}", service.getException());
 
 		});
 
-		Thread thread = new Thread(task, "datos");
-		thread.setDaemon(true);
-		thread.start();
+		btnEntrar.visibleProperty()
+				.bind(service.runningProperty()
+						.not());
+		service.start();
 
 	}
 
@@ -634,25 +639,22 @@ public class WelcomeController implements Initializable {
 
 				LOGGER.info("Cargando datos del curso: {}", actualCourse.getFullName());
 				// Establecemos los usuarios matriculados
-				if (checkBoxCourseData.isSelected()) {
-					actualCourse.clearCourseData();
-					updateMessage(I18n.get("label.loadingstudents"));
-					CreatorUBUGradesController.createEnrolledUsers(actualCourse.getId());
-					CreatorUBUGradesController.createSectionsAndModules(actualCourse.getId());
-					actualCourse.setUpdatedCourseData(ZonedDateTime.now());
-				}
+
+				actualCourse.clearCourseData();
+				updateMessage(I18n.get("label.loadingcoursedata"));
+				CreatorUBUGradesController.createEnrolledUsers(actualCourse.getId());
+				CreatorUBUGradesController.createSectionsAndModules(actualCourse.getId());
+				actualCourse.setUpdatedCourseData(ZonedDateTime.now());
+
 				if (checkBoxGradeItem.isSelected()) {
 					actualCourse.getGradeItems()
 							.clear();
 					updateMessage(I18n.get("label.loadingqualifier"));
 					// Establecemos calificador del curso
-					CreatorGradeItems creatorGradeItems = new CreatorGradeItems(new Locale(controller.getUser()
-							.getLang()));
-					creatorGradeItems.createGradeItems(controller.getActualCourse()
-							.getId(),
+					List<GradeItem> gradeItems = CreatorUBUGradesController.createGradeItems(actualCourse.getId(),
 							controller.getUser()
 									.getId());
-
+					actualCourse.setGradeItems(new HashSet<>(gradeItems));
 					// Establecemos las estadisticas
 					Stats stats = new Stats(actualCourse);
 					actualCourse.setStats(stats);
@@ -680,13 +682,12 @@ public class WelcomeController implements Initializable {
 								updateMessage(I18n.get("label.parselog"));
 
 								Logs logs = new Logs(downloadLogController.getServerTimeZone());
-								LogCreator.parserResponse(logs, response, actualCourse.getEnrolledUsers());
+								LogCreator.parserResponse(logs, response);
 								actualCourse.setLogs(logs);
 
 							} else {
 
-								LogCreator.createLogsMultipleDays(actualCourse.getLogs(),
-										actualCourse.getEnrolledUsers(), false);
+								LogCreator.createLogsMultipleDays(actualCourse.getLogs());
 
 							}
 
@@ -694,6 +695,21 @@ public class WelcomeController implements Initializable {
 									.getList());
 							actualCourse.setLogStats(logStats);
 							actualCourse.setUpdatedLog(ZonedDateTime.now());
+							
+
+							Set<String> ids = controller.getDataBase()
+									.getUsers()
+									.getMap()
+									.values()
+									.stream()
+									.filter(user -> !actualCourse.getEnrolledUsers()
+											.contains(user))
+									.map(EnrolledUser::getId)
+									.map(Object::toString)
+									.collect(Collectors.toSet());
+							System.out.println(ids);
+							List<EnrolledUser> notEnrolled = CreatorUBUGradesController.searchUser(ids);
+							actualCourse.addNotEnrolledUser(notEnrolled);
 							tries = limitRelogin + 1;
 						} catch (Exception e) {
 							if (tries >= limitRelogin) {

@@ -72,7 +72,7 @@ public class TotalBar extends ChartjsLog {
 			datasets.add(createDataset(I18n.get("text.selectedUsers"), typeLogs, map, false));
 		}
 
-		map = dataSet.getUserCounts(groupBy, listParticipants.getItems(), typeLogs, dateStart, dateEnd);
+		map = dataSet.getUserCounts(groupBy, getUsers(), typeLogs, dateStart, dateEnd);
 		datasets.add(createDataset(I18n.get("text.filteredusers"), typeLogs, map,
 				!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")));
 
@@ -168,7 +168,7 @@ public class TotalBar extends ChartjsLog {
 		List<DescriptiveStatistics> selectedUsersStats = getTypeLogsStats(typeLogs, map);
 		List<DescriptiveStatistics> filteredUsersStats = null;
 		if (generalActive) {
-			map = dataSet.getUserCounts(groupBy, listParticipants.getItems(), typeLogs, dateStart, dateEnd);
+			map = dataSet.getUserCounts(groupBy, getUsers(), typeLogs, dateStart, dateEnd);
 			filteredUsersStats = getTypeLogsStats(typeLogs, map);
 		}
 		List<List<DescriptiveStatistics>> groupStats = null;
@@ -233,7 +233,7 @@ public class TotalBar extends ChartjsLog {
 	@Override
 	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-		List<EnrolledUser> filteredUsers = listParticipants.getItems();
+		List<EnrolledUser> filteredUsers = getUsers();
 
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 

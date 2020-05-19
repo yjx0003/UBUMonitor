@@ -108,7 +108,7 @@ public class UtilMethods {
 	 * @return without reserved character
 	 */
 	public static String removeReservedChar(String stringToRemove) {
-		return stringToRemove.replaceAll(":|\\|/|\\?|\\*|\"|\\|", "");
+		return stringToRemove.replaceAll(":|\\\\|/|\\?|\\*|\\|", "");
 	}
 
 	/**

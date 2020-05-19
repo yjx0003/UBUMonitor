@@ -33,20 +33,21 @@ public class Stackedbar extends ChartjsLog {
 	public String calculateMax() {
 
 		long maxYAxis = 1L;
+		List<EnrolledUser> users = getUsers();
 		if (tabUbuLogsComponent.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getComponents().getMaxElement(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getComponents().getMaxElement(users,
 					listViewComponents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		} else if (tabUbuLogsEvent.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getMaxElement(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getMaxElement(users,
 					listViewEvents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		} else if (tabUbuLogsSection.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getSections().getMaxElement(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getSections().getMaxElement(users,
 					listViewSection.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		} else if (tabUbuLogsCourseModule.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getCourseModules().getMaxElement(listParticipants.getItems(),
+			maxYAxis = choiceBoxDate.getValue().getCourseModules().getMaxElement(users,
 					listViewCourseModule.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
 		}
@@ -57,7 +58,7 @@ public class Stackedbar extends ChartjsLog {
 	public int onClick(int userid) {
 
 		EnrolledUser user = Controller.getInstance().getDataBase().getUsers().getById(userid);
-		return listParticipants.getItems().indexOf(user);
+		return getUsers().indexOf(user);
 	}
 
 	@Override
@@ -116,7 +117,7 @@ public class Stackedbar extends ChartjsLog {
 	@Override
 	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet) {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-		List<EnrolledUser> enrolledUsers = new ArrayList<>(listParticipants.getItems());
+		List<EnrolledUser> enrolledUsers = getUsers();
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();

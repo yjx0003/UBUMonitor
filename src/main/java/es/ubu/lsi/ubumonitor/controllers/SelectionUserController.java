@@ -3,8 +3,12 @@ package es.ubu.lsi.ubumonitor.controllers;
 import java.io.ByteArrayInputStream;
 import java.text.MessageFormat;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.Group;
 import es.ubu.lsi.ubumonitor.model.LastActivity;
@@ -35,6 +40,8 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -45,11 +52,21 @@ public class SelectionUserController {
 
 	private static final Controller CONTROLLER = Controller.getInstance();
 	@FXML
+	private TabPane tabPane;
+
+	@FXML
+	private Tab tabEnrolled;
+	@FXML
+	private Tab tabNotEnrolled;
+
+	@FXML
 	private Label lblCountParticipants;
 	@FXML
 	private ListView<EnrolledUser> listParticipants;
 	private FilteredList<EnrolledUser> filteredEnrolledList;
 
+	@FXML
+	private ListView<EnrolledUser> listParticipantsOut;
 	@FXML
 	private CheckComboBox<Role> checkComboBoxRole;
 
@@ -64,10 +81,37 @@ public class SelectionUserController {
 	private AutoCompletionBinding<EnrolledUser> autoCompletionBinding;
 
 	private MainController mainController;
+	private Map<Tab, ListView<EnrolledUser>> tabListView;
 
 	public void init(MainController mainController) {
 		this.mainController = mainController;
+
+		tabPane.getSelectionModel()
+				.selectedItemProperty()
+				.addListener((ov, old, newValue) -> {
+					SelectionController selectionController = mainController.getSelectionController();
+					if (newValue.equals(tabNotEnrolled)) {
+						selectionController.getTabActivity()
+								.setDisable(true);
+						selectionController.getTabUbuGrades()
+								.setDisable(true);
+						selectionController.getTabPane()
+								.getSelectionModel()
+								.select(selectionController.getTabUbuLogs());
+					} else if (old.equals(tabNotEnrolled)) {
+						selectionController.getTabActivity()
+								.setDisable(false);
+						selectionController.getTabUbuGrades()
+								.setDisable(false);
+					}
+					this.mainController.updateListViewEnrolledUser();
+				});
+
 		initEnrolledUsers();
+		initNotEnrolledUsers();
+		tabListView = new HashMap<>();
+		tabListView.put(tabEnrolled, listParticipants);
+		tabListView.put(tabNotEnrolled, listParticipantsOut);
 	}
 
 	private void initEnrolledUsers() {
@@ -178,7 +222,7 @@ public class SelectionUserController {
 					Instant lastAccess = user.getLastaccess();
 					Instant lastLogInstant = CONTROLLER.getUpdatedCourseData()
 							.toInstant();
-					
+
 					setText(user + "\n" + I18n.get("label.course")
 							+ UtilMethods.formatDates(lastCourseAccess, lastLogInstant) + " | "
 							+ I18n.get("text.moodle") + UtilMethods.formatDates(lastAccess, lastLogInstant));
@@ -203,6 +247,56 @@ public class SelectionUserController {
 			}
 
 		});
+	}
+
+	private void initNotEnrolledUsers() {
+		Course course = CONTROLLER.getActualCourse();
+
+		ObservableList<EnrolledUser> user = FXCollections.observableArrayList(course.getNotEnrolledUser());
+		user.sort(Comparator.comparing(EnrolledUser::getFullName, String.CASE_INSENSITIVE_ORDER));
+		listParticipantsOut.getItems()
+				.setAll(user);
+		listParticipantsOut.getSelectionModel()
+				.setSelectionMode(SelectionMode.MULTIPLE);
+
+		listParticipantsOut.setCellFactory(callback -> new ListCell<EnrolledUser>() {
+			@Override
+			public void updateItem(EnrolledUser user, boolean empty) {
+				super.updateItem(user, empty);
+				if (empty || user == null) {
+					setText(null);
+					setGraphic(null);
+				} else {
+					Instant lastAccess = user.getLastaccess();
+					Instant lastLogInstant = CONTROLLER.getUpdatedCourseData()
+							.toInstant();
+
+					setText(user + "\n" + I18n.get("text.moodle")
+							+ UtilMethods.formatDates(lastAccess, lastLogInstant));
+
+					try {
+						Image image = new Image(new ByteArrayInputStream(user.getImageBytes()), 50, 50, false, false);
+						setGraphic(new ImageView(image));
+
+					} catch (Exception e) {
+						LOGGER.error("No se ha podido cargar la imagen de: {}", user);
+						setGraphic(new ImageView(new Image("/img/default_user.png")));
+					}
+					ContextMenu menu = new ContextMenu();
+					MenuItem seeUser = new MenuItem(I18n.get("text.see") + user);
+					seeUser.setOnAction(e -> userInfo(user));
+					menu.getItems()
+							.addAll(seeUser);
+					setContextMenu(menu);
+				}
+			}
+
+		});
+		listParticipantsOut.getSelectionModel()
+		.getSelectedItems()
+		.addListener(
+				(Change<? extends EnrolledUser> usersSelected) -> mainController.updateListViewEnrolledUser());
+
 	}
 
 	public void userInfo(EnrolledUser enrolledUser) {
@@ -264,11 +358,26 @@ public class SelectionUserController {
 	}
 
 	public ListView<EnrolledUser> getListParticipants() {
-		return listParticipants;
+		return tabListView.get(tabPane.getSelectionModel()
+				.getSelectedItem());
+
 	}
 
-	public FilteredList<EnrolledUser> getFilteredEnrolledList() {
-		return filteredEnrolledList;
+	public List<EnrolledUser> getUsers() {
+		List<EnrolledUser> user = new ArrayList<>(tabListView.get(tabPane.getSelectionModel()
+				.getSelectedItem())
+				.getItems());
+		user.removeAll(Collections.singletonList(null));
+		return user;
+	}
+
+	public List<EnrolledUser> getSelectedUsers() {
+		List<EnrolledUser> user = new ArrayList<>(tabListView.get(tabPane.getSelectionModel()
+				.getSelectedItem())
+				.getSelectionModel()
+				.getSelectedItems());
+		user.removeAll(Collections.singletonList(null));
+		return user;
 	}
 
 	public CheckComboBox<Role> getCheckComboBoxRole() {

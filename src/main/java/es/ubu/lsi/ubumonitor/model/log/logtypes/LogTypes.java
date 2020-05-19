@@ -18,8 +18,7 @@ public class LogTypes {
 	private static final Map<ComponentEvent, ReferencesLog> TYPES = new HashMap<>();
 
 	static{
-
-
+		
 		TYPES.put(get(ACTIVITY_REPORT, ACTIVITY_REPORT_VIEWED), UserCourse.getInstance());
 		TYPES.put(get(ACTIVITY_REPORT, OUTLINE_REPORT_VIEWED), UserAffectedCourse.getInstance());
 
@@ -131,9 +130,13 @@ public class LogTypes {
 		TYPES.put(get(GRADE_HISTORY, GRADE_HISTORY_REPORT_VIEWED), User.getInstance());
 		
 		TYPES.put(get(GRADER_REPORT, GRADER_REPORT_VIEWED), User.getInstance());
-
+		
+		TYPES.put(get(GUIA_DOCENTE, BIBLIOGRAPHY_CREATED), Ignore.getInstance());
+		TYPES.put(get(GUIA_DOCENTE, BIBLIOGRAPHY_DELETED), Ignore.getInstance());
+		TYPES.put(get(GUIA_DOCENTE, BIBLIOGRAPHY_MODIFIED), Ignore.getInstance());
 		TYPES.put(get(GUIA_DOCENTE, EVALUATION_SYSTEM_CREATED), Ignore.getInstance());
 		TYPES.put(get(GUIA_DOCENTE, EVALUATION_SYSTEM_MODIFIED), Ignore.getInstance()); 
+		TYPES.put(get(GUIA_DOCENTE, OBJECTIVE_CREATED), Ignore.getInstance());
 		TYPES.put(get(GUIA_DOCENTE, OUTSTANDING_RATINGS_MODIFIED), Ignore.getInstance()); 
 		TYPES.put(get(GUIA_DOCENTE, SUBJECT_MODIFIED), Ignore.getInstance()); 
 		TYPES.put(get(GUIA_DOCENTE, UNIT_MODIFIED), Ignore.getInstance()); 
@@ -150,6 +153,11 @@ public class LogTypes {
 		TYPES.put(get(JOURNAL, JOURNAL_ENTRY_CREATED), UserCmid.getInstance());
 		TYPES.put(get(JOURNAL, JOURNAL_ENTRY_UPDATED), UserCmid.getInstance());
 
+		TYPES.put(get(KALTURA_MEDIA_ASSIGNMENT, ASSIGNMENT_DETAILS_VIEWED), UserCmid.getInstance());
+		TYPES.put(get(KALTURA_MEDIA_ASSIGNMENT, ASSIGNMENT_SUBMITTED), UserCmid.getInstance());
+		TYPES.put(get(KALTURA_MEDIA_ASSIGNMENT, GRADE_SUBMISSIONS_PAGE_VIEWED), UserCmid.getInstance());
+		TYPES.put(get(KALTURA_MEDIA_ASSIGNMENT, SINGLE_SUBMISSION_PAGE_VIEWED), UserSubmissionCmid.getInstance());
+		
 		TYPES.put(get(LESSON, CONTENT_PAGE_VIEWED), UserPageCmid.getInstance());
 		TYPES.put(get(LESSON, COURSE_MODULE_INSTANCE_LIST_VIEWED), UserCourse.getInstance());
 		TYPES.put(get(LESSON, COURSE_MODULE_VIEWED), UserCmid.getInstance());
@@ -247,8 +255,8 @@ public class LogTypes {
 		TYPES.put(get(SYSTEM, COURSE_UPDATED), UserCourse.getInstance());
 		TYPES.put(get(SYSTEM, COURSE_USER_REPORT_VIEWED), UserCourseAffected.getInstance());
 		TYPES.put(get(SYSTEM, COURSE_VIEWED), SystemCourseViewed.getInstance());
-		TYPES.put(get(SYSTEM, ENROLMENT_INSTANCE_CREATED), UserAffected.getInstance());
-		TYPES.put(get(SYSTEM, ENROLMENT_INSTANCE_UPDATED), UserAffected.getInstance());
+		TYPES.put(get(SYSTEM, ENROLMENT_INSTANCE_CREATED), User.getInstance());
+		TYPES.put(get(SYSTEM, ENROLMENT_INSTANCE_UPDATED), User.getInstance());
 		TYPES.put(get(SYSTEM, EVIDENCE_CREATED), UserEvidence.getInstance());
 		TYPES.put(get(SYSTEM, GRADE_DELETED), UserGradeAffectedGradeitem.getInstance());
 		TYPES.put(get(SYSTEM, GROUP_ASSIGNED_TO_GROUPING), UserGroupGrouping.getInstance());
@@ -263,8 +271,10 @@ public class LogTypes {
 		TYPES.put(get(SYSTEM, NOTES_VIEWED), UserCourse.getInstance());
 		TYPES.put(get(SYSTEM, QUESTION_CATEGORY_CREATED), UserQuestioncategory.getInstance());
 		TYPES.put(get(SYSTEM, QUESTION_CATEGORY_VIEWED), UserQuestioncategory.getInstance());
+		TYPES.put(get(SYSTEM, QUESTION_CREATED), UserQuestionQuestioncategory.getInstance());
 		TYPES.put(get(SYSTEM, QUESTION_UPDATED), UserQuestion.getInstance());
 		TYPES.put(get(SYSTEM, QUESTION_VIEWED), UserQuestion.getInstance());
+		TYPES.put(get(SYSTEM, QUESTIONS_IMPORTED), UserQuestioncategory.getInstance());
 		TYPES.put(get(SYSTEM, RECENT_ACTIVITY_VIEWED), UserCourse.getInstance());
 		TYPES.put(get(SYSTEM, ROLE_ASSIGNED), UserRoleAffected.getInstance());
 		TYPES.put(get(SYSTEM, ROLE_CAPABILITIES_UPDATED), UserRole.getInstance());

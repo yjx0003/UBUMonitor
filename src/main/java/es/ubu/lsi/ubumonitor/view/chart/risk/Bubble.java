@@ -207,7 +207,7 @@ public class Bubble extends Chartjs {
 				.getDataBase()
 				.getUsers()
 				.getById(userid);
-		return listParticipants.getItems()
+		return getUsers()
 				.indexOf(user);
 	}
 }

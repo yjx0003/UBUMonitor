@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.controllers.load;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -245,15 +246,15 @@ public class CreatorUBUGradesController {
 
 		jsonArray.put(jsonObject);
 
-		Response response = Connection.getResponse(new Request.Builder()
+		try (Response response = Connection.getResponse(new Request.Builder()
 				.url(CONTROLLER.getUrlHost() + "/lib/ajax/service.php?sesskey=" + CONTROLLER.getSesskey())
 				.post(RequestBody.create(jsonArray.toString(), MediaType.parse("application/json; charset=utf-8")))
-				.build());
-		JSONArray responseArray = new JSONArray(new JSONTokener(response.body()
-				.byteStream()));
-		response.close();
-		return responseArray.getJSONObject(0)
-				.getJSONArray("data");
+				.build())) {
+			JSONArray responseArray = new JSONArray(new JSONTokener(response.body()
+					.byteStream()));
+			return responseArray.getJSONObject(0)
+					.getJSONArray("data");
+		}
 
 	}
 
@@ -326,6 +327,17 @@ public class CreatorUBUGradesController {
 
 	}
 
+	public static List<EnrolledUser> searchUser(Collection<String> ids) throws IOException {
+		JSONArray array = getJSONArrayResponse(new CoreUserGetUsersByField(Field.ID, ids));
+		List<EnrolledUser> users = new ArrayList<>();
+
+		for (int i = 0; i < array.length(); ++i) {
+			users.add(userAttributes(array.getJSONObject(i)));
+		}
+		return users;
+
+	}
+
 	/**
 	 * Crea el usuario matriculado a partir del json parcial de la respuesta de
 	 * moodle
@@ -337,6 +349,22 @@ public class CreatorUBUGradesController {
 	 */
 	public static EnrolledUser createEnrolledUser(JSONObject user) throws IOException {
 
+		EnrolledUser enrolledUser = userAttributes(user);
+
+		List<Course> courses = createCourses(user.optJSONArray("enrolledcourses"), false);
+		courses.forEach(course -> course.addEnrolledUser(enrolledUser));
+
+		List<Role> roles = createRoles(user.optJSONArray("roles"));
+		roles.forEach(role -> role.addEnrolledUser(enrolledUser));
+
+		List<Group> groups = createGroups(user.optJSONArray("groups"));
+		groups.forEach(group -> group.addEnrolledUser(enrolledUser));
+
+		return enrolledUser;
+
+	}
+
+	public static EnrolledUser userAttributes(JSONObject user) throws IOException {
 		int id = user.getInt("id");
 
 		EnrolledUser enrolledUser = CONTROLLER.getDataBase()
@@ -365,18 +393,7 @@ public class CreatorUBUGradesController {
 
 			enrolledUser.setImageBytes(imageBytes);
 		}
-
-		List<Course> courses = createCourses(user.optJSONArray("enrolledcourses"), false);
-		courses.forEach(course -> course.addEnrolledUser(enrolledUser));
-
-		List<Role> roles = createRoles(user.optJSONArray("roles"));
-		roles.forEach(role -> role.addEnrolledUser(enrolledUser));
-
-		List<Group> groups = createGroups(user.optJSONArray("groups"));
-		groups.forEach(group -> group.addEnrolledUser(enrolledUser));
-
 		return enrolledUser;
-
 	}
 
 	/**
@@ -730,17 +747,29 @@ public class CreatorUBUGradesController {
 	 * @return lista de grade item
 	 * @throws IOException si no se ha conectado con moodle
 	 */
-	public static List<GradeItem> createGradeItems(int courseid) throws IOException {
+	public static List<GradeItem> createGradeItems(int courseid, int userid) throws IOException {
+		try {
+			JSONObject jsonObject = getJSONObjectResponse(new GradereportUserGetGradesTable(courseid, userid));
+			List<GradeItem> gradeItems = createHierarchyGradeItems(jsonObject);
 
-		JSONObject jsonObject = getJSONObjectResponse(new GradereportUserGetGradesTable(courseid));
-		List<GradeItem> gradeItems = createHierarchyGradeItems(jsonObject);
+			JSONObject jsonGradeItems = getJSONObjectResponse(new GradereportUserGetGradeItems(courseid));
+			if (jsonGradeItems.has("exception")) {
+				jsonGradeItems = getJSONObjectResponse(new GradereportUserGetGradeItems(courseid, userid));
+			}
+			if (jsonGradeItems.has("exception")) {
+				CreatorGradeItems creatorGradeItems = new CreatorGradeItems();
+				return creatorGradeItems.createGradeItems(courseid, jsonObject);
+			}
+			setBasicAttributes(gradeItems, jsonGradeItems);
+			setEnrolledUserGrades(gradeItems, jsonGradeItems);
+			updateToOriginalGradeItem(gradeItems);
 
-		jsonObject = getJSONObjectResponse(new GradereportUserGetGradeItems(courseid));
-		setBasicAttributes(gradeItems, jsonObject);
-		setEnrolledUserGrades(gradeItems, jsonObject);
-		updateToOriginalGradeItem(gradeItems);
+			return gradeItems;
+		} catch (Exception e) {
+			LOGGER.error("Error al descargar los items de calificacione", e);
+			return Collections.emptyList();
+		}
 
-		return gradeItems;
 	}
 
 	/**
@@ -976,7 +1005,7 @@ public class CreatorUBUGradesController {
 	 */
 	private static void setEnrolledUserGrades(List<GradeItem> gradeItems, JSONObject jsonObject) {
 		JSONArray usergrades = jsonObject.getJSONArray("usergrades");
-
+		DecimalFormat decimalFormat = new DecimalFormat("###.#####");
 		for (int i = 0; i < usergrades.length(); i++) {
 
 			JSONObject usergrade = usergrades.getJSONObject(i);
@@ -991,6 +1020,18 @@ public class CreatorUBUGradesController {
 				GradeItem gradeItem = gradeItems.get(j);
 
 				gradeItem.addUserGrade(enrolledUser, gradeitem.optDouble("graderaw"));
+				double grade = Double.NaN;
+				String percentage = gradeitem.optString("percentageformatted", "-");
+				if (!"-".equals(percentage)) {
+
+					try {
+						grade = decimalFormat.parse(percentage)
+								.doubleValue();
+					} catch (Exception e) {
+						LOGGER.warn("Cannot format percentage {}", percentage);
+					}
+				}
+				gradeItem.addUserPercentage(enrolledUser, grade);
 			}
 		}
 

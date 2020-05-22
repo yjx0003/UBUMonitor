@@ -30,7 +30,8 @@ public class BoxPlot extends ChartjsGradeItem {
 	@Override
 	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
 		JSObject data = new JSObject();
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		MainConfiguration mainConfiguration = Controller.getInstance()
+				.getMainConfiguration();
 		data.put("labels", "[" + UtilMethods.joinWithQuotes(selectedGradeItems) + "]");
 		JSArray datasets = new JSArray();
 
@@ -39,13 +40,16 @@ public class BoxPlot extends ChartjsGradeItem {
 
 		}
 
-		datasets.add(createData(Controller.getInstance().getActualCourse().getEnrolledUsers(), selectedGradeItems,
-				I18n.get("text.all"),
+		datasets.add(createData(Controller.getInstance()
+				.getActualCourse()
+				.getEnrolledUsers(), selectedGradeItems, I18n.get("text.all"),
 				!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")));
 
-		for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
+		for (Group group : slcGroup.getCheckModel()
+				.getCheckedItems()) {
 			if (group != null) {
-				datasets.add(createData(group.getEnrolledUsers(), selectedGradeItems, group.getGroupName(),
+				
+				datasets.add(createData(new ArrayList<>(group.getEnrolledUsers()), selectedGradeItems, group.getGroupName(),
 						!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")));
 			}
 
@@ -72,6 +76,10 @@ public class BoxPlot extends ChartjsGradeItem {
 		dataset.put("borderWidth", 1);
 		dataset.put("outlierRadius", 5);
 		dataset.put("hidden", hidden);
+		JSArray usersArray = new JSArray();
+		selectedUser.forEach(u -> usersArray.addWithQuote(u.getFullName()));
+		dataset.put("users", usersArray);
+
 		JSArray data = new JSArray();
 
 		for (GradeItem gradeItem : selectedGradeItems) {
@@ -96,14 +104,19 @@ public class BoxPlot extends ChartjsGradeItem {
 	@Override
 	public String getOptions() {
 		JSObject jsObject = getDefaultOptions();
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		MainConfiguration mainConfiguration = Controller.getInstance()
+				.getMainConfiguration();
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
-		int tooltipDecimals = mainConfiguration.getValue(getChartType(), "tooltipDecimals");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBoxplot" : "boxplot");
-		jsObject.put("tooltipDecimals", tooltipDecimals);
 		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
 		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
 		jsObject.put("scales", "{yAxes:[{" + yLabel + "}],xAxes:[{" + xLabel + "}]}");
+
+		JSObject callbacks = new JSObject();
+		callbacks.put("afterTitle", "function(t,e){return e.datasets[t[0].datasetIndex].label}");
+		callbacks.put("boxplotLabel", "boxplotLabel");
+		jsObject.put("tooltips", "{callbacks:" + callbacks + "}");
+
 		return jsObject.toString();
 	}
 
@@ -116,7 +129,8 @@ public class BoxPlot extends ChartjsGradeItem {
 		for (GradeItem gradeItem : gradeItems) {
 			header.add(gradeItem.getItemname());
 		}
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		MainConfiguration mainConfiguration = Controller.getInstance()
+				.getMainConfiguration();
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
 				CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
 			List<EnrolledUser> enrolledUser = getSelectedEnrolledUser();
@@ -124,16 +138,18 @@ public class BoxPlot extends ChartjsGradeItem {
 				exportCSV(printer, enrolledUser, gradeItems, "selected users");
 
 			}
-			if((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")){
-				exportCSV(printer, controller.getActualCourse().getEnrolledUsers(), gradeItems, "all");
+			if ((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")) {
+				exportCSV(printer, controller.getActualCourse()
+						.getEnrolledUsers(), gradeItems, "all");
 			}
-			
-			if((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")){
-				for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
+
+			if ((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")) {
+				for (Group group : slcGroup.getCheckModel()
+						.getCheckedItems()) {
 					exportCSV(printer, group.getEnrolledUsers(), gradeItems, group.getGroupName());
 				}
 			}
-			
+
 		}
 
 	}

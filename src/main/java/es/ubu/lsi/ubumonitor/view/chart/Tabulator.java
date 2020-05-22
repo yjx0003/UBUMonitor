@@ -2,7 +2,7 @@ package es.ubu.lsi.ubumonitor.view.chart;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 
-public abstract class Tabulator extends Chart{
+public abstract class Tabulator extends Chart {
 
 	public Tabulator(MainController mainController, ChartType chartType, Tabs tabName) {
 		super(mainController, chartType, tabName);
@@ -11,13 +11,13 @@ public abstract class Tabulator extends Chart{
 	@Override
 	public void clear() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void hideLegend() {
 		// do nothing
-		
+
 	}
 
 	@Override
@@ -29,6 +29,7 @@ public abstract class Tabulator extends Chart{
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
+
 		webViewChartsEngine.executeScript("genericExport('tabulatorDiv')");
 		return null;
 	}

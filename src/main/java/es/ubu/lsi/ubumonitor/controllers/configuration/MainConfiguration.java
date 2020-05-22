@@ -58,7 +58,7 @@ public class MainConfiguration {
 				Role.class);
 		createItem(GENERAL, "initialGroups", FXCollections.observableArrayList(new ArrayList<Group>()), Group.class);
 		createItem(GENERAL, "initialLastActivity",
-				FXCollections.observableArrayList(LastActivityFactory.getAllLastActivity()), LastActivity.class);
+				FXCollections.observableArrayList(LastActivityFactory.DEFAULT.getAllLastActivity()), LastActivity.class);
 		createItem(GENERAL, "initialTypeTimes", TypeTimes.YEAR_WEEK);
 
 		createItem(GENERAL, "displayYScaleTitle", true);
@@ -77,6 +77,8 @@ public class MainConfiguration {
 		createItem(ChartType.HEAT_MAP, "thirdInterval", Color.web("#b5ff33"));
 		createItem(ChartType.HEAT_MAP, "fourthInterval", Color.web("#38e330"));
 		createItem(ChartType.HEAT_MAP, "moreMax", Color.web("#67b92e"));
+		createItem(ChartType.BOXPLOT_LOG, "horizontalMode", false);
+		createItem(ChartType.VIOLIN_LOG, "horizontalMode", false);
 		createItem(ChartType.CUM_LINE, "calculateMax", false);
 		createItem(ChartType.SESSION, "timeInterval", 60);
 		
@@ -86,9 +88,9 @@ public class MainConfiguration {
 		createItem(ChartType.MEAN_DIFF, "zeroLineWidth", 3);
 
 		createItem(ChartType.BOXPLOT, "horizontalMode", false);
-		createItem(ChartType.BOXPLOT, "tooltipDecimals", 2);
+
 		createItem(ChartType.VIOLIN, "horizontalMode", false);
-		createItem(ChartType.VIOLIN, "tooltipDecimals", 2);
+
 
 		createItem(ChartType.GRADE_REPORT_TABLE, "failGradeColor", Color.web("#DC143C"));
 		createItem(ChartType.GRADE_REPORT_TABLE, "passGradeColor", Color.web("#2DC214"));
@@ -109,6 +111,11 @@ public class MainConfiguration {
 		createItem(ChartType.BUBBLE, "secondInterval", Color.web("#fff033"));
 		createItem(ChartType.BUBBLE, "thirdInterval", Color.web("#f4e3ae"));
 		createItem(ChartType.BUBBLE, "fourthInterval",   Color.web("#f78880"));
+		
+		createItem(ChartType.BUBBLE_LOGARITHMIC, "firstInterval", Color.web("#b5ff33"));
+		createItem(ChartType.BUBBLE_LOGARITHMIC, "secondInterval", Color.web("#fff033"));
+		createItem(ChartType.BUBBLE_LOGARITHMIC, "thirdInterval", Color.web("#f4e3ae"));
+		createItem(ChartType.BUBBLE_LOGARITHMIC, "fourthInterval",   Color.web("#f78880"));
 	}
 
 	@SuppressWarnings("unchecked")

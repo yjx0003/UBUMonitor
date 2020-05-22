@@ -188,9 +188,9 @@ public class LoginController implements Initializable {
 		chkOfflineMode.setSelected(ConfigHelper.getProperty("offlineMode", false));
 
 		TextFields.bindAutoCompletion(txtUsername, ConfigHelper.getArray(USERNAMES)
-				.toList());
+				.toList()).setDelay(0);
 		TextFields.bindAutoCompletion(txtHost, ConfigHelper.getArray(HOSTS)
-				.toList());
+				.toList()).setDelay(0);
 
 	}
 

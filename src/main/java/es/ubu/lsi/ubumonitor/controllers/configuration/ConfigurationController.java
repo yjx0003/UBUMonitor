@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.SelectionUserController;
 import es.ubu.lsi.ubumonitor.model.Group;
 import es.ubu.lsi.ubumonitor.model.LastActivity;
 import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
@@ -56,8 +55,7 @@ public class ConfigurationController implements Initializable {
 							Controller.getInstance().getActualCourse().getGroups());
 				}
 				if (type == LastActivity.class) {
-					return new CheckComboBoxPropertyEditor<>(item, LastActivityFactory.getAllLastActivity(),
-							SelectionUserController.getActivityConverter());
+					return new CheckComboBoxPropertyEditor<>(item, LastActivityFactory.DEFAULT.getAllLastActivity());
 				}
 
 			}

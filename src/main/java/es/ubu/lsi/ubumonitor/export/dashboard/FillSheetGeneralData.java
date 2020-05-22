@@ -29,10 +29,10 @@ public class FillSheetGeneralData extends FillSheetData {
 				.getActualCourse()
 				.getEnrolledUsers();
 		Map<LastActivity, Long> lastActivities = enrolledUsers.stream()
-				.map(e -> LastActivityFactory.getActivity(e.getLastcourseaccess(), lastLogDate))
+				.map(e -> LastActivityFactory.DEFAULT.getActivity(e.getLastcourseaccess(), lastLogDate))
 				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 		int rowIndex = 0;
-		for (LastActivity lastActivity : LastActivityFactory.getAllLastActivity()) {
+		for (LastActivity lastActivity : LastActivityFactory.DEFAULT.getAllLastActivity()) {
 			if (lastActivities.get(lastActivity) != null) {
 				setCellValue(sheet, ++rowIndex, 3, lastActivities.get(lastActivity));
 

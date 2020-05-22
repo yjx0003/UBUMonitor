@@ -86,7 +86,7 @@ public class ConfigurationConsumer {
 		JSONArray jsonArray = jsonObject.getJSONArray(VALUE);
 		List<LastActivity> list = new ArrayList<>();
 		for (int i = 0; i < jsonArray.length(); i++) {
-			list.add(LastActivityFactory.getActivity(jsonArray.getInt(i)));
+			list.add(LastActivityFactory.DEFAULT.getActivity(jsonArray.getInt(i)));
 		}
 		mainConfiguration.overrideItem(jsonObject.getString(CATEGORY), jsonObject.getString(NAME),
 				FXCollections.observableList(list), LastActivity.class);

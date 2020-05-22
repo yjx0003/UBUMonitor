@@ -145,12 +145,12 @@ public class RiskEvolution extends RiskBarTemporal {
 				for (EnrolledUser user : selectedEnrolledUser) {
 					ZonedDateTime lastDateTime = getLastLog(l -> l.getTime()
 							.isBefore(zonedDateTime), logs, user);
-					users.computeIfAbsent(LastActivityFactory.getActivity(lastDateTime, zonedDateTime),
+					users.computeIfAbsent(LastActivityFactory.DEFAULT.getActivity(lastDateTime, zonedDateTime),
 							k -> new ArrayList<>())
 							.add(user);
 
 				}
-				for (LastActivity lastActivity : LastActivityFactory.getAllLastActivity()) {
+				for (LastActivity lastActivity : LastActivityFactory.DEFAULT.getAllLastActivity()) {
 					map.computeIfAbsent(lastActivity, k -> new HashMap<>())
 							.computeIfAbsent(entry.getKey(), k -> new DescriptiveStatistics())
 							.addValue(users.computeIfAbsent(lastActivity, k -> new ArrayList<>())
@@ -172,9 +172,9 @@ public class RiskEvolution extends RiskBarTemporal {
 
 		JSArray datasets = new JSArray();
 
-		for (int i = 0; i < LastActivityFactory.getAllLastActivity()
+		for (int i = 0; i < LastActivityFactory.DEFAULT.getAllLastActivity()
 				.size(); i++) {
-			LastActivity lastActivity = LastActivityFactory.getActivity(i);
+			LastActivity lastActivity = LastActivityFactory.DEFAULT.getActivity(i);
 			JSObject dataset = new JSObject();
 			dataset.putWithQuote("label", lastActivity);
 			dataset.put("borderColor", colorToRGB(lastActivity.getColor()));

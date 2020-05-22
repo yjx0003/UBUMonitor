@@ -102,9 +102,9 @@ public class Violin extends ChartjsGradeItem {
 		JSObject jsObject = getDefaultOptions();
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
-		int tooltipDecimals = mainConfiguration.getValue(getChartType(), "tooltipDecimals");
+	
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalViolin" : "violin");
-		jsObject.put("tooltipDecimals", tooltipDecimals);
+		jsObject.put("tooltipDecimals", 2);
 
 		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
 		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();

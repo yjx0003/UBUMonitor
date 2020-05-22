@@ -24,6 +24,7 @@ import es.ubu.lsi.ubumonitor.view.chart.gradeitems.GradeReportTable;
 import es.ubu.lsi.ubumonitor.view.chart.gradeitems.Line;
 import es.ubu.lsi.ubumonitor.view.chart.gradeitems.Radar;
 import es.ubu.lsi.ubumonitor.view.chart.gradeitems.Violin;
+import es.ubu.lsi.ubumonitor.view.chart.logs.BoxplotLog;
 import es.ubu.lsi.ubumonitor.view.chart.logs.CumLine;
 import es.ubu.lsi.ubumonitor.view.chart.logs.Heatmap;
 import es.ubu.lsi.ubumonitor.view.chart.logs.MeanDiff;
@@ -32,6 +33,7 @@ import es.ubu.lsi.ubumonitor.view.chart.logs.ScatterUser;
 import es.ubu.lsi.ubumonitor.view.chart.logs.SessionChart;
 import es.ubu.lsi.ubumonitor.view.chart.logs.Stackedbar;
 import es.ubu.lsi.ubumonitor.view.chart.logs.TotalBar;
+import es.ubu.lsi.ubumonitor.view.chart.logs.ViolinLog;
 import javafx.concurrent.Worker.State;
 import javafx.scene.control.Tab;
 import javafx.scene.web.WebEngine;
@@ -87,6 +89,8 @@ public class VisualizationJavaConnector {
 		addChart(new ActivitiesStatusTable(mainController));
 		addChart(new CalificationBar(mainController));
 		addChart(new SessionChart(mainController));
+		addChart(new BoxplotLog(mainController));
+		addChart(new ViolinLog(mainController));
 		currentType = mapChart.get(DEFAULT_LOG_CHART);
 	}
 

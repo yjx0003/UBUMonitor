@@ -124,7 +124,7 @@ public class RiskBarTemporal extends RiskBar {
 
 			if (lastUserLog != null) {
 				lastCourseAccess
-						.computeIfAbsent(LastActivityFactory.getActivity(lastUserLog, lastUpdate),
+						.computeIfAbsent(LastActivityFactory.DEFAULT.getActivity(lastUserLog, lastUpdate),
 								k -> new ArrayList<>())
 						.add(user);
 			} else {
@@ -133,7 +133,7 @@ public class RiskBarTemporal extends RiskBar {
 
 		}
 
-		List<LastActivity> lastActivities = LastActivityFactory.getAllLastActivity();
+		List<LastActivity> lastActivities = LastActivityFactory.DEFAULT.getAllLastActivity();
 
 		JSObject data = new JSObject();
 		JSArray labels = new JSArray();

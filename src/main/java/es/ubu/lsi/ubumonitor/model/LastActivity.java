@@ -1,30 +1,41 @@
 package es.ubu.lsi.ubumonitor.model;
 
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+
+import es.ubu.lsi.ubumonitor.util.I18n;
 import javafx.scene.paint.Color;
 
-public class LastActivity {
+public class LastActivity implements Comparable<LastActivity> {
 
 	private int index;
 
-	private int previusDays;
+	private int startInclusive;
 
-	private int limitDaysConnection;
+	private int endInclusive;
 
 	private Color color;
+	private ChronoUnit chronoUnit;
 
-	public LastActivity(int index, int previusDays, int limitDaysConnection, Color color) {
+	public LastActivity(int index, int startInclusive, int endInclusive, Color color, ChronoUnit chronoUnit) {
 		this.index = index;
-		this.previusDays = previusDays;
-		this.limitDaysConnection = limitDaysConnection;
+		this.startInclusive = startInclusive;
+		this.endInclusive = endInclusive;
 		this.color = color;
+		this.setChronoUnit(chronoUnit);
 	}
 
-	public int getLimitDaysConnection() {
-		return limitDaysConnection;
+	public boolean isBetween(Temporal startInclusive, Temporal endExclusive) {
+		long span = chronoUnit.between(startInclusive, endExclusive);
+		return span >= this.startInclusive && span < this.endInclusive;
 	}
 
-	public void setLimitDaysConnection(int limitDaysConnection) {
-		this.limitDaysConnection = limitDaysConnection;
+	public int getStartInclusive() {
+		return startInclusive;
+	}
+
+	public void setStartInclusive(int startInclusive) {
+		this.startInclusive = startInclusive;
 	}
 
 	public Color getColor() {
@@ -35,12 +46,18 @@ public class LastActivity {
 		this.color = color;
 	}
 
-	public int getPreviusDays() {
-		return previusDays;
+	/**
+	 * @return the chronoUnit
+	 */
+	public ChronoUnit getChronoUnit() {
+		return chronoUnit;
 	}
 
-	public void setPreviusDays(int previusDays) {
-		this.previusDays = previusDays;
+	/**
+	 * @param chronoUnit the chronoUnit to set
+	 */
+	public void setChronoUnit(ChronoUnit chronoUnit) {
+		this.chronoUnit = chronoUnit;
 	}
 
 	/**
@@ -56,7 +73,7 @@ public class LastActivity {
 	public void setIndex(int index) {
 		this.index = index;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return index;
@@ -71,16 +88,33 @@ public class LastActivity {
 		if (getClass() != obj.getClass())
 			return false;
 		LastActivity other = (LastActivity) obj;
-		if (index != other.index)
-			return false;
-		return true;
+		return index == other.index;
+
+	}
+
+	public String toStringEnumerated() {
+		String chronoString = I18n.get(chronoUnit.toString());
+		if (Integer.MAX_VALUE == endInclusive) {
+			return (char) (index + 65) + ". +" + startInclusive + " " + chronoString;
+		}
+		return (char) (index + 65) + ". [" + startInclusive + " " + chronoString + " - " + endInclusive + " "
+				+ chronoString + ")";
 	}
 
 	@Override
 	public String toString() {
-		if (Integer.MAX_VALUE == limitDaysConnection) {
-			return (char) (index + 65) + ". " + previusDays + "+";
+		String chronoString = I18n.get(chronoUnit.toString());
+		if (Integer.MAX_VALUE == endInclusive) {
+			return "+" + startInclusive + " " + chronoString;
 		}
-		return (char) (index + 65) + ". [" + previusDays + "-" + limitDaysConnection+ ")";
+		return "[" + startInclusive + " " + chronoString + " - " + endInclusive + " " + chronoString + ")";
+	}
+
+	@Override
+	public int compareTo(LastActivity o) {
+		if (o == null) {
+			return -1;
+		}
+		return Integer.compare(this.getIndex(), o.getIndex());
 	}
 }

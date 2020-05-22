@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.view.chart.risk;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -98,6 +99,7 @@ public class Bubble extends Chartjs {
 		String dataset = createDataset(getSelectedEnrolledUser());
 		String options = getOptions();
 		
+		System.out.println(options);
 		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, options));
 	}
 
@@ -209,5 +211,21 @@ public class Bubble extends Chartjs {
 				.getById(userid);
 		return getUsers()
 				.indexOf(user);
+	}
+	
+	@Override
+	public String getXAxisTitle() {
+
+		return MessageFormat.format(super.getXAxisTitle(), Controller.getInstance()
+				.getUpdatedCourseData()
+				.format(Controller.DATE_TIME_FORMATTER));
+	}
+	
+	@Override
+	public String getYAxisTitle() {
+
+		return MessageFormat.format(super.getYAxisTitle(), Controller.getInstance()
+				.getUpdatedCourseData()
+				.format(Controller.DATE_TIME_FORMATTER));
 	}
 }

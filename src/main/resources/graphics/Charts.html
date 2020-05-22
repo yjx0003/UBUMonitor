@@ -21,33 +21,35 @@
 
 <div id="all_tabs" class="controles">
     <div class="pestañas" id="GRADES">
-        <input type="button" class="btn" id="LINE" onclick='javaConnector.updateCharts("LINE");' />
-        <input type="button" class="btn" id="RADAR" onclick='javaConnector.updateCharts("RADAR");' />
+        <input type="button" class="btn" id="LINE" onclick='javaConnector.updateCharts(this.id);' />
+        <input type="button" class="btn" id="RADAR" onclick='javaConnector.updateCharts(this.id);' />
 
 
-        <input type="button" class="btn" id="BOXPLOT" onclick='javaConnector.updateCharts("BOXPLOT");' />
+        <input type="button" class="btn" id="BOXPLOT" onclick='javaConnector.updateCharts(this.id);' />
 
-        <input type="button" class="btn" id="VIOLIN" onclick='javaConnector.updateCharts("VIOLIN");' />
+        <input type="button" class="btn" id="VIOLIN" onclick='javaConnector.updateCharts(this.id);' />
         <input type="button" class="btn" id="GRADE_REPORT_TABLE"
-            onclick='javaConnector.updateCharts("GRADE_REPORT_TABLE");' />
+            onclick='javaConnector.updateCharts(this.id);' />
         <input type="button" class="btn" id="CALIFICATION_BAR"
-            onclick='javaConnector.updateCharts("CALIFICATION_BAR");' />
+            onclick='javaConnector.updateCharts(this.id);' />
     </div>
     <div class="pestañas" id="LOGS">
-    	<input type="button" class="btn" id="TOTAL_BAR" onclick='javaConnector.updateCharts("TOTAL_BAR");' />
-        <input type="button" class="btn" id="STACKED_BAR" onclick='javaConnector.updateCharts("STACKED_BAR");' />
-        <input type="button" class="btn" id="HEAT_MAP" onclick='javaConnector.updateCharts("HEAT_MAP");' />
-        <input type="button" class="btn" id="CUM_LINE" onclick='javaConnector.updateCharts("CUM_LINE");' />
-        <input type="button" class="btn" id="MEAN_DIFF" onclick='javaConnector.updateCharts("MEAN_DIFF");' />
-        <input type="button" class="btn" id="SCATTER" onclick='javaConnector.updateCharts("SCATTER");' />
-        <input type="button" class="btn" id="SCATTER_USER" onclick='javaConnector.updateCharts("SCATTER_USER");' />
-        <input type="button" class="btn" id="SESSION" onclick='javaConnector.updateCharts("SESSION");' />
+    	<input type="button" class="btn" id="TOTAL_BAR" onclick='javaConnector.updateCharts(this.id);' />
+        <input type="button" class="btn" id="STACKED_BAR" onclick='javaConnector.updateCharts(this.id);' />
+        <input type="button" class="btn" id="HEAT_MAP" onclick='javaConnector.updateCharts(this.id);' />
+        <input type="button" class="btn" id="BOXPLOT_LOG" onclick='javaConnector.updateCharts(this.id);' />
+        <input type="button" class="btn" id="VIOLIN_LOG" onclick='javaConnector.updateCharts(this.id);' />
+        <input type="button" class="btn" id="CUM_LINE" onclick='javaConnector.updateCharts(this.id);' />
+        <input type="button" class="btn" id="MEAN_DIFF" onclick='javaConnector.updateCharts(this.id);' />
+        <input type="button" class="btn" id="SCATTER" onclick='javaConnector.updateCharts(this.id);' />
+        <input type="button" class="btn" id="SCATTER_USER" onclick='javaConnector.updateCharts(this.id);' />
+        <input type="button" class="btn" id="SESSION" onclick='javaConnector.updateCharts(this.id);' />
         
 
     </div>
     <div class="pestañas" id="ACTIVITY_COMPLETION">
         <input type="button" class="btn" id="ACTIVITIES_TABLE"
-            onclick='javaConnector.updateCharts("ACTIVITIES_TABLE");' />
+            onclick='javaConnector.updateCharts(this.id);' />
     </div>
 
     <div class="opciones">
@@ -406,6 +408,20 @@
     function colorHEX(color) {
         return colorHash.hex(color);
     }
+     function formatBoxplot(text, value){
+    	return text+ ": " + value.toLocaleString(locale,{maximumFractionDigits:2});
+    }
+    
+    function boxplotLabel(t, a, o, e) {
+	    if (-1 == e) return [formatBoxplot("n", a.datasets[t.datasetIndex].data[t.index].length), formatBoxplot("min ", o.min), formatBoxplot("whiskerMin", o.whiskerMin), formatBoxplot("q1", o.q1), formatBoxplot("median", o.median), formatBoxplot("q3", o.q3), formatBoxplot("whiskerMax", o.whiskerMax), formatBoxplot("max", o.max)];
+	    var r, s = a.datasets[t.datasetIndex].users,
+	        n = a.datasets[t.datasetIndex].data[t.index],
+	        x = [];
+	    for (r = 0; r < n.length; r++) n[r] == o.outliers[e] && x.push(s[r] + " (" + n[r].toLocaleString(locale,{maximumFractionDigits:2}) + ")");
+	    return x
+	}
+    
+   
 
 </script>
 

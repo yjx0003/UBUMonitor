@@ -1,7 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.ByteArrayInputStream;
-import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +44,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.util.StringConverter;
 
 public class SelectionUserController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SelectionUserController.class);
@@ -121,6 +119,7 @@ public class SelectionUserController {
 
 		initEnrolledUsersListView();
 		autoCompletionBinding = TextFields.bindAutoCompletion(tfdParticipants, filteredEnrolledList);
+		autoCompletionBinding.setDelay(0);
 		checkComboBoxGroup.getItems()
 				.setAll(CONTROLLER.getActualCourse()
 						.getGroups()
@@ -151,7 +150,7 @@ public class SelectionUserController {
 				.addListener((Change<? extends Role> r) -> filterParticipants());
 
 		checkComboBoxActivity.getItems()
-				.addAll(LastActivityFactory.getAllLastActivity());
+				.addAll(LastActivityFactory.DEFAULT.getAllLastActivity());
 		ObservableList<LastActivity> lastActivities = CONTROLLER.getMainConfiguration()
 				.getValue(MainConfiguration.GENERAL, "initialLastActivity");
 		if (lastActivities != null) {
@@ -162,28 +161,12 @@ public class SelectionUserController {
 				.getCheckedItems()
 				.addListener((Change<? extends LastActivity> l) -> filterParticipants());
 
-		checkComboBoxActivity.setConverter(getActivityConverter());
 		lblCountParticipants.textProperty()
 				.bind(Bindings.size(filteredEnrolledList)
 						.asString());
 		filterParticipants();
 	}
 
-	public static StringConverter<LastActivity> getActivityConverter() {
-		return new StringConverter<LastActivity>() {
-			@Override
-			public LastActivity fromString(String role) {
-				return null;// no se va a usar en un choiceBox.
-			}
-
-			@Override
-			public String toString(LastActivity lastActivity) {
-				return MessageFormat.format(I18n.get("text.betweendates"), lastActivity.getPreviusDays(),
-						lastActivity.getLimitDaysConnection() == Integer.MAX_VALUE ? "∞"
-								: lastActivity.getLimitDaysConnection() - 1);
-			}
-		};
-	}
 
 	/**
 	 * Inicializa la lista de usuarios.
@@ -227,7 +210,7 @@ public class SelectionUserController {
 							+ UtilMethods.formatDates(lastCourseAccess, lastLogInstant) + " | "
 							+ I18n.get("text.moodle") + UtilMethods.formatDates(lastAccess, lastLogInstant));
 
-					setTextFill(LastActivityFactory.getColorActivity(lastCourseAccess, lastLogInstant));
+					setTextFill(LastActivityFactory.DEFAULT.getColorActivity(lastCourseAccess, lastLogInstant));
 
 					try {
 						Image image = new Image(new ByteArrayInputStream(user.getImageBytes()), 50, 50, false, false);
@@ -328,7 +311,7 @@ public class SelectionUserController {
 				&& (textField.isEmpty() || e.getFullName()
 						.toLowerCase()
 						.contains(textField))
-				&& (lastActivity.contains(LastActivityFactory.getActivity(e.getLastcourseaccess(), lastLogInstant))));
+				&& (lastActivity.contains(LastActivityFactory.DEFAULT.getActivity(e.getLastcourseaccess(), lastLogInstant))));
 		autoCompletionBinding.dispose();
 		autoCompletionBinding = TextFields.bindAutoCompletion(tfdParticipants, filteredEnrolledList);
 	}

@@ -42,12 +42,14 @@ public class TotalBar extends ChartjsLog {
 	public String getOptions() {
 		JSObject jsObject = getDefaultOptions();
 
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		MainConfiguration mainConfiguration = Controller.getInstance()
+				.getMainConfiguration();
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBar" : "bar");
 		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
 		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
-		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{stepSize:0}}],xAxes:[{" + xLabel + (useHorizontal ?",ticks:{maxTicksLimit:10}": "")+"}]}");
+		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{stepSize:0}}],xAxes:[{" + xLabel
+				+ (useHorizontal ? ",ticks:{maxTicksLimit:10}" : "") + "}]}");
 		jsObject.put("onClick", null);
 		jsObject.put("tooltips", "{mode:'index'}");
 		return jsObject.toString();
@@ -57,10 +59,14 @@ public class TotalBar extends ChartjsLog {
 	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet) {
 
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		MainConfiguration mainConfiguration = Controller.getInstance()
+				.getMainConfiguration();
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = Controller.getInstance()
+				.getActualCourse()
+				.getLogStats()
+				.getByType(TypeTimes.DAY);
 		Map<EnrolledUser, Map<E, List<Integer>>> map;
 
 		JSObject data = new JSObject();
@@ -76,8 +82,11 @@ public class TotalBar extends ChartjsLog {
 		datasets.add(createDataset(I18n.get("text.filteredusers"), typeLogs, map,
 				!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")));
 
-		Set<EnrolledUser> usersInRoles = getUsersInRoles();
-		for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
+		Set<EnrolledUser> usersInRoles = getUsersInRoles(selectionUserController.getCheckComboBoxRole()
+				.getCheckModel()
+				.getCheckedItems());
+		for (Group group : slcGroup.getCheckModel()
+				.getCheckedItems()) {
 			if (group != null) {
 
 				map = dataSet.getUserCounts(groupBy, getUserWithRole(group.getEnrolledUsers(), usersInRoles), typeLogs,
@@ -92,15 +101,20 @@ public class TotalBar extends ChartjsLog {
 		return data.toString();
 	}
 
-	public Set<EnrolledUser> getUsersInRoles() {
-		return selectionUserController.getCheckComboBoxRole().getCheckModel().getCheckedItems().stream()
-				.map(Role::getEnrolledUsers).flatMap(Set::stream).collect(Collectors.toSet());
+	public Set<EnrolledUser> getUsersInRoles(Collection<Role> roles) {
+		return roles.stream()
+				.map(Role::getEnrolledUsers)
+				.flatMap(Set::stream)
+				.distinct()
+				.collect(Collectors.toSet());
 
 	}
 
 	public List<EnrolledUser> getUserWithRole(Collection<EnrolledUser> user, Set<EnrolledUser> usersInRoles) {
 
-		return user.stream().filter(usersInRoles::contains).collect(Collectors.toList());
+		return user.stream()
+				.filter(usersInRoles::contains)
+				.collect(Collectors.toList());
 
 	}
 
@@ -125,7 +139,8 @@ public class TotalBar extends ChartjsLog {
 		JSArray dataArray = new JSArray();
 
 		for (int i = 0; i < typeLogs.size(); i++) {
-			dataArray.add(result.get(i).getSum());
+			dataArray.add(result.get(i)
+					.getSum());
 		}
 		dataset.put("data", dataArray);
 
@@ -134,13 +149,16 @@ public class TotalBar extends ChartjsLog {
 
 	public <E> List<DescriptiveStatistics> getTypeLogsStats(List<E> typeLogs,
 			Map<EnrolledUser, Map<E, List<Integer>>> map) {
-		List<DescriptiveStatistics> result = Stream.generate(DescriptiveStatistics::new).limit(typeLogs.size())
+		List<DescriptiveStatistics> result = Stream.generate(DescriptiveStatistics::new)
+				.limit(typeLogs.size())
 				.collect(Collectors.toList());
 		for (Map<E, List<Integer>> values : map.values()) {
 			for (int i = 0; i < typeLogs.size(); i++) {
 				List<Integer> counts = values.get(typeLogs.get(i));
 				DescriptiveStatistics descriptiveStatistics = result.get(i);
-				int sum = counts.stream().mapToInt(Integer::intValue).sum(); // sum all logs between days
+				int sum = counts.stream()
+						.mapToInt(Integer::intValue)
+						.sum(); // sum all logs between days
 				descriptiveStatistics.addValue(sum);
 			}
 		}
@@ -149,19 +167,25 @@ public class TotalBar extends ChartjsLog {
 
 	@Override
 	public String getXAxisTitle() {
-		return tabPaneUbuLogs.getSelectionModel().getSelectedItem().getText();
+		return tabPaneUbuLogs.getSelectionModel()
+				.getSelectedItem()
+				.getText();
 
 	}
 
 	@Override
 	protected <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		MainConfiguration mainConfiguration = Controller.getInstance()
+				.getMainConfiguration();
 		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
 		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = Controller.getInstance()
+				.getActualCourse()
+				.getLogStats()
+				.getByType(TypeTimes.DAY);
 		Map<EnrolledUser, Map<E, List<Integer>>> map = dataSet.getUserCounts(groupBy, selectedUsers, typeLogs,
 				dateStart, dateEnd);
 
@@ -173,9 +197,12 @@ public class TotalBar extends ChartjsLog {
 		}
 		List<List<DescriptiveStatistics>> groupStats = null;
 		if (groupActive) {
-			Set<EnrolledUser> usersInRoles = getUsersInRoles();
+			Set<EnrolledUser> usersInRoles = getUsersInRoles(selectionUserController.getCheckComboBoxRole()
+					.getCheckModel()
+					.getCheckedItems());
 			groupStats = new ArrayList<>();
-			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
+			for (Group group : slcGroup.getCheckModel()
+					.getCheckedItems()) {
 				map = dataSet.getUserCounts(groupBy, getUserWithRole(group.getEnrolledUsers(), usersInRoles), typeLogs,
 						dateStart, dateEnd);
 				groupStats.add(getTypeLogsStats(typeLogs, map));
@@ -189,13 +216,16 @@ public class TotalBar extends ChartjsLog {
 				printer.print(typeLog.hashCode());
 			}
 			printer.print(typeLog);
-			printer.print((int) selectedUsersStats.get(i).getSum());
+			printer.print((int) selectedUsersStats.get(i)
+					.getSum());
 			if (generalActive) {
-				printer.print((int) filteredUsersStats.get(i).getSum());
+				printer.print((int) filteredUsersStats.get(i)
+						.getSum());
 			}
 			if (groupActive) {
 				for (List<DescriptiveStatistics> groupStat : groupStats) {
-					printer.print((int) groupStat.get(i).getSum());
+					printer.print((int) groupStat.get(i)
+							.getSum());
 				}
 			}
 
@@ -206,8 +236,11 @@ public class TotalBar extends ChartjsLog {
 
 	@Override
 	protected String[] getCSVHeader() {
-		String selectedTab = tabPaneUbuLogs.getSelectionModel().getSelectedItem().getText();
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		String selectedTab = tabPaneUbuLogs.getSelectionModel()
+				.getSelectedItem()
+				.getText();
+		MainConfiguration mainConfiguration = Controller.getInstance()
+				.getMainConfiguration();
 		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
 		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
 
@@ -222,7 +255,8 @@ public class TotalBar extends ChartjsLog {
 		}
 		if (groupActive) {
 
-			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
+			for (Group group : slcGroup.getCheckModel()
+					.getCheckedItems()) {
 				list.add(group.getGroupName());
 			}
 		}
@@ -235,20 +269,27 @@ public class TotalBar extends ChartjsLog {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		List<EnrolledUser> filteredUsers = getUsers();
 
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		MainConfiguration mainConfiguration = Controller.getInstance()
+				.getMainConfiguration();
 
 		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = Controller.getInstance()
+				.getActualCourse()
+				.getLogStats()
+				.getByType(TypeTimes.DAY);
 		Map<EnrolledUser, Map<E, List<Integer>>> map = dataSet.getUserCounts(groupBy, filteredUsers, typeLogs,
 				dateStart, dateEnd);
 		boolean hasId = hasId();
 		for (EnrolledUser enrolledUser : filteredUsers) {
 			for (E typeLog : typeLogs) {
-				List<Integer> list = map.get(enrolledUser).get(typeLog);
-				int sum = list.stream().mapToInt(Integer::intValue).sum();
+				List<Integer> list = map.get(enrolledUser)
+						.get(typeLog);
+				int sum = list.stream()
+						.mapToInt(Integer::intValue)
+						.sum();
 				printer.print(enrolledUser.getId());
 				printer.print(enrolledUser.getFullName());
 				if (hasId) {
@@ -259,8 +300,11 @@ public class TotalBar extends ChartjsLog {
 				printer.print(selectedUsers.contains(enrolledUser) ? 1 : 0);
 
 				if (groupActive) {
-					Set<EnrolledUser> usersInRoles = getUsersInRoles();
-					for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
+					Set<EnrolledUser> usersInRoles = getUsersInRoles(selectionUserController.getCheckComboBoxRole()
+							.getCheckModel()
+							.getCheckedItems());
+					for (Group group : slcGroup.getCheckModel()
+							.getCheckedItems()) {
 						printer.print(group.contains(enrolledUser) && usersInRoles.contains(enrolledUser) ? 1 : 0);
 					}
 				}
@@ -271,8 +315,11 @@ public class TotalBar extends ChartjsLog {
 
 	@Override
 	protected String[] getCSVDesglosedHeader() {
-		String selectedTab = tabPaneUbuLogs.getSelectionModel().getSelectedItem().getText();
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		String selectedTab = tabPaneUbuLogs.getSelectionModel()
+				.getSelectedItem()
+				.getText();
+		MainConfiguration mainConfiguration = Controller.getInstance()
+				.getMainConfiguration();
 		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
 
 		List<String> list = new ArrayList<>();
@@ -286,7 +333,8 @@ public class TotalBar extends ChartjsLog {
 		list.add("logs");
 		list.add(I18n.get("text.selectedUsers"));
 		if (groupActive) {
-			for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
+			for (Group group : slcGroup.getCheckModel()
+					.getCheckedItems()) {
 				list.add(group.getGroupName());
 			}
 		}

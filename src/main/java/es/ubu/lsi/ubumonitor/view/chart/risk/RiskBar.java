@@ -105,16 +105,16 @@ public class RiskBar extends Chartjs {
 		Map<LastActivity, List<EnrolledUser>> lastAccess = new TreeMap<>(Comparator.comparing(LastActivity::getIndex));
 		for (EnrolledUser user : selectedEnrolledUser) {
 			lastCourseAccess
-					.computeIfAbsent(LastActivityFactory.getActivity(user.getLastcourseaccess(), lastUpdate),
+					.computeIfAbsent(LastActivityFactory.DEFAULT.getActivity(user.getLastcourseaccess(), lastUpdate),
 							k -> new ArrayList<>())
 					.add(user);
 			lastAccess
-					.computeIfAbsent(LastActivityFactory.getActivity(user.getLastaccess(), lastUpdate),
+					.computeIfAbsent(LastActivityFactory.DEFAULT.getActivity(user.getLastaccess(), lastUpdate),
 							k -> new ArrayList<>())
 					.add(user);
 		}
 
-		List<LastActivity> lastActivities = LastActivityFactory.getAllLastActivity();
+		List<LastActivity> lastActivities = LastActivityFactory.DEFAULT.getAllLastActivity();
 
 		JSObject data = new JSObject();
 		JSArray labels = new JSArray();

@@ -87,14 +87,14 @@ public class UserInfoController {
 		labelFirstAccess.setText(getDifferenceTime(enrolledUser.getFirstaccess(), reference));
 		labelLastAccess.setText(getDifferenceTime(enrolledUser.getLastaccess(), reference));
 		Circle circleLastAccees = new Circle(10);
-		circleLastAccees.setFill(LastActivityFactory.getColorActivity(enrolledUser.getLastaccess(),
+		circleLastAccees.setFill(LastActivityFactory.DEFAULT.getColorActivity(enrolledUser.getLastaccess(),
 				reference));
 		labelLastAccess.setGraphic(circleLastAccees);
 		
 		
 		labelLastCourseAccess.setText(getDifferenceTime(enrolledUser.getLastcourseaccess(), reference));
 		Circle circle = new Circle(10);
-		circle.setFill(LastActivityFactory.getColorActivity(enrolledUser.getLastcourseaccess(),
+		circle.setFill(LastActivityFactory.DEFAULT.getColorActivity(enrolledUser.getLastcourseaccess(),
 				reference));
 		labelLastCourseAccess.setGraphic(circle);
 		labelRoles.setText(Controller.getInstance().getActualCourse().getRoles().stream()

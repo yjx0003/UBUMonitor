@@ -48,6 +48,6 @@ public class FillSheetEnrolledUser extends FillSheetData {
 
 	}
 	private String getDifferenceDays(Temporal inclusive, Temporal exclusive) {
-		return LastActivityFactory.getActivity(inclusive, exclusive).toString();
+		return LastActivityFactory.DEFAULT.getActivity(inclusive, exclusive).toStringEnumerated();
 	}
 }

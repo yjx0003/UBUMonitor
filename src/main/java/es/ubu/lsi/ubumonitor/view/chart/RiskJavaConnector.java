@@ -17,6 +17,7 @@ import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.risk.Bubble;
+import es.ubu.lsi.ubumonitor.view.chart.risk.BubbleLogarithmic;
 import es.ubu.lsi.ubumonitor.view.chart.risk.RiskBar;
 import es.ubu.lsi.ubumonitor.view.chart.risk.RiskBarTemporal;
 import es.ubu.lsi.ubumonitor.view.chart.risk.RiskEvolution;
@@ -38,6 +39,7 @@ public class RiskJavaConnector {
 
 		mapChart = new EnumMap<>(ChartType.class);
 		addChart(new Bubble(riskController.getMainController()));
+		addChart(new BubbleLogarithmic(riskController.getMainController()));
 		addChart(new RiskBar(riskController.getMainController()));
 		addChart(new RiskBarTemporal(riskController.getMainController(), riskController.getDatePickerStart(),
 				riskController.getDatePickerEnd()));

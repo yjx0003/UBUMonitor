@@ -40,6 +40,7 @@ import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.LogStats;
 import es.ubu.lsi.ubumonitor.model.Logs;
 import es.ubu.lsi.ubumonitor.model.Stats;
+import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.persistence.Serialization;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
@@ -412,7 +413,8 @@ public class WelcomeController implements Initializable {
 						.getUserPhoto());
 				copyDataBase.setFullName(controller.getUser()
 						.getFullName());
-				copyDataBase.setUserZoneId(controller.getUser().getTimezone());
+				copyDataBase.setUserZoneId(controller.getUser()
+						.getTimezone());
 				TimeZone.setDefault(TimeZone.getTimeZone(copyDataBase.getUserZoneId()));
 				Course copyCourse = copyCourse(copyDataBase, selectedCourse);
 				controller.setDataBase(copyDataBase);
@@ -510,7 +512,7 @@ public class WelcomeController implements Initializable {
 			UtilMethods.errorWindow(I18n.get("error.invalidcache"), e);
 			throw new IllegalStateException("Se ha modificado una de las clases serializables", e);
 		}
-		
+
 	}
 
 	private void previusPasswordWindow() {
@@ -698,20 +700,20 @@ public class WelcomeController implements Initializable {
 									.getList());
 							actualCourse.setLogStats(logStats);
 							actualCourse.setUpdatedLog(ZonedDateTime.now());
-							
 
-							Set<String> ids = controller.getDataBase()
+							Set<EnrolledUser> notEnrolled = logStats.getByType(TypeTimes.ALL)
+									.getComponents()
 									.getUsers()
-									.getMap()
-									.values()
 									.stream()
 									.filter(user -> !actualCourse.getEnrolledUsers()
 											.contains(user))
+									.collect(Collectors.toSet());
+							List<String> ids =notEnrolled.stream()
 									.map(EnrolledUser::getId)
 									.map(Object::toString)
-									.collect(Collectors.toSet());
+									.collect(Collectors.toList());
 							LOGGER.info("Los ids de usuarios no matriculados: {}", ids);
-							List<EnrolledUser> notEnrolled = CreatorUBUGradesController.searchUser(ids);
+							CreatorUBUGradesController.searchUser(ids);
 							actualCourse.addNotEnrolledUser(notEnrolled);
 							tries = limitRelogin + 1;
 						} catch (Exception e) {

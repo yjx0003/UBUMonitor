@@ -190,6 +190,11 @@ public class LogCreator {
 			try {
 				ReferencesLog referencesLog = LogTypes.getReferenceLog(component, event);
 				referencesLog.setLogReferencesAttributes(log, ids);
+				if (headers.contains(LogCreator.USER_FULL_NAME) && log.getUser() != null && log.getUser()
+						.getFullName() == null) {
+					log.getUser()
+							.setFullName(csvRecord.get(LogCreator.USER_FULL_NAME));
+				}
 			} catch (Exception e) {
 				LOGGER.error("Problema en linea de log: " + csvRecord + " usando el gestor: con los ids:" + ids, e);
 			}

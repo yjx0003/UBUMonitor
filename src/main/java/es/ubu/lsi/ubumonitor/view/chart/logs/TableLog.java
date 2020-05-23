@@ -88,7 +88,6 @@ public class TableLog extends TabulatorLogs {
 		jsObject.putWithQuote("field", field);
 		jsObject.putWithQuote("sorter", sorter);
 		jsObject.put("align", "'center'");
-		jsObject.put("tooltip", true);
 		jsArray.add(jsObject);
 		return jsObject;
 	}
@@ -103,9 +102,12 @@ public class TableLog extends TabulatorLogs {
 
 		for (LogLine logLine : logLines) {
 			JSObject jsObject = new JSObject();
+
 			jsObject.put(ID, logLine.getUser()
 					.getId());
+
 			jsObject.putWithQuote(DATETIME, dateTimeWrapper.format(logLine.getTime()));
+
 			jsObject.putWithQuote(NAME, logLine.getUser()
 					.getFullName());
 			jsObject.putWithQuote(COMPONENT, I18n.get(logLine.getComponent()));
@@ -129,12 +131,11 @@ public class TableLog extends TabulatorLogs {
 
 		JSObject jsObject = getDefaultOptions();
 		jsObject.put("invalidOptionWarnings", false);
-		jsObject.put("height", "height");
 		jsObject.put("tooltipsHeader", true);
 		jsObject.put("virtualDom", true);
 		jsObject.putWithQuote("sort", DATETIME);
 		jsObject.putWithQuote("layout", "fitDataStretch");
-		jsObject.put("rowClick", "function(e,row){javaConnector.dataPointSelection(row._row.data."+ID+");}");
+		jsObject.put("rowClick", "function(e,row){javaConnector.dataPointSelection(row._row.data." + ID + ");}");
 		return jsObject.toString();
 	}
 
@@ -159,15 +160,14 @@ public class TableLog extends TabulatorLogs {
 
 		return null;
 	}
-	
+
 	@Override
 	public int onClick(int userid) {
 		EnrolledUser user = Controller.getInstance()
 				.getDataBase()
 				.getUsers()
 				.getById(userid);
-		return getUsers()
-				.indexOf(user);
+		return getUsers().indexOf(user);
 	}
 
 }

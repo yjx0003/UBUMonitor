@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -33,16 +34,22 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 	public void setCounts(List<LogLine> logLines, Predicate<LogLine> filter, Function<LogLine, E> getEFunction,
 			Function<LogLine, T> getTFunction) {
 
-		counts = logLines.stream().filter(filter).collect(Collectors.groupingBy(LogLine::getUser,
-				Collectors.groupingBy(getEFunction, Collectors.groupingBy(getTFunction, Collectors.toList()))));
+		counts = logLines.stream()
+				.filter(filter)
+				.collect(Collectors.groupingBy(LogLine::getUser,
+						Collectors.groupingBy(getEFunction, Collectors.groupingBy(getTFunction, Collectors.toList()))));
+	}
+
+	public Set<EnrolledUser> getUsers() {
+		return counts.keySet();
 	}
 
 	/**
 	 * Genera las estadisticas para un usuario
 	 * 
 	 * @param enrolledUsers usuarios que se quiere generar las estadisticas
-	 * @param elements primer listado de agrupamiento
-	 * @param groupByRange rango de un tipo de agrupacion
+	 * @param elements      primer listado de agrupamiento
+	 * @param groupByRange  rango de un tipo de agrupacion
 	 */
 	public void generateStatistics(List<EnrolledUser> enrolledUsers, List<E> elements, List<T> groupByRange) {
 		statistics = new HashMap<>();
@@ -77,9 +84,9 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 	 * y fecha de inicio y de fin
 	 * 
 	 * @param enrolledUsers lista de usuarios
-	 * @param components lista de componentes
-	 * @param start fecha de inicio
-	 * @param end fecha de fin
+	 * @param components    lista de componentes
+	 * @param start         fecha de inicio
+	 * @param end           fecha de fin
 	 * @return medias de componentes
 	 */
 	public Map<E, List<Double>> getMeans(List<EnrolledUser> enrolledUsers, List<E> elements, LocalDate start,
@@ -107,10 +114,10 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 	 * Devuelve los contadores de acceso a los registros de unos usuarios y
 	 * componentes
 	 * 
-	 * @param users usuarios
+	 * @param users      usuarios
 	 * @param components componentes
-	 * @param start inicio
-	 * @param end fin
+	 * @param start      inicio
+	 * @param end        fin
 	 * @return mapa multinivel
 	 */
 	public Map<EnrolledUser, Map<E, List<Integer>>> getUsersCounts(List<EnrolledUser> users, List<E> elements,
@@ -141,9 +148,9 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 	 * El maximo de los componentes de los usuarios
 	 * 
 	 * @param enrolledUsers usuarios que se quiere buscar el maximo
-	 * @param components componentes
-	 * @param start fecha de inicio
-	 * @param end fecha de fin
+	 * @param components    componentes
+	 * @param start         fecha de inicio
+	 * @param end           fecha de fin
 	 * @return maximo encontrado
 	 */
 	public long getMaxElement(List<EnrolledUser> enrolledUsers, List<E> elements, LocalDate start, LocalDate end) {
@@ -162,8 +169,8 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 			for (E element : elements) {
 				Map<T, List<LogLine>> groupByMap = elementsMap.computeIfAbsent(element, k -> new HashMap<>());
 				for (T groupBy : range) {
-					sumComponents.merge(groupBy, groupByMap.getOrDefault(groupBy, EMPTY_LIST).size(),
-							Integer::sum);
+					sumComponents.merge(groupBy, groupByMap.getOrDefault(groupBy, EMPTY_LIST)
+							.size(), Integer::sum);
 				}
 
 			}
@@ -187,7 +194,8 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 			for (E element : elements) {
 				Map<T, List<LogLine>> groupByMap = elementsMap.computeIfAbsent(element, k -> new HashMap<>());
 				for (T groupBy : range) {
-					cum += groupByMap.getOrDefault(groupBy, EMPTY_LIST).size();
+					cum += groupByMap.getOrDefault(groupBy, EMPTY_LIST)
+							.size();
 				}
 
 			}
@@ -230,7 +238,8 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 				for (E logType : logTypes) {
 					Map<T, List<LogLine>> groupByMap = elementsMap.computeIfAbsent(logType, k -> new HashMap<>());
 
-					cum += groupByMap.getOrDefault(range.get(i), EMPTY_LIST).size();
+					cum += groupByMap.getOrDefault(range.get(i), EMPTY_LIST)
+							.size();
 
 				}
 				if (Math.abs(Math.ceil(cum - cumMeans.get(i))) > max) {

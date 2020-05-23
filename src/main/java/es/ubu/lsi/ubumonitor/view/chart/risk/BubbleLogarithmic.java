@@ -51,8 +51,8 @@ public class BubbleLogarithmic extends Chartjs {
 								.atZone(ZoneId.systemDefault())),
 						Controller.DATE_TIME_FORMATTER.format(enrolledUser.getLastaccess()
 								.atZone(ZoneId.systemDefault())),
-						ChronoUnit.DAYS.between(enrolledUser.getLastcourseaccess(), updateTime),
-						ChronoUnit.DAYS.between(enrolledUser.getLastaccess(), updateTime));
+						ChronoUnit.HOURS.between(enrolledUser.getLastcourseaccess(), updateTime),
+						ChronoUnit.HOURS.between(enrolledUser.getLastaccess(), updateTime));
 
 			}
 		}
@@ -102,7 +102,6 @@ public class BubbleLogarithmic extends Chartjs {
 	public void update() {
 		String dataset = createDataset(getSelectedEnrolledUser());
 		String options = getOptions();
-		System.out.println(options);
 		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, options));
 	}
 

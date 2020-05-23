@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import javax.crypto.BadPaddingException;
@@ -411,6 +412,8 @@ public class WelcomeController implements Initializable {
 						.getUserPhoto());
 				copyDataBase.setFullName(controller.getUser()
 						.getFullName());
+				copyDataBase.setUserZoneId(controller.getUser().getTimezone());
+				TimeZone.setDefault(TimeZone.getTimeZone(copyDataBase.getUserZoneId()));
 				Course copyCourse = copyCourse(copyDataBase, selectedCourse);
 				controller.setDataBase(copyDataBase);
 				controller.setActualCourse(copyCourse);
@@ -497,16 +500,17 @@ public class WelcomeController implements Initializable {
 			isBBDDLoaded = true;
 			controller.setDefaultUpdate(ZonedDateTime.ofInstant(Instant.ofEpochSecond(cacheFilePath.toFile()
 					.lastModified()), ZoneId.systemDefault()));
+			TimeZone.setDefault(TimeZone.getTimeZone(dataBase.getUserZoneId()));
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			previusPasswordWindow();
 		} catch (IOException e) {
-			LOGGER.error(e.getMessage(), e);
 			UtilMethods.errorWindow(e.getMessage(), e);
+			throw new IllegalStateException(e);
 		} catch (Exception e) {
-			LOGGER.warn("Se ha modificado una de las clases serializables", e);
 			UtilMethods.errorWindow(I18n.get("error.invalidcache"), e);
+			throw new IllegalStateException("Se ha modificado una de las clases serializables", e);
 		}
-
+		
 	}
 
 	private void previusPasswordWindow() {
@@ -680,7 +684,6 @@ public class WelcomeController implements Initializable {
 								Response response = downloadLogController.downloadLog(false);
 								LOGGER.info("Log descargado");
 								updateMessage(I18n.get("label.parselog"));
-
 								Logs logs = new Logs(downloadLogController.getServerTimeZone());
 								LogCreator.parserResponse(logs, response);
 								actualCourse.setLogs(logs);
@@ -707,7 +710,7 @@ public class WelcomeController implements Initializable {
 									.map(EnrolledUser::getId)
 									.map(Object::toString)
 									.collect(Collectors.toSet());
-							System.out.println(ids);
+							LOGGER.info("Los ids de usuarios no matriculados: {}", ids);
 							List<EnrolledUser> notEnrolled = CreatorUBUGradesController.searchUser(ids);
 							actualCourse.addNotEnrolledUser(notEnrolled);
 							tries = limitRelogin + 1;

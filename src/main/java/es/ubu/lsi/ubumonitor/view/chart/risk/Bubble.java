@@ -99,7 +99,6 @@ public class Bubble extends Chartjs {
 		String dataset = createDataset(getSelectedEnrolledUser());
 		String options = getOptions();
 		
-		System.out.println(options);
 		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, options));
 	}
 

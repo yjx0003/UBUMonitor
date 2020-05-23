@@ -43,6 +43,7 @@
         <input type="button" class="btn" id="MEAN_DIFF" onclick='javaConnector.updateCharts(this.id);' />
         <input type="button" class="btn" id="SCATTER" onclick='javaConnector.updateCharts(this.id);' />
         <input type="button" class="btn" id="SCATTER_USER" onclick='javaConnector.updateCharts(this.id);' />
+         <input type="button" class="btn" id="TABLE_LOG" onclick='javaConnector.updateCharts(this.id);' />
         <input type="button" class="btn" id="SESSION" onclick='javaConnector.updateCharts(this.id);' />
         
 
@@ -271,7 +272,7 @@
 
     }
 
-    function updateTabulator(columns, tabledata, options) {
+    function updateTabulator(data, options) {
 
         displayApexChart(false);
         displayChartjs(false);
@@ -283,8 +284,12 @@
         disableTab(options.tab, options.button);
         table.destroy()
         table = new Tabulator("#tabulatorDiv", options);
-        table.setColumns(columns);
-        table.setData(tabledata).then(function () {
+        table.setColumns(data.columns);
+        table.setData(data.tabledata).then(function () {
+        	if(options.sort!=null){
+        		table.setSort(options.sort, "asc");
+        	}
+        	
             table.redraw();
         })
 

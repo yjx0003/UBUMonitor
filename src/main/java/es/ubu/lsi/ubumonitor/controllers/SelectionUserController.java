@@ -287,6 +287,7 @@ public class SelectionUserController {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/UserInfo.fxml"), I18n.getResourceBundle());
 
 		UtilMethods.createDialog(loader, CONTROLLER.getStage());
+		
 
 		UserInfoController userInfoController = loader.getController();
 		userInfoController.init(mainController, enrolledUser);

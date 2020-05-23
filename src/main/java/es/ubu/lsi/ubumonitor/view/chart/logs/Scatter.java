@@ -2,15 +2,9 @@ package es.ubu.lsi.ubumonitor.view.chart.logs;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.chrono.IsoChronology;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.csv.CSVPrinter;
@@ -22,29 +16,20 @@ import es.ubu.lsi.ubumonitor.model.LogLine;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
+import es.ubu.lsi.ubumonitor.util.DateTimeWrapper;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 
 public class Scatter extends ChartjsLog {
 
-	private DateTimeFormatter dateFormatter;
-	private DateTimeFormatter timeFormatter;
-	private String datePattern;
-	private String timePattern;
+	private DateTimeWrapper dateTimeWrapper;
 
 	public Scatter(MainController mainController) {
 		super(mainController, ChartType.SCATTER);
 		useLegend = true;
 		useRangeDate = true;
-		datePattern = DateTimeFormatterBuilder
-				.getLocalizedDateTimePattern(FormatStyle.SHORT, null, IsoChronology.INSTANCE, Locale.getDefault())
-				.toUpperCase();
-		timePattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(null, FormatStyle.SHORT,
-				IsoChronology.INSTANCE, Locale.getDefault());
-
-		dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
-		timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
+		dateTimeWrapper = new DateTimeWrapper();
 	}
 
 	@Override
@@ -56,9 +41,9 @@ public class Scatter extends ChartjsLog {
 		jsObject.put("onClick",
 				"function(t,a){let e=myChart.getElementAtEvent(t)[0];e&&javaConnector.dataPointSelection(myChart.data.datasets[e._datasetIndex].data[e._index].y)}");
 		jsObject.put("scales",
-				"{yAxes:[{type:'category'}],xAxes:[{type:'time',ticks:{min:'" + dateFormatter.format(dateStart)
-						+ "',max:'" + dateFormatter.format(dateEnd) + "',maxTicksLimit:10},time:{minUnit:'day',parser:'"
-						+ datePattern + " " + timePattern + "'}}]}");
+				"{yAxes:[{type:'category'}],xAxes:[{type:'time',ticks:{min:'" + dateTimeWrapper.formatDate(dateStart)
+						+ "',max:'" + dateTimeWrapper.formatDate(dateEnd.plusDays(1)) + "',maxTicksLimit:10},time:{minUnit:'day',parser:'"
+						+ dateTimeWrapper.getPattern() + "'}}]}");
 
 		jsObject.put("tooltips",
 				"{callbacks:{label:function(l,a){return a.datasets[l.datasetIndex].label+': '+ l.xLabel}}}");
@@ -89,7 +74,7 @@ public class Scatter extends ChartjsLog {
 				for (LogLine logLine : logLines) {
 					JSObject point = new JSObject();
 					point.putWithQuote("x",
-							dateFormatter.format(logLine.getTime()) + " " + timeFormatter.format(logLine.getTime()));
+							dateTimeWrapper.format(logLine.getTime()));
 					point.put("y", i);
 					jsArray.add(point);
 				}

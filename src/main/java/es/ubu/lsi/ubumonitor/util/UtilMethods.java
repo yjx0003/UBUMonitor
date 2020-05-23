@@ -12,11 +12,15 @@ import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
+
+import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.TextFields;
 
 import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.Style;
@@ -29,6 +33,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -414,6 +419,12 @@ public class UtilMethods {
 			      .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
 			      .toString();
 
+	}
+	
+	public static <E> AutoCompletionBinding<E> createAutoCompletionBinding(TextField textField, Collection<E> possibleSuggestions){
+		AutoCompletionBinding<E> autoCompletionBinding = TextFields.bindAutoCompletion(textField, possibleSuggestions);
+		autoCompletionBinding.setDelay(0);
+		return autoCompletionBinding;
 	}
 	
 }

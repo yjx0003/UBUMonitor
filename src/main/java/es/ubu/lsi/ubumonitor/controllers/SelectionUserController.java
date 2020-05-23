@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.rmi.CORBA.Util;
+
 import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
@@ -47,8 +49,16 @@ import javafx.scene.image.ImageView;
 
 public class SelectionUserController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SelectionUserController.class);
-
+	public static final Image DEFAULT_IMAGE = new Image("/img/default_user.png", 50, 50, false, false);
 	private static final Controller CONTROLLER = Controller.getInstance();
+
+	@FXML
+	private Label labelNotEnrolled;
+
+	@FXML
+	private TextField textFieldNotEnrolled;
+	private FilteredList<EnrolledUser> filteredListNotEnrolled;
+	private AutoCompletionBinding<EnrolledUser> autoCompletionBindingNotEnrolled;
 	@FXML
 	private TabPane tabPane;
 
@@ -118,8 +128,7 @@ public class SelectionUserController {
 		tfdParticipants.setOnAction(event -> filterParticipants());
 
 		initEnrolledUsersListView();
-		autoCompletionBinding = TextFields.bindAutoCompletion(tfdParticipants, filteredEnrolledList);
-		autoCompletionBinding.setDelay(0);
+		autoCompletionBinding = UtilMethods.createAutoCompletionBinding(tfdParticipants, filteredEnrolledList);
 		checkComboBoxGroup.getItems()
 				.setAll(CONTROLLER.getActualCourse()
 						.getGroups()
@@ -166,7 +175,6 @@ public class SelectionUserController {
 						.asString());
 		filterParticipants();
 	}
-
 
 	/**
 	 * Inicializa la lista de usuarios.
@@ -218,7 +226,7 @@ public class SelectionUserController {
 
 					} catch (Exception e) {
 						LOGGER.error("No se ha podido cargar la imagen de: {}", user);
-						setGraphic(new ImageView(new Image("/img/default_user.png")));
+						setGraphic(new ImageView(DEFAULT_IMAGE));
 					}
 					ContextMenu menu = new ContextMenu();
 					MenuItem seeUser = new MenuItem(I18n.get("text.see") + user);
@@ -236,9 +244,11 @@ public class SelectionUserController {
 		Course course = CONTROLLER.getActualCourse();
 
 		ObservableList<EnrolledUser> user = FXCollections.observableArrayList(course.getNotEnrolledUser());
-		user.sort(Comparator.comparing(EnrolledUser::getFullName, String.CASE_INSENSITIVE_ORDER));
-		listParticipantsOut.getItems()
-				.setAll(user);
+		user.sort(Comparator.comparing(EnrolledUser::getFullName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)));
+		filteredListNotEnrolled = new FilteredList<>(user);
+		filteredListNotEnrolled.predicateProperty()
+				.addListener(value -> mainController.updatePredicadeEnrolledList());
+		listParticipantsOut.setItems(filteredListNotEnrolled);
 		listParticipantsOut.getSelectionModel()
 				.setSelectionMode(SelectionMode.MULTIPLE);
 
@@ -263,7 +273,7 @@ public class SelectionUserController {
 
 					} catch (Exception e) {
 						LOGGER.error("No se ha podido cargar la imagen de: {}", user);
-						setGraphic(new ImageView(new Image("/img/default_user.png")));
+						setGraphic(new ImageView(DEFAULT_IMAGE));
 					}
 					ContextMenu menu = new ContextMenu();
 					MenuItem seeUser = new MenuItem(I18n.get("text.see") + user);
@@ -276,10 +286,22 @@ public class SelectionUserController {
 
 		});
 		listParticipantsOut.getSelectionModel()
-		.getSelectedItems()
-		.addListener(
-				(Change<? extends EnrolledUser> usersSelected) -> mainController.updateListViewEnrolledUser());
+				.getSelectedItems()
+				.addListener(
+						(Change<? extends EnrolledUser> usersSelected) -> mainController.updateListViewEnrolledUser());
+		labelNotEnrolled.textProperty()
+				.bind(Bindings.size(filteredListNotEnrolled)
+						.asString());
+		textFieldNotEnrolled.setOnAction(event -> {
+			String text = textFieldNotEnrolled.getText()
+					.toLowerCase();
+			filteredListNotEnrolled.setPredicate(e -> (text.isEmpty() || e.getFullName()
+					.toLowerCase()
+					.contains(text)));
+		});
 
+		autoCompletionBindingNotEnrolled = UtilMethods.createAutoCompletionBinding(textFieldNotEnrolled,
+				filteredListNotEnrolled);
 	}
 
 	public void userInfo(EnrolledUser enrolledUser) {
@@ -287,7 +309,6 @@ public class SelectionUserController {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/UserInfo.fxml"), I18n.getResourceBundle());
 
 		UtilMethods.createDialog(loader, CONTROLLER.getStage());
-		
 
 		UserInfoController userInfoController = loader.getController();
 		userInfoController.init(mainController, enrolledUser);
@@ -312,9 +333,10 @@ public class SelectionUserController {
 				&& (textField.isEmpty() || e.getFullName()
 						.toLowerCase()
 						.contains(textField))
-				&& (lastActivity.contains(LastActivityFactory.DEFAULT.getActivity(e.getLastcourseaccess(), lastLogInstant))));
+				&& (lastActivity
+						.contains(LastActivityFactory.DEFAULT.getActivity(e.getLastcourseaccess(), lastLogInstant))));
 		autoCompletionBinding.dispose();
-		autoCompletionBinding = TextFields.bindAutoCompletion(tfdParticipants, filteredEnrolledList);
+		autoCompletionBinding = UtilMethods.createAutoCompletionBinding(tfdParticipants, filteredEnrolledList);
 	}
 
 	private boolean checkUserHasGroup(List<Group> groups, EnrolledUser user) {

@@ -62,7 +62,7 @@ public abstract class ChartjsLog extends ChartLogs {
 	public String getYScaleLabel() {
 		MainConfiguration mainConfiguration = controller.getMainConfiguration();
 		JSObject jsObject = new JSObject();
-		jsObject.put("display", (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "displayYScaleTitle"));
+		jsObject.put("display", mainConfiguration.getValue(MainConfiguration.GENERAL, "displayYScaleTitle"));
 		jsObject.putWithQuote("labelString", getYAxisTitle());
 		jsObject.putWithQuote("fontSize", 14);
 		jsObject.put("fontColor",

@@ -32,6 +32,7 @@ import es.ubu.lsi.ubumonitor.view.chart.logs.Scatter;
 import es.ubu.lsi.ubumonitor.view.chart.logs.ScatterUser;
 import es.ubu.lsi.ubumonitor.view.chart.logs.SessionChart;
 import es.ubu.lsi.ubumonitor.view.chart.logs.Stackedbar;
+import es.ubu.lsi.ubumonitor.view.chart.logs.TableLog;
 import es.ubu.lsi.ubumonitor.view.chart.logs.TotalBar;
 import es.ubu.lsi.ubumonitor.view.chart.logs.ViolinLog;
 import javafx.concurrent.Worker.State;
@@ -91,6 +92,7 @@ public class VisualizationJavaConnector {
 		addChart(new SessionChart(mainController));
 		addChart(new BoxplotLog(mainController));
 		addChart(new ViolinLog(mainController));
+		addChart(new TableLog(mainController));
 		currentType = mapChart.get(DEFAULT_LOG_CHART);
 	}
 

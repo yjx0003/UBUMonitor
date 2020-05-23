@@ -40,11 +40,14 @@ public class GradeReportTable extends Tabulator {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 		List<GradeItem> gradeItems = getSelectedGradeItems();
 		String columns = createColumns(gradeItems);
-		String data = createData(enrolledUsers, gradeItems);
+		String tableData = createData(enrolledUsers, gradeItems);
+		JSObject data = new JSObject();
+		data.put("columns", columns);
+		data.put("tabledata", tableData);
 		LOGGER.debug("Usuarios seleccionados:{}", enrolledUsers);
 		LOGGER.debug("Columnas:{}", columns);
 		LOGGER.debug("Datos de tabla:{}", data);
-		webViewChartsEngine.executeScript(String.format("updateTabulator(%s, %s, %s)", columns, data, getOptions()));
+		webViewChartsEngine.executeScript(String.format("updateTabulator(%s, %s)", data, getOptions()));
 
 	}
 
@@ -67,9 +70,9 @@ public class GradeReportTable extends Tabulator {
 		// grade items columns
 		for (GradeItem gradeItem : gradeItems) {
 			jsObject = new JSObject();
-			jsObject.put("formatter","'progress'");
+			jsObject.put("formatter", "'progress'");
 			jsObject.put("formatterParams", progressParams);
-			jsObject.put("sorter","'number'");
+			jsObject.put("sorter", "'number'");
 			jsObject.putWithQuote("title", gradeItem.getItemname());
 			jsObject.putWithQuote("field", "ID" + gradeItem.getId());
 
@@ -87,15 +90,18 @@ public class GradeReportTable extends Tabulator {
 			jsObject.putWithQuote("name", enrolledUser.getFullName());
 			jsObject.putWithQuote("type", stringSelectedUsers);
 			for (GradeItem gradeItem : gradeItems) {
-				jsObject.put("ID" + gradeItem.getId(),
-						adjustTo10(gradeItem.getEnrolledUserPercentage(enrolledUser)));
+				jsObject.put("ID" + gradeItem.getId(), adjustTo10(gradeItem.getEnrolledUserPercentage(enrolledUser)));
 			}
 			array.add(jsObject.toString());
 		}
-		if (useGeneralButton && (boolean)Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL, "generalActive")) {
+		if (useGeneralButton && (boolean) Controller.getInstance()
+				.getMainConfiguration()
+				.getValue(MainConfiguration.GENERAL, "generalActive")) {
 			array.add(addStats(gradeItems, I18n.get("chartlabel.generalMean"), stats.getGeneralStats()));
 		}
-		if (useGroupButton && (boolean)Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL, "groupActive")) {
+		if (useGroupButton && (boolean) Controller.getInstance()
+				.getMainConfiguration()
+				.getValue(MainConfiguration.GENERAL, "groupActive")) {
 			for (Group group : slcGroup.getItems()) {
 				if (group != null) {
 					array.add(addStats(gradeItems,
@@ -115,7 +121,8 @@ public class GradeReportTable extends Tabulator {
 		jsObject.putWithQuote("name", name);
 		jsObject.putWithQuote("type", I18n.get("text.stats"));
 		for (GradeItem gradeItem : gradeItems) {
-			jsObject.put("ID" + gradeItem.getId(), adjustTo10(stats.get(gradeItem).getMean()));
+			jsObject.put("ID" + gradeItem.getId(), adjustTo10(stats.get(gradeItem)
+					.getMean()));
 		}
 		return jsObject.toString();
 	}
@@ -124,9 +131,9 @@ public class GradeReportTable extends Tabulator {
 	public String getOptions() {
 
 		JSObject jsObject = getDefaultOptions();
-		jsObject.put( "invalidOptionWarnings", false);
+		jsObject.put("invalidOptionWarnings", false);
 		jsObject.put("height", "height");
-		jsObject.put( "tooltipsHeader", true);
+		jsObject.put("tooltipsHeader", true);
 		jsObject.putWithQuote("groupBy", "type");
 		jsObject.put("virtualDom", true);
 		jsObject.putWithQuote("layout", "fitColumns");
@@ -135,13 +142,14 @@ public class GradeReportTable extends Tabulator {
 	}
 
 	private String getProgressParam() {
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		MainConfiguration mainConfiguration = Controller.getInstance()
+				.getMainConfiguration();
 		JSObject jsObject = new JSObject();
 		jsObject.put("min", 0);
 		jsObject.put("max", 10);
 		jsObject.put("legend", true);
 		jsObject.putWithQuote("legendAlign", "center");
-		
+
 		jsObject.put("color",
 				"function(e){return e<" + mainConfiguration.getValue(MainConfiguration.GENERAL, "cutGrade") + "?"
 						+ colorToRGB(mainConfiguration.getValue(getChartType(), "failGradeColor")) + ":"
@@ -158,8 +166,9 @@ public class GradeReportTable extends Tabulator {
 		for (GradeItem gradeItem : gradeItems) {
 			header.add(gradeItem.getItemname());
 		}
-		
-		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
+
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
+				CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
 			for (EnrolledUser enrolledUser : getSelectedEnrolledUser()) {
 				printer.print(enrolledUser.getId());
 				printer.print(enrolledUser.getFullName());
@@ -171,7 +180,5 @@ public class GradeReportTable extends Tabulator {
 		}
 
 	}
-		
-	
 
 }

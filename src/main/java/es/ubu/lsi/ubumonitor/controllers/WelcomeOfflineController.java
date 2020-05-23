@@ -8,10 +8,12 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -274,6 +276,10 @@ public class WelcomeOfflineController implements Initializable {
 			dataBase = (DataBase) Serialization.decrypt(password, cacheFilePath.toString());
 			controller.setDataBase(dataBase);
 			isBBDDLoaded = true;
+			controller.setDefaultUpdate(ZonedDateTime.ofInstant(Instant.ofEpochSecond(cacheFilePath.toFile()
+					.lastModified()), ZoneId.systemDefault()));
+			TimeZone.setDefault(TimeZone.getTimeZone(dataBase.getUserZoneId()));
+			return;
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			incorrectPasswordWindow();
 		} catch (IOException e) {
@@ -283,7 +289,9 @@ public class WelcomeOfflineController implements Initializable {
 		} catch (Exception e) {
 			LOGGER.warn("Se ha modificado una de las clases serializables", e);
 			UtilMethods.errorWindow(I18n.get("error.invalidcache"), e);
+			
 		}
+		throw new IllegalStateException();
 
 	}
 

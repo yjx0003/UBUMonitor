@@ -3,10 +3,6 @@ package es.ubu.lsi.ubumonitor.view.chart.activitystatus;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.chrono.IsoChronology;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -22,6 +18,7 @@ import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.ActivityCompletion;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.util.DateTimeWrapper;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
@@ -31,21 +28,11 @@ import es.ubu.lsi.ubumonitor.view.chart.Tabulator;
 
 public class ActivitiesStatusTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActivitiesStatusTable.class);
-
-	private String datePattern;
-	private String timePattern;
-	private DateTimeFormatter dateFormatter;
-	private DateTimeFormatter timeFormatter;
-
+	private DateTimeWrapper dateTimeWrapper;
 	public ActivitiesStatusTable(MainController mainController) {
 		super(mainController, ChartType.ACTIVITIES_TABLE, Tabs.ACTIVITY_COMPLETION);
+		dateTimeWrapper = new DateTimeWrapper();
 
-		datePattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(FormatStyle.SHORT, null,
-				IsoChronology.INSTANCE, Locale.getDefault());
-		timePattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(null, FormatStyle.SHORT,
-				IsoChronology.INSTANCE, Locale.getDefault());
-		dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
-		timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
 		useRangeDate = true;
 	}
 
@@ -55,9 +42,9 @@ public class ActivitiesStatusTable extends Tabulator {
 		JSArray array = new JSArray();
 
 		jsObject.putWithQuote("title", I18n.get("chartlabel.name"));
-		jsObject.putWithQuote("field", "name");
-		jsObject.putWithQuote("frozen", true);
-		array.add(jsObject.toString());
+		jsObject.put("field", "'name'");
+		jsObject.put("frozen", true);
+		array.add(jsObject);
 
 		JSObject formatterParams = new JSObject();
 		formatterParams.put("allowEmpty", true);
@@ -65,7 +52,7 @@ public class ActivitiesStatusTable extends Tabulator {
 		String stringFormatterParams = formatterParams.toString();
 
 		JSObject sorterParams = new JSObject();
-		sorterParams.putWithQuote("format", datePattern.toUpperCase() + ", " + timePattern);
+		sorterParams.putWithQuote("format", dateTimeWrapper.getPattern());
 		sorterParams.putWithQuote("alignEmptyValues", "bottom");
 		String stringsorterParams = sorterParams.toString();
 
@@ -139,8 +126,7 @@ public class ActivitiesStatusTable extends Tabulator {
 						Instant timeCompleted = activity.getTimecompleted();
 						if (timeCompleted != null && init.isBefore(timeCompleted) && end.isAfter(timeCompleted)) {
 							progress++;
-							jsObject.putWithQuote(field, dateFormatter.format(activity.getTimecompleted()) + ", "
-									+ timeFormatter.format(activity.getTimecompleted()));
+							jsObject.putWithQuote(field, dateTimeWrapper.format(timeCompleted));
 						}
 
 						break;
@@ -173,11 +159,14 @@ public class ActivitiesStatusTable extends Tabulator {
 
 		List<CourseModule> courseModules = selectionController.getListViewActivity().getSelectionModel().getSelectedItems();
 		String columns = createColumns(courseModules);
-		String data = createData(enrolledUsers, courseModules);
+		String tableData = createData(enrolledUsers, courseModules);
+		JSObject data = new JSObject();
+		data.put("columns", columns);
+		data.put("tabledata", tableData);
 		LOGGER.debug("Usuarios seleccionados:{}", enrolledUsers);
 		LOGGER.debug("Columnas:{}", columns);
 		LOGGER.debug("Datos de tabla:{}", data);
-		webViewChartsEngine.executeScript(String.format("updateTabulator(%s, %s, %s)", columns, data, getOptions()));
+		webViewChartsEngine.executeScript(String.format("updateTabulator(%s, %s)",data, getOptions()));
 
 	}
 
@@ -214,8 +203,7 @@ public class ActivitiesStatusTable extends Tabulator {
 
 					ActivityCompletion activity = courseModule.getActivitiesCompletion().get(enrolledUser);
 					printer.print(activity.getState().ordinal());
-					printer.print(dateFormatter.format(activity.getTimecompleted()) + ", "
-							+ timeFormatter.format(activity.getTimecompleted()));
+					printer.print(dateTimeWrapper.format(activity.getTimecompleted()));
 				}
 				printer.println();
 

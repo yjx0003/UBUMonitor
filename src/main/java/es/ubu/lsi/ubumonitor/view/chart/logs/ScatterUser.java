@@ -2,14 +2,8 @@ package es.ubu.lsi.ubumonitor.view.chart.logs;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.chrono.IsoChronology;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.csv.CSVPrinter;
@@ -21,29 +15,20 @@ import es.ubu.lsi.ubumonitor.model.LogLine;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
+import es.ubu.lsi.ubumonitor.util.DateTimeWrapper;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 
 public class ScatterUser extends ChartjsLog {
 
-	private DateTimeFormatter dateFormatter;
-	private DateTimeFormatter timeFormatter;
-	private String datePattern;
-	private String timePattern;
+	private DateTimeWrapper dateTimeWrapper;
 
 	public ScatterUser(MainController mainController) {
 		super(mainController, ChartType.SCATTER_USER);
 		useLegend = true;
 		useRangeDate = true;
-		datePattern = DateTimeFormatterBuilder
-				.getLocalizedDateTimePattern(FormatStyle.SHORT, null, IsoChronology.INSTANCE, Locale.getDefault())
-				.toUpperCase();
-		timePattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(null, FormatStyle.SHORT,
-				IsoChronology.INSTANCE, Locale.getDefault());
-
-		dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
-		timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
+		dateTimeWrapper = new DateTimeWrapper();
 	}
 
 	@Override
@@ -55,9 +40,9 @@ public class ScatterUser extends ChartjsLog {
 		jsObject.put("onClick",
 				"function(t,a){let e=myChart.getElementAtEvent(t)[0];e&&javaConnector.dataPointSelection(e._datasetIndex)}");
 		jsObject.put("scales",
-				"{yAxes:[{type:'category'}],xAxes:[{type:'time',ticks:{min:'" + dateFormatter.format(dateStart)
-						+ "',max:'" + dateFormatter.format(dateEnd) + "',maxTicksLimit:10},time:{minUnit:'day',parser:'"
-						+ datePattern + " " + timePattern + "'}}]}");
+				"{yAxes:[{type:'category'}],xAxes:[{type:'time',ticks:{min:'" + dateTimeWrapper.formatDate(dateStart)
+						+ "',max:'" + dateTimeWrapper.formatDate(dateEnd.plusDays(1))
+						+ "',maxTicksLimit:10},time:{minUnit:'day',parser:'" + dateTimeWrapper.getPattern() + "'}}]}");
 		jsObject.put("tooltips",
 				"{callbacks:{label:function(l,a){return a.datasets[l.datasetIndex].label+': '+ l.xLabel}}}");
 		return jsObject.toString();
@@ -69,7 +54,10 @@ public class ScatterUser extends ChartjsLog {
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = Controller.getInstance()
+				.getActualCourse()
+				.getLogStats()
+				.getByType(TypeTimes.DAY);
 		Map<EnrolledUser, Map<E, List<LogLine>>> map = dataSet.getUserLogs(groupBy, selectedUsers, typeLogs, dateStart,
 				dateEnd);
 		JSObject data = new JSObject();
@@ -88,11 +76,11 @@ public class ScatterUser extends ChartjsLog {
 			dataset.put("backgroundColor", hex(user.getId()));
 			JSArray dataArray = new JSArray();
 			for (int i = 0; i < typeLogs.size(); i++) {
-				List<LogLine> logLines = map.get(user).get(typeLogs.get(i));
+				List<LogLine> logLines = map.get(user)
+						.get(typeLogs.get(i));
 				for (LogLine logLine : logLines) {
 					JSObject point = new JSObject();
-					point.putWithQuote("x",
-							dateFormatter.format(logLine.getTime()) + " " + timeFormatter.format(logLine.getTime()));
+					point.putWithQuote("x", dateTimeWrapper.format(logLine.getTime()));
 					point.putWithQuote("y", i);
 					dataArray.add(point);
 				}
@@ -110,7 +98,10 @@ public class ScatterUser extends ChartjsLog {
 	protected <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = Controller.getInstance()
+				.getActualCourse()
+				.getLogStats()
+				.getByType(TypeTimes.DAY);
 		List<?> rangeDates = groupBy.getRange(dateStart, dateEnd);
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
@@ -138,7 +129,10 @@ public class ScatterUser extends ChartjsLog {
 	protected String[] getCSVHeader() {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = Controller.getInstance()
+				.getActualCourse()
+				.getLogStats()
+				.getByType(TypeTimes.DAY);
 		List<String> range = groupBy.getRangeString(dateStart, dateEnd);
 		range.add(0, "userid");
 		range.add(1, "fullname");
@@ -150,7 +144,10 @@ public class ScatterUser extends ChartjsLog {
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = Controller.getInstance()
+				.getActualCourse()
+				.getLogStats()
+				.getByType(TypeTimes.DAY);
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
 				dateStart, dateEnd);
@@ -176,11 +173,16 @@ public class ScatterUser extends ChartjsLog {
 	protected String[] getCSVDesglosedHeader() {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = Controller.getInstance()
+				.getActualCourse()
+				.getLogStats()
+				.getByType(TypeTimes.DAY);
 		List<String> list = new ArrayList<>();
 		list.add("userid");
 		list.add("fullname");
-		String selectedTab = tabPaneUbuLogs.getSelectionModel().getSelectedItem().getText();
+		String selectedTab = tabPaneUbuLogs.getSelectionModel()
+				.getSelectedItem()
+				.getText();
 		if (hasId()) {
 			list.add(selectedTab + "_id");
 		}

@@ -123,7 +123,7 @@ public class UtilMethods {
 	 * @return
 	 */
 	public static ButtonType errorWindow(String contentText) {
-		return dialogWindow(AlertType.ERROR, "Error", contentText);
+		return dialogWindow(AlertType.ERROR,I18n.get("error"), contentText);
 	}
 
 	/**
@@ -135,15 +135,15 @@ public class UtilMethods {
 	 */
 	public static ButtonType infoWindow(String contentText) {
 
-		return dialogWindow(AlertType.INFORMATION, "Information", contentText);
+		return dialogWindow(AlertType.INFORMATION, I18n.get("information"), contentText);
 	}
 
 	public static ButtonType confirmationWindow(String contentText) {
-		return dialogWindow(AlertType.CONFIRMATION, "Confirmation", contentText);
+		return dialogWindow(AlertType.CONFIRMATION, I18n.get("confirmation"), contentText);
 	}
 
 	public static ButtonType warningWindow(String contentText) {
-		return dialogWindow(AlertType.WARNING, "Warning", contentText);
+		return dialogWindow(AlertType.WARNING, I18n.get("warning"), contentText);
 	}
 
 	public static ButtonType errorWindow(String contentText, Throwable ex) {

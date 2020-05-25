@@ -11,11 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.rmi.CORBA.Util;
-
 import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
-import org.controlsfx.control.textfield.TextFields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -288,7 +285,11 @@ public class SelectionUserController {
 		listParticipantsOut.getSelectionModel()
 				.getSelectedItems()
 				.addListener(
-						(Change<? extends EnrolledUser> usersSelected) -> mainController.updateListViewEnrolledUser());
+						(Change<? extends EnrolledUser> usersSelected) -> {mainController.updateListViewEnrolledUser();
+						autoCompletionBindingNotEnrolled.dispose();
+						autoCompletionBinding = UtilMethods.createAutoCompletionBinding(textFieldNotEnrolled,
+								filteredListNotEnrolled);
+						});
 		labelNotEnrolled.textProperty()
 				.bind(Bindings.size(filteredListNotEnrolled)
 						.asString());

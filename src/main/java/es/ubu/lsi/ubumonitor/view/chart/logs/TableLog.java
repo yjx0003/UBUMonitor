@@ -30,7 +30,7 @@ public class TableLog extends TabulatorLogs {
 	private static final String COMPONENT = "c";
 	private static final String EVENT = "d";
 	private static final String COURSE_MODULE = "e";
-	private static final String WEB = "f";
+	private static final String ORIGIN = "f";
 	private static final String IP = "g";
 	private static final String ID = "h";
 
@@ -72,7 +72,7 @@ public class TableLog extends TabulatorLogs {
 		createColumn(jsArray, I18n.get("text.component"), COMPONENT);
 		createColumn(jsArray, I18n.get("text.event"), EVENT);
 		createColumn(jsArray, I18n.get("text.coursemodule"), COURSE_MODULE);
-		createColumn(jsArray, I18n.get("text.web"), WEB);
+		createColumn(jsArray, I18n.get("text.origin"), ORIGIN);
 		createColumn(jsArray, I18n.get("text.ip"), IP);
 		return jsArray;
 
@@ -87,6 +87,7 @@ public class TableLog extends TabulatorLogs {
 		jsObject.putWithQuote("title", title);
 		jsObject.putWithQuote("field", field);
 		jsObject.putWithQuote("sorter", sorter);
+		jsObject.put("headerFilter", "'select'");
 		jsObject.put("align", "'center'");
 		jsArray.add(jsObject);
 		return jsObject;
@@ -116,7 +117,7 @@ public class TableLog extends TabulatorLogs {
 				jsObject.putWithQuote(COURSE_MODULE, logLine.getCourseModule()
 						.getModuleName());
 			}
-			jsObject.putWithQuote(WEB, logLine.getOrigin());
+			jsObject.putWithQuote(ORIGIN, logLine.getOrigin());
 			jsObject.putWithQuote(IP, logLine.getIPAdress());
 			jsArray.add(jsObject);
 		}
@@ -133,6 +134,7 @@ public class TableLog extends TabulatorLogs {
 		jsObject.put("invalidOptionWarnings", false);
 		jsObject.put("tooltipsHeader", true);
 		jsObject.put("virtualDom", true);
+		jsObject.putWithQuote("headerFilterPlaceholder", I18n.get("label.filter"));
 		jsObject.putWithQuote("sort", DATETIME);
 		jsObject.putWithQuote("layout", "fitDataStretch");
 		jsObject.put("rowClick", "function(e,row){javaConnector.dataPointSelection(row._row.data." + ID + ");}");

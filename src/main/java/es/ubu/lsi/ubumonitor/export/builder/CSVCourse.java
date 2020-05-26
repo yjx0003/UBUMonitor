@@ -31,7 +31,7 @@ public class CSVCourse extends CSVBuilderAbstract {
 
 		for (Course course : courses) {
 			List<EnrolledUser> enrolledUsers = course.getEnrolledUsers().stream()
-					.sorted(EnrolledUser.NAME_COMPARATOR)
+					.sorted(EnrolledUser.getNameComparator())
 					.collect(Collectors.toList());
 			for (EnrolledUser enrolledUser : enrolledUsers) {
 				LOGGER.debug("Data line: {}, {}, {}, {}, {}", course.getId(), course.getShortName(), course.getFullName(),

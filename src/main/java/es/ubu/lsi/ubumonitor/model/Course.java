@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.model;
 
 import java.io.Serializable;
+import java.text.Collator;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,10 +35,7 @@ public class Course implements Serializable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Course.class);
 
-	public static final Comparator<Course> COURSE_COMPARATOR = Comparator
-			.comparing(Course::getFullName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
-			.thenComparing(c -> c.getCourseCategory()
-					.getName(), Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+	
 
 	private int id;
 	private String shortName;
@@ -72,7 +70,6 @@ public class Course implements Serializable {
 	private ZonedDateTime updatedActivityCompletion;
 	private ZonedDateTime updatedLog;
 
-	
 	public Course() {
 		this.enrolledUsers = new HashSet<>();
 		this.notEnrolledUsers = new HashSet<>();
@@ -703,16 +700,22 @@ public class Course implements Serializable {
 
 	public void setNotEnrolledUser(Set<EnrolledUser> notEnrolled) {
 		this.notEnrolledUsers = notEnrolled;
-		
+
 	}
+
 	public void addNotEnrolledUser(Collection<EnrolledUser> notEnrolled) {
 		this.notEnrolledUsers.addAll(notEnrolled);
-		
+
 	}
 
 	public Set<EnrolledUser> getNotEnrolledUser() {
 		return this.notEnrolledUsers;
 	}
-
+	
+	public static Comparator<Course> getCourseComparator() {
+		return Comparator.comparing(Course::getFullName, Comparator.nullsLast(Collator.getInstance()))
+				.thenComparing(c -> c.getCourseCategory()
+						.getName(), Comparator.nullsLast(Collator.getInstance()));
+	}
 
 }

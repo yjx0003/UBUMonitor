@@ -182,7 +182,7 @@ public class SelectionUserController {
 				.getEnrolledUsers();
 
 		ObservableList<EnrolledUser> observableUsers = FXCollections.observableArrayList(users);
-		observableUsers.sort(EnrolledUser.NAME_COMPARATOR);
+		observableUsers.sort(EnrolledUser.getNameComparator());
 		filteredEnrolledList = new FilteredList<>(observableUsers);
 		filteredEnrolledList.predicateProperty()
 				.addListener(p -> mainController.updatePredicadeEnrolledList());

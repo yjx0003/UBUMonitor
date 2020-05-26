@@ -168,9 +168,9 @@
                      </GridPane.margin>
                   </Label>
                   <Label fx:id="lblDateUpdate" GridPane.columnIndex="2" />
-                  <CheckBox fx:id="checkBoxGradeItem" mnemonicParsing="false" text="%text.gradeitems" GridPane.rowIndex="1" />
-                  <CheckBox fx:id="checkBoxActivityCompletion" mnemonicParsing="false" text="%label.withcompletion" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <CheckBox fx:id="checkBoxLogs" mnemonicParsing="false" text="%text.logs" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <CheckBox fx:id="checkBoxGradeItem" mnemonicParsing="false" text="%text.gradeitems" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <CheckBox fx:id="checkBoxActivityCompletion" mnemonicParsing="false" text="%label.withcompletion" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <CheckBox fx:id="checkBoxLogs" mnemonicParsing="false" text="%text.logs" GridPane.rowIndex="1" />
                </children>
             </GridPane>
          </children>

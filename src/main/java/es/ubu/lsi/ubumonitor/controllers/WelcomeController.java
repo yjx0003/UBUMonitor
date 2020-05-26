@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
+import es.ubu.lsi.ubumonitor.controllers.load.Connection;
 import es.ubu.lsi.ubumonitor.controllers.load.CreatorUBUGradesController;
 import es.ubu.lsi.ubumonitor.controllers.load.DownloadLogController;
 import es.ubu.lsi.ubumonitor.controllers.load.LogCreator;
@@ -290,7 +291,7 @@ public class WelcomeController implements Initializable {
 	}
 
 	private void initListViews() {
-		Comparator<Course> courseComparator = Course.COURSE_COMPARATOR;
+		Comparator<Course> courseComparator = Course.getCourseComparator();
 
 		initListView(controller.getUser()
 				.getCourses(), listCourses, courseComparator);
@@ -625,7 +626,7 @@ public class WelcomeController implements Initializable {
 	 */
 	public void logOut(ActionEvent actionEvent) {
 		LOGGER.info("Cerrando sesión de usuario");
-
+		Connection.clearCookies();
 		UtilMethods.changeScene(getClass().getResource("/view/Login.fxml"), controller.getStage());
 
 	}
@@ -770,7 +771,7 @@ public class WelcomeController implements Initializable {
 
 			} else {
 				Collections.sort(courses, Comparator.comparing(Course::hasCourseAccess, Comparator.reverseOrder())
-						.thenComparing(Course.COURSE_COMPARATOR));
+						.thenComparing(Course.getCourseComparator()));
 
 			}
 			listViewSearch.getItems()

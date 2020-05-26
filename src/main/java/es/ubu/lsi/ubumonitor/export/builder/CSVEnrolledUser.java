@@ -45,7 +45,7 @@ public class CSVEnrolledUser extends CSVBuilderAbstract {
 		Collection<EnrolledUser> studentsCollection = enrolledUsers.values();
 		// Remove nulls and sort
 		Stream<EnrolledUser> sortedUsers = studentsCollection.stream()
-				.sorted(EnrolledUser.NAME_COMPARATOR.thenComparing(EnrolledUser::getId));
+				.sorted(EnrolledUser.getNameComparator().thenComparing(EnrolledUser::getId));
 		// Load data users
 		sortedUsers.forEach(eu -> {
 			LOGGER.debug("Data line: {}, {}, {}, {}, {}, {}", eu.getId(), eu.getLastname(), eu.getFirstname(),

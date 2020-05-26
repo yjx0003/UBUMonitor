@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -46,6 +47,9 @@ public class WebServiceTest {
 		CONTROLLER = Controller.getInstance();
 		CONTROLLER.tryLogin(HOST, USERNAME, PASSWORD);
 		CONTROLLER.setDataBase(new DataBase());
+		CONTROLLER.setUsername(USERNAME);
+		CONTROLLER.setURLHost(new URL(HOST));
+		CONTROLLER.setPassword(PASSWORD);
 	}
 
 	@Test

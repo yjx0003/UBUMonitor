@@ -90,13 +90,15 @@ public class GradeReportTable extends Tabulator {
 			jsObject.putWithQuote("name", enrolledUser.getFullName());
 			jsObject.putWithQuote("type", stringSelectedUsers);
 			for (GradeItem gradeItem : gradeItems) {
-				jsObject.put("ID" + gradeItem.getId(), adjustTo10(gradeItem.getEnrolledUserPercentage(enrolledUser)));
+				double grade = adjustTo10(gradeItem.getEnrolledUserPercentage(enrolledUser));
+				jsObject.put("ID" + gradeItem.getId(), Double.isNaN(grade) ? -1 : grade);
 			}
 			array.add(jsObject.toString());
 		}
 		if (useGeneralButton && (boolean) Controller.getInstance()
 				.getMainConfiguration()
 				.getValue(MainConfiguration.GENERAL, "generalActive")) {
+
 			array.add(addStats(gradeItems, I18n.get("chartlabel.generalMean"), stats.getGeneralStats()));
 		}
 		if (useGroupButton && (boolean) Controller.getInstance()
@@ -145,9 +147,9 @@ public class GradeReportTable extends Tabulator {
 		MainConfiguration mainConfiguration = Controller.getInstance()
 				.getMainConfiguration();
 		JSObject jsObject = new JSObject();
-		jsObject.put("min", 0);
+		jsObject.put("min", 0.0);
 		jsObject.put("max", 10);
-		jsObject.put("legend", true);
+		jsObject.put("legend", "function(n){return 0==n?'0':n>0?n:void 0}");
 		jsObject.putWithQuote("legendAlign", "center");
 
 		jsObject.put("color",

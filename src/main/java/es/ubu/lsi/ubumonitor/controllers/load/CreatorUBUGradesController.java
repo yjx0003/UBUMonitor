@@ -68,6 +68,8 @@ import okhttp3.Response;
  */
 public class CreatorUBUGradesController {
 
+	private static final String EXCEPTION = "exception";
+
 	private static final String SHORTNAME = "shortname";
 
 	private static final String FULLNAME = "fullname";
@@ -93,8 +95,16 @@ public class CreatorUBUGradesController {
 	public static JSONArray getJSONArrayResponse(WSFunctionAbstract webServiceFunction) throws IOException {
 		try (Response response = CONTROLLER.getWebService()
 				.getResponse(webServiceFunction)) {
-			return new JSONArray(new JSONTokener(response.body()
-					.byteStream()));
+			String string = response.body()
+					.string();
+
+			if (string.startsWith("{")) {
+				JSONObject jsonObject = new JSONObject(string);
+				throw new IllegalStateException(webServiceFunction + "\n" + jsonObject.optString(EXCEPTION) + "\n"
+						+ jsonObject.optString("message"));
+			}
+
+			return new JSONArray(string);
 
 		}
 
@@ -103,9 +113,13 @@ public class CreatorUBUGradesController {
 	public static JSONObject getJSONObjectResponse(WSFunctionAbstract webServiceFunction) throws IOException {
 		try (Response response = CONTROLLER.getWebService()
 				.getResponse(webServiceFunction)) {
-			return new JSONObject(new JSONTokener(response.body()
+			JSONObject jsonObject = new JSONObject(new JSONTokener(response.body()
 					.byteStream()));
-
+			if (jsonObject.has(EXCEPTION)) {
+				throw new IllegalStateException(webServiceFunction + "\n" + jsonObject.optString(EXCEPTION) + "\n"
+						+ jsonObject.optString("message"));
+			}
+			return jsonObject;
 		}
 
 	}
@@ -216,7 +230,7 @@ public class CreatorUBUGradesController {
 			JSONArray courses = getJSONObjectResponse(
 					new CoreCourseGetEnrolledCoursesByTimelineClassification(classification)).getJSONArray("courses");
 
-			return createCourses(courses, true);
+			return createCourses(courses, false);
 		} catch (Exception ex) {
 			return Collections.emptyList();
 		}
@@ -226,7 +240,7 @@ public class CreatorUBUGradesController {
 
 		try {
 			JSONArray jsonArray = getRecentCoursesResponse(userid);
-			return createCourses(jsonArray, true);
+			return createCourses(jsonArray, false);
 		} catch (Exception ex) {
 			return Collections.emptyList();
 		}
@@ -445,7 +459,8 @@ public class CreatorUBUGradesController {
 		Instant startDate = Instant.ofEpochSecond(jsonObject.optLong("startdate"));
 		Instant endDate = Instant.ofEpochSecond(jsonObject.optLong("enddate"));
 		boolean isFavorite = jsonObject.optBoolean("isfavourite");
-		course.setHasActivityCompletion(jsonObject.optBoolean("enablecompletion", true));
+
+		course.setHasActivityCompletion(jsonObject.optBoolean("enablecompletion"));
 		int categoryId = jsonObject.optInt("category");
 		if (categoryId != 0) {
 			CourseCategory courseCategory = CONTROLLER.getDataBase()
@@ -753,10 +768,10 @@ public class CreatorUBUGradesController {
 			List<GradeItem> gradeItems = createHierarchyGradeItems(jsonObject);
 
 			JSONObject jsonGradeItems = getJSONObjectResponse(new GradereportUserGetGradeItems(courseid));
-			if (jsonGradeItems.has("exception")) {
+			if (jsonGradeItems.has(EXCEPTION)) {
 				jsonGradeItems = getJSONObjectResponse(new GradereportUserGetGradeItems(courseid, userid));
 			}
-			if (jsonGradeItems.has("exception")) {
+			if (jsonGradeItems.has(EXCEPTION)) {
 				CreatorGradeItems creatorGradeItems = new CreatorGradeItems();
 				return creatorGradeItems.createGradeItems(courseid, jsonObject);
 			}
@@ -913,8 +928,12 @@ public class CreatorUBUGradesController {
 
 		for (int i = 0; i < jsonArray.length(); ++i) {
 			JSONObject jsonObject = jsonArray.getJSONObject(i);
+
 			Course course = dataBaseCourse.getById(jsonObject.getInt("id"));
-			course.setHasActivityCompletion(jsonObject.optBoolean("enablecompletion", true));
+			if (jsonObject.has("enablecompletion")) {
+				course.setHasActivityCompletion(jsonObject.optInt("enablecompletion", 0) == 1);
+			}
+
 		}
 
 	}

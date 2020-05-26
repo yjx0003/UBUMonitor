@@ -13,6 +13,7 @@ import es.ubu.lsi.ubumonitor.Style;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigurationController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.controllers.load.Connection;
 import es.ubu.lsi.ubumonitor.export.CSVBuilderAbstract;
 import es.ubu.lsi.ubumonitor.export.CSVExport;
 import es.ubu.lsi.ubumonitor.export.dashboard.Excel;
@@ -119,7 +120,7 @@ public class MenuController {
 	 */
 	public void logOut(ActionEvent actionEvent) {
 		LOGGER.info("Cerrando sesión de usuario");
-
+		Connection.clearCookies();
 		changeScene(getClass().getResource("/view/Login.fxml"));
 	}
 

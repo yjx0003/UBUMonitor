@@ -36,19 +36,21 @@ public class Connection {
 	}
 
 	public static Response getResponse(String url) throws IOException {
-
 		return getResponse(new Request.Builder().url(url)
 				.build());
 	}
 
 	public static Response getResponse(Request request) throws IOException {
-
 		return CLIENT.newCall(request)
 				.execute();
 	}
 
 	public static CookieManager getCookieManager() {
 		return COOKIE_MANAGER;
+	}
+	
+	public static void clearCookies() {
+		COOKIE_MANAGER.getCookieStore().removeAll();
 	}
 
 }

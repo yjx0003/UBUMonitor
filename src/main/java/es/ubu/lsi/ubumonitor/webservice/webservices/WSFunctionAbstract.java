@@ -28,4 +28,10 @@ public abstract class WSFunctionAbstract implements WSFunction {
 		parameters.clear();
 	}
 	
+	@Override
+	public String toString() {
+		return webserviceFunctions.toString();
+	}
+	
+	
 }

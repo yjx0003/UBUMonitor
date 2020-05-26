@@ -87,7 +87,7 @@ public class TableLog extends TabulatorLogs {
 		jsObject.putWithQuote("title", title);
 		jsObject.putWithQuote("field", field);
 		jsObject.putWithQuote("sorter", sorter);
-		jsObject.put("headerFilter", "'select'");
+		jsObject.put("headerFilter", true);
 		jsObject.put("align", "'center'");
 		jsArray.add(jsObject);
 		return jsObject;
@@ -136,7 +136,7 @@ public class TableLog extends TabulatorLogs {
 		jsObject.put("virtualDom", true);
 		jsObject.putWithQuote("headerFilterPlaceholder", I18n.get("label.filter"));
 		jsObject.putWithQuote("sort", DATETIME);
-		jsObject.putWithQuote("layout", "fitDataStretch");
+		jsObject.putWithQuote("layout", "fitDataFill");
 		jsObject.put("rowClick", "function(e,row){javaConnector.dataPointSelection(row._row.data." + ID + ");}");
 		return jsObject.toString();
 	}

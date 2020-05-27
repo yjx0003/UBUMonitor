@@ -99,7 +99,7 @@ public class BoxplotLog extends ChartjsLog {
 		dataset.put("itemBackgroundColor", hex(text));
 		dataset.put("outlierColor", hex(text));
 		dataset.put("borderWidth", 1);
-		dataset.put("outlierRadius", 5);
+		dataset.put("outlierRadius", 10);
 		dataset.put("hidden", hidden);
 
 		JSArray usersArray = new JSArray();
@@ -184,8 +184,8 @@ public class BoxplotLog extends ChartjsLog {
 	}
 
 	@Override
-	public String getOptions() {
-		JSObject jsObject = getDefaultOptions();
+	public String getOptions(JSObject jsObject) {
+
 		MainConfiguration mainConfiguration = Controller.getInstance()
 				.getMainConfiguration();
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");

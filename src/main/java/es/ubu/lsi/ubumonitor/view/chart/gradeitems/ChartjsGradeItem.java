@@ -19,14 +19,13 @@ import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Chartjs;
-import es.ubu.lsi.ubumonitor.view.chart.Tabs;
 
 public abstract class ChartjsGradeItem extends Chartjs {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChartjsGradeItem.class);
 
 	public ChartjsGradeItem(MainController mainController, ChartType chartType) {
-		super(mainController, chartType, Tabs.GRADES);
+		super(mainController, chartType);
 		useGeneralButton = true;
 		useLegend = true;
 		useGroupButton = true;

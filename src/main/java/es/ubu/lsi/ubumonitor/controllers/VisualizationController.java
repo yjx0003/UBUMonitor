@@ -14,7 +14,6 @@ import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.util.FileUtil;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
-import es.ubu.lsi.ubumonitor.view.chart.Tabs;
 import es.ubu.lsi.ubumonitor.view.chart.VisualizationJavaConnector;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -37,6 +36,8 @@ import netscape.javascript.JSObject;
 
 public class VisualizationController implements MainAction {
 
+	private static final String CSV_FOLDER_PATH = "csvFolderPath";
+	private static final String YYYY_M_MDDHHMMSS = "yyyyMMddhhmmss";
 	private Controller controller = Controller.getInstance();
 	private MainController mainController;
 	private VisualizationJavaConnector javaConnector;
@@ -213,16 +214,14 @@ public class VisualizationController implements MainAction {
 		UtilMethods.fileAction(String.format("%s_%s_%s.png", controller.getActualCourse()
 				.getId(),
 				LocalDateTime.now()
-						.format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
+						.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),
 				javaConnector.getCurrentType()
 						.getChartType()),
 				ConfigHelper.getProperty("imageFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
 				file -> {
 					if (file != null) {
-						String str = javaConnector.export(file);
-						if (str == null)
-							return;
-						javaConnector.saveImage(str);
+						javaConnector.export(file);
+						
 						ConfigHelper.setProperty("imageFolderPath", file.getParent());
 					
 					}
@@ -236,15 +235,15 @@ public class VisualizationController implements MainAction {
 				String.format("%s_%s_%s.csv", controller.getActualCourse()
 						.getId(),
 						LocalDateTime.now()
-								.format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
+								.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),
 						javaConnector.getCurrentType()
 								.getChartType()),
-				ConfigHelper.getProperty("csvFolderPath", "./"),
+				ConfigHelper.getProperty(CSV_FOLDER_PATH, "./"),
 				new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
 
 		File file = fileChooser.showSaveDialog(controller.getStage());
 		if (file != null) {
-			ConfigHelper.setProperty("csvFolderPath", file.getParent());
+			ConfigHelper.setProperty(CSV_FOLDER_PATH, file.getParent());
 			try {
 				javaConnector.getCurrentType()
 						.exportCSV(file.getAbsolutePath());
@@ -262,15 +261,15 @@ public class VisualizationController implements MainAction {
 				String.format("%s_%s_%s_breakdown.csv", controller.getActualCourse()
 						.getId(),
 						LocalDateTime.now()
-								.format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
+								.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),
 						javaConnector.getCurrentType()
 								.getChartType()),
-				ConfigHelper.getProperty("csvFolderPath", "./"),
+				ConfigHelper.getProperty(CSV_FOLDER_PATH, "./"),
 				new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
 
 		File file = fileChooser.showSaveDialog(controller.getStage());
 		if (file != null) {
-			ConfigHelper.setProperty("csvFolderPath", file.getParent());
+			ConfigHelper.setProperty(CSV_FOLDER_PATH, file.getParent());
 			try {
 				javaConnector.getCurrentType()
 						.exportCSVDesglosed(file.getAbsolutePath());
@@ -341,7 +340,6 @@ public class VisualizationController implements MainAction {
 		javaConnector.setCurrentType(javaConnector.getCurrentTypeLogs());
 		findMaxaAndUpdateChart();
 
-		webViewChartsEngine.executeScript("manageButtons('" + Tabs.LOGS + "')");
 
 	}
 
@@ -349,14 +347,13 @@ public class VisualizationController implements MainAction {
 	public void onSetTabGrades() {
 		javaConnector.setCurrentType(javaConnector.getCurrentTypeGrades());
 		javaConnector.updateChart();
-		webViewChartsEngine.executeScript("manageButtons('" + Tabs.GRADES + "')");
+	
 	}
 
 	@Override
 	public void onSetTabActivityCompletion() {
 		javaConnector.setCurrentType(javaConnector.getCurrentTypeActivityCompletion());
 		javaConnector.updateChart();
-		webViewChartsEngine.executeScript("manageButtons('" + Tabs.ACTIVITY_COMPLETION + "')");
 	}
 
 	@Override

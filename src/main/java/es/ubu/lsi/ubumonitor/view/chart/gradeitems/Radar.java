@@ -32,8 +32,7 @@ public class Radar extends ChartjsGradeItem {
 	}
 
 	@Override
-	public String getOptions() {
-		JSObject jsObject = getDefaultOptions();
+	public String getOptions(JSObject jsObject) {
 		jsObject.putWithQuote("typeGraph", "radar");
 
 		return jsObject.toString();

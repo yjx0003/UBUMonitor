@@ -79,8 +79,7 @@ public class CalificationBar extends ChartjsGradeItem {
 	}
 
 	@Override
-	public String getOptions() {
-		JSObject jsObject = getDefaultOptions();
+	public String getOptions(JSObject jsObject) {
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBar" : "bar");

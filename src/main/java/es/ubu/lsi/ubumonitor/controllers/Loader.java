@@ -55,6 +55,8 @@ public class Loader extends Application {
 		}
 	}
 
+	
+
 	@Override
 	public void stop() {
 
@@ -80,6 +82,8 @@ public class Loader extends Application {
 	       LOGGER.error("Cannot set tooltip delay", e);
 	    }
 	}
+	
+	
 	
 
 	public static void initialize() {

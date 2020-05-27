@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.view.chart;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -27,8 +28,10 @@ import es.ubu.lsi.ubumonitor.model.Stats;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
@@ -59,7 +62,6 @@ public abstract class Chart implements ExportableChart {
 	protected TreeView<GradeItem> tvwGradeReport;
 	protected Stats stats;
 	protected ChartType chartType;
-	private Tabs tabName;
 	protected boolean useLegend;
 	protected boolean useGeneralButton;
 	protected boolean useGroupButton;
@@ -76,7 +78,7 @@ public abstract class Chart implements ExportableChart {
 	protected SelectionUserController selectionUserController;
 	protected static final double OPACITY = 0.2;
 
-	public Chart(MainController mainController, ChartType chartType, Tabs tabName) {
+	public Chart(MainController mainController, ChartType chartType) {
 		this.visualizationController = mainController.getVisualizationController();
 		this.selectionController = mainController.getSelectionController();
 		this.selectionUserController = mainController.getSelectionUserController();
@@ -101,7 +103,6 @@ public abstract class Chart implements ExportableChart {
 
 		this.mainController = mainController;
 		this.chartType = chartType;
-		this.tabName = tabName;
 
 	}
 
@@ -179,7 +180,13 @@ public abstract class Chart implements ExportableChart {
 				.collect(Collectors.toList());
 	}
 
-	public abstract String getOptions();
+	public abstract String getOptions(JSObject jsObject);
+	
+	public String getOptions() {
+		JSObject jsObject = getDefaultOptions();
+		getOptions(jsObject);
+		return jsObject.toString();
+	}
 
 	public abstract void update();
 
@@ -187,7 +194,7 @@ public abstract class Chart implements ExportableChart {
 
 	public abstract void hideLegend();
 
-	public abstract String export();
+	public abstract String export(File file);
 
 	public JSObject getDefaultOptions() {
 		MainConfiguration mainConfiguration = Controller.getInstance()
@@ -198,12 +205,18 @@ public abstract class Chart implements ExportableChart {
 		jsObject.put("useLegend", useLegend);
 		jsObject.put("useGroup", useGroupButton);
 		jsObject.put("useGeneral", useGeneralButton);
-		jsObject.putWithQuote("tab", tabName);
+		jsObject.putWithQuote("tab", chartType.getTab());
 		jsObject.putWithQuote("button", getChartType().name());
 		jsObject.put("legendActive", mainConfiguration.getValue(MainConfiguration.GENERAL, "legendActive"));
 		jsObject.put("generalActive", mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive"));
 		jsObject.put("groupActive", mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive"));
-
+		JSArray jsArray = new JSArray();
+		ObservableList<ChartType> listCharts = mainConfiguration.getValue(MainConfiguration.GENERAL, "listCharts");
+		
+		jsArray.addAllWithQuote(listCharts);
+		jsArray.addAllWithQuote(ChartType.getDefaultValues());
+		jsObject.put("listCharts", jsArray);
+	
 		return jsObject;
 
 	}
@@ -341,10 +354,6 @@ public abstract class Chart implements ExportableChart {
 
 	public Stats getStats() {
 		return stats;
-	}
-
-	public Tabs getTabName() {
-		return tabName;
 	}
 
 	public VisualizationController getVisualizationController() {

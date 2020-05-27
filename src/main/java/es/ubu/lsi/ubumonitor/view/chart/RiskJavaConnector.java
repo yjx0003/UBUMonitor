@@ -26,12 +26,14 @@ import javafx.scene.web.WebEngine;
 
 public class RiskJavaConnector {
 
+	private static final ChartType DEFAULT_CHART = ChartType.getDefaultRisk();
+	
 	private Chart currentType;
 	private WebEngine webViewChartsEngine;
 	private RiskController riskController;
 	private File file;
 	private Map<ChartType, Chart> mapChart;
-	private static final ChartType DEFAULT_CHART = ChartType.RISK_BAR_TEMPORAL;
+	
 
 	public RiskJavaConnector(RiskController riskController) {
 		this.riskController = riskController;
@@ -84,7 +86,6 @@ public class RiskJavaConnector {
 
 	public void setDefaultValues() {
 		webViewChartsEngine.executeScript("setLanguage()");
-		webViewChartsEngine.executeScript("manageButtons('" + Tabs.RISK + "')");
 		webViewChartsEngine.executeScript("setLocale('" + Locale.getDefault()
 				.toLanguageTag() + "')");
 		currentType = mapChart.get(DEFAULT_CHART);
@@ -112,8 +113,8 @@ public class RiskJavaConnector {
 
 	}
 
-	public void save() {
-		currentType.export();
+	public void save(File file) {
+		currentType.export(file);
 
 	}
 
@@ -121,9 +122,9 @@ public class RiskJavaConnector {
 		return currentType;
 	}
 
-	public String export(File file) {
+	public void export(File file) {
 		this.file = file;
-		return currentType.export();
+		currentType.export(file);
 	}
 
 	public void saveImage(String str) throws IOException {

@@ -33,8 +33,7 @@ public class Scatter extends ChartjsLog {
 	}
 
 	@Override
-	public String getOptions() {
-		JSObject jsObject = getDefaultOptions();
+	public String getOptions(JSObject jsObject) {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		jsObject.put("typeGraph", "'scatter'");

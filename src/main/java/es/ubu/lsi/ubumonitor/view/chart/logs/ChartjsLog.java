@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.view.chart.logs;
 
+import java.io.File;
 import java.util.List;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
@@ -40,7 +41,7 @@ public abstract class ChartjsLog extends ChartLogs {
 	}
 
 	@Override
-	public String export() {
+	public String export(File file) {
 		return (String) webViewChartsEngine.executeScript("exportChartjs()");
 	}
 	

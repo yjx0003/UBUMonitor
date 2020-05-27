@@ -47,6 +47,7 @@ import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseSearchCourses;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
@@ -171,6 +172,12 @@ public class WelcomeController implements Initializable {
 
 	@FXML
 	private Label totalLabel;
+
+	@FXML
+	private Label labelShowing;
+
+	@FXML
+	private HBox horizontalBox;
 
 	public WelcomeController() {
 		this(false);
@@ -331,6 +338,14 @@ public class WelcomeController implements Initializable {
 		});
 
 		listViewSearch.setOnKeyPressed(Event::consume);
+		horizontalBox.visibleProperty()
+				.bind(Bindings.isEmpty(listViewSearch.getItems())
+						.not());
+		horizontalBox.managedProperty()
+				.bind(horizontalBox.visibleProperty());
+		labelShowing.textProperty()
+				.bind(Bindings.size(listViewSearch.getItems())
+						.asString());
 
 	}
 
@@ -668,6 +683,7 @@ public class WelcomeController implements Initializable {
 					actualCourse.setUpdatedGradeItem(ZonedDateTime.now());
 				}
 				if (checkBoxActivityCompletion.isSelected()) {
+					actualCourse.getModules().forEach(m -> m.getActivitiesCompletion().clear());
 					updateMessage(I18n.get("label.loadingActivitiesCompletion"));
 					CreatorUBUGradesController.createActivitiesCompletionStatus(actualCourse.getId(),
 							actualCourse.getEnrolledUsers());
@@ -709,7 +725,7 @@ public class WelcomeController implements Initializable {
 									.filter(user -> !actualCourse.getEnrolledUsers()
 											.contains(user))
 									.collect(Collectors.toSet());
-							List<String> ids =notEnrolled.stream()
+							List<String> ids = notEnrolled.stream()
 									.map(EnrolledUser::getId)
 									.map(Object::toString)
 									.collect(Collectors.toList());
@@ -765,17 +781,18 @@ public class WelcomeController implements Initializable {
 			JSONObject jsonObject = CreatorUBUGradesController
 					.getJSONObjectResponse(new CoreCourseSearchCourses(text, 0, 50));
 			List<Course> courses = CreatorUBUGradesController.searchCourse(jsonObject);
-			totalLabel.setText(Integer.toString(jsonObject.getInt("total")));
+
 			if (courses.isEmpty()) {
 				UtilMethods.warningWindow(I18n.get("warning.nofound"));
 
 			} else {
 				Collections.sort(courses, Comparator.comparing(Course::hasCourseAccess, Comparator.reverseOrder())
 						.thenComparing(Course.getCourseComparator()));
-
+				listViewSearch.getItems()
+						.setAll(courses);
+				totalLabel.setText(Integer.toString(jsonObject.getInt("total")));
 			}
-			listViewSearch.getItems()
-					.setAll(courses);
+
 		} catch (Exception e) {
 			UtilMethods.errorWindow("Error when searching", e);
 		}

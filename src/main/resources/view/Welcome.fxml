@@ -116,7 +116,7 @@
                   </Tab>
                   <Tab text="%text.search">
                      <content>
-                        <GridPane hgap="5.0">
+                        <GridPane hgap="10.0">
                           <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" />
                             <ColumnConstraints hgrow="SOMETIMES" />
@@ -138,10 +138,18 @@
                                  </GridPane.margin>
                               </Button>
                               <ListView fx:id="listViewSearch" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="1" />
-                              <HBox alignment="CENTER_LEFT" spacing="5.0" GridPane.columnIndex="2">
+                              <HBox fx:id="horizontalBox" alignment="CENTER_LEFT" spacing="20.0" GridPane.columnIndex="2">
                                  <children>
-                                    <Label text="%text.total" />
-                                    <Label fx:id="totalLabel" />
+                                    <Label fx:id="totalLabel">
+                                       <graphic>
+                                          <Label text="%text.total" />
+                                       </graphic>
+                                    </Label>
+                                    <Label fx:id="labelShowing">
+                                       <graphic>
+                                          <Label text="%label.showing" />
+                                       </graphic>
+                                    </Label>
                                  </children>
                               </HBox>
                            </children>
@@ -190,9 +198,9 @@
          </font></Label>
       <GridPane layoutX="310.0" layoutY="110.0" prefHeight="55.0" prefWidth="410.0">
         <columnConstraints>
-          <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" />
-          <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" />
-            <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" />
+          <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="60.0" />
+          <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="167.0" minWidth="104.0" prefWidth="167.0" />
+            <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="100.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -201,8 +209,8 @@
          <children>
             <Label contentDisplay="BOTTOM" text="%label.loggedin" />
             <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" text="%label.host" GridPane.rowIndex="1" />
-            <Label fx:id="labelLoggedIn" text="Label" GridPane.columnIndex="1" />
-            <Label fx:id="labelHost" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label fx:id="labelLoggedIn" wrapText="true" GridPane.columnIndex="1" />
+            <Label fx:id="labelHost" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <Button fx:id="buttonLogout" mnemonicParsing="false" onAction="#logOut" text="%button.logout" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
             <Label fx:id="conexionLabel" text="Label" GridPane.columnIndex="2" GridPane.halignment="RIGHT" />
          </children>

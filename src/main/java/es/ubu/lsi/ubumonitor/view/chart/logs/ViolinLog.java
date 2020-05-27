@@ -13,8 +13,7 @@ public class ViolinLog extends BoxplotLog{
 	}
 	
 	@Override
-	public String getOptions() {
-		JSObject jsObject = getDefaultOptions();
+	public String getOptions(JSObject jsObject) {
 		MainConfiguration mainConfiguration = Controller.getInstance()
 				.getMainConfiguration();
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");

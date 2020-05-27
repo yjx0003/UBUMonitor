@@ -1,13 +1,15 @@
 package es.ubu.lsi.ubumonitor.view.chart;
 
+import java.io.File;
+
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 
 public abstract class ApexCharts extends Chart {
 
-	public ApexCharts(MainController mainController, ChartType chartType, Tabs tabName) {
-		super(mainController, chartType, tabName);
+	public ApexCharts(MainController mainController, ChartType chartType) {
+		super(mainController, chartType);
 		useLegend = true;
 	}
 
@@ -24,7 +26,7 @@ public abstract class ApexCharts extends Chart {
 	}
 
 	@Override
-	public String export() {
+	public String export(File file) {
 		webViewChartsEngine.executeScript("exportApexcharts()");
 		return null;
 	}

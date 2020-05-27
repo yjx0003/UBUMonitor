@@ -182,12 +182,12 @@
 
 
 
-    function displayChartsButtons(div_id, type) {
+    function displayChartsButtons(div_id, type, listCharts) {
         let tabs = document.getElementById(div_id);
         let children = tabs.children;
-        for (i = 0; i < children.length; i++) {
+        for (let i = 0; i < children.length; i++) {
             if (children[i].tagName == "INPUT") {
-                children[i].style.display = div_id == type ? "inline" : "none";
+                children[i].style.display = div_id == type && listCharts.includes(children[i].id)  ? "inline" : "none";
             }
 
         }
@@ -215,8 +215,8 @@
         displayApexChart(true);
         displayChartjs(false);
         displayTabulator(false);
-
-
+		
+		manageButtons(options.tab, options.listCharts);
         disableTab(options.tab, options.button);
 
         displayLegendButton(options.useLegend);
@@ -245,7 +245,7 @@
         imageButton("btnMean", options.generalActive);
         imageButton("btnGroupMean", options.groupActive);
 
-
+		manageButtons(options.tab, options.listCharts);
         disableTab(options.tab, options.button);
 
         displayLegendButton(options.useLegend);
@@ -281,6 +281,7 @@
         displayLegendButton(options.useLegend);
         displayGroupButton(options.useGroup);
         displayGeneralButton(options.useGeneral);
+        manageButtons(options.tab, options.listCharts);
         disableTab(options.tab, options.button);
         table.destroy()
         table = new Tabulator("#tabulatorDiv", options);
@@ -320,14 +321,18 @@
             }
         });
     }
+    
+    function clearTabulator(){
+    	table.clearData();
+    }
 
 
-    function manageButtons(type) {
+    function manageButtons(type, listCharts) {
 
 
-        displayChartsButtons("GRADES", type);
-        displayChartsButtons("LOGS", type);
-        displayChartsButtons("ACTIVITY_COMPLETION", type);
+        displayChartsButtons("GRADES", type, listCharts);
+        displayChartsButtons("LOGS", type, listCharts);
+        displayChartsButtons("ACTIVITY_COMPLETION", type, listCharts);
 
     }
 

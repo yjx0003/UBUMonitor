@@ -30,7 +30,7 @@ import es.ubu.lsi.ubumonitor.view.chart.Tabs;
 public class RiskBar extends Chartjs {
 
 	public RiskBar(MainController mainController) {
-		super(mainController, ChartType.RISK_BAR, Tabs.RISK);
+		super(mainController, ChartType.RISK_BAR);
 		useGeneralButton = false;
 		useLegend = true;
 		useGroupButton = false;
@@ -38,7 +38,7 @@ public class RiskBar extends Chartjs {
 	}
 
 	public RiskBar(MainController mainController, ChartType chartType, Tabs tab) {
-		super(mainController, chartType, tab);
+		super(mainController, chartType);
 		useGeneralButton = false;
 		useLegend = true;
 		useGroupButton = false;
@@ -65,9 +65,8 @@ public class RiskBar extends Chartjs {
 	}
 
 	@Override
-	public String getOptions() {
+	public String getOptions(JSObject jsObject) {
 
-		JSObject jsObject = getDefaultOptions();
 		jsObject.putWithQuote("typeGraph", "bar");
 		JSObject callbacks = new JSObject();
 		callbacks.put("title", "function(a,t){return t.datasets[a[0].datasetIndex].label}");

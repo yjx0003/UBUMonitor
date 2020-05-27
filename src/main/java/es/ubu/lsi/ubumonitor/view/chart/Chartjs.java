@@ -1,18 +1,20 @@
 package es.ubu.lsi.ubumonitor.view.chart;
 
+import java.io.File;
+
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 
 public abstract class Chartjs extends Chart {
 
-	public Chartjs(MainController mainController, ChartType chartType, Tabs tabName) {
-		super(mainController, chartType, tabName);
+	public Chartjs(MainController mainController, ChartType chartType) {
+		super(mainController, chartType);
 	}
 
 	@Override
 	public void clear() {
-		webViewChartsEngine.executeScript("clearChartjs()");
+		//webViewChartsEngine.executeScript("clearChartjs()");
 
 	}
 
@@ -23,7 +25,7 @@ public abstract class Chartjs extends Chart {
 	}
 
 	@Override
-	public String export() {
+	public String export(File file) {
 		return (String) webViewChartsEngine.executeScript("exportChartjs()");
 	}
 

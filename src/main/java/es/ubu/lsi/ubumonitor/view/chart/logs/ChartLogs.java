@@ -16,7 +16,6 @@ import es.ubu.lsi.ubumonitor.model.datasets.DataSetSection;
 import es.ubu.lsi.ubumonitor.model.datasets.DatasSetCourseModule;
 import es.ubu.lsi.ubumonitor.view.chart.Chart;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
-import es.ubu.lsi.ubumonitor.view.chart.Tabs;
 
 public abstract class ChartLogs extends Chart {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChartLogs.class);
@@ -24,7 +23,7 @@ public abstract class ChartLogs extends Chart {
 	private String max;
 
 	public ChartLogs(MainController mainController, ChartType chartType) {
-		super(mainController, chartType, Tabs.LOGS);
+		super(mainController, chartType);
 	}
 
 	@Override

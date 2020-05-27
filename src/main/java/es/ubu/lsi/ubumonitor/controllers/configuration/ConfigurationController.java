@@ -22,11 +22,13 @@ import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
 import es.ubu.lsi.ubumonitor.model.Role;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ButtonType;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 
 public class ConfigurationController implements Initializable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationController.class);
@@ -58,6 +60,21 @@ public class ConfigurationController implements Initializable {
 					return new CheckComboBoxPropertyEditor<>(item, LastActivityFactory.DEFAULT.getAllLastActivity());
 				}
 
+				if (type == ChartType.class) {
+					return new CheckComboBoxPropertyEditor<>(item, ChartType.getNonDefaultValues(), new StringConverter<ChartType>() {
+
+						@Override
+						public String toString(ChartType object) {
+							return I18n.get(object) + " ("+ I18n.get("tabs."+object.getTab())+")";
+						}
+
+						@Override
+						public ChartType fromString(String string) {
+							//not used
+							return null;
+						}
+					});
+				}
 			}
 
 			return DEFAUL_PROPERTY_EDITOR_FACTORY.call(item);

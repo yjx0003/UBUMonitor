@@ -127,10 +127,8 @@ public class MeanDiff extends ChartjsLog {
 	}
 
 	@Override
-	public String getOptions() {
+	public String getOptions(JSObject jsObject) {
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
-
-		JSObject jsObject = getDefaultOptions();
 		jsObject.putWithQuote("typeGraph", "line");
 		jsObject.put("scales",
 				"{yAxes:[{" + getYScaleLabel() + ",gridLines:{zeroLineColor:"

@@ -1,16 +1,18 @@
 package es.ubu.lsi.ubumonitor.view.chart;
 
+import java.io.File;
+
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 
 public abstract class Tabulator extends Chart {
 
-	public Tabulator(MainController mainController, ChartType chartType, Tabs tabName) {
-		super(mainController, chartType, tabName);
+	public Tabulator(MainController mainController, ChartType chartType) {
+		super(mainController, chartType);
 	}
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
+		webViewChartsEngine.executeScript("clearTabulator()");
 
 	}
 
@@ -21,7 +23,7 @@ public abstract class Tabulator extends Chart {
 	}
 
 	@Override
-	public String export() {
+	public String export(File file) {
 //		WritableImage image = mainController.getVisualizationController().getWebViewCharts().snapshot(new SnapshotParameters(), null);
 //		 try {
 //			ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", new File("chart.png"));

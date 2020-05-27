@@ -309,10 +309,7 @@ public class RiskController implements MainAction {
 				ConfigHelper.getProperty("imageFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
 				file -> {
 					if (file != null) {
-						String str = javaConnector.export(file);
-						if (str == null)
-							return;
-						javaConnector.saveImage(str);
+						javaConnector.export(file);
 						ConfigHelper.setProperty("imageFolderPath", file.getParent());
 
 					}

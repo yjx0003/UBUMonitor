@@ -112,8 +112,7 @@ public class RiskEvolution extends RiskBarTemporal {
 	}
 
 	@Override
-	public String getOptions() {
-		JSObject jsObject = getDefaultOptions();
+	public String getOptions(JSObject jsObject) {
 		jsObject.putWithQuote("typeGraph", "line");
 
 		JSObject scales = new JSObject();

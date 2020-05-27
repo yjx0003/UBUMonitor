@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.view.chart.logs;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -49,7 +50,7 @@ public class Heatmap extends ChartLogs {
 	}
 
 	@Override
-	public String export() {
+	public String export(File file) {
 		webViewChartsEngine.executeScript("exportApexcharts()");
 		return null;
 	}
@@ -120,7 +121,7 @@ public class Heatmap extends ChartLogs {
 	}
 
 	@Override
-	public String getOptions() {
+	public String getOptions(JSObject jsObject) {
 		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 		String zeroValue = colorToRGB(mainConfiguration.getValue(getChartType(), "zeroValue"));
 		String firstInterval = colorToRGB(mainConfiguration.getValue(getChartType(), "firstInterval"));
@@ -129,7 +130,6 @@ public class Heatmap extends ChartLogs {
 		String fourthInterval = colorToRGB(mainConfiguration.getValue(getChartType(), "fourthInterval"));
 		String moreMax = colorToRGB(mainConfiguration.getValue(getChartType(), "moreMax"));
 
-		JSObject jsObject = getDefaultOptions();
 		jsObject.putWithQuote("typeGraph", "heatmap");
 		jsObject.put("tooltip", "{x:{show:!0}}");
 

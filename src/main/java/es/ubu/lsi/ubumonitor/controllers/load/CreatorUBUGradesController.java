@@ -765,26 +765,40 @@ public class CreatorUBUGradesController {
 	public static List<GradeItem> createGradeItems(int courseid, int userid) throws IOException {
 		try {
 			JSONObject jsonObject = getJSONObjectResponse(new GradereportUserGetGradesTable(courseid, userid));
-			List<GradeItem> gradeItems = createHierarchyGradeItems(jsonObject);
 
-			JSONObject jsonGradeItems = getJSONObjectResponse(new GradereportUserGetGradeItems(courseid));
-			if (jsonGradeItems.has(EXCEPTION)) {
-				jsonGradeItems = getJSONObjectResponse(new GradereportUserGetGradeItems(courseid, userid));
-			}
-			if (jsonGradeItems.has(EXCEPTION)) {
-				CreatorGradeItems creatorGradeItems = new CreatorGradeItems();
-				return creatorGradeItems.createGradeItems(courseid, jsonObject);
-			}
-			setBasicAttributes(gradeItems, jsonGradeItems);
-			setEnrolledUserGrades(gradeItems, jsonGradeItems);
-			updateToOriginalGradeItem(gradeItems);
+			return tryGetGradeItems(courseid, userid, jsonObject);
 
-			return gradeItems;
 		} catch (Exception e) {
 			LOGGER.error("Error al descargar los items de calificacione", e);
 			return Collections.emptyList();
 		}
 
+	}
+
+	public static List<GradeItem> tryGetGradeItems(int courseid, int userid, JSONObject jsonObject) throws IOException {
+		try {
+			List<GradeItem> gradeItems = createHierarchyGradeItems(jsonObject);
+			getGradereportUserGetGradeItems(courseid, userid, gradeItems);
+			return gradeItems;
+		} catch (Exception e) {
+			CreatorGradeItems creatorGradeItems = new CreatorGradeItems();
+			return creatorGradeItems.createGradeItems(courseid, jsonObject);
+		}
+	}
+
+	public static JSONObject getGradereportUserGetGradeItems(int courseid, int userid, List<GradeItem> gradeItems)
+			throws IOException {
+		JSONObject jsonGradeItems;
+		try {
+			jsonGradeItems = getJSONObjectResponse(new GradereportUserGetGradeItems(courseid));
+
+		} catch (Exception e) {
+			jsonGradeItems = getJSONObjectResponse(new GradereportUserGetGradeItems(courseid, userid));
+		}
+		setBasicAttributes(gradeItems, jsonGradeItems);
+		setEnrolledUserGrades(gradeItems, jsonGradeItems);
+		updateToOriginalGradeItem(gradeItems);
+		return jsonGradeItems;
 	}
 
 	/**

@@ -251,9 +251,8 @@ public class SessionChart extends ChartjsLog {
 	}
 
 	@Override
-	public String getOptions() {
+	public String getOptions(JSObject jsObject) {
 
-		JSObject jsObject = getDefaultOptions();
 		jsObject.putWithQuote("typeGraph", "bar");
 		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",stacked: true,ticks:{suggestedMax:"
 				+ getSuggestedMax() + ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + ",stacked: true}]}");

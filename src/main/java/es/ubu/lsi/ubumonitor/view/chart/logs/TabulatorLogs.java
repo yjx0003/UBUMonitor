@@ -1,5 +1,7 @@
 package es.ubu.lsi.ubumonitor.view.chart.logs;
 
+import java.io.File;
+
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 
@@ -29,7 +31,7 @@ public abstract class TabulatorLogs extends ChartLogs {
 	}
 
 	@Override
-	public String export() {
+	public String export(File file) {
 		webViewChartsEngine.executeScript("genericExport('tabulatorDiv')");
 		return null;
 	}

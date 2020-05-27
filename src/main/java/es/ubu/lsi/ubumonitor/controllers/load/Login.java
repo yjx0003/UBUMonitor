@@ -91,11 +91,13 @@ public class Login {
 	 */
 	private void login(int typeoflogin, String host, String launchurl, String username, String password)
 			throws IOException {
-		LOGGER.info("Logeandose para web scraping");
+		
 
 		if (typeoflogin == 1) {
+			LOGGER.info("Login normal");
 			normalLogin(host, username, password);
 		} else {
+			LOGGER.info("Login sso");
 			loginSSO(host, launchurl, Controller.getInstance()
 					.getStage());
 		}
@@ -105,6 +107,7 @@ public class Login {
 	public void normalLogin(String host, String username, String password) throws IOException {
 		webService = new WebService(host, username, password);
 		String hostLogin = host + "/login/index.php";
+		LOGGER.info("Logeandose para web scraping");
 		try (Response response = Connection.getResponse(hostLogin)) {
 			String redirectedUrl = response.request()
 					.url()

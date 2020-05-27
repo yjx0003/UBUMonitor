@@ -27,13 +27,12 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Chartjs;
-import es.ubu.lsi.ubumonitor.view.chart.Tabs;
 import javafx.scene.paint.Color;
 
 public class BubbleLogarithmic extends Chartjs {
 
 	public BubbleLogarithmic(MainController mainController) {
-		super(mainController, ChartType.BUBBLE_LOGARITHMIC, Tabs.RISK);
+		super(mainController, ChartType.BUBBLE_LOGARITHMIC);
 		useGeneralButton = false;
 		useLegend = true;
 		useGroupButton = false;
@@ -60,8 +59,7 @@ public class BubbleLogarithmic extends Chartjs {
 	}
 
 	@Override
-	public String getOptions() {
-		JSObject jsObject = getDefaultOptions();
+	public String getOptions(JSObject jsObject) {
 		jsObject.putWithQuote("typeGraph", "bubble");
 		JSObject callbacks = new JSObject();
 

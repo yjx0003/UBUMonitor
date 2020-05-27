@@ -62,8 +62,7 @@ public class Stackedbar extends ChartjsLog {
 	}
 
 	@Override
-	public String getOptions() {
-		JSObject jsObject = getDefaultOptions();
+	public String getOptions(JSObject jsObject) {
 
 		long suggestedMax = getSuggestedMax();
 

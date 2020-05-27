@@ -22,13 +22,12 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Chartjs;
-import es.ubu.lsi.ubumonitor.view.chart.Tabs;
 import javafx.scene.paint.Color;
 
 public class Bubble extends Chartjs {
 
 	public Bubble(MainController mainController) {
-		super(mainController, ChartType.BUBBLE, Tabs.RISK);
+		super(mainController, ChartType.BUBBLE);
 		useGeneralButton = false;
 		useLegend = true;
 		useGroupButton = false;
@@ -55,13 +54,12 @@ public class Bubble extends Chartjs {
 	}
 
 	@Override
-	public String getOptions() {
+	public String getOptions(JSObject jsObject) {
 		
 		int limit = Controller.getInstance()
 				.getMainConfiguration()
 				.getValue(this.chartType, "limitDays");
 
-		JSObject jsObject = getDefaultOptions();
 		jsObject.putWithQuote("typeGraph", "bubble");
 		JSObject callbacks = new JSObject();
 

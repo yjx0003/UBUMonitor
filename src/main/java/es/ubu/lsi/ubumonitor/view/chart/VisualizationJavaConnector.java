@@ -41,6 +41,10 @@ import javafx.scene.web.WebEngine;
 
 public class VisualizationJavaConnector {
 
+	private static final ChartType DEFAULT_LOG_CHART = ChartType.getDefaultLogs();
+	private static final ChartType DEFAULT_GRADE_CHART = ChartType.getDefaultGrades();
+	private static final ChartType DEFAULT_ACTIVITY_COMPLETION_CHART = ChartType.getDefaultActivityCompletion();
+	
 	private WebEngine webViewChartsEngine;
 
 	private Tab tabLogs;
@@ -61,10 +65,7 @@ public class VisualizationJavaConnector {
 	private MainController mainController;
 	private VisualizationController visualizationController;
 
-	private static final ChartType DEFAULT_LOG_CHART = ChartType.TOTAL_BAR;
-	private static final ChartType DEFAULT_GRADE_CHART = ChartType.LINE;
 
-	private static final ChartType DEFAULT_ACTIVITY_COMPLETION_CHART = ChartType.ACTIVITIES_TABLE;
 
 	public VisualizationJavaConnector(VisualizationController visualizationController) {
 		this.visualizationController = visualizationController;
@@ -113,7 +114,7 @@ public class VisualizationJavaConnector {
 		}
 
 		if (currentType.getChartType() != chart.getChartType()) {
-			//currentType.clear();
+			currentType.clear();
 			currentType = chart;
 		}
 
@@ -216,24 +217,21 @@ public class VisualizationJavaConnector {
 		setCurrentTypeGrades(DEFAULT_GRADE_CHART);
 		setCurrentTypeActivityCompletion(DEFAULT_ACTIVITY_COMPLETION_CHART);
 		if (tabLogs.isSelected()) {
-			webViewChartsEngine.executeScript("manageButtons('" + Tabs.LOGS + "')");
 
 			setCurrentType(getCurrentTypeLogs());
 		} else if (tabGrades.isSelected()) {
-			webViewChartsEngine.executeScript("manageButtons('" + Tabs.GRADES + "')");
-
+			
 			setCurrentType(getCurrentTypeGrades());
 		} else if (tabActivityCompletion.isSelected()) {
-			webViewChartsEngine.executeScript("manageButtons('" + Tabs.ACTIVITY_COMPLETION + "')");
 			setCurrentType(getCurrentTypeActivityCompletion());
 		}
 		updateTabImages();
 
 	}
 
-	public String export(File file) {
+	public void export(File file) {
 		this.file = file;
-		return currentType.export();
+		currentType.export(file);
 	}
 
 	public void saveImage(String str) throws IOException {

@@ -135,8 +135,6 @@ public class WelcomeOfflineController implements Initializable {
 								.clearSelection();
 
 					});
-			tabPane.getSelectionModel()
-					.select(ConfigHelper.getProperty("courseList", 0));
 
 			Platform.runLater(() -> {
 				ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel()
@@ -226,8 +224,6 @@ public class WelcomeOfflineController implements Initializable {
 		lblNoSelect.setVisible(false);
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getFullName());
 
-		ConfigHelper.setProperty("courseList", Integer.toString(tabPane.getSelectionModel()
-				.getSelectedIndex()));
 
 		ConfigHelper.setProperty("actualCourse", getSelectedCourse().getId());
 

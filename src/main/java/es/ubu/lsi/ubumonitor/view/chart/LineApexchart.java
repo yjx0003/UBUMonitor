@@ -14,6 +14,7 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Stats;
 import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.scene.control.TreeItem;
 /**
@@ -24,7 +25,7 @@ import javafx.scene.control.TreeItem;
 public class LineApexchart extends ApexCharts {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LineApexchart.class);
 	public LineApexchart(MainController mainController) {
-		super(mainController, ChartType.LINE, Tabs.GRADES);
+		super(mainController, ChartType.LINE);
 		useGeneralButton = true;
 		useGroupButton = true;
 		
@@ -105,7 +106,7 @@ public class LineApexchart extends ApexCharts {
 	}
 
 	@Override
-	public String getOptions() {
+	public String getOptions(JSObject jsObject) {
 		// TODO Auto-generated method stub
 		return null;
 	}

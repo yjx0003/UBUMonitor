@@ -23,14 +23,13 @@ import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
-import es.ubu.lsi.ubumonitor.view.chart.Tabs;
 import es.ubu.lsi.ubumonitor.view.chart.Tabulator;
 
 public class ActivitiesStatusTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActivitiesStatusTable.class);
 	private DateTimeWrapper dateTimeWrapper;
 	public ActivitiesStatusTable(MainController mainController) {
-		super(mainController, ChartType.ACTIVITIES_TABLE, Tabs.ACTIVITY_COMPLETION);
+		super(mainController, ChartType.ACTIVITIES_TABLE);
 		dateTimeWrapper = new DateTimeWrapper();
 
 		useRangeDate = true;
@@ -171,9 +170,8 @@ public class ActivitiesStatusTable extends Tabulator {
 	}
 
 	@Override
-	public String getOptions() {
+	public String getOptions(JSObject jsObject) {
 
-		JSObject jsObject = getDefaultOptions();
 		jsObject.put("invalidOptionWarnings", false);
 		jsObject.put("height", "height");
 		jsObject.put("tooltipsHeader", true);

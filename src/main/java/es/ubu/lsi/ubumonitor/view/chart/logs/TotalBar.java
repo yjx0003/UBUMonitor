@@ -39,8 +39,7 @@ public class TotalBar extends ChartjsLog {
 	}
 
 	@Override
-	public String getOptions() {
-		JSObject jsObject = getDefaultOptions();
+	public String getOptions(JSObject jsObject) {
 
 		MainConfiguration mainConfiguration = Controller.getInstance()
 				.getMainConfiguration();

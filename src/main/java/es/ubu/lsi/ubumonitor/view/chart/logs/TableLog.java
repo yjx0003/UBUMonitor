@@ -68,6 +68,7 @@ public class TableLog extends TabulatorLogs {
 		JSObject jsObject = createColumn(jsArray, I18n.get("text.datetime"), DATETIME, "datetime");
 		jsObject.put("sorterParams",
 				"{format:'" + UtilMethods.escapeJavaScriptText(dateTimeWrapper.getPattern()) + "'}");
+		jsObject.put("topCalc", "'count'" );
 		createColumn(jsArray, I18n.get("chartlabel.name"), NAME);
 		createColumn(jsArray, I18n.get("text.component"), COMPONENT);
 		createColumn(jsArray, I18n.get("text.event"), EVENT);
@@ -128,9 +129,8 @@ public class TableLog extends TabulatorLogs {
 	}
 
 	@Override
-	public String getOptions() {
+	public String getOptions(JSObject jsObject) {
 
-		JSObject jsObject = getDefaultOptions();
 		jsObject.put("invalidOptionWarnings", false);
 		jsObject.put("tooltipsHeader", true);
 		jsObject.put("virtualDom", true);

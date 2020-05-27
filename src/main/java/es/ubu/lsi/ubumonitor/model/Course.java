@@ -443,7 +443,6 @@ public class Course implements Serializable {
 		this.roles.clear();
 		this.groups.forEach(Group::clear); // eliminamos los usuarios de ese grupo
 		this.groups.clear();
-		this.modules.forEach(CourseModule::clear);
 		this.modules.clear();
 		this.sections.clear();
 	}

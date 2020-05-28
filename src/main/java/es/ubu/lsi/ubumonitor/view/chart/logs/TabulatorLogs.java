@@ -1,8 +1,10 @@
 package es.ubu.lsi.ubumonitor.view.chart.logs;
 
 import java.io.File;
+import java.io.IOException;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 
 public abstract class TabulatorLogs extends ChartLogs {
@@ -20,7 +22,7 @@ public abstract class TabulatorLogs extends ChartLogs {
 
 	@Override
 	public void clear() {
-		// do nothing
+		webViewChartsEngine.executeScript("clearTabulator()");
 
 	}
 
@@ -31,9 +33,8 @@ public abstract class TabulatorLogs extends ChartLogs {
 	}
 
 	@Override
-	public String export(File file) {
-		webViewChartsEngine.executeScript("genericExport('tabulatorDiv')");
-		return null;
+	public void export(File file) throws IOException {
+		UtilMethods.snapshotNode(file, webView);
 	}
 
 }

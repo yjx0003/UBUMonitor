@@ -2,8 +2,8 @@ package es.ubu.lsi.ubumonitor.view.chart.logs;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,54 +20,49 @@ import es.ubu.lsi.ubumonitor.model.Group;
 import es.ubu.lsi.ubumonitor.model.Role;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
-import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.gradeitems.BoxPlot;
 
-public class BoxplotLog extends ChartjsLog {
+public class BoxplotLogTime extends ChartjsLog {
 
-	public BoxplotLog(MainController mainController) {
-		this(mainController, ChartType.BOXPLOT_LOG);
+	public BoxplotLogTime(MainController mainController) {
+		this(mainController, ChartType.BOXPLOT_LOG_TIME);
 	}
 
-	public BoxplotLog(MainController mainController, ChartType chartType) {
+	public BoxplotLogTime(MainController mainController, ChartType chartType) {
 		super(mainController, chartType);
 		useGroupButton = true;
 		useRangeDate = true;
 		useLegend = true;
+		useGroupBy = true;
 	}
 
 	@Override
 	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet) {
-
+		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		boolean groupActive = controller.getMainConfiguration()
 				.getValue(MainConfiguration.GENERAL, "groupActive");
 
-		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance()
-				.getActualCourse()
-				.getLogStats()
-				.getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 
-		return createData(typeLogs, dataSet, groupActive, selectedUsers, dateStart, dateEnd, groupBy);
-	}
+		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
 
-	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet, boolean groupActive,
-			List<EnrolledUser> selectedUsers, LocalDate dateStart, LocalDate dateEnd, GroupByAbstract<?> groupBy) {
 		JSObject data = new JSObject();
-		data.put("labels", createLabels(typeLogs, dataSet));
+
+		data.put("labels", createLabels(rangeDates));
 
 		JSArray datasets = new JSArray();
 
 		if (!selectedUsers.isEmpty()) {
 			Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, selectedUsers,
 					typeLogs, dateStart, dateEnd);
-			datasets.add(createDataset(selectedUsers, userCounts, typeLogs, I18n.get("text.selectedUsers"), false));
+			datasets.add(
+					createDataset(selectedUsers, userCounts, rangeDates.size(), I18n.get("text.selectedUsers"), false));
 		}
 
 		Set<EnrolledUser> userWithRole = getUsersInRoles(selectionUserController.getCheckComboBoxRole()
@@ -80,7 +75,7 @@ public class BoxplotLog extends ChartjsLog {
 				Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, users, typeLogs,
 						dateStart, dateEnd);
 
-				datasets.add(createDataset(users, userCounts, typeLogs, group.getGroupName(), !groupActive));
+				datasets.add(createDataset(users, userCounts, rangeDates.size(), group.getGroupName(), !groupActive));
 			}
 
 		}
@@ -89,18 +84,11 @@ public class BoxplotLog extends ChartjsLog {
 		return data.toString();
 	}
 
-	public <E> JSArray createLabels(List<E> typeLogs, DataSet<E> dataSet) {
-		JSArray labels = new JSArray();
-		for (E typeLog : typeLogs) {
-			labels.addWithQuote(dataSet.translate(typeLog));
-		}
-		return labels;
-	}
-
 	private <E> JSObject createDataset(List<EnrolledUser> users, Map<EnrolledUser, Map<E, List<Integer>>> userCounts,
-			List<E> typeLogs, String text, boolean hidden) {
+			int rangeDateSize, String text, boolean hidden) {
 
-		Map<EnrolledUser, Map<E, Integer>> logCounts = transform(userCounts, typeLogs);
+		Map<EnrolledUser, List<Integer>> logCounts = transform(userCounts, rangeDateSize);
+
 		JSObject dataset = BoxPlot.getDefaulDatasetProperties(text, hidden);
 
 		JSArray usersArray = new JSArray();
@@ -109,11 +97,11 @@ public class BoxplotLog extends ChartjsLog {
 
 		JSArray data = new JSArray();
 
-		for (E typeLog : typeLogs) {
+		for (int i = 0; i < rangeDateSize; ++i) {
 			JSArray dataArray = new JSArray();
 			for (EnrolledUser user : users) {
 				dataArray.add(logCounts.get(user)
-						.get(typeLog));
+						.get(i));
 			}
 			data.add(dataArray);
 
@@ -142,20 +130,19 @@ public class BoxplotLog extends ChartjsLog {
 
 	}
 
-	private <E> Map<EnrolledUser, Map<E, Integer>> transform(Map<EnrolledUser, Map<E, List<Integer>>> userCounts,
-			List<E> typeLogs) {
-		Map<EnrolledUser, Map<E, Integer>> map = new HashMap<>();
+	private <E> Map<EnrolledUser, List<Integer>> transform(Map<EnrolledUser, Map<E, List<Integer>>> userCounts,
+			int rangeDateSize) {
+		Map<EnrolledUser, List<Integer>> map = new HashMap<>();
 		for (Map.Entry<EnrolledUser, Map<E, List<Integer>>> entry : userCounts.entrySet()) {
-			for (E typeLog : typeLogs) {
-				Map<E, Integer> logsMap = map.computeIfAbsent(entry.getKey(), k->new HashMap<>());
-				List<Integer> everyDayLogs = entry.getValue()
-						.get(typeLog);
-				int sum = everyDayLogs.stream()
-						.mapToInt(Integer::intValue)
-						.sum();
-				logsMap.put(typeLog, sum);
-
-				map.put(entry.getKey(), logsMap);
+			List<Integer> list = new ArrayList<>();
+			map.put(entry.getKey(), list);
+			for (int j = 0; j < rangeDateSize; ++j) {
+				int sum = 0;
+				for (List<Integer> values : entry.getValue()
+						.values()) {
+					sum += values.get(j);
+				}
+				list.add(sum);
 			}
 		}
 		return map;

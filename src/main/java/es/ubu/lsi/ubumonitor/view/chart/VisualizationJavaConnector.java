@@ -1,21 +1,18 @@
 package es.ubu.lsi.ubumonitor.view.chart;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
-import javax.xml.bind.DatatypeConverter;
-
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.VisualizationController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.util.JSArray;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.activitystatus.ActivitiesStatusTable;
 import es.ubu.lsi.ubumonitor.view.chart.gradeitems.BoxPlot;
@@ -25,6 +22,7 @@ import es.ubu.lsi.ubumonitor.view.chart.gradeitems.Line;
 import es.ubu.lsi.ubumonitor.view.chart.gradeitems.Radar;
 import es.ubu.lsi.ubumonitor.view.chart.gradeitems.Violin;
 import es.ubu.lsi.ubumonitor.view.chart.logs.BoxplotLog;
+import es.ubu.lsi.ubumonitor.view.chart.logs.BoxplotLogTime;
 import es.ubu.lsi.ubumonitor.view.chart.logs.CumLine;
 import es.ubu.lsi.ubumonitor.view.chart.logs.Heatmap;
 import es.ubu.lsi.ubumonitor.view.chart.logs.MeanDiff;
@@ -35,6 +33,7 @@ import es.ubu.lsi.ubumonitor.view.chart.logs.Stackedbar;
 import es.ubu.lsi.ubumonitor.view.chart.logs.TableLog;
 import es.ubu.lsi.ubumonitor.view.chart.logs.TotalBar;
 import es.ubu.lsi.ubumonitor.view.chart.logs.ViolinLog;
+import es.ubu.lsi.ubumonitor.view.chart.logs.ViolinLogTime;
 import javafx.concurrent.Worker.State;
 import javafx.scene.control.Tab;
 import javafx.scene.web.WebEngine;
@@ -44,7 +43,7 @@ public class VisualizationJavaConnector {
 	private static final ChartType DEFAULT_LOG_CHART = ChartType.getDefaultLogs();
 	private static final ChartType DEFAULT_GRADE_CHART = ChartType.getDefaultGrades();
 	private static final ChartType DEFAULT_ACTIVITY_COMPLETION_CHART = ChartType.getDefaultActivityCompletion();
-	
+
 	private WebEngine webViewChartsEngine;
 
 	private Tab tabLogs;
@@ -60,21 +59,19 @@ public class VisualizationJavaConnector {
 
 	private Map<ChartType, Chart> mapChart;
 
-	private File file;
-
 	private MainController mainController;
 	private VisualizationController visualizationController;
-
-
 
 	public VisualizationJavaConnector(VisualizationController visualizationController) {
 		this.visualizationController = visualizationController;
 		this.mainController = visualizationController.getMainController();
 		webViewChartsEngine = visualizationController.getWebViewChartsEngine();
-		tabLogs = mainController.getSelectionController().getTabUbuLogs();
-		tabGrades = mainController.getSelectionController().getTabUbuGrades();
-		tabActivityCompletion = mainController.getSelectionController().getTabActivity();
-		
+		tabLogs = mainController.getSelectionController()
+				.getTabUbuLogs();
+		tabGrades = mainController.getSelectionController()
+				.getTabUbuGrades();
+		tabActivityCompletion = mainController.getSelectionController()
+				.getTabActivity();
 		mapChart = new EnumMap<>(ChartType.class);
 		addChart(new Heatmap(mainController));
 		addChart(new Stackedbar(mainController));
@@ -91,20 +88,28 @@ public class VisualizationJavaConnector {
 		addChart(new ActivitiesStatusTable(mainController));
 		addChart(new CalificationBar(mainController));
 		addChart(new SessionChart(mainController));
+		addChart(new BoxplotLogTime(mainController));
+		addChart(new ViolinLogTime(mainController));
+		addChart(new TableLog(mainController));
 		addChart(new BoxplotLog(mainController));
 		addChart(new ViolinLog(mainController));
-		addChart(new TableLog(mainController));
 		currentType = mapChart.get(DEFAULT_LOG_CHART);
 	}
 
 	private void addChart(Chart chart) {
+		chart.setChoiceBoxDate(visualizationController.getChoiceBoxDate());
+		chart.setDatePickerStart(visualizationController.getDatePickerStart());
+		chart.setDatePickerEnd(visualizationController.getDatePickerEnd());
+		chart.setWebView(visualizationController.getWebViewCharts());
+		chart.setWebViewChartsEngine(visualizationController.getWebViewChartsEngine());
 		mapChart.put(chart.getChartType(), chart);
 	}
 
 	public void updateCharts(String typeChart) {
 		Chart chart = mapChart.get(ChartType.valueOf(typeChart));
 		if (tabLogs.isSelected()) {
-			currentTypeLogs.setMax(visualizationController.getTextFieldMax().getText());
+			currentTypeLogs.setMax(visualizationController.getTextFieldMax()
+					.getText());
 			currentTypeLogs = chart;
 
 		} else if (tabGrades.isSelected()) {
@@ -120,9 +125,11 @@ public class VisualizationJavaConnector {
 
 		if (tabLogs.isSelected()) {
 			if (currentType.isCalculateMaxActivated()) {
-				visualizationController.getTextFieldMax().setText(currentType.calculateMax());
+				visualizationController.getTextFieldMax()
+						.setText(currentType.calculateMax());
 			} else {
-				visualizationController.getTextFieldMax().setText(currentType.getMax());
+				visualizationController.getTextFieldMax()
+						.setText(currentType.getMax());
 			}
 
 		}
@@ -134,13 +141,18 @@ public class VisualizationJavaConnector {
 	private void manageOptions() {
 		visualizationController.getOptionsUbuLogs()
 				.setVisible(currentType.isUseRangeDate() || currentType.isUseGroupBy());
-		visualizationController.getDateGridPane().setVisible(currentType.isUseRangeDate()
-				|| currentType.isUseGroupBy() && visualizationController.getChoiceBoxDate().getValue().useDatePicker());
-		visualizationController.getGridPaneOptionLogs().setVisible(currentType.isUseGroupBy());
+		visualizationController.getDateGridPane()
+				.setVisible(currentType.isUseRangeDate()
+						|| currentType.isUseGroupBy() && visualizationController.getChoiceBoxDate()
+								.getValue()
+								.useDatePicker());
+		visualizationController.getGridPaneOptionLogs()
+				.setVisible(currentType.isUseGroupBy());
 	}
 
 	public void updateChart(boolean calculateMax) {
-		if (webViewChartsEngine.getLoadWorker().getState() != State.SUCCEEDED) {
+		if (webViewChartsEngine.getLoadWorker()
+				.getState() != State.SUCCEEDED) {
 			return;
 		}
 		if (calculateMax) {
@@ -165,7 +177,6 @@ public class VisualizationJavaConnector {
 
 		currentType.hideLegend();
 	}
-
 
 	public Chart getCurrentTypeLogs() {
 		return currentTypeLogs;
@@ -212,7 +223,23 @@ public class VisualizationJavaConnector {
 	}
 
 	public void setDefaultValues() {
-		webViewChartsEngine.executeScript("setLocale('" + Locale.getDefault().toLanguageTag() + "')");
+		webViewChartsEngine.executeScript("setLocale('" + Locale.getDefault()
+				.toLanguageTag() + "')");
+
+		JSArray jsArray = new JSArray();
+		for (ChartType chartType : mapChart.keySet()) {
+			JSObject jsObject = new JSObject();
+			jsObject.putWithQuote("id", chartType.toString());
+			jsObject.putWithQuote("text", I18n.get(chartType));
+			jsObject.putWithQuote("type", chartType.getTab());
+			jsArray.add(jsObject);
+		}
+	
+		webViewChartsEngine.executeScript("generateButtons(" + jsArray + ")");
+		webViewChartsEngine.executeScript(String.format("translate(%s,'%s')", "'btnLegend'",UtilMethods.escapeJavaScriptText( I18n.get("btnLegend"))));
+		webViewChartsEngine.executeScript(String.format("translate(%s,'%s')", "'btnMean'",UtilMethods.escapeJavaScriptText( I18n.get("btnMean"))));
+		webViewChartsEngine.executeScript(String.format("translate(%s,'%s')", "'btnGroupMean'", UtilMethods.escapeJavaScriptText(I18n.get("btnGroupMean"))));
+		
 		setCurrentTypeLogs(DEFAULT_LOG_CHART);
 		setCurrentTypeGrades(DEFAULT_GRADE_CHART);
 		setCurrentTypeActivityCompletion(DEFAULT_ACTIVITY_COMPLETION_CHART);
@@ -220,7 +247,7 @@ public class VisualizationJavaConnector {
 
 			setCurrentType(getCurrentTypeLogs());
 		} else if (tabGrades.isSelected()) {
-			
+
 			setCurrentType(getCurrentTypeGrades());
 		} else if (tabActivityCompletion.isSelected()) {
 			setCurrentType(getCurrentTypeActivityCompletion());
@@ -229,18 +256,8 @@ public class VisualizationJavaConnector {
 
 	}
 
-	public void export(File file) {
-		this.file = file;
+	public void export(File file) throws IOException {
 		currentType.export(file);
-	}
-
-	public void saveImage(String str) throws IOException {
-		
-		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
-		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
-
-		ImageIO.write(bufferedImage, "png", file);
-		UtilMethods.infoWindow(I18n.get("message.export_png") + file.getAbsolutePath());
 	}
 
 	public void showErrorWindow(String errorMessage) {
@@ -251,8 +268,13 @@ public class VisualizationJavaConnector {
 
 		int index = currentType.onClick(selectedIndex);
 		if (index >= 0) {
-			mainController.getSelectionUserController().getListParticipants().scrollTo(index);
-			mainController.getSelectionUserController().getListParticipants().getFocusModel().focus(index);
+			mainController.getSelectionUserController()
+					.getListParticipants()
+					.scrollTo(index);
+			mainController.getSelectionUserController()
+					.getListParticipants()
+					.getFocusModel()
+					.focus(index);
 		}
 
 	}
@@ -270,8 +292,12 @@ public class VisualizationJavaConnector {
 	}
 
 	private boolean swap(String category, String name) {
-		boolean active = Controller.getInstance().getMainConfiguration().getValue(category, name);
-		Controller.getInstance().getMainConfiguration().setValue(category, name, !active);
+		boolean active = Controller.getInstance()
+				.getMainConfiguration()
+				.getValue(category, name);
+		Controller.getInstance()
+				.getMainConfiguration()
+				.setValue(category, name, !active);
 		return !active;
 	}
 
@@ -286,10 +312,12 @@ public class VisualizationJavaConnector {
 		}
 
 		if (currentType == null) {
-			visualizationController.getTextFieldMax().setText(null);
+			visualizationController.getTextFieldMax()
+					.setText(null);
 		} else if (currentType.isCalculateMaxActivated()) {
 
-			visualizationController.getTextFieldMax().setText(currentType.calculateMax());
+			visualizationController.getTextFieldMax()
+					.setText(currentType.calculateMax());
 		}
 
 	}
@@ -297,19 +325,17 @@ public class VisualizationJavaConnector {
 	public Chart getCurrentTypeActivityCompletion() {
 		return currentTypeActivityCompletion;
 	}
-	
-	
-	
 
 	public void updateTabImages() {
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		MainConfiguration mainConfiguration = Controller.getInstance()
+				.getMainConfiguration();
 		boolean legendActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "legendActive");
 		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
 		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
 		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnLegend", legendActive));
 		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnMean", generalActive));
 		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnGroupMean", groupActive));
-		
+
 	}
 
 }

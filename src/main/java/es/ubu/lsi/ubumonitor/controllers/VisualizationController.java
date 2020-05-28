@@ -96,9 +96,9 @@ public class VisualizationController implements MainAction {
 					progressBar.setVisible(false);
 					JSObject window = (JSObject) webViewChartsEngine.executeScript("window");
 					window.setMember("javaConnector", javaConnector);
-					webViewChartsEngine.executeScript("setLanguage()");
-					webViewCharts.toFront();
 					javaConnector.setDefaultValues();
+					webViewCharts.toFront();
+					
 
 					javaConnector.updateChart();
 				});

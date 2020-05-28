@@ -63,19 +63,7 @@ public class BoxPlot extends ChartjsGradeItem {
 	private JSObject createData(Collection<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems, String text,
 			boolean hidden) {
 
-		JSObject dataset = new JSObject();
-		dataset.putWithQuote("label", text);
-		dataset.put("borderColor", hex(text));
-		dataset.put("backgroundColor", rgba(text, OPACITY));
-
-		dataset.put("padding", 10);
-		dataset.put("itemRadius", 2);
-		dataset.putWithQuote("itemStyle", "circle");
-		dataset.put("itemBackgroundColor", hex(text));
-		dataset.put("outlierColor", hex(text));
-		dataset.put("borderWidth", 1);
-		dataset.put("outlierRadius", 10);
-		dataset.put("hidden", hidden);
+		JSObject dataset = getDefaulDatasetProperties(text, hidden);
 		JSArray usersArray = new JSArray();
 		selectedUser.forEach(u -> usersArray.addWithQuote(u.getFullName()));
 		dataset.put("users", usersArray);
@@ -93,6 +81,23 @@ public class BoxPlot extends ChartjsGradeItem {
 			data.add(dataArray);
 		}
 		dataset.put("data", data);
+		return dataset;
+	}
+
+	public static JSObject getDefaulDatasetProperties(String text, boolean hidden) {
+		JSObject dataset = new JSObject();
+		dataset.putWithQuote("label", text);
+		dataset.put("borderColor", hex(text));
+		dataset.put("backgroundColor", rgba(text, OPACITY));
+
+		dataset.put("padding", 10);
+		dataset.put("itemRadius", 2);
+		dataset.putWithQuote("itemStyle", "circle");
+		dataset.put("itemBackgroundColor", hex(text));
+		dataset.put("outlierColor", hex(text));
+		dataset.put("borderWidth", 1);
+		dataset.put("outlierRadius", 10);
+		dataset.put("hidden", hidden);
 		return dataset;
 	}
 

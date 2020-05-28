@@ -50,9 +50,8 @@ public class Heatmap extends ChartLogs {
 	}
 
 	@Override
-	public String export(File file) {
-		webViewChartsEngine.executeScript("exportApexcharts()");
-		return null;
+	public void export(File file) throws IOException {
+		UtilMethods.snapshotNode(file, webView);
 	}
 
 	public String getXScaleLabel() {

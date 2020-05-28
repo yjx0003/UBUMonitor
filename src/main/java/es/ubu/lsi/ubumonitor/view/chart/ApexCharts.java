@@ -1,10 +1,12 @@
 package es.ubu.lsi.ubumonitor.view.chart;
 
 import java.io.File;
+import java.io.IOException;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.util.JSObject;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
 public abstract class ApexCharts extends Chart {
 
@@ -26,9 +28,8 @@ public abstract class ApexCharts extends Chart {
 	}
 
 	@Override
-	public String export(File file) {
-		webViewChartsEngine.executeScript("exportApexcharts()");
-		return null;
+	public void export(File file) throws IOException {
+		UtilMethods.snapshotNode(file, webView);
 	}
 	
 	public String getXScaleLabel() {

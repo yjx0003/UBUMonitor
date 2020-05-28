@@ -1,10 +1,18 @@
 package es.ubu.lsi.ubumonitor.view.chart;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.xml.bind.DatatypeConverter;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSObject;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
 public abstract class Chartjs extends Chart {
 
@@ -25,8 +33,13 @@ public abstract class Chartjs extends Chart {
 	}
 
 	@Override
-	public String export(File file) {
-		return (String) webViewChartsEngine.executeScript("exportChartjs()");
+	public void export(File file) throws IOException {
+		String str = (String) webViewChartsEngine.executeScript("exportChartjs()");
+		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
+		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
+
+		ImageIO.write(bufferedImage, "png", file);
+		UtilMethods.infoWindow(I18n.get("message.export_png") + file.getAbsolutePath());
 	}
 
 	public String getXScaleLabel() {

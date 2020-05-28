@@ -13,8 +13,10 @@ public enum ChartType {
 	TOTAL_BAR(Tabs.LOGS, 0),
 	STACKED_BAR(Tabs.LOGS, 1), 
 	HEAT_MAP(Tabs.LOGS, 2),
-	BOXPLOT_LOG(Tabs.LOGS, 3),
-	VIOLIN_LOG(Tabs.LOGS, 4), 
+	BOXPLOT_LOG(Tabs.LOGS, 23),
+	VIOLIN_LOG(Tabs.LOGS, 24),
+	BOXPLOT_LOG_TIME(Tabs.LOGS, 3),
+	VIOLIN_LOG_TIME(Tabs.LOGS, 4), 
 	CUM_LINE(Tabs.LOGS, 5),
 	MEAN_DIFF(Tabs.LOGS, 6), 
 	SCATTER(Tabs.LOGS, 7),
@@ -36,6 +38,7 @@ public enum ChartType {
 	RISK_BAR(Tabs.RISK, 20),
 	BUBBLE(Tabs.RISK, 21),
 	BUBBLE_LOGARITHMIC(Tabs.RISK, 22);
+	
 
 	private Tabs tab;
 	private int id;

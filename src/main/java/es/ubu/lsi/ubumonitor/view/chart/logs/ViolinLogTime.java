@@ -6,12 +6,12 @@ import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 
-public class ViolinLog extends BoxplotLog {
+public class ViolinLogTime extends BoxplotLogTime{
 
-	public ViolinLog(MainController mainController) {
-		super(mainController, ChartType.VIOLIN_LOG);
+	public ViolinLogTime(MainController mainController) {
+		super(mainController, ChartType.VIOLIN_LOG_TIME);
 	}
-
+	
 	@Override
 	public String getOptions(JSObject jsObject) {
 		MainConfiguration mainConfiguration = Controller.getInstance()
@@ -26,4 +26,5 @@ public class ViolinLog extends BoxplotLog {
 
 		return jsObject.toString();
 	}
+
 }

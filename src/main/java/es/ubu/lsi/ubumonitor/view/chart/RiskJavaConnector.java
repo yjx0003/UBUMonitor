@@ -1,20 +1,17 @@
 package es.ubu.lsi.ubumonitor.view.chart;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
-import javax.xml.bind.DatatypeConverter;
-
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.RiskController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.util.JSArray;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.risk.Bubble;
 import es.ubu.lsi.ubumonitor.view.chart.risk.BubbleLogarithmic;
@@ -31,7 +28,6 @@ public class RiskJavaConnector {
 	private Chart currentType;
 	private WebEngine webViewChartsEngine;
 	private RiskController riskController;
-	private File file;
 	private Map<ChartType, Chart> mapChart;
 	
 
@@ -52,6 +48,7 @@ public class RiskJavaConnector {
 
 	public void addChart(Chart chart) {
 		chart.setWebViewChartsEngine(webViewChartsEngine);
+		chart.setWebView(riskController.getWebViewCharts());
 		mapChart.put(chart.chartType, chart);
 	}
 
@@ -85,7 +82,19 @@ public class RiskJavaConnector {
 	}
 
 	public void setDefaultValues() {
-		webViewChartsEngine.executeScript("setLanguage()");
+		JSArray jsArray = new JSArray();
+		for (ChartType chartType : mapChart.keySet()) {
+			JSObject jsObject = new JSObject();
+			jsObject.putWithQuote("id", chartType.toString());
+			jsObject.putWithQuote("text", I18n.get(chartType));
+			jsObject.putWithQuote("type", chartType.getTab());
+			jsArray.add(jsObject);
+		}
+	
+		webViewChartsEngine.executeScript("generateButtons(" + jsArray + ")");
+		webViewChartsEngine.executeScript(String.format("translate(%s,'%s')", "'btnLegend'",UtilMethods.escapeJavaScriptText( I18n.get("btnLegend"))));
+		webViewChartsEngine.executeScript(String.format("translate(%s,'%s')", "'btnMean'",UtilMethods.escapeJavaScriptText( I18n.get("btnMean"))));
+		webViewChartsEngine.executeScript(String.format("translate(%s,'%s')", "'btnGroupMean'", UtilMethods.escapeJavaScriptText(I18n.get("btnGroupMean"))));
 		webViewChartsEngine.executeScript("setLocale('" + Locale.getDefault()
 				.toLanguageTag() + "')");
 		currentType = mapChart.get(DEFAULT_CHART);
@@ -113,27 +122,13 @@ public class RiskJavaConnector {
 
 	}
 
-	public void save(File file) {
+	public void save(File file) throws IOException {
 		currentType.export(file);
 
 	}
 
 	public Chart getCurrentType() {
 		return currentType;
-	}
-
-	public void export(File file) {
-		this.file = file;
-		currentType.export(file);
-	}
-
-	public void saveImage(String str) throws IOException {
-
-		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
-		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
-
-		ImageIO.write(bufferedImage, "png", file);
-		UtilMethods.infoWindow(I18n.get("message.export_png") + file.getAbsolutePath());
 	}
 
 	public boolean swapLegend() {
@@ -175,6 +170,11 @@ public class RiskJavaConnector {
 					.focus(index);
 		}
 
+	}
+
+	public void export(File file) throws IOException {
+		currentType.export(file);
+		
 	}
 
 }

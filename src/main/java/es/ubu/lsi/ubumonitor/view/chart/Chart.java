@@ -41,9 +41,11 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 
 public abstract class Chart implements ExportableChart {
 
+	protected WebView webView;
 	protected WebEngine webViewChartsEngine;
 	protected CheckComboBox<Group> slcGroup;
 	protected TabPane tabPaneUbuLogs;
@@ -93,13 +95,9 @@ public abstract class Chart implements ExportableChart {
 		this.listViewEvents = selectionController.getListViewEvents();
 		this.listViewSection = selectionController.getListViewSection();
 		this.listViewCourseModule = selectionController.getListViewCourseModule();
-		this.choiceBoxDate = visualizationController.getChoiceBoxDate();
-		this.datePickerStart = visualizationController.getDatePickerStart();
-		this.datePickerEnd = visualizationController.getDatePickerEnd();
 		this.stats = mainController.getStats();
 		this.tvwGradeReport = selectionController.getTvwGradeReport();
 		this.tabPaneUbuLogs = selectionController.getTabPaneUbuLogs();
-		this.webViewChartsEngine = visualizationController.getWebViewChartsEngine();
 
 		this.mainController = mainController;
 		this.chartType = chartType;
@@ -148,15 +146,15 @@ public abstract class Chart implements ExportableChart {
 		return getUsers().indexOf(selectedUser);
 	}
 
-	public <T> String rgba(T hash, double alpha) {
+	public static <T> String rgba(T hash, double alpha) {
 		return "colorRGBA('" + UtilMethods.escapeJavaScriptText(hash.toString()) + "'," + alpha + ")";
 	}
 
-	public <T> String rgb(T hash) {
+	public static <T> String rgb(T hash) {
 		return "colorRGB('" + UtilMethods.escapeJavaScriptText(hash.toString()) + "')";
 	}
 
-	public <T> String hex(T hash) {
+	public static <T> String hex(T hash) {
 		return "colorHEX('" + UtilMethods.escapeJavaScriptText(hash.toString()) + "')";
 	}
 
@@ -181,7 +179,7 @@ public abstract class Chart implements ExportableChart {
 	}
 
 	public abstract String getOptions(JSObject jsObject);
-	
+
 	public String getOptions() {
 		JSObject jsObject = getDefaultOptions();
 		getOptions(jsObject);
@@ -194,7 +192,7 @@ public abstract class Chart implements ExportableChart {
 
 	public abstract void hideLegend();
 
-	public abstract String export(File file);
+	public abstract void export(File file) throws IOException;
 
 	public JSObject getDefaultOptions() {
 		MainConfiguration mainConfiguration = Controller.getInstance()
@@ -212,11 +210,11 @@ public abstract class Chart implements ExportableChart {
 		jsObject.put("groupActive", mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive"));
 		JSArray jsArray = new JSArray();
 		ObservableList<ChartType> listCharts = mainConfiguration.getValue(MainConfiguration.GENERAL, "listCharts");
-		
+
 		jsArray.addAllWithQuote(listCharts);
 		jsArray.addAllWithQuote(ChartType.getDefaultValues());
 		jsObject.put("listCharts", jsArray);
-	
+
 		return jsObject;
 
 	}
@@ -383,5 +381,24 @@ public abstract class Chart implements ExportableChart {
 	public boolean isUseOptions() {
 		return useOptions;
 	}
+
+	public void setWebView(WebView webViewCharts) {
+		this.webView = webViewCharts;
+
+	}
+
+	public void setChoiceBoxDate(ChoiceBox<GroupByAbstract<?>> choiceBoxDate) {
+		this.choiceBoxDate = choiceBoxDate;
+	}
+
+	public void setDatePickerStart(DatePicker datePickerStart) {
+		this.datePickerStart = datePickerStart;
+	}
+
+	public void setDatePickerEnd(DatePicker datePickerEnd) {
+		this.datePickerEnd = datePickerEnd;
+	}
+	
+	
 
 }

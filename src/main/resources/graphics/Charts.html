@@ -21,42 +21,20 @@
 
 <div id="all_tabs" class="controles">
     <div class="pestañas" id="GRADES">
-        <input type="button" class="btn" id="LINE" onclick='javaConnector.updateCharts(this.id);' />
-        <input type="button" class="btn" id="RADAR" onclick='javaConnector.updateCharts(this.id);' />
-
-
-        <input type="button" class="btn" id="BOXPLOT" onclick='javaConnector.updateCharts(this.id);' />
-
-        <input type="button" class="btn" id="VIOLIN" onclick='javaConnector.updateCharts(this.id);' />
-        <input type="button" class="btn" id="GRADE_REPORT_TABLE"
-            onclick='javaConnector.updateCharts(this.id);' />
-        <input type="button" class="btn" id="CALIFICATION_BAR"
-            onclick='javaConnector.updateCharts(this.id);' />
+     
     </div>
     <div class="pestañas" id="LOGS">
-    	<input type="button" class="btn" id="TOTAL_BAR" onclick='javaConnector.updateCharts(this.id);' />
-        <input type="button" class="btn" id="STACKED_BAR" onclick='javaConnector.updateCharts(this.id);' />
-        <input type="button" class="btn" id="HEAT_MAP" onclick='javaConnector.updateCharts(this.id);' />
-        <input type="button" class="btn" id="BOXPLOT_LOG" onclick='javaConnector.updateCharts(this.id);' />
-        <input type="button" class="btn" id="VIOLIN_LOG" onclick='javaConnector.updateCharts(this.id);' />
-        <input type="button" class="btn" id="CUM_LINE" onclick='javaConnector.updateCharts(this.id);' />
-        <input type="button" class="btn" id="MEAN_DIFF" onclick='javaConnector.updateCharts(this.id);' />
-        <input type="button" class="btn" id="SCATTER" onclick='javaConnector.updateCharts(this.id);' />
-        <input type="button" class="btn" id="SCATTER_USER" onclick='javaConnector.updateCharts(this.id);' />
-         <input type="button" class="btn" id="TABLE_LOG" onclick='javaConnector.updateCharts(this.id);' />
-        <input type="button" class="btn" id="SESSION" onclick='javaConnector.updateCharts(this.id);' />
-        
+
 
     </div>
     <div class="pestañas" id="ACTIVITY_COMPLETION">
-        <input type="button" class="btn" id="ACTIVITIES_TABLE"
-            onclick='javaConnector.updateCharts(this.id);' />
+        
     </div>
 
     <div class="opciones">
-        <input type="button" value="Leyenda" class="btn" id="btnLegend" onclick="hideLegend()" />
-        <input type="button" value="Media General" class="btn" id="btnMean" onclick="showGeneralMean()" />
-        <input type="button" class="btn" id="btnGroupMean" onclick="showGroupMean()" />
+        <button value="Leyenda" class="btn" id="btnLegend" onclick="hideLegend()" />
+        <button value="Media General" class="btn" id="btnMean" onclick="showGeneralMean()" />
+        <button class="btn" id="btnGroupMean" onclick="showGroupMean()" />
     </div>
 </div>
 
@@ -186,7 +164,7 @@
         let tabs = document.getElementById(div_id);
         let children = tabs.children;
         for (let i = 0; i < children.length; i++) {
-            if (children[i].tagName == "INPUT") {
+            if (children[i].tagName == "BUTTON") {
                 children[i].style.display = div_id == type && listCharts.includes(children[i].id)  ? "inline" : "none";
             }
 
@@ -199,7 +177,7 @@
             let tabs = document.getElementById(div_id);
             let children = tabs.children;
             for (i = 0; i < children.length; i++) {
-                if (children[i].tagName == "INPUT") {
+                if (children[i].tagName == "BUTTON") {
                     children[i].disabled = false;
                 }
 
@@ -384,18 +362,28 @@
         })
 
     }
+    
+    function generateButtons(buttons){
+    	for (const value of buttons){
+			let button = document.createElement("BUTTON");
+			button.id = value.id;
+			button.innerText = value.text;
+			button.className = "btn";
+			//button.type = "button";
+			button.setAttribute( "onClick", "javascript: javaConnector.updateCharts(this.id);" );
+			
+			type = document.getElementById(value.type);
+			type.appendChild(button);
+    	}
+    }
 
     // Modifica el valor de los inputs segun el idioma pasado
     function getI18n(item) {
         document.getElementById(item).value = javaConnector.getI18n(item);
     }
 
-    // Establece el idioma
-    function setLanguage() {
-        let tabs = document.querySelectorAll("#all_tabs > div > input");
-        for (i = 0; i < tabs.length; i++) {
-            getI18n(tabs[i].id);
-        }
+    function translate(id, text){
+    	document.getElementById(id).innerText = text;
     }
 
 

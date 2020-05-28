@@ -21,11 +21,7 @@
 
 <div id="all_tabs" class="controles">
     <div class="pestañas" id="RISK">
-     	<input type="button" class="btn" id="RISK_BAR_TEMPORAL" onclick='javaConnector.updateCharts(this.id);' />
-          <input type="button" class="btn" id="RISK_EVOLUTION" onclick='javaConnector.updateCharts(this.id);' />
-        <input type="button" class="btn" id="RISK_BAR" onclick='javaConnector.updateCharts(this.id);' />
-        <input type="button" class="btn" id="BUBBLE" onclick='javaConnector.updateCharts(this.id);' />
-        <input type="button" class="btn" id="BUBBLE_LOGARITHMIC" onclick='javaConnector.updateCharts(this.id);' />
+ 
      
        
     </div>
@@ -152,7 +148,7 @@
         let tabs = document.getElementById(div_id);
         let children = tabs.children;
         for (i = 0; i < children.length; i++) {
-            if (children[i].tagName == "INPUT") {
+            if (children[i].tagName == "BUTTON") {
                 children[i].style.display = div_id == type ? "inline" : "none";
             }
 
@@ -164,7 +160,7 @@
             let tabs = document.getElementById(div_id);
             let children = tabs.children;
             for (i = 0; i < children.length; i++) {
-                if (children[i].tagName == "INPUT") {
+                if (children[i].tagName == "BUTTON") {
                     children[i].disabled = false;
                 }
 
@@ -337,20 +333,24 @@
 
     }
 
-    // Modifica el valor de los inputs segun el idioma pasado
-    function getI18n(item) {
-        document.getElementById(item).value = javaConnector.getI18n(item);
+ function generateButtons(buttons){
+    	for (const value of buttons){
+			let button = document.createElement("BUTTON");
+			button.id = value.id;
+			button.innerText = value.text;
+			button.className = "btn";
+			//button.type = "button";
+			button.setAttribute( "onClick", "javascript: javaConnector.updateCharts(this.id);" );
+			
+			type = document.getElementById(value.type);
+			type.appendChild(button);
+    	}
     }
 
-    // Establece el idioma
-    function setLanguage() {
-        let tabs = document.querySelectorAll("#all_tabs > div > input");
-        for (i = 0; i < tabs.length; i++) {
-            getI18n(tabs[i].id);
-        }
+
+ function translate(id, text){
+    	document.getElementById(id).innerText = text;
     }
-
-
 
     function setLocale(newLocale) {
         locale = newLocale;

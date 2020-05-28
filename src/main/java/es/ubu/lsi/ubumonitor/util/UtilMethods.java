@@ -19,15 +19,20 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import javax.imageio.ImageIO;
+
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
 import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.Style;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -35,6 +40,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
@@ -425,6 +431,13 @@ public class UtilMethods {
 		AutoCompletionBinding<E> autoCompletionBinding = TextFields.bindAutoCompletion(textField, possibleSuggestions);
 		autoCompletionBinding.setDelay(0);
 		return autoCompletionBinding;
+	}
+	
+	public static void snapshotNode(File file, Node node) throws IOException {
+		WritableImage image = node.snapshot(new SnapshotParameters(), null);
+		
+		ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+		UtilMethods.infoWindow(I18n.get("message.export_png") + file.getAbsolutePath());
 	}
 	
 }

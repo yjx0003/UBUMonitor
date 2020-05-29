@@ -79,9 +79,8 @@ public class MainConfiguration {
 		createItem(ChartType.HEAT_MAP, "thirdInterval", Color.web("#b5ff33"));
 		createItem(ChartType.HEAT_MAP, "fourthInterval", Color.web("#38e330"));
 		createItem(ChartType.HEAT_MAP, "moreMax", Color.web("#67b92e"));
-		createItem(ChartType.BOXPLOT_LOG, "horizontalMode", false);
-
-		createItem(ChartType.VIOLIN_LOG, "horizontalMode", false);
+		createItem(ChartType.BOXPLOT_LOG, "horizontalMode", true);
+		createItem(ChartType.VIOLIN_LOG, "horizontalMode", true);
 		createItem(ChartType.BOXPLOT_LOG_TIME, "horizontalMode", false);
 		createItem(ChartType.VIOLIN_LOG_TIME, "horizontalMode", false);
 		createItem(ChartType.CUM_LINE, "calculateMax", false);

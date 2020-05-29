@@ -54,7 +54,7 @@ public class SelectionUserController {
 
 	@FXML
 	private TextField textFieldNotEnrolled;
-	private FilteredList<EnrolledUser> filteredListNotEnrolled;
+	
 	private AutoCompletionBinding<EnrolledUser> autoCompletionBindingNotEnrolled;
 	@FXML
 	private TabPane tabPane;
@@ -242,7 +242,7 @@ public class SelectionUserController {
 
 		ObservableList<EnrolledUser> user = FXCollections.observableArrayList(course.getNotEnrolledUser());
 		user.sort(Comparator.comparing(EnrolledUser::getFullName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)));
-		filteredListNotEnrolled = new FilteredList<>(user);
+		FilteredList<EnrolledUser> filteredListNotEnrolled = new FilteredList<>(user);
 		filteredListNotEnrolled.predicateProperty()
 				.addListener(value -> mainController.updatePredicadeEnrolledList());
 		listParticipantsOut.setItems(filteredListNotEnrolled);

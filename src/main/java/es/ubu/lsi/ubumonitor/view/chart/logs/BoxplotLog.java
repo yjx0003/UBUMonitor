@@ -3,14 +3,15 @@ package es.ubu.lsi.ubumonitor.view.chart.logs;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
@@ -147,7 +148,7 @@ public class BoxplotLog extends ChartjsLog {
 		Map<EnrolledUser, Map<E, Integer>> map = new HashMap<>();
 		for (Map.Entry<EnrolledUser, Map<E, List<Integer>>> entry : userCounts.entrySet()) {
 			for (E typeLog : typeLogs) {
-				Map<E, Integer> logsMap = map.computeIfAbsent(entry.getKey(), k->new HashMap<>());
+				Map<E, Integer> logsMap = map.computeIfAbsent(entry.getKey(), k -> new HashMap<>());
 				List<Integer> everyDayLogs = entry.getValue()
 						.get(typeLog);
 				int sum = everyDayLogs.stream()
@@ -161,28 +162,92 @@ public class BoxplotLog extends ChartjsLog {
 		return map;
 	}
 
+	private <E> Map<E, DescriptiveStatistics> getDescriptiveStatistics(Map<EnrolledUser, Map<E, Integer>> logCounts,
+			List<EnrolledUser> selectedUsers, List<E> typeLogs) {
+		Map<E, DescriptiveStatistics> descriptiveStatistics = new HashMap<>();
+
+		for (EnrolledUser user : selectedUsers) {
+			Map<E, Integer> map = logCounts.get(user);
+			for (E typeLog : typeLogs) {
+				descriptiveStatistics.computeIfAbsent(typeLog, k -> new DescriptiveStatistics())
+						.addValue(map.getOrDefault(typeLog, 0));
+			}
+		}
+
+		return descriptiveStatistics;
+	}
+
 	@Override
 	protected <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
-		// TODO Auto-generated method stub
+		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
+
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = Controller.getInstance()
+				.getActualCourse()
+				.getLogStats()
+				.getByType(TypeTimes.DAY);
+
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, selectedUsers, typeLogs,
+				dateStart, dateEnd);
+
+		Map<EnrolledUser, Map<E, Integer>> logCounts = transform(userCounts, typeLogs);
+		Map<E, DescriptiveStatistics> descriptiveStatistics = getDescriptiveStatistics(logCounts, selectedUsers,
+				typeLogs);
+		for (E typeLog : typeLogs) {
+			DescriptiveStatistics stats = descriptiveStatistics.get(typeLog);
+			printer.print(dataSet.translate(typeLog));
+			printer.print(stats.getN());
+			printer.print(stats.getMin());
+			printer.print(stats.getPercentile(25));
+			printer.print(stats.getPercentile(50));
+			printer.print(stats.getPercentile(75));
+			printer.print(stats.getMax());
+			printer.println();
+
+		}
 
 	}
 
 	@Override
 	protected String[] getCSVHeader() {
-		// TODO Auto-generated method stub
-		return null;
+		return new String[] { "item", "n", "min", "q1", "median", "q3", "max" };
 	}
 
 	@Override
 	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
-		// TODO Auto-generated method stub
+		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
+
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = Controller.getInstance()
+				.getActualCourse()
+				.getLogStats()
+				.getByType(TypeTimes.DAY);
+
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, selectedUsers, typeLogs,
+				dateStart, dateEnd);
+		Map<EnrolledUser, Map<E, Integer>> logCounts = transform(userCounts, typeLogs);
+		for (Map.Entry<EnrolledUser, Map<E, Integer>> entry : logCounts.entrySet()) {
+
+			for (Map.Entry<E, Integer> entry2 : entry.getValue()
+					.entrySet()) {
+				printer.print(entry.getKey()
+						.getId());
+				printer.print(entry.getKey()
+						.getFullName());
+				printer.print(dataSet.translate(entry2.getKey()));
+				printer.print(entry2.getValue());
+				printer.println();
+			}
+
+		}
 
 	}
 
 	@Override
 	protected String[] getCSVDesglosedHeader() {
-		// TODO Auto-generated method stub
-		return null;
+		return new String[] { "userid", "fullname", "item", "value" };
 	}
 
 	@Override
@@ -208,5 +273,13 @@ public class BoxplotLog extends ChartjsLog {
 	@Override
 	public int onClick(int index) {
 		return -1; // do nothing at the moment
+	}
+
+	@Override
+	public String getXAxisTitle() {
+		return tabPaneUbuLogs.getSelectionModel()
+				.getSelectedItem()
+				.getText();
+
 	}
 }

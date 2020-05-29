@@ -11,6 +11,7 @@ import org.apache.commons.csv.CSVPrinter;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.LogLine;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
@@ -33,6 +34,7 @@ public class TableLog extends TabulatorLogs {
 	private static final String ORIGIN = "f";
 	private static final String IP = "g";
 	private static final String ID = "h";
+	private static final String SECTION = "i";
 
 	private DateTimeWrapper dateTimeWrapper;
 
@@ -68,10 +70,11 @@ public class TableLog extends TabulatorLogs {
 		JSObject jsObject = createColumn(jsArray, I18n.get("text.datetime"), DATETIME, "datetime");
 		jsObject.put("sorterParams",
 				"{format:'" + UtilMethods.escapeJavaScriptText(dateTimeWrapper.getPattern()) + "'}");
-		jsObject.put("topCalc", "'count'" );
+		jsObject.put("topCalc", "'count'");
 		createColumn(jsArray, I18n.get("chartlabel.name"), NAME);
 		createColumn(jsArray, I18n.get("text.component"), COMPONENT);
 		createColumn(jsArray, I18n.get("text.event"), EVENT);
+		createColumn(jsArray, I18n.get("text.section"), SECTION);
 		createColumn(jsArray, I18n.get("text.coursemodule"), COURSE_MODULE);
 		createColumn(jsArray, I18n.get("text.origin"), ORIGIN);
 		createColumn(jsArray, I18n.get("text.ip"), IP);
@@ -114,9 +117,13 @@ public class TableLog extends TabulatorLogs {
 					.getFullName());
 			jsObject.putWithQuote(COMPONENT, I18n.get(logLine.getComponent()));
 			jsObject.putWithQuote(EVENT, I18n.get(logLine.getEventName()));
+
 			if (logLine.getCourseModule() != null) {
 				jsObject.putWithQuote(COURSE_MODULE, logLine.getCourseModule()
 						.getModuleName());
+				jsObject.putWithQuote(SECTION, logLine.getCourseModule()
+						.getSection()
+						.getName());
 			}
 			jsObject.putWithQuote(ORIGIN, logLine.getOrigin());
 			jsObject.putWithQuote(IP, logLine.getIPAdress());
@@ -136,31 +143,77 @@ public class TableLog extends TabulatorLogs {
 		jsObject.put("virtualDom", true);
 		jsObject.putWithQuote("headerFilterPlaceholder", I18n.get("label.filter"));
 		jsObject.putWithQuote("sort", DATETIME);
-		jsObject.putWithQuote("layout", "fitDataFill");
+		jsObject.putWithQuote("layout", "fitDataStretch");
+		jsObject.putWithQuote("layoutColumnsOnNewData", true);
 		jsObject.put("rowClick", "function(e,row){javaConnector.dataPointSelection(row._row.data." + ID + ");}");
 		return jsObject.toString();
 	}
 
 	@Override
 	protected <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
+		for (LogLine logLine : createLogLines(getSelectedEnrolledUser(), typeLogs, dataSet)) {
+			printer.print(Controller.DATE_TIME_FORMATTER.format(logLine.getTime()));
+			printer.print(logLine.getUser()
+					.getFullName());
+			printer.print(I18n.get(logLine.getComponent()));
+			printer.print(I18n.get(logLine.getEventName()));
+			if (logLine.getCourseModule() != null) {
+				printer.print(logLine.getCourseModule()
+						.getSection()
+						.getName());
+				printer.print(logLine.getCourseModule()
+						.getModuleName());
+			} else {
+				printer.print(null);
+				printer.print(null);
+			}
+			printer.print(logLine.getOrigin());
+			printer.print(logLine.getIPAdress());
+			printer.println();
+		}
 
 	}
 
 	@Override
 	protected String[] getCSVHeader() {
-
-		return null;
+		return new String[] { "dateTime", "username", "component", "event", "section", "courseModule", "origin",
+				"ipAdress" };
 	}
 
 	@Override
 	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
-
+		for (LogLine logLine : createLogLines(getSelectedEnrolledUser(), typeLogs, dataSet)) {
+			printer.print(Controller.DATE_TIME_FORMATTER.format(logLine.getTime()));
+			printer.print(logLine.getUser()
+					.getId());
+			printer.print(logLine.getUser()
+					.getFullName());
+			printer.print(I18n.get(logLine.getComponent()));
+			printer.print(I18n.get(logLine.getEventName()));
+			CourseModule cm = logLine.getCourseModule();
+			if (cm != null) {
+				printer.print(cm.getSection()
+						.getId());
+				printer.print(cm.getSection()
+						.getName());
+				printer.print(cm.getCmid());
+				printer.print(cm.getModuleName());
+			} else {
+				printer.print(null);
+				printer.print(null);
+				printer.print(null);
+				printer.print(null);
+			}
+			printer.print(logLine.getOrigin());
+			printer.print(logLine.getIPAdress());
+			printer.println();
+		}
 	}
 
 	@Override
 	protected String[] getCSVDesglosedHeader() {
-
-		return null;
+		return new String[] { "dateTime", "userid", "username", "component", "event", "sectionid", "sectionName",
+				"courseModuleId", "courseModuleName", "origin", "ipAdress" };
 	}
 
 	@Override

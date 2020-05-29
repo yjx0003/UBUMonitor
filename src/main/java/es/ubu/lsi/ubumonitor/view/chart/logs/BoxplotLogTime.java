@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.view.chart.logs;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,8 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
@@ -148,28 +151,85 @@ public class BoxplotLogTime extends ChartjsLog {
 		return map;
 	}
 
+	private List<DescriptiveStatistics> getDescriptiveStatistics(Map<EnrolledUser, List<Integer>> logCounts,
+			List<EnrolledUser> users, int size) {
+		List<DescriptiveStatistics> descriptiveStatistics = Stream.generate(DescriptiveStatistics::new)
+				.limit(size)
+				.collect(Collectors.toList());
+		for (EnrolledUser user : users) {
+			List<Integer> counts = logCounts.get(user);
+			for (int i = 0; i < size; ++i) {
+				descriptiveStatistics.get(i)
+						.addValue(counts.get(i));
+			}
+		}
+		return descriptiveStatistics;
+
+	}
+
 	@Override
 	protected <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
-		// TODO Auto-generated method stub
+		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
+
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, selectedUsers, typeLogs,
+				dateStart, dateEnd);
+		List<String> rangeDatesString = groupBy.getRangeString(dateStart, dateEnd);
+		Map<EnrolledUser, List<Integer>> logCounts = transform(userCounts, rangeDatesString.size());
+		List<DescriptiveStatistics> descriptiveStatistics = getDescriptiveStatistics(logCounts, selectedUsers,
+				rangeDatesString.size());
+		for (int i = 0; i < descriptiveStatistics.size(); i++) {
+			DescriptiveStatistics stats = descriptiveStatistics.get(i);
+			printer.print(rangeDatesString.get(i));
+			printer.print(stats.getN());
+			printer.print(stats.getMin());
+			printer.print(stats.getPercentile(25));
+			printer.print(stats.getPercentile(50));
+			printer.print(stats.getPercentile(75));
+			printer.print(stats.getMax());
+			printer.println();
+
+		}
 
 	}
 
 	@Override
 	protected String[] getCSVHeader() {
-		// TODO Auto-generated method stub
-		return null;
+		return new String[] { "time", "n", "min", "q1", "median", "q3", "max" };
 	}
 
 	@Override
 	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
-		// TODO Auto-generated method stub
+		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
+
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, selectedUsers, typeLogs,
+				dateStart, dateEnd);
+		List<String> rangeDatesString = groupBy.getRangeString(dateStart, dateEnd);
+		Map<EnrolledUser, List<Integer>> logCounts = transform(userCounts, rangeDatesString.size());
+		for (Map.Entry<EnrolledUser, List<Integer>> entry : logCounts.entrySet()) {
+			printer.print(entry.getKey()
+					.getId());
+			printer.print(entry.getKey()
+					.getFullName());
+			printer.printRecord(entry.getValue());
+		}
 
 	}
 
 	@Override
 	protected String[] getCSVDesglosedHeader() {
-		// TODO Auto-generated method stub
-		return null;
+		LocalDate dateStart = datePickerStart.getValue();
+		LocalDate dateEnd = datePickerEnd.getValue();
+		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
+		List<String> range = groupBy.getRangeString(dateStart, dateEnd);
+		range.add(0, "userid");
+		range.add(1, "fullname");
+		return range.toArray(new String[0]);
 	}
 
 	@Override
@@ -195,5 +255,11 @@ public class BoxplotLogTime extends ChartjsLog {
 	@Override
 	public int onClick(int index) {
 		return -1; // do nothing at the moment
+	}
+
+	@Override
+	public String getXAxisTitle() {
+		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"), I18n.get(choiceBoxDate.getValue()
+				.getTypeTime()));
 	}
 }

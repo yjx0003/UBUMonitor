@@ -147,11 +147,11 @@ public class SelectionController {
 		initTabActivityCompletion();
 
 		initiGradeItems();
-		if(tabPane.getTabs().isEmpty()) {
+		if (tabPane.getTabs()
+				.isEmpty()) {
 			tabPane.setVisible(false);
-			Platform.runLater(() -> {
-				mainController.getSplitPaneLeft().setDividerPositions(1.0);
-			});
+			Platform.runLater(() -> mainController.getSplitPaneLeft()
+					.setDividerPositions(1.0));
 		}
 
 	}
@@ -160,7 +160,8 @@ public class SelectionController {
 
 		if (CONTROLLER.getActualCourse()
 				.getUpdatedGradeItem() == null) {
-			tabPane.getTabs().remove(tabUbuGrades);
+			tabPane.getTabs()
+					.remove(tabUbuGrades);
 			return;
 		}
 		ObservableList<ModuleType> observableListModules = FXCollections.observableArrayList();
@@ -234,7 +235,8 @@ public class SelectionController {
 	private void initTabActivityCompletion() {
 		if (CONTROLLER.getActualCourse()
 				.getUpdatedActivityCompletion() == null) {
-			tabPane.getTabs().remove(tabActivity);
+			tabPane.getTabs()
+					.remove(tabActivity);
 			return;
 		}
 		tabActivity.setOnSelectionChanged(this::onSetTabActivityCompletion);
@@ -243,9 +245,7 @@ public class SelectionController {
 		// grafica y la escala
 		listViewActivity.getSelectionModel()
 				.getSelectedItems()
-				.addListener((Change<? extends CourseModule> courseModule) -> {
-					mainController.updateListViewActivity();
-				});
+				.addListener((Change<? extends CourseModule> courseModule) -> mainController.updateListViewActivity());
 
 		listViewActivity.setCellFactory(getListCellCourseModule());
 
@@ -356,7 +356,8 @@ public class SelectionController {
 	public void initTabLogs() {
 		if (CONTROLLER.getActualCourse()
 				.getUpdatedLog() == null) {
-			tabPane.getTabs().remove(tabUbuLogs);
+			tabPane.getTabs()
+					.remove(tabUbuLogs);
 			return;
 		}
 		tabUbuLogs.setOnSelectionChanged(this::setTablogs);
@@ -390,10 +391,9 @@ public class SelectionController {
 		// grafica y la escala
 		listViewComponents.getSelectionModel()
 				.getSelectedItems()
-				.addListener((Change<? extends Component> c) -> {
-					mainController.updateListViewComponents();
+				.addListener((Change<? extends Component> c) -> mainController.updateListViewComponents()
 
-				});
+				);
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono

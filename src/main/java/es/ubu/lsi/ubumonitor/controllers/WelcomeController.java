@@ -233,7 +233,7 @@ public class WelcomeController implements Initializable {
 						ListView<Course> listView;
 						if (value.getContent() instanceof ListView<?>) {
 							listView = (ListView<Course>) value.getContent();
-
+							
 						} else {
 
 							listView = listViewSearch;

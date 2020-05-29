@@ -720,9 +720,16 @@ public class CreatorUBUGradesController {
 	}
 
 	public static void createActivitiesCompletionStatus(int courseid, int userid) throws IOException {
+		JSONObject jsonObject = null;
+		try {
+			jsonObject = getJSONObjectResponse(
+					new CoreCompletionGetActivitiesCompletionStatus(courseid, userid));
+		}catch(Exception e) {
+			LOGGER.warn("Cannot get activity completion for userid {} and courseid {}", userid, courseid);
+			return;
+		}
+		
 
-		JSONObject jsonObject = getJSONObjectResponse(
-				new CoreCompletionGetActivitiesCompletionStatus(courseid, userid));
 		SubDataBase<CourseModule> modules = CONTROLLER.getDataBase()
 				.getModules();
 		SubDataBase<EnrolledUser> enrolledUsers = CONTROLLER.getDataBase()
@@ -751,6 +758,7 @@ public class CreatorUBUGradesController {
 					.put(enrolledUsers.getById(userid), activity);
 
 		}
+
 	}
 
 	/**

@@ -126,7 +126,7 @@
    <center>
       <SplitPane dividerPositions="0.8" BorderPane.alignment="CENTER">
          <items>
-            <TabPane minWidth="-Infinity" prefHeight="200.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane minWidth="-Infinity" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab text="%clustering.2Dgraph">
                      <content>
@@ -145,7 +145,7 @@
                   </Tab>
               </tabs>
             </TabPane>
-            <TabPane maxWidth="1000.0" minWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane maxWidth="1000.0" minWidth="-Infinity" prefWidth="300.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab text="%clustering.table">
                      <content>
@@ -162,7 +162,7 @@
                                  </columnResizePolicy></TableView>
                            </center>
                            <top>
-                              <GridPane BorderPane.alignment="CENTER">
+                              <GridPane hgap="10.0" BorderPane.alignment="CENTER">
                                 <columnConstraints>
                                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -207,10 +207,13 @@
                      <content>
                         <BorderPane prefHeight="200.0" prefWidth="200.0">
                            <center>
-                              <ListView fx:id="listViewLabels" editable="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                              <ListView fx:id="listViewLabels" editable="true" BorderPane.alignment="CENTER">
                                  <BorderPane.margin>
-                                    <Insets bottom="20.0" />
+                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                                  </BorderPane.margin>
+								 <placeholder>
+									<Label text="%clustering.noLabels" />
+								</placeholder>
                               </ListView>
                            </center>
                            <bottom>

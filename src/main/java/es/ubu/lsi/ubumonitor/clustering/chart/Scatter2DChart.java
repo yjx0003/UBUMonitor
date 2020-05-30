@@ -97,15 +97,6 @@ public class Scatter2DChart extends ClusteringChart {
 	}
 
 	@Override
-	public void rename(List<ClusterWrapper> clusters) {
-		JSArray names = new JSArray();
-		int total = clusters.stream().mapToInt(ClusterWrapper::size).sum();
-		clusters.forEach(
-				c -> names.addWithQuote(String.format(ClusteringChart.LEGEND_FORMAT, c.getName(), c.size(), total)));
-		getWebEngine().executeScript("rename(" + names + ")");
-	}
-
-	@Override
 	protected void exportData(File file) throws IOException {
 		String[] head = new String[] { "UserId", "FullName", "Cluster", "X", "Y" };
 		List<List<Object>> data = new ArrayList<>();

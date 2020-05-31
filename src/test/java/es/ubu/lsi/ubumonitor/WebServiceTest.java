@@ -10,7 +10,9 @@ import java.net.URL;
 import java.util.List;
 
 import org.json.JSONObject;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -54,6 +56,7 @@ public class WebServiceTest {
 
 	@Test
 	@Order(2)
+	@Disabled
 	public void createMoodleUserTest() throws IOException {
 		MoodleUser moodleUser = CreatorUBUGradesController.createMoodleUser(CONTROLLER.getUsername());
 		assertEquals(CONTROLLER.getUsername(), moodleUser.getUserName());

@@ -188,9 +188,11 @@ public class LoginController implements Initializable {
 		chkOfflineMode.setSelected(ConfigHelper.getProperty("offlineMode", false));
 
 		TextFields.bindAutoCompletion(txtUsername, ConfigHelper.getArray(USERNAMES)
-				.toList()).setDelay(0);
+				.toList())
+				.setDelay(0);
 		TextFields.bindAutoCompletion(txtHost, ConfigHelper.getArray(HOSTS)
-				.toList()).setDelay(0);
+				.toList())
+				.setDelay(0);
 
 	}
 
@@ -235,12 +237,7 @@ public class LoginController implements Initializable {
 	 * @param event El ActionEvent.
 	 */
 	public void login(ActionEvent event) {
-		if (txtHost.getText()
-				.isEmpty()
-				|| txtPassword.getText()
-						.isEmpty()
-				|| txtUsername.getText()
-						.isEmpty()) {
+		if (txtHost.getText().trim().isEmpty()|| txtPassword.getText().trim().isEmpty()|| txtUsername.getText().trim().isEmpty()) {
 			lblStatus.setText(I18n.get("error.fields"));
 		} else {
 			controller.getStage()
@@ -339,7 +336,8 @@ public class LoginController implements Initializable {
 					.getException()
 					.getMessage());
 		});
-		anchorPane.disableProperty().bind(service.runningProperty());
+		anchorPane.disableProperty()
+				.bind(service.runningProperty());
 		service.start();
 	}
 
@@ -385,11 +383,10 @@ public class LoginController implements Initializable {
 					String validUsername = CreatorUBUGradesController
 							.getJSONObjectResponse(new CoreWebserviceGetSiteInfo())
 							.getString("username");
-					txtUsername.setText(validUsername);
 
 					MoodleUser moodleUser = CreatorUBUGradesController.createMoodleUser(validUsername);
 					controller.setUser(moodleUser);
-					controller.setUsername(validUsername);
+					controller.setUsername(txtUsername.getText());
 					controller.setPassword(txtPassword.getText());
 					controller.setDirectory();
 				} catch (Exception e) {

@@ -21,6 +21,7 @@ import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.webservice.api.tool.mobile.ToolMobileGetPublicConfig;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.Scene;
 import javafx.scene.web.WebView;
 import javafx.stage.Modality;
@@ -33,14 +34,16 @@ import okhttp3.Response;
 
 public class Login {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Login.class);
+
+	private static final String HOST_LOGIN_DEFAULT_PATH = "/login/index.php";
+	private static final Pattern PATTERN_MOODLE_MOBILE = Pattern.compile("^moodlemobile://token=(\\w+)");
 	private static final Pattern PATTERN_TOKEN = Pattern.compile("^\\w+:::(\\w+)(:::(\\w+))?");
 	private static final int DEFAULT_TYPE_OF_LOGIN = 1;
-	
+
 	private String sesskey;
 	private WebService webService;
 	private int typeoflogin;
 	private String launchurl;
-	
 
 	public Login() {
 		webService = new WebService();
@@ -57,16 +60,44 @@ public class Login {
 	 * @throws IOException si no ha podido conectarse o la contraseña es erronea
 	 */
 	public void tryLogin(String host, String username, String password) throws IOException {
-
-		try (Response response = WebService.getAjaxResponse(host, new ToolMobileGetPublicConfig())) {
-			JSONObject data = new JSONArray(new JSONTokener(response.body()
-					.byteStream())).getJSONObject(0)
-							.optJSONObject("data");
-			if (data != null) {
-				// The type of login. 1 for app, 2 for browser, 3 for embedded.
-				typeoflogin = data.optInt("typeoflogin", DEFAULT_TYPE_OF_LOGIN);
-				launchurl = data.optString("launchurl");
+		boolean hasError;
+		boolean coreSupported = false;
+		try (Response response = Connection.getResponse(host + "/local/mobile/check.php?service=local_mobile")) {
+			JSONObject jsonObject = new JSONObject(response.body()
+					.string());
+			hasError = jsonObject.optInt("error", 1) == 1;
+			if (!hasError) {
+				typeoflogin = Integer.valueOf(jsonObject.optString("code"));
+				coreSupported = jsonObject.optInt("coresupported", 0) == 1;
 			}
+
+		} catch (Exception e) {
+			typeoflogin = DEFAULT_TYPE_OF_LOGIN;
+
+			LOGGER.info("has not launch url");
+		}
+
+		if (coreSupported && typeoflogin != DEFAULT_TYPE_OF_LOGIN) {
+			try (Response response = WebService.getAjaxResponse(host, new ToolMobileGetPublicConfig())) {
+				JSONObject data = new JSONArray(new JSONTokener(response.body()
+						.byteStream())).getJSONObject(0)
+								.optJSONObject("data");
+				if (data != null) {
+					// The type of login. 1 for app, 2 for browser, 3 for embedded.
+
+					launchurl = data.getString("launchurl") + "?service=local_mobile&urlscheme=moodlemobile&passport="
+							+ UtilMethods.ranmdomAlphanumeric();
+					try (Response responseLaunch = Connection.getResponse(launchurl)) {
+						if (responseLaunch.code() != 200) {
+							launchurl = null;
+						}
+					}
+				}
+			} catch (Exception e) {
+
+				LOGGER.info("not toolMobileGetPublicConfig");
+			}
+
 		}
 
 		login(typeoflogin, host, launchurl, username, password);
@@ -74,7 +105,8 @@ public class Login {
 	}
 
 	public void reLogin(String host, String username, String password) throws IOException {
-
+		sesskey = null;
+		launchurl = null;
 		login(typeoflogin, host, launchurl, username, password);
 
 	}
@@ -91,22 +123,23 @@ public class Login {
 	 */
 	private void login(int typeoflogin, String host, String launchurl, String username, String password)
 			throws IOException {
-		
 
-		if (typeoflogin == 1) {
+		if (launchurl != null && typeoflogin != DEFAULT_TYPE_OF_LOGIN) {
+
+			LOGGER.info("Login SSO with Launch url");
+			loginWebViewWithLaunchUrl(host, launchurl, Controller.getInstance()
+					.getStage());
+
+		} else {
 			LOGGER.info("Login normal");
 			normalLogin(host, username, password);
-		} else {
-			LOGGER.info("Login sso");
-			loginSSO(host, launchurl, Controller.getInstance()
-					.getStage());
 		}
 
 	}
 
 	public void normalLogin(String host, String username, String password) throws IOException {
 		webService = new WebService(host, username, password);
-		String hostLogin = host + "/login/index.php";
+		String hostLogin = host + HOST_LOGIN_DEFAULT_PATH;
 		LOGGER.info("Logeandose para web scraping");
 		try (Response response = Connection.getResponse(hostLogin)) {
 			String redirectedUrl = response.request()
@@ -121,6 +154,7 @@ public class Login {
 					.add("password", password)
 					.add("logintoken", logintoken)
 					.build();
+
 			String html = Connection.getResponse(new Request.Builder().url(redirectedUrl)
 					.post(formBody)
 					.build())
@@ -128,87 +162,92 @@ public class Login {
 					.string();
 
 			sesskey = findSesskey(html);
+			if (sesskey == null) {
+				LOGGER.info("cannot login in the login/index.php page, trying with webview");
+				loginWithWebView(host + HOST_LOGIN_DEFAULT_PATH, Controller.getInstance()
+						.getStage());
+			}
 		}
 	}
 
-	public void loginSSO(String host, String launchurl, Window owner)  {
-	
-//		if (webService.getPrivateToken() != null) {
-//			LOGGER.info("Logueandose con el token privado");
-//			RequestBody formBody = new FormBody.Builder().add("privatetoken", webService.getPrivateToken())
-//					.build();
-//			try (Response response = webService.getResponse(new ToolMobileGetAutologinKey(), formBody)) {
-//				JSONObject jsonObject = new JSONObject(response.body()
-//						.string());
-//				String autologinurl = jsonObject.getString("autologinurl");
-//				String key = jsonObject.getString("key");
-//				Response responseLogin = Connection.getResponse(autologinurl + "?userid=" + Controller.getInstance()
-//						.getUser()
-//						.getId() + "&key=" + key);
-//				sesskey = findSesskey(responseLogin.body()
-//						.string());
-//
-//			} catch (Exception e) {
-//				LOGGER.error("Cannot login with private token");
-//			}
-//
-//		}
-
-		loginWebView(host, launchurl + "?service=local_mobile&urlscheme=moodlemobile&passport="
-				+ UtilMethods.ranmdomAlphanumeric(), owner);
-
-	}
-
-	public void loginWebView(String host, String launchurl, Window owner) {
+	private void loginWithWebView(String host, Window owner) {
 		CompletableFuture.runAsync(() -> {
-
-			Pattern pattern = Pattern.compile("^moodlemobile://token=(\\w+)");
 			Stage popup = UtilMethods.createStage(owner, Modality.WINDOW_MODAL);
-			WebView webView = new WebView();
-			webView.getEngine()
-					.locationProperty()
-					.addListener((ov, old, newValue) -> {
-						try (Response response = Connection.getResponse(newValue)) {
-							String location = response.header("location");
-							if (location == null)
-								return;
-							Matcher matcher = pattern.matcher(location);
-							if (matcher.find()) {
-								byte[] decode = Base64.getDecoder()
-										.decode(matcher.group(1));
+			setWebview(host, popup, (ov, old, newValue) -> {
+				try (Response response = Connection.getResponse(newValue)) {
 
-								matcher = PATTERN_TOKEN.matcher(new String(decode));
-								if (matcher.find()) {
-									
-									webService.setData(host, matcher.group(1), matcher.group(3));
-								} else {
-									throw new IllegalAccessError("Cannot get the token in the decoded: " + matcher);
-								}
-
-								try (Response sesskeyResponse = Connection.getResponse(host)) {
-									sesskey = findSesskey(sesskeyResponse.body()
-											.string());
-
-									popup.close();
-								}
-
-							}
-						} catch (Exception e) {
-							LOGGER.error("Error al intentar loguearse", e);
-							throw new IllegalStateException("No se ha podido loguear al servidor");
-						}
-					});
-			webView.getEngine()
-					.load(launchurl);
-
-			popup.setScene(new Scene(webView, 960, 600));
-			popup.showAndWait();
+					sesskey = findSesskey(response.body()
+							.string());
+					if (sesskey != null) {
+						popup.close();
+					}
+				} catch (Exception e) {
+					LOGGER.error("Error al intentar loguearse", e);
+					throw new IllegalStateException("No se ha podido loguear al servidor");
+				}
+			});
 		}, Platform::runLater)
 				.join();
+	}
 
+	public void loginWebViewWithLaunchUrl(String host, String launchurl, Window owner) {
+		CompletableFuture.runAsync(() -> {
+
+			Stage popup = UtilMethods.createStage(owner, Modality.WINDOW_MODAL);
+			setWebview(launchurl, popup, launcherLogin(host, popup));
+
+		}, Platform::runLater)
+				.join();
 		if (webService == null) {
 			throw new IllegalStateException(I18n.get("error.windowclosed"));
 		}
+	}
+
+	public void setWebview(String launchurl, Stage popup, ChangeListener<String> listenner) {
+
+		WebView webView = new WebView();
+		webView.getEngine()
+				.locationProperty()
+				.addListener(listenner);
+		webView.getEngine()
+				.load(launchurl);
+		popup.setMaximized(true);
+		popup.setScene(new Scene(webView, 960, 600));
+		popup.showAndWait();
+
+	}
+
+	public ChangeListener<String> launcherLogin(String host, Stage popup) {
+		return (ov, old, newValue) -> {
+			try (Response response = Connection.getResponse(newValue)) {
+				String location = response.header("location");
+				if (location == null)
+					return;
+				Matcher matcher = PATTERN_MOODLE_MOBILE.matcher(location);
+				if (matcher.find()) {
+					byte[] decode = Base64.getDecoder()
+							.decode(matcher.group(1));
+
+					matcher = PATTERN_TOKEN.matcher(new String(decode));
+					if (matcher.find()) {
+
+						webService.setData(host, matcher.group(1), matcher.group(3));
+					} else {
+						throw new IllegalAccessError("Cannot get the token in the decoded: " + matcher);
+					}
+					popup.close();
+					try (Response sesskeyResponse = Connection.getResponse(host)) {
+						sesskey = findSesskey(sesskeyResponse.body()
+								.string());
+
+					}
+
+				}
+			} catch (Exception e) {
+				LOGGER.error("Error al intentar loguearse", e);
+				throw new IllegalStateException("No se ha podido loguear al servidor");
+			}
+		};
 	}
 
 	public String findSesskey(String html) {

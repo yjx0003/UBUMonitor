@@ -4,6 +4,7 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -15,7 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.clustering.algorithm.Algorithm;
-import es.ubu.lsi.ubumonitor.clustering.algorithm.Algorithms;
+import es.ubu.lsi.ubumonitor.clustering.algorithm.DBSCAN;
+import es.ubu.lsi.ubumonitor.clustering.algorithm.FuzzyKMeans;
+import es.ubu.lsi.ubumonitor.clustering.algorithm.KMeansPlusPlus;
+import es.ubu.lsi.ubumonitor.clustering.algorithm.MultiKMeansPlusPlus;
 import es.ubu.lsi.ubumonitor.clustering.analysis.AnalysisFactory;
 import es.ubu.lsi.ubumonitor.clustering.analysis.ElbowFactory;
 import es.ubu.lsi.ubumonitor.clustering.analysis.SilhouetteFactory;
@@ -128,6 +132,7 @@ public class ClusteringController {
 	private WebView webViewSilhouette;
 
 	/* Tabla */
+
 	@FXML
 	private TableView<UserData> tableView;
 
@@ -147,6 +152,7 @@ public class ClusteringController {
 	private CheckBox checkBoxExportGrades;
 
 	/* Etiquetar */
+
 	@FXML
 	private PropertySheet propertySheetLabel;
 
@@ -208,7 +214,9 @@ public class ClusteringController {
 			}
 		});
 		checkComboBoxLogs.disableProperty().bind(checkBoxLogs.selectedProperty().not());
-		algorithmList.getItems().setAll(Algorithms.getAlgorithms());
+		List<Algorithm> algorithms = Arrays.asList(new KMeansPlusPlus(), new FuzzyKMeans(), new DBSCAN(),
+				new MultiKMeansPlusPlus());
+		algorithmList.getItems().setAll(algorithms);
 		algorithmList.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> propertySheet
 				.getItems().setAll(newValue.getParameters().getPropertyItems()));
 		algorithmList.getSelectionModel().selectFirst();
@@ -242,16 +250,7 @@ public class ClusteringController {
 								.getSelectedItems();
 						Algorithm algorithm = algorithmList.getSelectionModel().getSelectedItem();
 
-						List<DataCollector> collectors = new ArrayList<>();
-						if (checkBoxLogs.isSelected()) {
-							collectors.addAll(checkComboBoxLogs.getCheckModel().getCheckedItems());
-						}
-						if (checkBoxGrades.isSelected()) {
-							collectors.add(gradesCollector);
-						}
-						if (checkBoxActivity.isSelected()) {
-							collectors.add(activityCollector);
-						}
+						List<DataCollector> collectors = getSelectedCollectors();
 
 						AlgorithmExecuter algorithmExecuter = new AlgorithmExecuter(algorithm, users, collectors);
 
@@ -335,8 +334,8 @@ public class ClusteringController {
 				clusters.get(i).setName(name);
 				propertyEditorLabel.add(name);
 			}
-			graph.rename(clusters);
 			table.updateTable(clusters);
+			graph.rename(clusters);
 			graph3D.rename(clusters);
 			silhouette.rename(clusters);
 		});
@@ -355,8 +354,7 @@ public class ClusteringController {
 				if (exportGrades) {
 					List<TreeItem<GradeItem>> treeItems = mainController.getTvwGradeReport().getSelectionModel()
 							.getSelectedItems();
-					List<GradeItem> grades = treeItems.stream().map(TreeItem<GradeItem>::getValue)
-							.collect(Collectors.toList());
+					List<GradeItem> grades = treeItems.stream().map(TreeItem::getValue).collect(Collectors.toList());
 					ExportUtil.exportClustering(file, clusters, grades.toArray(new GradeItem[0]));
 				} else {
 					ExportUtil.exportClustering(file, clusters);
@@ -380,16 +378,7 @@ public class ClusteringController {
 		int end = (int) rangeSlider.getHighValue();
 
 		List<EnrolledUser> users = mainController.getListParticipants().getSelectionModel().getSelectedItems();
-		List<DataCollector> collectors = new ArrayList<>();
-		if (checkBoxLogs.isSelected()) {
-			collectors.addAll(checkComboBoxLogs.getCheckModel().getCheckedItems());
-		}
-		if (checkBoxGrades.isSelected()) {
-			collectors.add(gradesCollector);
-		}
-		if (checkBoxActivity.isSelected()) {
-			collectors.add(activityCollector);
-		}
+		List<DataCollector> collectors = getSelectedCollectors();
 		try {
 
 			AnalysisMethod analysisMethod = choiceBoxAnalyze.getValue().createAnalysis(algorithm);
@@ -407,6 +396,20 @@ public class ClusteringController {
 			UtilMethods.errorWindow("Error", e);
 			LOGGER.error("Error en la ejecucion", e);
 		}
+	}
+
+	private List<DataCollector> getSelectedCollectors() {
+		List<DataCollector> collectors = new ArrayList<>();
+		if (checkBoxLogs.isSelected()) {
+			collectors.addAll(checkComboBoxLogs.getCheckModel().getCheckedItems());
+		}
+		if (checkBoxGrades.isSelected()) {
+			collectors.add(gradesCollector);
+		}
+		if (checkBoxActivity.isSelected()) {
+			collectors.add(activityCollector);
+		}
+		return collectors;
 	}
 
 	/**

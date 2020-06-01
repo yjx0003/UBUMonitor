@@ -16,10 +16,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.clustering.algorithm.Algorithm;
-import es.ubu.lsi.ubumonitor.clustering.algorithm.DBSCAN;
-import es.ubu.lsi.ubumonitor.clustering.algorithm.FuzzyKMeans;
-import es.ubu.lsi.ubumonitor.clustering.algorithm.KMeansPlusPlus;
-import es.ubu.lsi.ubumonitor.clustering.algorithm.MultiKMeansPlusPlus;
+import es.ubu.lsi.ubumonitor.clustering.algorithm.apache.DBSCAN;
+import es.ubu.lsi.ubumonitor.clustering.algorithm.apache.FuzzyKMeans;
+import es.ubu.lsi.ubumonitor.clustering.algorithm.apache.KMeansPlusPlus;
+import es.ubu.lsi.ubumonitor.clustering.algorithm.apache.MultiKMeansPlusPlus;
+import es.ubu.lsi.ubumonitor.clustering.algorithm.smile.DBSCANSmile;
+import es.ubu.lsi.ubumonitor.clustering.algorithm.smile.DENCLUE;
+import es.ubu.lsi.ubumonitor.clustering.algorithm.smile.DeterministicAnnealing;
+import es.ubu.lsi.ubumonitor.clustering.algorithm.smile.GMeans;
+import es.ubu.lsi.ubumonitor.clustering.algorithm.smile.KMeans;
+import es.ubu.lsi.ubumonitor.clustering.algorithm.smile.Spectral;
+import es.ubu.lsi.ubumonitor.clustering.algorithm.smile.XMeans;
 import es.ubu.lsi.ubumonitor.clustering.analysis.AnalysisFactory;
 import es.ubu.lsi.ubumonitor.clustering.analysis.ElbowFactory;
 import es.ubu.lsi.ubumonitor.clustering.analysis.SilhouetteFactory;
@@ -214,8 +221,10 @@ public class ClusteringController {
 			}
 		});
 		checkComboBoxLogs.disableProperty().bind(checkBoxLogs.selectedProperty().not());
+
 		List<Algorithm> algorithms = Arrays.asList(new KMeansPlusPlus(), new FuzzyKMeans(), new DBSCAN(),
-				new MultiKMeansPlusPlus());
+				new MultiKMeansPlusPlus(), new KMeans(), new XMeans(), new GMeans(), new DBSCANSmile(), new DENCLUE(),
+				new Spectral(), new DeterministicAnnealing());
 		algorithmList.getItems().setAll(algorithms);
 		algorithmList.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> propertySheet
 				.getItems().setAll(newValue.getParameters().getPropertyItems()));
@@ -283,7 +292,7 @@ public class ClusteringController {
 			service.reset();
 		});
 		service.setOnFailed(e -> {
-			UtilMethods.errorWindow(service.getException().getMessage());
+			UtilMethods.errorWindow(I18n.get(service.getException().getMessage()), service.getException());
 			service.reset();
 		});
 	}

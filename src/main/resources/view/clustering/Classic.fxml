@@ -59,7 +59,7 @@
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin></CheckComboBox>
-            <RangeSlider fx:id="rangeSlider" blockIncrement="1.0" highValue="10.0" lowValue="2.0" majorTickUnit="1.0" max="15.0" min="1.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="4" GridPane.rowIndex="1">
+            <RangeSlider fx:id="rangeSlider" blockIncrement="1.0" highValue="10.0" lowValue="2.0" majorTickUnit="1.0" max="15.0" min="2.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="4" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets right="10.0" />
                </GridPane.margin></RangeSlider>
@@ -107,7 +107,7 @@
                         <Insets right="10.0" />
                      </GridPane.margin>
                   </Label>
-                  <TextField fx:id="textFieldIterations" maxWidth="-Infinity" prefWidth="60.0" promptText="10" text="10" GridPane.columnIndex="1" />
+                  <TextField fx:id="textFieldIterations" maxWidth="-Infinity" prefWidth="60.0" text="30" GridPane.columnIndex="1" />
                </children>
             </GridPane>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="3">

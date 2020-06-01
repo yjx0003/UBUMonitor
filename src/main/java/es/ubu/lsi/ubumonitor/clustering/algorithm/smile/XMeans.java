@@ -1,0 +1,54 @@
+package es.ubu.lsi.ubumonitor.clustering.algorithm.smile;
+
+import org.apache.commons.math3.exception.NumberIsTooSmallException;
+import org.apache.commons.math3.ml.clustering.Clusterer;
+
+import es.ubu.lsi.ubumonitor.clustering.algorithm.Algorithm;
+import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
+import es.ubu.lsi.ubumonitor.clustering.data.UserData;
+import smile.clustering.CentroidClustering;
+
+public class XMeans extends Algorithm {
+
+	private static final String NAME = "X-Means (Smile)";
+
+	public XMeans() {
+		super(NAME);
+		addParameter(ClusteringParameter.MAX_NUM_CLUSTER, 5);
+		addParameter(ClusteringParameter.MAX_ITERATIONS, 50);
+		addParameter(ClusteringParameter.TOLERANCE, 0.001);
+	}
+
+	@Override
+	public Clusterer<UserData> getClusterer() {
+		int kmax = getParameters().getValue(ClusteringParameter.MAX_NUM_CLUSTER);
+		int max = getParameters().getValue(ClusteringParameter.MAX_ITERATIONS);
+		double tol = getParameters().getValue(ClusteringParameter.TOLERANCE);
+
+		checkParameter(ClusteringParameter.MAX_NUM_CLUSTER, kmax);
+		checkParameter(ClusteringParameter.MAX_ITERATIONS, max);
+		checkParameter(ClusteringParameter.TOLERANCE, tol);
+
+		return new XMeansAdapter(kmax, max, tol);
+	}
+
+	private class XMeansAdapter extends SmileAdapter {
+
+		private int kmax;
+		private int maxIter;
+		private double tol;
+
+		private XMeansAdapter(int kmax, int maxIter, double tol) {
+			this.kmax = kmax;
+			this.maxIter = maxIter;
+			this.tol = tol;
+		}
+
+		@Override
+		protected CentroidClustering<double[], double[]> execute(double[][] data) {
+			if (data.length < kmax)
+				throw new NumberIsTooSmallException(data.length, kmax, true);
+			return smile.clustering.XMeans.fit(data, kmax, maxIter, tol);
+		}
+	}
+}

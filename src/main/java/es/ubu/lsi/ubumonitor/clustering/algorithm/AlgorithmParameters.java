@@ -11,11 +11,7 @@ import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
 
 public class AlgorithmParameters {
 
-	private Map<ClusteringParameter, Item> parameters;
-
-	public AlgorithmParameters() {
-		parameters = new LinkedHashMap<>();
-	}
+	private Map<ClusteringParameter, Item> parameters = new LinkedHashMap<>();
 
 	public void addParameter(ClusteringParameter parameter, Object value) {
 		Item item = new SimplePropertySheetItem(parameter.getName(), value, parameter.getDescription());

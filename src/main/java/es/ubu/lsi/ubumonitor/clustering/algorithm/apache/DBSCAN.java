@@ -1,12 +1,12 @@
-package es.ubu.lsi.ubumonitor.clustering.algorithm;
+package es.ubu.lsi.ubumonitor.clustering.algorithm.apache;
 
-import org.apache.commons.math3.ml.clustering.Clusterable;
 import org.apache.commons.math3.ml.clustering.Clusterer;
 import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
 
+import es.ubu.lsi.ubumonitor.clustering.algorithm.Algorithm;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.data.Distance;
-import es.ubu.lsi.ubumonitor.clustering.exception.IllegalParamenterException;
+import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 
 public class DBSCAN extends Algorithm {
 
@@ -20,16 +20,13 @@ public class DBSCAN extends Algorithm {
 	}
 
 	@Override
-	public <T extends Clusterable> Clusterer<T> getClusterer() {
+	public Clusterer<UserData> getClusterer() {
 		double eps = getParameters().getValue(ClusteringParameter.EPS);
 		int minPts = getParameters().getValue(ClusteringParameter.MIN_POINTS);
 		Distance distance = getParameters().getValue(ClusteringParameter.DISTANCE_TYPE);
 
-		if (!ClusteringParameter.EPS.isValid(eps))
-			throw new IllegalParamenterException(ClusteringParameter.EPS, eps);
-
-		if (!ClusteringParameter.MIN_POINTS.isValid(minPts))
-			throw new IllegalParamenterException(ClusteringParameter.MIN_POINTS, minPts);
+		checkParameter(ClusteringParameter.EPS, eps);
+		checkParameter(ClusteringParameter.MIN_POINTS, minPts);
 
 		return new DBSCANClusterer<>(eps, minPts, distance.getInstance());
 	}

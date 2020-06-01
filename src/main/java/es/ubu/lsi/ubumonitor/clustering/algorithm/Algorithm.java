@@ -1,9 +1,10 @@
 package es.ubu.lsi.ubumonitor.clustering.algorithm;
 
-import org.apache.commons.math3.ml.clustering.Clusterable;
 import org.apache.commons.math3.ml.clustering.Clusterer;
 
 import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
+import es.ubu.lsi.ubumonitor.clustering.data.UserData;
+import es.ubu.lsi.ubumonitor.clustering.exception.IllegalParamenterException;
 
 public abstract class Algorithm {
 
@@ -31,7 +32,12 @@ public abstract class Algorithm {
 		parameters.addParameter(parameter, value);
 	}
 
-	public abstract <T extends Clusterable> Clusterer<T> getClusterer();
+	protected void checkParameter(ClusteringParameter parameter, Number value) {
+		if (!parameter.isValid(value))
+			throw new IllegalParamenterException(parameter, value);
+	}
+
+	public abstract Clusterer<UserData> getClusterer();
 
 	@Override
 	public String toString() {

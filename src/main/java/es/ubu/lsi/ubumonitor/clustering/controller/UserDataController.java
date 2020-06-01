@@ -6,16 +6,16 @@ import es.ubu.lsi.ubumonitor.clustering.data.Datum;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.controllers.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
-import javafx.beans.property.SimpleDoubleProperty;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 
 public class UserDataController {
 
@@ -38,7 +38,7 @@ public class UserDataController {
 	private TableColumn<Datum, String> columnItem;
 
 	@FXML
-	private TableColumn<Datum, Number> columnValue;
+	private TableColumn<Datum, String> columnValue;
 
 	private TableView<UserData> table;
 
@@ -51,15 +51,23 @@ public class UserDataController {
 		EnrolledUser enrolledUser = userData.getEnrolledUser();
 		labelUser.setText(enrolledUser.getFullName());
 		imageView.setImage(new Image(new ByteArrayInputStream(enrolledUser.getImageBytes())));
-		tableView.getItems().setAll(userData.getData());
+		tableView.setItems(FXCollections.observableList(userData.getData()));
 		columnType.setCellValueFactory(e -> new SimpleStringProperty(I18n.get(e.getValue().getType())));
 		columnItem.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getItem()));
-		columnValue.setCellValueFactory(e -> new SimpleDoubleProperty(e.getValue().getValue().doubleValue()));
+		columnValue.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getValue().toString()));
 
-		columnIcon.setCellValueFactory(
-				e -> new SimpleObjectProperty<>(new ImageView(AppInfo.IMG_DIR + e.getValue().getIconFile() + ".png")));
+		columnIcon.setCellValueFactory(e -> {
+			ImageView imageView;
+			try {
+				imageView = new ImageView(AppInfo.IMG_DIR + e.getValue().getIconFile() + ".png");
+			} catch (Exception ex) {
+				imageView = new ImageView("/img/manual.png");
+			}
+			return new SimpleObjectProperty<>(imageView);
+
+		});
 	}
-	
+
 	private void change(int index) {
 		UserData user = table.getItems().get(index);
 		table.getSelectionModel().clearAndSelect(index);

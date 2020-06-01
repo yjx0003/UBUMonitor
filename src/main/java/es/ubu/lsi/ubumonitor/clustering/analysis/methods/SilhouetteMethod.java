@@ -32,7 +32,7 @@ public class SilhouetteMethod extends AnalysisMethod {
 		List<UserData> users = clusters.stream().flatMap(ClusterWrapper::stream).collect(Collectors.toList());
 		Map<UserData, Double> ai = new HashMap<>(users.size());
 		Map<UserData, Double> bi = new HashMap<>(users.size());
-		DistanceMeasure distance = distanceType.getInstance();
+		DistanceMeasure distance = distanceType == null ? Distance.EUCLIDEAN_DISTANCE.getInstance() : distanceType.getInstance();
 
 		for (ClusterWrapper cluster : clusters) {
 			for (UserData userData : cluster) {

@@ -35,7 +35,7 @@ public class DendogramChart extends AbstractChart {
 		data.put("labels", labels);
 		data.put("datasets", datasets);
 
-		LOGGER.debug("Herarchical: {}", data);
+		LOGGER.debug("Hierarchical: {}", data);
 		getWebEngine().executeScript("updateChart(" + data + ")");
 	}
 
@@ -50,6 +50,7 @@ public class DendogramChart extends AbstractChart {
 		JSArray users = new JSArray();
 		addChildrens(users, node);
 		object.put("users", users);
+		object.putWithQuote("distance", node.getInfo("distance"));
 
 		points.add(object);
 

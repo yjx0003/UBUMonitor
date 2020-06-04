@@ -1,7 +1,9 @@
 package es.ubu.lsi.ubumonitor.clustering.util;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Tree<E> {
 
@@ -23,12 +25,12 @@ public class Tree<E> {
 	public static class Node<E> {
 		private E element;
 		private Node<E> parent;
-		private List<Node<E>> childrens;
+		private List<Node<E>> childrens = new ArrayList<>();
+		private Map<String, String> info = new LinkedHashMap<>();
 
 		private Node(E element, Node<E> parent) {
 			this.element = element;
 			this.parent = parent;
-			childrens = new ArrayList<>();
 		}
 
 		public Node<E> addChildren(E children) {
@@ -47,6 +49,14 @@ public class Tree<E> {
 
 		public List<Node<E>> getChildrens() {
 			return childrens;
+		}
+
+		public void putInfo(String key, String value) {
+			info.put(key, value);
+		}
+
+		public String getInfo(String key) {
+			return info.get(key);
 		}
 
 		@Override

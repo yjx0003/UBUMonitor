@@ -49,6 +49,7 @@ public class Scatter2DChart extends ClusteringChart {
 	@Override
 	public void updateChart(List<ClusterWrapper> clusters) {
 		connector.setClusters(clusters);
+		LOGGER.debug("Clusters: {}", clusters);
 		points = AlgorithmExecuter.clustersTo(2, clusters);
 
 		Map<ClusterWrapper, Color> colors = UtilMethods.getRandomColors(clusters);

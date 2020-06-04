@@ -40,7 +40,8 @@ public abstract class SmileAdapter extends Clusterer<UserData> {
 		List<UserData> users = new ArrayList<>(points);
 		List<CentroidCluster<UserData>> result = new ArrayList<>();
 		for (int i = 0; i < centroidClustering.k; i++) {
-			CentroidCluster<UserData> cluster = new CentroidCluster<>(new DoublePoint(centroidClustering.centroids[i]));
+			DoublePoint center = new DoublePoint(convertNaNs(centroidClustering.centroids[i]));
+			CentroidCluster<UserData> cluster = new CentroidCluster<>(center);
 			for (int j = 0; j < centroidClustering.y.length; j++) {
 				if (i == centroidClustering.y[j])
 					cluster.addPoint(users.get(j));
@@ -62,5 +63,13 @@ public abstract class SmileAdapter extends Clusterer<UserData> {
 			result.add(cluster);
 		}
 		return result;
+	}
+	
+	private double[] convertNaNs(double[] point) {
+		for (int i = 0; i < point.length; i++) {
+			if (Double.isNaN(point[i]))
+				point[i] = 0;
+		}
+		return point;
 	}
 }

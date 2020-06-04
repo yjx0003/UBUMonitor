@@ -114,6 +114,7 @@ public class AlgorithmExecuter {
 				centers.add(center);
 			}
 		}
+
 		double[][] matrix = Stream
 				.concat(clusters.stream().flatMap(ClusterWrapper::stream).map(UserData::getPoint), centers.stream())
 				.toArray(double[][]::new);

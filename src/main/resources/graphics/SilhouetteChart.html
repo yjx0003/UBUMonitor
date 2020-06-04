@@ -45,7 +45,6 @@
 						display : true,
 						fontStyle : "bold",
 						fontSize : 14,
-						labelString : "Silhouette width"
 					}
 				} ]
 
@@ -86,7 +85,8 @@
 		}
 	});
 
-	function updateChart(data, names, c) {
+	function updateChart(data, names, c, yAxes) {
+		myChart.options.scales.yAxes[0].scaleLabel.labelString = yAxes;
 		myChart.data = data;
 		clusterNames = names;
 		colors = c;

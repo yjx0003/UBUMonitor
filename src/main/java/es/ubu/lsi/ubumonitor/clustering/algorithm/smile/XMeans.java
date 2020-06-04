@@ -14,7 +14,7 @@ public class XMeans extends Algorithm {
 
 	public XMeans() {
 		super(NAME);
-		addParameter(ClusteringParameter.MAX_NUM_CLUSTER, 5);
+		addParameter(ClusteringParameter.MAX_NUM_CLUSTER, 4);
 		addParameter(ClusteringParameter.MAX_ITERATIONS, 50);
 		addParameter(ClusteringParameter.TOLERANCE, 0.001);
 	}

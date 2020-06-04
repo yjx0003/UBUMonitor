@@ -27,12 +27,18 @@ public class SilhouetteMethod extends AnalysisMethod {
 		return average.getAsDouble();
 	}
 
+	@Override
+	public String getYLabel() {
+		return "clustering.analyze.silhouette.yLabel";
+	}
+
 	public static Map<UserData, Double> silhouette(List<ClusterWrapper> clusters, Distance distanceType) {
 
 		List<UserData> users = clusters.stream().flatMap(ClusterWrapper::stream).collect(Collectors.toList());
 		Map<UserData, Double> ai = new HashMap<>(users.size());
 		Map<UserData, Double> bi = new HashMap<>(users.size());
-		DistanceMeasure distance = distanceType == null ? Distance.EUCLIDEAN_DISTANCE.getInstance() : distanceType.getInstance();
+		DistanceMeasure distance = distanceType == null ? Distance.EUCLIDEAN_DISTANCE.getInstance()
+				: distanceType.getInstance();
 
 		for (ClusterWrapper cluster : clusters) {
 			for (UserData userData : cluster) {

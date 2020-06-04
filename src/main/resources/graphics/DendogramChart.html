@@ -29,6 +29,10 @@
 					},
 					tooltips : {
 						callbacks : {
+							title : function(tooltipItem, data) {
+								var distance = data.datasets[tooltipItem[0].datasetIndex].data[tooltipItem[0].index].distance;
+								return distance;
+							},
 							label : function(tooltipItem, data) {
 								var labels = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].users;
 								return labels;

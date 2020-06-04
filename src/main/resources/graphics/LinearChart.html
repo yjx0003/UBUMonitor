@@ -29,10 +29,7 @@
 					tooltips : {
 						callbacks : {
 							label : function(tooltipItem, data) {
-								var label = data.labels[tooltipItem.index];
-								return label + ': ('
-										+ tooltipItem.xLabel.toFixed(2) + ', '
-										+ tooltipItem.yLabel.toFixed(2) + ')';
+								return tooltipItem.yLabel.toFixed(2);
 							}
 						}
 					},

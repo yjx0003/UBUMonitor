@@ -40,13 +40,14 @@ public class HierarchicalClustering {
 		}
 
 		Cluster cluster = algorithm.performClustering(distances, names, new AverageLinkageStrategy());
-		
+
 		Tree<String> tree = new Tree<>(cluster.getName());
 		generateTree(cluster, tree.getRoot());
 		return tree;
 	}
 
 	private void generateTree(Cluster cluster, Node<String> node) {
+		node.putInfo("distance", cluster.getDistance().toString());
 		for (Cluster children : cluster.getChildren()) {
 			generateTree(children, node.addChildren(children.getName()));
 		}

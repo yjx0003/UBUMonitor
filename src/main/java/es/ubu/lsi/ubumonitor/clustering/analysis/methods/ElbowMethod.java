@@ -29,4 +29,9 @@ public class ElbowMethod extends AnalysisMethod {
 		return sum;
 	}
 
+	@Override
+	public String getYLabel() {
+		return "clustering.analyze.elbow.yLabel";
+	}
+
 }

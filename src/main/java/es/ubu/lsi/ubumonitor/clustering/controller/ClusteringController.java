@@ -41,7 +41,6 @@ import es.ubu.lsi.ubumonitor.clustering.controller.collector.LogCollector;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
-import es.ubu.lsi.ubumonitor.clustering.exception.IllegalParamenterException;
 import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
 import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
 import es.ubu.lsi.ubumonitor.clustering.util.TextFieldPropertyEditorFactory;
@@ -377,7 +376,7 @@ public class ClusteringController {
 	}
 
 	@FXML
-	private void executeOptimal() {
+	private void executeAnalysis() {
 		Algorithm algorithm = algorithmList.getSelectionModel().getSelectedItem();
 		if (algorithm.getParameters().getValue(ClusteringParameter.NUM_CLUSTER) == null) {
 			UtilMethods.errorWindow(I18n.get("clustering.invalid"));
@@ -388,23 +387,12 @@ public class ClusteringController {
 
 		List<EnrolledUser> users = mainController.getListParticipants().getSelectionModel().getSelectedItems();
 		List<DataCollector> collectors = getSelectedCollectors();
-		try {
+		AnalysisMethod analysisMethod = choiceBoxAnalyze.getValue().createAnalysis(algorithm);
 
-			AnalysisMethod analysisMethod = choiceBoxAnalyze.getValue().createAnalysis(algorithm);
-			List<Double> points = analysisMethod.analyze(start, end, users, collectors);
-
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/OptimalClusters.fxml"));
-			UtilMethods.createDialog(loader, Controller.getInstance().getStage());
-			AnalysisController controller = loader.getController();
-			controller.updateChart(points, start);
-		} catch (IllegalParamenterException e) {
-			UtilMethods.errorWindow(e.getMessage());
-		} catch (IllegalStateException e) {
-			UtilMethods.errorWindow(I18n.get(e.getMessage()));
-		} catch (Exception e) {
-			UtilMethods.errorWindow("Error", e);
-			LOGGER.error("Error en la ejecucion", e);
-		}
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/OptimalClusters.fxml"));
+		UtilMethods.createDialog(loader, Controller.getInstance().getStage());
+		AnalysisController controller = loader.getController();
+		controller.setUp(analysisMethod, users, collectors, start, end);
 	}
 
 	private List<DataCollector> getSelectedCollectors() {

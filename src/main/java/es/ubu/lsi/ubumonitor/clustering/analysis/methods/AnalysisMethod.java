@@ -14,7 +14,7 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 
 public abstract class AnalysisMethod {
 
-	private static final int TRIALS = 10;
+	private static final int TRIALS = 30;
 
 	private Algorithm algorithm;
 	private Comparator<Double> comparator;
@@ -44,9 +44,12 @@ public abstract class AnalysisMethod {
 	}
 
 	protected abstract double calculate(List<ClusterWrapper> clusters);
+		
+	public abstract String getYLabel();
 
 	protected Distance getDistance() {
-		return algorithm.getParameters().getValue(ClusteringParameter.DISTANCE_TYPE);
+		Distance distance = algorithm.getParameters().getValue(ClusteringParameter.DISTANCE_TYPE);
+		return distance != null ? distance : Distance.EUCLIDEAN_DISTANCE;
 	}
 
 }

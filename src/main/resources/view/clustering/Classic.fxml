@@ -90,7 +90,7 @@
               </rowConstraints>
                <children>
                   <ChoiceBox fx:id="choiceBoxAnalyze" />
-                  <Button mnemonicParsing="false" onAction="#executeOptimal" text="%clustering.analyze" GridPane.columnIndex="1" />
+                  <Button mnemonicParsing="false" onAction="#executeAnalysis" text="%clustering.analyze" GridPane.columnIndex="1" />
                </children>
             </GridPane>
             <GridPane GridPane.columnIndex="3" GridPane.rowIndex="2">

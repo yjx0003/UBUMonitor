@@ -19,6 +19,7 @@ import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.Distance;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
+import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
@@ -93,7 +94,8 @@ public class SilhouetteChart extends ClusteringChart {
 		JSArray jsColors = new JSArray();
 		jsColors.addAll(colors.values().stream().map(UtilMethods::colorToRGB).collect(Collectors.toList()));
 		LOGGER.debug("Colors: {}", jsColors);
-		getWebEngine().executeScript("updateChart(" + root + "," + clustersName + "," + jsColors + ")");
+		getWebEngine().executeScript("updateChart(" + root + "," + clustersName + "," + jsColors + ",'"
+				+ I18n.get("clustering.silhouetteWidth") + "')");
 
 	}
 

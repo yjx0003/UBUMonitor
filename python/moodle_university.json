@@ -1,0 +1,981 @@
+[
+    {
+        "launch": 404,
+        "launchLocalMobile": 404,
+        "local_mobile_check": "Error: 404",
+        "moodleURL": "https://moodle.uam.es/",
+        "name": "Universidad Autónoma de Madrid",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "agedigitalconsentverification": false,
+                    "authinstructions": "",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "autolang": 1,
+                    "country": "0",
+                    "enablemobilewebservice": 1,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "",
+                    "guestlogin": 0,
+                    "httpswwwroot": "https://moodle.uam.es",
+                    "identityproviders": [
+                        {
+                            "iconurl": "https://moodle.uam.es/theme/image.php/essential/core/1588418517/i/user",
+                            "name": "Login via ID-UAM",
+                            "url": "https://moodle.uam.es/auth/saml2/login.php?wants&idp=cebe5294a678ea658b3001066ac8533e&passive=off"
+                        }
+                    ],
+                    "lang": "es",
+                    "langlist": "",
+                    "langmenu": 1,
+                    "launchurl": "https://moodle.uam.es/admin/tool/mobile/launch.php",
+                    "locale": "",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "<p><span id=\"selectionBoundary_1564991558748_9778748752431708\" style=\"line-height:0;\" class=\"rangySelectionBoundary\">﻿</span></p><p><span id=\"selectionBoundary_1564991558748_1882738779972689\" style=\"line-height:0;\" class=\"rangySelectionBoundary\">﻿</span>Estamos realizando labores de mantenimiento.<br /></p><p><br />El servicio quedará restablecido tan pronto como finalicen los trabajos.<br /><br />Disculpen las molestias y gracias por su comprensión.<br /></p>",
+                    "mobilecssurl": "",
+                    "registerauth": "",
+                    "rememberusername": 0,
+                    "sitename": "MOODLE DE GRADO",
+                    "tool_mobile_disabledfeatures": "",
+                    "typeoflogin": 3,
+                    "warnings": [],
+                    "wwwroot": "https://moodle.uam.es"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": 200,
+        "launchLocalMobile": 404,
+        "local_mobile_check": {
+            "code": "3",
+            "coresupported": 1,
+            "error": 0
+        },
+        "moodleURL": "https://aulaglobal.uc3m.es/",
+        "name": "Universidad Carlos III de Madrid",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "agedigitalconsentverification": false,
+                    "authinstructions": "",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "autolang": 1,
+                    "compactlogourl": "https://aulaglobal.uc3m.es/pluginfile.php/1/core_admin/logocompact/0x70/1590780182/uc3m.png",
+                    "country": "0",
+                    "enablemobilewebservice": 1,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "",
+                    "guestlogin": 0,
+                    "httpswwwroot": "https://aulaglobal.uc3m.es",
+                    "lang": "es",
+                    "langlist": "",
+                    "langmenu": 1,
+                    "launchurl": "https://aulaglobal.uc3m.es/admin/tool/mobile/launch.php",
+                    "locale": "",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "<div style=\"padding:1em;\"><p>En estos momentos se está actualizando Aula Global.</p><p>El horario previsto de parada es de 7:30 a 10:00.</p><p><strong><br />PERIODO DE MATRÍCULA</strong></p><p>La matrícula sigue disponible en los siguientes enlaces:</p><ul><li><a href=\"http://www.uc3m.es/ss/Satellite/SecretariaVirtual/es/TextoMixta/1371210685276/\" target=\"_blank\" rel=\"noreferrer noopener\">Matrícula estudiantes de la Facultad de Humanidades, Comunicación y Documentación (Getafe)</a></li><li><a href=\"http://www.uc3m.es/ss/Satellite/SecretariaVirtual/es/TextoMixta/1371210677811/\" target=\"_blank\" rel=\"noreferrer noopener\">Matrícula estudiantes de la Escuela Politénica Superior (Leganés)</a></li><li><a href=\"http://www.uc3m.es/ss/Satellite/SecretariaVirtual/es/TextoMixta/1371210671545/\" target=\"_blank\" rel=\"noreferrer noopener\">Matrícula estudiantes del campus de Colmenarejo</a></li></ul></div>",
+                    "mobilecssurl": "https://aulaglobal.uc3m.es/theme/boost/style/mobileapp_style.css",
+                    "registerauth": "",
+                    "rememberusername": 2,
+                    "sitename": "Aula Global",
+                    "tool_mobile_disabledfeatures": "",
+                    "typeoflogin": 3,
+                    "warnings": [],
+                    "wwwroot": "https://aulaglobal.uc3m.es"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": 200,
+        "launchLocalMobile": 404,
+        "local_mobile_check": {
+            "code": "3",
+            "coresupported": 1,
+            "error": 0
+        },
+        "moodleURL": "https://cv4.ucm.es/moodle/",
+        "name": "Universidad Complutense de Madrid",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "authinstructions": "",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "enablemobilewebservice": 1,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "https://idm.ucm.es/perl/idmResetPwdAuth.pl",
+                    "guestlogin": 1,
+                    "httpswwwroot": "https://cv4.ucm.es/moodle",
+                    "identityproviders": [
+                        {
+                            "iconurl": "https://cv4.ucm.es/moodle/theme/image.php/boost/core/1590890401/i/user",
+                            "name": "Acceso con cuenta UCM",
+                            "url": "https://cv4.ucm.es/moodle/auth/saml2/login.php?wants&idp=e78505e2f935fb6b1f051035c553ed4a&passive=off"
+                        }
+                    ],
+                    "launchurl": "https://cv4.ucm.es/moodle/admin/tool/mobile/launch.php",
+                    "logourl": "https://cv4.ucm.es/moodle/pluginfile.php/1/core_admin/logo/0x200/1590890401/Marca%20UCM%20Secundaria%20Monocromo%20Negro.png",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "<p>Este servicio está inhabilitado actualmente. <br /></p><p>Perdonen las molestias.<br /></p>",
+                    "mobilecssurl": "",
+                    "registerauth": "",
+                    "rememberusername": 2,
+                    "sitename": "Campus Virtual Moodle 3.4",
+                    "tool_mobile_disabledfeatures": "",
+                    "typeoflogin": 3,
+                    "warnings": [],
+                    "wwwroot": "https://cv4.ucm.es/moodle"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": "no launch url",
+        "launchLocalMobile": 200,
+        "local_mobile_check": {
+            "code": "2",
+            "error": 0
+        },
+        "moodleURL": "https://moodle.udc.es/",
+        "name": "Universidad de A Coruña",
+        "tool_mobile_get_public_config": [
+            {
+                "error": true,
+                "exception": {
+                    "errorcode": "invalidrecord",
+                    "link": "https://moodle.udc.es/",
+                    "message": "Non é posíbel atopar o rexistro de datos na táboa da base de datos external_functions.",
+                    "moreinfourl": "http://docs.moodle.org/30/gl/error/moodle/invalidrecord"
+                }
+            }
+        ]
+    },
+    {
+        "launch": 404,
+        "launchLocalMobile": 404,
+        "local_mobile_check": "Error: 404",
+        "moodleURL": "https://moodle2019-20.ua.es/moodle/",
+        "name": "Universidad de Alicante",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "agedigitalconsentverification": false,
+                    "authinstructions": "",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "autolang": 1,
+                    "compactlogourl": "https://moodle2019-20.ua.es/moodle/pluginfile.php/1/core_admin/logocompact/0x70/1590473285/logo_negre_UACloud_Campus_Virtual%282%29.png",
+                    "country": "ES",
+                    "enablemobilewebservice": 0,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "",
+                    "guestlogin": 1,
+                    "httpswwwroot": "https://moodle2019-20.ua.es/moodle",
+                    "lang": "es",
+                    "langlist": "",
+                    "langmenu": 1,
+                    "launchurl": "https://moodle2019-20.ua.es/moodle/admin/tool/mobile/launch.php",
+                    "locale": "",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "",
+                    "mobilecssurl": "",
+                    "registerauth": "",
+                    "rememberusername": 2,
+                    "sitename": "Moodle UA 2019-20",
+                    "tool_mobile_disabledfeatures": "",
+                    "typeoflogin": 3,
+                    "warnings": [],
+                    "wwwroot": "https://moodle2019-20.ua.es/moodle"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": 404,
+        "launchLocalMobile": 404,
+        "local_mobile_check": {
+            "code": 3,
+            "error": 1
+        },
+        "moodleURL": "https://campusvirtual.ub.edu/",
+        "name": "Universidad de Barcelona",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "agedigitalconsentverification": false,
+                    "authinstructions": "",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "autolang": 1,
+                    "country": "0",
+                    "enablemobilewebservice": 1,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "",
+                    "guestlogin": 0,
+                    "httpswwwroot": "https://campusvirtual.ub.edu",
+                    "identityproviders": [
+                        {
+                            "iconurl": "",
+                            "name": "CAS",
+                            "url": "https://campusvirtual.ub.edu/login/index.php?authCAS=CAS"
+                        },
+                        {
+                            "iconurl": "https://campusvirtual.ub.edu/theme/image.php/snap/core/1590712658/i/mahara_host",
+                            "name": "Home - Mahara",
+                            "url": "https://campusvirtual.ub.edu/mahara/auth/xmlrpc/jump.php?hostwwwroot=https%3A%2F%2Fcampusvirtual.ub.edu&wantsurl&remoteurl=1"
+                        }
+                    ],
+                    "lang": "ca",
+                    "langlist": "en,es,ca,en_us,fr,gl,pl,pt,ru",
+                    "langmenu": 1,
+                    "launchurl": "https://campusvirtual.ub.edu/admin/tool/mobile/launch.php",
+                    "locale": "",
+                    "logourl": "https://campusvirtual.ub.edu/pluginfile.php/1/theme_snap/logo/1590712658/ub_logo.png",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "<p><br />Este sitio no está disponible durante varias horas mientras se realiza el mantenimiento programado. Por favor, inténtelo de nuevo más tarde.</p>",
+                    "mobilecssurl": "",
+                    "registerauth": "",
+                    "rememberusername": 2,
+                    "sitename": "Campus Virtual de la Universitat de Barcelona",
+                    "tool_mobile_disabledfeatures": "",
+                    "typeoflogin": 3,
+                    "warnings": [],
+                    "wwwroot": "https://campusvirtual.ub.edu"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": 404,
+        "launchLocalMobile": 404,
+        "local_mobile_check": "Error: 404",
+        "moodleURL": "https://ubuvirtual.ubu.es/",
+        "name": "Universidad de Burgos",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "agedigitalconsentverification": false,
+                    "authinstructions": "",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "autolang": 0,
+                    "country": "ES",
+                    "enablemobilewebservice": 1,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "",
+                    "guestlogin": 1,
+                    "httpswwwroot": "https://ubuvirtual.ubu.es",
+                    "lang": "es",
+                    "langlist": "es,en,pt",
+                    "langmenu": 1,
+                    "launchurl": "https://ubuvirtual.ubu.es/admin/tool/mobile/launch.php",
+                    "locale": "",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "<p>Se están realizando labores de mejora. El servicio se restablecerá lo antes posible.</p><p>Rogamos disculpen las molestias que les pueda ocasionar.<br /></p>",
+                    "mobilecssurl": "",
+                    "registerauth": "",
+                    "rememberusername": 0,
+                    "sitename": "UBUVirtual - Aula Virtual de la Universidad de Burgos",
+                    "tool_mobile_disabledfeatures": "",
+                    "typeoflogin": 1,
+                    "warnings": [],
+                    "wwwroot": "https://ubuvirtual.ubu.es"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": 404,
+        "launchLocalMobile": 404,
+        "local_mobile_check": "Error: 404",
+        "moodleURL": "https://moodle.unican.es/",
+        "name": "Universidad de Cantabria",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "authinstructions": "<p style=\"text-align:left;\">Para acceder a la plataforma Moodle de UNICAN debe introducir:</p><ul style=\"text-align:left;\"><li><strong>Usuario</strong>: nombre corto de usuario de la UC.</li><li><strong>Contraseña</strong>: la misma que utiliza para todos los servicios de UNICAN (correo, Campus Virtual...).</li></ul><p style=\"text-align:left;\"><strong>Importante</strong>: si no está cargado en el sistema como alumno o profesor no podrá acceder a la plataforma aún introduciendo correctamente sus datos de usuario. Para cualquier consulta contacte con <a href=\"mailto:aulavirtual@unican.es\"> aulavirtual@unican.es</a>.</p><p style=\"text-align:left;\">El acceso de los alumnos a cada curso estará deshabilitado por defecto. Los profesores del curso serán quienes puedan permitir este acceso cuando lo estimen oportuno. En los siguientes enlaces hay información de cómo hacer esta operación: <a href=\"http://aulavirtual.unican.es/contenidos/Tutorial_Disponibilidad_Curso_Moodle2.9.pdf\" target=\"_blank\" rel=\"noreferrer\">PDF </a>y <a href=\"https://youtu.be/Jz6xLWEocdk\" target=\"_blank\" rel=\"noreferrer\"><span class=\"nolink\">Video</span></a>.</p>",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "enablemobilewebservice": 1,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "https://sdei.unican.es/Paginas/servicios/identidad/Recuperar-Clave.aspx",
+                    "guestlogin": 0,
+                    "httpswwwroot": "https://moodle.unican.es",
+                    "identityproviders": [
+                        {
+                            "iconurl": "https://moodle.unican.es/theme/image.php/clean/core/1582717876/i/moodle_host",
+                            "name": "Bacheche DEI e siti degli insegnamenti",
+                            "url": "https://elearning.dei.unipd.it/auth/mnet/jump.php?hostwwwroot=https%3A%2F%2Fmoodle.unican.es&wantsurl&remoteurl=1"
+                        },
+                        {
+                            "iconurl": "https://moodle.unican.es/theme/image.php/clean/core/1582717876/i/moodle_host",
+                            "name": "Metropolia University of Applied Sciences ",
+                            "url": "https://moodle.metropolia.fi/auth/mnet/jump.php?hostwwwroot=https%3A%2F%2Fmoodle.unican.es&wantsurl&remoteurl=1"
+                        },
+                        {
+                            "iconurl": "https://moodle.unican.es/theme/image.php/clean/core/1582717876/i/moodle_host",
+                            "name": "DECAMP Moodle Munich",
+                            "url": "https://munich.mydecamp.eu/auth/mnet/jump.php?hostwwwroot=https%3A%2F%2Fmoodle.unican.es&wantsurl&remoteurl=1"
+                        },
+                        {
+                            "iconurl": "https://moodle.unican.es/theme/image.php/clean/core/1582717876/i/moodle_host",
+                            "name": "Cursuri Facultatea de Automatica si Calculatoare",
+                            "url": "https://acs.curs.pub.ro/2018/auth/mnet/jump.php?hostwwwroot=https%3A%2F%2Fmoodle.unican.es&wantsurl&remoteurl=1"
+                        }
+                    ],
+                    "launchurl": "https://moodle.unican.es/admin/tool/mobile/launch.php",
+                    "logourl": "https://moodle.unican.es/pluginfile.php/1/theme_clean/logo/1582717876/logo.jpg",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "<p>Sitio en Mantenimiento </p><p>Volvemos enseguida </p><p>Aula Virtual UC</p>",
+                    "mobilecssurl": "",
+                    "registerauth": "",
+                    "rememberusername": 2,
+                    "sitename": "Moodle de la Universidad de Cantabria",
+                    "tool_mobile_disabledfeatures": "$mmSideMenuDelegate_mmaNotifications",
+                    "typeoflogin": 1,
+                    "warnings": [],
+                    "wwwroot": "https://moodle.unican.es"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": 404,
+        "launchLocalMobile": 404,
+        "local_mobile_check": "Error: 404",
+        "moodleURL": "https://moodle.uco.es/m1920/",
+        "name": "Universidad de Córdoba",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "agedigitalconsentverification": false,
+                    "authinstructions": "",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "autolang": 1,
+                    "compactlogourl": "https://moodle.uco.es/m1920/pluginfile.php/1/core_admin/logocompact/0x70/1590145553/uco-sombrero-128.png",
+                    "country": "0",
+                    "enablemobilewebservice": 1,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "https://www.uco.es/sigu/index.php?go=sigu/u1000400/u1000400.html",
+                    "guestlogin": 1,
+                    "httpswwwroot": "https://moodle.uco.es/m1920",
+                    "lang": "es",
+                    "langlist": "",
+                    "langmenu": 1,
+                    "launchurl": "https://moodle.uco.es/m1920/admin/tool/mobile/launch.php",
+                    "locale": "",
+                    "logourl": "https://moodle.uco.es/m1920/pluginfile.php/1/core_admin/logo/0x200/1590145553/ucodigital_moodle.jpg",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "",
+                    "mobilecssurl": "",
+                    "registerauth": "",
+                    "rememberusername": 2,
+                    "sitename": "Estudios de Grados y Másteres 2019/20",
+                    "tool_mobile_disabledfeatures": "",
+                    "typeoflogin": 1,
+                    "warnings": [],
+                    "wwwroot": "https://moodle.uco.es/m1920"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": 200,
+        "launchLocalMobile": 404,
+        "local_mobile_check": {
+            "code": "3",
+            "coresupported": 1,
+            "error": 0
+        },
+        "moodleURL": "https://moodle2.udg.edu/",
+        "name": "Universidad de Girona",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "agedigitalconsentverification": false,
+                    "authinstructions": "",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "autolang": 0,
+                    "country": "0",
+                    "enablemobilewebservice": 1,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "",
+                    "guestlogin": 1,
+                    "httpswwwroot": "https://moodle2.udg.edu",
+                    "lang": "ca",
+                    "langlist": "",
+                    "langmenu": 1,
+                    "launchurl": "https://moodle2.udg.edu/admin/tool/mobile/launch.php",
+                    "locale": "",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "<p>Estem realitzant tasques de manteniment dels servidors Moodle. L'aturada programada és de 15 minuts, des de les 7:45 a les 8:00.<br /></p><p>Disculpeu les molèsties.</p>",
+                    "mobilecssurl": "",
+                    "registerauth": "",
+                    "rememberusername": 2,
+                    "sitename": "UdGMoodle",
+                    "tool_mobile_disabledfeatures": "",
+                    "typeoflogin": 3,
+                    "warnings": [],
+                    "wwwroot": "https://moodle2.udg.edu"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": "no launch url",
+        "launchLocalMobile": "no mobile launch url",
+        "local_mobile_check": "Error decoding json: <!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html><head>\n<title>404 Not Found</title>\n</head><body>\n<h1>Not Found</h1>\n<p>The requested URL /local/mobile/launch.php was not found on this server.</p>\n</body></html>\n",
+        "moodleURL": "https://agora.unileon.es/",
+        "name": "Universidad de León",
+        "tool_mobile_get_public_config": "Error decoding json: <!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html><head>\n<title>404 Not Found</title>\n</head><body>\n<h1>Not Found</h1>\n<p>The requested URL /local/mobile/launch.php was not found on this server.</p>\n</body></html>\n"
+    },
+    {
+        "launch": "no launch url",
+        "launchLocalMobile": 404,
+        "local_mobile_check": "Error: 404",
+        "moodleURL": "https://moodle2.usal.es/",
+        "name": "Universidad de Salamanca",
+        "tool_mobile_get_public_config": "Error: 404"
+    },
+    {
+        "launch": 404,
+        "launchLocalMobile": 404,
+        "local_mobile_check": "Error: 404",
+        "moodleURL": "https://campusvirtual.uva.es/",
+        "name": "Universidad de Valladolid",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "agedigitalconsentverification": false,
+                    "authinstructions": "",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "autolang": 1,
+                    "country": "ES",
+                    "enablemobilewebservice": 1,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "",
+                    "guestlogin": 1,
+                    "httpswwwroot": "https://campusvirtual.uva.es",
+                    "lang": "es",
+                    "langlist": "es,en,fr,pt,de",
+                    "langmenu": 1,
+                    "launchurl": "https://campusvirtual.uva.es/admin/tool/mobile/launch.php",
+                    "locale": "",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "<p style=\"margin-left:10%;font-weight:600;font-size:large;color:#FF0000;\"></p><p></p><div><div></div></div><div><div><div><p></p></div></div></div><p>Estimado<br />\r\nusuari@,</p>Los servicios de campus virtual UVa permanecen cerrados para su mantenimiento.                                                    <br /><div>Abriremos el servicio a todos los usuarios hoy por la mañana en cuanto terminemos.    <br /></div><div>                                                                                                       <br /></div><div>Inténtalo más tarde.</div><div><br /></div><p>Servicio<br />\r\ntécnico del Campus Virtual Uva (S.T.I.C.)</p><br /><p></p>",
+                    "mobilecssurl": "http://campusvirtual.uva.es/theme/uva2017/scss/Uva2017Mobile.css",
+                    "registerauth": "",
+                    "rememberusername": 2,
+                    "sitename": "Campus Virtual UVa",
+                    "tool_mobile_disabledfeatures": "",
+                    "typeoflogin": 1,
+                    "warnings": [],
+                    "wwwroot": "https://campusvirtual.uva.es"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": 404,
+        "launchLocalMobile": 404,
+        "local_mobile_check": {
+            "code": "1",
+            "coresupported": 1,
+            "error": 0
+        },
+        "moodleURL": "https://moodle.unizar.es/add/",
+        "name": "Universidad de Zaragoza",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "agedigitalconsentverification": false,
+                    "authinstructions": "<div class=\"no-overflow\"><p>Acceso para estudiantes y correos coincidentes con el NIP: NIP y contraseña administrativa.</p><p>El profesorado con cuenta de correo distinta del NIP continuará utilizando sus credenciales de correo.</p></div>",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "autolang": 1,
+                    "country": "ES",
+                    "enablemobilewebservice": 1,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "",
+                    "guestlogin": 1,
+                    "httpswwwroot": "https://moodle.unizar.es/add",
+                    "lang": "es",
+                    "langlist": "",
+                    "langmenu": 1,
+                    "launchurl": "https://moodle.unizar.es/add/admin/tool/mobile/launch.php",
+                    "locale": "",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "<p>Debido a la necesidad técnica de realizar tareas de mantenimiento y actualización, los servidores de la plataforma Moodle se pararán durante la mañana del martes 21 de julio.<br /> Esperamos que las molestias ocasionadas sean mínimas y agradecemos de antemano la colaboración a toda la comunidad universitaria usuaria del ADD.<br /> En caso de dudas o problemas pueden obtener más ayuda en <a class=\"moz-txt-link-freetext\" href=\"https://ayudica.unizar.es\">https://ayudica.unizar.es</a></p>",
+                    "mobilecssurl": "",
+                    "registerauth": "",
+                    "rememberusername": 2,
+                    "sitename": "ADD Unizar - Moodle",
+                    "tool_mobile_disabledfeatures": "",
+                    "typeoflogin": 1,
+                    "warnings": [],
+                    "wwwroot": "https://moodle.unizar.es/add"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": 404,
+        "launchLocalMobile": 404,
+        "local_mobile_check": "Error: 404",
+        "moodleURL": "https://campus.umh.es/",
+        "name": "Universidad Miguel Hernández de Elche",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "agedigitalconsentverification": false,
+                    "authinstructions": "",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "autolang": 1,
+                    "compactlogourl": "https://campus.umh.es/pluginfile.php/1/core_admin/logocompact/100x100/1590441980/logo-universitep.png",
+                    "country": "0",
+                    "enablemobilewebservice": 1,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "",
+                    "guestlogin": 0,
+                    "httpswwwroot": "https://campus.umh.es",
+                    "identityproviders": [
+                        {
+                            "iconurl": "https://campus.umh.es/theme/image.php/boost_campus/core/1590441980/i/user",
+                            "name": "Login via SAML2",
+                            "url": "https://campus.umh.es/auth/saml2/login.php?wants&idp=c7aae0975dccef4510244bde30b00e0f&passive=off"
+                        }
+                    ],
+                    "lang": "es",
+                    "langlist": "",
+                    "langmenu": 0,
+                    "launchurl": "https://campus.umh.es/admin/tool/mobile/launch.php",
+                    "locale": "",
+                    "logourl": "https://campus.umh.es/pluginfile.php/1/core_admin/logo/0x200/1590441980/PRIMERA-ARTICULACION-UNA-TINTA-RGB_ok%20%281%29.jpg",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "",
+                    "mobilecssurl": "",
+                    "registerauth": "",
+                    "rememberusername": 2,
+                    "sitename": "CAMPUS VIRTUAL UMH",
+                    "tool_mobile_disabledfeatures": "",
+                    "typeoflogin": 3,
+                    "warnings": [],
+                    "wwwroot": "https://campus.umh.es"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": "no launch url",
+        "launchLocalMobile": 200,
+        "local_mobile_check": {
+            "code": "2",
+            "error": 0
+        },
+        "moodleURL": "https://aulavirtual.upct.es/",
+        "name": "Universidad Politécnica de Cartagena",
+        "tool_mobile_get_public_config": [
+            {
+                "error": true,
+                "exception": {
+                    "errorcode": "invalidrecord",
+                    "link": "https://aulavirtual.upct.es/",
+                    "message": "No se puede encontrar registro de datos en la tabla external_functions de la base de datos.",
+                    "moreinfourl": "http://docs.moodle.org/30/es/error/moodle/invalidrecord"
+                }
+            }
+        ]
+    },
+    {
+        "launch": 200,
+        "launchLocalMobile": 404,
+        "local_mobile_check": {
+            "code": "2",
+            "coresupported": 1,
+            "error": 0
+        },
+        "moodleURL": "https://atenea.upc.edu/",
+        "name": "Universidad Politécnica de Cataluña",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "agedigitalconsentverification": false,
+                    "authinstructions": "",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "autolang": 0,
+                    "compactlogourl": "https://atenea.upc.edu/pluginfile.php/1/core_admin/logocompact/0x70/1590459127/Head-SimbolATENEA-Blau.png",
+                    "country": "ES",
+                    "enablemobilewebservice": 1,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "http://www.upcnet.es/CanviContrasenyaUPC",
+                    "guestlogin": 1,
+                    "httpswwwroot": "https://atenea.upc.edu",
+                    "lang": "ca",
+                    "langlist": "",
+                    "langmenu": 0,
+                    "launchurl": "https://atenea.upc.edu/admin/tool/mobile/launch.php",
+                    "locale": "",
+                    "logourl": "https://atenea.upc.edu/pluginfile.php/1/core_admin/logo/0x200/1590459127/atenea_login.png",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "",
+                    "mobilecssurl": "http://atenea.upc.edu/theme/campus/mobile/mobileapp_beta_v0.7.css",
+                    "registerauth": "",
+                    "rememberusername": 0,
+                    "sitename": "Campus Virtual UPC",
+                    "tool_mobile_disabledfeatures": "",
+                    "typeoflogin": 2,
+                    "warnings": [],
+                    "wwwroot": "https://atenea.upc.edu"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": 404,
+        "launchLocalMobile": 404,
+        "local_mobile_check": {
+            "code": 4,
+            "error": 1
+        },
+        "moodleURL": "https://moodle.upm.es/titulaciones/oficiales/",
+        "name": "Universidad Politécnica de Madrid",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "agedigitalconsentverification": false,
+                    "authinstructions": "<p>Para acceder a las asignaturas es necesario una cuenta de correo de alumnos UPM. Puede obtenerla en la dirección https://correo.alumnos.upm.es/. Los datos de acceso serán: - usuario, la dirección de correo UPM completa (incluida la parte final, @alumnos.upm.es). - contraseña, la contraseña de la cuenta de correo. En caso de encontrar cualquier problema con el acceso puede escribir a gate@upm.es DEBIDO A TAREAS DE MANTENIMIENTO Y ACTUALIZACIÓN EL SERVICIO ESTARÁ INTERRUMPIDO HASTA EL LUNES 30 DE JULIO. Disculpen las molestias.</p>",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "autolang": 0,
+                    "country": "ES",
+                    "enablemobilewebservice": 0,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "",
+                    "guestlogin": 0,
+                    "httpswwwroot": "https://moodle.upm.es/titulaciones/oficiales",
+                    "lang": "es",
+                    "langlist": "es,en,fr,de,it,pt,zh_cn",
+                    "langmenu": 1,
+                    "launchurl": "https://moodle.upm.es/titulaciones/oficiales/admin/tool/mobile/launch.php",
+                    "locale": "",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "<p><span style=\"color:#ff0000;font-size:small;\"><strong></strong></span></p><b></b><b><br /><span></span></b><p><b></b></p><b><b><b><b><b>Debido a tareas de mejora, el servicio se encuentra interrumpido.<br /><br />Disculpen <br />\r\nlas molestias.</b></b></b></b></b><p><b><br /></b></p><b><br /></b><p><span style=\"color:#ff0000;font-size:small;\"><strong><br /></strong></span></p><p><br /><span style=\"color:#ff0000;font-size:small;\"><strong></strong></span></p><strong></strong><p></p><p></p><p class=\"Estilo1\"></p><p><strong><span style=\"font-size:small;color:#ff6600;\"> </span></strong></p>",
+                    "mobilecssurl": "",
+                    "registerauth": "",
+                    "rememberusername": 2,
+                    "sitename": "UPM - Plataforma Institucional para Titulaciones Oficiales",
+                    "tool_mobile_disabledfeatures": "",
+                    "typeoflogin": 1,
+                    "warnings": [],
+                    "wwwroot": "https://moodle.upm.es/titulaciones/oficiales"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": 404,
+        "launchLocalMobile": 404,
+        "local_mobile_check": {
+            "code": 4,
+            "error": 1
+        },
+        "moodleURL": "https://aulaglobal.upf.edu/",
+        "name": "Universidad Pompeu Fabra",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "agedigitalconsentverification": false,
+                    "authinstructions": "",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "autolang": 0,
+                    "country": "ES",
+                    "enablemobilewebservice": 0,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "",
+                    "guestlogin": 0,
+                    "httpswwwroot": "https://aulaglobal.upf.edu",
+                    "identityproviders": [
+                        {
+                            "iconurl": "",
+                            "name": "CAS",
+                            "url": "https://aulaglobal.upf.edu/login/index.php?authCAS=CAS"
+                        },
+                        {
+                            "iconurl": "https://aulaglobal.upf.edu/theme/image.php/classic/core/1590712662/i/mahara_host",
+                            "name": "Home - Mahara",
+                            "url": "https://aulaglobal.upf.edu/mahara/auth/xmlrpc/jump.php?hostwwwroot=https%3A%2F%2Faulaglobal.upf.edu&wantsurl&remoteurl=1"
+                        }
+                    ],
+                    "lang": "ca",
+                    "langlist": "ca,es,en,fr,it,de",
+                    "langmenu": 1,
+                    "launchurl": "https://aulaglobal.upf.edu/admin/tool/mobile/launch.php",
+                    "locale": "",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "",
+                    "mobilecssurl": "",
+                    "registerauth": "",
+                    "rememberusername": 2,
+                    "sitename": "Universitat Pompeu Fabra",
+                    "tool_mobile_disabledfeatures": "",
+                    "typeoflogin": 1,
+                    "warnings": [],
+                    "wwwroot": "https://aulaglobal.upf.edu"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": 404,
+        "launchLocalMobile": 404,
+        "local_mobile_check": "Error: 404",
+        "moodleURL": "https://www.aulavirtual.urjc.es/moodle/",
+        "name": "Universidad Rey Juan Carlos",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "agedigitalconsentverification": false,
+                    "authinstructions": "<p>Está intentando acceder a un área protegida. Introduzca su usuario de dominio único y contraseña para conectarse.</p><p>- Si su correo es &#112;&#101;&#112;&#101;&#46;&#112;&#101;re&#122;@&#117;r&#106;&#99;&#46;&#101;&#115; su usuario de dominio único para conectarse será <strong>pepe.perez</strong>.</p><p>- S<span>i su correo es j.gomez@alumnos.urjc.es, su usuario de dominio único para contectarse será </span><strong>j.gomez</strong><span>. </span></p><p><strong><span style=\"color:#ff0000;\">IMPORTANTE</span>:</strong><span> </span><strong>Por labores de mantenimiento, los días 10 y 11 de julio, Campus Virtual no estará disponible.</strong></p>",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "autolang": 1,
+                    "country": "ES",
+                    "enablemobilewebservice": 0,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "https://miportal.urjc.es",
+                    "guestlogin": 1,
+                    "httpswwwroot": "https://www.aulavirtual.urjc.es/moodle",
+                    "lang": "es",
+                    "langlist": "",
+                    "langmenu": 0,
+                    "launchurl": "https://www.aulavirtual.urjc.es/moodle/admin/tool/mobile/launch.php",
+                    "locale": "",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "<p>La aplicación se encuentra en mantenimiento.</p>",
+                    "mobilecssurl": "",
+                    "registerauth": "",
+                    "rememberusername": 0,
+                    "sitename": "Aula Virtual | Universidad Rey Juan Carlos",
+                    "tool_mobile_disabledfeatures": false,
+                    "typeoflogin": 1,
+                    "warnings": [],
+                    "wwwroot": "https://www.aulavirtual.urjc.es/moodle"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": 404,
+        "launchLocalMobile": 404,
+        "local_mobile_check": {
+            "code": "1",
+            "coresupported": 1,
+            "error": 0
+        },
+        "moodleURL": "https://campusvirtual.urv.cat/",
+        "name": "Universidad Rovira i Virgili ",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "agedigitalconsentverification": false,
+                    "authinstructions": "<p>La validació al Campus Virtual (Moodle) es fa mitjançant el nom d'usuari i la contrasenya institucionals, els mateixos que utilitzes per consultar el correu electrònic.</p><p>El nom d’usuari correspon al <b>NIF</b> en el format següent: <b>12565458-L</b> o al <b>NIE</b>, el format del qual és:</p><ul><li><b>X1234567</b> per a alumnes de la URV i</li><li><b>X-1234567-Y</b> per a alumnes de Formació Permanent (FURV)</li></ul><p>La contrasenya inicial és la data de naixement en format <b>dd-MMM-aa</b> (per exemple, 02-MAI-78) on MMM són les tres primeres lletres del mes en català en majúscules.</p><p><i>Per motius de seguretat recomanem canviar-la</i>. Pots fer-ho al <a title=\"https://idm.urv.cat/AjudaServeis/index.html\" class=\"external text\" href=\"https://idm.urv.cat/AjudaServeis/index.html\" target=\"_blank\" rel=\"noreferrer noopener\">Gestor d'identitat de la URV</a></p><p><b>Si tens qualsevol incidència amb el nom d'usuari o clau, has de dirigir-te al </b><a href=\"https://idm.urv.cat/AjudaServeis/index.html\" target=\"_blank\" title=\"https://idm.urv.cat/AjudaServeis/index.html\" rel=\"noreferrer noopener\">Gestor d'identitat de la URV</a></p><div style=\"text-align:right;\"><img src=\"https://moodle.urv.cat/moodle/file.php/1/img-portada/recomanemnavegar.png\" alt=\"navegadors\" width=\"190\" height=\"50\" class=\"img-responsive\" /></div>",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "autolang": 0,
+                    "compactlogourl": "https://campusvirtual.urv.cat/pluginfile.php/1/core_admin/logocompact/0x70/1590899675/logoURV50x50.png",
+                    "country": "ES",
+                    "enablemobilewebservice": 1,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "",
+                    "guestlogin": 1,
+                    "httpswwwroot": "https://campusvirtual.urv.cat",
+                    "lang": "ca",
+                    "langlist": "ca,es,en,fr,de,eu,gl,it,el,pl,pt,ru,zh_tw,zh_cn",
+                    "langmenu": 1,
+                    "launchurl": "https://campusvirtual.urv.cat/admin/tool/mobile/launch.php",
+                    "locale": "",
+                    "logourl": "https://campusvirtual.urv.cat/pluginfile.php/1/core_admin/logo/0x200/1590899675/logoURVppd.png",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "<p><span lang=\"ca\" class=\"multilang\"><img src=\"https://moodle.urv.cat/w28/images/e/eb/LogoURVppd.png\" alt=\"urv\" width=\"230\" height=\"65\" class=\"img-responsive atto_image_button_text-bottom\" /><br /></span></p><span lang=\"ca\" class=\"multilang\">S'estan duent tasques de manteniment als servidors del Campus Virtual. Disculpa les molèsties.</span><br /><br /><span lang=\"es\" class=\"multilang\">Se están realizando tareas de mantenimiento a los servidores del Campus Virtual. Disculpa las molestias.</span><br /><br /><span lang=\"en\" class=\"multilang\">Maintenance tasks are being carried out on the Virtual Campus servers. Sorry for the inconvenience.</span>",
+                    "mobilecssurl": "https://campusvirtual.urv.cat/css/urv.min.css#2",
+                    "registerauth": "",
+                    "rememberusername": 2,
+                    "sitename": "Campus Virtual URV",
+                    "tool_mobile_disabledfeatures": "$mmSideMenuDelegate_mmaFrontpage,$mmSideMenuDelegate_mmaCompetency,$mmCoursesDelegate_mmaCompetency,$mmUserDelegate_mmaBadges,$mmUserDelegate_mmaCompetency:learningPlan,$mmCourseDelegate_mmaModImscp,$mmCourseDelegate_mmaModLti",
+                    "typeoflogin": 1,
+                    "warnings": [],
+                    "wwwroot": "https://campusvirtual.urv.cat"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": 404,
+        "launchLocalMobile": 404,
+        "local_mobile_check": "Error: 404",
+        "moodleURL": "https://ad.uib.es/estudis1920/",
+        "name": "Universitat de las Illes Balears ",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "agedigitalconsentverification": false,
+                    "authinstructions": "",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "autolang": 0,
+                    "country": "ES",
+                    "enablemobilewebservice": 1,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "https://sso.uib.es/cas/login?service=https%3A%2F%2Fuibdigital.uib.es%2Fuibdigital%2Flogin",
+                    "guestlogin": 0,
+                    "httpswwwroot": "https://ad.uib.es/estudis1920",
+                    "lang": "ca",
+                    "langlist": "",
+                    "langmenu": 1,
+                    "launchurl": "https://ad.uib.es/estudis1920/admin/tool/mobile/launch.php",
+                    "locale": "",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "<p>&lt;p&gt;&lt;/p&gt;&lt;h3&gt;Actualització del servidor.&lt;/h3&gt;<br />&lt;p&gt;Entre<br />\r\n les 7h15 i les 7h20 hores el servei d'Aula digital romandrà fora de <br />\r\nservei per realitzar-hi tasques de <br />\r\nmillora.&lt;/p&gt;&lt;p&gt;&lt;span&gt;Disculpau les <br />\r\nmolèsties.&lt;/span&gt;&lt;/p&gt;&lt;br&gt;&lt;p&gt;&lt;/p&gt;<br /></p>",
+                    "mobilecssurl": "https://ad.uib.es/estudis1920/theme/fordson/style/uib_mobile.css",
+                    "registerauth": "",
+                    "rememberusername": 0,
+                    "sitename": "Aula digital 2019-20",
+                    "tool_mobile_disabledfeatures": "$mmSideMenuDelegate_mmaCompetency,$mmCoursesDelegate_search,$mmUserDelegate_mmaBadges,files_sitefiles",
+                    "typeoflogin": 3,
+                    "warnings": [],
+                    "wwwroot": "https://ad.uib.es/estudis1920"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": 404,
+        "launchLocalMobile": 404,
+        "local_mobile_check": "Error: 404",
+        "moodleURL": "https://aulavirtual.uv.es/",
+        "name": "Universitat de València",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "agedigitalconsentverification": false,
+                    "authinstructions": "",
+                    "authloginviaemail": 1,
+                    "authnoneenabled": 0,
+                    "autolang": 1,
+                    "compactlogourl": "https://aulavirtual.uv.es/pluginfile.php/1/core_admin/logocompact/100x100/1590899401/Universitat%20logo70.png",
+                    "country": "ES",
+                    "enablemobilewebservice": 1,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "",
+                    "guestlogin": 1,
+                    "httpswwwroot": "https://aulavirtual.uv.es",
+                    "identityproviders": [
+                        {
+                            "iconurl": "https://aulavirtual.uv.es/theme/image.php/boost_campus_uv/core/1590899401/i/user",
+                            "name": "Login via SAML2",
+                            "url": "https://aulavirtual.uv.es/auth/saml2/login.php?wants&idp=4e8be24519039f539b66e0137c391656&passive=off"
+                        }
+                    ],
+                    "lang": "ca",
+                    "langlist": "",
+                    "langmenu": 1,
+                    "launchurl": "https://aulavirtual.uv.es/admin/tool/mobile/launch.php",
+                    "locale": "",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "",
+                    "mobilecssurl": "",
+                    "registerauth": "emailadmin",
+                    "rememberusername": 2,
+                    "sitename": "Aula Virtual de la Universitat de València 2019/20",
+                    "tool_mobile_disabledfeatures": "",
+                    "typeoflogin": 2,
+                    "warnings": [],
+                    "wwwroot": "https://aulavirtual.uv.es"
+                },
+                "error": false
+            }
+        ]
+    },
+    {
+        "launch": 404,
+        "launchLocalMobile": 404,
+        "local_mobile_check": "Error: 404",
+        "moodleURL": "https://aulavirtual.uji.es/",
+        "name": "Universitat Jaume I de Castellón",
+        "tool_mobile_get_public_config": [
+            {
+                "data": {
+                    "agedigitalconsentverification": false,
+                    "authinstructions": "",
+                    "authloginviaemail": 0,
+                    "authnoneenabled": 0,
+                    "autolang": 0,
+                    "compactlogourl": "https://aulavirtual.uji.es/pluginfile.php/2/core_admin/logocompact/100x100/1590206427/logo_compacto.png",
+                    "country": "ES",
+                    "enablemobilewebservice": 1,
+                    "enablewebservices": 1,
+                    "forgottenpasswordurl": "https://sso.uji.es/",
+                    "guestlogin": 1,
+                    "httpswwwroot": "https://aulavirtual.uji.es",
+                    "identityproviders": [
+                        {
+                            "iconurl": "https://aulavirtual.uji.es/theme/image.php/uji/auth_uji/1590206427/uji",
+                            "name": "Universitat Jaume I",
+                            "url": "https://aulavirtual.uji.es/auth/uji/auth-uji.php"
+                        },
+                        {
+                            "iconurl": "https://aulavirtual.uji.es/auth/eidas/pix/eidas.png",
+                            "name": "eIDAS",
+                            "url": "https://aulavirtual.uji.es/auth/eidas/login.php"
+                        }
+                    ],
+                    "lang": "ca",
+                    "langlist": "es,ca,en,de,fr,it,pt,ro",
+                    "langmenu": 1,
+                    "launchurl": "https://aulavirtual.uji.es/admin/tool/mobile/launch.php",
+                    "locale": "",
+                    "logourl": "https://aulavirtual.uji.es/pluginfile.php/2/core_admin/logo/0x200/1590206427/logo.png",
+                    "maintenanceenabled": 0,
+                    "maintenancemessage": "<p>Per manteniment, l'accés a l'Aula Virtual romandrà tancat entre les 21:00 i les 23:00 aproximadament.</p><p>Disculpeu les molèsties.<br /></p><p>Por mantenimiento, el acceso al Aula Virtual permanecerá cerrado entre las 21:00 y las 23:00 aproximadamente.</p><p>Disculpen las molestias.</p>",
+                    "mobilecssurl": "https://aulavirtual.uji.es/local/uji/mdlmobile/styles02.css",
+                    "registerauth": "",
+                    "rememberusername": 2,
+                    "sitename": "Aula Virtual UJI",
+                    "tool_mobile_disabledfeatures": "",
+                    "typeoflogin": 3,
+                    "warnings": [],
+                    "wwwroot": "https://aulavirtual.uji.es"
+                },
+                "error": false
+            }
+        ]
+    }
+]

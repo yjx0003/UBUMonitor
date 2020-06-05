@@ -22,6 +22,7 @@ import es.ubu.lsi.ubumonitor.webservice.api.tool.mobile.ToolMobileGetPublicConfi
 import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.concurrent.Worker;
 import javafx.scene.Scene;
 import javafx.scene.web.WebView;
 import javafx.stage.Modality;
@@ -44,10 +45,11 @@ public class Login {
 	private WebService webService;
 	private int typeoflogin;
 	private String launchurl;
+	private WebView webView;
 
 	public Login() {
+
 		webService = new WebService();
-		typeoflogin = DEFAULT_TYPE_OF_LOGIN;
 	}
 
 	/**
@@ -60,15 +62,19 @@ public class Login {
 	 * @throws IOException si no ha podido conectarse o la contraseña es erronea
 	 */
 	public void tryLogin(String host, String username, String password) throws IOException {
-		boolean hasError;
+		boolean hasError = true;
 		boolean coreSupported = false;
 		try (Response response = Connection.getResponse(host + "/local/mobile/check.php?service=local_mobile")) {
 			JSONObject jsonObject = new JSONObject(response.body()
 					.string());
 			hasError = jsonObject.optInt("error", 1) == 1;
 			if (!hasError) {
+				// The type of login. 1 for app, 2 for browser, 3 for embedded.
 				typeoflogin = Integer.valueOf(jsonObject.optString("code"));
-				coreSupported = jsonObject.optInt("coresupported", 0) == 1;
+				coreSupported = jsonObject.optInt("coresupported") == 1;
+			}
+			if (typeoflogin != DEFAULT_TYPE_OF_LOGIN) {
+				launchurl = host + "/local/mobile/launch.php?service=local_mobile&urlscheme=moodlemobile&passport=1";
 			}
 
 		} catch (Exception e) {
@@ -77,31 +83,36 @@ public class Login {
 			LOGGER.info("has not launch url");
 		}
 
-		if (coreSupported && typeoflogin != DEFAULT_TYPE_OF_LOGIN) {
-			try (Response response = WebService.getAjaxResponse(host, new ToolMobileGetPublicConfig())) {
-				JSONObject data = new JSONArray(new JSONTokener(response.body()
-						.byteStream())).getJSONObject(0)
-								.optJSONObject("data");
-				if (data != null) {
-					// The type of login. 1 for app, 2 for browser, 3 for embedded.
-
-					launchurl = data.getString("launchurl") + "?service=local_mobile&urlscheme=moodlemobile&passport="
-							+ UtilMethods.ranmdomAlphanumeric();
-					try (Response responseLaunch = Connection.getResponse(launchurl)) {
-						if (responseLaunch.code() != 200) {
-							launchurl = null;
-						}
-					}
-				}
-			} catch (Exception e) {
-
-				LOGGER.info("not toolMobileGetPublicConfig");
-			}
+		if (hasError || (coreSupported && typeoflogin != DEFAULT_TYPE_OF_LOGIN)) {
+			toolMobileGetPublicConfig(host);
 
 		}
 
 		login(typeoflogin, host, launchurl, username, password);
 
+	}
+
+	public void toolMobileGetPublicConfig(String host) throws IllegalAccessError {
+		try (Response response = WebService.getAjaxResponse(host, new ToolMobileGetPublicConfig())) {
+			JSONObject data = new JSONArray(new JSONTokener(response.body()
+					.byteStream())).getJSONObject(0)
+							.optJSONObject("data");
+			if (data != null) {
+
+				launchurl = data.getString("launchurl") + "?service=local_mobile&urlscheme=moodlemobile&passport=1";
+				typeoflogin = data.optInt("typeoflogin", DEFAULT_TYPE_OF_LOGIN);
+				if(data.optInt("enablemobilewebservice", 1) == 0) {
+					throw new IllegalAccessError("Mobile web service not enabled");
+				}
+				try (Response responseLaunch = Connection.getResponse(launchurl)) {
+					if (responseLaunch.code() != 200) {
+						launchurl = null;
+					}
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.info("not toolMobileGetPublicConfig");
+		}
 	}
 
 	public void reLogin(String host, String username, String password) throws IOException {
@@ -174,7 +185,10 @@ public class Login {
 		CompletableFuture.runAsync(() -> {
 			Stage popup = UtilMethods.createStage(owner, Modality.WINDOW_MODAL);
 			setWebview(host, popup, (ov, old, newValue) -> {
-				try (Response response = Connection.getResponse(newValue)) {
+				if (newValue != Worker.State.SUCCEEDED)
+					return;
+				try (Response response = Connection.getResponse(webView.getEngine()
+						.getLocation())) {
 
 					sesskey = findSesskey(response.body()
 							.string());
@@ -203,11 +217,12 @@ public class Login {
 		}
 	}
 
-	public void setWebview(String launchurl, Stage popup, ChangeListener<String> listenner) {
+	public void setWebview(String launchurl, Stage popup, ChangeListener<Worker.State> listenner) {
 
-		WebView webView = new WebView();
+		webView = new WebView();
 		webView.getEngine()
-				.locationProperty()
+				.getLoadWorker()
+				.stateProperty()
 				.addListener(listenner);
 		webView.getEngine()
 				.load(launchurl);
@@ -217,10 +232,16 @@ public class Login {
 
 	}
 
-	public ChangeListener<String> launcherLogin(String host, Stage popup) {
+	public ChangeListener<Worker.State> launcherLogin(String host, Stage popup) {
 		return (ov, old, newValue) -> {
-			try (Response response = Connection.getResponse(newValue)) {
+
+			if (newValue != Worker.State.FAILED)
+				return; // failed if try to go url scheme MOODLE_LOCAL_SERVICE
+
+			try (Response response = Connection.getResponse(webView.getEngine()
+					.getLocation())) {
 				String location = response.header("location");
+
 				if (location == null)
 					return;
 				Matcher matcher = PATTERN_MOODLE_MOBILE.matcher(location);

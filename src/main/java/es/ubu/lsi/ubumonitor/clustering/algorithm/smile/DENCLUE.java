@@ -9,10 +9,11 @@ import smile.clustering.PartitionClustering;
 
 public class DENCLUE extends Algorithm {
 
-	private static final String NAME = "DENCLUE (Smile)";
+	private static final String NAME = "DENCLUE";
+	private static final String LIBRARY = "Smile";
 
 	public DENCLUE() {
-		super(NAME);
+		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.SMOOTH, 0.3);
 		addParameter(ClusteringParameter.MAX_NUM_CLUSTER, 3);
 		addParameter(ClusteringParameter.TOLERANCE, 0.01);

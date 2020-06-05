@@ -10,10 +10,11 @@ import smile.clustering.CentroidClustering;
 
 public class XMeans extends Algorithm {
 
-	private static final String NAME = "X-Means (Smile)";
+	private static final String NAME = "X-Means";
+	private static final String LIBRARY = "Smile";
 
 	public XMeans() {
-		super(NAME);
+		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.MAX_NUM_CLUSTER, 4);
 		addParameter(ClusteringParameter.MAX_ITERATIONS, 50);
 		addParameter(ClusteringParameter.TOLERANCE, 0.001);

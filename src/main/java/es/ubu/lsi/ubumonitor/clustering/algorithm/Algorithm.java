@@ -9,11 +9,12 @@ import es.ubu.lsi.ubumonitor.clustering.exception.IllegalParamenterException;
 public abstract class Algorithm {
 
 	private String name;
-	private AlgorithmParameters parameters;
+	private String library;
+	private AlgorithmParameters parameters = new AlgorithmParameters();;
 
-	protected Algorithm(String name) {
-		parameters = new AlgorithmParameters();
+	protected Algorithm(String name, String library) {
 		setName(name);
+		this.library = library;
 	}
 
 	public void setName(String name) {
@@ -22,6 +23,10 @@ public abstract class Algorithm {
 
 	public String getName() {
 		return name;
+	}
+	
+	public String getLibrary() {
+		return library;
 	}
 
 	public AlgorithmParameters getParameters() {
@@ -41,6 +46,6 @@ public abstract class Algorithm {
 
 	@Override
 	public String toString() {
-		return name;
+		return name + " (" + library + ")";
 	}
 }

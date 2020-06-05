@@ -11,9 +11,10 @@ import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 public class DBSCAN extends Algorithm {
 
 	private static final String NAME = "DBSCAN";
+	private static final String LIBRARY = "Apache";
 
 	public DBSCAN() {
-		super(NAME);
+		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.EPS, 0.4);
 		addParameter(ClusteringParameter.MIN_POINTS, 1);
 		addParameter(ClusteringParameter.DISTANCE_TYPE, Distance.MANHATTAN_DISTANCE);

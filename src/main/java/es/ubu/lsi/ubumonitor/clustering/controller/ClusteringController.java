@@ -44,6 +44,7 @@ import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
 import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
 import es.ubu.lsi.ubumonitor.clustering.util.TextFieldPropertyEditorFactory;
+import es.ubu.lsi.ubumonitor.controllers.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
@@ -64,6 +65,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.SelectionMode;
@@ -72,6 +74,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
@@ -220,6 +223,27 @@ public class ClusteringController {
 			}
 		});
 		checkComboBoxLogs.disableProperty().bind(checkBoxLogs.selectedProperty().not());
+
+		algorithmList.setCellFactory(callback -> new ListCell<Algorithm>() {
+			@Override
+			public void updateItem(Algorithm algorithm, boolean empty) {
+				super.updateItem(algorithm, empty);
+				if (empty) {
+					setText(null);
+					setGraphic(null);
+				} else {
+					setText(algorithm.getName() + " (" + algorithm.getLibrary() + ")");
+					try {
+						Image image = new Image(AppInfo.IMG_DIR + algorithm.getLibrary().toLowerCase() + ".png", 24, 24,
+								false, true);
+						ImageView imageView = new ImageView(image);
+						setGraphic(imageView);
+					} catch (Exception e) {
+						setGraphic(null);
+					}
+				}
+			}
+		});
 
 		List<Algorithm> algorithms = Arrays.asList(new KMeansPlusPlus(), new FuzzyKMeans(), new DBSCAN(),
 				new MultiKMeansPlusPlus(), new KMeans(), new XMeans(), new GMeans(), new DBSCANSmile(), new DENCLUE(),

@@ -10,10 +10,11 @@ import smile.clustering.CentroidClustering;
 
 public class DeterministicAnnealing extends Algorithm {
 
-	private static final String NAME = "DeterministicAnnealing (Smile)";
+	private static final String NAME = "DeterministicAnnealing";
+	private static final String LIBRARY = "Smile";
 
 	public DeterministicAnnealing() {
-		super(NAME);
+		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.MAX_NUM_CLUSTER, 5);
 		addParameter(ClusteringParameter.ANNELING_CONTROL, 0.9);
 		addParameter(ClusteringParameter.MAX_ITERATIONS, 50);

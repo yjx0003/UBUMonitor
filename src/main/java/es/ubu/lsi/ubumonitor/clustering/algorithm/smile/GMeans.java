@@ -10,10 +10,11 @@ import smile.clustering.CentroidClustering;
 
 public class GMeans extends Algorithm {
 
-	private static final String NAME = "G-Means (Smile)";
+	private static final String NAME = "G-Means";
+	private static final String LIBRARY = "Smile";
 
 	public GMeans() {
-		super(NAME);
+		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.MAX_NUM_CLUSTER, 4);
 		addParameter(ClusteringParameter.MAX_ITERATIONS, 50);
 		addParameter(ClusteringParameter.TOLERANCE, 0.001);

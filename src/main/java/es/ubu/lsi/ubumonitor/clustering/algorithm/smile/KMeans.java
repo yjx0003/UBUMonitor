@@ -10,10 +10,11 @@ import smile.clustering.CentroidClustering;
 
 public class KMeans extends Algorithm {
 
-	private static final String NAME = "K-Means (Smile)";
+	private static final String NAME = "K-Means";
+	private static final String LIBRARY = "Smile";
 
 	public KMeans() {
-		super(NAME);
+		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.NUM_CLUSTER, 3);
 		addParameter(ClusteringParameter.MAX_ITERATIONS, 50);
 		addParameter(ClusteringParameter.TOLERANCE, 0.001);

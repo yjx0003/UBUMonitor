@@ -9,10 +9,11 @@ import smile.clustering.PartitionClustering;
 
 public class DBSCANSmile extends Algorithm {
 
-	private static final String NAME = "DBSCAN (Smile)";
+	private static final String NAME = "DBSCAN";
+	private static final String LIBRARY = "Smile";
 
 	public DBSCANSmile() {
-		super(NAME);
+		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.EPS, 0.4);
 		addParameter(ClusteringParameter.MIN_POINTS, 1);
 	}

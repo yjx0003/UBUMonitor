@@ -28,10 +28,6 @@ public class UserData implements Clusterable {
 		this.normalizedData = userData.normalizedData;
 	}
 
-	public EnrolledUser getEnrolledUser() {
-		return user;
-	}
-
 	public void addNormalizedDatum(double datum) {
 		normalizedData.add(Double.isNaN(datum) ? 0 : datum);
 	}
@@ -39,9 +35,18 @@ public class UserData implements Clusterable {
 	public void addDatum(Datum datum) {
 		data.add(datum);
 	}
+	
+	public void removeDatum(int index) {
+		data.remove(index);
+		normalizedData.remove(index);
+	}
 
 	public void setData(double[] data) {
 		this.normalizedData = Arrays.stream(data).boxed().collect(Collectors.toList());
+	}
+	
+	public void setCluster(ClusterWrapper cluster) {
+		this.cluster = cluster;
 	}
 
 	@Override
@@ -49,8 +54,8 @@ public class UserData implements Clusterable {
 		return normalizedData.stream().mapToDouble(Double::doubleValue).toArray();
 	}
 
-	public void setCluster(ClusterWrapper cluster) {
-		this.cluster = cluster;
+	public EnrolledUser getEnrolledUser() {
+		return user;
 	}
 
 	public ClusterWrapper getCluster() {

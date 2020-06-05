@@ -19,6 +19,7 @@ import es.ubu.lsi.ubumonitor.clustering.analysis.methods.SilhouetteMethod;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.DataCollector;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
+import es.ubu.lsi.ubumonitor.clustering.data.Datum;
 import es.ubu.lsi.ubumonitor.clustering.data.Distance;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
@@ -36,6 +37,33 @@ public class AlgorithmExecuter {
 		this.distance = algorithm.getParameters().getValue(ClusteringParameter.DISTANCE_TYPE);
 		usersData = enrolledUsers.stream().map(UserData::new).collect(Collectors.toList());
 		dataCollectors.forEach(collector -> collector.collect(usersData));
+
+	}
+
+	private void filter(List<UserData> usersData) {
+		List<Datum> data = usersData.get(0).getData();
+		List<Integer> remove = new ArrayList<>();
+
+		for (int j = 0; j < data.size(); j++) {
+			if (checkData(usersData, data, j))
+				remove.add(j);
+		}
+		if (remove.size() != data.size()) {
+			for (UserData userData : usersData) {
+				for (int i = remove.size() - 1; i >= 0; i--) {
+					userData.removeDatum(i);
+				}
+			}
+		}
+	}
+
+	private boolean checkData(List<UserData> usersData, List<Datum> data, int j) {
+		for (int i = 1; i < usersData.size(); i++) {
+			if (!data.get(j).getValue().equals(usersData.get(i).getData().get(j).getValue())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public List<ClusterWrapper> execute(int dim) {
@@ -43,9 +71,6 @@ public class AlgorithmExecuter {
 	}
 
 	public List<ClusterWrapper> execute(int iterations, int dimension) {
-
-		if (usersData.isEmpty())
-			throw new IllegalStateException(I18n.get("clustering.error.notUsers"));
 
 		if (usersData.size() < 2)
 			throw new IllegalStateException(I18n.get("clustering.error.notUsers"));
@@ -55,6 +80,8 @@ public class AlgorithmExecuter {
 
 		if (usersData.get(0).getData().size() < dimension)
 			throw new IllegalStateException(I18n.get("clustering.error.invalidDimension"));
+
+		filter(usersData);
 
 		if (dimension > 0) {
 			PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();

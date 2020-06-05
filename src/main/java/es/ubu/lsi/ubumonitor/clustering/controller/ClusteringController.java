@@ -22,10 +22,8 @@ import es.ubu.lsi.ubumonitor.clustering.algorithm.apache.KMeansPlusPlus;
 import es.ubu.lsi.ubumonitor.clustering.algorithm.apache.MultiKMeansPlusPlus;
 import es.ubu.lsi.ubumonitor.clustering.algorithm.smile.DBSCANSmile;
 import es.ubu.lsi.ubumonitor.clustering.algorithm.smile.DENCLUE;
-import es.ubu.lsi.ubumonitor.clustering.algorithm.smile.DeterministicAnnealing;
 import es.ubu.lsi.ubumonitor.clustering.algorithm.smile.GMeans;
 import es.ubu.lsi.ubumonitor.clustering.algorithm.smile.KMeans;
-import es.ubu.lsi.ubumonitor.clustering.algorithm.smile.Spectral;
 import es.ubu.lsi.ubumonitor.clustering.algorithm.smile.XMeans;
 import es.ubu.lsi.ubumonitor.clustering.analysis.AnalysisFactory;
 import es.ubu.lsi.ubumonitor.clustering.analysis.ElbowFactory;
@@ -246,8 +244,8 @@ public class ClusteringController {
 		});
 
 		List<Algorithm> algorithms = Arrays.asList(new KMeansPlusPlus(), new FuzzyKMeans(), new DBSCAN(),
-				new MultiKMeansPlusPlus(), new KMeans(), new XMeans(), new GMeans(), new DBSCANSmile(), new DENCLUE(),
-				new Spectral(), new DeterministicAnnealing());
+				new MultiKMeansPlusPlus(), new KMeans(), new XMeans(), new GMeans(), new DBSCANSmile(), new DENCLUE()
+		/* ,new Spectral(), new DeterministicAnnealing() */);
 		algorithmList.getItems().setAll(algorithms);
 		algorithmList.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> propertySheet
 				.getItems().setAll(newValue.getParameters().getPropertyItems()));
@@ -315,6 +313,7 @@ public class ClusteringController {
 			service.reset();
 		});
 		service.setOnFailed(e -> {
+//			UtilMethods.errorWindow(I18n.get(service.getException().getMessage()), service.getException());
 			UtilMethods.infoWindow(I18n.get(service.getException().getMessage()));
 			service.reset();
 		});

@@ -44,7 +44,7 @@
 			</font>
 		</Button>
 		<Button fx:id="btnDelete" font="$x2" layoutX="230.0" layoutY="450.0" mnemonicParsing="false" onAction="#clear" prefWidth="70.0" stylesheets="@/css/style.css" text="%btn.clear" />
-		<ImageView fitHeight="271.0" fitWidth="276.0" layoutX="70.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true">
+		<ImageView fitHeight="250.0" fitWidth="250.0" layoutX="75.0" layoutY="30.0" pickOnBounds="true" preserveRatio="true">
 			<image>
 				<Image url="@../img/logo.png" />
 			</image>

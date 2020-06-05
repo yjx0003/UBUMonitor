@@ -24,12 +24,12 @@ def fill_json(universities):
             r = requests.get(university[MOODLE_URL]+"/local/mobile/check.php?service=local_mobile")
 
             university["local_mobile_check"] = r.json() if r.status_code == 200 else "Error: "+str(r.status_code)
-        except json.decoder.JSONDecodeError:
+        except:
              university["local_mobile_check"] = "Error decoding json: " + r.text
         try:
             r = requests.post(university[MOODLE_URL]+"lib/ajax/service.php", json = PUBLIC_CONFIG)
             university["tool_mobile_get_public_config"] = r.json() if r.status_code == 200 else "Error: "+str(r.status_code)
-        except json.decoder.JSONDecodeError:
+        except:
             university["tool_mobile_get_public_config"] = "Error decoding json: " + r.text
        
         try:
@@ -38,6 +38,13 @@ def fill_json(universities):
            university["launch"] = r.status_code
         except:
             university["launch"] = "no launch url"
+
+        try:
+           url =  university[MOODLE_URL]+"/local/mobile/launch.php"
+           r = requests.get(url, params= {"service":"local_mobile", "passport":1})
+           university["launchLocalMobile"] = r.status_code
+        except:
+            university["launchLocalMobile"] = "no mobile launch url"
 
 if __name__ == "__main__":
 

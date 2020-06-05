@@ -25,7 +25,7 @@
 
 <BorderPane prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.clustering.controller.ClusteringController">
    <top>
-      <GridPane BorderPane.alignment="CENTER">
+      <GridPane hgap="10.0" vgap="5.0" BorderPane.alignment="CENTER">
         <columnConstraints>
             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="250.0" />
@@ -37,28 +37,19 @@
           <RowConstraints minHeight="20.0" prefHeight="40.0" vgrow="SOMETIMES" />
           <RowConstraints minHeight="20.0" prefHeight="40.0" vgrow="SOMETIMES" />
           <RowConstraints minHeight="20.0" prefHeight="40.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="20.0" prefHeight="40.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
 
-            <PropertySheet fx:id="propertySheet" modeSwitcherVisible="false" searchBoxVisible="false" GridPane.columnIndex="1" GridPane.rowSpan="4" />
-            <CheckBox fx:id="checkBoxGrades" mnemonicParsing="false" text="%tab.grades" GridPane.columnIndex="2" GridPane.rowIndex="2">
+            <PropertySheet fx:id="propertySheet" modeSwitcherVisible="false" searchBoxVisible="false" GridPane.columnIndex="1" GridPane.rowSpan="3" />
+            <CheckBox fx:id="checkBoxGrades" mnemonicParsing="false" text="%tab.grades" GridPane.columnIndex="2" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin></CheckBox>
-            <CheckBox fx:id="checkBoxLogs" mnemonicParsing="false" text="%tab.logs" GridPane.columnIndex="2">
+            <CheckBox fx:id="checkBoxActivity" mnemonicParsing="false" text="%tab.activityCompletion" GridPane.columnIndex="2" GridPane.rowIndex="2">
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin></CheckBox>
-            <CheckBox fx:id="checkBoxActivity" mnemonicParsing="false" text="%tab.activityCompletion" GridPane.columnIndex="2" GridPane.rowIndex="3">
-               <GridPane.margin>
-                  <Insets left="10.0" />
-               </GridPane.margin></CheckBox>
-            <ListView fx:id="algorithmList" prefHeight="200.0" prefWidth="200.0" GridPane.rowSpan="4" />
-            <CheckComboBox fx:id="checkComboBoxLogs" title="%clustering.logTypes" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.hgrow="NEVER" GridPane.rowIndex="1">
-               <GridPane.margin>
-                  <Insets left="10.0" />
-               </GridPane.margin></CheckComboBox>
+            <ListView fx:id="algorithmList" prefHeight="200.0" prefWidth="200.0" GridPane.rowSpan="3" />
             <RangeSlider fx:id="rangeSlider" blockIncrement="1.0" highValue="10.0" lowValue="2.0" majorTickUnit="1.0" max="15.0" min="2.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="4" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets right="10.0" />
@@ -66,13 +57,16 @@
             <GridPane GridPane.columnIndex="3">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <CheckBox fx:id="checkBoxReduce" mnemonicParsing="false" text="%clustering.reduce" />
+                  <CheckBox fx:id="checkBoxReduce" mnemonicParsing="false" text="%clustering.reduce" GridPane.halignment="RIGHT">
+                     <GridPane.margin>
+                        <Insets right="10.0" />
+                     </GridPane.margin></CheckBox>
                   <TextField fx:id="textFieldReduce" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="60.0" GridPane.columnIndex="1" />
                </children>
             </GridPane>
@@ -93,10 +87,10 @@
                   <Button mnemonicParsing="false" onAction="#executeAnalysis" text="%clustering.analyze" GridPane.columnIndex="1" />
                </children>
             </GridPane>
-            <GridPane GridPane.columnIndex="3" GridPane.rowIndex="2">
+            <GridPane GridPane.columnIndex="3" GridPane.rowIndex="1">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -110,7 +104,7 @@
                   <TextField fx:id="textFieldIterations" maxWidth="-Infinity" prefWidth="60.0" text="30" GridPane.columnIndex="1" />
                </children>
             </GridPane>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="3">
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="2">
                <children>
                   <Button fx:id="buttonExecute" mnemonicParsing="false" onAction="#execute" text="%clustering.execute" />
                   <ProgressIndicator fx:id="progressExecute" prefHeight="30.0" prefWidth="30.0" visible="false">
@@ -120,6 +114,27 @@
                   </ProgressIndicator>
                </children>
             </HBox>
+            <GridPane GridPane.columnIndex="2">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <CheckComboBox fx:id="checkComboBoxLogs" title="%clustering.logTypes" GridPane.columnIndex="1" GridPane.hgrow="NEVER">
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin>
+                  </CheckComboBox>
+                  <CheckBox fx:id="checkBoxLogs" mnemonicParsing="false" text="%tab.logs">
+                     <GridPane.margin>
+                        <Insets left="10.0" />
+                     </GridPane.margin>
+                  </CheckBox>
+               </children>
+            </GridPane>
          </children>
       </GridPane>
    </top>

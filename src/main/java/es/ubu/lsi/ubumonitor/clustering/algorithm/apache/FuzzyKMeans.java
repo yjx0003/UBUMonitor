@@ -11,9 +11,10 @@ import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 public class FuzzyKMeans extends Algorithm {
 
 	private static final String NAME = "FuzzyKMeans";
+	private static final String LIBRARY = "Apache";
 
 	public FuzzyKMeans() {
-		super(NAME);
+		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.NUM_CLUSTER, 3);
 		addParameter(ClusteringParameter.FUZZINESS, 2.0);
 		addParameter(ClusteringParameter.MAX_ITERATIONS, 50);

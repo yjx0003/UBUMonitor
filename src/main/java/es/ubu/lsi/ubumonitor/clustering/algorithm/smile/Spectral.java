@@ -10,10 +10,11 @@ import smile.clustering.SpectralClustering;
 
 public class Spectral extends Algorithm {
 
-	private static final String NAME = "Spectral Clustering (Smile)";
+	private static final String NAME = "Spectral Clustering";
+	private static final String LIBRARY = "Smile";
 
 	public Spectral() {
-		super(NAME);
+		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.NUM_CLUSTER, 3);
 		addParameter(ClusteringParameter.SMOOTH, 0.5);
 		addParameter(ClusteringParameter.MAX_ITERATIONS, 50);

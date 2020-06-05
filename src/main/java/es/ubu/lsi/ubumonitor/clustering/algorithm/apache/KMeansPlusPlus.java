@@ -11,9 +11,10 @@ import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 public class KMeansPlusPlus extends Algorithm {
 
 	private static final String NAME = "K-Means++";
+	private static final String LIBRARY = "Apache";
 
 	public KMeansPlusPlus() {
-		super(NAME);
+		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.NUM_CLUSTER, 3);
 		addParameter(ClusteringParameter.MAX_ITERATIONS, 50);
 		addParameter(ClusteringParameter.DISTANCE_TYPE, Distance.MANHATTAN_DISTANCE);

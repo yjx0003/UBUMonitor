@@ -123,7 +123,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <CheckComboBox fx:id="checkComboBoxLogs" title="%clustering.logTypes" GridPane.columnIndex="1" GridPane.hgrow="NEVER">
+                  <CheckComboBox fx:id="checkComboBoxLogs" showCheckedCount="true" title="%clustering.logTypes" GridPane.columnIndex="1" GridPane.hgrow="NEVER">
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin>

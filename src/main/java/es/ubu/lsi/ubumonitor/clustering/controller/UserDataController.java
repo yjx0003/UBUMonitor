@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.clustering.controller;
 
 import java.io.ByteArrayInputStream;
+import java.util.Comparator;
 
 import es.ubu.lsi.ubumonitor.clustering.data.Datum;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
@@ -38,7 +39,7 @@ public class UserDataController {
 	private TableColumn<Datum, String> columnItem;
 
 	@FXML
-	private TableColumn<Datum, String> columnValue;
+	private TableColumn<Datum, Number> columnValue;
 
 	private TableView<UserData> table;
 
@@ -54,7 +55,8 @@ public class UserDataController {
 		tableView.setItems(FXCollections.observableList(userData.getData()));
 		columnType.setCellValueFactory(e -> new SimpleStringProperty(I18n.get(e.getValue().getType())));
 		columnItem.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getItem()));
-		columnValue.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getValue().toString()));
+		columnValue.setCellValueFactory(e -> new SimpleObjectProperty<Number>(e.getValue().getValue()));
+		columnValue.setComparator(Comparator.comparing(Number::doubleValue));
 
 		columnIcon.setCellValueFactory(e -> {
 			ImageView imageView;

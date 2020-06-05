@@ -291,7 +291,7 @@ public class ClusteringController {
 			service.reset();
 		});
 		service.setOnFailed(e -> {
-			UtilMethods.errorWindow(I18n.get(service.getException().getMessage()), service.getException());
+			UtilMethods.infoWindow(I18n.get(service.getException().getMessage()));
 			service.reset();
 		});
 	}

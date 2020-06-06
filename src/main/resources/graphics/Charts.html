@@ -412,7 +412,7 @@
     
     function boxplotLabel(t, a, o, e) {
 	    if (-1 == e) return [formatBoxplot("n", a.datasets[t.datasetIndex].data[t.index].length), formatBoxplot("min ", o.min), formatBoxplot("whiskerMin", o.whiskerMin), formatBoxplot("q1", o.q1), formatBoxplot("median", o.median), formatBoxplot("q3", o.q3), formatBoxplot("whiskerMax", o.whiskerMax), formatBoxplot("max", o.max)];
-	    var r, s = a.datasets[t.datasetIndex].users,
+	    var r, s = a.datasets[t.datasetIndex].users[0] instanceof Array ? a.datasets[t.datasetIndex].users[t.index] : a.datasets[t.datasetIndex].users,
 	        n = a.datasets[t.datasetIndex].data[t.index],
 	        x = [];
 	    for (r = 0; r < n.length; r++) n[r] == o.outliers[e] && x.push(s[r] + " (" + n[r].toLocaleString(locale,{maximumFractionDigits:2}) + ")");

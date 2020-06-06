@@ -233,7 +233,7 @@ public class WelcomeController implements Initializable {
 						ListView<Course> listView;
 						if (value.getContent() instanceof ListView<?>) {
 							listView = (ListView<Course>) value.getContent();
-							
+
 						} else {
 
 							listView = listViewSearch;
@@ -683,7 +683,9 @@ public class WelcomeController implements Initializable {
 					actualCourse.setUpdatedGradeItem(ZonedDateTime.now());
 				}
 				if (checkBoxActivityCompletion.isSelected()) {
-					actualCourse.getModules().forEach(m -> m.getActivitiesCompletion().clear());
+					actualCourse.getModules()
+							.forEach(m -> m.getActivitiesCompletion()
+									.clear());
 					updateMessage(I18n.get("label.loadingActivitiesCompletion"));
 					CreatorUBUGradesController.createActivitiesCompletionStatus(actualCourse.getId(),
 							actualCourse.getEnrolledUsers());
@@ -718,20 +720,6 @@ public class WelcomeController implements Initializable {
 							actualCourse.setLogStats(logStats);
 							actualCourse.setUpdatedLog(ZonedDateTime.now());
 
-							Set<EnrolledUser> notEnrolled = logStats.getByType(TypeTimes.ALL)
-									.getComponents()
-									.getUsers()
-									.stream()
-									.filter(user -> !actualCourse.getEnrolledUsers()
-											.contains(user))
-									.collect(Collectors.toSet());
-							List<String> ids = notEnrolled.stream()
-									.map(EnrolledUser::getId)
-									.map(Object::toString)
-									.collect(Collectors.toList());
-							LOGGER.info("Los ids de usuarios no matriculados: {}", ids);
-							CreatorUBUGradesController.searchUser(ids);
-							actualCourse.addNotEnrolledUser(notEnrolled);
 							tries = limitRelogin + 1;
 						} catch (Exception e) {
 							if (tries >= limitRelogin) {
@@ -745,6 +733,24 @@ public class WelcomeController implements Initializable {
 
 						}
 					}
+				}
+
+				if (actualCourse.getUpdatedLog() != null) {
+					Set<EnrolledUser> notEnrolled = actualCourse.getLogStats()
+							.getByType(TypeTimes.ALL)
+							.getComponents()
+							.getUsers()
+							.stream()
+							.filter(user -> !actualCourse.getEnrolledUsers()
+									.contains(user))
+							.collect(Collectors.toSet());
+					List<String> ids = notEnrolled.stream()
+							.map(EnrolledUser::getId)
+							.map(Object::toString)
+							.collect(Collectors.toList());
+					LOGGER.info("Los ids de usuarios no matriculados: {}", ids);
+					CreatorUBUGradesController.searchUser(ids);
+					actualCourse.addNotEnrolledUser(notEnrolled);
 				}
 
 				updateMessage(I18n.get("label.savelocal"));

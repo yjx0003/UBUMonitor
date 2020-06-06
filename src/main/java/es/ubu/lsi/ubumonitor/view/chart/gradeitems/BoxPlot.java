@@ -64,22 +64,26 @@ public class BoxPlot extends ChartjsGradeItem {
 			boolean hidden) {
 
 		JSObject dataset = getDefaulDatasetProperties(text, hidden);
-		JSArray usersArray = new JSArray();
-		selectedUser.forEach(u -> usersArray.addWithQuote(u.getFullName()));
-		dataset.put("users", usersArray);
+		JSArray usersArrays = new JSArray();
+		
+		
 
 		JSArray data = new JSArray();
 
 		for (GradeItem gradeItem : selectedGradeItems) {
 			JSArray dataArray = new JSArray();
+			JSArray userArray = new JSArray();
 			for (EnrolledUser user : selectedUser) {
 				double grade = gradeItem.getEnrolledUserPercentage(user);
 				if (!Double.isNaN(grade)) {
 					dataArray.add(adjustTo10(grade));
+					userArray.addWithQuote(user.getFullName());
 				}
 			}
+			usersArrays.add(userArray);
 			data.add(dataArray);
 		}
+		dataset.put("users", usersArrays);
 		dataset.put("data", data);
 		return dataset;
 	}

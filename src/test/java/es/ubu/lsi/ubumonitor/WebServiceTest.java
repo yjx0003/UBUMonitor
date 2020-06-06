@@ -55,7 +55,6 @@ public class WebServiceTest {
 
 	@Test
 	@Order(2)
-	@Disabled
 	public void createMoodleUserTest() throws IOException {
 		MoodleUser moodleUser = CreatorUBUGradesController.createMoodleUser(CONTROLLER.getUsername());
 		assertEquals(CONTROLLER.getUsername(), moodleUser.getUserName());

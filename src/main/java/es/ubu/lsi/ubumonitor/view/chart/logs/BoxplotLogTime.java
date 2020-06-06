@@ -93,7 +93,7 @@ public class BoxplotLogTime extends ChartjsLog {
 		Map<EnrolledUser, List<Integer>> logCounts = transform(userCounts, rangeDateSize);
 
 		JSObject dataset = BoxPlot.getDefaulDatasetProperties(text, hidden);
-
+		dataset.put("outlierRadius", 5);
 		JSArray usersArray = new JSArray();
 		users.forEach(u -> usersArray.addWithQuote(u.getFullName()));
 		dataset.put("users", usersArray);

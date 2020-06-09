@@ -184,7 +184,7 @@ public class UtilMethods {
 		return alert.getResult();
 	}
 
-	private static ButtonType dialogWindow(AlertType alertType, String headerText, String contentText) {
+	public static ButtonType dialogWindow(AlertType alertType, String headerText, String contentText) {
 		Alert alert = createAlert(alertType, headerText, contentText);
 		alert.showAndWait();
 		return alert.getResult();

@@ -265,9 +265,6 @@
         table = new Tabulator("#tabulatorDiv", options);
         table.setColumns(data.columns);
         table.setData(data.tabledata).then(function () {
-        	if(options.sort!=null){
-        		table.setSort(options.sort, "asc");
-        	}
         	
             table.redraw();
         })

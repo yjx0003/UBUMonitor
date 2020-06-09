@@ -51,7 +51,7 @@
             <Label fx:id="labelRoles" layoutX="69.0" layoutY="54.0" text="Label" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <Label layoutX="124.0" layoutY="273.0" text="%label.groups" wrapText="true" GridPane.rowIndex="5" />
             <Label fx:id="labelGroups" layoutX="317.0" layoutY="117.0" text="Label" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            <Hyperlink fx:id="hyperlinkEmail" text="Hyperlink" wrapText="true" />
+            <Hyperlink fx:id="hyperlinkEmail" wrapText="true" />
             <Label text="%label.ncourses" wrapText="true" GridPane.rowIndex="6" />
             <Label fx:id="labelNcourses" layoutX="170.0" layoutY="342.0" text="Label" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="6" />
          </children>

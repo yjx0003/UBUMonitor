@@ -437,7 +437,7 @@ public class Course implements Serializable {
 	 * Elimina todos los elementos del curso excepto los logs.
 	 */
 	public void clearCourseData() {
-		this.notEnrolledUsers.clear();
+		
 		this.enrolledUsers.clear();
 		this.roles.forEach(Role::clear); // eliminamos los usuarios de ese rol
 		this.roles.clear();

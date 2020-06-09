@@ -70,6 +70,7 @@ public class TableLog extends TabulatorLogs {
 		JSObject jsObject = createColumn(jsArray, I18n.get("text.datetime"), DATETIME, "datetime");
 		jsObject.put("sorterParams",
 				"{format:'" + UtilMethods.escapeJavaScriptText(dateTimeWrapper.getPattern()) + "'}");
+		jsObject.put("headerSortStartingDir", "'desc'");
 		jsObject.put("topCalc", "'count'");
 		createColumn(jsArray, I18n.get("chartlabel.name"), NAME);
 		createColumn(jsArray, I18n.get("text.component"), COMPONENT);
@@ -121,9 +122,13 @@ public class TableLog extends TabulatorLogs {
 			if (logLine.getCourseModule() != null) {
 				jsObject.putWithQuote(COURSE_MODULE, logLine.getCourseModule()
 						.getModuleName());
-				jsObject.putWithQuote(SECTION, logLine.getCourseModule()
-						.getSection()
-						.getName());
+				if (logLine.getCourseModule()
+						.getSection() != null) {
+					jsObject.putWithQuote(SECTION, logLine.getCourseModule()
+							.getSection()
+							.getName());
+				}
+
 			}
 			jsObject.putWithQuote(ORIGIN, logLine.getOrigin());
 			jsObject.putWithQuote(IP, logLine.getIPAdress());

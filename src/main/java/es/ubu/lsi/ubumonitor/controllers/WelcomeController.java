@@ -267,6 +267,14 @@ public class WelcomeController implements Initializable {
 					chkUpdateData.setSelected(true);
 					btnEntrar.fire();
 				}
+				if (Files.isDirectory(controller.getHostUserDir())
+						&& !Files.isDirectory(controller.getHostUserModelversionDir())) {
+					UtilMethods.infoWindow(I18n.get("text.modelversionchanged"));
+					controller.getHostUserModelversionDir()
+					.toFile()
+					.mkdirs();
+				}
+				
 			});
 
 		} catch (Exception e) {
@@ -369,7 +377,7 @@ public class WelcomeController implements Initializable {
 	private void checkFile(Course course) {
 		if (course == null)
 			return;
-		cacheFilePath = controller.getDirectoryCache(course);
+		cacheFilePath = controller.getHostUserModelversionCourseFile(course);
 		LOGGER.debug("Buscando si existe {}", cacheFilePath);
 
 		File f = cacheFilePath.toFile();
@@ -496,10 +504,10 @@ public class WelcomeController implements Initializable {
 			return;
 		}
 
-		File f = controller.getDirectoryCache()
+		File f = controller.getHostUserModelversionDir()
 				.toFile();
 		if (!f.isDirectory()) {
-			LOGGER.info("No existe el directorio, se va a crear: {}", controller.getDirectoryCache());
+			LOGGER.info("No existe el directorio, se va a crear: {}", controller.getHostUserModelversionDir());
 			f.mkdirs();
 		}
 		LOGGER.info("Guardando los datos encriptados en: {}", f.getAbsolutePath());
@@ -718,6 +726,20 @@ public class WelcomeController implements Initializable {
 							LogStats logStats = new LogStats(actualCourse.getLogs()
 									.getList());
 							actualCourse.setLogStats(logStats);
+							Set<EnrolledUser> notEnrolled = logStats.getByType(TypeTimes.ALL)
+									.getComponents()
+									.getUsers()
+									.stream()
+									.filter(user -> !actualCourse.getEnrolledUsers()
+											.contains(user))
+									.collect(Collectors.toSet());
+							List<String> ids = notEnrolled.stream()
+									.map(EnrolledUser::getId)
+									.map(Object::toString)
+									.collect(Collectors.toList());
+							LOGGER.info("Los ids de usuarios no matriculados: {}", ids);
+							CreatorUBUGradesController.searchUser(ids);
+							actualCourse.setNotEnrolledUser(notEnrolled);
 							actualCourse.setUpdatedLog(ZonedDateTime.now());
 
 							tries = limitRelogin + 1;
@@ -733,24 +755,6 @@ public class WelcomeController implements Initializable {
 
 						}
 					}
-				}
-
-				if (actualCourse.getUpdatedLog() != null) {
-					Set<EnrolledUser> notEnrolled = actualCourse.getLogStats()
-							.getByType(TypeTimes.ALL)
-							.getComponents()
-							.getUsers()
-							.stream()
-							.filter(user -> !actualCourse.getEnrolledUsers()
-									.contains(user))
-							.collect(Collectors.toSet());
-					List<String> ids = notEnrolled.stream()
-							.map(EnrolledUser::getId)
-							.map(Object::toString)
-							.collect(Collectors.toList());
-					LOGGER.info("Los ids de usuarios no matriculados: {}", ids);
-					CreatorUBUGradesController.searchUser(ids);
-					actualCourse.addNotEnrolledUser(notEnrolled);
 				}
 
 				updateMessage(I18n.get("label.savelocal"));

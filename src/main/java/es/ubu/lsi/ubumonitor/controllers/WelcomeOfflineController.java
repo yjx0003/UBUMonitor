@@ -146,6 +146,13 @@ public class WelcomeOfflineController implements Initializable {
 				listView.getSelectionModel()
 						.select(course);
 				listView.scrollTo(course);
+				if (Files.isDirectory(controller.getHostUserDir())
+						&& !Files.isDirectory(controller.getHostUserModelversionDir())) {
+					UtilMethods.infoWindow(I18n.get("text.modelversionchanged"));
+					controller.getHostUserModelversionDir()
+							.toFile()
+							.mkdirs();
+				}
 
 			});
 
@@ -189,7 +196,7 @@ public class WelcomeOfflineController implements Initializable {
 	private void checkFile(Course newValue) {
 		if (newValue == null)
 			return;
-		cacheFilePath = controller.getDirectoryCache(newValue);
+		cacheFilePath = controller.getHostUserModelversionCourseFile(newValue);
 
 		LOGGER.debug("Buscando si existe {}", cacheFilePath);
 
@@ -223,7 +230,6 @@ public class WelcomeOfflineController implements Initializable {
 		}
 		lblNoSelect.setVisible(false);
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getFullName());
-
 
 		ConfigHelper.setProperty("actualCourse", getSelectedCourse().getId());
 
@@ -285,7 +291,7 @@ public class WelcomeOfflineController implements Initializable {
 		} catch (Exception e) {
 			LOGGER.warn("Se ha modificado una de las clases serializables", e);
 			UtilMethods.errorWindow(I18n.get("error.invalidcache"), e);
-			
+
 		}
 		throw new IllegalStateException();
 

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +40,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -237,33 +239,46 @@ public class LoginController implements Initializable {
 	 * @param event El ActionEvent.
 	 */
 	public void login(ActionEvent event) {
-		if (txtHost.getText().trim().isEmpty()|| txtPassword.getText().trim().isEmpty()|| txtUsername.getText().trim().isEmpty()) {
+		if (txtHost.getText()
+				.trim()
+				.isEmpty()
+				|| txtPassword.getText()
+						.trim()
+						.isEmpty()
+				|| txtUsername.getText()
+						.trim()
+						.isEmpty()) {
 			lblStatus.setText(I18n.get("error.fields"));
-		} else {
-			controller.getStage()
-					.getScene()
-					.setCursor(Cursor.WAIT);
+			return;
+		}
+		controller.getStage()
+				.getScene()
+				.setCursor(Cursor.WAIT);
 
-			if (chkOfflineMode.isSelected()) {
-				try {
-					lblStatus.setText(null);
-					offlineMode();
+		if (chkOfflineMode.isSelected()) {
+			try {
+				lblStatus.setText(null);
+			
+		
+				if(offlineMode()) {
 					UtilMethods.changeScene(getClass().getResource("/view/WelcomeOffline.fxml"), controller.getStage(),
 							new WelcomeOfflineController());
-				} catch (MalformedURLException | RuntimeException e) {
-
-					lblStatus.setText(e.getMessage());
 				}
-
-			} else {
-				onlineMode();
+				
+			} catch (MalformedURLException | RuntimeException e) {
+				LOGGER.error("Error en el login offline", e);
+				lblStatus.setText(e.getMessage());
 			}
+
+		} else {
+			onlineMode();
 		}
+
 	}
 
 	private List<Course> findCacheCourses() {
 
-		File dir = controller.getDirectoryCache()
+		File dir = controller.getHostUserModelversionDir()
 				.toFile();
 		if (!dir.exists() || !dir.isDirectory()) {
 			return Collections.emptyList();
@@ -282,24 +297,38 @@ public class LoginController implements Initializable {
 		return courses;
 	}
 
-	private void offlineMode() throws MalformedURLException {
+	private boolean offlineMode() throws MalformedURLException {
 
 		controller.setURLHost(new URL(txtHost.getText()));
 
 		controller.setUsername(txtUsername.getText());
 		controller.setPassword(txtPassword.getText());
+		onSuccessLogin();
+		List<Course> courses = findCacheCourses();
+		if (Files.isDirectory(controller.getHostUserDir())
+				&& !Files.isDirectory(controller.getHostUserModelversionDir()) || courses.isEmpty()) {
+			
+			ButtonType option = UtilMethods.confirmationWindow(I18n.get("text.modelversionchanged")+"\n"+ I18n.get("text.wantonlinemode"));
+			if(option == ButtonType.OK) {
+				controller.getHostUserModelversionDir()
+				.toFile()
+				.mkdirs();
+				chkOfflineMode.setSelected(false);
+				
+				login(null);
+				
+			}
+			return false;
+		}
+	
+		
 		MoodleUser user = new MoodleUser();
 		user.setFullName(txtUsername.getText()); // because we have not a fullname of the user in offline mode
 		controller.setUser(user);
-		onSuccessLogin();
-
-		List<Course> courses = findCacheCourses();
-		if (courses.isEmpty()) {
-			throw new IllegalArgumentException(I18n.get("error.nocacheavaible"));
-		}
 		user.getCourses()
 				.addAll(courses);
-
+		
+		return true;
 	}
 
 	private void onlineMode() {
@@ -314,13 +343,7 @@ public class LoginController implements Initializable {
 		lblStatus.setText(null);
 		service.setOnSucceeded(s -> {
 			onSuccessLogin();
-			if (!controller.getDirectoryCache()
-					.toFile()
-					.exists()) {
-				controller.getDirectoryCache()
-						.toFile()
-						.mkdirs();
-			}
+
 			UtilMethods.changeScene(getClass().getResource("/view/Welcome.fxml"), controller.getStage(),
 					new WelcomeController());
 		});
@@ -365,10 +388,9 @@ public class LoginController implements Initializable {
 				try {
 
 					controller.tryLogin(txtHost.getText(), txtUsername.getText(), txtPassword.getText());
+					txtHost.setText(controller.getUrlHost()
+							.toString());
 
-				} catch (MalformedURLException e) {
-					LOGGER.error("URL mal formada. ¿Has añadido protocolo http(s)?", e);
-					throw new IllegalArgumentException(I18n.get("error.malformedurl"));
 				} catch (IOException e) {
 					LOGGER.error("No se ha podido conectar con el host.", e);
 					throw new IllegalArgumentException(I18n.get("error.host"));
@@ -388,7 +410,7 @@ public class LoginController implements Initializable {
 					controller.setUser(moodleUser);
 					controller.setUsername(txtUsername.getText());
 					controller.setPassword(txtPassword.getText());
-					controller.setDirectory();
+					
 				} catch (Exception e) {
 					LOGGER.error("Error al recuperar los datos del usuario.", e);
 					throw new IllegalStateException(I18n.get("error.user"));

@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import org.controlsfx.control.CheckComboBox?>
 
-<TabPane fx:id="tabPane" minWidth="-Infinity" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.controllers.SelectionController">
+<TabPane fx:id="tabPane" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.controllers.SelectionController">
 	<tabs>
 		<Tab fx:id="tabUbuLogs" closable="false" text="%tab.logs">
 			<content>

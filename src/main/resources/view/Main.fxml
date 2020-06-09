@@ -1,50 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.Tooltip?>
-<?import javafx.scene.control.TreeView?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import org.controlsfx.control.CheckComboBox?>
 <?import org.controlsfx.control.StatusBar?>
 
-<BorderPane fx:id="canvas" maxHeight="-Infinity"
-	maxWidth="-Infinity" minHeight="500.0" minWidth="750.0"
-	prefHeight="500.0" prefWidth="750.0" stylesheets="@../css/style.css"
-	xmlns="http://javafx.com/javafx/8.0.171"
-	xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="es.ubu.lsi.ubumonitor.controllers.MainController">
+<BorderPane fx:id="canvas" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="500.0" minWidth="750.0" prefHeight="500.0" prefWidth="750.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.controllers.MainController">
 	<center>
-		<SplitPane fx:id="splitPane"
-			dividerPositions="0.3422459893048128" BorderPane.alignment="CENTER">
+		<SplitPane fx:id="splitPane" dividerPositions="0.3422459893048128" BorderPane.alignment="CENTER">
 			<items>
-				<BorderPane maxWidth="600.0" prefHeight="200.0"
-					prefWidth="200.0">
+				<BorderPane maxWidth="600.0" prefHeight="200.0" prefWidth="200.0">
 					<center>
-						<SplitPane fx:id="splitPaneLeft" dividerPositions="0.5"
-							orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0"
-							BorderPane.alignment="CENTER">
+						<SplitPane fx:id="splitPaneLeft" dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
 							<items>
 
-								<fx:include fx:id="selectionUser"
-									source="SelectionUser.fxml" />
+								<fx:include fx:id="selectionUser" source="SelectionUser.fxml" />
 								<fx:include fx:id="selection" source="Selection.fxml" />
 							</items>
 						</SplitPane>
@@ -52,22 +23,16 @@
 				</BorderPane>
 				<BorderPane prefHeight="200.0" prefWidth="200.0">
 					<center>
-						<TabPane fx:id="webViewTabPane" prefHeight="200.0"
-							prefWidth="200.0" tabClosingPolicy="UNAVAILABLE"
-							BorderPane.alignment="CENTER">
+						<TabPane fx:id="webViewTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
 							<tabs>
-								<Tab fx:id="visualizationTab" closable="false"
-									text="%tab.visualization">
+								<Tab fx:id="visualizationTab" closable="false" text="%tab.visualization">
 
-									<fx:include fx:id="visualization"
-										source="Visualization.fxml" />
+									<fx:include fx:id="visualization" source="Visualization.fxml" />
 
 								</Tab>
-								<Tab fx:id="riskTab" closable="false"
-									text="%tab.risk">
+								<Tab fx:id="riskTab" closable="false" text="%tab.risk">
 
-									<fx:include fx:id="risk"
-										source="Risk.fxml" />
+									<fx:include fx:id="risk" source="Risk.fxml" />
 
 								</Tab>
 
@@ -79,8 +44,7 @@
 		</SplitPane>
 	</center>
 	<bottom>
-		<StatusBar fx:id="statusBar" text=""
-			BorderPane.alignment="CENTER" />
+		<StatusBar fx:id="statusBar" text="" BorderPane.alignment="CENTER" />
 	</bottom>
 	<top>
 		<fx:include fx:id="menu" source="Menu.fxml" />

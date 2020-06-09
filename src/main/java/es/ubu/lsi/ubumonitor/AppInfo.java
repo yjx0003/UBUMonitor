@@ -9,6 +9,8 @@ package es.ubu.lsi.ubumonitor;
 public class AppInfo {
 
 	public static final String APPLICATION_VERSION = "v2.6.5-dev";
+	
+	public static final String MODEL_VERSION = "v.1.1";
 
 	public static final String APPLICATION_NAME = "UBUMonitor";
 
@@ -59,5 +61,4 @@ public class AppInfo {
 	private AppInfo() {
 		throw new UnsupportedOperationException();
 	}
-
 }

@@ -25,6 +25,8 @@ public class AboutAppController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		appInfo = new StringBuilder();
+		append("Application version: ", AppInfo.APPLICATION_VERSION);
+		append("Model version: ", AppInfo.MODEL_VERSION); 
 		append("Installation directory for Java Runtime Environment (JRE): ", AppInfo.JAVA_HOME);
 		append("JRE vendor name: ", AppInfo.JAVA_VENDOR);
 		append("JRE version number: ", AppInfo.JAVA_VERSION);

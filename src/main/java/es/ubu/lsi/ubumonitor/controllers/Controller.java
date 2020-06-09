@@ -41,7 +41,8 @@ public class Controller {
 
 	private DataBase dataBase;
 	private LocalDateTime loggedIn;
-	private Path directoryCache;
+	private Path hostUserModelversionDir;
+	private Path hostUserDir;
 	private URL host;
 	private Stage stage;
 	private Login login;
@@ -224,16 +225,24 @@ public class Controller {
 	/**
 	 * @return the directoryCache
 	 */
-	public Path getDirectoryCache() {
-		return directoryCache;
+	public Path getHostUserModelversionDir() {
+		return hostUserModelversionDir;
 	}
 
 	/**
 	 * @return the directoryCache
 	 */
-	public Path getDirectoryCache(Course course) {
-		return directoryCache
+	public Path getHostUserModelversionCourseFile(Course course) {
+		return hostUserModelversionDir
 				.resolve(Paths.get(UtilMethods.removeReservedChar(course.toString()) + "-" + course.getId()));
+	}
+
+	public Path getHostUserDir() {
+		return hostUserDir;
+	}
+
+	public void setHostUserDir(Path hostUserDir) {
+		this.hostUserDir = hostUserDir;
 	}
 
 	public Path getConfiguration() {
@@ -254,7 +263,8 @@ public class Controller {
 		String hostName = UtilMethods.removeReservedChar(this.getUrlHost()
 				.getHost());
 		String userName = UtilMethods.removeReservedChar(this.getUsername());
-		this.directoryCache = Paths.get(AppInfo.CACHE_DIR, hostName, userName);
+		this.hostUserModelversionDir = Paths.get(AppInfo.CACHE_DIR, hostName, userName, AppInfo.MODEL_VERSION);
+		this.hostUserDir = Paths.get(AppInfo.CACHE_DIR, hostName, userName);
 		this.configuration = Paths.get(AppInfo.CONFIGURATION_DIR, hostName, userName);
 	}
 
@@ -344,10 +354,11 @@ public class Controller {
 	}
 
 	public void tryLogin(String host, String username, String password) throws IOException {
-		this.host = new URL(host);
+		
 		login = new Login();
-		login.tryLogin(host, username, password);
-
+		String validHost = login.checkUrlServer(host);
+		login.tryLogin(validHost, username, password);
+		this.host = new URL(validHost);
 	}
 
 }

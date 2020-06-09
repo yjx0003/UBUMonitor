@@ -1,6 +1,8 @@
 package es.ubu.lsi.ubumonitor.controllers.load;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
@@ -34,6 +36,10 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class Login {
+	private static final String HTTP = "http://";
+
+	private static final String HTTPS = "https://";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(Login.class);
 
 	private static final String HOST_LOGIN_DEFAULT_PATH = "/login/index.php";
@@ -101,7 +107,7 @@ public class Login {
 
 				launchurl = data.getString("launchurl") + "?service=local_mobile&urlscheme=moodlemobile&passport=1";
 				typeoflogin = data.optInt("typeoflogin", DEFAULT_TYPE_OF_LOGIN);
-				if(data.optInt("enablemobilewebservice", 1) == 0) {
+				if (data.optInt("enablemobilewebservice", 1) == 0) {
 					throw new IllegalAccessError("Mobile web service not enabled");
 				}
 				try (Response responseLaunch = Connection.getResponse(launchurl)) {
@@ -280,6 +286,53 @@ public class Login {
 		}
 		LOGGER.warn("Didn't found a sesskey in principal page after login: {}", html);
 		return null;
+	}
+
+	public String checkUrlServer(String host) throws MalformedURLException {
+		String url = convertToHttps(host);
+		URL httpsUrl = new URL(url);
+		if (checkWebsService(httpsUrl)) {
+			return httpsUrl.toString();
+		}
+
+		url = url.replaceFirst(HTTPS, HTTP);
+		URL httpUrl = new URL(url);
+		if (checkWebsService(httpUrl)) {
+			return httpUrl.toString();
+		}
+		throw new IllegalArgumentException(I18n.get("error.malformedurl"));
+
+	}
+
+	private boolean checkWebsService(URL url) {
+
+		try (Response response = Connection.getResponse(url + "/login/token.php")) {
+			JSONObject jsonObject = new JSONObject(response.body()
+					.string());
+			return jsonObject.has("error");
+
+		} catch (IOException e) {
+			LOGGER.info("Has not protocol", e);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException(I18n.get("error.malformedurl"), e);
+		}
+
+		return false;
+	}
+
+	private String convertToHttps(String host) {
+		String url;
+
+		if (!host.matches("^(?i)https?://.*$")) {
+
+			url = HTTPS + host;
+		} else if (host.matches("^(?i)http://.*$")) {
+			url = host.replaceFirst("(?i)http://", HTTPS);
+		} else {
+			url = host;
+		}
+
+		return url;
 	}
 
 	public String getSesskey() {

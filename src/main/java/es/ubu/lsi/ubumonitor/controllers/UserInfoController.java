@@ -79,6 +79,16 @@ public class UserInfoController {
 
 		setUser(previousUser);
 	}
+	public void firstUser() {
+		setUser(mainController.getSelectionUserController()
+				.getListParticipants().getItems().get(0));
+	}
+	
+	public void lastUser() {
+		setUser(mainController.getSelectionUserController()
+				.getListParticipants().getItems().get(mainController.getSelectionUserController()
+						.getListParticipants().getItems().size()-1));
+	}
 
 	public void setUser(EnrolledUser enrolledUser) {
 		actualEnrolledUser = enrolledUser;

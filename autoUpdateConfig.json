@@ -1,0 +1,4 @@
+{
+  "checkUrl": "https://api.github.com/repos/yjx0003/ubumonitor/releases/latest",
+  "pattern": "^UBUMonitor.+.jar$"
+}

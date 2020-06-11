@@ -7,11 +7,20 @@ import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import smile.clustering.PartitionClustering;
 
+/**
+ * Algoritmo DENCLUE de Smile.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class DENCLUE extends Algorithm {
 
 	private static final String NAME = "DENCLUE";
 	private static final String LIBRARY = "Smile";
 
+	/**
+	 * Constructor del algoritmo DENCLUE.
+	 */
 	public DENCLUE() {
 		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.SMOOTH, 0.3);
@@ -21,6 +30,9 @@ public class DENCLUE extends Algorithm {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Clusterer<UserData> getClusterer() {
 		double sigma = getParameters().getValue(ClusteringParameter.SMOOTH);

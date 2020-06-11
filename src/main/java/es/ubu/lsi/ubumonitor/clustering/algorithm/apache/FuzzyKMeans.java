@@ -8,11 +8,20 @@ import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.data.Distance;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 
+/**
+ * Algoritmo FuzzyKMeans de Apache.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class FuzzyKMeans extends Algorithm {
 
 	private static final String NAME = "FuzzyKMeans";
 	private static final String LIBRARY = "Apache";
 
+	/**
+	 * Constructor del algoritmo FuzzyKMeans.
+	 */
 	public FuzzyKMeans() {
 		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.NUM_CLUSTER, 3);
@@ -21,6 +30,9 @@ public class FuzzyKMeans extends Algorithm {
 		addParameter(ClusteringParameter.DISTANCE_TYPE, Distance.MANHATTAN_DISTANCE);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Clusterer<UserData> getClusterer() {
 		int k = getParameters().getValue(ClusteringParameter.NUM_CLUSTER);

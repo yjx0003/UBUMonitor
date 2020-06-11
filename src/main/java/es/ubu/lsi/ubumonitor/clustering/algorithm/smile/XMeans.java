@@ -8,11 +8,20 @@ import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import smile.clustering.CentroidClustering;
 
+/**
+ * Algoritmo X-Means de Smile.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class XMeans extends Algorithm {
 
 	private static final String NAME = "X-Means";
 	private static final String LIBRARY = "Smile";
 
+	/**
+	 * Constructor del algoritmo X-Means.
+	 */
 	public XMeans() {
 		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.MAX_NUM_CLUSTER, 4);
@@ -20,6 +29,9 @@ public class XMeans extends Algorithm {
 		addParameter(ClusteringParameter.TOLERANCE, 0.001);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Clusterer<UserData> getClusterer() {
 		int kmax = getParameters().getValue(ClusteringParameter.MAX_NUM_CLUSTER);

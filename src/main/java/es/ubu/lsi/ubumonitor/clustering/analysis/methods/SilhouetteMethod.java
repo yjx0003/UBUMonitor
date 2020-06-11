@@ -14,12 +14,26 @@ import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.Distance;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 
+/**
+ * Método de la siluitea utiliazando el coeficiente de silueta.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class SilhouetteMethod extends AnalysisMethod {
 
+	/**
+	 * Constructor del método de la silueta.
+	 * 
+	 * @param algorithm algortimo de clustering
+	 */
 	public SilhouetteMethod(Algorithm algorithm) {
 		super(algorithm, Comparator.<Double>naturalOrder().reversed());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected double calculate(List<ClusterWrapper> clusters) {
 		Map<UserData, Double> silhouette = silhouette(clusters, getDistance());
@@ -27,11 +41,21 @@ public class SilhouetteMethod extends AnalysisMethod {
 		return average.getAsDouble();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getYLabel() {
 		return "clustering.analyze.silhouette.yLabel";
 	}
 
+	/**
+	 * Realiza el analisis a cada elemento de las agrupaciones.
+	 * 
+	 * @param clusters     lista de agrupaciones
+	 * @param distanceType medida de distancia
+	 * @return mapa con el valor del analisis de cada elemento
+	 */
 	public static Map<UserData, Double> silhouette(List<ClusterWrapper> clusters, Distance distanceType) {
 
 		List<UserData> users = clusters.stream().flatMap(ClusterWrapper::stream).collect(Collectors.toList());

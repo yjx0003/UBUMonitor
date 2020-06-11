@@ -9,15 +9,27 @@ import es.ubu.lsi.ubumonitor.model.GradeItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
+/**
+ * Clase que recoge las calificaciones de los alumnos.
+ * @author Xing Long Ji
+ *
+ */
 public class GradesCollector extends DataCollector {
 
 	private TreeView<GradeItem> gradeItems;
 
+	/**
+	 * Constructor.
+	 * @param mainController controlador general de UBUMonitor
+	 */
 	public GradesCollector(MainController mainController) {
 		super("clustering.type.grade");
 		gradeItems = mainController.getTvwGradeReport();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void collect(List<UserData> users) {
 		List<TreeItem<GradeItem>> selected = gradeItems.getSelectionModel().getSelectedItems();

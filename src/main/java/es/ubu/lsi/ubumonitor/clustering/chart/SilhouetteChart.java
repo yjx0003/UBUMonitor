@@ -25,23 +25,42 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
+/**
+ * Clase que gestiona la representación gráfica del analisis de silueta. Se
+ * repesenta mediante un diagrama de barras.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class SilhouetteChart extends ClusteringChart {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SilhouetteChart.class);
 	private Map<UserData, Double> silhouette;
-	private Distance distanceType;
+	private Distance distance;
 
+	/**
+	 * Constructor.
+	 * @param clusteringController controlador general
+	 */
 	public SilhouetteChart(ClusteringController clusteringController) {
-		super(clusteringController.getwebViewSilhouette());
+		super(clusteringController.getWebViewSilhouette());
 		getWebEngine().load(getClass().getResource("/graphics/SilhouetteChart.html").toExternalForm());
 	}
 
-	public void setDistanceType(Distance distanceType) {
-		this.distanceType = distanceType;
+	/**
+	 * Establece la medida de distancia.
+	 * @param distance medida de distancia
+	 */
+	public void setDistanceType(Distance distance) {
+		this.distance = distance;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void updateChart(List<ClusterWrapper> clusters) {
-		silhouette = SilhouetteMethod.silhouette(clusters, distanceType);
+		silhouette = SilhouetteMethod.silhouette(clusters, distance);
 		Map<ClusterWrapper, Color> colors = UtilMethods.getRandomColors(clusters);
 		JSObject root = new JSObject();
 		JSArray datasets = new JSArray();
@@ -99,6 +118,9 @@ public class SilhouetteChart extends ClusteringChart {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void exportData(File file) throws IOException {
 		String[] head = new String[] { "UserId", "FullName", "Cluster", "Silhouette width" };

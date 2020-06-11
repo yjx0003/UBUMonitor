@@ -8,11 +8,20 @@ import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import smile.clustering.CentroidClustering;
 
+/**
+ * Algoritmo Deterministic Annealing de Smile.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class DeterministicAnnealing extends Algorithm {
 
-	private static final String NAME = "DeterministicAnnealing";
+	private static final String NAME = "Deterministic Annealing";
 	private static final String LIBRARY = "Smile";
 
+	/**
+	 * Constructor del algoritmo Deterministic Annealing.
+	 */
 	public DeterministicAnnealing() {
 		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.MAX_NUM_CLUSTER, 5);
@@ -22,6 +31,9 @@ public class DeterministicAnnealing extends Algorithm {
 		addParameter(ClusteringParameter.SPLIT_TOLERANCE, 0.01);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Clusterer<UserData> getClusterer() {
 		int kmax = getParameters().getValue(ClusteringParameter.MAX_NUM_CLUSTER);

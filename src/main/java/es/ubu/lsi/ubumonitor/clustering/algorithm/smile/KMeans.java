@@ -8,11 +8,20 @@ import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import smile.clustering.CentroidClustering;
 
+/**
+ * Algoritmo K-Means de Smile.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class KMeans extends Algorithm {
 
 	private static final String NAME = "K-Means";
 	private static final String LIBRARY = "Smile";
 
+	/**
+	 * Constructor del algoritmo K-Means.
+	 */
 	public KMeans() {
 		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.NUM_CLUSTER, 3);
@@ -20,6 +29,9 @@ public class KMeans extends Algorithm {
 		addParameter(ClusteringParameter.TOLERANCE, 0.001);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Clusterer<UserData> getClusterer() {
 		int k = getParameters().getValue(ClusteringParameter.NUM_CLUSTER);

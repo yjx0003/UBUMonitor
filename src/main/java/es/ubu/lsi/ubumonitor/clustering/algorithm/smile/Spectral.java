@@ -8,11 +8,20 @@ import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import smile.clustering.PartitionClustering;
 import smile.clustering.SpectralClustering;
 
+/**
+ * Algoritmo Spectral Clustering de Smile.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class Spectral extends Algorithm {
 
 	private static final String NAME = "Spectral Clustering";
 	private static final String LIBRARY = "Smile";
 
+	/**
+	 * Constructor del algoritmo Spectral Clustering.
+	 */
 	public Spectral() {
 		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.NUM_CLUSTER, 3);
@@ -21,6 +30,9 @@ public class Spectral extends Algorithm {
 		addParameter(ClusteringParameter.TOLERANCE, 0.001);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Clusterer<UserData> getClusterer() {
 		int k = getParameters().getValue(ClusteringParameter.NUM_CLUSTER);

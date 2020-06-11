@@ -22,6 +22,12 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
+/**
+ * Clase base de gestiona de gráficas.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public abstract class AbstractChart {
 
 	private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyyMMddhhmmss");
@@ -34,6 +40,11 @@ public abstract class AbstractChart {
 	private WebView webView;
 	private WebEngine webEngine;
 
+	/**
+	 * Constructor a traves de un WebView.
+	 * 
+	 * @param webView WebView que contiene la gráfica
+	 */
 	protected AbstractChart(WebView webView) {
 		this.webView = webView;
 		webEngine = webView.getEngine();
@@ -79,6 +90,12 @@ public abstract class AbstractChart {
 		}
 	}
 
+	/**
+	 * Exporta los datos de la gráfica a un fichero CSV.
+	 * 
+	 * @param file fichero
+	 * @throws IOException si hay un error de E/S
+	 */
 	protected abstract void exportData(File file) throws IOException;
 
 	private void exportPNG() {
@@ -104,6 +121,11 @@ public abstract class AbstractChart {
 		ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
 	}
 
+	/**
+	 * Devuelve el motor web.
+	 * 
+	 * @return WebEngine
+	 */
 	protected WebEngine getWebEngine() {
 		return webEngine;
 	}

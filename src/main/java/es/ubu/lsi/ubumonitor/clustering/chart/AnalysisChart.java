@@ -18,6 +18,12 @@ import es.ubu.lsi.ubumonitor.util.JSObject;
 import javafx.concurrent.Worker;
 import javafx.scene.web.WebView;
 
+/**
+ * Representación gráfica del análisis. Se representa en un gráfico de lineas.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class AnalysisChart extends AbstractChart {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AnalysisChart.class);
@@ -25,11 +31,23 @@ public class AnalysisChart extends AbstractChart {
 	private List<Double> points;
 	private int start;
 
+	/**
+	 * Constructor mediante el WebView.
+	 * 
+	 * @param webView WebView que contiene la gráfica
+	 */
 	public AnalysisChart(WebView webView) {
 		super(webView);
 		getWebEngine().load(getClass().getResource("/graphics/LinearChart.html").toExternalForm());
 	}
 
+	/**
+	 * Actualiza la gráfica con la lista de puntos.
+	 * 
+	 * @param analysisMethod tipo de método de analisis
+	 * @param points         lista de puntos
+	 * @param start          inicio en el eje X
+	 */
 	public void updateChart(AnalysisMethod analysisMethod, List<Double> points, int start) {
 		this.points = points;
 		this.start = start;
@@ -66,6 +84,9 @@ public class AnalysisChart extends AbstractChart {
 				I18n.get("clustering.numberOfClusters"), I18n.get(analysisMethod.getYLabel())));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void exportData(File file) throws IOException {
 		String[] head = new String[] { "Number of clusters", "Value" };

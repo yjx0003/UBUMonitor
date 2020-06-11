@@ -8,11 +8,20 @@ import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.data.Distance;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 
+/**
+ * Algoritmo DBSCAN de Apache.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class DBSCAN extends Algorithm {
 
 	private static final String NAME = "DBSCAN";
 	private static final String LIBRARY = "Apache";
 
+	/**
+	 * Constructor del algoritmo DBSCAN.
+	 */
 	public DBSCAN() {
 		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.EPS, 0.4);
@@ -20,6 +29,9 @@ public class DBSCAN extends Algorithm {
 		addParameter(ClusteringParameter.DISTANCE_TYPE, Distance.MANHATTAN_DISTANCE);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Clusterer<UserData> getClusterer() {
 		double eps = getParameters().getValue(ClusteringParameter.EPS);

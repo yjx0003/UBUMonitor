@@ -9,6 +9,12 @@ import org.apache.commons.math3.ml.distance.ManhattanDistance;
 
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 
+/**
+ * Enumeración de la medidas de distancia.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public enum Distance {
 
 	MANHATTAN_DISTANCE(new ManhattanDistance()),
@@ -23,10 +29,15 @@ public enum Distance {
 		this.instance = instance;
 	}
 
+	/**
+	 * Devulve la instancia.
+	 * 
+	 * @return instacia
+	 */
 	public DistanceMeasure getInstance() {
 		return instance;
 	}
-	
+
 	@Override
 	public String toString() {
 		return I18n.get("clustering.distance." + super.toString().toLowerCase());

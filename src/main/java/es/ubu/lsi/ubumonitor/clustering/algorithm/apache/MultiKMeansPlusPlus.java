@@ -7,16 +7,28 @@ import org.apache.commons.math3.ml.clustering.MultiKMeansPlusPlusClusterer;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 
+/**
+ * Algoritmo MultiKMeans++ de Apache.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class MultiKMeansPlusPlus extends KMeansPlusPlus {
 
-	private static final String NAME = "MultiKMeansPlusPlus";
+	private static final String NAME = "MultiKMeans++";
 
+	/**
+	 * Constructor del algoritmo MultiKMeans++.
+	 */
 	public MultiKMeansPlusPlus() {
 		super();
 		setName(NAME);
 		addParameter(ClusteringParameter.NUM_TRIALS, 3);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Clusterer<UserData> getClusterer() {
 		KMeansPlusPlusClusterer<UserData> clusterer = (KMeansPlusPlusClusterer<UserData>) super.getClusterer();

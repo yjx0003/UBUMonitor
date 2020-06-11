@@ -25,6 +25,12 @@ import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
 
+/**
+ * Clase que gestiona una diagrama de dispersión 2D.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class Scatter2DChart extends ClusteringChart {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Scatter2DChart.class);
@@ -32,6 +38,11 @@ public class Scatter2DChart extends ClusteringChart {
 	private Connector connector;
 	private List<Map<UserData, double[]>> points;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param clusteringController controlador general
+	 */
 	public Scatter2DChart(ClusteringController clusteringController) {
 		super(clusteringController.getWebViewScatter());
 
@@ -46,6 +57,9 @@ public class Scatter2DChart extends ClusteringChart {
 		webEngine.load(getClass().getResource("/graphics/ClusterChart.html").toExternalForm());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void updateChart(List<ClusterWrapper> clusters) {
 		connector.setClusters(clusters);
@@ -97,6 +111,9 @@ public class Scatter2DChart extends ClusteringChart {
 		getWebEngine().executeScript("updateChart(" + root + ")");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void exportData(File file) throws IOException {
 		String[] head = new String[] { "UserId", "FullName", "Cluster", "X", "Y" };
@@ -104,13 +121,17 @@ public class Scatter2DChart extends ClusteringChart {
 		for (Map<UserData, double[]> cluster : points) {
 			for (Entry<UserData, double[]> entry : cluster.entrySet()) {
 				UserData userData = entry.getKey();
+				if (userData == null) {
+					continue;
+				}
+				double[] point = entry.getValue();
 				EnrolledUser enrolledUser = userData.getEnrolledUser();
 				List<Object> row = new ArrayList<>();
 				row.add(enrolledUser.getId());
 				row.add(enrolledUser.getFullName());
 				row.add(userData.getCluster().getName());
-				row.add(entry.getValue()[0]);
-				row.add(entry.getValue()[1]);
+				row.add(point[0]);
+				row.add(point.length > 1 ? point[1] : 0.0);
 				data.add(row);
 			}
 		}

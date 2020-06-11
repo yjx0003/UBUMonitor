@@ -8,11 +8,20 @@ import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import smile.clustering.CentroidClustering;
 
+/**
+ * Algoritmo G-Means de Smile.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class GMeans extends Algorithm {
 
 	private static final String NAME = "G-Means";
 	private static final String LIBRARY = "Smile";
 
+	/**
+	 * Constructor del algoritmo G-Means.
+	 */
 	public GMeans() {
 		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.MAX_NUM_CLUSTER, 4);
@@ -20,6 +29,9 @@ public class GMeans extends Algorithm {
 		addParameter(ClusteringParameter.TOLERANCE, 0.001);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Clusterer<UserData> getClusterer() {
 		int kmax = getParameters().getValue(ClusteringParameter.MAX_NUM_CLUSTER);

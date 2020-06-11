@@ -67,9 +67,10 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.image.Image;
@@ -110,7 +111,7 @@ public class ClusteringController {
 	private CheckBox checkBoxReduce;
 
 	@FXML
-	private TextField textFieldReduce;
+	private Spinner<Integer> spinnerReduce;
 
 	@FXML
 	private RangeSlider rangeSlider;
@@ -119,7 +120,7 @@ public class ClusteringController {
 	private ChoiceBox<AnalysisFactory> choiceBoxAnalyze;
 
 	@FXML
-	private TextField textFieldIterations;
+	private Spinner<Integer> spinnerIterations;
 
 	@FXML
 	private Button buttonExecute;
@@ -205,19 +206,25 @@ public class ClusteringController {
 		initAlgorithms();
 		initCollectors();
 		initLabels();
-		initTask();
+		initService();
 	}
 
 	private void initAlgorithms() {
-		textFieldReduce.disableProperty().bind(checkBoxReduce.selectedProperty().not());
-		textFieldReduce.textProperty().addListener((obs, oldValue, newValue) -> {
-			if (!newValue.isEmpty() && !newValue.matches("[1-9]\\d*")) {
-				textFieldReduce.setText(oldValue);
+		spinnerReduce.disableProperty().bind(checkBoxReduce.selectedProperty().not());
+		spinnerReduce.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 9999));
+		spinnerReduce.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
+			if (!newValue.isEmpty() && !newValue.matches("^[1-9]\\d{0,4}")) {
+				spinnerReduce.getEditor().setText(oldValue);
+			} else {
+				spinnerReduce.getValueFactory().setValue(Integer.valueOf(newValue));
 			}
 		});
-		textFieldIterations.textProperty().addListener((obs, oldValue, newValue) -> {
+		spinnerIterations.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 9999, 20));
+		spinnerIterations.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
 			if (!newValue.isEmpty() && !newValue.matches("^[1-9]\\d{0,4}")) {
-				textFieldIterations.setText(oldValue);
+				spinnerIterations.getEditor().setText(oldValue);
+			} else {
+				spinnerIterations.getValueFactory().setValue(Integer.valueOf(newValue));
 			}
 		});
 		checkComboBoxLogs.disableProperty().bind(checkBoxLogs.selectedProperty().not());
@@ -267,7 +274,7 @@ public class ClusteringController {
 		checkComboBoxLogs.getItems().setAll(list);
 	}
 
-	private void initTask() {
+	private void initService() {
 		service = new Service<Void>() {
 
 			@Override
@@ -284,13 +291,9 @@ public class ClusteringController {
 
 						AlgorithmExecuter algorithmExecuter = new AlgorithmExecuter(algorithm, users, collectors);
 
-						int dim = checkBoxReduce.isSelected() ? Integer.valueOf(textFieldReduce.getText()) : 0;
-						if (dim > users.size())
-							throw new IllegalStateException("clustering.error.invalidDimension");
-
-						int iter = 10;
-						if (!textFieldIterations.getText().isEmpty())
-							iter = Integer.valueOf(textFieldIterations.getText());
+						int dim = checkBoxReduce.isSelected() ? spinnerReduce.getValue() : 0;
+						LOGGER.debug("dim: " + dim);
+						int iter = spinnerIterations.getValue();
 						clusters = algorithmExecuter.execute(iter, dim);
 
 						silhouette
@@ -313,8 +316,8 @@ public class ClusteringController {
 			service.reset();
 		});
 		service.setOnFailed(e -> {
-//			UtilMethods.errorWindow(I18n.get(service.getException().getMessage()), service.getException());
-			UtilMethods.infoWindow(I18n.get(service.getException().getMessage()));
+			UtilMethods.errorWindow(I18n.get(service.getException().getMessage()), service.getException());
+//			UtilMethods.infoWindow(I18n.get(service.getException().getMessage()));
 			service.reset();
 		});
 	}
@@ -447,38 +450,6 @@ public class ClusteringController {
 	}
 
 	/**
-	 * @return the algorithmList
-	 */
-	public ListView<Algorithm> getAlgorithmList() {
-		return algorithmList;
-	}
-
-	/**
-	 * @return the webViewScatter
-	 */
-	public WebView getWebViewScatter() {
-		return webViewScatter;
-	}
-
-	public WebView getWebView3DScatter() {
-		return webView3DScatter;
-	}
-
-	/**
-	 * @return the webViewSilhouette
-	 */
-	public WebView getwebViewSilhouette() {
-		return webViewSilhouette;
-	}
-
-	/**
-	 * @return the tableView
-	 */
-	public TableView<UserData> getTableView() {
-		return tableView;
-	}
-
-	/**
 	 * @return the checkComboBoxLogs
 	 */
 	public CheckComboBox<DataCollector> getCheckComboBoxLogs() {
@@ -507,10 +478,80 @@ public class ClusteringController {
 	}
 
 	/**
-	 * @return the checkComboBoxCluster
+	 * @return the checkBoxReduce
 	 */
-	public CheckComboBox<Integer> getCheckComboBoxCluster() {
-		return checkComboBoxCluster;
+	public CheckBox getCheckBoxReduce() {
+		return checkBoxReduce;
+	}
+
+	/**
+	 * @return the spinnerReduce
+	 */
+	public Spinner<Integer> getSpinnerReduce() {
+		return spinnerReduce;
+	}
+
+	/**
+	 * @return the rangeSlider
+	 */
+	public RangeSlider getRangeSlider() {
+		return rangeSlider;
+	}
+
+	/**
+	 * @return the choiceBoxAnalyze
+	 */
+	public ChoiceBox<AnalysisFactory> getChoiceBoxAnalyze() {
+		return choiceBoxAnalyze;
+	}
+
+	/**
+	 * @return the spinnerIterations
+	 */
+	public Spinner<Integer> getSpinnerIterations() {
+		return spinnerIterations;
+	}
+
+	/**
+	 * @return the buttonExecute
+	 */
+	public Button getButtonExecute() {
+		return buttonExecute;
+	}
+
+	/**
+	 * @return the progressExecute
+	 */
+	public ProgressIndicator getProgressExecute() {
+		return progressExecute;
+	}
+
+	/**
+	 * @return the webViewScatter
+	 */
+	public WebView getWebViewScatter() {
+		return webViewScatter;
+	}
+
+	/**
+	 * @return the webView3DScatter
+	 */
+	public WebView getWebView3DScatter() {
+		return webView3DScatter;
+	}
+
+	/**
+	 * @return the webViewSilhouette
+	 */
+	public WebView getWebViewSilhouette() {
+		return webViewSilhouette;
+	}
+
+	/**
+	 * @return the tableView
+	 */
+	public TableView<UserData> getTableView() {
+		return tableView;
 	}
 
 	/**
@@ -535,31 +576,45 @@ public class ClusteringController {
 	}
 
 	/**
-	 * @return the checkBoxReduce
+	 * @return the checkComboBoxCluster
 	 */
-	public CheckBox getCheckBoxReduce() {
-		return checkBoxReduce;
+	public CheckComboBox<Integer> getCheckComboBoxCluster() {
+		return checkComboBoxCluster;
 	}
 
 	/**
-	 * @return the textFieldReduce
+	 * @return the checkBoxExportGrades
 	 */
-	public TextField getTextFieldReduce() {
-		return textFieldReduce;
+	public CheckBox getCheckBoxExportGrades() {
+		return checkBoxExportGrades;
 	}
 
 	/**
-	 * @return the gradesCollector
+	 * @return the propertySheetLabel
 	 */
-	public GradesCollector getGradesCollector() {
-		return gradesCollector;
+	public PropertySheet getPropertySheetLabel() {
+		return propertySheetLabel;
 	}
 
 	/**
-	 * @return the activityCollector
+	 * @return the buttonLabel
 	 */
-	public ActivityCollector getActivityCollector() {
-		return activityCollector;
+	public Button getButtonLabel() {
+		return buttonLabel;
+	}
+
+	/**
+	 * @return the listViewLabels
+	 */
+	public ListView<String> getListViewLabels() {
+		return listViewLabels;
+	}
+
+	/**
+	 * @return the propertyEditorLabel
+	 */
+	public TextFieldPropertyEditorFactory getPropertyEditorLabel() {
+		return propertyEditorLabel;
 	}
 
 }

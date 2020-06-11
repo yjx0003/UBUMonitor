@@ -2,6 +2,12 @@ package es.ubu.lsi.ubumonitor.clustering.data;
 
 import java.util.Objects;
 
+/**
+ * Representa un dato concreto.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class Datum {
 
 	private String type;
@@ -9,6 +15,14 @@ public class Datum {
 	private String iconFile;
 	private Number value;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param type     tipo de dato
+	 * @param item     elemento de Moodle
+	 * @param iconFile fichero del icono
+	 * @param value    valor
+	 */
 	public Datum(String type, String item, String iconFile, Number value) {
 		this.type = type;
 		this.item = item;
@@ -17,28 +31,36 @@ public class Datum {
 	}
 
 	/**
-	 * @return the type
+	 * Devuelve el tipo.
+	 * 
+	 * @return el tipo
 	 */
 	public String getType() {
 		return type;
 	}
 
 	/**
-	 * @return the item
+	 * Devuelve el elemento de Moodle.
+	 * 
+	 * @return el elemento
 	 */
 	public String getItem() {
 		return item;
 	}
 
 	/**
-	 * @return the iconFile
+	 * Devuelve el nombre del fichero del icono.
+	 * 
+	 * @return el nombre del fichero del icono
 	 */
 	public String getIconFile() {
 		return iconFile;
 	}
 
 	/**
-	 * @return the value
+	 * Devuelve el valor del dato.
+	 * 
+	 * @return el valor
 	 */
 	public Number getValue() {
 		return value;

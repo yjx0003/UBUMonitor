@@ -7,17 +7,29 @@ import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import smile.clustering.PartitionClustering;
 
+/**
+ * Algoritmo DBSCAN de Smile.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class DBSCANSmile extends Algorithm {
 
 	private static final String NAME = "DBSCAN";
 	private static final String LIBRARY = "Smile";
 
+	/**
+	 * Constructor del algoritmo DBSCAN.
+	 */
 	public DBSCANSmile() {
 		super(NAME, LIBRARY);
 		addParameter(ClusteringParameter.EPS, 0.4);
 		addParameter(ClusteringParameter.MIN_POINTS, 1);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Clusterer<UserData> getClusterer() {
 		double eps = getParameters().getValue(ClusteringParameter.EPS);

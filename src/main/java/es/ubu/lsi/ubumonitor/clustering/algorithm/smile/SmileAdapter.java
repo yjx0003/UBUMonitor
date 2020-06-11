@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.math3.exception.ConvergenceException;
-import org.apache.commons.math3.exception.MathIllegalArgumentException;
 import org.apache.commons.math3.ml.clustering.CentroidCluster;
 import org.apache.commons.math3.ml.clustering.Cluster;
 import org.apache.commons.math3.ml.clustering.Clusterer;
@@ -23,8 +21,7 @@ public abstract class SmileAdapter extends Clusterer<UserData> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<? extends Cluster<UserData>> cluster(Collection<UserData> points)
-			throws MathIllegalArgumentException, ConvergenceException {
+	public List<? extends Cluster<UserData>> cluster(Collection<UserData> points) {
 		double[][] data = points.stream().map(UserData::getPoint).toArray(double[][]::new);
 		PartitionClustering clustering = execute(data);
 		if (clustering instanceof CentroidClustering) {

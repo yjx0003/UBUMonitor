@@ -16,6 +16,7 @@ import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.ActivityCompletion;
+import es.ubu.lsi.ubumonitor.model.ActivityCompletion.State;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.DateTimeWrapper;
@@ -28,6 +29,7 @@ import es.ubu.lsi.ubumonitor.view.chart.Tabulator;
 public class ActivitiesStatusTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActivitiesStatusTable.class);
 	private DateTimeWrapper dateTimeWrapper;
+
 	public ActivitiesStatusTable(MainController mainController) {
 		super(mainController, ChartType.ACTIVITIES_TABLE);
 		dateTimeWrapper = new DateTimeWrapper();
@@ -83,7 +85,8 @@ public class ActivitiesStatusTable extends Tabulator {
 	}
 
 	private String getProgressParam(int max) {
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		MainConfiguration mainConfiguration = Controller.getInstance()
+				.getMainConfiguration();
 		JSObject jsObject = new JSObject();
 		jsObject.put("min", 0);
 		jsObject.put("max", max);
@@ -107,14 +110,20 @@ public class ActivitiesStatusTable extends Tabulator {
 	public String createData(List<EnrolledUser> enrolledUsers, List<CourseModule> courseModules) {
 		JSArray array = new JSArray();
 		JSObject jsObject;
-		Instant init = datePickerStart.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant();
-		Instant end = datePickerEnd.getValue().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
+		Instant init = datePickerStart.getValue()
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
+		Instant end = datePickerEnd.getValue()
+				.plusDays(1)
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
 		for (EnrolledUser enrolledUser : enrolledUsers) {
 			jsObject = new JSObject();
 			jsObject.putWithQuote("name", enrolledUser.getFullName());
 			int progress = 0;
 			for (CourseModule courseModule : courseModules) {
-				ActivityCompletion activity = courseModule.getActivitiesCompletion().get(enrolledUser);
+				ActivityCompletion activity = courseModule.getActivitiesCompletion()
+						.get(enrolledUser);
 				String field = "ID" + courseModule.getCmid();
 				if (activity == null || activity.getState() == null) {
 					jsObject.putWithQuote(field, "");
@@ -156,7 +165,9 @@ public class ActivitiesStatusTable extends Tabulator {
 	public void update() {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 
-		List<CourseModule> courseModules = selectionController.getListViewActivity().getSelectionModel().getSelectedItems();
+		List<CourseModule> courseModules = selectionController.getListViewActivity()
+				.getSelectionModel()
+				.getSelectedItems();
 		String columns = createColumns(courseModules);
 		String tableData = createData(enrolledUsers, courseModules);
 		JSObject data = new JSObject();
@@ -165,7 +176,7 @@ public class ActivitiesStatusTable extends Tabulator {
 		LOGGER.debug("Usuarios seleccionados:{}", enrolledUsers);
 		LOGGER.debug("Columnas:{}", columns);
 		LOGGER.debug("Datos de tabla:{}", data);
-		webViewChartsEngine.executeScript(String.format("updateTabulator(%s, %s)",data, getOptions()));
+		webViewChartsEngine.executeScript(String.format("updateTabulator(%s, %s)", data, getOptions()));
 
 	}
 
@@ -183,8 +194,17 @@ public class ActivitiesStatusTable extends Tabulator {
 
 	@Override
 	public void exportCSV(String path) throws IOException {
+		Instant init = datePickerStart.getValue()
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
+		Instant end = datePickerEnd.getValue()
+				.plusDays(1)
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		List<CourseModule> courseModules = selectionController.getListViewActivity().getSelectionModel().getSelectedItems();
+		List<CourseModule> courseModules = selectionController.getListViewActivity()
+				.getSelectionModel()
+				.getSelectedItems();
 		List<String> header = new ArrayList<>();
 		header.add("userid");
 		header.add("fullname");
@@ -192,17 +212,38 @@ public class ActivitiesStatusTable extends Tabulator {
 			header.add(courseModule.getModuleName());
 			header.add("end date " + courseModule.getModuleName());
 		}
-		
-		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
+		header.add("completed");
+		header.add("nCourseModules");
+		header.add("percentageCompleted");
+
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
+				CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
 			for (EnrolledUser enrolledUser : enrolledUsers) {
 				printer.print(enrolledUser.getId());
 				printer.print(enrolledUser.getFullName());
+				int completed = 0;
 				for (CourseModule courseModule : courseModules) {
 
-					ActivityCompletion activity = courseModule.getActivitiesCompletion().get(enrolledUser);
-					printer.print(activity.getState().ordinal());
-					printer.print(dateTimeWrapper.format(activity.getTimecompleted()));
+					ActivityCompletion activity = courseModule.getActivitiesCompletion()
+							.get(enrolledUser);
+					State state = activity.getState();
+					Instant timeCompleted = activity.getTimecompleted();
+
+					if ((state == ActivityCompletion.State.COMPLETE || state == ActivityCompletion.State.COMPLETE_PASS)
+							&& timeCompleted != null && init.isBefore(timeCompleted) && end.isAfter(timeCompleted)) {
+						++completed;
+						printer.print(activity.getState()
+								.ordinal());
+						printer.print(dateTimeWrapper.format(timeCompleted));
+					} else {
+						printer.print(ActivityCompletion.State.INCOMPLETE);
+						printer.print(null);
+					}
+
 				}
+				printer.print(completed);
+				printer.print(courseModules.size());
+				printer.print(completed / courseModules.size() * 100);
 				printer.println();
 
 			}

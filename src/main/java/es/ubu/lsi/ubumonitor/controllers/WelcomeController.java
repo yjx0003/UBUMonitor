@@ -269,7 +269,7 @@ public class WelcomeController implements Initializable {
 				}
 				if (Files.isDirectory(controller.getHostUserDir())
 						&& !Files.isDirectory(controller.getHostUserModelversionDir())) {
-					UtilMethods.warningWindow(I18n.get("text."));
+					UtilMethods.warningWindow(I18n.get("text.modelversionchanged"));
 					controller.getHostUserModelversionDir()
 					.toFile()
 					.mkdirs();

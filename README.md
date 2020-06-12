@@ -79,7 +79,7 @@ External **JavaScript** libraries are included in  [resources/graphics/lib/](res
   
 ### JavaScript dependencies:
 * [ApexCharts](https://apexcharts.com/)
-  * Versión: **3.10.1**
+  * Versión: **3.19.2**
   * [Github](https://github.com/apexcharts/apexcharts.js)
   * [JSDELIVR Repository](https://www.jsdelivr.com/package/npm/apexcharts)
 * [Chart.js](https://www.chartjs.org/)
@@ -87,17 +87,17 @@ External **JavaScript** libraries are included in  [resources/graphics/lib/](res
   * [Github](https://github.com/chartjs/Chart.js)
   * [CDNJS Repository](https://cdnjs.com/libraries/Chart.js/)
 * **Chart.js Box and Violin Plot**
-  * Versión: **2.2.1**
+  * Versión: **2.3.0**
   * [Github](https://github.com/datavisyn/chartjs-chart-box-and-violin-plot)
-  * [UNPKG](https://unpkg.com/chartjs-chart-box-and-violin-plot@2/build/Chart.BoxPlot.js)
+  * [JSDELIVR](https://www.jsdelivr.com/package/npm/chartjs-chart-box-and-violin-plot)
 * **color-hash**
   * Versión: **1.0.3**
   * [Github](https://github.com/zenozeng/color-hash)
   * [jsDelivr Repository](https://www.jsdelivr.com/package/npm/color-hash)
 * [Tabulator](http://tabulator.info/)
-  * Versión: **4.5.2**
+  * Versión: **4.6.3**
   * [Github](https://github.com/olifolkerd/tabulator)
-  * [UNPKG](https://unpkg.com/tabulator-tables@4.5.2/dist/js/tabulator.min.js)
+  * [CDNJS](https://cdnjs.com/libraries/tabulator)
 * [html2canvas](https://html2canvas.hertzen.com/)
   * Versión: **1.0.0-rc.5**
   * [Github](https://github.com/niklasvh/html2canvas/)

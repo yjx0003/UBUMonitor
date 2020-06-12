@@ -134,10 +134,11 @@ public class Heatmap extends ChartLogs {
 
 		jsObject.put("legend", "{position:'top'}");
 		jsObject.put("chart",
-				"{type:\"heatmap\",events:{dataPointSelection:function(e,t,n){javaConnector.dataPointSelection(n.w.config.series.length-1-n.seriesIndex)}},height:height,toolbar:{show:!1},animations:{enabled:!1}}");
+				"{type:'heatmap',events:{dataPointSelection:function(e,t,n){javaConnector.dataPointSelection(n.w.config.series.length-1-n.seriesIndex)}},height:height,toolbar:{show:!1},animations:{enabled:!1}}");
 		jsObject.put("dataLabels", "{formatter:function(r,t){return 0==r?\"\":r},style:{colors:[\"#000000\"]}}");
 
 		jsObject.put("xaxis", "{" + getXScaleLabel() + "}");
+		jsObject.put("yaxis", "{labels:{maxWidth:300}}");
 
 		if ((boolean) mainConfiguration.getValue(getChartType(), "useQuartile")) {
 			quartileColor(zeroValue, firstInterval, secondInterval, thirdInterval, fourthInterval, jsObject);

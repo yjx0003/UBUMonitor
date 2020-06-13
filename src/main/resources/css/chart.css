@@ -72,9 +72,7 @@ html,body
 	color: #000000;
    	font-weight: bold;
 }
-	
 
-	
 .apexchart-container
 {
 	clear: both;
@@ -153,7 +151,7 @@ button[disabled] {
 	font-weight: bold;
 	font-size: 14.0px;
 }
-
+.apexcharts-data-labels{ display:contents !important; }
 
 .tabulator .tabulator-header .tabulator-col {
     text-align:center;

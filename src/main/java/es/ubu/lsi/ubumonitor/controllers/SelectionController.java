@@ -135,6 +135,9 @@ public class SelectionController {
 	@FXML
 	private CheckComboBox<ModuleType> checkComboBoxModuleType;
 
+	@FXML
+	private CheckComboBox<Section> checkComboBoxSection;
+
 	private MainController mainController;
 
 	public void init(MainController mainController) {
@@ -198,16 +201,17 @@ public class SelectionController {
 		// Establecemos la raiz del Treeview
 		if (grcl != null) {
 			TreeItem<GradeItem> root = new TreeItem<>(grcl);
+			root.setExpanded(true);
 			setIcon(root);
 			// Llamamos recursivamente para llenar el Treeview
 			for (int k = 0; k < grcl.getChildren()
 					.size(); k++) {
 				TreeItem<GradeItem> item = new TreeItem<>(grcl.getChildren()
 						.get(k));
+				item.setExpanded(false);
 				setIcon(item);
 				root.getChildren()
 						.add(item);
-				root.setExpanded(true);
 				setTreeview(item, grcl.getChildren()
 						.get(k));
 			}
@@ -555,9 +559,8 @@ public class SelectionController {
 					setGraphic(null);
 					return;
 				}
-				String sectionName = section.getName();
-				setText(sectionName == null || sectionName.trim()
-						.isEmpty() ? I18n.get("text.sectionplaceholder") : sectionName);
+				
+				setText(section.getName());
 
 				try {
 					if (!section.isVisible()) {
@@ -652,6 +655,41 @@ public class SelectionController {
 						listViewCourseModule.setCellFactory(getListCellCourseModule());
 
 					});
+
+			if (!CONTROLLER.getActualCourse()
+					.getSections()
+					.isEmpty()) {
+				Section dummySection = new Section(-1);
+				dummySection.setName(I18n.get("text.selectall"));
+				checkComboBoxSection.getItems()
+						.add(dummySection);
+				checkComboBoxSection.getItems()
+						.addAll(CONTROLLER.getActualCourse()
+								.getSections());
+
+				checkComboBoxSection.getCheckModel()
+						.checkAll();
+				checkComboBoxSection.getItemBooleanProperty(0)
+						.addListener((observable, oldValue, newValue) -> {
+
+							if (newValue.booleanValue()) {
+								checkComboBoxSection.getCheckModel()
+										.checkAll();
+							} else {
+								checkComboBoxSection.getCheckModel()
+										.clearChecks();
+
+							}
+
+						});
+				checkComboBoxSection.getCheckModel()
+						.getCheckedItems()
+						.addListener((Change<? extends Section> c) -> {
+							filterCourseModules.setPredicate(getCourseModulePredicate());
+							listViewCourseModule.setCellFactory(getListCellCourseModule());
+						});
+			}
+
 		}
 
 		// ponemos un listener al cuadro de texto para que se filtre el list view en
@@ -710,7 +748,10 @@ public class SelectionController {
 						.getCheckedItems()
 						.contains(cm.getModuleType()))
 				&& (!checkBoxActivityCompleted.isSelected() || !cm.getActivitiesCompletion()
-						.isEmpty());
+						.isEmpty())
+				&& (checkComboBoxSection.getCheckModel()
+						.getCheckedItems()
+						.contains(cm.getSection()));
 	}
 
 	private boolean containsTextField(String newValue, String element) {
@@ -771,7 +812,7 @@ public class SelectionController {
 			setIcon(item);
 			parent.getChildren()
 					.add(item);
-			parent.setExpanded(true);
+			item.setExpanded(false);
 			setTreeview(item, line.getChildren()
 					.get(j));
 		}

@@ -44,6 +44,7 @@ public class RiskBarTemporal extends RiskBar {
 		this.datePickerEnd = datePickerEnd;
 		useRangeDate = true;
 		useOptions = true;
+		useLogs = true;
 	}
 
 	public RiskBarTemporal(MainController mainController, ChartType chartType) {

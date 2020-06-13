@@ -138,6 +138,8 @@ public class WelcomeController implements Initializable {
 	private Button btnEntrar;
 	@FXML
 	private Button btnRemove;
+	@FXML
+	private Button buttonCancelDownload;
 
 	@FXML
 	private ProgressBar progressBar;
@@ -271,10 +273,10 @@ public class WelcomeController implements Initializable {
 						&& !Files.isDirectory(controller.getHostUserModelversionDir())) {
 					UtilMethods.warningWindow(I18n.get("text.modelversionchanged"));
 					controller.getHostUserModelversionDir()
-					.toFile()
-					.mkdirs();
+							.toFile()
+							.mkdirs();
 				}
-				
+
 			});
 
 		} catch (Exception e) {
@@ -499,7 +501,7 @@ public class WelcomeController implements Initializable {
 	}
 
 	private void saveData() {
-
+		LOGGER.debug("entramos a savedata");
 		if (!isBBDDLoaded) {
 			return;
 		}
@@ -599,7 +601,7 @@ public class WelcomeController implements Initializable {
 
 			@Override
 			protected Task<Void> createTask() {
-				return getUserDataWorker();
+				return getUserDataWorker(controller.getActualCourse());
 			}
 
 		};
@@ -607,6 +609,8 @@ public class WelcomeController implements Initializable {
 				.bind(service.messageProperty());
 		service.setOnSucceeded(v -> {
 			controller.setDefaultUpdate(ZonedDateTime.now());
+			
+
 			loadNextWindow();
 		});
 		service.setOnFailed(e -> {
@@ -619,10 +623,19 @@ public class WelcomeController implements Initializable {
 			LOGGER.error("Error al actualizar los datos del curso: {}", service.getException());
 
 		});
+		service.setOnCancelled(e -> {
+			controller.getStage()
+					.getScene()
+					.setCursor(Cursor.DEFAULT);
+			controller.setDataBase(null);
+		});
 
 		btnEntrar.visibleProperty()
 				.bind(service.runningProperty()
 						.not());
+		buttonCancelDownload.visibleProperty()
+				.bind(service.runningProperty());
+		buttonCancelDownload.setOnAction(e -> service.cancel());
 		service.start();
 
 	}
@@ -660,12 +673,10 @@ public class WelcomeController implements Initializable {
 	 * 
 	 * @return La tarea a realizar.
 	 */
-	private Task<Void> getUserDataWorker() {
+	private Task<Void> getUserDataWorker(Course actualCourse) {
 		return new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
-
-				Course actualCourse = controller.getActualCourse();
 
 				LOGGER.info("Cargando datos del curso: {}", actualCourse.getFullName());
 				// Establecemos los usuarios matriculados
@@ -676,7 +687,7 @@ public class WelcomeController implements Initializable {
 				CreatorUBUGradesController.createSectionsAndModules(actualCourse.getId());
 				actualCourse.setUpdatedCourseData(ZonedDateTime.now());
 
-				if (checkBoxGradeItem.isSelected()) {
+				if (checkBoxGradeItem.isSelected() && !isCancelled()) {
 					actualCourse.getGradeItems()
 							.clear();
 					updateMessage(I18n.get("label.loadingqualifier"));
@@ -690,7 +701,7 @@ public class WelcomeController implements Initializable {
 					actualCourse.setStats(stats);
 					actualCourse.setUpdatedGradeItem(ZonedDateTime.now());
 				}
-				if (checkBoxActivityCompletion.isSelected()) {
+				if (checkBoxActivityCompletion.isSelected() && !isCancelled()) {
 					actualCourse.getModules()
 							.forEach(m -> m.getActivitiesCompletion()
 									.clear());
@@ -702,7 +713,7 @@ public class WelcomeController implements Initializable {
 				if (checkBoxLogs.isSelected()) {
 					int tries = 1;
 					int limitRelogin = 3;
-					while (tries <= limitRelogin) {
+					while (tries <= limitRelogin && !isCancelled()) {
 						try {
 
 							updateMessage(MessageFormat.format(I18n.get("label.downloadinglog"), tries, limitRelogin));
@@ -756,9 +767,11 @@ public class WelcomeController implements Initializable {
 						}
 					}
 				}
-
-				updateMessage(I18n.get("label.savelocal"));
-				saveData();
+				if(!isCancelled()) {
+					updateMessage(I18n.get("label.savelocal"));
+					saveData();
+				}
+			
 
 				return null;
 			}

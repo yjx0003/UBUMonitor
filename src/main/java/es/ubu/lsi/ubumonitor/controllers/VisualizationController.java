@@ -1,7 +1,5 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
-import java.io.File;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -30,7 +28,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 import netscape.javascript.JSObject;
 
@@ -67,10 +64,15 @@ public class VisualizationController implements MainAction {
 
 	public void init(MainController mainController) {
 		this.mainController = mainController;
-		
-		if(mainController.getSelectionController().getTabPane().getTabs().isEmpty()) {
-			mainController.getWebViewTabPane().getTabs().remove(mainController.getVisualizationTab());
-	
+
+		if (mainController.getSelectionController()
+				.getTabPane()
+				.getTabs()
+				.isEmpty()) {
+			mainController.getWebViewTabPane()
+					.getTabs()
+					.remove(mainController.getVisualizationTab());
+
 		}
 		initLogOptionsFilter();
 		initTabPaneWebView();
@@ -98,7 +100,6 @@ public class VisualizationController implements MainAction {
 					window.setMember("javaConnector", javaConnector);
 					javaConnector.setDefaultValues();
 					webViewCharts.toFront();
-					
 
 					javaConnector.updateChart();
 				});
@@ -219,66 +220,50 @@ public class VisualizationController implements MainAction {
 						.getChartType()),
 				ConfigHelper.getProperty("imageFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
 				file -> {
-					if (file != null) {
-						javaConnector.export(file);
-						
-						ConfigHelper.setProperty("imageFolderPath", file.getParent());
-					
-					}
+
+					javaConnector.export(file);
+
+					ConfigHelper.setProperty("imageFolderPath", file.getParent());
+
 				}, false, FileUtil.PNG);
 
 	}
 
 	public void exportCSV() {
 
-		FileChooser fileChooser = UtilMethods.createFileChooser(
-				String.format("%s_%s_%s.csv", controller.getActualCourse()
-						.getId(),
-						LocalDateTime.now()
-								.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),
-						javaConnector.getCurrentType()
-								.getChartType()),
-				ConfigHelper.getProperty(CSV_FOLDER_PATH, "./"),
-				new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
-
-		File file = fileChooser.showSaveDialog(controller.getStage());
-		if (file != null) {
-			ConfigHelper.setProperty(CSV_FOLDER_PATH, file.getParent());
-			try {
+		UtilMethods.fileAction(String.format("%s_%s_%s.png", controller.getActualCourse()
+				.getId(),
+				LocalDateTime.now()
+						.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),
 				javaConnector.getCurrentType()
-						.exportCSV(file.getAbsolutePath());
-				UtilMethods.infoWindow(I18n.get("message.export_csv") + file.getAbsolutePath());
-			} catch (IOException e) {
-				UtilMethods.errorWindow("Cannot save file", e);
-			}
+						.getChartType()),
+				ConfigHelper.getProperty(CSV_FOLDER_PATH, "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
+				file -> {
 
-		}
+					javaConnector.getCurrentType().exportCSV(file.getAbsolutePath());
+
+					ConfigHelper.setProperty(CSV_FOLDER_PATH, file.getParent());
+
+				}, true, FileUtil.CSV);
+
 	}
 
 	public void exportCSVDesglosed() {
-
-		FileChooser fileChooser = UtilMethods.createFileChooser(
-				String.format("%s_%s_%s_breakdown.csv", controller.getActualCourse()
-						.getId(),
-						LocalDateTime.now()
-								.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),
-						javaConnector.getCurrentType()
-								.getChartType()),
-				ConfigHelper.getProperty(CSV_FOLDER_PATH, "./"),
-				new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
-
-		File file = fileChooser.showSaveDialog(controller.getStage());
-		if (file != null) {
-			ConfigHelper.setProperty(CSV_FOLDER_PATH, file.getParent());
-			try {
+		UtilMethods.fileAction(String.format("%s_%s_%s.png", controller.getActualCourse()
+				.getId(),
+				LocalDateTime.now()
+						.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),
 				javaConnector.getCurrentType()
-						.exportCSVDesglosed(file.getAbsolutePath());
-				UtilMethods.infoWindow(I18n.get("message.export_csv_desglossed") + file.getAbsolutePath());
-			} catch (IOException e) {
-				UtilMethods.errorWindow("Cannot save file", e);
-			}
+						.getChartType()),
+				ConfigHelper.getProperty(CSV_FOLDER_PATH, "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
+				file -> {
 
-		}
+					javaConnector.getCurrentType()
+							.exportCSVDesglosed(file.getAbsolutePath());
+					ConfigHelper.setProperty(CSV_FOLDER_PATH, file.getParent());
+
+				}, true, FileUtil.CSV);
+
 	}
 
 	/**
@@ -299,10 +284,10 @@ public class VisualizationController implements MainAction {
 	 * @param event evento
 	 */
 	public void applyFilterLogs() {
-		if(mainController.getVisualizationTab().isSelected()) {
+		if (mainController.getVisualizationTab()
+				.isSelected()) {
 			findMaxaAndUpdateChart();
 		}
-		
 
 	}
 
@@ -340,14 +325,13 @@ public class VisualizationController implements MainAction {
 		javaConnector.setCurrentType(javaConnector.getCurrentTypeLogs());
 		findMaxaAndUpdateChart();
 
-
 	}
 
 	@Override
 	public void onSetTabGrades() {
 		javaConnector.setCurrentType(javaConnector.getCurrentTypeGrades());
 		javaConnector.updateChart();
-	
+
 	}
 
 	@Override
@@ -497,7 +481,5 @@ public class VisualizationController implements MainAction {
 	public void setMainController(MainController mainController) {
 		this.mainController = mainController;
 	}
-
-
 
 }

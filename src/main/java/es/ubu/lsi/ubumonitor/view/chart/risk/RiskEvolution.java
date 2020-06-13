@@ -46,6 +46,7 @@ public class RiskEvolution extends RiskBarTemporal {
 		useRangeDate = true;
 		useGroupBy = true;
 		useOptions = true;
+		useLogs = true;
 	}
 
 	@Override

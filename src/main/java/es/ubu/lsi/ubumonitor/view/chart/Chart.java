@@ -70,6 +70,7 @@ public abstract class Chart implements ExportableChart {
 	protected boolean useGroupBy;
 
 	protected boolean useRangeDate;
+	protected boolean useLogs;
 
 	protected boolean useNegativeValues;
 	protected boolean useOptions;
@@ -397,6 +398,10 @@ public abstract class Chart implements ExportableChart {
 
 	public void setDatePickerEnd(DatePicker datePickerEnd) {
 		this.datePickerEnd = datePickerEnd;
+	}
+
+	public boolean isUseLogs() {
+		return useLogs;
 	}
 	
 	

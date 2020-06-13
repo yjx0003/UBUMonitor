@@ -125,7 +125,12 @@ public class Role implements Serializable {
 
 	@Override
 	public String toString() {
-		return roleName;
+		if(roleName!= null && roleName.trim().isEmpty()) {
+			return roleShortName;
+		}else {
+			return roleName;
+		}
+		
 	}
 
 	@Override
@@ -142,6 +147,7 @@ public class Role implements Serializable {
 		Role other = (Role) obj;
 		return roleId == other.roleId;
 		
+	
 	}
 
 

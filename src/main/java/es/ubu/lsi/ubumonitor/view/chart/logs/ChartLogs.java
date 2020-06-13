@@ -109,7 +109,7 @@ public abstract class ChartLogs extends Chart {
 		}
 
 	}
-
+	
 	protected abstract String getJSFunction(String dataset, String options);
 
 	public abstract <E> String createData(List<E> typeLogs, DataSet<E> dataSet);

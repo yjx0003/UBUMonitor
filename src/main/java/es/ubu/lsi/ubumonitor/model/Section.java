@@ -9,9 +9,10 @@ import java.io.Serializable;
  * @author Yi Peng Ji
  *
  */
-public class Section implements Serializable{
+public class Section implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	private static final String EMPTY_NAME_PLACEHOLDER = "(empty name)";
 
 	/**
 	 * Section ID
@@ -56,7 +57,6 @@ public class Section implements Serializable{
 	 * Optional. Availability information.
 	 */
 	private String availabilityinfo;
-	
 
 	public Section(int id) {
 		this.id = id;
@@ -75,7 +75,13 @@ public class Section implements Serializable{
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		if (name != null && name.trim()
+				.isEmpty()) {
+			this.name = EMPTY_NAME_PLACEHOLDER;
+		} else {
+			this.name = name;
+		}
+
 	}
 
 	public boolean isVisible() {
@@ -147,14 +153,12 @@ public class Section implements Serializable{
 			return false;
 		Section other = (Section) obj;
 		return id == other.id;
-			
+
 	}
-	
+
 	@Override
 	public String toString() {
 		return name;
 	}
-	
-	
 
 }

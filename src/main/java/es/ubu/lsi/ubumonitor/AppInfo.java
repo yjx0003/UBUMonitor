@@ -17,6 +17,8 @@ public class AppInfo {
 	public static final String APPLICATION_NAME_WITH_VERSION = APPLICATION_NAME + " " + APPLICATION_VERSION;
 
 	public static final String GITHUB = "https://github.com/yjx0003/UBUMonitor";
+	
+	public static final String USER_GUIDE = "https://ubumonitordocs.readthedocs.io/es/latest/";
 
 	public static final String RESOURCE_BUNDLE_FILE_NAME = "messages/Messages";
 
@@ -57,6 +59,8 @@ public class AppInfo {
 	public static final String USER_NAME = System.getProperty("user.name");
 
 	public static final String JAVA_FX_VERSION = System.getProperty("javafx.runtime.version");
+
+	
 
 	private AppInfo() {
 		throw new UnsupportedOperationException();

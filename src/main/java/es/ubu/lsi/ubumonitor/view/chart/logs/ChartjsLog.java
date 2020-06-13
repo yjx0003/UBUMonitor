@@ -1,10 +1,13 @@
 package es.ubu.lsi.ubumonitor.view.chart.logs;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.xml.bind.DatatypeConverter;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
@@ -12,9 +15,6 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.SnapshotParameters;
-import javafx.scene.image.WritableImage;
 
 public abstract class ChartjsLog extends ChartLogs {
 
@@ -48,9 +48,13 @@ public abstract class ChartjsLog extends ChartLogs {
 
 	@Override
 	public void export(File file) throws IOException {
-		WritableImage image = webView.snapshot(new SnapshotParameters(), null);
+		String str = (String) webViewChartsEngine.executeScript("exportChartjs()");
+		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
+		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
 
-		ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+		ImageIO.write(bufferedImage, "png", file);
+		
+		UtilMethods.showExportedFile(file);
 	}
 	
 

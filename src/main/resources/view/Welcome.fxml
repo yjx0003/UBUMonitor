@@ -236,5 +236,17 @@
          </font>
       </Label>
       <Hyperlink layoutX="5.0" layoutY="15.0" onAction="#aboutApp" prefWidth="115.0" text="%about_app" wrapText="true" />
+      <Button fx:id="buttonCancelDownload" cancelButton="true" ellipsisString="" layoutX="520.0" layoutY="530.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="100.0" style="-fx-font-size: 16;" stylesheets="@/css/style.css" text="%btn.cancel" visible="false">
+         <font>
+            <Font size="19.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <styleClass>
+            <String fx:value="rich-blue" />
+            <String fx:value="danger_button" />
+         </styleClass>
+      </Button>
 	</children>
 </AnchorPane>

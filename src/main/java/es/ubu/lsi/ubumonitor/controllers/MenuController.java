@@ -337,5 +337,10 @@ public class MenuController {
 		controller.getStage()
 				.close();
 	}
+	
+	
+	public void userGuide() {
+		UtilMethods.openURL(AppInfo.USER_GUIDE);
+	}
 
 }

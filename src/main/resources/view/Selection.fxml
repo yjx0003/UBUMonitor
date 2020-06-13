@@ -100,6 +100,7 @@
 												<CheckBox fx:id="checkBoxCourseModule" layoutX="140.0" layoutY="5.0" mnemonicParsing="false" text="%label.withhidden" />
 												<CheckBox fx:id="checkBoxActivityCompleted" layoutX="5.0" layoutY="5.0" mnemonicParsing="false" text="%label.withcompletion" />
 												<CheckComboBox fx:id="checkComboBoxCourseModule" layoutX="140.0" layoutY="28.0" prefHeight="31.0" prefWidth="108.0" />
+                                    <CheckComboBox fx:id="checkComboBoxSection" layoutX="260.0" layoutY="28.0" prefHeight="31.0" prefWidth="108.0" />
 											</children>
 										</Pane>
 									</top>

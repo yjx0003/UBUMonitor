@@ -47,9 +47,12 @@ public class RiskJavaConnector {
 	}
 
 	public void addChart(Chart chart) {
-		chart.setWebViewChartsEngine(webViewChartsEngine);
-		chart.setWebView(riskController.getWebViewCharts());
-		mapChart.put(chart.chartType, chart);
+		if(Controller.getInstance().getActualCourse().getUpdatedLog()!=null || !chart.isUseLogs()) {
+			chart.setWebViewChartsEngine(webViewChartsEngine);
+			chart.setWebView(riskController.getWebViewCharts());
+			mapChart.put(chart.chartType, chart);
+		}
+	
 	}
 
 	private void manageOptions() {

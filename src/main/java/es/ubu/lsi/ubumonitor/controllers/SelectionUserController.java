@@ -43,6 +43,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 
 public class SelectionUserController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SelectionUserController.class);
@@ -54,7 +55,7 @@ public class SelectionUserController {
 
 	@FXML
 	private TextField textFieldNotEnrolled;
-	
+
 	private AutoCompletionBinding<EnrolledUser> autoCompletionBindingNotEnrolled;
 	@FXML
 	private TabPane tabPane;
@@ -205,6 +206,8 @@ public class SelectionUserController {
 				if (empty || user == null) {
 					setText(null);
 					setGraphic(null);
+					setOnMouseClicked(null);
+					setContextMenu(null);
 				} else {
 					Instant lastCourseAccess = user.getLastcourseaccess();
 					Instant lastAccess = user.getLastaccess();
@@ -231,6 +234,11 @@ public class SelectionUserController {
 					menu.getItems()
 							.addAll(seeUser);
 					setContextMenu(menu);
+					setOnMouseClicked(e -> {
+						if (e.getButton() == MouseButton.PRIMARY && e.getClickCount() == 2) {
+							userInfo(user);
+						}
+					});
 				}
 			}
 
@@ -269,7 +277,7 @@ public class SelectionUserController {
 						setGraphic(new ImageView(image));
 
 					} catch (Exception e) {
-						LOGGER.error("No se ha podido cargar la imagen de: {}", user);
+						LOGGER.warn("No se ha podido cargar la imagen de: {}", user);
 						setGraphic(new ImageView(DEFAULT_IMAGE));
 					}
 					ContextMenu menu = new ContextMenu();
@@ -284,12 +292,12 @@ public class SelectionUserController {
 		});
 		listParticipantsOut.getSelectionModel()
 				.getSelectedItems()
-				.addListener(
-						(Change<? extends EnrolledUser> usersSelected) -> {mainController.updateListViewEnrolledUser();
-						autoCompletionBindingNotEnrolled.dispose();
-						autoCompletionBinding = UtilMethods.createAutoCompletionBinding(textFieldNotEnrolled,
-								filteredListNotEnrolled);
-						});
+				.addListener((Change<? extends EnrolledUser> usersSelected) -> {
+					mainController.updateListViewEnrolledUser();
+					autoCompletionBindingNotEnrolled.dispose();
+					autoCompletionBinding = UtilMethods.createAutoCompletionBinding(textFieldNotEnrolled,
+							filteredListNotEnrolled);
+				});
 		labelNotEnrolled.textProperty()
 				.bind(Bindings.size(filteredListNotEnrolled)
 						.asString());

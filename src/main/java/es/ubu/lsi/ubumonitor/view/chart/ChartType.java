@@ -33,11 +33,12 @@ public enum ChartType {
 
 	ACTIVITIES_TABLE(Tabs.ACTIVITY_COMPLETION, 17),
 
-	RISK_BAR_TEMPORAL(Tabs.RISK, 18),
-	RISK_EVOLUTION(Tabs.RISK, 19),
+	
 	RISK_BAR(Tabs.RISK, 20),
 	BUBBLE(Tabs.RISK, 21),
-	BUBBLE_LOGARITHMIC(Tabs.RISK, 22);
+	BUBBLE_LOGARITHMIC(Tabs.RISK, 22),
+	RISK_BAR_TEMPORAL(Tabs.RISK, 18),
+	RISK_EVOLUTION(Tabs.RISK, 19);
 	
 
 	private Tabs tab;
@@ -46,7 +47,7 @@ public enum ChartType {
 	private static final ChartType DEFAULT_LOGS = TOTAL_BAR;
 	private static final ChartType DEFAULT_GRADES = LINE;
 	private static final ChartType DEFAULT_ACTIVITY_COMPLETION = ACTIVITIES_TABLE;
-	private static final ChartType DEFAULT_RISK = RISK_BAR_TEMPORAL;
+	private static final ChartType DEFAULT_RISK = RISK_BAR;
 
 	private static Map<Integer, ChartType> map = new HashMap<>();
 

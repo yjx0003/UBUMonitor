@@ -10,7 +10,6 @@ import javax.xml.bind.DatatypeConverter;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
-import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
@@ -39,7 +38,8 @@ public abstract class Chartjs extends Chart {
 		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
 
 		ImageIO.write(bufferedImage, "png", file);
-		UtilMethods.infoWindow(I18n.get("message.export_png") + file.getAbsolutePath());
+		
+		UtilMethods.showExportedFile(file);
 	}
 
 	public String getXScaleLabel() {

@@ -337,5 +337,7 @@ public class VisualizationJavaConnector {
 		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnGroupMean", groupActive));
 
 	}
+	
+	
 
 }

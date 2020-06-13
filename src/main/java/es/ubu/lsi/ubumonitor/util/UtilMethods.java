@@ -36,6 +36,7 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -43,6 +44,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -129,7 +132,7 @@ public class UtilMethods {
 	 * @return
 	 */
 	public static ButtonType errorWindow(String contentText) {
-		return dialogWindow(AlertType.ERROR,I18n.get("error"), contentText);
+		return dialogWindow(AlertType.ERROR, I18n.get("error"), contentText);
 	}
 
 	/**
@@ -190,7 +193,7 @@ public class UtilMethods {
 		return alert.getResult();
 	}
 
-	private static Alert createAlert(AlertType alertType, String headerText, String contentText) {
+	public static Alert createAlert(AlertType alertType) {
 		Alert alert = new Alert(alertType);
 		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		alert.initModality(Modality.APPLICATION_MODAL);
@@ -199,6 +202,11 @@ public class UtilMethods {
 				.getWindow();
 		stageAlert.getIcons()
 				.add(new Image("/img/logo_min.png"));
+		return alert;
+	}
+
+	public static Alert createAlert(AlertType alertType, String headerText, String contentText) {
+		Alert alert = createAlert(alertType);
 		alert.setHeaderText(headerText);
 		alert.setContentText(contentText);
 		return alert;
@@ -301,7 +309,7 @@ public class UtilMethods {
 
 	public static void mailTo(String mail) {
 		try {
-			if (Desktop.isDesktopSupported() && (Desktop.getDesktop()).isSupported(Desktop.Action.MAIL)) {
+			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.MAIL)) {
 				Desktop.getDesktop()
 						.mail(new URI("mailto:" + mail));
 			}
@@ -333,7 +341,7 @@ public class UtilMethods {
 		try {
 			consumer.accept(file);
 			if (confirmationWindow) {
-				infoWindow(I18n.get("message.export") + file.getAbsolutePath());
+				showExportedFile(file);
 			}
 		} catch (FileNotFoundException e) {
 			errorWindow(e.getMessage());
@@ -342,6 +350,18 @@ public class UtilMethods {
 		}
 
 	}
+
+	public static void showExportedFile(File file) {
+		Alert alert = createAlert(AlertType.INFORMATION);
+		Hyperlink hyperLink = new Hyperlink(file.getAbsolutePath());
+		hyperLink.setOnAction(e-> openFileFolder(file.getParentFile()));
+		TextFlow flow = new TextFlow(new Text(I18n.get("message.export")+"\n"), hyperLink);
+		alert.getDialogPane()
+				.setContent(flow);
+		alert.show();
+	}
+
+	
 
 	public static void fileAction(String initialFileName, String initialDirectory, Window owner,
 			FileUtil.FileChooserType fileChooserType, FileUtil.ThrowingConsumer<File, IOException> consumer,
@@ -412,6 +432,7 @@ public class UtilMethods {
 
 	/**
 	 * https://www.baeldung.com/java-random-string
+	 * 
 	 * @return
 	 */
 	public static String ranmdomAlphanumeric() {
@@ -420,24 +441,35 @@ public class UtilMethods {
 		int targetStringLength = 10;
 
 		return RANDOM.ints(leftLimit, rightLimit + 1)
-			      .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-			      .limit(targetStringLength)
-			      .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-			      .toString();
+				.filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+				.limit(targetStringLength)
+				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+				.toString();
 
 	}
-	
-	public static <E> AutoCompletionBinding<E> createAutoCompletionBinding(TextField textField, Collection<E> possibleSuggestions){
+
+	public static <E> AutoCompletionBinding<E> createAutoCompletionBinding(TextField textField,
+			Collection<E> possibleSuggestions) {
 		AutoCompletionBinding<E> autoCompletionBinding = TextFields.bindAutoCompletion(textField, possibleSuggestions);
 		autoCompletionBinding.setDelay(0);
 		return autoCompletionBinding;
 	}
-	
+
 	public static void snapshotNode(File file, Node node) throws IOException {
 		WritableImage image = node.snapshot(new SnapshotParameters(), null);
-		
+
 		ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-		UtilMethods.infoWindow(I18n.get("message.export_png") + file.getAbsolutePath());
+		showExportedFile(file);
 	}
 	
+	private static void openFileFolder(File file) {
+		if(Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+			try {
+				Desktop.getDesktop().open(file);
+			} catch (Exception e) {
+				errorWindow("Cannot open in this System operative", e);
+			}
+		}
+	}
+
 }

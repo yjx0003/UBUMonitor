@@ -537,17 +537,19 @@ public class Course implements Serializable {
 	}
 
 	/**
-	 * Devuelve el rol de nombre corto "estudiante" con mayor número usuarios
-	 * matriculados o null en caso de que no haya ninguno.
+	 * Return roles with shortname "student", if no has return all roles.
 	 * 
-	 * @return student role or null
+	 * @return student roles or all roles of the course
 	 */
-	public Role getStudentRole() {
-		return roles.stream()
+	public Set<Role> getStudentRole() {
+		Set<Role> studentRoles =  roles.stream()
 				.filter(r -> "student".equals(r.getRoleShortName()))
-				.max(Comparator.comparingInt(r -> r.getEnrolledUsers()
-						.size()))
-				.orElse(null);
+				.collect(Collectors.toSet());
+		if(studentRoles.isEmpty()) {
+			return roles;
+		}
+		return studentRoles;
+				
 
 	}
 

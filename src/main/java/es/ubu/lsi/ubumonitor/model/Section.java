@@ -12,7 +12,7 @@ import java.io.Serializable;
 public class Section implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static final String EMPTY_NAME_PLACEHOLDER = "(empty name)";
+	private static final String EMPTY_NAME_PLACEHOLDER = "<N/A>";
 
 	/**
 	 * Section ID

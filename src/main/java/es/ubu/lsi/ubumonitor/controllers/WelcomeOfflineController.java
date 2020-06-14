@@ -293,7 +293,7 @@ public class WelcomeOfflineController implements Initializable {
 			UtilMethods.errorWindow(I18n.get("error.invalidcache"), e);
 
 		}
-		throw new IllegalStateException();
+
 
 	}
 

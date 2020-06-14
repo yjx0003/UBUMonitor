@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
+import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.Component;
 import es.ubu.lsi.ubumonitor.model.ComponentEvent;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
@@ -199,22 +200,15 @@ public class SelectionController {
 		GradeItem grcl = CONTROLLER.getActualCourse()
 				.getRootGradeItem();
 		// Establecemos la raiz del Treeview
+		
 		if (grcl != null) {
 			TreeItem<GradeItem> root = new TreeItem<>(grcl);
 			root.setExpanded(true);
 			setIcon(root);
 			// Llamamos recursivamente para llenar el Treeview
-			for (int k = 0; k < grcl.getChildren()
-					.size(); k++) {
-				TreeItem<GradeItem> item = new TreeItem<>(grcl.getChildren()
-						.get(k));
-				item.setExpanded(false);
-				setIcon(item);
-				root.getChildren()
-						.add(item);
-				setTreeview(item, grcl.getChildren()
-						.get(k));
-			}
+			int limitLevel = CONTROLLER.getMainConfiguration().getValue(MainConfiguration.GENERAL, "limitLevelGradeItem");
+			setTreeview(root, grcl, 1, Math.max(limitLevel, 0));
+
 			// Establecemos la raiz en el TreeView
 			tvwGradeReport.setRoot(root);
 			tvwGradeReport.getSelectionModel()
@@ -559,7 +553,7 @@ public class SelectionController {
 					setGraphic(null);
 					return;
 				}
-				
+
 				setText(section.getName());
 
 				try {
@@ -804,7 +798,7 @@ public class SelectionController {
 	 * @param parent El padre al que añadir los elementos.
 	 * @param line   La linea con los elementos a añadir.
 	 */
-	public void setTreeview(TreeItem<GradeItem> parent, GradeItem line) {
+	public void setTreeview(TreeItem<GradeItem> parent, GradeItem line, int level, int limitLevel) {
 		for (int j = 0; j < line.getChildren()
 				.size(); j++) {
 			TreeItem<GradeItem> item = new TreeItem<>(line.getChildren()
@@ -812,9 +806,11 @@ public class SelectionController {
 			setIcon(item);
 			parent.getChildren()
 					.add(item);
-			item.setExpanded(false);
+
+			item.setExpanded(level <= limitLevel);
+
 			setTreeview(item, line.getChildren()
-					.get(j));
+					.get(j), level + 1, limitLevel);
 		}
 	}
 
@@ -864,7 +860,7 @@ public class SelectionController {
 							.add(item);
 					treeItemRoot.setExpanded(true);
 					setTreeview(item, root.getChildren()
-							.get(k));
+							.get(k), 0, 2);
 				}
 			} else { // Con filtro
 				for (GradeItem gradeItem : gradeItems) {

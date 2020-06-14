@@ -309,7 +309,8 @@ public class UtilMethods {
 
 	public static void mailTo(String mail) {
 		try {
-			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.MAIL)) {
+			if (Desktop.isDesktopSupported() && Desktop.getDesktop()
+					.isSupported(Desktop.Action.MAIL)) {
 				Desktop.getDesktop()
 						.mail(new URI("mailto:" + mail));
 			}
@@ -337,7 +338,14 @@ public class UtilMethods {
 		if (file == null) {
 			return;
 		}
-
+		String extension = fileChooser.getSelectedExtensionFilter()
+				.getExtensions()
+				.get(0)
+				.substring(1);
+		if (!file.getName().toLowerCase()
+				.endsWith(extension)) {
+			file = new File(file.getAbsolutePath() + extension);
+		}
 		try {
 			consumer.accept(file);
 			if (confirmationWindow) {
@@ -354,14 +362,12 @@ public class UtilMethods {
 	public static void showExportedFile(File file) {
 		Alert alert = createAlert(AlertType.INFORMATION);
 		Hyperlink hyperLink = new Hyperlink(file.getAbsolutePath());
-		hyperLink.setOnAction(e-> openFileFolder(file.getParentFile()));
-		TextFlow flow = new TextFlow(new Text(I18n.get("message.export")+"\n"), hyperLink);
+		hyperLink.setOnAction(e -> openFileFolder(file.getParentFile()));
+		TextFlow flow = new TextFlow(new Text(I18n.get("message.export") + "\n"), hyperLink);
 		alert.getDialogPane()
 				.setContent(flow);
 		alert.show();
 	}
-
-	
 
 	public static void fileAction(String initialFileName, String initialDirectory, Window owner,
 			FileUtil.FileChooserType fileChooserType, FileUtil.ThrowingConsumer<File, IOException> consumer,
@@ -461,11 +467,13 @@ public class UtilMethods {
 		ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
 		showExportedFile(file);
 	}
-	
+
 	private static void openFileFolder(File file) {
-		if(Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+		if (Desktop.isDesktopSupported() && Desktop.getDesktop()
+				.isSupported(Desktop.Action.OPEN)) {
 			try {
-				Desktop.getDesktop().open(file);
+				Desktop.getDesktop()
+						.open(file);
 			} catch (Exception e) {
 				errorWindow("Cannot open in this System operative", e);
 			}

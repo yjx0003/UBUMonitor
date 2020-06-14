@@ -262,7 +262,7 @@ public class MenuController {
 
 	public void exportConfiguration() {
 		Course course = controller.getActualCourse();
-		UtilMethods.fileAction(UtilMethods.removeReservedChar(course.getFullName() + "-" + course.getId()) + ".json",
+		UtilMethods.fileAction(UtilMethods.removeReservedChar(course.getFullName() + "-" + course.getId()),
 				ConfigHelper.getProperty("configurationFolderPath", "./"), controller.getStage(),
 				FileUtil.FileChooserType.SAVE, file -> {
 					ConfigurationController.saveConfiguration(controller.getMainConfiguration(), file.toPath());
@@ -304,7 +304,7 @@ public class MenuController {
 
 	private void exportPhoto(boolean defaultPhoto) {
 		Course course = controller.getActualCourse();
-		UtilMethods.fileAction(UtilMethods.removeReservedChar(course.getFullName() + "-" + course.getId()) + ".docx",
+		UtilMethods.fileAction(UtilMethods.removeReservedChar(course.getFullName() + "-" + course.getId()),
 				ConfigHelper.getProperty("csvFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
 				file -> {
 					UserPhoto exportUserPhoto = new UserPhoto();
@@ -319,7 +319,7 @@ public class MenuController {
 	public void exportDashboard() {
 
 		Course course = controller.getActualCourse();
-		UtilMethods.fileAction(UtilMethods.removeReservedChar(course.getFullName() + "-" + course.getId()) + ".xlsx",
+		UtilMethods.fileAction(UtilMethods.removeReservedChar(course.getFullName() + "-" + course.getId()),
 				ConfigHelper.getProperty("csvFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
 				file -> {
 					Excel excel = new Excel();

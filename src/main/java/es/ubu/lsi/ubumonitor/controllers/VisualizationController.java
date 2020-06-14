@@ -212,7 +212,7 @@ public class VisualizationController implements MainAction {
 	@Override
 	public void save() {
 
-		UtilMethods.fileAction(String.format("%s_%s_%s.png", controller.getActualCourse()
+		UtilMethods.fileAction(String.format("%s_%s_%s", controller.getActualCourse()
 				.getId(),
 				LocalDateTime.now()
 						.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),
@@ -231,7 +231,7 @@ public class VisualizationController implements MainAction {
 
 	public void exportCSV() {
 
-		UtilMethods.fileAction(String.format("%s_%s_%s.png", controller.getActualCourse()
+		UtilMethods.fileAction(String.format("%s_%s_%s", controller.getActualCourse()
 				.getId(),
 				LocalDateTime.now()
 						.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),
@@ -249,7 +249,7 @@ public class VisualizationController implements MainAction {
 	}
 
 	public void exportCSVDesglosed() {
-		UtilMethods.fileAction(String.format("%s_%s_%s.png", controller.getActualCourse()
+		UtilMethods.fileAction(String.format("%s_%s_%s", controller.getActualCourse()
 				.getId(),
 				LocalDateTime.now()
 						.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),

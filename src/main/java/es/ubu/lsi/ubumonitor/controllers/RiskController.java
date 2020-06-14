@@ -308,11 +308,11 @@ public class RiskController implements MainAction {
 						.getChartType()),
 				ConfigHelper.getProperty("imageFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
 				file -> {
-					if (file != null) {
+					
 						javaConnector.export(file);
 						ConfigHelper.setProperty("imageFolderPath", file.getParent());
 
-					}
+					
 				}, false, FileUtil.PNG);
 
 	}

@@ -92,9 +92,9 @@
             						</ImageView>
             					</graphic>
             				</Label>
-            				<CheckComboBox fx:id="checkComboBoxRole" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" />
-            				<CheckComboBox fx:id="checkComboBoxGroup" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
-            				<CheckComboBox fx:id="checkComboBoxActivity" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
+            				<CheckComboBox fx:id="checkComboBoxRole" maxWidth="1.7976931348623157E308" showCheckedCount="true" title="" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" />
+            				<CheckComboBox fx:id="checkComboBoxGroup" maxWidth="1.7976931348623157E308" showCheckedCount="true" title="" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+            				<CheckComboBox fx:id="checkComboBoxActivity" maxWidth="1.7976931348623157E308" showCheckedCount="true" title="" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
             			</children>
             		</GridPane>
             	</top>

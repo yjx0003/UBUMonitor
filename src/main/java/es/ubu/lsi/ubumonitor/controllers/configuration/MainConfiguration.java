@@ -48,6 +48,7 @@ public class MainConfiguration {
 		createItem(GENERAL, "charset", Charsets.UTF_8);
 		createItem(GENERAL, "chartBackgroundColor", Color.web("#FFFFFF", 0.0));
 		createItem(GENERAL, "cutGrade", 5.0);
+		createItem(GENERAL, "limitLevelGradeItem", 1);
 		createItem(GENERAL, "borderLength", 10);
 		createItem(GENERAL, "borderSpace", 5);
 		createItem(GENERAL, "legendActive", true);
@@ -68,6 +69,7 @@ public class MainConfiguration {
 		createItem(GENERAL, "displayXScaleTitle", true);
 		createItem(GENERAL, "fontColorYScaleTitle", Color.BLACK);
 		createItem(GENERAL, "fontColorXScaleTitle", Color.BLACK);
+		
 
 		createItem(ChartType.TOTAL_BAR, "horizontalMode", false);
 		createItem(ChartType.STACKED_BAR, "calculateMax", false);

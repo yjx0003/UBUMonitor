@@ -644,7 +644,6 @@ public class WelcomeController implements Initializable {
 		if (!isBBDDLoaded) {
 			return;
 		}
-
 		UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), false);
 		controller.getStage()
 				.setMaximized(true);

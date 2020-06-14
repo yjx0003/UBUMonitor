@@ -60,7 +60,7 @@ public class TableLog extends TabulatorLogs {
 				.flatMap(m -> m.values()
 						.stream())
 				.flatMap(List::stream)
-				.sorted(Comparator.comparing(LogLine::getTime))
+				.sorted(Comparator.comparing(LogLine::getTime).reversed())
 				.collect(Collectors.toList());
 
 	}
@@ -70,7 +70,7 @@ public class TableLog extends TabulatorLogs {
 		JSObject jsObject = createColumn(jsArray, I18n.get("text.datetime"), DATETIME, "datetime");
 		jsObject.put("sorterParams",
 				"{format:'" + UtilMethods.escapeJavaScriptText(dateTimeWrapper.getPattern()) + "'}");
-		jsObject.put("headerSortStartingDir", "'desc'");
+		jsObject.put("headerSortStartingDir", "'asc'");
 		jsObject.put("topCalc", "'count'");
 		createColumn(jsArray, I18n.get("chartlabel.name"), NAME);
 		createColumn(jsArray, I18n.get("text.component"), COMPONENT);

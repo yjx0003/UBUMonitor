@@ -236,14 +236,14 @@ public class ActivitiesStatusTable extends Tabulator {
 								.ordinal());
 						printer.print(dateTimeWrapper.format(timeCompleted));
 					} else {
-						printer.print(ActivityCompletion.State.INCOMPLETE);
+						printer.print(ActivityCompletion.State.INCOMPLETE.ordinal());
 						printer.print(null);
 					}
 
 				}
 				printer.print(completed);
 				printer.print(courseModules.size());
-				printer.print(completed / courseModules.size() * 100);
+				printer.print(completed / (double)courseModules.size() * 100);
 				printer.println();
 
 			}

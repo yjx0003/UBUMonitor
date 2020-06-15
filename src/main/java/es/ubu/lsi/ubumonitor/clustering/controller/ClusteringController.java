@@ -213,7 +213,7 @@ public class ClusteringController {
 		spinnerReduce.disableProperty().bind(checkBoxReduce.selectedProperty().not());
 		spinnerReduce.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 9999));
 		spinnerReduce.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-			if (!newValue.isEmpty() && !newValue.matches("^[1-9]\\d{0,4}")) {
+			if (!newValue.matches("^[1-9]\\d{0,4}")) {
 				spinnerReduce.getEditor().setText(oldValue);
 			} else {
 				spinnerReduce.getValueFactory().setValue(Integer.valueOf(newValue));
@@ -221,7 +221,7 @@ public class ClusteringController {
 		});
 		spinnerIterations.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 9999, 20));
 		spinnerIterations.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-			if (!newValue.isEmpty() && !newValue.matches("^[1-9]\\d{0,4}")) {
+			if (!newValue.matches("^[1-9]\\d{0,4}")) {
 				spinnerIterations.getEditor().setText(oldValue);
 			} else {
 				spinnerIterations.getValueFactory().setValue(Integer.valueOf(newValue));
@@ -292,7 +292,6 @@ public class ClusteringController {
 						AlgorithmExecuter algorithmExecuter = new AlgorithmExecuter(algorithm, users, collectors);
 
 						int dim = checkBoxReduce.isSelected() ? spinnerReduce.getValue() : 0;
-						LOGGER.debug("dim: " + dim);
 						int iter = spinnerIterations.getValue();
 						clusters = algorithmExecuter.execute(iter, dim);
 

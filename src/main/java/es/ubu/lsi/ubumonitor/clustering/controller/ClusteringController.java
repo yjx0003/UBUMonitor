@@ -121,6 +121,9 @@ public class ClusteringController {
 
 	@FXML
 	private Spinner<Integer> spinnerIterations;
+	
+	@FXML
+	private CheckBox checkBoxFilter;
 
 	@FXML
 	private Button buttonExecute;
@@ -272,6 +275,7 @@ public class ClusteringController {
 		list.add(new LogCollector<>("coursemodule", mainController.getListViewCourseModule(),
 				DatasSetCourseModule.getInstance(), t -> t.getModuleType().getModName()));
 		checkComboBoxLogs.getItems().setAll(list);
+		checkComboBoxLogs.getCheckModel().checkAll();
 	}
 
 	private void initService() {
@@ -293,7 +297,7 @@ public class ClusteringController {
 
 						int dim = checkBoxReduce.isSelected() ? spinnerReduce.getValue() : 0;
 						int iter = spinnerIterations.getValue();
-						clusters = algorithmExecuter.execute(iter, dim);
+						clusters = algorithmExecuter.execute(iter, dim, checkBoxFilter.isSelected());
 
 						silhouette
 								.setDistanceType(algorithm.getParameters().getValue(ClusteringParameter.DISTANCE_TYPE));
@@ -315,8 +319,8 @@ public class ClusteringController {
 			service.reset();
 		});
 		service.setOnFailed(e -> {
-			UtilMethods.errorWindow(I18n.get(service.getException().getMessage()), service.getException());
-//			UtilMethods.infoWindow(I18n.get(service.getException().getMessage()));
+//			UtilMethods.errorWindow(I18n.get(service.getException().getMessage()), service.getException());
+			UtilMethods.infoWindow(I18n.get(service.getException().getMessage()));
 			service.reset();
 		});
 	}

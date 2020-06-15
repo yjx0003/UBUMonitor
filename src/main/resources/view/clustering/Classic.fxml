@@ -45,10 +45,22 @@
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin></CheckBox>
-            <CheckBox fx:id="checkBoxActivity" mnemonicParsing="false" text="%tab.activityCompletion" GridPane.columnIndex="2" GridPane.rowIndex="2">
+            <GridPane GridPane.columnIndex="2" GridPane.rowIndex="2">
                <GridPane.margin>
                   <Insets left="10.0" />
-               </GridPane.margin></CheckBox>
+               </GridPane.margin>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <CheckBox fx:id="checkBoxActivity" mnemonicParsing="false" text="%tab.activityCompletion" />
+                  <CheckBox fx:id="checkBoxFilter" mnemonicParsing="false" selected="true" text="%clustering.filter" GridPane.columnIndex="1" />
+               </children>
+            </GridPane>
             <ListView fx:id="algorithmList" prefWidth="150.0" GridPane.rowSpan="3" />
             <RangeSlider fx:id="rangeSlider" blockIncrement="1.0" highValue="10.0" lowValue="2.0" majorTickUnit="1.0" max="15.0" min="2.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="4" GridPane.rowIndex="1">
                <GridPane.margin>

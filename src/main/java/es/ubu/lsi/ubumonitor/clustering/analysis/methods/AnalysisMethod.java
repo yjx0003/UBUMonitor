@@ -54,7 +54,7 @@ public abstract class AnalysisMethod {
 			for (int j = 0; j < TRIALS; j++) {
 				algorithm.getParameters().setParameter(ClusteringParameter.NUM_CLUSTER, i);
 				AlgorithmExecuter executer = new AlgorithmExecuter(algorithm, users, collectors);
-				List<ClusterWrapper> clusters = executer.execute(0);
+				List<ClusterWrapper> clusters = executer.execute(0, true);
 				double value = calculate(clusters);
 				if (Double.isNaN(best) || comparator.compare(best, value) > 0)
 					best = value;

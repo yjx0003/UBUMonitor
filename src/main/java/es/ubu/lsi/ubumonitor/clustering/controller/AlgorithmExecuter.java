@@ -66,11 +66,11 @@ public class AlgorithmExecuter {
 		return true;
 	}
 
-	public List<ClusterWrapper> execute(int dim) {
-		return execute(1, dim);
+	public List<ClusterWrapper> execute(int dim, boolean filter) {
+		return execute(1, dim, filter);
 	}
 
-	public List<ClusterWrapper> execute(int iterations, int dimension) {
+	public List<ClusterWrapper> execute(int iterations, int dimension, boolean filter) {
 
 		if (usersData.size() < 2)
 			throw new IllegalStateException(I18n.get("clustering.error.notUsers"));
@@ -81,7 +81,8 @@ public class AlgorithmExecuter {
 		if (usersData.get(0).getData().size() < dimension)
 			throw new IllegalStateException(I18n.get("clustering.error.invalidDimension"));
 
-		filter(usersData);
+		if (filter)
+			filter(usersData);
 
 		if (dimension > 0) {
 			PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();

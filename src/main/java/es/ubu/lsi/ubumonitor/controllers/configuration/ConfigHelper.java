@@ -31,7 +31,7 @@ public class ConfigHelper {
 				properties = new JSONObject(new JSONTokener(in));
 
 			} catch (Exception e) {
-				LOGGER.error("No se ha podido cargar {} ", path);
+				LOGGER.error("No se ha podido cargar ", e);
 				properties = new JSONObject();
 			}
 		}

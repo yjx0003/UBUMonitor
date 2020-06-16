@@ -162,7 +162,7 @@ public class MenuController {
 				Charsets charset = controller.getMainConfiguration()
 						.getValue(MainConfiguration.GENERAL, "charset");
 				CSVExport.run(charset.get());
-				UtilMethods.infoWindow(I18n.get("message.export_csv_success") + selectedDir.getAbsolutePath());
+				UtilMethods.showExportedFile(file);
 				ConfigHelper.setProperty("csvFolderPath", selectedDir.getAbsolutePath());
 			}
 

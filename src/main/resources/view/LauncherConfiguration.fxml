@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ButtonType?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<DialogPane fx:id="dialogPane" expanded="true" minHeight="-Infinity" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.controllers.LauncherConfigurationController">
+   <buttonTypes>
+      <ButtonType fx:constant="OK" />
+      <ButtonType fx:constant="CANCEL" />
+   </buttonTypes>
+   <content>
+      <GridPane hgap="20.0" vgap="20.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="NEVER" />
+          <ColumnConstraints hgrow="ALWAYS" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <CheckBox fx:id="checkBox" mnemonicParsing="false" text="%checkbox.checkupdatesagain" GridPane.columnSpan="2" />
+            <Label text="%label.restoreversion" GridPane.rowIndex="1" />
+            <ChoiceBox fx:id="choiceBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label text="%label.restartapplication" textFill="RED" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+         </children>
+         <padding>
+            <Insets left="20.0" right="20.0" top="20.0" />
+         </padding>
+      </GridPane>
+   </content>
+</DialogPane>

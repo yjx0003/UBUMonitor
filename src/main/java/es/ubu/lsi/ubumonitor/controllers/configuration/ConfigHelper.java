@@ -84,6 +84,10 @@ public class ConfigHelper {
 	public static void appendArray(String key, Object value) {
 		properties.append(key, value);
 	}
+	
+	public static boolean has(String key) {
+		return properties.has(key);
+	}
 
 	public static void save() {
 		save(path);

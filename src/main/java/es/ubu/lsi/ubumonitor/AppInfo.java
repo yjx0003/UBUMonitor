@@ -22,7 +22,7 @@ public class AppInfo {
 
 	public static final String RESOURCE_BUNDLE_FILE_NAME = "messages/Messages";
 
-	public static final String LOGGER_FILE_APPENDER = "./log/" + APPLICATION_NAME_WITH_VERSION + ".log";
+	public static final String LOGGER_FILE_APPENDER = "log/" + APPLICATION_NAME_WITH_VERSION + ".log";
 
 	public static final String CACHE_DIR = "cache";
 	

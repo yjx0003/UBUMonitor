@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
@@ -76,6 +77,14 @@
          </image>
       </ImageView>
       <Hyperlink layoutX="5.0" layoutY="15.0" onAction="#aboutApp" prefWidth="115.0" text="%about_app" wrapText="true" />
+      <ImageView fx:id="imageViewconfigurationHelper" fitHeight="24.0" fitWidth="24.0" layoutX="370.0" layoutY="60.0" onMouseClicked="#openLauncherConfiguration" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../img/cog-solid.png" />
+         </image>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </ImageView>
       
       	</children>
 </AnchorPane>

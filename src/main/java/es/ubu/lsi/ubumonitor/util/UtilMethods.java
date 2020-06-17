@@ -468,7 +468,7 @@ public class UtilMethods {
 		showExportedFile(file);
 	}
 
-	private static void openFileFolder(File file) {
+	public static void openFileFolder(File file) {
 		if (Desktop.isDesktopSupported() && Desktop.getDesktop()
 				.isSupported(Desktop.Action.OPEN)) {
 			try {

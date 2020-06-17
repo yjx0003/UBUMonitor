@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,6 +64,10 @@ import javafx.util.Callback;
  */
 public class LoginController implements Initializable {
 
+	private static final String APPLICATION_PATH = "applicationPath";
+
+	private static final String ASK_AGAIN = "askAgain";
+
 	private static final String HOSTS = "hosts";
 
 	private static final String USERNAMES = "usernames";
@@ -97,6 +102,9 @@ public class LoginController implements Initializable {
 	@FXML
 	private ImageView insecureProtocol;
 
+	@FXML
+	private ImageView imageViewconfigurationHelper;
+
 	/**
 	 * Crea el selector de idioma.
 	 */
@@ -122,6 +130,7 @@ public class LoginController implements Initializable {
 		});
 		Tooltip.install(insecureProtocol, new Tooltip(I18n.get("tooltip.insecureprotocol")));
 		initLanguagesList();
+		initLauncherConfiguration();
 
 	}
 
@@ -258,13 +267,12 @@ public class LoginController implements Initializable {
 		if (chkOfflineMode.isSelected()) {
 			try {
 				lblStatus.setText(null);
-			
-		
-				if(offlineMode()) {
+
+				if (offlineMode()) {
 					UtilMethods.changeScene(getClass().getResource("/view/WelcomeOffline.fxml"), controller.getStage(),
 							new WelcomeOfflineController());
 				}
-				
+
 			} catch (MalformedURLException | RuntimeException e) {
 				LOGGER.error("Error en el login offline", e);
 				lblStatus.setText(e.getMessage());
@@ -307,27 +315,27 @@ public class LoginController implements Initializable {
 		List<Course> courses = findCacheCourses();
 		if (Files.isDirectory(controller.getHostUserDir())
 				&& !Files.isDirectory(controller.getHostUserModelversionDir()) || courses.isEmpty()) {
-			
-			ButtonType option = UtilMethods.confirmationWindow(I18n.get("text.modelversionchanged")+"\n"+ I18n.get("text.wantonlinemode"));
-			if(option == ButtonType.OK) {
+
+			ButtonType option = UtilMethods
+					.confirmationWindow(I18n.get("text.modelversionchanged") + "\n" + I18n.get("text.wantonlinemode"));
+			if (option == ButtonType.OK) {
 				controller.getHostUserModelversionDir()
-				.toFile()
-				.mkdirs();
+						.toFile()
+						.mkdirs();
 				chkOfflineMode.setSelected(false);
-				
+
 				login(null);
-				
+
 			}
 			return false;
 		}
-	
-		
+
 		MoodleUser user = new MoodleUser();
 		user.setFullName(txtUsername.getText()); // because we have not a fullname of the user in offline mode
 		controller.setUser(user);
 		user.getCourses()
 				.addAll(courses);
-		
+
 		return true;
 	}
 
@@ -410,7 +418,7 @@ public class LoginController implements Initializable {
 					controller.setUser(moodleUser);
 					controller.setUsername(txtUsername.getText());
 					controller.setPassword(txtPassword.getText());
-					
+
 				} catch (Exception e) {
 					LOGGER.error("Error al recuperar los datos del usuario.", e);
 					throw new IllegalStateException(I18n.get("error.user"));
@@ -436,13 +444,42 @@ public class LoginController implements Initializable {
 	/**
 	 * Abre en el navegador el repositorio del proyecto.
 	 * 
-	 * @param actionEvent El ActionEvent.
 	 */
-	public void aboutApp() {
+	@FXML
+	private void aboutApp() {
 
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AboutApp.fxml"), I18n.getResourceBundle());
 
 		UtilMethods.createDialog(loader, controller.getStage());
+
+	}
+
+	private void initLauncherConfiguration() {
+
+		imageViewconfigurationHelper.setVisible(ConfigHelper.has(ASK_AGAIN) && ConfigHelper.has(APPLICATION_PATH)
+				&& Files.isDirectory(Paths.get(ConfigHelper.getProperty(APPLICATION_PATH))));
+
+	}
+
+	@FXML
+	private void openLauncherConfiguration() {
+
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/LauncherConfiguration.fxml"),
+				I18n.getResourceBundle());
+		try {
+			fxmlLoader.load();
+		} catch (IOException e) {
+			LOGGER.error("cannot load /view/DownloadConfirmation.fxml", e);
+			UtilMethods.errorWindow("Error loading LauncherConfiguration.fxml", e);
+			return;
+		}
+		LauncherConfigurationController launcherConfigurationController = fxmlLoader.getController();
+
+		launcherConfigurationController.init(ConfigHelper.getProperty(ASK_AGAIN, true),
+				new File(ConfigHelper.getProperty(APPLICATION_PATH)));
+		ConfigHelper.setProperty(ASK_AGAIN, launcherConfigurationController.isAskAgain());
+		ConfigHelper.setProperty(APPLICATION_PATH, launcherConfigurationController.getActualVersion()
+				.getPath());
 
 	}
 

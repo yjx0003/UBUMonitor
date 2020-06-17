@@ -13,13 +13,13 @@ import java.util.Map;
  */
 public enum Languages {
 
-	CATALAN_SPAIN("ca-ES","ES-CT"),
-	GERMAN_GERMANY("de-DE"),
+	//CATALAN_SPAIN("ca-ES","ES-CT"),
+	//GERMAN_GERMANY("de-DE"),
 	SPANISH_SPAIN("es-ES"),
-	FRENCH_FRANCE("fr-FR"),
-	ITALIAN_ITALY("it-IT"),
+	//FRENCH_FRANCE("fr-FR"),
+	//ITALIAN_ITALY("it-IT"),
 	//JAPANESE("ja"),
-	PORTUGUESE_PORTUGAL("pt-PT"),
+	//PORTUGUESE_PORTUGAL("pt-PT"),
 	// RUSSIAN("ru"),
 	// CHINESE_SIMPLIFIED("zh-CN"),
 	ENGLISH_UK("en-GB");
@@ -48,11 +48,6 @@ public enum Languages {
 		this.flag = locale.getCountry();
 	}
 
-	private Languages(String languageTag, String flag) {
-		this.locale = Locale.forLanguageTag(languageTag);
-		this.flag = flag;
-
-	}
 
 	/**
 	 * Devuelve un lenguaje a partor del codigo de lengua, por ejemplo el Español

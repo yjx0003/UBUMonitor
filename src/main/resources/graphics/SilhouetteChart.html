@@ -25,6 +25,13 @@
 			animation : false,
 			responsive : true,
 			maintainAspectRatio : false,
+			tooltips : {
+				callbacks : {
+					label : function(tooltipItem, data) {
+						return tooltipItem.yLabel.toFixed(2);
+					}
+				}
+			},
 			scales : {
 				xAxes : [ {
 					categoryPercentage : 1.1,

@@ -35,6 +35,7 @@ import es.ubu.lsi.ubumonitor.util.UtilMethods;
 public class SilhouetteChart extends ClusteringChart {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SilhouetteChart.class);
+	
 	private Map<UserData, Double> silhouette;
 	private Distance distance;
 

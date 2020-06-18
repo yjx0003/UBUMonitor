@@ -9,10 +9,10 @@ public class IllegalParamenterException extends IllegalArgumentException {
 
 	private static final long serialVersionUID = 7926694236793826773L;
 
-	private ClusteringParameter parameter;
-	private Object wrong;
+	private final ClusteringParameter parameter;
+	private final Number wrong;
 
-	public IllegalParamenterException(ClusteringParameter parameter, Object wrong) {
+	public IllegalParamenterException(ClusteringParameter parameter, Number wrong) {
 		this.parameter = parameter;
 		this.wrong = wrong;
 	}

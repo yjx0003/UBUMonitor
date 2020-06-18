@@ -455,9 +455,8 @@ public class LoginController implements Initializable {
 	}
 
 	private void initLauncherConfiguration() {
-
 		imageViewconfigurationHelper.setVisible(ConfigHelper.has(ASK_AGAIN) && ConfigHelper.has(APPLICATION_PATH)
-				&& Files.isDirectory(Paths.get(ConfigHelper.getProperty(APPLICATION_PATH))));
+				&& Files.isDirectory(Paths.get(ConfigHelper.getProperty(APPLICATION_PATH)).getParent()));
 
 	}
 
@@ -475,11 +474,12 @@ public class LoginController implements Initializable {
 		}
 		LauncherConfigurationController launcherConfigurationController = fxmlLoader.getController();
 
-		launcherConfigurationController.init(ConfigHelper.getProperty(ASK_AGAIN, true),
-				new File(ConfigHelper.getProperty(APPLICATION_PATH)));
+		File newPath = launcherConfigurationController.init(ConfigHelper.getProperty(ASK_AGAIN, true),
+				ConfigHelper.getProperty("betaTester", false), new File(ConfigHelper.getProperty(APPLICATION_PATH)));
+		
+		ConfigHelper.setProperty(APPLICATION_PATH, newPath.getPath());
 		ConfigHelper.setProperty(ASK_AGAIN, launcherConfigurationController.isAskAgain());
-		ConfigHelper.setProperty(APPLICATION_PATH, launcherConfigurationController.getActualVersion()
-				.getPath());
+		ConfigHelper.setProperty("betaTester",launcherConfigurationController.isBetaTester());
 
 	}
 

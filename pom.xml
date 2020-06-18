@@ -100,6 +100,10 @@
 			<groupId>com.github.haifengl</groupId>
 			<artifactId>smile-core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.github.haifengl</groupId>
+			<artifactId>smile-plot</artifactId>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
@@ -190,6 +194,11 @@
 			<dependency>
 				<groupId>com.github.haifengl</groupId>
 				<artifactId>smile-core</artifactId>
+				<version>2.4.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.haifengl</groupId>
+				<artifactId>smile-plot</artifactId>
 				<version>2.4.0</version>
 			</dependency>
 		</dependencies>

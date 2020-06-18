@@ -6,13 +6,11 @@ import java.util.List;
 import org.controlsfx.control.CheckComboBox;
 
 import es.ubu.lsi.ubumonitor.clustering.algorithm.HierarchicalClustering;
-import es.ubu.lsi.ubumonitor.clustering.chart.DendogramChart;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.ActivityCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.DataCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.GradesCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.LogCollector;
 import es.ubu.lsi.ubumonitor.clustering.data.Distance;
-import es.ubu.lsi.ubumonitor.clustering.util.Tree;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponent;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;
@@ -23,12 +21,17 @@ import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
-import javafx.scene.web.WebView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 
 public class HierarchicalController {
-
+	
 	@FXML
-	private WebView webView;
+	private ImageView imageView;
+	
+	@FXML
+	private Pane pane;
 
 	@FXML
 	private CheckComboBox<DataCollector> checkComboBoxLogs;
@@ -53,14 +56,12 @@ public class HierarchicalController {
 
 	private HierarchicalClustering hierarchical = new HierarchicalClustering();
 
-	private DendogramChart dendogramChart;
-
 	public void init(MainController mainController) {
 		listParticipants = mainController.getListParticipants();
 
 		choiceBoxDistance.getItems().setAll(Distance.values());
-		choiceBoxDistance.getSelectionModel().selectedItemProperty()
-				.addListener((obs, oldValue, newValue) -> hierarchical.setDistance(newValue));
+//		choiceBoxDistance.getSelectionModel().selectedItemProperty()
+//				.addListener((obs, oldValue, newValue) -> hierarchical.setDistance(newValue));
 		choiceBoxDistance.getSelectionModel().selectFirst();
 
 		gradesCollector = new GradesCollector(mainController);
@@ -75,11 +76,11 @@ public class HierarchicalController {
 		list.add(new LogCollector<>("coursemodule", mainController.getListViewCourseModule(),
 				DatasSetCourseModule.getInstance(), t -> t.getModuleType().getModName()));
 		checkComboBoxLogs.getItems().setAll(list);
-
+		checkComboBoxLogs.getCheckModel().checkAll();
 		checkComboBoxLogs.disableProperty().bind(checkBoxLogs.selectedProperty().not());
 
-		dendogramChart = new DendogramChart(webView);
-
+		imageView.fitWidthProperty().bind(pane.widthProperty());
+		imageView.fitHeightProperty().bind(pane.heightProperty());
 	}
 
 	@FXML
@@ -96,9 +97,8 @@ public class HierarchicalController {
 		if (checkBoxActivity.isSelected()) {
 			collectors.add(activityCollector);
 		}
-
-		Tree<String> tree = hierarchical.execute(users, collectors);
-		dendogramChart.updateChart(tree);
+		Image dendogram = hierarchical.execute(users, collectors);
+		imageView.setImage(dendogram);
 	}
 
 }

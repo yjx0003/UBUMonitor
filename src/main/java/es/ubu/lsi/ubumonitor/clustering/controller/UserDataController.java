@@ -59,13 +59,13 @@ public class UserDataController {
 		columnValue.setComparator(Comparator.comparing(Number::doubleValue));
 
 		columnIcon.setCellValueFactory(e -> {
-			ImageView imageView;
+			ImageView image;
 			try {
-				imageView = new ImageView(AppInfo.IMG_DIR + e.getValue().getIconFile() + ".png");
+				image = new ImageView(AppInfo.IMG_DIR + e.getValue().getIconFile() + ".png");
 			} catch (Exception ex) {
-				imageView = new ImageView("/img/manual.png");
+				image = new ImageView("/img/manual.png");
 			}
-			return new SimpleObjectProperty<>(imageView);
+			return new SimpleObjectProperty<>(image);
 
 		});
 	}

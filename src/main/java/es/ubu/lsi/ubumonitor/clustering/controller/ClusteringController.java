@@ -39,6 +39,7 @@ import es.ubu.lsi.ubumonitor.clustering.controller.collector.LogCollector;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
+import es.ubu.lsi.ubumonitor.clustering.exception.IllegalParamenterException;
 import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
 import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
 import es.ubu.lsi.ubumonitor.clustering.util.TextFieldPropertyEditorFactory;
@@ -121,7 +122,7 @@ public class ClusteringController {
 
 	@FXML
 	private Spinner<Integer> spinnerIterations;
-	
+
 	@FXML
 	private CheckBox checkBoxFilter;
 
@@ -319,8 +320,9 @@ public class ClusteringController {
 			service.reset();
 		});
 		service.setOnFailed(e -> {
-//			UtilMethods.errorWindow(I18n.get(service.getException().getMessage()), service.getException());
-			UtilMethods.infoWindow(I18n.get(service.getException().getMessage()));
+			Throwable exception = service.getException();
+			UtilMethods.infoWindow(exception instanceof IllegalParamenterException ? exception.getMessage()
+					: I18n.get(exception.getMessage()));
 			service.reset();
 		});
 	}

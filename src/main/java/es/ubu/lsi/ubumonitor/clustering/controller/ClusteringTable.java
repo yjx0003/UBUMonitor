@@ -155,7 +155,7 @@ public class ClusteringTable {
 	}
 
 	public void showUserDataInfo(UserData userData) {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ClusteringInfo.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ClusteringInfo.fxml"), I18n.getResourceBundle());
 		UtilMethods.createDialog(loader, Controller.getInstance().getStage());
 		UserDataController controller = loader.getController();
 		controller.init(userData, tableView);

@@ -5,11 +5,12 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.web.WebView?>
 <?import org.controlsfx.control.CheckComboBox?>
 
 <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.clustering.controller.HierarchicalController">
@@ -42,7 +43,7 @@
                   <Insets left="10.0" />
                </GridPane.margin>
             </CheckBox>
-            <CheckComboBox fx:id="checkComboBoxLogs" title="%clustering.logTypes" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <CheckComboBox fx:id="checkComboBoxLogs" showCheckedCount="true" title="%clustering.logTypes" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin>
@@ -62,6 +63,10 @@
       </GridPane>
    </top>
    <center>
-      <WebView fx:id="webView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <Pane fx:id="pane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fx:id="imageView" pickOnBounds="true" preserveRatio="true" />
+         </children>
+      </Pane>
    </center>
 </BorderPane>

@@ -1,12 +1,9 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -16,6 +13,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.util.StringConverter;
 
 public class LauncherConfigurationController {
 	@FXML
@@ -28,7 +26,7 @@ public class LauncherConfigurationController {
 	private CheckBox checkBoxBetaTester;
 
 	@FXML
-	private ChoiceBox<String> choiceBox;
+	private ChoiceBox<File> choiceBox;
 
 	@FXML
 	private Label label;
@@ -37,24 +35,24 @@ public class LauncherConfigurationController {
 
 	private boolean checkAgain;
 
-	public File init(boolean askAgain, boolean isBetaTester, File pathActualVersion) {
-
-		File directory = pathActualVersion.getParentFile();
-		File[] files = directory.listFiles((dir, value) -> value.endsWith(".jar"));
-
-		List<String> versions = files == null || files.length == 0 ? Collections.emptyList()
-				: Arrays.stream(files)
-						.map(File::getName)
-						.collect(Collectors.toList());
-
+	public File init(boolean askAgain, boolean isBetaTester, String pathActualVersion) {
+		
+		File directory = new File(".");
+		File actualVersion = new File(directory, pathActualVersion);
+		
+		File[] files = directory.listFiles((dir, name) -> name.matches(AppInfo.PATTERN_FILE));
 		checkBox.setSelected(askAgain);
 		checkBoxBetaTester.setSelected(isBetaTester);
 
-		choiceBox.getItems()
-				.setAll(versions);
+		if (files != null && files.length != 0) {
+			choiceBox.getItems()
+					.setAll(files);
+			choiceBox.getSelectionModel()
+					.select(actualVersion);
+		}
 
-		choiceBox.getSelectionModel()
-				.select(pathActualVersion.getName());
+		choiceBox.setConverter(getFileConverter());
+
 		Alert alert = UtilMethods.createAlert(AlertType.CONFIRMATION);
 
 		alert.setDialogPane(dialogPane);
@@ -63,11 +61,11 @@ public class LauncherConfigurationController {
 		if (buttonType.isPresent() && buttonType.get() == ButtonType.OK && choiceBox.getValue() != null) {
 			betaTester = checkBoxBetaTester.isSelected();
 			checkAgain = checkBox.isSelected();
-			return new File(directory, choiceBox.getValue());
+			return choiceBox.getValue();
 
 		}
 
-		return pathActualVersion;
+		return actualVersion;
 
 	}
 
@@ -83,6 +81,21 @@ public class LauncherConfigurationController {
 	 */
 	public boolean isBetaTester() {
 		return betaTester;
+	}
+
+	public StringConverter<File> getFileConverter() {
+		return new StringConverter<File>() {
+
+			@Override
+			public String toString(File object) {
+				return object.getName();
+			}
+
+			@Override
+			public File fromString(String string) {
+				return null;
+			}
+		};
 	}
 
 }

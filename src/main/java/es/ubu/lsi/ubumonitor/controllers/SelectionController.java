@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
+import java.text.Collator;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -49,12 +50,14 @@ import javafx.util.StringConverter;
 
 public class SelectionController {
 
+	private static final String TEXT_SELECTALL = "text.selectall";
 	private static final Controller CONTROLLER = Controller.getInstance();
 	private static final String ALL = "text.all";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SelectionController.class);
 
 	private static final Image NONE_ICON = new Image("/img/manual.png");
+	private static final Section DUMMY_SECTION = new Section(-1);
 
 	@FXML
 	private TreeView<GradeItem> tvwGradeReport;
@@ -138,6 +141,9 @@ public class SelectionController {
 
 	@FXML
 	private CheckComboBox<Section> checkComboBoxSection;
+	
+	@FXML
+	private CheckComboBox<Section> checkComboBoxSectionAc;
 
 	private MainController mainController;
 
@@ -274,7 +280,7 @@ public class SelectionController {
 				.map(CourseModule::getModuleType)
 				.distinct()
 				.collect(Collectors.toList()));
-		observableListModuleTypes.sort(Comparator.nullsFirst(Comparator.comparing(I18n::get)));
+		observableListModuleTypes.sort(Comparator.nullsFirst(Comparator.comparing(I18n::get, Collator.getInstance())));
 		if (!observableListModuleTypes.isEmpty()) {
 			observableListModuleTypes.add(0, ModuleType.DUMMY);
 			checkComboBoxModuleType.getItems()
@@ -313,7 +319,7 @@ public class SelectionController {
 			@Override
 			public String toString(ModuleType moduleType) {
 				if (moduleType == null || moduleType == ModuleType.DUMMY) {
-					return I18n.get("text.selectall");
+					return I18n.get(TEXT_SELECTALL);
 				}
 				return I18n.get(moduleType);
 			}
@@ -338,14 +344,51 @@ public class SelectionController {
 					filterCourseModules.setPredicate(getActivityPredicade());
 					listViewActivity.setCellFactory(getListCellCourseModule());
 				});
+		
+		if (!CONTROLLER.getActualCourse()
+				.getSections()
+				.isEmpty()) {
+			
+			DUMMY_SECTION.setName(I18n.get(TEXT_SELECTALL));
+			checkComboBoxSectionAc.getItems()
+					.add(DUMMY_SECTION);
+			checkComboBoxSectionAc.getItems()
+					.addAll(CONTROLLER.getActualCourse()
+							.getSections());
+
+			checkComboBoxSectionAc.getCheckModel()
+					.checkAll();
+			checkComboBoxSectionAc.getItemBooleanProperty(0)
+					.addListener((observable, oldValue, newValue) -> {
+
+						if (newValue.booleanValue()) {
+							checkComboBoxSectionAc.getCheckModel()
+									.checkAll();
+						} else {
+							checkComboBoxSectionAc.getCheckModel()
+									.clearChecks();
+
+						}
+
+					});
+			checkComboBoxSectionAc.getCheckModel()
+					.getCheckedItems()
+					.addListener((Change<? extends Section> c) -> {
+						filterCourseModules.setPredicate(getActivityPredicade());
+						listViewActivity.setCellFactory(getListCellCourseModule());
+					});
+		}
 		filterCourseModules.setPredicate(getActivityPredicade());
+		
+		
+
 	}
 
 	private Predicate<? super CourseModule> getActivityPredicade() {
 		return cm -> containsTextField(activityTextField.getText(), cm.getModuleName())
-				&& (checkBoxActivity.isSelected() || cm.isVisible()) && (checkComboBoxModuleType.getCheckModel()
-						.getCheckedItems()
-						.contains(cm.getModuleType()));
+				&& (checkBoxActivity.isSelected() || cm.isVisible()) 
+				&& (checkComboBoxModuleType.getCheckModel().getCheckedItems().contains(cm.getModuleType()))
+				&& (checkComboBoxSectionAc.getCheckModel().getCheckedItems().contains(cm.getSection()));
 	}
 
 	/**
@@ -419,7 +462,7 @@ public class SelectionController {
 				.getUniqueComponents();
 
 		// Ordenamos los componentes segun los nombres internacionalizados
-		uniqueComponents.sort(Comparator.comparing(I18n::get));
+		uniqueComponents.sort(Comparator.comparing(I18n::get, Collator.getInstance()));
 
 		ObservableList<Component> observableListComponents = FXCollections.observableArrayList(uniqueComponents);
 		FilteredList<Component> filterComponents = new FilteredList<>(observableListComponents);
@@ -478,8 +521,8 @@ public class SelectionController {
 				.getUniqueComponentsEvents();
 
 		// Ordenamos los componentes segun los nombres internacionalizados
-		uniqueComponentsEvents.sort(Comparator.comparing((ComponentEvent c) -> I18n.get(c.getComponent()))
-				.thenComparing((ComponentEvent c) -> I18n.get(c.getEventName())));
+		uniqueComponentsEvents.sort(Comparator.comparing((ComponentEvent c) -> I18n.get(c.getComponent()), Collator.getInstance())
+				.thenComparing((ComponentEvent c) -> I18n.get(c.getEventName()), Collator.getInstance()));
 
 		ObservableList<ComponentEvent> observableListComponents = FXCollections
 				.observableArrayList(uniqueComponentsEvents);
@@ -607,7 +650,7 @@ public class SelectionController {
 		ObservableList<ModuleType> observableListModuleTypes = FXCollections
 				.observableArrayList(CONTROLLER.getActualCourse()
 						.getUniqueCourseModulesTypes());
-		observableListModuleTypes.sort(Comparator.nullsFirst(Comparator.comparing(I18n::get)));
+		observableListModuleTypes.sort(Comparator.nullsFirst(Comparator.comparing(I18n::get, Collator.getInstance())));
 		if (!observableListModuleTypes.isEmpty()) {
 			observableListModuleTypes.add(0, ModuleType.DUMMY);
 			checkComboBoxCourseModule.getItems()
@@ -636,7 +679,7 @@ public class SelectionController {
 				@Override
 				public String toString(ModuleType moduleType) {
 					if (moduleType == null || moduleType == ModuleType.DUMMY) {
-						return I18n.get("text.selectall");
+						return I18n.get(TEXT_SELECTALL);
 					}
 					return I18n.get(moduleType);
 				}
@@ -653,10 +696,10 @@ public class SelectionController {
 			if (!CONTROLLER.getActualCourse()
 					.getSections()
 					.isEmpty()) {
-				Section dummySection = new Section(-1);
-				dummySection.setName(I18n.get("text.selectall"));
+				
+				DUMMY_SECTION.setName(I18n.get(TEXT_SELECTALL));
 				checkComboBoxSection.getItems()
-						.add(dummySection);
+						.add(DUMMY_SECTION);
 				checkComboBoxSection.getItems()
 						.addAll(CONTROLLER.getActualCourse()
 								.getSections());

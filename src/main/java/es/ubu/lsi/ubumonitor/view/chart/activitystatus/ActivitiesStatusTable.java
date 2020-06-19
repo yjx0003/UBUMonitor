@@ -43,6 +43,7 @@ public class ActivitiesStatusTable extends Tabulator {
 		JSArray array = new JSArray();
 
 		jsObject.putWithQuote("title", I18n.get("chartlabel.name"));
+		jsObject.put("tooltip", true);
 		jsObject.put("field", "'name'");
 		jsObject.put("frozen", true);
 		array.add(jsObject);

@@ -146,6 +146,7 @@
 								<TextField fx:id="activityTextField" layoutX="6.0" layoutY="28.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
 								<CheckBox fx:id="checkBoxActivity" layoutX="140.0" layoutY="5.0" mnemonicParsing="false" text="%label.withhidden" />
 								<CheckComboBox fx:id="checkComboBoxModuleType" layoutX="139.0" layoutY="28.0" prefHeight="31.0" prefWidth="108.0" showCheckedCount="true" title="" />
+                        <CheckComboBox fx:id="checkComboBoxSectionAc" layoutX="254.0" layoutY="28.0" prefHeight="31.0" prefWidth="108.0" showCheckedCount="true" title="" />
 							</children>
 						</Pane>
 					</top>

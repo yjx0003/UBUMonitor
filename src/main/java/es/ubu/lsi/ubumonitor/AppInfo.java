@@ -18,7 +18,7 @@ public class AppInfo {
 
 	public static final String GITHUB = "https://github.com/yjx0003/UBUMonitor";
 	
-	public static final String USER_GUIDE = "https://ubumonitordocs.readthedocs.io/es/latest/";
+	public static final String USER_GUIDE = "https://ubumonitordocs.readthedocs.io/es/2.6.5/";
 
 	public static final String RESOURCE_BUNDLE_FILE_NAME = "messages/Messages";
 
@@ -59,6 +59,10 @@ public class AppInfo {
 	public static final String USER_NAME = System.getProperty("user.name");
 
 	public static final String JAVA_FX_VERSION = System.getProperty("javafx.runtime.version");
+
+	public static final String PATTERN_FILE = "^UBUMonitor.+.jar$";
+
+	public static final String VERSIONS_DIR = "versions/";
 
 	
 

@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.ByteArrayInputStream;
+import java.text.Collator;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -132,7 +133,7 @@ public class SelectionUserController {
 						.getGroups()
 						.stream()
 						.sorted(Comparator.comparing(Group::getGroupName,
-								Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)))
+								Comparator.nullsLast(Collator.getInstance())))
 						.collect(Collectors.toList()));
 		ObservableList<Group> groups = CONTROLLER.getMainConfiguration()
 				.getValue(MainConfiguration.GENERAL, "initialGroups");
@@ -249,7 +250,7 @@ public class SelectionUserController {
 		Course course = CONTROLLER.getActualCourse();
 
 		ObservableList<EnrolledUser> user = FXCollections.observableArrayList(course.getNotEnrolledUser());
-		user.sort(Comparator.comparing(EnrolledUser::getFullName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)));
+		user.sort(Comparator.comparing(EnrolledUser::getFullName, Comparator.nullsLast(Collator.getInstance())));
 		FilteredList<EnrolledUser> filteredListNotEnrolled = new FilteredList<>(user);
 		filteredListNotEnrolled.predicateProperty()
 				.addListener(value -> mainController.updatePredicadeEnrolledList());

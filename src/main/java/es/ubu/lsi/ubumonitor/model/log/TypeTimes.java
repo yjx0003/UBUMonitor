@@ -7,13 +7,13 @@ package es.ubu.lsi.ubumonitor.model.log;
  */
 public enum TypeTimes {
 	ALL,
-	AM_PM,
+	//AM_PM,
 	DAY,
 	DAY_OF_WEEK,
 	HOUR,
-	YEAR,
+	//YEAR,
 	YEAR_MONTH,
-	YEAR_QUARTER,
+	//YEAR_QUARTER,
 	YEAR_WEEK;
 
 

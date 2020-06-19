@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.text.Collator;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,6 +63,8 @@ import javafx.util.Callback;
  *
  */
 public class LoginController implements Initializable {
+
+	private static final String BETA_TESTER = "betaTester";
 
 	private static final String APPLICATION_PATH = "applicationPath";
 
@@ -164,7 +166,7 @@ public class LoginController implements Initializable {
 		languageSelector.setButtonCell(listCell.call(null));
 
 		ObservableList<Languages> languages = FXCollections.observableArrayList(Languages.values());
-		languages.sort(Comparator.comparing(Languages::getDisplayLanguage, String.CASE_INSENSITIVE_ORDER));
+		languages.sort(Comparator.comparing(Languages::getDisplayLanguage, Collator.getInstance()));
 		languageSelector.setItems(languages);
 		languageSelector.setValue(controller.getSelectedLanguage());
 
@@ -455,8 +457,7 @@ public class LoginController implements Initializable {
 	}
 
 	private void initLauncherConfiguration() {
-		imageViewconfigurationHelper.setVisible(ConfigHelper.has(ASK_AGAIN) && ConfigHelper.has(APPLICATION_PATH)
-				&& Files.isDirectory(Paths.get(ConfigHelper.getProperty(APPLICATION_PATH)).getParent()));
+		imageViewconfigurationHelper.setVisible(ConfigHelper.has(ASK_AGAIN) && ConfigHelper.has(APPLICATION_PATH));
 
 	}
 
@@ -475,11 +476,11 @@ public class LoginController implements Initializable {
 		LauncherConfigurationController launcherConfigurationController = fxmlLoader.getController();
 
 		File newPath = launcherConfigurationController.init(ConfigHelper.getProperty(ASK_AGAIN, true),
-				ConfigHelper.getProperty("betaTester", false), new File(ConfigHelper.getProperty(APPLICATION_PATH)));
+				ConfigHelper.getProperty(BETA_TESTER, false), ConfigHelper.getProperty(APPLICATION_PATH));
 		
 		ConfigHelper.setProperty(APPLICATION_PATH, newPath.getPath());
 		ConfigHelper.setProperty(ASK_AGAIN, launcherConfigurationController.isAskAgain());
-		ConfigHelper.setProperty("betaTester",launcherConfigurationController.isBetaTester());
+		ConfigHelper.setProperty(BETA_TESTER,launcherConfigurationController.isBetaTester());
 
 	}
 

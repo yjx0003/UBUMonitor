@@ -33,6 +33,10 @@ public class LauncherConfigurationController {
 	@FXML
 	private Label label;
 
+	private boolean betaTester;
+
+	private boolean checkAgain;
+
 	public File init(boolean askAgain, boolean isBetaTester, File pathActualVersion) {
 
 		File directory = pathActualVersion.getParentFile();
@@ -49,14 +53,16 @@ public class LauncherConfigurationController {
 		choiceBox.getItems()
 				.setAll(versions);
 
-		choiceBox.getSelectionModel().select(pathActualVersion.getName());
+		choiceBox.getSelectionModel()
+				.select(pathActualVersion.getName());
 		Alert alert = UtilMethods.createAlert(AlertType.CONFIRMATION);
 
 		alert.setDialogPane(dialogPane);
 
 		Optional<ButtonType> buttonType = alert.showAndWait();
 		if (buttonType.isPresent() && buttonType.get() == ButtonType.OK && choiceBox.getValue() != null) {
-
+			betaTester = checkBoxBetaTester.isSelected();
+			checkAgain = checkBox.isSelected();
 			return new File(directory, choiceBox.getValue());
 
 		}
@@ -69,14 +75,14 @@ public class LauncherConfigurationController {
 	 * @return the askAgain
 	 */
 	public boolean isAskAgain() {
-		return checkBox.isSelected();
+		return checkAgain;
 	}
 
 	/**
 	 * @return if is beta tester
 	 */
 	public boolean isBetaTester() {
-		return checkBoxBetaTester.isSelected();
+		return betaTester;
 	}
 
 }

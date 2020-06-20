@@ -368,6 +368,16 @@ public class UtilMethods {
 				.setContent(flow);
 		alert.show();
 	}
+	
+	public static void showExportedDir(File dir) {
+		Alert alert = createAlert(AlertType.INFORMATION);
+		Hyperlink hyperLink = new Hyperlink(dir.getAbsolutePath());
+		hyperLink.setOnAction(e -> openFileFolder(dir));
+		TextFlow flow = new TextFlow(new Text(I18n.get("message.exportdir") + "\n"), hyperLink);
+		alert.getDialogPane()
+				.setContent(flow);
+		alert.show();
+	}
 
 	public static void fileAction(String initialFileName, String initialDirectory, Window owner,
 			FileUtil.FileChooserType fileChooserType, FileUtil.ThrowingConsumer<File, IOException> consumer,

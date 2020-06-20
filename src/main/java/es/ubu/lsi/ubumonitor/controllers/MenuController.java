@@ -151,7 +151,7 @@ public class MenuController {
 		LOGGER.info("Exportando ficheros CSV");
 		try {
 			DirectoryChooser dir = new DirectoryChooser();
-			File file = new File(ConfigHelper.getProperty("csvFolderPath", "./"));
+			File file = new File(ConfigHelper.getProperty("csvFolderPath", "./")).getParentFile();
 			if (file.exists() && file.isDirectory()) {
 				dir.setInitialDirectory(file);
 			}

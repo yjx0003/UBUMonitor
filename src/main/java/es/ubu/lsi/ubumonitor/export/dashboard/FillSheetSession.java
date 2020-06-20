@@ -38,6 +38,7 @@ public class FillSheetSession extends FillSheetData {
 				.getLogs()
 				.getList();
 		Map<EnrolledUser, List<LogLine>> map = logLines.stream()
+				.filter(l -> l.getUser() != null)
 				.collect(Collectors.groupingBy(LogLine::getUser, Collectors.toList()));
 		int rowIndex = 0;
 		for (Map.Entry<EnrolledUser, List<LogLine>> entry : map.entrySet()) {

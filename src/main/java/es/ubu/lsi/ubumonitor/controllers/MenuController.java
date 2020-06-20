@@ -147,7 +147,7 @@ public class MenuController {
 	 * @param actionEvent evento
 	 * @since 2.4.0.0
 	 */
-	public void exportCSV(ActionEvent actionEvent) {
+	public void exportCSV() {
 		LOGGER.info("Exportando ficheros CSV");
 		try {
 			DirectoryChooser dir = new DirectoryChooser();
@@ -162,7 +162,7 @@ public class MenuController {
 				Charsets charset = controller.getMainConfiguration()
 						.getValue(MainConfiguration.GENERAL, "charset");
 				CSVExport.run(charset.get());
-				UtilMethods.showExportedFile(file);
+				UtilMethods.showExportedFile(selectedDir);
 				ConfigHelper.setProperty("csvFolderPath", selectedDir.getAbsolutePath());
 			}
 

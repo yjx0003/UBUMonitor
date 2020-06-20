@@ -342,7 +342,8 @@ public class UtilMethods {
 				.getExtensions()
 				.get(0)
 				.substring(1);
-		if (!file.getName().toLowerCase()
+		if (!file.getName()
+				.toLowerCase()
 				.endsWith(extension)) {
 			file = new File(file.getAbsolutePath() + extension);
 		}
@@ -362,17 +363,24 @@ public class UtilMethods {
 	public static void showExportedFile(File file) {
 		Alert alert = createAlert(AlertType.INFORMATION);
 		Hyperlink hyperLink = new Hyperlink(file.getAbsolutePath());
-		hyperLink.setOnAction(e -> openFileFolder(file.getParentFile()));
+		hyperLink.setOnAction(e -> {
+			alert.close();
+			openFileFolder(file.getParentFile());
+			
+		});
 		TextFlow flow = new TextFlow(new Text(I18n.get("message.export") + "\n"), hyperLink);
 		alert.getDialogPane()
 				.setContent(flow);
 		alert.show();
 	}
-	
+
 	public static void showExportedDir(File dir) {
 		Alert alert = createAlert(AlertType.INFORMATION);
 		Hyperlink hyperLink = new Hyperlink(dir.getAbsolutePath());
-		hyperLink.setOnAction(e -> openFileFolder(dir));
+		hyperLink.setOnAction(e -> {
+			alert.close();
+			openFileFolder(dir);
+		});
 		TextFlow flow = new TextFlow(new Text(I18n.get("message.exportdir") + "\n"), hyperLink);
 		alert.getDialogPane()
 				.setContent(flow);

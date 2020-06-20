@@ -1,4 +1,5 @@
 {
   "checkUrl": "https://api.github.com/repos/yjx0003/ubumonitor/releases/latest",
-  "pattern": "^UBUMonitor.+.jar$"
+  "pattern": "^UBUMonitor.+.jar$",
+  "vmArgs": "-Xmx1g -XX:NewRatio=8" 
 }

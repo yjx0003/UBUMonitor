@@ -36,10 +36,11 @@ public class LauncherConfigurationController {
 	private boolean checkAgain;
 
 	public File init(boolean askAgain, boolean isBetaTester, String pathActualVersion) {
-		
+		checkAgain = askAgain;
+		betaTester = isBetaTester;
 		File directory = new File(".");
 		File actualVersion = new File(directory, pathActualVersion);
-		
+
 		File[] files = directory.listFiles((dir, name) -> name.matches(AppInfo.PATTERN_FILE));
 		checkBox.setSelected(askAgain);
 		checkBoxBetaTester.setSelected(isBetaTester);
@@ -58,10 +59,12 @@ public class LauncherConfigurationController {
 		alert.setDialogPane(dialogPane);
 
 		Optional<ButtonType> buttonType = alert.showAndWait();
-		if (buttonType.isPresent() && buttonType.get() == ButtonType.OK && choiceBox.getValue() != null) {
+		if (buttonType.isPresent() && buttonType.get() == ButtonType.OK) {
 			betaTester = checkBoxBetaTester.isSelected();
 			checkAgain = checkBox.isSelected();
-			return choiceBox.getValue();
+			if (choiceBox.getValue() != null) {
+				return choiceBox.getValue();
+			}
 
 		}
 

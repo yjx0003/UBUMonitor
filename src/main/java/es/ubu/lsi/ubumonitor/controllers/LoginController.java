@@ -458,7 +458,7 @@ public class LoginController implements Initializable {
 
 	private void initLauncherConfiguration() {
 		imageViewconfigurationHelper.setVisible(ConfigHelper.has(ASK_AGAIN) && ConfigHelper.has(APPLICATION_PATH));
-
+		Tooltip.install(imageViewconfigurationHelper, new Tooltip(I18n.get("label.launcherconfiguration")));
 	}
 
 	@FXML
@@ -478,7 +478,7 @@ public class LoginController implements Initializable {
 		File newPath = launcherConfigurationController.init(ConfigHelper.getProperty(ASK_AGAIN, true),
 				ConfigHelper.getProperty(BETA_TESTER, false), ConfigHelper.getProperty(APPLICATION_PATH));
 		
-		ConfigHelper.setProperty(APPLICATION_PATH, newPath.getPath());
+		ConfigHelper.setProperty(APPLICATION_PATH, newPath.getName());
 		ConfigHelper.setProperty(ASK_AGAIN, launcherConfigurationController.isAskAgain());
 		ConfigHelper.setProperty(BETA_TESTER,launcherConfigurationController.isBetaTester());
 

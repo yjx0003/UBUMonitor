@@ -1,11 +1,11 @@
 package es.ubu.lsi.ubumonitor.export.dashboard;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
+import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 
@@ -17,7 +17,9 @@ public class FillSheetGradeItem extends FillSheetData {
 
 	@Override
 	protected void fillTable(XSSFSheet sheet, CellStyle dateStyle) {
-		Set<GradeItem> gradeItems = new HashSet<>();
+		Set<GradeItem> gradeItems = Controller.getInstance()
+				.getActualCourse()
+				.getGradeItems();
 		int rowIndex = 1;
 		
 		for (GradeItem gradeItem : gradeItems) {

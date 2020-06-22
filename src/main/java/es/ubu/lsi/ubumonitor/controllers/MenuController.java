@@ -151,7 +151,7 @@ public class MenuController {
 		LOGGER.info("Exportando ficheros CSV");
 		try {
 			DirectoryChooser dir = new DirectoryChooser();
-			File file = new File(ConfigHelper.getProperty("csvFolderPath", "./")).getParentFile();
+			File file = new File(ConfigHelper.getProperty("csvFolderPath", "./"));
 			if (file.exists() && file.isDirectory()) {
 				dir.setInitialDirectory(file);
 			}
@@ -312,6 +312,7 @@ public class MenuController {
 							.getListParticipants()
 							.getSelectionModel()
 							.getSelectedItems(), file, defaultPhoto);
+					ConfigHelper.setProperty("csvFolderPath", file.getParent());
 				}, FileUtil.WORD);
 
 	}
@@ -324,6 +325,7 @@ public class MenuController {
 				file -> {
 					Excel excel = new Excel();
 					excel.createExcel(file.getAbsolutePath());
+					ConfigHelper.setProperty("csvFolderPath", file.getParent());
 				}, FileUtil.EXCEL);
 	}
 

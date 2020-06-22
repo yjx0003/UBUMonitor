@@ -144,12 +144,12 @@
 
 
 
-    function displayChartsButtons(div_id, type) {
+   function displayChartsButtons(div_id, type, listCharts) {
         let tabs = document.getElementById(div_id);
         let children = tabs.children;
-        for (i = 0; i < children.length; i++) {
+        for (let i = 0; i < children.length; i++) {
             if (children[i].tagName == "BUTTON") {
-                children[i].style.display = div_id == type ? "inline" : "none";
+                children[i].style.display = div_id == type && listCharts.includes(children[i].id)  ? "inline" : "none";
             }
 
         }
@@ -176,8 +176,8 @@
         displayApexChart(true);
         displayChartjs(false);
         displayTabulator(false);
-
-
+		
+		manageButtons(options.tab, options.listCharts);
         disableTab(options.tab, options.button);
 
         displayLegendButton(options.useLegend);
@@ -199,7 +199,6 @@
     }
 
     function updateChartjs(dataset, options) {
-    	
         displayApexChart(false);
         displayChartjs(true);
         displayTabulator(false);
@@ -207,7 +206,7 @@
         imageButton("btnMean", options.generalActive);
         imageButton("btnGroupMean", options.groupActive);
 
-
+		manageButtons(options.tab, options.listCharts);
         disableTab(options.tab, options.button);
 
         displayLegendButton(options.useLegend);
@@ -234,7 +233,7 @@
 
     }
 
-    function updateTabulator(columns, tabledata, options) {
+    function updateTabulator(data, options) {
 
         displayApexChart(false);
         displayChartjs(false);
@@ -243,16 +242,19 @@
         displayLegendButton(options.useLegend);
         displayGroupButton(options.useGroup);
         displayGeneralButton(options.useGeneral);
+        manageButtons(options.tab, options.listCharts);
         disableTab(options.tab, options.button);
         table.destroy()
         table = new Tabulator("#tabulatorDiv", options);
-        table.setColumns(columns);
-        table.setData(tabledata).then(function () {
+        table.setColumns(data.columns);
+        table.setData(data.tabledata).then(function () {
+        	
             table.redraw();
         })
 
 
     }
+
 
 
 
@@ -280,12 +282,12 @@
     }
 
 
-    function manageButtons(type) {
+    function manageButtons(type, listCharts) {
 
-		displayChartsButtons("RISK", type);
-        //displayChartsButtons("GRADES", type);
-        //displayChartsButtons("LOGS", type);
-        //displayChartsButtons("ACTIVITY_COMPLETION", type);
+
+        displayChartsButtons("RISK", type, listCharts);
+        //displayChartsButtons("LOGS", type, listCharts);
+        //displayChartsButtons("ACTIVITY_COMPLETION", type, listCharts);
 
     }
 

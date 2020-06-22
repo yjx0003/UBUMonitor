@@ -132,8 +132,7 @@ public class SelectionUserController {
 				.setAll(CONTROLLER.getActualCourse()
 						.getGroups()
 						.stream()
-						.sorted(Comparator.comparing(Group::getGroupName,
-								Comparator.nullsLast(Collator.getInstance())))
+						.sorted(Comparator.comparing(Group::getGroupName, Comparator.nullsLast(Collator.getInstance())))
 						.collect(Collectors.toList()));
 		ObservableList<Group> groups = CONTROLLER.getMainConfiguration()
 				.getValue(MainConfiguration.GENERAL, "initialGroups");
@@ -274,8 +273,13 @@ public class SelectionUserController {
 							+ UtilMethods.formatDates(lastAccess, lastLogInstant));
 
 					try {
-						Image image = new Image(new ByteArrayInputStream(user.getImageBytes()), 50, 50, false, false);
-						setGraphic(new ImageView(image));
+						if (user.getImageBytes() != null) {
+							Image image = new Image(new ByteArrayInputStream(user.getImageBytes()), 50, 50, false,
+									false);
+							setGraphic(new ImageView(image));
+						} else {
+							setGraphic(new ImageView(DEFAULT_IMAGE));
+						}
 
 					} catch (Exception e) {
 						LOGGER.warn("No se ha podido cargar la imagen de: {}", user);

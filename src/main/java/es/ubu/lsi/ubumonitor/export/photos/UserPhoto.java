@@ -1,14 +1,15 @@
 package es.ubu.lsi.ubumonitor.export.photos;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
@@ -38,13 +39,10 @@ public class UserPhoto {
 		byte[] defaultUser = null;
 
 		if (defaultPhoto) {
-			try {
-				defaultUser = Files.readAllBytes(Paths.get(this.getClass()
-						.getResource("/img/default_user.png")
-						.toURI()));
-			} catch (URISyntaxException e) {
-				throw new IllegalStateException("Cannot read default user image");
-			}
+			BufferedImage bImage = ImageIO.read(getClass().getResource("/img/default_user.png"));
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			ImageIO.write(bImage, "png", bos);
+			defaultUser = bos.toByteArray();
 		}
 
 		try (FileOutputStream out = new FileOutputStream(file); XWPFDocument document = new XWPFDocument()) {
@@ -96,8 +94,10 @@ public class UserPhoto {
 				paragraph = cell.getParagraphArray(0);
 				paragraph.setAlignment(ParagraphAlignment.CENTER);
 				run = paragraph.createRun();
-				byte[] bytePhoto = defaultPhoto ? defaultUser: enrolledUsers.get(i).getImageBytes();
-				
+				byte[] bytePhoto = defaultPhoto ? defaultUser
+						: enrolledUsers.get(i)
+								.getImageBytes();
+
 				run.addPicture(new ByteArrayInputStream(bytePhoto), Document.PICTURE_TYPE_PNG, enrolledUsers.get(i)
 						.getId() + ".png", Units.pixelToEMU(80), Units.pixelToEMU(80));
 				run.addBreak();

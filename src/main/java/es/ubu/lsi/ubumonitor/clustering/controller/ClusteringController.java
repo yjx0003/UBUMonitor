@@ -194,7 +194,8 @@ public class ClusteringController {
 
 	public void init(MainController controller) {
 		mainController = controller;
-		table = new ClusteringTable(this);
+		table = new ClusteringTable(tableView, columnImage, columnName, columnCluster, controller.getTvwGradeReport(),
+				checkComboBoxCluster);
 		graph = new Scatter2DChart(this);
 		silhouette = new SilhouetteChart(this);
 		graph3D = new Scatter3DChart(this);

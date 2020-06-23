@@ -12,11 +12,11 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import javafx.scene.web.WebView;
 
-public class DendogramChart extends AbstractChart {
+public class DendrogramChart extends AbstractChart {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(DendogramChart.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DendrogramChart.class);
 
-	public DendogramChart(WebView webView) {
+	public DendrogramChart(WebView webView) {
 		super(webView);
 		getWebEngine().load(getClass().getResource("/graphics/DendogramChart.html").toExternalForm());
 	}

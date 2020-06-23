@@ -47,13 +47,24 @@ public class ClusteringTable {
 	private TreeView<GradeItem> gradeItem;
 	private CheckComboBox<Integer> checkComboBoxCluster;
 
-	public ClusteringTable(ClusteringController controller) {
-		tableView = controller.getTableView();
-		columnImage = controller.getColumnImage();
-		columnName = controller.getColumnName();
-		columnCluster = controller.getColumnCluster();
-		gradeItem = controller.getMainController().getTvwGradeReport();
-		checkComboBoxCluster = controller.getCheckComboBoxCluster();
+
+	/**
+	 * @param tableView
+	 * @param columnImage
+	 * @param columnName
+	 * @param columnCluster
+	 * @param gradeItem
+	 * @param checkComboBoxCluster
+	 */
+	public ClusteringTable(TableView<UserData> tableView, TableColumn<UserData, ImageView> columnImage,
+			TableColumn<UserData, String> columnName, TableColumn<UserData, String> columnCluster,
+			TreeView<GradeItem> gradeItem, CheckComboBox<Integer> checkComboBoxCluster) {
+		this.tableView = tableView;
+		this.columnImage = columnImage;
+		this.columnName = columnName;
+		this.columnCluster = columnCluster;
+		this.gradeItem = gradeItem;
+		this.checkComboBoxCluster = checkComboBoxCluster;
 		init();
 	}
 
@@ -61,7 +72,10 @@ public class ClusteringTable {
 		columnImage.setCellValueFactory(c -> new SimpleObjectProperty<>(new ImageView(new Image(
 				new ByteArrayInputStream(c.getValue().getEnrolledUser().getImageBytes()), 50, 50, true, false))));
 		columnName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getEnrolledUser().getFullName()));
-		columnCluster.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCluster().getName()));
+		columnCluster.setCellValueFactory(c -> new SimpleStringProperty(c
+				.getValue()
+				.getCluster()
+				.getName()));
 
 		ContextMenu contextMenu = new ContextMenu();
 		contextMenu.setAutoHide(true);
@@ -155,7 +169,8 @@ public class ClusteringTable {
 	}
 
 	public void showUserDataInfo(UserData userData) {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ClusteringInfo.fxml"), I18n.getResourceBundle());
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ClusteringInfo.fxml"),
+				I18n.getResourceBundle());
 		UtilMethods.createDialog(loader, Controller.getInstance().getStage());
 		UserDataController controller = loader.getController();
 		controller.init(userData, tableView);

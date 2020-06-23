@@ -38,8 +38,8 @@ public abstract class FillSheetData {
 	}
 
 	private void setArea(XSSFTable table) {
-		table.setArea(new AreaReference(table.getStartCellReference(), new CellReference(table.getXSSFSheet()
-				.getLastRowNum(), table.getEndColIndex()), SpreadsheetVersion.EXCEL2007));
+		table.setArea(new AreaReference(table.getStartCellReference(), new CellReference(Math.max(table.getXSSFSheet()
+				.getLastRowNum(), table.getEndRowIndex()), table.getEndColIndex()), SpreadsheetVersion.EXCEL2007));
 	}
 
 	protected Cell getCell(Sheet sheet, int rowIndex, int columnIndex, CellType cellType) {

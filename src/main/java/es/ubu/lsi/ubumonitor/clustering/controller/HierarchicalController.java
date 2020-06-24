@@ -20,6 +20,7 @@ import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -68,10 +69,10 @@ public class HierarchicalController {
 	private ChoiceBox<LinkageMeasure> choiceBoxLinkage;
 
 	/* Tabla */
-	
+
 	@FXML
 	private Spinner<Integer> spinnerClusters;
-	
+
 	@FXML
 	private Button buttonExecute;
 
@@ -137,7 +138,7 @@ public class HierarchicalController {
 
 		imageView.fitWidthProperty().bind(pane.widthProperty());
 		imageView.fitHeightProperty().bind(pane.heightProperty());
-		
+
 		spinnerClusters.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 9999, 3));
 		spinnerClusters.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
 			if (!newValue.matches("^[1-9]\\d{0,4}")) {
@@ -146,6 +147,22 @@ public class HierarchicalController {
 				spinnerClusters.getValueFactory().setValue(Integer.valueOf(newValue));
 			}
 		});
+
+		ChangeListener<? super Number> listener = (obs, newValue, oldValue) -> setImage();
+		pane.widthProperty().addListener(listener);
+		pane.heightProperty().addListener(listener);
+	}
+
+	private void setImage() {
+		if (hierarchicalClustering == null)
+			return;
+
+		Dendrogram dendrogram = new Dendrogram(hierarchicalClustering.getTree(), hierarchicalClustering.getHeight());
+		Canvas canvas = dendrogram.canvas();
+		canvas.setMargin(0.05);
+		Image image = SwingFXUtils
+				.toFXImage(canvas.toBufferedImage((int) pane.getWidth() + 1, (int) pane.getHeight() + 1), null);
+		imageView.setImage(image);
 	}
 
 	@FXML
@@ -163,15 +180,10 @@ public class HierarchicalController {
 			collectors.add(activityCollector);
 		}
 		hierarchicalClustering = hierarchicalAlgorithm.execute(users, collectors);
-		Dendrogram dendogram = new Dendrogram(hierarchicalClustering.getTree(), hierarchicalClustering.getHeight());
-		Canvas canvas = dendogram.canvas();
-		canvas.setMargin(0.05);
-		Image image = SwingFXUtils.toFXImage(canvas.toBufferedImage(1400, 1000), null);
-		imageView.setImage(image);
-		
+		setImage();
 		buttonExecute.setDisable(false);
 	}
-	
+
 	@FXML
 	private void executePartition() {
 		int k = spinnerClusters.getValue();

@@ -18,7 +18,7 @@ public class DendrogramChart extends AbstractChart {
 
 	public DendrogramChart(WebView webView) {
 		super(webView);
-		getWebEngine().load(getClass().getResource("/graphics/DendogramChart.html").toExternalForm());
+		getWebEngine().load(getClass().getResource("/graphics/DendrogramChart.html").toExternalForm());
 	}
 
 	public void updateChart(Tree<String> tree) {

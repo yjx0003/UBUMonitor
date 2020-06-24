@@ -35,12 +35,13 @@ import es.ubu.lsi.ubumonitor.util.UtilMethods;
 public class SilhouetteChart extends ClusteringChart {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SilhouetteChart.class);
-	
+
 	private Map<UserData, Double> silhouette;
 	private Distance distance;
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param clusteringController controlador general
 	 */
 	public SilhouetteChart(ClusteringController clusteringController) {
@@ -50,6 +51,7 @@ public class SilhouetteChart extends ClusteringChart {
 
 	/**
 	 * Establece la medida de distancia.
+	 * 
 	 * @param distance medida de distancia
 	 */
 	public void setDistanceType(Distance distance) {

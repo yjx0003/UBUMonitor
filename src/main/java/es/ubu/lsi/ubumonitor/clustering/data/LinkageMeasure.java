@@ -31,7 +31,7 @@ public enum LinkageMeasure {
 	
 	@Override
 	public String toString() {
-		return I18n.get("clustering.linkage." + super.toString());
+		return I18n.get("clustering.linkage." + super.toString().toLowerCase());
 	}
 
 }

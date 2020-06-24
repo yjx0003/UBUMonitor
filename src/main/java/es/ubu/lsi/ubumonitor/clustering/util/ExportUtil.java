@@ -21,10 +21,23 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.util.Charsets;
 
+/**
+ * Clase de utilidad para la exportación en CSV.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class ExportUtil {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExportUtil.class);
 
+	/**
+	 * Exporta los datos a un fichero CSV.
+	 * 
+	 * @param file fichero
+	 * @param head cabecera
+	 * @param data datos
+	 */
 	public static void exportCSV(File file, String[] head, List<List<Object>> data) {
 		Charsets charset = Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL,
 				"charset");
@@ -40,6 +53,13 @@ public class ExportUtil {
 		}
 	}
 
+	/**
+	 * Exporta el resultado del clustering a un fichero CSV.
+	 * 
+	 * @param file     fichero
+	 * @param clusters lista de clusters
+	 * @param grades   calificaciones a exportar
+	 */
 	public static void exportClustering(File file, List<ClusterWrapper> clusters, GradeItem... grades) {
 		List<String> head = new ArrayList<>(Arrays.asList("UserId", "FullName", "Cluster"));
 		if (!clusters.isEmpty()) {

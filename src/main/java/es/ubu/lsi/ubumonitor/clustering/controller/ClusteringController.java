@@ -162,6 +162,9 @@ public class ClusteringController {
 
 	@FXML
 	private CheckBox checkBoxExportGrades;
+	
+	@FXML
+	private Button buttonExport;
 
 	/* Etiquetar */
 
@@ -318,6 +321,7 @@ public class ClusteringController {
 			updateRename();
 			graph.updateChart(clusters);
 			graph3D.updateChart(clusters);
+			buttonExport.setDisable(false);
 			service.reset();
 		});
 		service.setOnFailed(e -> {

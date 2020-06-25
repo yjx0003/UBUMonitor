@@ -5,6 +5,7 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -15,22 +16,23 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
 <?import org.controlsfx.control.CheckComboBox?>
 
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.clustering.controller.HierarchicalController">
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.clustering.controller.HierarchicalController">
    <top>
-      <GridPane BorderPane.alignment="CENTER">
+      <GridPane hgap="10.0" vgap="10.0" BorderPane.alignment="CENTER">
         <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="NEVER" />
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="NEVER" />
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
             <GridPane GridPane.columnIndex="2">
@@ -74,16 +76,17 @@
                   <Insets left="10.0" />
                </GridPane.margin>
             </Label>
-            <Label text="Distancia entre agrupaciones" GridPane.rowIndex="1">
+            <Label text="%clustering.distanceClusters" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin>
             </Label>
             <ChoiceBox fx:id="choiceBoxLinkage" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Separator orientation="VERTICAL" prefHeight="200.0" GridPane.columnIndex="4" GridPane.rowSpan="2147483647" />
+            <Label text="%clustering.numberOfClusters" GridPane.columnIndex="5" />
+            <Spinner fx:id="spinnerClusters" disable="true" editable="true" prefHeight="25.0" prefWidth="83.0" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+            <Button fx:id="buttonExecute" disable="true" mnemonicParsing="false" onAction="#executePartition" text="%clustering.execute" GridPane.columnIndex="5" GridPane.rowIndex="2" />
          </children>
-         <padding>
-            <Insets bottom="10.0" />
-         </padding>
       </GridPane>
    </top>
    <center>
@@ -94,7 +97,7 @@
                   <ImageView fx:id="imageView" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <BorderPane>
+            <BorderPane minWidth="0.0">
                <center>
                   <TableView fx:id="tableView">
                     <columns>
@@ -108,28 +111,24 @@
                   </TableView>
                </center>
                <top>
-                  <VBox alignment="CENTER" spacing="8.0" BorderPane.alignment="CENTER">
-                     <children>
-                        <Label text="%clustering.numberOfClusters" />
-                        <Spinner fx:id="spinnerClusters" editable="true" prefHeight="25.0" prefWidth="83.0" />
-                        <Button fx:id="buttonExecute" disable="true" mnemonicParsing="false" onAction="#executePartition" text="%clustering.execute" />
-                        <GridPane>
-                          <columnConstraints>
-                            <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                            <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                          </columnConstraints>
-                          <rowConstraints>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                          </rowConstraints>
-                           <children>
-                              <CheckComboBox fx:id="checkComboBoxCluster" title="%clustering.clusters" />
-                           </children>
-                        </GridPane>
-                     </children>
-                     <BorderPane.margin>
-                        <Insets bottom="5.0" top="5.0" />
-                     </BorderPane.margin>
-                  </VBox>
+                  <GridPane hgap="10.0" BorderPane.alignment="CENTER">
+                      <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      </columnConstraints>
+                      <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      </rowConstraints>
+                       <children>
+                          <CheckComboBox fx:id="checkComboBoxCluster" title="%clustering.clusters" />
+                          <CheckBox fx:id="checkBoxExportGrades" alignment="CENTER_RIGHT" mnemonicParsing="false" text="%clustering.exportGrades" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
+                          <Button fx:id="buttonExport" disable="true" mnemonicParsing="false" onAction="#exportTable" text="%text.exportcsv" GridPane.columnIndex="2" />
+                       </children>
+                       <BorderPane.margin>
+                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                       </BorderPane.margin>
+                  </GridPane>
                </top>
             </BorderPane>
          </items>

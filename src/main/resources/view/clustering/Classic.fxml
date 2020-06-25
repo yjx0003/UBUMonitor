@@ -7,6 +7,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
@@ -31,6 +32,7 @@
           <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="250.0" />
           <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" />
             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="NEVER" minWidth="10.0" />
             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
         </columnConstraints>
         <rowConstraints>
@@ -40,7 +42,7 @@
         </rowConstraints>
          <children>
 
-            <PropertySheet fx:id="propertySheet" modeSwitcherVisible="false" searchBoxVisible="false" GridPane.columnIndex="1" GridPane.rowSpan="3" />
+            <PropertySheet fx:id="propertySheet" modeSwitcherVisible="false" searchBoxVisible="false" GridPane.columnIndex="1" GridPane.rowSpan="2147483647" />
             <CheckBox fx:id="checkBoxGrades" mnemonicParsing="false" text="%tab.grades" GridPane.columnIndex="2" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets left="10.0" />
@@ -61,8 +63,8 @@
                   <CheckBox fx:id="checkBoxFilter" mnemonicParsing="false" selected="true" text="%clustering.filter" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
                </children>
             </GridPane>
-            <ListView fx:id="algorithmList" prefWidth="150.0" GridPane.rowSpan="3" />
-            <RangeSlider fx:id="rangeSlider" blockIncrement="1.0" highValue="10.0" lowValue="2.0" majorTickUnit="1.0" max="15.0" min="2.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="4" GridPane.rowIndex="1">
+            <ListView fx:id="algorithmList" prefWidth="150.0" GridPane.rowSpan="2147483647" />
+            <RangeSlider fx:id="rangeSlider" blockIncrement="1.0" highValue="10.0" lowValue="2.0" majorTickUnit="1.0" max="15.0" min="2.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="5" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets right="10.0" />
                </GridPane.margin></RangeSlider>
@@ -82,11 +84,11 @@
                   <Spinner fx:id="spinnerReduce" editable="true" prefWidth="90.0" GridPane.columnIndex="1" />
                </children>
             </GridPane>
-            <Label text="%clustering.numberOfClusters" GridPane.columnIndex="4">
+            <Label text="%clustering.numberOfClusters" GridPane.columnIndex="5">
                <GridPane.margin>
                   <Insets right="10.0" />
                </GridPane.margin></Label>
-            <GridPane GridPane.columnIndex="4" GridPane.rowIndex="2">
+            <GridPane GridPane.columnIndex="5" GridPane.rowIndex="2">
               <columnConstraints>
                 <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                 <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -147,6 +149,7 @@
                   </CheckBox>
                </children>
             </GridPane>
+            <Separator orientation="VERTICAL" prefHeight="200.0" GridPane.columnIndex="4" GridPane.rowSpan="2147483647" />
          </children>
       </GridPane>
    </top>
@@ -201,7 +204,7 @@
                                  <children>
                                     <CheckComboBox fx:id="checkComboBoxCluster" title="%clustering.clusters" />
                                     <CheckBox fx:id="checkBoxExportGrades" alignment="CENTER_RIGHT" mnemonicParsing="false" text="%clustering.exportGrades" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
-                                    <Button fx:id="buttonExport" mnemonicParsing="false" onAction="#exportTable" text="%text.exportcsv" GridPane.columnIndex="2" />
+                                    <Button fx:id="buttonExport" disable="true" mnemonicParsing="false" onAction="#exportTable" text="%text.exportcsv" GridPane.columnIndex="2" />
                                  </children>
                                  <BorderPane.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

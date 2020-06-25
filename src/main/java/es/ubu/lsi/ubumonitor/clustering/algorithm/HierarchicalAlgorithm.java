@@ -20,10 +20,16 @@ public class HierarchicalAlgorithm {
 	public HierarchicalClustering execute(List<EnrolledUser> enrolledUsers, List<DataCollector> dataCollectors) {
 		usersData = enrolledUsers.stream().map(UserData::new).collect(Collectors.toList());
 		dataCollectors.forEach(collector -> collector.collect(usersData));
-		double[][] data = usersData.stream().map(UserData::getPoint).toArray(double[][]::new);
 		
-		Linkage linkage = linkageMeasure.of(data, distance);
+		if (usersData.size() < 2)
+			throw new IllegalStateException("clustering.error.notUsers");
 
+		if (usersData.get(0).getData().isEmpty())
+			throw new IllegalStateException("clustering.error.notData");
+		
+		
+		double[][] data = usersData.stream().map(UserData::getPoint).toArray(double[][]::new);
+		Linkage linkage = linkageMeasure.of(data, distance);
 		return HierarchicalClustering.fit(linkage);
 	}
 

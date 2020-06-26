@@ -365,8 +365,8 @@ public class UtilMethods {
 		Hyperlink hyperLink = new Hyperlink(file.getAbsolutePath());
 		hyperLink.setOnAction(e -> {
 			alert.close();
-			openFileFolder(file.getParentFile());
-			
+			openFileFolder(file);
+
 		});
 		TextFlow flow = new TextFlow(new Text(I18n.get("message.export") + "\n"), hyperLink);
 		alert.getDialogPane()
@@ -487,15 +487,39 @@ public class UtilMethods {
 	}
 
 	public static void openFileFolder(File file) {
-		if (Desktop.isDesktopSupported() && Desktop.getDesktop()
-				.isSupported(Desktop.Action.OPEN)) {
-			try {
-				Desktop.getDesktop()
-						.open(file);
-			} catch (Exception e) {
-				errorWindow("Cannot open in this System operative", e);
+		File path = file.isFile() ? file.getParentFile() : file;
+		try {
+			switch (OSUtil.getOS()) {
+			case WINDOWS:
+				Runtime.getRuntime()
+						.exec("explorer.exe /select," + file.getAbsolutePath());
+				break;
+			case LINUX:
+				Runtime.getRuntime()
+						.exec("xdg-open", new String[] { path.getAbsolutePath() });
+				break;
+			case MAC:
+
+				Runtime.getRuntime()
+						.exec("open", new String[] { path.getAbsolutePath() });
+				break;
+			default:
+				if (Desktop.isDesktopSupported() && Desktop.getDesktop()
+						.isSupported(Desktop.Action.OPEN)) {
+
+					Desktop.getDesktop()
+							.open(path);
+				} else {
+					throw new IllegalAccessError("This system operative is not supported to open file");
+				}
+
+				break;
+
 			}
+		} catch (Exception e) {
+			errorWindow("Cannot open in this System operative", e);
 		}
+
 	}
 
 }

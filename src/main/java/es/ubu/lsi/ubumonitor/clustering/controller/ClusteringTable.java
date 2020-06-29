@@ -62,8 +62,9 @@ public class ClusteringTable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringTable.class);
 
 	private static final Controller CONTROLLER = Controller.getInstance();
-	
-	private static final ObservableList<String> LABELS_LIST = FXCollections.observableArrayList(ConfigHelper.getArray("labels"));
+
+	private static final ObservableList<String> LABELS_LIST = FXCollections
+			.observableArrayList(ConfigHelper.getArray("labels"));
 
 	private MainController mainController;
 
@@ -145,7 +146,7 @@ public class ClusteringTable {
 
 	private void initLabels() {
 		listViewLabels.setItems(LABELS_LIST);
-		
+
 		propertyEditorLabel = new TextFieldPropertyEditorFactory(listViewLabels.getItems());
 		propertySheetLabel.setPropertyEditorFactory(propertyEditorLabel);
 
@@ -241,8 +242,7 @@ public class ClusteringTable {
 		tableView.refresh();
 	}
 
-	@FXML
-	private void exportTable() {
+	public void exportTable() {
 		try {
 			FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportcsv"),
 					String.format("%s_%s_CLUSTERING_TABLE.csv", CONTROLLER.getActualCourse().getId(),
@@ -275,8 +275,7 @@ public class ClusteringTable {
 		userDataController.init(userData, tableView);
 	}
 
-	@FXML
-	private void deleteLabels() {
+	public void deleteLabels() {
 		listViewLabels.getItems().removeAll(listViewLabels.getSelectionModel().getSelectedItems());
 	}
 

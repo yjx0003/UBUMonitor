@@ -4,10 +4,10 @@
 
 ## Autor
 
-- Xing Long Ji
+  - Xing Long Ji
 
 ## Tutor
-- Raúl Marticorena Sánchez
+  - Raúl Marticorena Sánchez
 
 ## Licencia
 Este proyecto está licenciado bajo la licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.

@@ -15,6 +15,12 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
+/**
+ * Controlador del resultado del análisis.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class AnalysisController {
 
 	@FXML
@@ -30,6 +36,15 @@ public class AnalysisController {
 	private int start;
 	private int end;
 
+	/**
+	 * Inicializa el controlador.
+	 * 
+	 * @param analysisMethod método de analisis
+	 * @param users          usuarios
+	 * @param collectors     lista de colectores
+	 * @param start          inicio del rango
+	 * @param end            fin del rango
+	 */
 	public void setUp(AnalysisMethod analysisMethod, List<EnrolledUser> users, List<DataCollector> collectors,
 			int start, int end) {
 		analysisChart = new AnalysisChart(webView);

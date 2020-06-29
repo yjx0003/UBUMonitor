@@ -18,6 +18,12 @@ import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+/**
+ * Controllador de la ventana de los datos de un usuario.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class UserDataController {
 
 	@FXML
@@ -43,6 +49,12 @@ public class UserDataController {
 
 	private TableView<UserData> table;
 
+	/**
+	 * Inicializa el controllador.
+	 * 
+	 * @param userData datos del usuario
+	 * @param table    TableView
+	 */
 	public void init(UserData userData, TableView<UserData> table) {
 		loadUser(userData);
 		this.table = table;
@@ -77,12 +89,18 @@ public class UserDataController {
 		loadUser(user);
 	}
 
+	/**
+	 * Visualiza el siguiente usuario.
+	 */
 	public void loadNext() {
 		int actual = table.getSelectionModel().getSelectedIndex();
 		int next = (actual + 1) % table.getItems().size();
 		change(next);
 	}
 
+	/**
+	 * Visualiza el anterior usuario.
+	 */
 	public void loadPrevious() {
 		int actual = table.getSelectionModel().getSelectedIndex();
 		int next = actual == 0 ? table.getItems().size() - 1 : actual - 1;

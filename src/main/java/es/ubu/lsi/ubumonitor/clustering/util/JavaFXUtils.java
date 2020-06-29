@@ -9,8 +9,14 @@ import javafx.scene.control.Spinner;
  * @author Xing Long Ji
  *
  */
-public class Util {
+public class JavaFXUtils {
 
+	/**
+	 * Devuelve un listener que limita los números hasta cuatro dígitos.
+	 * 
+	 * @param spinner componente spinner de JavaFX
+	 * @return el listener
+	 */
 	public static ChangeListener<String> getSpinnerListener(Spinner<Integer> spinner) {
 		return (obs, oldValue, newValue) -> {
 			if (!newValue.matches("^[1-9]\\d{0,4}")) {
@@ -21,7 +27,7 @@ public class Util {
 		};
 	}
 
-	private Util() {
+	private JavaFXUtils() {
 		throw new UnsupportedOperationException();
 	}
 

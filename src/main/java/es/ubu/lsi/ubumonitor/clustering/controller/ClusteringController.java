@@ -36,8 +36,8 @@ import es.ubu.lsi.ubumonitor.clustering.controller.collector.LogCollector;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.exception.IllegalParamenterException;
+import es.ubu.lsi.ubumonitor.clustering.util.JavaFXUtils;
 import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
-import es.ubu.lsi.ubumonitor.clustering.util.Util;
 import es.ubu.lsi.ubumonitor.controllers.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
@@ -64,6 +64,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.web.WebView;
 
+/**
+ * Controlador del clustering particional.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class ClusteringController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringController.class);
@@ -142,6 +148,11 @@ public class ClusteringController {
 
 	private Service<Void> service;
 
+	/**
+	 * Inicializa el controlador.
+	 * 
+	 * @param controller controlador general
+	 */
 	public void init(MainController controller) {
 		mainController = controller;
 		clusteringTableController.init(controller);
@@ -162,10 +173,10 @@ public class ClusteringController {
 	private void initAlgorithms() {
 		spinnerReduce.disableProperty().bind(checkBoxReduce.selectedProperty().not());
 		spinnerReduce.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 9999));
-		spinnerReduce.getEditor().textProperty().addListener(Util.getSpinnerListener(spinnerReduce));
+		spinnerReduce.getEditor().textProperty().addListener(JavaFXUtils.getSpinnerListener(spinnerReduce));
 
 		spinnerIterations.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 9999, 20));
-		spinnerIterations.getEditor().textProperty().addListener(Util.getSpinnerListener(spinnerIterations));
+		spinnerIterations.getEditor().textProperty().addListener(JavaFXUtils.getSpinnerListener(spinnerIterations));
 
 		checkComboBoxLogs.disableProperty().bind(checkBoxLogs.selectedProperty().not());
 
@@ -263,6 +274,9 @@ public class ClusteringController {
 		});
 	}
 
+	/**
+	 * Ejecuta el algoritmo de clustering.
+	 */
 	public void executeClustering() {
 		service.start();
 	}
@@ -285,6 +299,9 @@ public class ClusteringController {
 		});
 	}
 
+	/**
+	 * Ejecuta el analisis.
+	 */
 	public void executeAnalysis() {
 		Algorithm algorithm = algorithmList.getSelectionModel().getSelectedItem();
 		if (algorithm.getParameters().getValue(ClusteringParameter.NUM_CLUSTER) == null) {

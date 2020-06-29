@@ -57,6 +57,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.converter.IntegerStringConverter;
 
+/**
+ * Controlador de la tabla resultante del clustering.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class ClusteringTable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringTable.class);
@@ -106,6 +112,11 @@ public class ClusteringTable {
 
 	private List<ClusterWrapper> clusters;
 
+	/**
+	 * Inicializa el controlador.
+	 * 
+	 * @param controller controlador general
+	 */
 	public void init(MainController controller) {
 		this.mainController = controller;
 		checkBoxExportGrades.disableProperty()
@@ -205,6 +216,11 @@ public class ClusteringTable {
 		});
 	}
 
+	/**
+	 * Actualiza la tabla con los clusters.
+	 * 
+	 * @param clusters nuevas agrupaciones
+	 */
 	public void updateTable(List<ClusterWrapper> clusters) {
 		this.clusters = clusters;
 		buttonExport.setDisable(false);
@@ -242,6 +258,9 @@ public class ClusteringTable {
 		tableView.refresh();
 	}
 
+	/**
+	 * Exporta la tabla a un fichero CSV.
+	 */
 	public void exportTable() {
 		try {
 			FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportcsv"),
@@ -267,6 +286,11 @@ public class ClusteringTable {
 		}
 	}
 
+	/**
+	 * Muestra los datos de un usuario.
+	 * 
+	 * @param userData usuario
+	 */
 	public void showUserDataInfo(UserData userData) {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ClusteringInfo.fxml"),
 				I18n.getResourceBundle());
@@ -275,82 +299,53 @@ public class ClusteringTable {
 		userDataController.init(userData, tableView);
 	}
 
+	/**
+	 * Elimina las etiquetas seleccionadas.
+	 */
 	public void deleteLabels() {
 		listViewLabels.getItems().removeAll(listViewLabels.getSelectionModel().getSelectedItems());
 	}
 
 	/**
-	 * @return the tableView
+	 * Devuelve la TableView.
+	 * 
+	 * @return TableView
 	 */
 	public TableView<UserData> getTableView() {
 		return tableView;
 	}
 
 	/**
-	 * @return the columnImage
-	 */
-	public TableColumn<UserData, ImageView> getColumnImage() {
-		return columnImage;
-	}
-
-	/**
-	 * @return the columnName
-	 */
-	public TableColumn<UserData, String> getColumnName() {
-		return columnName;
-	}
-
-	/**
-	 * @return the columnCluster
-	 */
-	public TableColumn<UserData, String> getColumnCluster() {
-		return columnCluster;
-	}
-
-	/**
-	 * @return the checkComboBoxCluster
-	 */
-	public CheckComboBox<Integer> getCheckComboBoxCluster() {
-		return checkComboBoxCluster;
-	}
-
-	/**
-	 * @return the checkBoxExportGrades
-	 */
-	public CheckBox getCheckBoxExportGrades() {
-		return checkBoxExportGrades;
-	}
-
-	/**
-	 * @return the buttonExport
-	 */
-	public Button getButtonExport() {
-		return buttonExport;
-	}
-
-	/**
-	 * @return the propertySheetLabel
+	 * Devuelve el PropertySheet de las etiquetas.
+	 * 
+	 * @return PropertySheet
 	 */
 	public PropertySheet getPropertySheetLabel() {
 		return propertySheetLabel;
 	}
 
 	/**
-	 * @return the buttonLabel
+	 * Devuelve el botón de etiquetar.
+	 * 
+	 * @return botón
 	 */
 	public Button getButtonLabel() {
 		return buttonLabel;
 	}
 
 	/**
-	 * @return the listViewLabels
+	 * Devuelve la ListView de las etiquetas.
+	 * 
+	 * @return ListView
 	 */
 	public ListView<String> getListViewLabels() {
 		return listViewLabels;
 	}
 
 	/**
-	 * @return the propertyEditorLabel
+	 * Devuelve el TextFieldPropertyEditorFactory
+	 * 
+	 * @return TextFieldPropertyEditorFactory
 	 */
 	public TextFieldPropertyEditorFactory getPropertyEditorLabel() {
 		return propertyEditorLabel;

@@ -13,15 +13,29 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
 import javafx.util.Callback;
 
+/**
+ * Generador de TextFields con autocompletado.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class TextFieldPropertyEditorFactory implements Callback<Item, PropertyEditor<?>> {
 
 	private List<Editor> editors = new ArrayList<>();
 	private List<String> suggestions;
 
+	/**
+	 * Constructor con una lista de sugerencias.
+	 * 
+	 * @param suggestions lista de sugerencias
+	 */
 	public TextFieldPropertyEditorFactory(List<String> suggestions) {
 		this.suggestions = suggestions;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public PropertyEditor<?> call(Item param) {
 		TextField textField = new TextField();
@@ -30,13 +44,20 @@ public class TextFieldPropertyEditorFactory implements Callback<Item, PropertyEd
 		return editor;
 	}
 
-	public void add(String string) {
-		if (!suggestions.contains(string)) {
-			suggestions.add(string);
+	/**
+	 * Añade una sugerencia si no estaba.
+	 * @param sugerencia texto de sugerencia
+	 */
+	public void add(String sugerencia) {
+		if (!suggestions.contains(sugerencia)) {
+			suggestions.add(sugerencia);
 			refresh();
 		}
 	}
 
+	/**
+	 * Actualiza los editores.
+	 */
 	public void refresh() {
 		for (Editor editor : editors) {
 			editor.refresh();
@@ -47,7 +68,7 @@ public class TextFieldPropertyEditorFactory implements Callback<Item, PropertyEd
 
 		private AutoCompletionBinding<String> autoCompletion;
 
-		public Editor(Item property, TextField control, List<String> list) {
+		private Editor(Item property, TextField control, List<String> list) {
 			super(property, control);
 			setup(list);
 		}

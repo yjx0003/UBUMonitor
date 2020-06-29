@@ -173,7 +173,7 @@ public class HierarchicalController {
 		checkComboBoxLogs.getCheckModel().checkAll();
 		checkComboBoxLogs.disableProperty().bind(checkBoxLogs.selectedProperty().not());
 
-		spinnerClusters.setValueFactory(new IntegerSpinnerValueFactory(1, 9999, 3));
+		spinnerClusters.setValueFactory(new IntegerSpinnerValueFactory(2, 9999, 2));
 		spinnerClusters.getEditor().textProperty().addListener(JavaFXUtils.getSpinnerListener(spinnerClusters));
 
 		ChangeListener<? super Number> listener = (obs, newValue, oldValue) -> setImage();
@@ -234,6 +234,7 @@ public class HierarchicalController {
 	 */
 	public void executePartition() {
 		int k = spinnerClusters.getValue();
+		LOGGER.debug("Partition, number of clusters: {}", k);
 		List<UserData> usersData = hierarchicalAlgorithm.getUsersData();
 		int[] partition = hierarchicalClustering.partition(k);
 		List<ClusterWrapper> clusterWarpers = new ArrayList<>();
@@ -252,6 +253,7 @@ public class HierarchicalController {
 			clusterWarpper.forEach(u -> u.setCluster(clusterWarpper));
 		}
 
+		LOGGER.debug("Partition, clusters: {}", clusterWarpers);
 		clusteringTableController.updateTable(clusterWarpers);
 		updateRename(clusterWarpers);
 	}

@@ -86,5 +86,9 @@ public class ExportUtil {
 		}
 		exportCSV(file, head.toArray(new String[0]), data);
 	}
+	
+	private ExportUtil() {
+		throw new UnsupportedOperationException();
+	}
 
 }

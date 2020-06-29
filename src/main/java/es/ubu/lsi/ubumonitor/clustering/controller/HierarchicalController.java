@@ -26,6 +26,7 @@ import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.LinkageMeasure;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
+import es.ubu.lsi.ubumonitor.clustering.util.Util;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
@@ -160,13 +161,7 @@ public class HierarchicalController {
 		checkComboBoxLogs.disableProperty().bind(checkBoxLogs.selectedProperty().not());
 
 		spinnerClusters.setValueFactory(new IntegerSpinnerValueFactory(1, 9999, 3));
-		spinnerClusters.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-			if (!newValue.matches("^[1-9]\\d{0,4}")) {
-				spinnerClusters.getEditor().setText(oldValue);
-			} else {
-				spinnerClusters.getValueFactory().setValue(Integer.valueOf(newValue));
-			}
-		});
+		spinnerClusters.getEditor().textProperty().addListener(Util.getSpinnerListener(spinnerClusters));
 
 		ChangeListener<? super Number> listener = (obs, newValue, oldValue) -> setImage();
 		pane.widthProperty().addListener(listener);

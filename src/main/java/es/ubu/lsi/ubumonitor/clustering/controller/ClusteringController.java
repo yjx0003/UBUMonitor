@@ -37,6 +37,7 @@ import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
 import es.ubu.lsi.ubumonitor.clustering.exception.IllegalParamenterException;
 import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
+import es.ubu.lsi.ubumonitor.clustering.util.Util;
 import es.ubu.lsi.ubumonitor.controllers.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
@@ -161,21 +162,11 @@ public class ClusteringController {
 	private void initAlgorithms() {
 		spinnerReduce.disableProperty().bind(checkBoxReduce.selectedProperty().not());
 		spinnerReduce.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 9999));
-		spinnerReduce.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-			if (!newValue.matches("^[1-9]\\d{0,4}")) {
-				spinnerReduce.getEditor().setText(oldValue);
-			} else {
-				spinnerReduce.getValueFactory().setValue(Integer.valueOf(newValue));
-			}
-		});
+		spinnerReduce.getEditor().textProperty().addListener(Util.getSpinnerListener(spinnerReduce));
+
 		spinnerIterations.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 9999, 20));
-		spinnerIterations.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-			if (!newValue.matches("^[1-9]\\d{0,4}")) {
-				spinnerIterations.getEditor().setText(oldValue);
-			} else {
-				spinnerIterations.getValueFactory().setValue(Integer.valueOf(newValue));
-			}
-		});
+		spinnerIterations.getEditor().textProperty().addListener(Util.getSpinnerListener(spinnerIterations));
+
 		checkComboBoxLogs.disableProperty().bind(checkBoxLogs.selectedProperty().not());
 
 		algorithmList.setCellFactory(callback -> new ListCell<Algorithm>() {
@@ -315,13 +306,6 @@ public class ClusteringController {
 		controller.setUp(analysisMethod, users, collectors, start, end);
 	}
 
-	/**
-	 * @return the clusteringTable
-	 */
-	public ClusteringTable getClusteringTable() {
-		return clusteringTableController;
-	}
-
 	private List<DataCollector> getSelectedCollectors() {
 		List<DataCollector> collectors = new ArrayList<>();
 		if (checkBoxLogs.isSelected()) {
@@ -334,6 +318,13 @@ public class ClusteringController {
 			collectors.add(activityCollector);
 		}
 		return collectors;
+	}
+
+	/**
+	 * @return the clusteringTable
+	 */
+	public ClusteringTable getClusteringTable() {
+		return clusteringTableController;
 	}
 
 	/**

@@ -39,13 +39,18 @@ public abstract class SmileAdapter extends Clusterer<UserData> {
 		for (int i = 0; i < centroidClustering.k; i++) {
 			DoublePoint center = new DoublePoint(convertNaNs(centroidClustering.centroids[i]));
 			CentroidCluster<UserData> cluster = new CentroidCluster<>(center);
-			for (int j = 0; j < centroidClustering.y.length; j++) {
-				if (i == centroidClustering.y[j])
-					cluster.addPoint(users.get(j));
-			}
+			addPoints(centroidClustering, users, i, cluster);
 			result.add(cluster);
 		}
 		return result;
+	}
+
+	private void addPoints(PartitionClustering clustering, List<UserData> users, int i,
+			Cluster<UserData> cluster) {
+		for (int j = 0; j < clustering.y.length; j++) {
+			if (i == clustering.y[j])
+				cluster.addPoint(users.get(j));
+		}
 	}
 
 	private List<? extends Cluster<UserData>> adaptSmile(Collection<UserData> points, PartitionClustering clustering) {
@@ -53,15 +58,12 @@ public abstract class SmileAdapter extends Clusterer<UserData> {
 		List<Cluster<UserData>> result = new ArrayList<>();
 		for (int i = 0; i < clustering.k; i++) {
 			Cluster<UserData> cluster = new Cluster<>();
-			for (int j = 0; j < clustering.y.length; j++) {
-				if (i == clustering.y[j])
-					cluster.addPoint(users.get(j));
-			}
+			addPoints(clustering, users, i, cluster);
 			result.add(cluster);
 		}
 		return result;
 	}
-	
+
 	private double[] convertNaNs(double[] point) {
 		for (int i = 0; i < point.length; i++) {
 			if (Double.isNaN(point[i]))

@@ -24,12 +24,25 @@ import es.ubu.lsi.ubumonitor.clustering.data.Distance;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 
+/**
+ * Clase encargada de ejecutar un algoritmo de clustering.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class AlgorithmExecuter {
 
 	private Clusterer<UserData> clusterer;
 	private Distance distance;
 	private List<UserData> usersData;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param algorithm      algoritmo de clustering
+	 * @param enrolledUsers  usuarios
+	 * @param dataCollectors lista de colectores de datos
+	 */
 	public AlgorithmExecuter(Algorithm algorithm, List<EnrolledUser> enrolledUsers,
 			List<DataCollector> dataCollectors) {
 		this.clusterer = algorithm.getClusterer();
@@ -65,10 +78,25 @@ public class AlgorithmExecuter {
 		return true;
 	}
 
+	/**
+	 * Ejecuta una vez el algoritmo.
+	 * 
+	 * @param dim    reducir dimensiones, 0 para no reducir
+	 * @param filter true para eliminar constantes
+	 * @return lista de agrupaciones
+	 */
 	public List<ClusterWrapper> execute(int dim, boolean filter) {
 		return execute(1, dim, filter);
 	}
 
+	/**
+	 * Ejecuta el algoritmo varias veces y devuelve el mejor resultado.
+	 * 
+	 * @param iterations número de iteraciones
+	 * @param dimension  reducir dimensiones, 0 para no reducir
+	 * @param filter     true para eliminar constantes
+	 * @return lista de agrupaciones
+	 */
 	public List<ClusterWrapper> execute(int iterations, int dimension, boolean filter) {
 
 		if (usersData.size() < 2)
@@ -123,14 +151,32 @@ public class AlgorithmExecuter {
 		}
 	}
 
+	/**
+	 * Devuelve el clusterer.
+	 * 
+	 * @return clusterer
+	 */
 	public Clusterer<UserData> getClusterer() {
 		return clusterer;
 	}
 
+	/**
+	 * Devuelve la lista de usuarios.
+	 * 
+	 * @return lista de usuarios
+	 */
 	public List<UserData> getUserData() {
 		return usersData;
 	}
 
+	/**
+	 * Reduce las dimensiones de los datos.
+	 * 
+	 * @param dim      número de dimensiones
+	 * @param clusters lista de agrupaciones
+	 * @return lista de mapas con clave el usuario y valor un array de dim
+	 *         dimensiones
+	 */
 	public static List<Map<UserData, double[]>> clustersTo(int dim, List<ClusterWrapper> clusters) {
 		if (clusters.isEmpty()) {
 			return Collections.emptyList();

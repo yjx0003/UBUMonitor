@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -25,8 +26,8 @@ import es.ubu.lsi.ubumonitor.clustering.controller.collector.LogCollector;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.LinkageMeasure;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
+import es.ubu.lsi.ubumonitor.clustering.util.JavaFXUtils;
 import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
-import es.ubu.lsi.ubumonitor.clustering.util.Util;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
@@ -65,6 +66,12 @@ import smile.math.distance.ManhattanDistance;
 import smile.plot.swing.Canvas;
 import smile.plot.swing.Dendrogram;
 
+/**
+ * Controlador del clustering jerárquico.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class HierarchicalController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HierarchicalController.class);
@@ -116,7 +123,11 @@ public class HierarchicalController {
 
 	private HierarchicalClustering hierarchicalClustering;
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * Inicializa el controllador.
+	 * 
+	 * @param mainController controllador general
+	 */
 	public void init(MainController mainController) {
 
 		clusteringTableController.init(mainController);
@@ -134,7 +145,9 @@ public class HierarchicalController {
 				return null;
 			}
 		});
-		choiceBoxDistance.getItems().setAll(new EuclideanDistance(), new ManhattanDistance(), new ChebyshevDistance());
+		List<Distance<double[]>> distances = Arrays.asList(new EuclideanDistance(), new ManhattanDistance(),
+				new ChebyshevDistance());
+		choiceBoxDistance.getItems().setAll(distances);
 		choiceBoxDistance.getSelectionModel().selectedItemProperty()
 				.addListener((obs, oldValue, newValue) -> hierarchicalAlgorithm.setDistance(newValue));
 		choiceBoxDistance.getSelectionModel().selectFirst();
@@ -161,7 +174,7 @@ public class HierarchicalController {
 		checkComboBoxLogs.disableProperty().bind(checkBoxLogs.selectedProperty().not());
 
 		spinnerClusters.setValueFactory(new IntegerSpinnerValueFactory(1, 9999, 3));
-		spinnerClusters.getEditor().textProperty().addListener(Util.getSpinnerListener(spinnerClusters));
+		spinnerClusters.getEditor().textProperty().addListener(JavaFXUtils.getSpinnerListener(spinnerClusters));
 
 		ChangeListener<? super Number> listener = (obs, newValue, oldValue) -> setImage();
 		pane.widthProperty().addListener(listener);
@@ -187,18 +200,9 @@ public class HierarchicalController {
 		});
 	}
 
-	private void setImage() {
-		if (hierarchicalClustering == null)
-			return;
-
-		Dendrogram dendrogram = new Dendrogram(hierarchicalClustering.getTree(), hierarchicalClustering.getHeight());
-		Canvas canvas = dendrogram.canvas();
-		canvas.setMargin(0.05);
-		Image image = SwingFXUtils
-				.toFXImage(canvas.toBufferedImage((int) pane.getWidth() + 1, (int) pane.getHeight() + 1), null);
-		imageView.setImage(image);
-	}
-
+	/**
+	 * Ejecuta el clustering jerárquico.
+	 */
 	public void executeClustering() {
 		List<EnrolledUser> users = listParticipants.getSelectionModel().getSelectedItems();
 
@@ -225,6 +229,9 @@ public class HierarchicalController {
 		}
 	}
 
+	/**
+	 * Ejecuta la partición.
+	 */
 	public void executePartition() {
 		int k = spinnerClusters.getValue();
 		List<UserData> usersData = hierarchicalAlgorithm.getUsersData();
@@ -247,6 +254,18 @@ public class HierarchicalController {
 
 		clusteringTableController.updateTable(clusterWarpers);
 		updateRename(clusterWarpers);
+	}
+
+	private void setImage() {
+		if (hierarchicalClustering == null)
+			return;
+
+		Dendrogram dendrogram = new Dendrogram(hierarchicalClustering.getTree(), hierarchicalClustering.getHeight());
+		Canvas canvas = dendrogram.canvas();
+		canvas.setMargin(0.05);
+		Image image = SwingFXUtils
+				.toFXImage(canvas.toBufferedImage((int) pane.getWidth() + 1, (int) pane.getHeight() + 1), null);
+		imageView.setImage(image);
 	}
 
 	private void exportPNG() {

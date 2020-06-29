@@ -1,8 +1,5 @@
 package es.ubu.lsi.ubumonitor.clustering.controller;
 
-import java.io.File;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,25 +35,18 @@ import es.ubu.lsi.ubumonitor.clustering.controller.collector.GradesCollector;
 import es.ubu.lsi.ubumonitor.clustering.controller.collector.LogCollector;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
-import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.clustering.exception.IllegalParamenterException;
-import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
 import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
-import es.ubu.lsi.ubumonitor.clustering.util.TextFieldPropertyEditorFactory;
 import es.ubu.lsi.ubumonitor.controllers.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponent;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
-import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -67,26 +57,20 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.web.WebView;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 
 public class ClusteringController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringController.class);
 
-	private Controller controller = Controller.getInstance();
-
 	private MainController mainController;
+
+	@FXML
+	private ClusteringTable clusteringTableController;
 
 	/* Componentes de seleccion */
 
@@ -143,53 +127,15 @@ public class ClusteringController {
 	@FXML
 	private WebView webViewSilhouette;
 
-	/* Tabla */
-
-	@FXML
-	private TableView<UserData> tableView;
-
-	@FXML
-	private TableColumn<UserData, ImageView> columnImage;
-
-	@FXML
-	private TableColumn<UserData, String> columnName;
-
-	@FXML
-	private TableColumn<UserData, String> columnCluster;
-
-	@FXML
-	private CheckComboBox<Integer> checkComboBoxCluster;
-
-	@FXML
-	private CheckBox checkBoxExportGrades;
-	
-	@FXML
-	private Button buttonExport;
-
-	/* Etiquetar */
-
-	@FXML
-	private PropertySheet propertySheetLabel;
-
-	@FXML
-	private Button buttonLabel;
-
-	@FXML
-	private ListView<String> listViewLabels;
-
 	private GradesCollector gradesCollector;
 
 	private ActivityCollector activityCollector;
 
 	private List<ClusterWrapper> clusters;
 
-	private ClusteringTable table;
-
 	private Scatter2DChart graph;
 
 	private SilhouetteChart silhouette;
-
-	private TextFieldPropertyEditorFactory propertyEditorLabel;
 
 	private Scatter3DChart graph3D;
 
@@ -197,8 +143,7 @@ public class ClusteringController {
 
 	public void init(MainController controller) {
 		mainController = controller;
-		table = new ClusteringTable(tableView, columnImage, columnName, columnCluster, controller.getTvwGradeReport(),
-				checkComboBoxCluster);
+		clusteringTableController.init(controller);
 		graph = new Scatter2DChart(this);
 		silhouette = new SilhouetteChart(this);
 		graph3D = new Scatter3DChart(this);
@@ -208,12 +153,8 @@ public class ClusteringController {
 		choiceBoxAnalyze.getItems().setAll(new ElbowFactory(), new SilhouetteFactory());
 		choiceBoxAnalyze.getSelectionModel().selectFirst();
 
-		checkBoxExportGrades.disableProperty()
-				.bind(controller.getTvwGradeReport().getSelectionModel().selectedItemProperty().isNull());
-
 		initAlgorithms();
 		initCollectors();
-		initLabels();
 		initService();
 	}
 
@@ -317,11 +258,10 @@ public class ClusteringController {
 		progressExecute.visibleProperty().bind(service.runningProperty());
 		service.setOnSucceeded(e -> {
 			silhouette.updateChart(clusters);
-			table.updateTable(clusters);
+			clusteringTableController.updateTable(clusters);
 			updateRename();
 			graph.updateChart(clusters);
 			graph3D.updateChart(clusters);
-			buttonExport.setDisable(false);
 			service.reset();
 		});
 		service.setOnFailed(e -> {
@@ -330,36 +270,6 @@ public class ClusteringController {
 					: I18n.get(exception.getMessage()));
 			service.reset();
 		});
-	}
-
-	private void initLabels() {
-		propertyEditorLabel = new TextFieldPropertyEditorFactory(listViewLabels.getItems());
-		propertySheetLabel.setPropertyEditorFactory(propertyEditorLabel);
-
-		listViewLabels.getItems().setAll(ConfigHelper.getArray("labels"));
-		FXCollections.sort(listViewLabels.getItems(), String.CASE_INSENSITIVE_ORDER);
-		listViewLabels.getItems().addListener(new ListChangeListener<String>() {
-			private boolean flag = true;
-
-			@Override
-			public void onChanged(Change<? extends String> c) {
-				if (flag) {
-					flag = false;
-					FXCollections.sort(listViewLabels.getItems(), String.CASE_INSENSITIVE_ORDER);
-					propertyEditorLabel.refresh();
-					ConfigHelper.setArray("labels", listViewLabels.getItems());
-					flag = true;
-				}
-			}
-		});
-
-		listViewLabels.setCellFactory(TextFieldListCell.forListView());
-		listViewLabels.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-	}
-
-	@FXML
-	private void deleteLabels() {
-		listViewLabels.getItems().removeAll(listViewLabels.getSelectionModel().getSelectedItems());
 	}
 
 	@FXML
@@ -371,44 +281,18 @@ public class ClusteringController {
 		List<PropertySheet.Item> items = IntStream.range(0, clusters.size())
 				.mapToObj(i -> new SimplePropertySheetItem(String.valueOf(i), String.valueOf(i)))
 				.collect(Collectors.toList());
-		propertySheetLabel.getItems().setAll(items);
-		buttonLabel.setOnAction(e -> {
+		clusteringTableController.getPropertySheetLabel().getItems().setAll(items);
+		clusteringTableController.getButtonLabel().setOnAction(e -> {
 			for (int i = 0; i < items.size(); i++) {
 				String name = items.get(i).getValue().toString();
 				clusters.get(i).setName(name);
-				propertyEditorLabel.add(name);
+				clusteringTableController.getPropertyEditorLabel().add(name);
 			}
-			table.updateTable(clusters);
+			clusteringTableController.updateTable(clusters);
 			graph.rename(clusters);
 			graph3D.rename(clusters);
 			silhouette.rename(clusters);
 		});
-	}
-
-	@FXML
-	private void exportTable() {
-		try {
-			FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportcsv"),
-					String.format("%s_%s_CLUSTERING_TABLE.csv", controller.getActualCourse().getId(),
-							LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss"))),
-					ConfigHelper.getProperty("csvFolderPath", "./"), new ExtensionFilter("CSV (*.csv)", "*.csv"));
-			File file = fileChooser.showSaveDialog(controller.getStage());
-			if (file != null) {
-				boolean exportGrades = checkBoxExportGrades.isSelected();
-				if (exportGrades) {
-					List<TreeItem<GradeItem>> treeItems = mainController.getTvwGradeReport().getSelectionModel()
-							.getSelectedItems();
-					List<GradeItem> grades = treeItems.stream().map(TreeItem::getValue).collect(Collectors.toList());
-					ExportUtil.exportClustering(file, clusters, grades.toArray(new GradeItem[0]));
-				} else {
-					ExportUtil.exportClustering(file, clusters);
-				}
-				UtilMethods.infoWindow(I18n.get("message.export_csv") + file.getAbsolutePath());
-			}
-		} catch (Exception e) {
-			LOGGER.error("Error al exportar el fichero CSV.", e);
-			UtilMethods.errorWindow(I18n.get("error.savecsvfiles"), e);
-		}
 	}
 
 	@FXML
@@ -429,6 +313,13 @@ public class ClusteringController {
 		UtilMethods.createDialog(loader, Controller.getInstance().getStage());
 		AnalysisController controller = loader.getController();
 		controller.setUp(analysisMethod, users, collectors, start, end);
+	}
+
+	/**
+	 * @return the clusteringTable
+	 */
+	public ClusteringTable getClusteringTable() {
+		return clusteringTableController;
 	}
 
 	private List<DataCollector> getSelectedCollectors() {
@@ -555,76 +446,6 @@ public class ClusteringController {
 	 */
 	public WebView getWebViewSilhouette() {
 		return webViewSilhouette;
-	}
-
-	/**
-	 * @return the tableView
-	 */
-	public TableView<UserData> getTableView() {
-		return tableView;
-	}
-
-	/**
-	 * @return the columnImage
-	 */
-	public TableColumn<UserData, ImageView> getColumnImage() {
-		return columnImage;
-	}
-
-	/**
-	 * @return the columnName
-	 */
-	public TableColumn<UserData, String> getColumnName() {
-		return columnName;
-	}
-
-	/**
-	 * @return the columnCluster
-	 */
-	public TableColumn<UserData, String> getColumnCluster() {
-		return columnCluster;
-	}
-
-	/**
-	 * @return the checkComboBoxCluster
-	 */
-	public CheckComboBox<Integer> getCheckComboBoxCluster() {
-		return checkComboBoxCluster;
-	}
-
-	/**
-	 * @return the checkBoxExportGrades
-	 */
-	public CheckBox getCheckBoxExportGrades() {
-		return checkBoxExportGrades;
-	}
-
-	/**
-	 * @return the propertySheetLabel
-	 */
-	public PropertySheet getPropertySheetLabel() {
-		return propertySheetLabel;
-	}
-
-	/**
-	 * @return the buttonLabel
-	 */
-	public Button getButtonLabel() {
-		return buttonLabel;
-	}
-
-	/**
-	 * @return the listViewLabels
-	 */
-	public ListView<String> getListViewLabels() {
-		return listViewLabels;
-	}
-
-	/**
-	 * @return the propertyEditorLabel
-	 */
-	public TextFieldPropertyEditorFactory getPropertyEditorLabel() {
-		return propertyEditorLabel;
 	}
 
 }

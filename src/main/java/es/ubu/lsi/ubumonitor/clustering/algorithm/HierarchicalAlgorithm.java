@@ -11,29 +11,43 @@ import smile.clustering.HierarchicalClustering;
 import smile.clustering.linkage.Linkage;
 import smile.math.distance.Distance;
 
+/**
+ * Algoritmo del clustering jerárquico.
+ * 
+ * @author Xing Long Ji
+ *
+ */
 public class HierarchicalAlgorithm {
 
 	private LinkageMeasure linkageMeasure;
 	private Distance<double[]> distance;
 	private List<UserData> usersData;
 
+	/**
+	 * Ejecuta el algoritmo con los datos pasados por parámetro.
+	 * 
+	 * @param enrolledUsers  lista de usuarios
+	 * @param dataCollectors lista de recolectores de datos
+	 * @return HierarchicalClustering resultante
+	 */
 	public HierarchicalClustering execute(List<EnrolledUser> enrolledUsers, List<DataCollector> dataCollectors) {
 		usersData = enrolledUsers.stream().map(UserData::new).collect(Collectors.toList());
 		dataCollectors.forEach(collector -> collector.collect(usersData));
-		
+
 		if (usersData.size() < 2)
 			throw new IllegalStateException("clustering.error.notUsers");
 
 		if (usersData.get(0).getData().isEmpty())
 			throw new IllegalStateException("clustering.error.notData");
-		
-		
+
 		double[][] data = usersData.stream().map(UserData::getPoint).toArray(double[][]::new);
 		Linkage linkage = linkageMeasure.of(data, distance);
 		return HierarchicalClustering.fit(linkage);
 	}
 
 	/**
+	 * Establece la medida de distancia entre clusters.
+	 * 
 	 * @param linkageMeasure the linkageMeasure to set
 	 */
 	public void setLinkageMeasure(LinkageMeasure linkageMeasure) {

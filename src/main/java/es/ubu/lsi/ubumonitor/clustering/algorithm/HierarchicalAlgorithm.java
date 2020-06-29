@@ -48,21 +48,25 @@ public class HierarchicalAlgorithm {
 	/**
 	 * Establece la medida de distancia entre clusters.
 	 * 
-	 * @param linkageMeasure the linkageMeasure to set
+	 * @param linkageMeasure a establecer
 	 */
 	public void setLinkageMeasure(LinkageMeasure linkageMeasure) {
 		this.linkageMeasure = linkageMeasure;
 	}
 
 	/**
-	 * @param distance the distance to set
+	 * Establece la medida de distancia entre elementos.
+	 * 
+	 * @param distance a establecer
 	 */
 	public void setDistance(Distance<double[]> distance) {
 		this.distance = distance;
 	}
 
 	/**
-	 * @return the usersData
+	 * Devuelve la lista de usuarios con datos.
+	 * 
+	 * @return lista de UserData
 	 */
 	public List<UserData> getUsersData() {
 		return usersData;

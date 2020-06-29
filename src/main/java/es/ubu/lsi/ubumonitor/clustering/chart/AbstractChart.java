@@ -74,8 +74,7 @@ public abstract class AbstractChart {
 
 	private void exportCSV() {
 		try {
-			String fileName = String.format(FILE_NAME_CSV, controller.getActualCourse().getId(),
-					LocalDateTime.now().format(DTF));
+			String fileName = getFileName(FILE_NAME_CSV);
 
 			FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportcsv"), fileName,
 					ConfigHelper.getProperty("csvFolderPath", "./"), EXTENSION_CSV);
@@ -90,6 +89,10 @@ public abstract class AbstractChart {
 		}
 	}
 
+	private String getFileName(String nameFormat) {
+		return String.format(nameFormat, controller.getActualCourse().getId(), LocalDateTime.now().format(DTF));
+	}
+
 	/**
 	 * Exporta los datos de la gráfica a un fichero CSV.
 	 * 
@@ -100,8 +103,7 @@ public abstract class AbstractChart {
 
 	private void exportPNG() {
 		try {
-			String fileName = String.format(FILE_NAME_PNG, controller.getActualCourse().getId(),
-					LocalDateTime.now().format(DTF));
+			String fileName = getFileName(FILE_NAME_PNG);
 
 			FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportpng"), fileName,
 					ConfigHelper.getProperty("csvFolderPath", "./"), EXTENSION_PNG);

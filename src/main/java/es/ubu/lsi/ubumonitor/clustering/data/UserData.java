@@ -91,7 +91,7 @@ public class UserData implements Clusterable {
 	}
 
 	/**
-	 * Devuelve los datos normalizados. {@inheritDocs}
+	 * Devuelve los datos normalizados.
 	 */
 	@Override
 	public double[] getPoint() {

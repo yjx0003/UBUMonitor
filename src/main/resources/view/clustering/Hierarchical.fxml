@@ -8,8 +8,6 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -90,47 +88,16 @@
       </GridPane>
    </top>
    <center>
-      <SplitPane dividerPositions="0.8" BorderPane.alignment="CENTER">
+      <SplitPane dividerPositions="0.7" BorderPane.alignment="CENTER">
          <items>
             <Pane fx:id="pane" prefHeight="200.0" prefWidth="200.0">
                <children>
                   <ImageView fx:id="imageView" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
-            <BorderPane minWidth="0.0">
-               <center>
-                  <TableView fx:id="tableView">
-                    <columns>
-                      <TableColumn fx:id="columnImage" editable="false" maxWidth="54.0" minWidth="54.0" prefWidth="54.0" sortable="false" />
-                      <TableColumn fx:id="columnName" prefWidth="75.0" text="%clustering.fullname" />
-                        <TableColumn fx:id="columnCluster" prefWidth="75.0" text="%clustering.cluster" />
-                    </columns>
-                     <columnResizePolicy>
-                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                     </columnResizePolicy>
-                  </TableView>
-               </center>
-               <top>
-                  <GridPane hgap="10.0" BorderPane.alignment="CENTER">
-                      <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                      </columnConstraints>
-                      <rowConstraints>
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      </rowConstraints>
-                       <children>
-                          <CheckComboBox fx:id="checkComboBoxCluster" title="%clustering.clusters" />
-                          <CheckBox fx:id="checkBoxExportGrades" alignment="CENTER_RIGHT" mnemonicParsing="false" text="%clustering.exportGrades" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
-                          <Button fx:id="buttonExport" disable="true" mnemonicParsing="false" onAction="#exportTable" text="%text.exportcsv" GridPane.columnIndex="2" />
-                       </children>
-                       <BorderPane.margin>
-                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                       </BorderPane.margin>
-                  </GridPane>
-               </top>
-            </BorderPane>
+            
+            <fx:include fx:id="clusteringTable" source="Table.fxml" />
+            
          </items>
       </SplitPane>
    </center>

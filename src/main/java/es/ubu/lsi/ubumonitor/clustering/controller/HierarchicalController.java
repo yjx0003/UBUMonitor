@@ -7,11 +7,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.imageio.ImageIO;
 
 import org.apache.commons.math3.ml.clustering.Cluster;
 import org.controlsfx.control.CheckComboBox;
+import org.controlsfx.control.PropertySheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +25,7 @@ import es.ubu.lsi.ubumonitor.clustering.controller.collector.LogCollector;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.LinkageMeasure;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
-import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
+import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
@@ -33,7 +35,6 @@ import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
 import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
-import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.SwingFXUtils;
@@ -47,9 +48,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -57,6 +55,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.util.StringConverter;
 import smile.clustering.HierarchicalClustering;
 import smile.math.distance.ChebyshevDistance;
 import smile.math.distance.Distance;
@@ -65,13 +64,16 @@ import smile.math.distance.ManhattanDistance;
 import smile.plot.swing.Canvas;
 import smile.plot.swing.Dendrogram;
 
-public class HierarchicalController extends AbstractController {
+public class HierarchicalController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HierarchicalController.class);
 
 	private static final Controller CONTROLLER = Controller.getInstance();
 
 	private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyyMMddhhmmss");
+
+	@FXML
+	private ClusteringTable clusteringTableController;
 
 	@FXML
 	private ImageView imageView;
@@ -97,34 +99,11 @@ public class HierarchicalController extends AbstractController {
 	@FXML
 	private ChoiceBox<LinkageMeasure> choiceBoxLinkage;
 
-	/* Tabla */
-
-	@FXML
-	private CheckBox checkBoxExportGrades;
-
 	@FXML
 	private Spinner<Integer> spinnerClusters;
 
 	@FXML
 	private Button buttonExecute;
-
-	@FXML
-	private TableView<UserData> tableView;
-
-	@FXML
-	private TableColumn<UserData, ImageView> columnImage;
-
-	@FXML
-	private TableColumn<UserData, String> columnName;
-
-	@FXML
-	private TableColumn<UserData, String> columnCluster;
-
-	@FXML
-	private CheckComboBox<Integer> checkComboBoxCluster;
-	
-	@FXML
-	private Button buttonExport;
 
 	private GradesCollector gradesCollector;
 
@@ -134,23 +113,26 @@ public class HierarchicalController extends AbstractController {
 
 	private HierarchicalAlgorithm hierarchicalAlgorithm = new HierarchicalAlgorithm();
 
-	private ClusteringTable clusteringTable;
-
 	private HierarchicalClustering hierarchicalClustering;
-
-	private List<ClusterWrapper> clusters;
-
-	private MainController mainController;
 
 	@SuppressWarnings("unchecked")
 	public void init(MainController mainController) {
-		this.mainController = mainController;
 
-		clusteringTable = new ClusteringTable(tableView, columnImage, columnName, columnCluster,
-				mainController.getTvwGradeReport(), checkComboBoxCluster);
+		clusteringTableController.init(mainController);
 
 		listParticipants = mainController.getListParticipants();
+		choiceBoxDistance.setConverter(new StringConverter<Distance<double[]>>() {
 
+			@Override
+			public String toString(Distance<double[]> object) {
+				return I18n.get("clustering.distance." + object.toString().replace(' ', '_').toLowerCase());
+			}
+
+			@Override
+			public Distance<double[]> fromString(String string) {
+				return null;
+			}
+		});
 		choiceBoxDistance.getItems().setAll(new EuclideanDistance(), new ManhattanDistance(), new ChebyshevDistance());
 		choiceBoxDistance.getSelectionModel().selectedItemProperty()
 				.addListener((obs, oldValue, newValue) -> hierarchicalAlgorithm.setDistance(newValue));
@@ -172,12 +154,10 @@ public class HierarchicalController extends AbstractController {
 				t -> t.isVisible() ? "visible" : "not_visible"));
 		list.add(new LogCollector<>("coursemodule", mainController.getListViewCourseModule(),
 				DatasSetCourseModule.getInstance(), t -> t.getModuleType().getModName()));
+
 		checkComboBoxLogs.getItems().setAll(list);
 		checkComboBoxLogs.getCheckModel().checkAll();
 		checkComboBoxLogs.disableProperty().bind(checkBoxLogs.selectedProperty().not());
-
-		imageView.fitWidthProperty().bind(pane.widthProperty());
-		imageView.fitHeightProperty().bind(pane.heightProperty());
 
 		spinnerClusters.setValueFactory(new IntegerSpinnerValueFactory(1, 9999, 3));
 		spinnerClusters.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
@@ -191,9 +171,6 @@ public class HierarchicalController extends AbstractController {
 		ChangeListener<? super Number> listener = (obs, newValue, oldValue) -> setImage();
 		pane.widthProperty().addListener(listener);
 		pane.heightProperty().addListener(listener);
-
-		checkBoxExportGrades.disableProperty()
-				.bind(mainController.getTvwGradeReport().getSelectionModel().selectedItemProperty().isNull());
 
 		initContextMenu(imageView);
 	}
@@ -241,6 +218,7 @@ public class HierarchicalController extends AbstractController {
 		if (checkBoxActivity.isSelected()) {
 			collectors.add(activityCollector);
 		}
+
 		try {
 			hierarchicalClustering = hierarchicalAlgorithm.execute(users, collectors);
 			setImage();
@@ -251,7 +229,6 @@ public class HierarchicalController extends AbstractController {
 		} catch (IllegalStateException e) {
 			UtilMethods.infoWindow(I18n.get(e.getMessage()));
 		}
-
 	}
 
 	@FXML
@@ -274,9 +251,9 @@ public class HierarchicalController extends AbstractController {
 			clusterWarpers.add(clusterWarpper);
 			clusterWarpper.forEach(u -> u.setCluster(clusterWarpper));
 		}
-		this.clusters = clusterWarpers;
-		clusteringTable.updateTable(clusterWarpers);
-		buttonExport.setDisable(false);
+
+		clusteringTableController.updateTable(clusterWarpers);
+		updateRename(clusterWarpers);
 	}
 
 	private void exportPNG() {
@@ -293,6 +270,7 @@ public class HierarchicalController extends AbstractController {
 				UtilMethods.infoWindow(I18n.get("message.export_png") + file.getAbsolutePath());
 			}
 		} catch (IOException e) {
+			LOGGER.error("Error in export", e);
 			UtilMethods.errorWindow(I18n.get("error.savechart"), e);
 		}
 	}
@@ -302,30 +280,19 @@ public class HierarchicalController extends AbstractController {
 		ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
 	}
 
-	@FXML
-	private void exportTable() {
-		try {
-			FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportcsv"),
-					String.format("%s_%s_CLUSTERING_TABLE.csv", CONTROLLER.getActualCourse().getId(),
-							LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss"))),
-					ConfigHelper.getProperty("csvFolderPath", "./"), new ExtensionFilter("CSV (*.csv)", "*.csv"));
-			File file = fileChooser.showSaveDialog(CONTROLLER.getStage());
-			if (file != null) {
-				boolean exportGrades = checkBoxExportGrades.isSelected();
-				if (exportGrades) {
-					List<TreeItem<GradeItem>> treeItems = mainController.getTvwGradeReport().getSelectionModel()
-							.getSelectedItems();
-					List<GradeItem> grades = treeItems.stream().map(TreeItem::getValue).collect(Collectors.toList());
-					ExportUtil.exportClustering(file, clusters, grades.toArray(new GradeItem[0]));
-				} else {
-					ExportUtil.exportClustering(file, clusters);
-				}
-				UtilMethods.infoWindow(I18n.get("message.export_csv") + file.getAbsolutePath());
+	private void updateRename(List<ClusterWrapper> clusters) {
+		List<PropertySheet.Item> items = IntStream.range(0, clusters.size())
+				.mapToObj(i -> new SimplePropertySheetItem(String.valueOf(i), String.valueOf(i)))
+				.collect(Collectors.toList());
+		clusteringTableController.getPropertySheetLabel().getItems().setAll(items);
+		clusteringTableController.getButtonLabel().setOnAction(e -> {
+			for (int i = 0; i < items.size(); i++) {
+				String name = items.get(i).getValue().toString();
+				clusters.get(i).setName(name);
+				clusteringTableController.getPropertyEditorLabel().add(name);
 			}
-		} catch (Exception e) {
-			LOGGER.error("Error al exportar el fichero CSV.", e);
-			UtilMethods.errorWindow(I18n.get("error.savecsvfiles"), e);
-		}
+			clusteringTableController.updateTable(clusters);
+		});
 	}
 
 }

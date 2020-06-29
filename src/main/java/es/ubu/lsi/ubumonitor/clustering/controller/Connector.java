@@ -5,14 +5,13 @@ import java.util.List;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import javafx.scene.control.TableView;
-import javafx.scene.web.WebEngine;
 
 public class Connector {
 
 	private ClusteringController clusteringController;
 	private List<ClusterWrapper> clusters;
 
-	public Connector(ClusteringController controller, WebEngine webEngine) {
+	public Connector(ClusteringController controller) {
 		this.clusteringController = controller;
 	}
 

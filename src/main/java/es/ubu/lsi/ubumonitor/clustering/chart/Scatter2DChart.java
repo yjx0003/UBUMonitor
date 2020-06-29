@@ -47,7 +47,7 @@ public class Scatter2DChart extends ClusteringChart {
 		super(clusteringController.getWebViewScatter());
 
 		WebEngine webEngine = getWebEngine();
-		connector = new Connector(clusteringController, webEngine);
+		connector = new Connector(clusteringController);
 		webEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
 			if (Worker.State.SUCCEEDED != newState)
 				return;

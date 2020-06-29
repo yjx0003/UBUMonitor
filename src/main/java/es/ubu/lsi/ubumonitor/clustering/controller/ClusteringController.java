@@ -263,8 +263,7 @@ public class ClusteringController {
 		});
 	}
 
-	@FXML
-	private void execute() {
+	public void executeClustering() {
 		service.start();
 	}
 
@@ -286,8 +285,7 @@ public class ClusteringController {
 		});
 	}
 
-	@FXML
-	private void executeAnalysis() {
+	public void executeAnalysis() {
 		Algorithm algorithm = algorithmList.getSelectionModel().getSelectedItem();
 		if (algorithm.getParameters().getValue(ClusteringParameter.NUM_CLUSTER) == null) {
 			UtilMethods.errorWindow(I18n.get("clustering.invalid"));

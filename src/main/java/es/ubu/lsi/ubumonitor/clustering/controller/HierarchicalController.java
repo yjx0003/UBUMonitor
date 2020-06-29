@@ -199,8 +199,7 @@ public class HierarchicalController {
 		imageView.setImage(image);
 	}
 
-	@FXML
-	private void execute() {
+	public void executeClustering() {
 		List<EnrolledUser> users = listParticipants.getSelectionModel().getSelectedItems();
 
 		List<DataCollector> collectors = new ArrayList<>();
@@ -226,8 +225,7 @@ public class HierarchicalController {
 		}
 	}
 
-	@FXML
-	private void executePartition() {
+	public void executePartition() {
 		int k = spinnerClusters.getValue();
 		List<UserData> usersData = hierarchicalAlgorithm.getUsersData();
 		int[] partition = hierarchicalClustering.partition(k);

@@ -63,7 +63,7 @@
                   <Insets left="10.0" />
                </GridPane.margin>
             </CheckBox>
-            <Button mnemonicParsing="false" onAction="#execute" text="%clustering.execute" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+            <Button mnemonicParsing="false" onAction="#executeClustering" text="%clustering.execute" GridPane.columnIndex="3" GridPane.rowIndex="2" />
             <ChoiceBox fx:id="choiceBoxDistance" GridPane.columnIndex="1">
                <GridPane.margin>
                   <Insets />

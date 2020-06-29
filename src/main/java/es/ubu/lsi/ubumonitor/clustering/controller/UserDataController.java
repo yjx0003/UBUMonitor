@@ -77,15 +77,13 @@ public class UserDataController {
 		loadUser(user);
 	}
 
-	@FXML
-	private void loadNext() {
+	public void loadNext() {
 		int actual = table.getSelectionModel().getSelectedIndex();
 		int next = (actual + 1) % table.getItems().size();
 		change(next);
 	}
 
-	@FXML
-	private void loadPrevious() {
+	public void loadPrevious() {
 		int actual = table.getSelectionModel().getSelectedIndex();
 		int next = actual == 0 ? table.getItems().size() - 1 : actual - 1;
 		change(next);

@@ -118,7 +118,7 @@
             </GridPane>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="2">
                <children>
-                  <Button fx:id="buttonExecute" mnemonicParsing="false" onAction="#execute" text="%clustering.execute" />
+                  <Button fx:id="buttonExecute" mnemonicParsing="false" onAction="#executeClustering" text="%clustering.execute" />
                   <ProgressIndicator fx:id="progressExecute" prefHeight="30.0" prefWidth="30.0" visible="false">
                      <HBox.margin>
                         <Insets left="10.0" />

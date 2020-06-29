@@ -18,7 +18,7 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import javafx.scene.control.ListView;
 
 /**
- * Clase que recoge los logs de tipo <T>.
+ * Clase que recoge los logs un tipo.
  * 
  * @author Xing Long Ji
  *

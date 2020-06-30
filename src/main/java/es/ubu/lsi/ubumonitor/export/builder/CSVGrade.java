@@ -60,7 +60,7 @@ public class CSVGrade extends CSVBuilderAbstract {
 		Set<EnrolledUser> enrolledUsers = getDataBase().getActualCourse().getEnrolledUsers();
 
 		Stream<EnrolledUser> enrolledUsersSorted = enrolledUsers.stream()
-				.sorted(EnrolledUser.NAME_COMPARATOR);
+				.sorted(EnrolledUser.getNameComparator());
 
 		
 		enrolledUsersSorted.forEach(eu->{

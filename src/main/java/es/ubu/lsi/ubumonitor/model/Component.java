@@ -10,7 +10,6 @@ import java.util.Map;
  */
 public enum Component {
 	
-	
 	ACTIVITY_REPORT("Activity report"),
 	ASSIGNMENT("Assignment"),
 	BOOK("Book"),
@@ -30,11 +29,14 @@ public enum Component {
 	FOLDER("Folder"),
 	FORUM("Forum"),
 	GLOSSARY("Glossary"),
+	GRADE_HISTORY("Grade history"),
 	GRADER_REPORT("Grader report"),
 	GUIA_DOCENTE("Guía Docente"),
 	HOTPOT_MODULE("HotPot module"),
 	IMS_CONTENT_PACKAGE("IMS content package"),
 	JOURNAL("Journal"),
+	KALTURA_MEDIA_ASSIGNMENT("Kaltura Media Assignment"),
+	KALTURA_VIDEO_RESOURCE("Kaltura Video Resource"),
 	LESSON("Lesson"),
 	LIVE_LOGS("Live logs"),
 	LOGS("Logs"),
@@ -51,6 +53,7 @@ public enum Component {
 	STATISTICS("Statistics"),
 	SUBMISSION_COMMENTS("Submission comments"),
 	SURVEY("Survey"),
+	SMOWL("SMOWL"),
 	SYSTEM("System"),
 	TAB_DISPLAY("Tab display"),
 	TURNITIN_ASSIGNMENT_2("Turnitin Assignment 2"),

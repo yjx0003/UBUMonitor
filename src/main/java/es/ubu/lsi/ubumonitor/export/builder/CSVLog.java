@@ -52,7 +52,7 @@ public class CSVLog extends CSVBuilderAbstract {
 			courseModule = log.getCourseModule() != null ? Integer.toString(log.getCourseModule().getCmid()) : "";
 			ip = log.getIPAdress() != null ? log.getIPAdress() : "";
 			// Add data
-			System.out.println(log);
+			
 			LOGGER.debug("Data line: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}",
 					log.getTime().toLocalDateTime(),
 					log.getComponent().getName(),

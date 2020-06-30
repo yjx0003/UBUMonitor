@@ -11,6 +11,7 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.Group;
 import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
 import es.ubu.lsi.ubumonitor.model.Role;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -59,14 +60,18 @@ public class UserInfoController {
 	}
 
 	public void previousUser() {
-		ObservableList<EnrolledUser> list = mainController.getListParticipants().getItems();
+		ObservableList<EnrolledUser> list = mainController.getSelectionUserController()
+				.getListParticipants()
+				.getItems();
 		int index = list.indexOf(actualEnrolledUser);
 		EnrolledUser previousUser = index == 0 ? list.get(list.size() - 1) : list.get(--index);
 		setUser(previousUser);
 	}
 
 	public void nextUser() {
-		ObservableList<EnrolledUser> list = mainController.getListParticipants().getItems();
+		ObservableList<EnrolledUser> list = mainController.getSelectionUserController()
+				.getListParticipants()
+				.getItems();
 
 		int index = list.indexOf(actualEnrolledUser);
 
@@ -74,43 +79,73 @@ public class UserInfoController {
 
 		setUser(previousUser);
 	}
+	public void firstUser() {
+		setUser(mainController.getSelectionUserController()
+				.getListParticipants().getItems().get(0));
+	}
+	
+	public void lastUser() {
+		setUser(mainController.getSelectionUserController()
+				.getListParticipants().getItems().get(mainController.getSelectionUserController()
+						.getListParticipants().getItems().size()-1));
+	}
 
 	public void setUser(EnrolledUser enrolledUser) {
 		actualEnrolledUser = enrolledUser;
-
-		imageView.setImage(new Image(new ByteArrayInputStream(enrolledUser.getImageBytes())));
+		try {
+			imageView.setImage(new Image(new ByteArrayInputStream(enrolledUser.getImageBytes())));
+		} catch (Exception e) {
+			imageView.setImage(SelectionUserController.DEFAULT_IMAGE);
+		}
 		labelUser.setText(enrolledUser.toString());
-		hyperlinkEmail.setText(enrolledUser.getEmail());
-		hyperlinkEmail.setOnAction(e -> UtilMethods.mailTo(enrolledUser.getEmail()));
-		Instant reference = Controller.getInstance().getActualCourse().getLogs().getLastDatetime().toInstant();
+		if(enrolledUser.getEmail()!=null) {
+			hyperlinkEmail.setText(enrolledUser.getEmail());
+			hyperlinkEmail.setOnAction(e -> UtilMethods.mailTo(enrolledUser.getEmail()));
+		}
+
+		Instant reference = Controller.getInstance()
+				.getUpdatedCourseData()
+				.toInstant();
 		labelFirstAccess.setText(getDifferenceTime(enrolledUser.getFirstaccess(), reference));
 		labelLastAccess.setText(getDifferenceTime(enrolledUser.getLastaccess(), reference));
 		Circle circleLastAccees = new Circle(10);
-		circleLastAccees.setFill(LastActivityFactory.getColorActivity(enrolledUser.getLastaccess(),
-				Controller.getInstance().getActualCourse().getLogs().getLastDatetime().toInstant()));
+		circleLastAccees.setFill(LastActivityFactory.DEFAULT.getColorActivity(enrolledUser.getLastaccess(), reference));
 		labelLastAccess.setGraphic(circleLastAccees);
-		
-		
+
 		labelLastCourseAccess.setText(getDifferenceTime(enrolledUser.getLastcourseaccess(), reference));
 		Circle circle = new Circle(10);
-		circle.setFill(LastActivityFactory.getColorActivity(enrolledUser.getLastcourseaccess(),
-				Controller.getInstance().getActualCourse().getLogs().getLastDatetime().toInstant()));
+		circle.setFill(LastActivityFactory.DEFAULT.getColorActivity(enrolledUser.getLastcourseaccess(), reference));
 		labelLastCourseAccess.setGraphic(circle);
-		labelRoles.setText(Controller.getInstance().getActualCourse().getRoles().stream()
-				.filter(r -> r.contains(enrolledUser)).map(Role::getRoleName).collect(Collectors.joining(", ")));
-		labelGroups.setText(Controller.getInstance().getActualCourse().getGroups().stream()
-				.filter(r -> r.contains(enrolledUser)).map(Group::getGroupName).collect(Collectors.joining(", ")));
-		
-		ObservableList<Course> courses = Controller.getInstance().getDataBase().getCourses().getMap().values().stream()
+		labelRoles.setText(Controller.getInstance()
+				.getActualCourse()
+				.getRoles()
+				.stream()
+				.filter(r -> r.contains(enrolledUser))
+				.map(Role::getRoleName)
+				.collect(Collectors.joining(", ")));
+		labelGroups.setText(Controller.getInstance()
+				.getActualCourse()
+				.getGroups()
+				.stream()
+				.filter(r -> r.contains(enrolledUser))
+				.map(Group::getGroupName)
+				.collect(Collectors.joining(", ")));
+
+		ObservableList<Course> courses = Controller.getInstance()
+				.getDataBase()
+				.getCourses()
+				.getMap()
+				.values()
+				.stream()
 				.filter(c -> c.contains(enrolledUser))
 				.collect(Collectors.toCollection(FXCollections::observableArrayList));
 		courses.sort(Comparator.comparing(Course::getId, Comparator.reverseOrder()));
-		
-		coursesColumn.setCellValueFactory(v -> new SimpleStringProperty(v.getValue().getFullName()));
+
+		coursesColumn.setCellValueFactory(v -> new SimpleStringProperty(v.getValue()
+				.getFullName()));
 		coursesColumn.setComparator(String::compareToIgnoreCase);
 		tableView.setItems(courses);
 		labelNcourses.setText(String.valueOf(courses.size()));
-		
 
 	}
 

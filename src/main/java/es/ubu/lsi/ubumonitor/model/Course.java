@@ -1,9 +1,13 @@
 package es.ubu.lsi.ubumonitor.model;
 
 import java.io.Serializable;
+import java.text.Collator;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -30,6 +34,9 @@ public class Course implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Course.class);
+
+	
+
 	private int id;
 	private String shortName;
 	private String fullName;
@@ -43,6 +50,7 @@ public class Course implements Serializable {
 	private CourseCategory courseCategory;
 
 	private Set<EnrolledUser> enrolledUsers;
+	private Set<EnrolledUser> notEnrolledUsers;
 	private Set<Role> roles; // roles que hay en el curso
 	private Set<Group> groups; // grupos que hay en el curso
 	private Set<CourseModule> modules;
@@ -53,14 +61,25 @@ public class Course implements Serializable {
 	private LogStats logStats;
 	private byte[] userPhoto;
 	private String userFullName;
+	private boolean courseAccess;
+	private boolean reportAccess;
+	private boolean gradeItemAccess;
+	private boolean hasActivityCompletion;
+	private ZonedDateTime updatedCourseData;
+	private ZonedDateTime updatedGradeItem;
+	private ZonedDateTime updatedActivityCompletion;
+	private ZonedDateTime updatedLog;
 
 	public Course() {
 		this.enrolledUsers = new HashSet<>();
+		this.notEnrolledUsers = new HashSet<>();
 		this.roles = new HashSet<>();
 		this.groups = new HashSet<>();
 		this.gradeItems = new HashSet<>();
 		this.modules = new LinkedHashSet<>();
 		this.sections = new LinkedHashSet<>();
+		this.logs = new Logs(ZoneId.systemDefault());
+		this.logStats = new LogStats(logs.getList());
 	}
 
 	public Course(int id) {
@@ -185,8 +204,7 @@ public class Course implements Serializable {
 			if (gradeItem.getFather() == null)
 				return gradeItem;
 		}
-		throw new IllegalStateException(
-				"No existe el nodo raíz, no hay un nodo que tenga como atributo 'father' en null");
+		return null;
 	}
 
 	/**
@@ -418,14 +436,14 @@ public class Course implements Serializable {
 	/**
 	 * Elimina todos los elementos del curso excepto los logs.
 	 */
-	public void clear() {
+	public void clearCourseData() {
+		
 		this.enrolledUsers.clear();
 		this.roles.forEach(Role::clear); // eliminamos los usuarios de ese rol
 		this.roles.clear();
 		this.groups.forEach(Group::clear); // eliminamos los usuarios de ese grupo
 		this.groups.clear();
 		this.modules.clear();
-		this.gradeItems.clear();
 		this.sections.clear();
 	}
 
@@ -452,7 +470,9 @@ public class Course implements Serializable {
 	 * @return los tipos de modulo sin repetición
 	 */
 	public Set<ModuleType> getUniqueGradeModuleTypes() {
-		return gradeItems.stream().map(GradeItem::getItemModule).filter(Objects::nonNull)
+		return gradeItems.stream()
+				.map(GradeItem::getItemModule)
+				.filter(Objects::nonNull)
 				.collect(Collectors.toCollection(TreeSet::new));
 
 	}
@@ -463,10 +483,13 @@ public class Course implements Serializable {
 	 * @return componentes de logs realizados por usuario actuales del curso
 	 */
 	public List<Component> getUniqueComponents() {
-		return logs.getList().stream()
+		return logs.getList()
+				.stream()
 				// cogemos las lineas de log de los usuarios que pertenecen al curso actual
 				.filter(logLine -> logLine.getUser() != null && enrolledUsers.contains(logLine.getUser()))
-				.map(LogLine::getComponent).distinct().collect(Collectors.toList());
+				.map(LogLine::getComponent)
+				.distinct()
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -476,15 +499,20 @@ public class Course implements Serializable {
 	 * @return componente-evento unicos de los logs de usuarios actuales del curso
 	 */
 	public List<ComponentEvent> getUniqueComponentsEvents() {
-		return logs.getList().stream()
+		return logs.getList()
+				.stream()
 				// cogemos las lineas de log de los usuarios que pertenecen al curso actual
 				.filter(logLine -> logLine.getUser() != null && enrolledUsers.contains(logLine.getUser()))
-				.map(l -> ComponentEvent.get(l.getComponent(), l.getEventName())).distinct()
+				.map(l -> ComponentEvent.get(l.getComponent(), l.getEventName()))
+				.distinct()
 				.collect(Collectors.toList());
 	}
 
 	public List<ModuleType> getUniqueCourseModulesTypes() {
-		return modules.stream().map(CourseModule::getModuleType).distinct().collect(Collectors.toList());
+		return modules.stream()
+				.map(CourseModule::getModuleType)
+				.distinct()
+				.collect(Collectors.toList());
 	}
 
 	public LocalDate getStart() {
@@ -493,8 +521,8 @@ public class Course implements Serializable {
 			return getEnd();
 		}
 
-		return startDate.isBefore(Instant.now()) ? LocalDateTime.ofInstant(startDate, logs.getZoneId()).toLocalDate()
-				: LocalDate.now();
+		return startDate.isBefore(Instant.now()) ? LocalDateTime.ofInstant(startDate, logs.getZoneId())
+				.toLocalDate() : LocalDate.now();
 	}
 
 	public LocalDate getEnd() {
@@ -503,20 +531,25 @@ public class Course implements Serializable {
 			return LocalDate.now();
 		}
 
-		return endDate.isBefore(Instant.now()) ? LocalDateTime.ofInstant(endDate, logs.getZoneId()).toLocalDate()
-				: LocalDate.now();
+		return endDate.isBefore(Instant.now()) ? LocalDateTime.ofInstant(endDate, logs.getZoneId())
+				.toLocalDate() : LocalDate.now();
 
 	}
 
 	/**
-	 * Devuelve el rol de nombre corto "estudiante" con mayor número usuarios
-	 * matriculados o null en caso de que no haya ninguno.
+	 * Return roles with shortname "student", if no has return all roles.
 	 * 
-	 * @return student role or null
+	 * @return student roles or all roles of the course
 	 */
-	public Role getStudentRole() {
-		return roles.stream().filter(r -> "student".equals(r.getRoleShortName()))
-				.max(Comparator.comparingInt(r -> r.getEnrolledUsers().size())).orElse(null);
+	public Set<Role> getStudentRole() {
+		Set<Role> studentRoles =  roles.stream()
+				.filter(r -> "student".equals(r.getRoleShortName()))
+				.collect(Collectors.toSet());
+		if(studentRoles.isEmpty()) {
+			return roles;
+		}
+		return studentRoles;
+				
 
 	}
 
@@ -582,6 +615,108 @@ public class Course implements Serializable {
 	 */
 	public void setUserFullName(String userFullName) {
 		this.userFullName = userFullName;
+	}
+
+	/**
+	 * @return the courseAccess
+	 */
+	public boolean hasCourseAccess() {
+		return courseAccess;
+	}
+
+	/**
+	 * @param courseAccess the courseAccess to set
+	 */
+	public void setCourseAccess(boolean courseAccess) {
+		this.courseAccess = courseAccess;
+	}
+
+	/**
+	 * @return the reportAccess
+	 */
+	public boolean hasReportAccess() {
+		return reportAccess;
+	}
+
+	/**
+	 * @param reportAccess the reportAccess to set
+	 */
+	public void setReportAccess(boolean reportAccess) {
+		this.reportAccess = reportAccess;
+	}
+
+	/**
+	 * @return the gradeItemAccess
+	 */
+	public boolean hasGradeItemAccess() {
+		return gradeItemAccess;
+	}
+
+	/**
+	 * @param gradeItemAccess the gradeItemAccess to set
+	 */
+	public void setGradeItemAccess(boolean gradeItemAccess) {
+		this.gradeItemAccess = gradeItemAccess;
+	}
+
+	public ZonedDateTime getUpdatedCourseData() {
+		return updatedCourseData;
+	}
+
+	public void setUpdatedCourseData(ZonedDateTime updatedCourseData) {
+		this.updatedCourseData = updatedCourseData;
+	}
+
+	public ZonedDateTime getUpdatedGradeItem() {
+		return updatedGradeItem;
+	}
+
+	public void setUpdatedGradeItem(ZonedDateTime updatedGradeItem) {
+		this.updatedGradeItem = updatedGradeItem;
+	}
+
+	public ZonedDateTime getUpdatedActivityCompletion() {
+		return updatedActivityCompletion;
+	}
+
+	public void setUpdatedActivityCompletion(ZonedDateTime updatedActivityCompletion) {
+		this.updatedActivityCompletion = updatedActivityCompletion;
+	}
+
+	public ZonedDateTime getUpdatedLog() {
+		return updatedLog;
+	}
+
+	public void setUpdatedLog(ZonedDateTime updatedLog) {
+		this.updatedLog = updatedLog;
+	}
+
+	public boolean hasActivityCompletion() {
+		return hasActivityCompletion;
+	}
+
+	public void setHasActivityCompletion(boolean hasActivityCompletion) {
+		this.hasActivityCompletion = hasActivityCompletion;
+	}
+
+	public void setNotEnrolledUser(Set<EnrolledUser> notEnrolled) {
+		this.notEnrolledUsers = notEnrolled;
+
+	}
+
+	public void addNotEnrolledUser(Collection<EnrolledUser> notEnrolled) {
+		this.notEnrolledUsers.addAll(notEnrolled);
+
+	}
+
+	public Set<EnrolledUser> getNotEnrolledUser() {
+		return this.notEnrolledUsers;
+	}
+	
+	public static Comparator<Course> getCourseComparator() {
+		return Comparator.comparing(Course::getFullName, Comparator.nullsLast(Collator.getInstance()))
+				.thenComparing(c -> c.getCourseCategory()
+						.getName(), Comparator.nullsLast(Collator.getInstance()));
 	}
 
 }

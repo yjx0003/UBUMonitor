@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import org.controlsfx.control.CheckComboBox?>
+
+<TabPane fx:id="tabPane" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.controllers.SelectionController">
+	<tabs>
+		<Tab fx:id="tabUbuLogs" closable="false" text="%tab.logs">
+			<content>
+				<TabPane fx:id="tabPaneUbuLogs" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+					<tabs>
+						<Tab fx:id="tabUbuLogsComponent" closable="false" text="%tab.component">
+							<content>
+								<BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+									<center>
+										<ListView fx:id="listViewComponents" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+											<placeholder>
+												<Label text="%text.nousers" />
+											</placeholder>
+										</ListView>
+									</center>
+									<top>
+										<Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+											<children>
+												<Label layoutX="14.0" layoutY="21.0" text="%label.component" />
+												<TextField fx:id="componentTextField" layoutX="128.0" layoutY="16.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+											</children>
+										</Pane>
+									</top>
+								</BorderPane>
+							</content>
+						</Tab>
+						<Tab fx:id="tabUbuLogsEvent" closable="false" text="%tab.event">
+							<content>
+								<BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+									<center>
+										<ListView fx:id="listViewEvents" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+											<placeholder>
+												<Label text="%text.nousers" />
+											</placeholder>
+										</ListView>
+									</center>
+									<top>
+										<Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+											<children>
+												<Label alignment="TOP_LEFT" layoutX="22.0" layoutY="9.0" text="%label.componentorevent" textAlignment="RIGHT" />
+												<TextField fx:id="componentEventTextField" layoutX="125.0" layoutY="15.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+											</children>
+										</Pane>
+									</top>
+								</BorderPane>
+							</content>
+						</Tab>
+						<Tab fx:id="tabUbuLogsSection" closable="false" text="%tab.section">
+							<content>
+								<BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+									<center>
+										<ListView fx:id="listViewSection" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+											<placeholder>
+												<Label text="%text.nousers" />
+											</placeholder>
+										</ListView>
+									</center>
+									<top>
+										<Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+											<children>
+												<Label layoutX="6.0" layoutY="5.0" text="%label.section" />
+												<TextField fx:id="sectionTextField" layoutX="6.0" layoutY="26.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+												<CheckBox fx:id="checkBoxSection" layoutX="140.0" layoutY="5.0" mnemonicParsing="false" text="%label.withhidden" />
+											</children>
+										</Pane>
+									</top>
+								</BorderPane>
+							</content>
+						</Tab>
+						<Tab fx:id="tabUbuLogsCourseModule" closable="false" text="%tab.coursemodule">
+							<content>
+								<BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+									<center>
+										<ListView fx:id="listViewCourseModule" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+											<placeholder>
+												<Label text="%text.nousers" />
+											</placeholder>
+										</ListView>
+									</center>
+									<top>
+										<Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+											<children>
+												<TextField fx:id="courseModuleTextField" layoutX="6.0" layoutY="28.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+												<CheckBox fx:id="checkBoxCourseModule" layoutX="140.0" layoutY="5.0" mnemonicParsing="false" text="%label.withhidden" />
+												<CheckBox fx:id="checkBoxActivityCompleted" layoutX="5.0" layoutY="5.0" mnemonicParsing="false" text="%label.withcompletion" />
+												<CheckComboBox fx:id="checkComboBoxCourseModule" layoutX="140.0" layoutY="28.0" prefHeight="31.0" prefWidth="108.0" showCheckedCount="true" title="" />
+                                    <CheckComboBox fx:id="checkComboBoxSection" layoutX="260.0" layoutY="28.0" prefHeight="31.0" prefWidth="108.0" showCheckedCount="true" title="" />
+											</children>
+										</Pane>
+									</top>
+								</BorderPane>
+							</content>
+						</Tab>
+					</tabs>
+				</TabPane>
+			</content>
+		</Tab>
+		<Tab fx:id="tabUbuGrades" closable="false" text="%tab.grades">
+			<content>
+				<BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+					<top>
+						<Pane minHeight="63.0" prefHeight="63.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+							<children>
+								<Label layoutX="8.0" layoutY="6.0" text="%label.categoryitem" />
+								<TextField fx:id="tfdItems" layoutX="8.0" layoutY="30.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+								<Label layoutX="123.0" layoutY="36.0" text="%label.type" />
+								<ChoiceBox fx:id="slcType" layoutX="164.0" layoutY="30.0" maxWidth="88.0" minHeight="25.0" />
+							</children>
+						</Pane>
+					</top>
+					<center>
+						<TreeView fx:id="tvwGradeReport" minWidth="250.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+					</center>
+				</BorderPane>
+			</content>
+		</Tab>
+		<Tab fx:id="tabActivity" closable="false" text="%tab.activityCompletion">
+			<content>
+				<BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+					<center>
+						<ListView fx:id="listViewActivity" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+							<placeholder>
+								<Label text="%text.nousers" />
+							</placeholder>
+						</ListView>
+					</center>
+					<top>
+						<Pane minHeight="60.0" prefHeight="60.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+							<children>
+								<TextField fx:id="activityTextField" layoutX="6.0" layoutY="28.0" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+								<CheckBox fx:id="checkBoxActivity" layoutX="140.0" layoutY="5.0" mnemonicParsing="false" text="%label.withhidden" />
+								<CheckComboBox fx:id="checkComboBoxModuleType" layoutX="139.0" layoutY="28.0" prefHeight="31.0" prefWidth="108.0" showCheckedCount="true" title="" />
+                        <CheckComboBox fx:id="checkComboBoxSectionAc" layoutX="254.0" layoutY="28.0" prefHeight="31.0" prefWidth="108.0" showCheckedCount="true" title="" />
+							</children>
+						</Pane>
+					</top>
+				</BorderPane>
+			</content>
+		</Tab>
+	</tabs>
+</TabPane>

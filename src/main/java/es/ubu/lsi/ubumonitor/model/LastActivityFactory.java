@@ -1,59 +1,75 @@
 package es.ubu.lsi.ubumonitor.model;
 
-import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javafx.scene.paint.Color;
 
 public class LastActivityFactory {
 
-	private static final Set<LastActivity> SPAN_TIME = new LinkedHashSet<>();
+	private List<LastActivity> spanTime;
+
+	public static final LastActivityFactory DEFAULT = new LastActivityFactory();
 
 	static {
-		SPAN_TIME.add(new LastActivity(SPAN_TIME.size(), 0, 3, Color.GREEN));
-		SPAN_TIME.add(new LastActivity(SPAN_TIME.size(), 3, 7, Color.BLUE));
-		SPAN_TIME.add(new LastActivity(SPAN_TIME.size(), 7, 14, Color.ORANGE));
-		SPAN_TIME.add(new LastActivity(SPAN_TIME.size(), 14, Integer.MAX_VALUE, Color.RED));
+
+		DEFAULT.addActivity(0, 3, Color.GREEN, ChronoUnit.DAYS);
+		DEFAULT.addActivity(3, 7, Color.BLUE, ChronoUnit.DAYS);
+		DEFAULT.addActivity(7, 14, Color.ORANGE, ChronoUnit.DAYS);
+		DEFAULT.addActivity(14, Integer.MAX_VALUE, Color.RED, ChronoUnit.DAYS);
+	}
+	
+	public LastActivityFactory() {
+		spanTime = new ArrayList<>();
 	}
 
-	public static Color getColorActivity(Temporal startInclusive, Temporal endInclusive) {
-		long days = Duration.between(startInclusive, endInclusive).toDays();
+	public Color getColorActivity(Temporal startInclusive, Temporal endExclusive) {
+		if (startInclusive == null || endExclusive == null) {
+			return Color.BLACK;
+		}
 
-		for (LastActivity lastActivity : SPAN_TIME) {
-			if (days < lastActivity.getLimitDaysConnection()) {
+		for (LastActivity lastActivity : spanTime) {
+			if (lastActivity.isBetween(startInclusive, endExclusive)) {
 				return lastActivity.getColor();
 			}
 		}
 		return Color.BLACK;
 	}
 
-	public static LastActivity getActivity(Temporal startInclusive, Temporal endInclusive) {
-		long days = Duration.between(startInclusive, endInclusive).toDays();
-		for (LastActivity lastActivity : SPAN_TIME) {
-			if (days < lastActivity.getLimitDaysConnection()) {
+	public LastActivity getActivity(Temporal startInclusive, Temporal endExclusive) {
+		if (startInclusive == null || endExclusive == null) {
+			return spanTime.get(spanTime.size() - 1);
+		}
+
+		for (LastActivity lastActivity : spanTime) {
+			if (lastActivity.isBetween(startInclusive, endExclusive)) {
 				return lastActivity;
 			}
 		}
 		throw new IllegalArgumentException();
 	}
 
-	public static Set<LastActivity> getAllLastActivity() {
-		return SPAN_TIME;
+	public List<LastActivity> getAllLastActivity() {
+		return spanTime;
 	}
 
-	private LastActivityFactory() {
-		throw new UnsupportedOperationException();
-	}
-
-	public static LastActivity getActivity(int index) {
-		for(LastActivity activity: SPAN_TIME) {
-			if(activity.getIndex() == index) {
+	public LastActivity getActivity(int index) {
+		for (LastActivity activity : spanTime) {
+			if (activity.getIndex() == index) {
 				return activity;
 			}
 		}
 		return null;
+	}
+	
+	public void addActivity(LastActivity lastActivity) {
+		spanTime.add(lastActivity);
+	}
+	
+	public void addActivity(int startInclusive, int endInclusive, Color color, ChronoUnit chronoUnit) {
+		addActivity(new LastActivity(spanTime.size(), startInclusive, endInclusive, color, chronoUnit));
 	}
 
 }

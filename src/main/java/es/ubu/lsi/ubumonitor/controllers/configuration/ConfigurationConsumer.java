@@ -10,12 +10,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.TypeTimes;
 import es.ubu.lsi.ubumonitor.model.Group;
 import es.ubu.lsi.ubumonitor.model.LastActivity;
 import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
 import es.ubu.lsi.ubumonitor.model.Role;
 import es.ubu.lsi.ubumonitor.model.SubDataBase;
+import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
+import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import javafx.collections.FXCollections;
 import javafx.scene.paint.Color;
 
@@ -35,6 +36,7 @@ public class ConfigurationConsumer {
 		CONSUMER_MAP.put(Boolean.class.toString(), ConfigurationConsumer::manageBoolean);
 		CONSUMER_MAP.put(String.class.toString(), ConfigurationConsumer::manageString);
 		CONSUMER_MAP.put(TypeTimes.class.toString(), ConfigurationConsumer::manageTypeTimes);
+		CONSUMER_MAP.put(ChartType.class.toString(), ConfigurationConsumer::manageChartType);
 	}
 
 	public static void consume(MainConfiguration mainConfiguration, JSONObject jsonObject) {
@@ -86,7 +88,7 @@ public class ConfigurationConsumer {
 		JSONArray jsonArray = jsonObject.getJSONArray(VALUE);
 		List<LastActivity> list = new ArrayList<>();
 		for (int i = 0; i < jsonArray.length(); i++) {
-			list.add(LastActivityFactory.getActivity(jsonArray.getInt(i)));
+			list.add(LastActivityFactory.DEFAULT.getActivity(jsonArray.getInt(i)));
 		}
 		mainConfiguration.overrideItem(jsonObject.getString(CATEGORY), jsonObject.getString(NAME),
 				FXCollections.observableList(list), LastActivity.class);
@@ -115,6 +117,21 @@ public class ConfigurationConsumer {
 		mainConfiguration.overrideItem(jsonObject.getString(CATEGORY), jsonObject.getString(NAME),
 				FXCollections.observableList(roles), Role.class);
 	}
+	
+	private static void manageChartType(MainConfiguration mainConfiguration, JSONObject jsonObject) {
+		JSONArray jsonArray = jsonObject.getJSONArray(VALUE);
+		List<ChartType> hiddenCharts = new ArrayList<>();
+		List<ChartType> listCharts = new ArrayList<>(ChartType.getNonDefaultValues());
+		
+		for (int i = 0; i < jsonArray.length(); i++) {
+			hiddenCharts.add(ChartType.getById(jsonArray.getInt(i)));
+		}
+		listCharts.removeAll(hiddenCharts);
+		mainConfiguration.overrideItem(jsonObject.getString(CATEGORY), jsonObject.getString(NAME),
+				FXCollections.observableList(listCharts), ChartType.class);
+	}
+	
+	
 	
 	private ConfigurationConsumer() {
 		throw new UnsupportedOperationException();

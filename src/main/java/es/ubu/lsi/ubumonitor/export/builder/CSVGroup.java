@@ -41,7 +41,7 @@ public class CSVGroup extends CSVBuilderAbstract {
 		// Load data
 		for (Group group : groups) {
 			Stream<EnrolledUser> users = group.getEnrolledUsers().stream()
-					.sorted(EnrolledUser.NAME_COMPARATOR);
+					.sorted(EnrolledUser.getNameComparator());
 			for (EnrolledUser enrollmentUser : (Iterable<EnrolledUser>) users::iterator) {
 				LOGGER.debug("Data line: {}, {}, {}, {}, {}", group.getGroupId(), group.getGroupName(), group.getDescription(),
 						enrollmentUser.getId(), enrollmentUser.getFullName());

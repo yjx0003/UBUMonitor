@@ -1,0 +1,50 @@
+package es.ubu.lsi.ubumonitor.model.log.logtypes;
+
+import java.util.List;
+
+import es.ubu.lsi.ubumonitor.model.LogLine;
+
+/**
+ * The user with id '' created the data record with id '' for the data activity with course module id ''.
+ * The user with id '' deleted the data record with id '' in the data activity with course module id ''.
+ * The user with id '' updated the data record with id '' in the data activity with course module id ''.
+ * 
+ * @author Yi Peng Ji
+ *
+ */
+public class UserRecordCmid extends ReferencesLog {
+
+	/**
+	 * Instacia única de la clase UserRecordCmid.
+	 */
+	private static UserRecordCmid instance;
+
+	/**
+	 * Constructor privado de la clase singleton.
+	 */
+	private UserRecordCmid() {
+	}
+
+	/**
+	 * Devuelve la instancia única de UserRecordCmid.
+	 * @return instancia singleton
+	 */
+	public static UserRecordCmid getInstance() {
+		if (instance == null) {
+			instance = new UserRecordCmid();
+		}
+		return instance;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
+		setUserById(log, ids.get(0));
+		//record id
+		setCourseModuleById(log, ids.get(2));
+
+	}
+
+}

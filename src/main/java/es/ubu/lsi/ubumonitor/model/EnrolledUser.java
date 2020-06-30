@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.model;
 
 import java.io.Serializable;
+import java.text.Collator;
 import java.time.Instant;
 import java.util.Comparator;
 
@@ -17,12 +18,7 @@ public class EnrolledUser implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	public static final Comparator<EnrolledUser> NAME_COMPARATOR = Comparator
-			.comparing(EnrolledUser::getLastname, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
-			.thenComparing(EnrolledUser::getFirstname, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
 
-	
 	/**
 	 * ID of the user
 	 */
@@ -149,10 +145,7 @@ public class EnrolledUser implements Serializable {
 	 */
 	private String profileimageurl;
 
-
 	private byte[] imageBytes;
-
-
 
 	public EnrolledUser(int id) {
 		this.id = id;
@@ -382,7 +375,6 @@ public class EnrolledUser implements Serializable {
 		this.profileimageurl = profileimageurl;
 	}
 
-
 	public byte[] getImageBytes() {
 		return imageBytes;
 	}
@@ -409,8 +401,11 @@ public class EnrolledUser implements Serializable {
 
 	@Override
 	public String toString() {
-		return lastname + ", " + firstname;
+		return fullName;
 	}
 
+	public static Comparator<EnrolledUser> getNameComparator() {
+		return Comparator.comparing(EnrolledUser::getFullName, Comparator.nullsLast(Collator.getInstance()));
+	}
 
 }

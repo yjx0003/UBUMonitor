@@ -1,7 +1,9 @@
 package es.ubu.lsi.ubumonitor.util;
 
+import java.awt.Color;
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -10,30 +12,68 @@ import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
-import es.ubu.lsi.ubumonitor.controllers.AppInfo;
-import es.ubu.lsi.ubumonitor.controllers.I18n;
-import es.ubu.lsi.ubumonitor.controllers.Style;
+import javax.imageio.ImageIO;
+
+import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.TextFields;
+
+import es.ubu.lsi.ubumonitor.AppInfo;
+import es.ubu.lsi.ubumonitor.Style;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class UtilMethods {
+	private static final Random RANDOM = new Random();
+
 	private UtilMethods() {
+	}
+
+	/**
+	 * Selecciona colores pseudo-aleatorios a partir del HSV
+	 * 
+	 * @param <E>
+	 */
+	public static <E> Map<E, Color> getRandomColors(List<E> typeLogs) {
+		Map<E, Color> colors = new HashMap<>();
+
+		for (int i = 0; i < typeLogs.size(); i++) {
+
+			// generamos un color a partir de HSB, el hue(H) es el color, saturacion (S), y
+			// brillo(B)
+			Color c = new Color(Color.HSBtoRGB(i / (float) typeLogs.size(), 0.8f, 1.0f));
+			colors.put(typeLogs.get(i), c);
+		}
+		return colors;
+
 	}
 
 	/**
@@ -43,7 +83,10 @@ public class UtilMethods {
 	 * @return texto escapado
 	 */
 	public static String escapeJavaScriptText(String input) {
-		return input.replace("'", "\\\'");
+
+		return input.replace("'", "\\\'")
+				.replaceAll("\\R", "");
+
 	}
 
 	/**
@@ -53,7 +96,9 @@ public class UtilMethods {
 	 * @return
 	 */
 	public static <E> String join(List<E> datasets) {
-		return datasets.stream().map(E::toString).collect(Collectors.joining(","));
+		return datasets.stream()
+				.map(E::toString)
+				.collect(Collectors.joining(","));
 	}
 
 	/**
@@ -65,7 +110,9 @@ public class UtilMethods {
 	 */
 	public static <T> String joinWithQuotes(List<T> list) {
 		// https://stackoverflow.com/a/18229122
-		return list.stream().map(s -> "'" + escapeJavaScriptText(s.toString()) + "'").collect(Collectors.joining(","));
+		return list.stream()
+				.map(s -> "'" + escapeJavaScriptText(s.toString()) + "'")
+				.collect(Collectors.joining(","));
 	}
 
 	/**
@@ -75,7 +122,7 @@ public class UtilMethods {
 	 * @return without reserved character
 	 */
 	public static String removeReservedChar(String stringToRemove) {
-		return stringToRemove.replaceAll(":|\\|/|\\?|\\*|\"|\\|", "");
+		return stringToRemove.replaceAll(":|\\\\|/|\\?|\\*|\\|", "");
 	}
 
 	/**
@@ -85,23 +132,27 @@ public class UtilMethods {
 	 * @return
 	 */
 	public static ButtonType errorWindow(String contentText) {
-		return dialogWindow(AlertType.ERROR, "Information", contentText);
+		return dialogWindow(AlertType.ERROR, I18n.get("error"), contentText);
 	}
 
 	/**
 	 * Muestra una ventana de información.
 	 * 
 	 * @param message El mensaje que se quiere mostrar.
-	 * @param exit Indica si se quiere mostar el boton de salir o no.
+	 * @param exit    Indica si se quiere mostar el boton de salir o no.
 	 * @return
 	 */
 	public static ButtonType infoWindow(String contentText) {
 
-		return dialogWindow(AlertType.INFORMATION, "Information", contentText);
+		return dialogWindow(AlertType.INFORMATION, I18n.get("information"), contentText);
 	}
 
 	public static ButtonType confirmationWindow(String contentText) {
-		return dialogWindow(AlertType.CONFIRMATION, "Confirmation", contentText);
+		return dialogWindow(AlertType.CONFIRMATION, I18n.get("confirmation"), contentText);
+	}
+
+	public static ButtonType warningWindow(String contentText) {
+		return dialogWindow(AlertType.WARNING, I18n.get("warning"), contentText);
 	}
 
 	public static ButtonType errorWindow(String contentText, Throwable ex) {
@@ -113,7 +164,7 @@ public class UtilMethods {
 		PrintWriter pw = new PrintWriter(sw);
 		ex.printStackTrace(pw);
 
-		Label label = new Label("The exception stacktrace was:");
+		Label label = new Label(I18n.get("exceptionTrace"));
 
 		TextArea textArea = new TextArea(sw.toString());
 		textArea.setEditable(false);
@@ -130,23 +181,32 @@ public class UtilMethods {
 		expContent.add(textArea, 0, 1);
 
 		// Set expandable Exception into the dialog pane.
-		alert.getDialogPane().setExpandableContent(expContent);
+		alert.getDialogPane()
+				.setExpandableContent(expContent);
 		alert.showAndWait();
 		return alert.getResult();
 	}
 
-	private static ButtonType dialogWindow(AlertType alertType, String headerText, String contentText) {
+	public static ButtonType dialogWindow(AlertType alertType, String headerText, String contentText) {
 		Alert alert = createAlert(alertType, headerText, contentText);
 		alert.showAndWait();
 		return alert.getResult();
 	}
 
-	private static Alert createAlert(AlertType alertType, String headerText, String contentText) {
+	public static Alert createAlert(AlertType alertType) {
 		Alert alert = new Alert(alertType);
 		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		alert.initModality(Modality.APPLICATION_MODAL);
-		Stage stageAlert = (Stage) alert.getDialogPane().getScene().getWindow();
-		stageAlert.getIcons().add(new Image("/img/logo_min.png"));
+		Stage stageAlert = (Stage) alert.getDialogPane()
+				.getScene()
+				.getWindow();
+		stageAlert.getIcons()
+				.add(new Image("/img/logo_min.png"));
+		return alert;
+	}
+
+	public static Alert createAlert(AlertType alertType, String headerText, String contentText) {
+		Alert alert = createAlert(alertType);
 		alert.setHeaderText(headerText);
 		alert.setContentText(contentText);
 		return alert;
@@ -191,13 +251,12 @@ public class UtilMethods {
 			}
 		} catch (IOException e) {
 			errorWindow("error loading fxml: " + sceneFXML, e);
-			throw new IllegalArgumentException("Invalid fxml");
+			throw new IllegalArgumentException("Invalid fxml", e);
 		}
 
 	}
-	
+
 	public static void createDialog(FXMLLoader loader, Stage ownerStage) {
-		
 
 		Scene newScene;
 		try {
@@ -207,14 +266,10 @@ public class UtilMethods {
 			return;
 		}
 		Style.addStyle(ConfigHelper.getProperty("style"), newScene.getStylesheets());
-		Stage stage = new Stage();
+
+		Stage stage = createStage(ownerStage, Modality.WINDOW_MODAL);
 		stage.setScene(newScene);
 		stage.setResizable(false);
-		stage.initOwner(ownerStage);
-		stage.initModality(Modality.WINDOW_MODAL);
-
-		stage.getIcons().add(new Image("/img/logo_min.png"));
-		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 
 		stage.show();
 	}
@@ -226,20 +281,26 @@ public class UtilMethods {
 		try {
 			if (osName.startsWith("Mac OS")) {
 				Class<?> fileMgr = Class.forName("com.apple.eio.FileManager");
-				Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] { String.class });
-				openURL.invoke(null, new Object[] { url });
-			} else if (osName.startsWith("Windows"))
-				Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
+				Method openURL = fileMgr.getDeclaredMethod("openURL", String.class);
+				openURL.invoke(null, url);
+			} else if (osName.startsWith("Windows")) {
+				Runtime.getRuntime()
+						.exec("rundll32 url.dll,FileProtocolHandler " + url);
+			}
+
 			else { // assume Unix or Linux
 				String[] browsers = { "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" };
 				String browser = null;
 				for (int count = 0; count < browsers.length && browser == null; count++)
-					if (Runtime.getRuntime().exec(new String[] { "which", browsers[count] }).waitFor() == 0)
+					if (Runtime.getRuntime()
+							.exec(new String[] { "which", browsers[count] })
+							.waitFor() == 0)
 						browser = browsers[count];
 				if (browser == null)
 					throw new IllegalStateException("Could not find web browser");
 				else
-					Runtime.getRuntime().exec(new String[] { browser, url });
+					Runtime.getRuntime()
+							.exec(new String[] { browser, url });
 			}
 		} catch (Exception e) {
 			errorWindow("Cannot open " + url + " in web browser", e);
@@ -248,22 +309,89 @@ public class UtilMethods {
 
 	public static void mailTo(String mail) {
 		try {
-			if (Desktop.isDesktopSupported() && (Desktop.getDesktop()).isSupported(Desktop.Action.MAIL)) {
-				Desktop.getDesktop().mail(new URI("mailto:" + mail));
+			if (Desktop.isDesktopSupported() && Desktop.getDesktop()
+					.isSupported(Desktop.Action.MAIL)) {
+				Desktop.getDesktop()
+						.mail(new URI("mailto:" + mail));
 			}
 		} catch (Exception e) {
 			errorWindow("Cannot open " + mail + " in the default mail client.");
 		}
 	}
 
-	public static FileChooser createFileChooser(String title, String initialFileName, String initialDirectory,
+	public static FileChooser createFileChooser(String initialFileName, String initialDirectory,
 			FileChooser.ExtensionFilter... extensionFilters) {
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle(title);
+		fileChooser.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		fileChooser.setInitialFileName(initialFileName);
 		fileChooser.setInitialDirectory(new File(initialDirectory));
-		fileChooser.getExtensionFilters().addAll(extensionFilters);
+		fileChooser.getExtensionFilters()
+				.addAll(extensionFilters);
 		return fileChooser;
+	}
+
+	public static void fileAction(String initialFileName, String initialDirectory, Window owner,
+			FileUtil.FileChooserType fileChooserType, FileUtil.ThrowingConsumer<File, IOException> consumer,
+			boolean confirmationWindow, FileChooser.ExtensionFilter... extensionFilters) {
+		FileChooser fileChooser = createFileChooser(initialFileName, initialDirectory, extensionFilters);
+		File file = fileChooserType.getFile(fileChooser, owner);
+		if (file == null) {
+			return;
+		}
+		String extension = fileChooser.getSelectedExtensionFilter()
+				.getExtensions()
+				.get(0)
+				.substring(1);
+		if (!file.getName()
+				.toLowerCase()
+				.endsWith(extension)) {
+			file = new File(file.getAbsolutePath() + extension);
+		}
+		try {
+			consumer.accept(file);
+			if (confirmationWindow) {
+				showExportedFile(file);
+			}
+		} catch (FileNotFoundException e) {
+			errorWindow(e.getMessage());
+		} catch (Exception e) {
+			errorWindow(e.getMessage(), e);
+		}
+
+	}
+
+	public static void showExportedFile(File file) {
+		Alert alert = createAlert(AlertType.INFORMATION);
+		Hyperlink hyperLink = new Hyperlink(file.getAbsolutePath());
+		hyperLink.setOnAction(e -> {
+			alert.close();
+			openFileFolder(file);
+
+		});
+		TextFlow flow = new TextFlow(new Text(I18n.get("message.export") + "\n"), hyperLink);
+		alert.getDialogPane()
+				.setContent(flow);
+		alert.show();
+	}
+
+	public static void showExportedDir(File dir) {
+		Alert alert = createAlert(AlertType.INFORMATION);
+		Hyperlink hyperLink = new Hyperlink(dir.getAbsolutePath());
+		hyperLink.setOnAction(e -> {
+			alert.close();
+			openFileFolder(dir);
+		});
+		TextFlow flow = new TextFlow(new Text(I18n.get("message.exportdir") + "\n"), hyperLink);
+		alert.getDialogPane()
+				.setContent(flow);
+		alert.show();
+	}
+
+	public static void fileAction(String initialFileName, String initialDirectory, Window owner,
+			FileUtil.FileChooserType fileChooserType, FileUtil.ThrowingConsumer<File, IOException> consumer,
+			FileChooser.ExtensionFilter... extensionFilters) {
+		fileAction(initialFileName, initialDirectory, owner, fileChooserType, consumer, true, extensionFilters);
+
 	}
 
 	/**
@@ -272,7 +400,7 @@ public class UtilMethods {
 	 * por horas, y asi consecutivamente.
 	 * 
 	 * @param lastCourseAccess fecha inicio
-	 * @param lastLogInstant fecha fin
+	 * @param lastLogInstant   fecha fin
 	 * @return texto con el numero y el tipo de tiempo
 	 */
 	public static String formatDates(Instant lastCourseAccess, Instant lastLogInstant) {
@@ -305,12 +433,93 @@ public class UtilMethods {
 	 * Devuelve la difernecia absoluta entre dos instantes dependiendo de que sea el
 	 * tipo
 	 * 
-	 * @param type dias, horas, minutos
+	 * @param type             dias, horas, minutos
 	 * @param lastCourseAccess instante inicio
-	 * @param lastLogInstant instante fin
+	 * @param lastLogInstant   instante fin
 	 * @return numero de diferencia absoluta
 	 */
 	private static long betweenDates(ChronoUnit type, Instant lastCourseAccess, Instant lastLogInstant) {
 		return type.between(lastCourseAccess, lastLogInstant);
 	}
+
+	public static Stage createStage(Window owner, Modality modality) {
+		Stage stage = new Stage();
+
+		stage.initOwner(owner);
+		stage.initModality(modality);
+
+		stage.getIcons()
+				.add(new Image("/img/logo_min.png"));
+		stage.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
+		return stage;
+	}
+
+	/**
+	 * https://www.baeldung.com/java-random-string
+	 * 
+	 * @return
+	 */
+	public static String ranmdomAlphanumeric() {
+		int leftLimit = 97; // letter 'a'
+		int rightLimit = 122; // letter 'z'
+		int targetStringLength = 10;
+
+		return RANDOM.ints(leftLimit, rightLimit + 1)
+				.filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+				.limit(targetStringLength)
+				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+				.toString();
+
+	}
+
+	public static <E> AutoCompletionBinding<E> createAutoCompletionBinding(TextField textField,
+			Collection<E> possibleSuggestions) {
+		AutoCompletionBinding<E> autoCompletionBinding = TextFields.bindAutoCompletion(textField, possibleSuggestions);
+		autoCompletionBinding.setDelay(0);
+		return autoCompletionBinding;
+	}
+
+	public static void snapshotNode(File file, Node node) throws IOException {
+		WritableImage image = node.snapshot(new SnapshotParameters(), null);
+
+		ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+		showExportedFile(file);
+	}
+
+	public static void openFileFolder(File file) {
+		File path = file.isFile() ? file.getParentFile() : file;
+		try {
+			switch (OSUtil.getOS()) {
+			case WINDOWS:
+				Runtime.getRuntime()
+						.exec("explorer.exe /select," + file.getAbsolutePath());
+				break;
+			case LINUX:
+				Runtime.getRuntime()
+						.exec("xdg-open", new String[] { path.getAbsolutePath() });
+				break;
+			case MAC:
+
+				Runtime.getRuntime()
+						.exec("open", new String[] { path.getAbsolutePath() });
+				break;
+			default:
+				if (Desktop.isDesktopSupported() && Desktop.getDesktop()
+						.isSupported(Desktop.Action.OPEN)) {
+
+					Desktop.getDesktop()
+							.open(path);
+				} else {
+					throw new IllegalAccessError("This system operative is not supported to open file");
+				}
+
+				break;
+
+			}
+		} catch (Exception e) {
+			errorWindow("Cannot open in this System operative", e);
+		}
+
+	}
+
 }

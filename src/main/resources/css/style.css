@@ -63,7 +63,9 @@
 .tree-view .tree-cell{
 	-fx-accent: #ffffff;
 }
-
+.list-view .list-cell:disabled{
+	-fx-text-fill:gray;
+}
 
 .list-view .list-cell:hover {
   -fx-background-color:#cdfafa;

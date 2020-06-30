@@ -5,7 +5,7 @@
 
 	<groupId>es.ubu.lsi</groupId>
 	<artifactId>ubumonitor</artifactId>
-	<version>2.6.3-stable</version>
+	<version>2.6.5-stable</version>
 
 
 	<name>UBUMonitor</name>
@@ -39,8 +39,8 @@
 			<artifactId>commons-math3</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>
@@ -94,7 +94,7 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-csv</artifactId>
-				<version>1.7</version>
+				<version>1.8</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -102,9 +102,9 @@
 				<version>3.6.1</version>
 			</dependency>
 			<dependency>
-				<groupId>log4j</groupId>
-				<artifactId>log4j</artifactId>
-				<version>1.2.17</version>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>2.13.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.json</groupId>
@@ -152,12 +152,12 @@
 			<dependency>
 				<groupId>com.squareup.okhttp3</groupId>
 				<artifactId>okhttp</artifactId>
-				<version>4.3.1</version>
+				<version>4.4.1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.squareup.okhttp3</groupId>
 				<artifactId>okhttp-urlconnection</artifactId>
-				<version>4.3.1</version>
+				<version>4.4.1</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -169,7 +169,7 @@
 				<!-- JUnit 5 requires Surefire version 2.22.0 or higher -->
 				<version>2.22.0</version>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -202,7 +202,7 @@
 						<manifest>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-							<mainClass>es.ubu.lsi.ubumonitor.controllers.UBUMonitor</mainClass>
+							<mainClass>es.ubu.lsi.ubumonitor.UBUMonitor</mainClass>
 						</manifest>
 					</archive>
 

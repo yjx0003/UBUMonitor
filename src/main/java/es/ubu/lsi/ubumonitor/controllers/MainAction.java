@@ -2,6 +2,8 @@ package es.ubu.lsi.ubumonitor.controllers;
 
 public interface MainAction {
 
+	public void onWebViewTabChange();
+	
 	public void updateTreeViewGradeItem();
 
 	public void updateListViewEnrolledUser();

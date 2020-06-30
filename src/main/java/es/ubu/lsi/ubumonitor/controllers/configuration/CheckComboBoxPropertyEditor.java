@@ -25,14 +25,18 @@ public class CheckComboBoxPropertyEditor<T> extends AbstractPropertyEditor<Obser
 
 	public CheckComboBoxPropertyEditor(Item property, Collection<T> items) {
 		super(property, new CheckComboBox<T>());
-		getEditor().getItems().addAll(items);
-	
+		CheckComboBox<T> checkComboBox = getEditor();
+		checkComboBox.setShowCheckedCount(true);
+		checkComboBox.setTitle(property.getName());
+		checkComboBox.getItems()
+				.addAll(items);
+
 	}
-	
+
 	public CheckComboBoxPropertyEditor(Item property, Collection<T> items, StringConverter<T> stringConverter) {
-		this(property,items);
+		this(property, items);
 		getEditor().setConverter(stringConverter);
-	
+
 	}
 
 	@Override
@@ -44,7 +48,8 @@ public class CheckComboBoxPropertyEditor<T> extends AbstractPropertyEditor<Obser
 	@Override
 	protected ObservableValue<ObservableList<T>> getObservableValue() {
 		if (list == null) {
-			list = new SimpleListProperty<>(getEditor().getCheckModel().getCheckedItems());
+			list = new SimpleListProperty<>(getEditor().getCheckModel()
+					.getCheckedItems());
 		}
 		return list;
 	}

@@ -2,6 +2,7 @@ package es.ubu.lsi.ubumonitor.model;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +34,8 @@ public class MoodleUser implements Serializable{
 	private List<Course> inProgressCourses;
 	private List<Course> futureCourses;
 	private List<Course> pastCourses;
-	private String timezone;
+	private ZoneId timezone;
+	private ZoneId serverTimezone;
 
 	/**
 	 * Constructor de MoodleUser sin parámetros
@@ -241,12 +243,12 @@ public class MoodleUser implements Serializable{
 		this.courses = courses;
 	}
 
-	public void setTimezone(String timezone) {
-		this.timezone = timezone;
+	public void setTimezone(ZoneId zoneId) {
+		this.timezone = zoneId;
 
 	}
 
-	public String getTimezone() {
+	public ZoneId getTimezone() {
 		return this.timezone;
 	}
 
@@ -295,5 +297,19 @@ public class MoodleUser implements Serializable{
 
 	public void setPastCourses(List<Course> pastCourses) {
 		this.pastCourses = pastCourses;
+	}
+
+	/**
+	 * @return the serverTimezone
+	 */
+	public ZoneId getServerTimezone() {
+		return serverTimezone;
+	}
+
+	/**
+	 * @param serverTimezone the serverTimezone to set
+	 */
+	public void setServerTimezone(ZoneId serverTimezone) {
+		this.serverTimezone = serverTimezone;
 	}
 }

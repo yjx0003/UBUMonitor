@@ -23,6 +23,8 @@ public enum ModuleType {
 	FILE("resource"),
 	FOLDER("folder"),
 	FORUM("forum"),
+	KALTURA_MEDIA_ASSIGNMENT("kalvidassign"),
+	KALTURA_VIDEO_RESOURCE("kalvidres"),
 	GLOSSARY("glossary"),
 	GUIA_DOCENTE("guiadocente"),
 	HOT_POT("hotpot"),

@@ -2,42 +2,60 @@ package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InvalidClassException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
-import es.ubu.lsi.ubumonitor.controllers.ubugrades.CreatorGradeItems;
-import es.ubu.lsi.ubumonitor.controllers.ubugrades.CreatorUBUGradesController;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.DownloadLogController;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.LogCreator;
+import es.ubu.lsi.ubumonitor.controllers.load.Connection;
+import es.ubu.lsi.ubumonitor.controllers.load.CreatorUBUGradesController;
+import es.ubu.lsi.ubumonitor.controllers.load.DownloadLogController;
+import es.ubu.lsi.ubumonitor.controllers.load.LogCreator;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.CourseCategory;
 import es.ubu.lsi.ubumonitor.model.DataBase;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.model.LogStats;
 import es.ubu.lsi.ubumonitor.model.Logs;
+import es.ubu.lsi.ubumonitor.model.Stats;
+import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.persistence.Serialization;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseSearchCourses;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -49,10 +67,12 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -101,6 +121,8 @@ public class WelcomeController implements Initializable {
 
 	@FXML
 	private ListView<Course> listCoursesFuture;
+	@FXML
+	private ListView<Course> listViewSearch;
 
 	@FXML
 	private TabPane tabPane;
@@ -116,6 +138,8 @@ public class WelcomeController implements Initializable {
 	private Button btnEntrar;
 	@FXML
 	private Button btnRemove;
+	@FXML
+	private Button buttonCancelDownload;
 
 	@FXML
 	private ProgressBar progressBar;
@@ -125,13 +149,37 @@ public class WelcomeController implements Initializable {
 	private Label lblDateUpdate;
 	@FXML
 	private CheckBox chkUpdateData;
-	@FXML
-	private CheckBox chkOnlyWeb;
+
 	private boolean isBBDDLoaded;
 
 	@FXML
 	private Label conexionLabel;
 	private boolean autoUpdate;
+
+	@FXML
+	private CheckBox checkBoxGradeItem;
+	@FXML
+	private CheckBox checkBoxActivityCompletion;
+	@FXML
+	private CheckBox checkBoxLogs;
+
+	@FXML
+	private TextField textFieldSearch;
+
+	@FXML
+	private Button buttonSearch;
+
+	@FXML
+	private Button buttonLogout;
+
+	@FXML
+	private Label totalLabel;
+
+	@FXML
+	private Label labelShowing;
+
+	@FXML
+	private HBox horizontalBox;
 
 	public WelcomeController() {
 		this(false);
@@ -150,38 +198,85 @@ public class WelcomeController implements Initializable {
 
 		try {
 			conexionLabel.setText(I18n.get("text.online_" + !controller.isOfflineMode()));
-			lblUser.setText(I18n.get("label.welcome") + " " + controller.getUser().getFullName());
-			progressBar.visibleProperty().bind(btnEntrar.visibleProperty().not());
-			anchorPane.disableProperty().bind(btnEntrar.visibleProperty().not());
-			lblProgress.visibleProperty().bind(btnEntrar.visibleProperty().not());
-			btnRemove.visibleProperty().bind(btnEntrar.visibleProperty());
-			btnRemove.disableProperty().bind(chkUpdateData.disabledProperty());
-			chkOnlyWeb.visibleProperty().bind(chkUpdateData.selectedProperty());
-			chkOnlyWeb.setSelected(Boolean.parseBoolean(ConfigHelper.getProperty("onlyWeb", "false")));
-			labelLoggedIn.setText(controller.getLoggedIn().format(Controller.DATE_TIME_FORMATTER));
-			labelHost.setText(controller.getUrlHost().toString());
+			lblUser.setText(I18n.get("label.welcome") + " " + controller.getUser()
+					.getFullName());
+			progressBar.visibleProperty()
+					.bind(btnEntrar.visibleProperty()
+							.not());
+			anchorPane.disableProperty()
+					.bind(btnEntrar.visibleProperty()
+							.not());
+			lblProgress.visibleProperty()
+					.bind(btnEntrar.visibleProperty()
+							.not());
+			btnRemove.visibleProperty()
+					.bind(btnEntrar.visibleProperty());
+			btnRemove.disableProperty()
+					.bind(chkUpdateData.disabledProperty());
+			buttonLogout.disableProperty()
+					.bind(btnEntrar.visibleProperty()
+							.not());
+
+			manageCheckBox(checkBoxGradeItem, chkUpdateData);
+			manageCheckBox(checkBoxActivityCompletion, chkUpdateData);
+			manageCheckBox(checkBoxLogs, chkUpdateData);
+
+			labelLoggedIn.setText(controller.getLoggedIn()
+					.format(Controller.DATE_TIME_FORMATTER));
+			labelHost.setText(controller.getUrlHost()
+					.toString());
 
 			initListViews();
 
-			tabPane.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
-				ListView<Course> listView = (ListView<Course>) value.getContent();
-				listView.getSelectionModel().clearSelection();
-				chkUpdateData.setDisable(true);
-				lblDateUpdate.setText(null);
-			});
-			tabPane.getSelectionModel().select(ConfigHelper.getProperty("courseList", 0));
+			tabPane.getSelectionModel()
+					.selectedItemProperty()
+					.addListener((ov, value, newValue) -> {
+
+						ListView<Course> listView;
+						if (value.getContent() instanceof ListView<?>) {
+							listView = (ListView<Course>) value.getContent();
+
+						} else {
+
+							listView = listViewSearch;
+						}
+						listView.getSelectionModel()
+								.clearSelection();
+						chkUpdateData.setDisable(true);
+						lblDateUpdate.setText(null);
+						if (!(newValue.getContent() instanceof ListView<?>)) {
+							Platform.runLater(() -> textFieldSearch.requestFocus());
+							buttonSearch.setDefaultButton(true);
+							btnEntrar.setDefaultButton(false);
+						} else {
+							btnEntrar.setDefaultButton(true);
+							buttonSearch.setDefaultButton(false);
+						}
+					});
+			tabPane.getSelectionModel()
+					.select(ConfigHelper.getProperty("courseList", 0));
 
 			Platform.runLater(() -> {
-				ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem()
-						.getContent();
-				Course course = controller.getUser().getCourseById(ConfigHelper.getProperty("actualCourse", -1));
+				ListView<Course> listView = getActualListView();
 
-				listView.getSelectionModel().select(course);
+				Course course = controller.getUser()
+						.getCourseById(ConfigHelper.getProperty("actualCourse", -1));
+
+				listView.getSelectionModel()
+						.select(course);
 				listView.scrollTo(course);
 				if (autoUpdate) {
 					chkUpdateData.setSelected(true);
 					btnEntrar.fire();
 				}
+				if (Files.isDirectory(controller.getHostUserDir())
+						&& !Files.isDirectory(controller.getHostUserModelversionDir())) {
+					UtilMethods.warningWindow(I18n.get("text.modelversionchanged"));
+					controller.getHostUserModelversionDir()
+							.toFile()
+							.mkdirs();
+				}
+
 			});
 
 		} catch (Exception e) {
@@ -190,16 +285,78 @@ public class WelcomeController implements Initializable {
 
 	}
 
-	private void initListViews() {
-		Comparator<Course> courseComparator = Comparator.comparing(Course::getFullName)
-				.thenComparing(c -> c.getCourseCategory().getName());
+	@SuppressWarnings("unchecked")
+	private ListView<Course> getActualListView() {
+		ListView<Course> listView;
+		if (tabPane.getSelectionModel()
+				.getSelectedItem()
+				.getContent() instanceof ListView<?>) {
+			listView = (ListView<Course>) tabPane.getSelectionModel()
+					.getSelectedItem()
+					.getContent();
 
-		initListView(controller.getUser().getCourses(), listCourses, courseComparator);
-		initListView(controller.getUser().getFavoriteCourses(), listCoursesFavorite, courseComparator);
-		initListView(controller.getUser().getRecentCourses(), listCoursesRecent, null);
-		initListView(controller.getUser().getInProgressCourses(), listCoursesInProgress, courseComparator);
-		initListView(controller.getUser().getPastCourses(), listCoursesPast, courseComparator);
-		initListView(controller.getUser().getFutureCourses(), listCoursesFuture, courseComparator);
+		} else {
+			listView = listViewSearch;
+		}
+		return listView;
+	}
+
+	private void manageCheckBox(CheckBox checkBox1, CheckBox checkBox2) {
+		checkBox1.visibleProperty()
+				.bind(checkBox2.selectedProperty());
+
+	}
+
+	private void initListViews() {
+		Comparator<Course> courseComparator = Course.getCourseComparator();
+
+		initListView(controller.getUser()
+				.getCourses(), listCourses, courseComparator);
+		initListView(controller.getUser()
+				.getFavoriteCourses(), listCoursesFavorite, courseComparator);
+		initListView(controller.getUser()
+				.getRecentCourses(), listCoursesRecent, null);
+		initListView(controller.getUser()
+				.getInProgressCourses(), listCoursesInProgress, courseComparator);
+		initListView(controller.getUser()
+				.getPastCourses(), listCoursesPast, courseComparator);
+		initListView(controller.getUser()
+				.getFutureCourses(), listCoursesFuture, courseComparator);
+		listViewSearch.getSelectionModel()
+				.selectedItemProperty()
+				.addListener((ov, value, newValue) -> checkFile(newValue));
+
+		listViewSearch.setCellFactory(callback -> new ListCell<Course>() {
+			@Override
+			protected void updateItem(Course course, boolean empty) {
+				super.updateItem(course, empty);
+
+				if (empty || course == null || !course.hasCourseAccess()) {
+					setDisable(true);
+
+				} else {
+					setDisable(false);
+
+					setFocusTraversable(course.hasCourseAccess());
+
+				}
+
+				setText(course == null ? null : course.toString());
+				setMouseTransparent(isDisable());
+				setFocusTraversable(!isDisable());
+			}
+		});
+
+		listViewSearch.setOnKeyPressed(Event::consume);
+		horizontalBox.visibleProperty()
+				.bind(Bindings.isEmpty(listViewSearch.getItems())
+						.not());
+		horizontalBox.managedProperty()
+				.bind(horizontalBox.visibleProperty());
+		labelShowing.textProperty()
+				.bind(Bindings.size(listViewSearch.getItems())
+						.asString());
+
 	}
 
 	private void initListView(List<Course> courseList, ListView<Course> listView, Comparator<Course> comparator) {
@@ -208,27 +365,27 @@ public class WelcomeController implements Initializable {
 			observableList.sort(comparator);
 		}
 		listView.setItems(observableList);
-		listView.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> checkFile(newValue));
+		listView.getSelectionModel()
+				.selectedItemProperty()
+				.addListener((ov, value, newValue) -> checkFile(newValue));
 
 	}
 
 	private Course getSelectedCourse() {
-		@SuppressWarnings("unchecked")
-		ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem().getContent();
-		return listView.getSelectionModel().getSelectedItem();
+		return getActualListView().getSelectionModel()
+				.getSelectedItem();
 	}
 
-	private void checkFile(Course newValue) {
-		if (newValue == null)
+	private void checkFile(Course course) {
+		if (course == null)
 			return;
-		cacheFilePath = controller.getDirectoryCache(newValue);
+		cacheFilePath = controller.getHostUserModelversionCourseFile(course);
 		LOGGER.debug("Buscando si existe {}", cacheFilePath);
 
 		File f = cacheFilePath.toFile();
 
-		if (f.exists() && f.isFile()) {
-			chkUpdateData.setSelected(false);
-			chkUpdateData.setDisable(false);
+		if (f.exists() && f.isFile()) { // exist local file
+
 			long lastModified = f.lastModified();
 
 			LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastModified),
@@ -236,11 +393,18 @@ public class WelcomeController implements Initializable {
 			lblDateUpdate.setText(localDateTime.format(Controller.DATE_TIME_FORMATTER));
 			isFileCacheExists = true;
 		} else {
-			chkUpdateData.setSelected(true);
-			chkUpdateData.setDisable(true);
+
 			lblDateUpdate.setText(I18n.get("label.never"));
 			isFileCacheExists = false;
 		}
+		chkUpdateData.setSelected(!isFileCacheExists);
+		chkUpdateData.setDisable(!isFileCacheExists);
+		checkBoxGradeItem.setSelected(course.hasGradeItemAccess());
+		checkBoxGradeItem.setDisable(!course.hasGradeItemAccess());
+		checkBoxLogs.setSelected(course.hasReportAccess());
+		checkBoxLogs.setDisable(!course.hasReportAccess());
+		checkBoxActivityCompletion.setSelected(course.hasActivityCompletion());
+		checkBoxActivityCompletion.setDisable(!course.hasActivityCompletion());
 	}
 
 	/**
@@ -249,7 +413,7 @@ public class WelcomeController implements Initializable {
 	 * @param event El evento.
 	 */
 
-	public void enterCourse(ActionEvent event) {
+	public void enterCourse() {
 
 		// Guardamos en una variable el curso seleccionado por el usuario
 
@@ -261,19 +425,23 @@ public class WelcomeController implements Initializable {
 		lblNoSelect.setVisible(false);
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getFullName());
 
-		ConfigHelper.setProperty("courseList", Integer.toString(tabPane.getSelectionModel().getSelectedIndex()));
+		ConfigHelper.setProperty("courseList", tabPane.getSelectionModel()
+				.getSelectedIndex());
 
 		ConfigHelper.setProperty("actualCourse", getSelectedCourse().getId());
-
-		ConfigHelper.setProperty("onlyWeb", Boolean.toString(chkOnlyWeb.isSelected()));
 
 		if (chkUpdateData.isSelected()) {
 			if (isFileCacheExists) {
 				loadData(controller.getPassword());
 			} else {
 				DataBase copyDataBase = new DataBase();
-				copyDataBase.setUserPhoto(controller.getUser().getUserPhoto());
-				copyDataBase.setFullName(controller.getUser().getFullName());
+				copyDataBase.setUserPhoto(controller.getUser()
+						.getUserPhoto());
+				copyDataBase.setFullName(controller.getUser()
+						.getFullName());
+				copyDataBase.setUserZoneId(controller.getUser()
+						.getTimezone());
+				TimeZone.setDefault(TimeZone.getTimeZone(copyDataBase.getUserZoneId()));
 				Course copyCourse = copyCourse(copyDataBase, selectedCourse);
 				controller.setDataBase(copyDataBase);
 				controller.setActualCourse(copyCourse);
@@ -292,30 +460,38 @@ public class WelcomeController implements Initializable {
 		alert.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		alert.initModality(Modality.APPLICATION_MODAL);
 		alert.setHeaderText(I18n.get("text.confirmation"));
-		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(new Image("/img/logo_min.png"));
+		Stage stage = (Stage) alert.getDialogPane()
+				.getScene()
+				.getWindow();
+		stage.getIcons()
+				.add(new Image("/img/logo_min.png"));
 
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.isPresent() && result.get() == ButtonType.OK) {
 			Files.delete(cacheFilePath);
-			@SuppressWarnings("unchecked")
-			ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel().getSelectedItem().getContent();
-			int index = listView.getSelectionModel().getSelectedIndex();
-			listView.getSelectionModel().clearSelection();
-			listView.getSelectionModel().select(index);
+
+			ListView<Course> listView = getActualListView();
+			int index = listView.getSelectionModel()
+					.getSelectedIndex();
+			listView.getSelectionModel()
+					.clearSelection();
+			listView.getSelectionModel()
+					.select(index);
 		}
 	}
 
 	private Course copyCourse(DataBase copyDataBase, Course selectedCourse) {
 
-		Course copyCourse = copyDataBase.getCourses().getById(selectedCourse.getId());
+		Course copyCourse = copyDataBase.getCourses()
+				.getById(selectedCourse.getId());
 		copyCourse.setStartDate(selectedCourse.getStartDate());
 		copyCourse.setEndDate(selectedCourse.getEndDate());
 		copyCourse.setSummary(selectedCourse.getSummary());
 		copyCourse.setSummaryformat(selectedCourse.getSummaryformat());
 
 		CourseCategory courseCategory = selectedCourse.getCourseCategory();
-		CourseCategory copyCourseCategory = copyDataBase.getCourseCategories().getById(courseCategory.getId());
+		CourseCategory copyCourseCategory = copyDataBase.getCourseCategories()
+				.getById(courseCategory.getId());
 
 		copyCourseCategory.setName(courseCategory.getName());
 
@@ -325,14 +501,15 @@ public class WelcomeController implements Initializable {
 	}
 
 	private void saveData() {
-
+		LOGGER.debug("entramos a savedata");
 		if (!isBBDDLoaded) {
 			return;
 		}
 
-		File f = controller.getDirectoryCache().toFile();
+		File f = controller.getHostUserModelversionDir()
+				.toFile();
 		if (!f.isDirectory()) {
-			LOGGER.info("No existe el directorio, se va a crear: {}", controller.getDirectoryCache());
+			LOGGER.info("No existe el directorio, se va a crear: {}", controller.getHostUserModelversionDir());
 			f.mkdirs();
 		}
 		LOGGER.info("Guardando los datos encriptados en: {}", f.getAbsolutePath());
@@ -349,11 +526,17 @@ public class WelcomeController implements Initializable {
 			copyCourse(dataBase, getSelectedCourse());
 			controller.setDataBase(dataBase);
 			isBBDDLoaded = true;
+			controller.setDefaultUpdate(ZonedDateTime.ofInstant(Instant.ofEpochSecond(cacheFilePath.toFile()
+					.lastModified()), ZoneId.systemDefault()));
+			TimeZone.setDefault(TimeZone.getTimeZone(dataBase.getUserZoneId()));
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			previusPasswordWindow();
-		} catch (InvalidClassException | ClassNotFoundException | ClassCastException e) {
-			LOGGER.warn("Se ha modificado una de las clases serializables", e);
+		} catch (IOException e) {
+			UtilMethods.errorWindow(e.getMessage(), e);
+			throw new IllegalStateException(e);
+		} catch (Exception e) {
 			UtilMethods.errorWindow(I18n.get("error.invalidcache"), e);
+			throw new IllegalStateException("Se ha modificado una de las clases serializables", e);
 		}
 
 	}
@@ -365,24 +548,34 @@ public class WelcomeController implements Initializable {
 		dialog.setHeaderText(I18n.get("header.passwordChangedMessage") + "\n" + I18n.get("header.passwordDateTime")
 				+ lblDateUpdate.getText());
 
-		Stage dialogStage = (Stage) dialog.getDialogPane().getScene().getWindow();
-		dialogStage.getIcons().add(new Image("img/error.png"));
-		dialog.getDialogPane().setGraphic(new ImageView("img/error.png"));
-		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
+		Stage dialogStage = (Stage) dialog.getDialogPane()
+				.getScene()
+				.getWindow();
+		dialogStage.getIcons()
+				.add(new Image("img/error.png"));
+		dialog.getDialogPane()
+				.setGraphic(new ImageView("img/error.png"));
+		dialog.getDialogPane()
+				.getButtonTypes()
+				.addAll(ButtonType.OK);
 
 		PasswordField pwd = new PasswordField();
 		HBox content = new HBox();
 		content.setAlignment(Pos.CENTER);
 		content.setSpacing(10);
-		content.getChildren().addAll(new Label(I18n.get("label.oldPassword")), pwd);
-		dialog.getDialogPane().setContent(content);
+		content.getChildren()
+				.addAll(new Label(I18n.get("label.oldPassword")), pwd);
+		dialog.getDialogPane()
+				.setContent(content);
 
 		// desabilitamos el boton hasta que no escriba texto
-		Node accept = dialog.getDialogPane().lookupButton(ButtonType.OK);
+		Node accept = dialog.getDialogPane()
+				.lookupButton(ButtonType.OK);
 		accept.setDisable(true);
 
 		pwd.textProperty()
-				.addListener((observable, oldValue, newValue) -> accept.setDisable(newValue.trim().isEmpty()));
+				.addListener((observable, oldValue, newValue) -> accept.setDisable(newValue.trim()
+						.isEmpty()));
 		dialog.setResultConverter(dialogButton -> {
 			if (dialogButton == ButtonType.OK) {
 				return pwd.getText();
@@ -404,22 +597,46 @@ public class WelcomeController implements Initializable {
 			return;
 		}
 
-		btnEntrar.setVisible(false);
-		Task<Void> task = getUserDataWorker();
-		lblProgress.textProperty().bind(task.messageProperty());
-		task.setOnSucceeded(v -> loadNextWindow());
-		task.setOnFailed(e -> {
-			controller.getStage().getScene().setCursor(Cursor.DEFAULT);
-			btnEntrar.setVisible(true);
-			UtilMethods.errorWindow("Error al actualizar los datos del curso: " + task.getException().getMessage(),
-					task.getException());
-			LOGGER.error("Error al actualizar los datos del curso: {}", task.getException());
+		Service<Void> service = new Service<Void>() {
+
+			@Override
+			protected Task<Void> createTask() {
+				return getUserDataWorker(controller.getActualCourse());
+			}
+
+		};
+		lblProgress.textProperty()
+				.bind(service.messageProperty());
+		service.setOnSucceeded(v -> {
+			controller.setDefaultUpdate(ZonedDateTime.now());
+			
+
+			loadNextWindow();
+		});
+		service.setOnFailed(e -> {
+			controller.getStage()
+					.getScene()
+					.setCursor(Cursor.DEFAULT);
+
+			UtilMethods.errorWindow(I18n.get("error.downloadingdata") + " " + service.getException()
+					.getMessage(), service.getException());
+			LOGGER.error("Error al actualizar los datos del curso: {}", service.getException());
 
 		});
+		service.setOnCancelled(e -> {
+			controller.getStage()
+					.getScene()
+					.setCursor(Cursor.DEFAULT);
+			controller.setDataBase(null);
+		});
 
-		Thread thread = new Thread(task, "datos");
-		thread.setDaemon(true);
-		thread.start();
+		btnEntrar.visibleProperty()
+				.bind(service.runningProperty()
+						.not());
+		buttonCancelDownload.visibleProperty()
+				.bind(service.runningProperty());
+		buttonCancelDownload.setOnAction(e -> service.cancel());
+		service.start();
 
 	}
 
@@ -427,11 +644,13 @@ public class WelcomeController implements Initializable {
 		if (!isBBDDLoaded) {
 			return;
 		}
-
 		UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), false);
-		controller.getStage().setMaximized(true);
-		controller.getStage().setResizable(true);
-		controller.getStage().show();
+		controller.getStage()
+				.setMaximized(true);
+		controller.getStage()
+				.setResizable(true);
+		controller.getStage()
+				.show();
 
 	}
 
@@ -442,7 +661,7 @@ public class WelcomeController implements Initializable {
 	 */
 	public void logOut(ActionEvent actionEvent) {
 		LOGGER.info("Cerrando sesión de usuario");
-
+		Connection.clearCookies();
 		UtilMethods.changeScene(getClass().getResource("/view/Login.fxml"), controller.getStage());
 
 	}
@@ -453,69 +672,153 @@ public class WelcomeController implements Initializable {
 	 * 
 	 * @return La tarea a realizar.
 	 */
-	private Task<Void> getUserDataWorker() {
+	private Task<Void> getUserDataWorker(Course actualCourse) {
 		return new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
 
-				Course actualCourse = controller.getActualCourse();
-				actualCourse.clear();
 				LOGGER.info("Cargando datos del curso: {}", actualCourse.getFullName());
 				// Establecemos los usuarios matriculados
-				updateMessage(I18n.get("label.loadingstudents"));
+
+				actualCourse.clearCourseData();
+				updateMessage(I18n.get("label.loadingcoursedata"));
 				CreatorUBUGradesController.createEnrolledUsers(actualCourse.getId());
 				CreatorUBUGradesController.createSectionsAndModules(actualCourse.getId());
-				updateMessage(I18n.get("label.loadingqualifier"));
-				// Establecemos calificador del curso
-				CreatorGradeItems creatorGradeItems = new CreatorGradeItems(new Locale(controller.getUser().getLang()));
-				creatorGradeItems.createGradeItems(controller.getActualCourse().getId());
-				updateMessage(I18n.get("label.loadingActivitiesCompletion"));
-				CreatorUBUGradesController.createActivitiesCompletionStatus(actualCourse.getId(),
-						actualCourse.getEnrolledUsers());
+				actualCourse.setUpdatedCourseData(ZonedDateTime.now());
 
-				int tries = 0;
-				int limitRelogin = 3;
-				while (tries < limitRelogin) {
-					try {
-						if (!isFileCacheExists) {
-							updateMessage(I18n.get("label.downloadinglog"));
-							DownloadLogController downloadLogController = LogCreator.download();
+				if (checkBoxGradeItem.isSelected() && !isCancelled()) {
+					actualCourse.getGradeItems()
+							.clear();
+					updateMessage(I18n.get("label.loadingqualifier"));
+					// Establecemos calificador del curso
+					List<GradeItem> gradeItems = CreatorUBUGradesController.createGradeItems(actualCourse.getId(),
+							controller.getUser()
+									.getId());
+					actualCourse.setGradeItems(new HashSet<>(gradeItems));
+					// Establecemos las estadisticas
+					Stats stats = new Stats(actualCourse);
+					actualCourse.setStats(stats);
+					actualCourse.setUpdatedGradeItem(ZonedDateTime.now());
+				}
+				if (checkBoxActivityCompletion.isSelected() && !isCancelled()) {
+					actualCourse.getModules()
+							.forEach(m -> m.getActivitiesCompletion()
+									.clear());
+					updateMessage(I18n.get("label.loadingActivitiesCompletion"));
+					CreatorUBUGradesController.createActivitiesCompletionStatus(actualCourse.getId(),
+							actualCourse.getEnrolledUsers());
+					actualCourse.setUpdatedActivityCompletion(ZonedDateTime.now());
+				}
+				if (checkBoxLogs.isSelected()) {
+					int tries = 1;
+					int limitRelogin = 3;
+					while (tries <= limitRelogin && !isCancelled()) {
+						try {
 
-							Response response = downloadLogController.downloadLog(chkOnlyWeb.isSelected());
-							LOGGER.info("Log descargado");
-							updateMessage(I18n.get("label.parselog"));
+							updateMessage(MessageFormat.format(I18n.get("label.downloadinglog"), tries, limitRelogin));
+							if (actualCourse.getUpdatedLog() == null) {
 
-							Logs logs = new Logs(downloadLogController.getServerTimeZone());
-							LogCreator.parserResponse(logs, response, actualCourse.getEnrolledUsers());
-							actualCourse.setLogs(logs);
+								DownloadLogController downloadLogController = LogCreator.download();
 
-						} else {
-							updateMessage(I18n.get("label.downloadinglog"));
-							LogCreator.createLogsMultipleDays(actualCourse.getLogs(), actualCourse.getEnrolledUsers(),
-									chkOnlyWeb.isSelected());
+								Response response = downloadLogController.downloadLog(false);
+								LOGGER.info("Log descargado");
+								updateMessage(I18n.get("label.parselog"));
+								Logs logs = new Logs(downloadLogController.getServerTimeZone());
+								LogCreator.parserResponse(logs, response);
+								actualCourse.setLogs(logs);
+
+							} else {
+
+								LogCreator.createLogsMultipleDays(actualCourse.getLogs());
+
+							}
+
+							LogStats logStats = new LogStats(actualCourse.getLogs()
+									.getList());
+							actualCourse.setLogStats(logStats);
+							Set<EnrolledUser> notEnrolled = logStats.getByType(TypeTimes.ALL)
+									.getComponents()
+									.getUsers()
+									.stream()
+									.filter(user -> !actualCourse.getEnrolledUsers()
+											.contains(user))
+									.collect(Collectors.toSet());
+							List<String> ids = notEnrolled.stream()
+									.map(EnrolledUser::getId)
+									.map(Object::toString)
+									.collect(Collectors.toList());
+							LOGGER.info("Los ids de usuarios no matriculados: {}", ids);
+							CreatorUBUGradesController.searchUser(ids);
+							actualCourse.setNotEnrolledUser(notEnrolled);
+							actualCourse.setUpdatedLog(ZonedDateTime.now());
+
+							tries = limitRelogin + 1;
+						} catch (Exception e) {
+							if (tries >= limitRelogin) {
+								throw e;
+							}
+							tries++;
+							updateMessage(I18n.get("label.relogin"));
+							controller.getLogin()
+									.reLogin(controller.getUrlHost()
+											.toString(), controller.getUsername(), controller.getPassword());
 
 						}
-						tries = limitRelogin;
-					} catch (RuntimeException e) {
-						tries++;
-						if (tries == limitRelogin) {
-							throw e;
-						}
-						updateMessage(I18n.get("label.relogin"));
-						controller.reLogin();
-
 					}
 				}
-				updateMessage(I18n.get("label.loadingstats"));
-				// Establecemos las estadisticas
-				controller.createStats();
-
-				updateMessage(I18n.get("label.savelocal"));
-				saveData();
+				if(!isCancelled()) {
+					updateMessage(I18n.get("label.savelocal"));
+					saveData();
+				}
+			
 
 				return null;
 			}
 		};
+	}
+
+	/**
+	 * Abre en el navegador el repositorio del proyecto.
+	 * 
+	 * @param actionEvent El ActionEvent.
+	 */
+	public void aboutApp() {
+
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AboutApp.fxml"), I18n.getResourceBundle());
+
+		UtilMethods.createDialog(loader, controller.getStage());
+
+	}
+
+	public void onActionSearch() {
+		String text = textFieldSearch.getText();
+		if (text == null || text.trim()
+				.isEmpty()) {
+			UtilMethods.errorWindow(I18n.get("error.emptytextfield"));
+			return;
+		}
+
+		try {
+
+			JSONObject jsonObject = CreatorUBUGradesController
+					.getJSONObjectResponse(new CoreCourseSearchCourses(text, 0, 50));
+			List<Course> courses = CreatorUBUGradesController.searchCourse(jsonObject);
+
+			if (courses.isEmpty()) {
+				UtilMethods.warningWindow(I18n.get("warning.nofound"));
+
+			} else {
+				Collections.sort(courses, Comparator.comparing(Course::hasCourseAccess, Comparator.reverseOrder())
+						.thenComparing(Course.getCourseComparator()));
+				listViewSearch.getItems()
+						.setAll(courses);
+				totalLabel.setText(Integer.toString(jsonObject.getInt("total")));
+			}
+
+		} catch (Exception e) {
+			UtilMethods.errorWindow("Error when searching", e);
+		}
+
 	}
 
 }

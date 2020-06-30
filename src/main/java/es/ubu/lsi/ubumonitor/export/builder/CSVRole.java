@@ -39,12 +39,13 @@ public class CSVRole extends CSVBuilderAbstract {
 
 	@Override
 	public void buildBody() {
+		
 		Collection<Role> roles = getDataBase().getRoles().getMap().values();
 		// Load data rows for roles
 		for (Role role : roles) {
 			// Filter nulls and sort
 			Stream<EnrolledUser> users = role.getEnrolledUsers().stream()
-					.sorted(EnrolledUser.NAME_COMPARATOR);
+					.sorted(EnrolledUser.getNameComparator());
 			// Load data rows for enrolledUsers
 			users.forEach(enrollmentUser -> {
 				LOGGER.debug(role.getRoleId() + "," + role.getRoleName() + "," + role.getRoleShortName() + ","
@@ -56,7 +57,9 @@ public class CSVRole extends CSVBuilderAbstract {
 						Integer.toString(enrollmentUser.getId()),
 						enrollmentUser.getFullName() });
 			});
+			
 		}
+		
 	}
 
 }

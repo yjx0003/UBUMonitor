@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.model;
 
 import java.io.Serializable;
+import java.time.ZoneId;
 
 /**
  * Clase de bases de datos. Almacena datos de todos los años Encargado de las
@@ -17,9 +18,11 @@ import java.io.Serializable;
 public class DataBase implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private byte[] userPhoto;
 	private String fullName;
+	private ZoneId userZoneId;
+
 	private SubDataBase<Role> roles;
 	private SubDataBase<Group> groups;
 	private SubDataBase<EnrolledUser> users;
@@ -57,8 +60,7 @@ public class DataBase implements Serializable {
 	/**
 	 * Modifica el curso actual.
 	 * 
-	 * @param course
-	 *            curso actual
+	 * @param course curso actual
 	 */
 	public void setActualCourse(Course course) {
 		actualCourse = course;
@@ -124,6 +126,12 @@ public class DataBase implements Serializable {
 		this.fullName = fullName;
 	}
 
-	
+	public ZoneId getUserZoneId() {
+		return userZoneId;
+	}
+
+	public void setUserZoneId(ZoneId userZoneId) {
+		this.userZoneId = userZoneId;
+	}
 
 }

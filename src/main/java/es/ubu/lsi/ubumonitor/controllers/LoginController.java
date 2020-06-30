@@ -5,9 +5,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.text.Collator;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -21,19 +22,26 @@ import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
-import es.ubu.lsi.ubumonitor.controllers.ubugrades.CreatorUBUGradesController;
+import es.ubu.lsi.ubumonitor.controllers.load.CreatorUBUGradesController;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
+import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.util.Languages;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.webservice.api.core.webservice.CoreWebserviceGetSiteInfo;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -44,6 +52,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 
 /**
@@ -55,10 +64,22 @@ import javafx.util.Callback;
  */
 public class LoginController implements Initializable {
 
+	private static final String BETA_TESTER = "betaTester";
+
+	private static final String APPLICATION_PATH = "applicationPath";
+
+	private static final String ASK_AGAIN = "askAgain";
+
+	private static final String HOSTS = "hosts";
+
+	private static final String USERNAMES = "usernames";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
 
 	private Controller controller = Controller.getInstance();
 
+	@FXML
+	private AnchorPane anchorPane;
 	@FXML
 	private Label lblStatus;
 	@FXML
@@ -83,27 +104,35 @@ public class LoginController implements Initializable {
 	@FXML
 	private ImageView insecureProtocol;
 
+	@FXML
+	private ImageView imageViewconfigurationHelper;
+
 	/**
 	 * Crea el selector de idioma.
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		txtHost.textProperty().addListener((observable, oldValue, newValue) -> insecureProtocol
-				.setVisible(Optional.ofNullable(newValue).orElse("").startsWith("http://")));
+		txtHost.textProperty()
+				.addListener((observable, oldValue,
+						newValue) -> insecureProtocol.setVisible(Optional.ofNullable(newValue)
+								.orElse("")
+								.startsWith("http://")));
 
 		initializeProperties();
 
 		Platform.runLater(() -> {
-			if (!Optional.ofNullable(txtUsername.getText()).orElse("").isEmpty()) {
+			if (!Optional.ofNullable(txtUsername.getText())
+					.orElse("")
+					.isEmpty()) {
 
 				txtPassword.requestFocus(); // si hay texto cargado del usuario cambiamos el focus al texto de
 											// password
 			}
 		});
-
 		Tooltip.install(insecureProtocol, new Tooltip(I18n.get("tooltip.insecureprotocol")));
 		initLanguagesList();
+		initLauncherConfiguration();
 
 	}
 
@@ -137,19 +166,22 @@ public class LoginController implements Initializable {
 		languageSelector.setButtonCell(listCell.call(null));
 
 		ObservableList<Languages> languages = FXCollections.observableArrayList(Languages.values());
-		languages.sort(Comparator.comparing(Languages::getDisplayLanguage, String.CASE_INSENSITIVE_ORDER));
+		languages.sort(Comparator.comparing(Languages::getDisplayLanguage, Collator.getInstance()));
 		languageSelector.setItems(languages);
 		languageSelector.setValue(controller.getSelectedLanguage());
 
 		// Carga la interfaz con el idioma seleccionado
-		languageSelector.getSelectionModel().selectedItemProperty().addListener((ov, value, newValue) -> {
+		languageSelector.getSelectionModel()
+				.selectedItemProperty()
+				.addListener((ov, value, newValue) -> {
 
-			controller.setSelectedLanguage(newValue);
-			LOGGER.info("Idioma de la aplicación: {}", newValue);
-			LOGGER.info("Idioma cargado del resource bundle: {}", I18n.getResourceBundle().getLocale());
-			LOGGER.info("[Bienvenido a " + AppInfo.APPLICATION_NAME_WITH_VERSION + "]");
-			UtilMethods.changeScene(getClass().getResource("/view/Login.fxml"), controller.getStage());
-		});
+					controller.setSelectedLanguage(newValue);
+					LOGGER.info("Idioma de la aplicación: {}", newValue);
+					LOGGER.info("Idioma cargado del resource bundle: {}", I18n.getResourceBundle()
+							.getLocale());
+					LOGGER.info("[Bienvenido a " + AppInfo.APPLICATION_NAME_WITH_VERSION + "]");
+					UtilMethods.changeScene(getClass().getResource("/view/Login.fxml"), controller.getStage());
+				});
 
 	}
 
@@ -164,13 +196,16 @@ public class LoginController implements Initializable {
 
 		txtUsername.setText(ConfigHelper.getProperty("username", ""));
 		txtPassword.setText(System.getProperty(AppInfo.APPLICATION_NAME + ".password", ""));
-		chkSaveUsername.setSelected(Boolean.parseBoolean(ConfigHelper.getProperty("saveUsername")));
-		chkSaveHost.setSelected(Boolean.parseBoolean(ConfigHelper.getProperty("saveHost")));
-		chkOfflineMode.setSelected(Boolean.parseBoolean(ConfigHelper.getProperty("offlineMode")));
-		String[] hosts = ConfigHelper.getProperty("hosts", ConfigHelper.getProperty("host", "")).split("\t");
-		String[] usernames = ConfigHelper.getProperty("usernames", ConfigHelper.getProperty("username", "")).split("\t");
-		TextFields.bindAutoCompletion(txtUsername, usernames);
-		TextFields.bindAutoCompletion(txtHost, hosts);
+		chkSaveUsername.setSelected(ConfigHelper.getProperty("saveUsername", false));
+		chkSaveHost.setSelected(ConfigHelper.getProperty("saveHost", false));
+		chkOfflineMode.setSelected(ConfigHelper.getProperty("offlineMode", false));
+
+		TextFields.bindAutoCompletion(txtUsername, ConfigHelper.getArray(USERNAMES)
+				.toList())
+				.setDelay(0);
+		TextFields.bindAutoCompletion(txtHost, ConfigHelper.getArray(HOSTS)
+				.toList())
+				.setDelay(0);
 
 	}
 
@@ -181,24 +216,28 @@ public class LoginController implements Initializable {
 
 		String username = chkSaveUsername.isSelected() ? txtUsername.getText() : "";
 		ConfigHelper.setProperty("username", username);
-		ConfigHelper.setProperty("saveUsername", Boolean.toString(chkSaveUsername.isSelected()));
+		ConfigHelper.setProperty("saveUsername", chkSaveUsername.isSelected());
 
 		String host = chkSaveHost.isSelected() ? txtHost.getText() : "";
 		ConfigHelper.setProperty("host", host);
-		ConfigHelper.setProperty("saveHost", Boolean.toString(chkSaveHost.isSelected()));
+		ConfigHelper.setProperty("saveHost", chkSaveHost.isSelected());
 
-		ConfigHelper.setProperty("offlineMode", Boolean.toString(chkOfflineMode.isSelected()));
+		ConfigHelper.setProperty("offlineMode", chkOfflineMode.isSelected());
 		if (chkSaveUsername.isSelected()) {
-			String[] usernames = ConfigHelper.getProperty("usernames", "").split("\t");
-			if (Arrays.stream(usernames).noneMatch(username::equals)) {
-				ConfigHelper.setProperty("usernames", username + "\t" + String.join("\t", usernames));
+			List<Object> array = ConfigHelper.getArray(USERNAMES)
+					.toList();
+			if (!array.contains(username)) {
+
+				ConfigHelper.appendArray(USERNAMES, username);
 			}
 		}
 		if (chkSaveHost.isSelected()) {
 
-			String[] hosts = ConfigHelper.getProperty("hosts", "").split("\t");
-			if (Arrays.stream(hosts).noneMatch(host::equals)) {
-				ConfigHelper.setProperty("hosts", host + "\t" + String.join("\t", hosts));
+			List<Object> array = ConfigHelper.getArray(HOSTS)
+					.toList();
+			if (!array.contains(host)) {
+
+				ConfigHelper.appendArray(HOSTS, host);
 			}
 		}
 
@@ -211,28 +250,46 @@ public class LoginController implements Initializable {
 	 * @param event El ActionEvent.
 	 */
 	public void login(ActionEvent event) {
-		if (txtHost.getText().isEmpty() || txtPassword.getText().isEmpty() || txtUsername.getText().isEmpty()) {
+		if (txtHost.getText()
+				.trim()
+				.isEmpty()
+				|| txtPassword.getText()
+						.trim()
+						.isEmpty()
+				|| txtUsername.getText()
+						.trim()
+						.isEmpty()) {
 			lblStatus.setText(I18n.get("error.fields"));
-		} else {
-			controller.getStage().getScene().setCursor(Cursor.WAIT);
-			if (chkOfflineMode.isSelected()) {
-				try {
-					offlineMode();
+			return;
+		}
+		controller.getStage()
+				.getScene()
+				.setCursor(Cursor.WAIT);
+
+		if (chkOfflineMode.isSelected()) {
+			try {
+				lblStatus.setText(null);
+
+				if (offlineMode()) {
 					UtilMethods.changeScene(getClass().getResource("/view/WelcomeOffline.fxml"), controller.getStage(),
 							new WelcomeOfflineController());
-				} catch (MalformedURLException | RuntimeException e) {
-					lblStatus.setText(e.getMessage());
 				}
 
-			} else {
-				onlineMode();
+			} catch (MalformedURLException | RuntimeException e) {
+				LOGGER.error("Error en el login offline", e);
+				lblStatus.setText(e.getMessage());
 			}
+
+		} else {
+			onlineMode();
 		}
+
 	}
 
 	private List<Course> findCacheCourses() {
 
-		File dir = controller.getDirectoryCache().toFile();
+		File dir = controller.getHostUserModelversionDir()
+				.toFile();
 		if (!dir.exists() || !dir.isDirectory()) {
 			return Collections.emptyList();
 		}
@@ -250,51 +307,79 @@ public class LoginController implements Initializable {
 		return courses;
 	}
 
-	private void offlineMode() throws MalformedURLException {
+	private boolean offlineMode() throws MalformedURLException {
 
 		controller.setURLHost(new URL(txtHost.getText()));
 
 		controller.setUsername(txtUsername.getText());
 		controller.setPassword(txtPassword.getText());
+		onSuccessLogin();
+		List<Course> courses = findCacheCourses();
+		if (Files.isDirectory(controller.getHostUserDir())
+				&& !Files.isDirectory(controller.getHostUserModelversionDir()) || courses.isEmpty()) {
+
+			ButtonType option = UtilMethods
+					.confirmationWindow(I18n.get("text.modelversionchanged") + "\n" + I18n.get("text.wantonlinemode"));
+			if (option == ButtonType.OK) {
+				controller.getHostUserModelversionDir()
+						.toFile()
+						.mkdirs();
+				chkOfflineMode.setSelected(false);
+
+				login(null);
+
+			}
+			return false;
+		}
+
 		MoodleUser user = new MoodleUser();
 		user.setFullName(txtUsername.getText()); // because we have not a fullname of the user in offline mode
 		controller.setUser(user);
-		onSuccessLogin();
+		user.getCourses()
+				.addAll(courses);
 
-		List<Course> courses = findCacheCourses();
-		if (courses.isEmpty()) {
-			throw new IllegalArgumentException(I18n.get("error.nocacheavaible"));
-		}
-		user.getCourses().addAll(courses);
-
+		return true;
 	}
 
 	private void onlineMode() {
-		Task<Void> loginTask = getUserDataWorker();
+		Service<Void> service = new Service<Void>() {
 
-		loginTask.setOnSucceeded(s -> {
-			onSuccessLogin();
-			if (!controller.getDirectoryCache().toFile().exists()) {
-				controller.getDirectoryCache().toFile().mkdirs();
+			@Override
+			protected Task<Void> createTask() {
+				return getUserDataWorker();
 			}
+		};
+
+		lblStatus.setText(null);
+		service.setOnSucceeded(s -> {
+			onSuccessLogin();
+
 			UtilMethods.changeScene(getClass().getResource("/view/Welcome.fxml"), controller.getStage(),
 					new WelcomeController());
 		});
 
-		loginTask.setOnFailed(e -> {
-			LOGGER.error("Error al recuperar los datos: ", e.getSource().getException());
-			controller.getStage().getScene().setCursor(Cursor.DEFAULT);
-			txtPassword.clear();
-			lblStatus.setText(e.getSource().getException().getMessage());
+		service.setOnFailed(e -> {
+			LOGGER.info("Failed task", e.getSource()
+					.getException());
+			controller.getStage()
+					.getScene()
+					.setCursor(Cursor.DEFAULT);
+
+			lblStatus.setText(e.getSource()
+					.getException()
+					.getMessage());
 		});
-		Thread th = new Thread(loginTask, "login");
-		th.setDaemon(true);
-		th.start();
+		anchorPane.disableProperty()
+				.bind(service.runningProperty());
+		service.start();
 	}
 
 	private void onSuccessLogin() {
+		LOGGER.info("Login success");
 		saveProperties();
-		controller.getStage().getScene().setCursor(Cursor.DEFAULT);
+		controller.getStage()
+				.getScene()
+				.setCursor(Cursor.DEFAULT);
 		controller.setLoggedIn(LocalDateTime.now());
 		controller.setDirectory();
 
@@ -313,11 +398,9 @@ public class LoginController implements Initializable {
 				try {
 
 					controller.tryLogin(txtHost.getText(), txtUsername.getText(), txtPassword.getText());
-					controller.setDirectory();
-			
-				} catch (MalformedURLException e) {
-					LOGGER.error("URL mal formada. ¿Has añadido protocolo http(s)?", e);
-					throw new IllegalArgumentException(I18n.get("error.malformedurl"));
+					txtHost.setText(controller.getUrlHost()
+							.toString());
+
 				} catch (IOException e) {
 					LOGGER.error("No se ha podido conectar con el host.", e);
 					throw new IllegalArgumentException(I18n.get("error.host"));
@@ -328,9 +411,17 @@ public class LoginController implements Initializable {
 				}
 
 				try {
-					MoodleUser moodleUser = CreatorUBUGradesController.createMoodleUser(controller.getUsername());
+					LOGGER.info("Recogiendo info del usuario");
+					String validUsername = CreatorUBUGradesController
+							.getJSONObjectResponse(new CoreWebserviceGetSiteInfo())
+							.getString("username");
+
+					MoodleUser moodleUser = CreatorUBUGradesController.createMoodleUser(validUsername);
 					controller.setUser(moodleUser);
-				} catch (IOException e) {
+					controller.setUsername(txtUsername.getText());
+					controller.setPassword(txtPassword.getText());
+
+				} catch (Exception e) {
 					LOGGER.error("Error al recuperar los datos del usuario.", e);
 					throw new IllegalStateException(I18n.get("error.user"));
 				}
@@ -350,6 +441,47 @@ public class LoginController implements Initializable {
 		txtUsername.setText("");
 		txtPassword.setText("");
 		txtHost.setText("");
+	}
+
+	/**
+	 * Abre en el navegador el repositorio del proyecto.
+	 * 
+	 */
+	@FXML
+	private void aboutApp() {
+
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AboutApp.fxml"), I18n.getResourceBundle());
+
+		UtilMethods.createDialog(loader, controller.getStage());
+
+	}
+
+	private void initLauncherConfiguration() {
+		imageViewconfigurationHelper.setVisible(ConfigHelper.has(ASK_AGAIN) && ConfigHelper.has(APPLICATION_PATH));
+		Tooltip.install(imageViewconfigurationHelper, new Tooltip(I18n.get("label.launcherconfiguration")));
+	}
+
+	@FXML
+	private void openLauncherConfiguration() {
+
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/LauncherConfiguration.fxml"),
+				I18n.getResourceBundle());
+		try {
+			fxmlLoader.load();
+		} catch (IOException e) {
+			LOGGER.error("cannot load /view/DownloadConfirmation.fxml", e);
+			UtilMethods.errorWindow("Error loading LauncherConfiguration.fxml", e);
+			return;
+		}
+		LauncherConfigurationController launcherConfigurationController = fxmlLoader.getController();
+
+		File newPath = launcherConfigurationController.init(ConfigHelper.getProperty(ASK_AGAIN, true),
+				ConfigHelper.getProperty(BETA_TESTER, false), ConfigHelper.getProperty(APPLICATION_PATH));
+		
+		ConfigHelper.setProperty(APPLICATION_PATH, newPath.getName());
+		ConfigHelper.setProperty(ASK_AGAIN, launcherConfigurationController.isAskAgain());
+		ConfigHelper.setProperty(BETA_TESTER,launcherConfigurationController.isBetaTester());
+
 	}
 
 }

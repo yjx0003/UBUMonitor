@@ -5,34 +5,29 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.controllers.load.Login;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.DataBase;
-import es.ubu.lsi.ubumonitor.model.LogStats;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
 import es.ubu.lsi.ubumonitor.model.Stats;
+import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.util.Languages;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
-import es.ubu.lsi.ubumonitor.webservice.WebService;
+import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
 import javafx.stage.Stage;
-import okhttp3.FormBody;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class Controller {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Controller.class);
@@ -40,17 +35,19 @@ public class Controller {
 	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
 			.ofLocalizedDateTime(FormatStyle.SHORT);
 
+	public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
+
 	private Languages selectedLanguage;
 
 	private DataBase dataBase;
 	private LocalDateTime loggedIn;
-	private Path directoryCache;
+	private Path hostUserModelversionDir;
+	private Path hostUserDir;
 	private URL host;
 	private Stage stage;
-	private String password;
+	private Login login;
 	private String username;
-	private String sesskey;
-
+	private String password;
 	private boolean offlineMode;
 
 	private MainConfiguration mainConfiguration;
@@ -61,6 +58,8 @@ public class Controller {
 	private MoodleUser user;
 
 	private Path configuration;
+
+	private ZonedDateTime defaultUpdate;
 
 	/**
 	 * Instacia única de la clase Controller.
@@ -89,8 +88,8 @@ public class Controller {
 		ConfigHelper.initialize(AppInfo.PROPERTIES_PATH);
 		setDataBase(new DataBase());
 		// Si no existe el recurso de idioma especificado cargamos el Español
-		Languages lang = Languages
-				.getLanguageByTag(ConfigHelper.getProperty("language", Locale.getDefault().toLanguageTag()));
+		Languages lang = Languages.getLanguageByTag(ConfigHelper.getProperty("language", Locale.getDefault()
+				.toLanguageTag()));
 		try {
 
 			if (lang == null) {
@@ -193,37 +192,6 @@ public class Controller {
 	}
 
 	/**
-	 * Intenta buscar el token de acceso a la REST API de moodle e iniciar sesion en
-	 * la pagina de moodle.
-	 * 
-	 * @param host servidor moodle
-	 * @param username nombre de usuario
-	 * @param password contraseña
-	 * @throws IOException si no ha podido conectarse o la contraseña es erronea
-	 */
-	public void tryLogin(String host, String username, String password) throws IOException {
-
-		URL hostURL = new URL(host);
-
-		WebService.initialize(hostURL.toString(), username, password);
-
-
-		sesskey = findSesskey(loginWebScraping(hostURL.toString(), username, password));
-
-		setURLHost(hostURL);
-
-		setUsername(username);
-		setPassword(password);
-
-	}
-
-	public void reLogin() throws IOException {
-
-		sesskey = findSesskey(loginWebScraping(host.toString(), username, password));
-
-	}
-
-	/**
 	 * Devuelve las estadisticas de calificaciones del curso.
 	 * 
 	 * @return estadistica de calificaciones del curso
@@ -231,17 +199,6 @@ public class Controller {
 	public Stats getStats() {
 
 		return getActualCourse().getStats();
-	}
-
-	/**
-	 * Crea las estadisticas del curso tanto de calificaciones como de logs.
-	 */
-	public void createStats() {
-		Stats stats = new Stats(getActualCourse());
-		getActualCourse().setStats(stats);
-
-		LogStats logStats = new LogStats(getActualCourse().getLogs().getList());
-		getActualCourse().setLogStats(logStats);
 	}
 
 	/**
@@ -253,54 +210,8 @@ public class Controller {
 		dataBase.setActualCourse(selectedCourse);
 	}
 
-	/**
-	 * Se loguea en el servidor de moodle mediante web scraping.
-	 * 
-	 * @param username nombre de usuario de la cuenta
-	 * @param password password contraseña
-	 * @return las cookies que se usan para navegar dentro del servidor despues de
-	 * loguearse
-	 * @throws IllegalStateException si no ha podido loguearse
-	 */
-	private Response loginWebScraping(String host, String username, String password) {
-
-		try {
-			LOGGER.info("Logeandose para web scraping");
-			String hostLogin = host + "/login/index.php";
-			Response response = Connection.getResponse(hostLogin);
-			Document loginDoc = Jsoup.parse(response.body().byteStream(), null, hostLogin);
-			response.close();
-			Element e = loginDoc.selectFirst("input[name=logintoken]");
-			String logintoken = (e == null) ? "" : e.attr("value");
-
-			RequestBody formBody = new FormBody.Builder().add("username", username).add("password", password)
-					.add("logintoken", logintoken).build();
-			return Connection.getResponse(new Request.Builder().url(hostLogin).post(formBody).build());
-
-		} catch (Exception e) {
-			LOGGER.error("Error al intentar loguearse", e);
-			throw new IllegalStateException("No se ha podido loguear al servidor");
-		}
-
-	}
-
-	public String findSesskey(Response html) throws IOException {
-
-		Pattern pattern = Pattern.compile("sesskey=([\\w]+)");
-		Matcher m = pattern.matcher(html.body().string());
-		if (m.find()) {
-			return m.group(1);
-		}
-		LOGGER.warn("Didn't found a sesskey in principal page after login.");
-		return null;
-	}
-
 	public String getSesskey() {
-		return sesskey;
-	}
-
-	public void setSesskey(String sesskey) {
-		this.sesskey = sesskey;
+		return login.getSesskey();
 	}
 
 	public LocalDateTime getLoggedIn() {
@@ -314,16 +225,24 @@ public class Controller {
 	/**
 	 * @return the directoryCache
 	 */
-	public Path getDirectoryCache() {
-		return directoryCache;
+	public Path getHostUserModelversionDir() {
+		return hostUserModelversionDir;
 	}
 
 	/**
 	 * @return the directoryCache
 	 */
-	public Path getDirectoryCache(Course course) {
-		return directoryCache
+	public Path getHostUserModelversionCourseFile(Course course) {
+		return hostUserModelversionDir
 				.resolve(Paths.get(UtilMethods.removeReservedChar(course.toString()) + "-" + course.getId()));
+	}
+
+	public Path getHostUserDir() {
+		return hostUserDir;
+	}
+
+	public void setHostUserDir(Path hostUserDir) {
+		this.hostUserDir = hostUserDir;
 	}
 
 	public Path getConfiguration() {
@@ -341,10 +260,12 @@ public class Controller {
 
 	public void setDirectory() {
 
-		String host = UtilMethods.removeReservedChar(this.getUrlHost().getHost());
-		String username = UtilMethods.removeReservedChar(this.getUsername());
-		this.directoryCache = Paths.get(AppInfo.CACHE_DIR, host, username);
-		this.configuration = Paths.get(AppInfo.CONFIGURATION_DIR, host, username);
+		String hostName = UtilMethods.removeReservedChar(this.getUrlHost()
+				.getHost());
+		String userName = UtilMethods.removeReservedChar(this.getUsername());
+		this.hostUserModelversionDir = Paths.get(AppInfo.CACHE_DIR, hostName, userName, AppInfo.MODEL_VERSION);
+		this.hostUserDir = Paths.get(AppInfo.CACHE_DIR, hostName, userName);
+		this.configuration = Paths.get(AppInfo.CONFIGURATION_DIR, hostName, userName);
 	}
 
 	/**
@@ -370,6 +291,74 @@ public class Controller {
 	 */
 	public void setMainConfiguration(MainConfiguration mainConfiguration) {
 		this.mainConfiguration = mainConfiguration;
+	}
+
+	public ZonedDateTime getUpdatedCourseData() {
+		if (dataBase.getActualCourse()
+				.getUpdatedCourseData() == null) {
+			return defaultUpdate;
+		}
+		return dataBase.getActualCourse()
+				.getUpdatedCourseData();
+	}
+
+	public ZonedDateTime getUpdatedGradeItem() {
+		if (dataBase.getActualCourse()
+				.getUpdatedGradeItem() == null) {
+			return defaultUpdate;
+		}
+		return dataBase.getActualCourse()
+				.getUpdatedGradeItem();
+	}
+
+	public ZonedDateTime getUpdatedActivityCompletion() {
+		if (dataBase.getActualCourse()
+				.getUpdatedActivityCompletion() == null) {
+			return defaultUpdate;
+		}
+		return dataBase.getActualCourse()
+				.getUpdatedActivityCompletion();
+	}
+
+	public ZonedDateTime getUpdatedLog() {
+		if (dataBase.getActualCourse()
+				.getUpdatedLog() == null) {
+			return defaultUpdate;
+		}
+
+		return dataBase.getActualCourse()
+				.getUpdatedLog();
+	}
+
+	public ZonedDateTime getDefaultUpdate() {
+		return defaultUpdate;
+	}
+
+	public void setDefaultUpdate(ZonedDateTime defaultUpdate) {
+		this.defaultUpdate = defaultUpdate;
+	}
+
+	/**
+	 * @return the webService
+	 */
+	public WebService getWebService() {
+		return login.getWebService();
+	}
+
+	public Login getLogin() {
+		return login;
+	}
+
+	public void setLogin(Login login) {
+		this.login = login;
+	}
+
+	public void tryLogin(String host, String username, String password) throws IOException {
+		
+		login = new Login();
+		String validHost = login.checkUrlServer(host);
+		login.tryLogin(validHost, username, password);
+		this.host = new URL(validHost);
 	}
 
 }

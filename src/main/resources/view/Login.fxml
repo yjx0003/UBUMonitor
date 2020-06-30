@@ -39,18 +39,18 @@
 				<TextField fx:id="txtHost" layoutY="100.0" prefWidth="173.0" promptText="https://demo.moodle.net" styleClass="text-field-login" stylesheets="@/css/style.css" />
 			</children>
 		</Group>
-		<Button id="Entrar" fx:id="btnLogin" cancelButton="false" defaultButton="true" disable="false" focusTraversable="true" graphicTextGap="5.0" layoutX="100.0" layoutY="450.0" mnemonicParsing="false" onAction="#login" prefWidth="70.0" text="%btn.enter" textOverrun="ELLIPSIS" underline="false" visible="true">
+		<Button id="Entrar" fx:id="btnLogin" cancelButton="false" defaultButton="true" disable="false" focusTraversable="true" graphicTextGap="5.0" layoutX="100.0" layoutY="455.0" mnemonicParsing="false" onAction="#login" prefWidth="70.0" text="%btn.enter" textOverrun="ELLIPSIS" underline="false" visible="true">
 			<font>
 				<Font size="14.0" fx:id="x2" />
 			</font>
 		</Button>
-		<Button fx:id="btnDelete" font="$x2" layoutX="230.0" layoutY="450.0" mnemonicParsing="false" onAction="#clear" prefWidth="70.0" stylesheets="@/css/style.css" text="%btn.clear" />
+		<Button fx:id="btnDelete" font="$x2" layoutX="230.0" layoutY="455.0" mnemonicParsing="false" onAction="#clear" prefWidth="70.0" stylesheets="@/css/style.css" text="%btn.clear" />
 		<ImageView fitHeight="250.0" fitWidth="250.0" layoutX="75.0" layoutY="30.0" pickOnBounds="true" preserveRatio="true">
 			<image>
 				<Image url="@../img/logo.png" />
 			</image>
 		</ImageView>
-		<Label fx:id="lblStatus" alignment="CENTER" layoutX="13.0" layoutY="482.0" minHeight="27.0" minWidth="375.0" prefHeight="38.0" prefWidth="375.0" style="-fx-text-fill: #ff5050;" textFill="#cd0909" wrapText="true">
+		<Label fx:id="lblStatus" alignment="CENTER" layoutX="13.0" layoutY="489.0" minHeight="27.0" minWidth="375.0" prefHeight="31.0" prefWidth="375.0" style="-fx-text-fill: #ff5050;" textFill="#cd0909" wrapText="true">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>

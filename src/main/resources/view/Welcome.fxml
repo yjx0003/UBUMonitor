@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
@@ -29,7 +33,7 @@
             <Image url="@../img/titulo.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="161.0" fitWidth="161.0" layoutX="135.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="161.0" fitWidth="161.0" layoutX="110.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../img/logo_min.png" />
          </image>
@@ -40,7 +44,7 @@
               <tabs>
                   <Tab text="%text.recent">
                      <content>
-                        <ListView fx:id="listCoursesRecent" prefHeight="250.0" prefWidth="650.0" styleClass="list-view-intro" stylesheets="@/css/style.css">
+                        <ListView fx:id="listCoursesRecent" prefHeight="250.0" prefWidth="648.0" styleClass="list-view-intro" stylesheets="@/css/style.css">
        						<placeholder>
                   				<Label text="%label.never" />
               				</placeholder>
@@ -110,12 +114,73 @@
                         </ListView>
                      </content>
                   </Tab>
+                  <Tab text="%text.search">
+                     <content>
+                        <GridPane hgap="10.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" />
+                            <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints vgrow="SOMETIMES" />
+                            <RowConstraints vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <TextField fx:id="textFieldSearch" GridPane.hgrow="ALWAYS">
+                                 <GridPane.margin>
+                                    <Insets left="5.0" />
+                                 </GridPane.margin>
+                              </TextField>
+                              <Button fx:id="buttonSearch" mnemonicParsing="false" onAction="#onActionSearch" text="%button.search" GridPane.columnIndex="1">
+                                 <GridPane.margin>
+                                    <Insets />
+                                 </GridPane.margin>
+                              </Button>
+                              <ListView fx:id="listViewSearch" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="1" />
+                              <HBox fx:id="horizontalBox" alignment="CENTER_LEFT" spacing="20.0" GridPane.columnIndex="2">
+                                 <children>
+                                    <Label fx:id="totalLabel">
+                                       <graphic>
+                                          <Label text="%text.total" />
+                                       </graphic>
+                                    </Label>
+                                    <Label fx:id="labelShowing">
+                                       <graphic>
+                                          <Label text="%label.showing" />
+                                       </graphic>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </GridPane>
+                     </content>
+                  </Tab>
               </tabs>
             </TabPane>
-            <Label layoutX="70.0" layoutY="300.0" prefHeight="21.0" prefWidth="258.0" text="%label.lastupdate" />
-            <CheckBox fx:id="chkUpdateData" disable="true" layoutX="70.0" layoutY="330.0" mnemonicParsing="false" text="%checkbox.updatedata" />
-            <Label fx:id="lblDateUpdate" layoutX="300.0" layoutY="300.0" prefHeight="21.0" prefWidth="146.0" />
-            <CheckBox fx:id="chkOnlyWeb" layoutX="300.0" layoutY="330.0" mnemonicParsing="false" selected="true" text="%checkbox.onlyweb" />
+            <GridPane layoutY="291.0" prefHeight="60.0" prefWidth="650.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="325.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="325.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="325.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                <RowConstraints vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <CheckBox fx:id="chkUpdateData" disable="true" mnemonicParsing="false" prefHeight="21.0" prefWidth="165.0" text="%checkbox.updatedata" wrapText="true" />
+                  <Label text="%label.lastupdate" wrapText="true" GridPane.columnIndex="1">
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin>
+                  </Label>
+                  <Label fx:id="lblDateUpdate" GridPane.columnIndex="2" />
+                  <CheckBox fx:id="checkBoxGradeItem" mnemonicParsing="false" text="%text.gradeitems" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <CheckBox fx:id="checkBoxActivityCompletion" mnemonicParsing="false" text="%label.withcompletion" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <CheckBox fx:id="checkBoxLogs" mnemonicParsing="false" text="%text.logs" GridPane.rowIndex="1" />
+               </children>
+            </GridPane>
          </children>
       </AnchorPane>
 		<Button fx:id="btnEntrar" defaultButton="true" layoutX="200.0" layoutY="540.0" mnemonicParsing="false" onAction="#enterCourse" prefHeight="39.0" prefWidth="86.0" style="-fx-font-size: 16;" styleClass="rich-blue" stylesheets="@/css/style.css" text="%btn.enter">
@@ -133,9 +198,9 @@
          </font></Label>
       <GridPane layoutX="310.0" layoutY="110.0" prefHeight="55.0" prefWidth="410.0">
         <columnConstraints>
-          <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="170.0" minWidth="10.0" prefWidth="170.0" />
-            <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="140.0" minWidth="10.0" prefWidth="140.0" />
+          <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="60.0" />
+          <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="167.0" minWidth="104.0" prefWidth="167.0" />
+            <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="100.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -144,9 +209,9 @@
          <children>
             <Label contentDisplay="BOTTOM" text="%label.loggedin" />
             <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" text="%label.host" GridPane.rowIndex="1" />
-            <Label fx:id="labelLoggedIn" text="Label" GridPane.columnIndex="1" />
-            <Label fx:id="labelHost" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Button mnemonicParsing="false" onAction="#logOut" text="%button.logout" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+            <Label fx:id="labelLoggedIn" wrapText="true" GridPane.columnIndex="1" />
+            <Label fx:id="labelHost" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Button fx:id="buttonLogout" mnemonicParsing="false" onAction="#logOut" text="%button.logout" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
             <Label fx:id="conexionLabel" text="Label" GridPane.columnIndex="2" GridPane.halignment="RIGHT" />
          </children>
          <cursor>
@@ -170,5 +235,18 @@
             <Font size="22.0" />
          </font>
       </Label>
+      <Hyperlink layoutX="5.0" layoutY="15.0" onAction="#aboutApp" prefWidth="115.0" text="%about_app" wrapText="true" />
+      <Button fx:id="buttonCancelDownload" cancelButton="true" ellipsisString="" layoutX="520.0" layoutY="530.0" mnemonicParsing="false" prefHeight="39.0" style="-fx-font-size: 16;" stylesheets="@/css/style.css" text="%btn.cancel" visible="false">
+         <font>
+            <Font size="19.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <styleClass>
+            <String fx:value="rich-blue" />
+            <String fx:value="danger_button" />
+         </styleClass>
+      </Button>
 	</children>
 </AnchorPane>

@@ -109,4 +109,11 @@ public class NullMainAction implements MainAction {
 
 	}
 
+	@Override
+	public void onWebViewTabChange() {
+		// do nothing
+		
+	}
+
+
 }

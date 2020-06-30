@@ -4,14 +4,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAll;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByDay;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByDayOfWeek;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByHour;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByYearMonth;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByYearWeek;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.TypeTimes;
+import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
+import es.ubu.lsi.ubumonitor.model.log.GroupByAll;
+import es.ubu.lsi.ubumonitor.model.log.GroupByDay;
+import es.ubu.lsi.ubumonitor.model.log.GroupByDayOfWeek;
+import es.ubu.lsi.ubumonitor.model.log.GroupByHour;
+import es.ubu.lsi.ubumonitor.model.log.GroupByYearMonth;
+import es.ubu.lsi.ubumonitor.model.log.GroupByYearWeek;
+import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 
 /**
  * Clase contenedora que crea las instancias de las distintas agrupaciónes por

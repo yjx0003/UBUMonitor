@@ -6,20 +6,20 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
-import java.util.Locale;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import es.ubu.lsi.ubumonitor.controllers.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
-import es.ubu.lsi.ubumonitor.controllers.ubugrades.CreatorGradeItems;
-import es.ubu.lsi.ubumonitor.controllers.ubugrades.CreatorUBUGradesController;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.DownloadLogController;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.LogCreator;
+import es.ubu.lsi.ubumonitor.controllers.load.CreatorGradeItems;
+import es.ubu.lsi.ubumonitor.controllers.load.CreatorUBUGradesController;
+import es.ubu.lsi.ubumonitor.controllers.load.DownloadLogController;
+import es.ubu.lsi.ubumonitor.controllers.load.LogCreator;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.DataBase;
@@ -27,6 +27,7 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Logs;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
+import es.ubu.lsi.ubumonitor.webservice.api.gradereport.GradereportUserGetGradesTable;
 import okhttp3.Response;
 
 @TestMethodOrder(OrderAnnotation.class)
@@ -46,6 +47,9 @@ public class WebServiceTest {
 		CONTROLLER = Controller.getInstance();
 		CONTROLLER.tryLogin(HOST, USERNAME, PASSWORD);
 		CONTROLLER.setDataBase(new DataBase());
+		CONTROLLER.setUsername(USERNAME);
+		CONTROLLER.setURLHost(new URL(HOST));
+		CONTROLLER.setPassword(PASSWORD);
 	}
 
 	@Test
@@ -82,8 +86,9 @@ public class WebServiceTest {
 	@Test
 	@Order(6)
 	public void getGradeItems() throws IOException {
-		CreatorGradeItems creatorGradeItems = new CreatorGradeItems(new Locale(CONTROLLER.getUser().getLang()));
-		List<GradeItem> gradeItems = creatorGradeItems.createGradeItems(COURSE_ID);
+		JSONObject jsonObject = CreatorUBUGradesController.getJSONObjectResponse(new GradereportUserGetGradesTable(COURSE_ID, CONTROLLER.getUser().getId()));
+		CreatorGradeItems creatorGradeItems = new CreatorGradeItems();
+		List<GradeItem> gradeItems = creatorGradeItems.createGradeItems(COURSE_ID, jsonObject);
 		assertFalse(gradeItems.isEmpty());
 	}
 	@Test
@@ -100,7 +105,7 @@ public class WebServiceTest {
 		Response response = downloadLogController.downloadLog(true);
 	
 		Logs logs = new Logs(downloadLogController.getServerTimeZone());
-		LogCreator.parserResponse(logs, response, CONTROLLER.getActualCourse().getEnrolledUsers());
+		LogCreator.parserResponse(logs, response);
 		CONTROLLER.getActualCourse().setLogs(logs);
 	}
 

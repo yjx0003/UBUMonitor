@@ -17,14 +17,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
-import es.ubu.lsi.ubumonitor.controllers.I18n;
-import es.ubu.lsi.ubumonitor.controllers.charts.ChartType;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.TypeTimes;
 import es.ubu.lsi.ubumonitor.model.Group;
 import es.ubu.lsi.ubumonitor.model.LastActivity;
 import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
 import es.ubu.lsi.ubumonitor.model.Role;
+import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.util.Charsets;
+import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -46,25 +46,32 @@ public class MainConfiguration {
 		properties.clear();
 		categories.clear();
 		createItem(GENERAL, "charset", Charsets.UTF_8);
+		createItem(GENERAL, "chartBackgroundColor", Color.web("#FFFFFF", 0.0));
 		createItem(GENERAL, "cutGrade", 5.0);
+		createItem(GENERAL, "limitLevelGradeItem", 1);
 		createItem(GENERAL, "borderLength", 10);
 		createItem(GENERAL, "borderSpace", 5);
 		createItem(GENERAL, "legendActive", true);
 		createItem(GENERAL, "generalActive", true);
 		createItem(GENERAL, "groupActive", true);
-		createItem(GENERAL, "initialRoles",
-				FXCollections.observableArrayList(Controller.getInstance().getActualCourse().getStudentRole()),
-				Role.class);
+		createItem(GENERAL, "listCharts", FXCollections.observableArrayList(ChartType.getNonDefaultValues()),
+				ChartType.class);
+		createItem(GENERAL, "initialRoles", FXCollections.observableArrayList(Controller.getInstance()
+				.getActualCourse()
+				.getStudentRole()), Role.class);
 		createItem(GENERAL, "initialGroups", FXCollections.observableArrayList(new ArrayList<Group>()), Group.class);
 		createItem(GENERAL, "initialLastActivity",
-				FXCollections.observableArrayList(LastActivityFactory.getAllLastActivity()), LastActivity.class);
+				FXCollections.observableArrayList(LastActivityFactory.DEFAULT.getAllLastActivity()),
+				LastActivity.class);
 		createItem(GENERAL, "initialTypeTimes", TypeTimes.YEAR_WEEK);
 
 		createItem(GENERAL, "displayYScaleTitle", true);
 		createItem(GENERAL, "displayXScaleTitle", true);
 		createItem(GENERAL, "fontColorYScaleTitle", Color.BLACK);
 		createItem(GENERAL, "fontColorXScaleTitle", Color.BLACK);
+		
 
+		createItem(ChartType.TOTAL_BAR, "horizontalMode", false);
 		createItem(ChartType.STACKED_BAR, "calculateMax", false);
 		createItem(ChartType.HEAT_MAP, "calculateMax", true);
 		createItem(ChartType.HEAT_MAP, "useQuartile", false);
@@ -74,30 +81,45 @@ public class MainConfiguration {
 		createItem(ChartType.HEAT_MAP, "thirdInterval", Color.web("#b5ff33"));
 		createItem(ChartType.HEAT_MAP, "fourthInterval", Color.web("#38e330"));
 		createItem(ChartType.HEAT_MAP, "moreMax", Color.web("#67b92e"));
-		createItem(ChartType.TOTAL_BAR, "horizontalMode", false);
-
+		createItem(ChartType.BOXPLOT_LOG, "horizontalMode", true);
+		createItem(ChartType.VIOLIN_LOG, "horizontalMode", true);
+		createItem(ChartType.BOXPLOT_LOG_TIME, "horizontalMode", false);
+		createItem(ChartType.VIOLIN_LOG_TIME, "horizontalMode", false);
 		createItem(ChartType.CUM_LINE, "calculateMax", false);
+		createItem(ChartType.SESSION, "timeInterval", 60);
 
 		createItem(ChartType.MEAN_DIFF, "calculateMax", false);
 		createItem(ChartType.MEAN_DIFF, "zeroLineColor", Color.web("#DC143C"));
 		createItem(ChartType.MEAN_DIFF, "zeroLineWidth", 3);
 
 		createItem(ChartType.BOXPLOT, "horizontalMode", false);
-		createItem(ChartType.BOXPLOT, "tooltipDecimals", 2);
+
 		createItem(ChartType.VIOLIN, "horizontalMode", false);
-		createItem(ChartType.VIOLIN, "tooltipDecimals", 2);
 
 		createItem(ChartType.GRADE_REPORT_TABLE, "failGradeColor", Color.web("#DC143C"));
 		createItem(ChartType.GRADE_REPORT_TABLE, "passGradeColor", Color.web("#2DC214"));
+
+		createItem(ChartType.CALIFICATION_BAR, "horizontalMode", false);
 		createItem(ChartType.CALIFICATION_BAR, "emptyGradeColor", Color.web("#D3D3D3", 0.3));
 		createItem(ChartType.CALIFICATION_BAR, "failGradeColor", Color.web("#DC143C", 0.3));
 		createItem(ChartType.CALIFICATION_BAR, "passGradeColor", Color.web("#2DC214", 0.3));
-		
-		createItem(ChartType.ACTIVITIES_TABLE, "firstInterval",  Color.web("#f78880"));
+
+		createItem(ChartType.ACTIVITIES_TABLE, "firstInterval", Color.web("#f78880"));
 		createItem(ChartType.ACTIVITIES_TABLE, "secondInterval", Color.web("#f4e3ae"));
 		createItem(ChartType.ACTIVITIES_TABLE, "thirdInterval", Color.web("#fff033"));
-		createItem(ChartType.ACTIVITIES_TABLE, "fourthInterval",  Color.web("#b5ff33"));
+		createItem(ChartType.ACTIVITIES_TABLE, "fourthInterval", Color.web("#b5ff33"));
 		createItem(ChartType.ACTIVITIES_TABLE, "moreMax", Color.web("#38e330"));
+
+		createItem(ChartType.BUBBLE, "limitDays", 14);
+		createItem(ChartType.BUBBLE, "firstInterval", Color.web("#b5ff33"));
+		createItem(ChartType.BUBBLE, "secondInterval", Color.web("#fff033"));
+		createItem(ChartType.BUBBLE, "thirdInterval", Color.web("#f4e3ae"));
+		createItem(ChartType.BUBBLE, "fourthInterval", Color.web("#f78880"));
+
+		createItem(ChartType.BUBBLE_LOGARITHMIC, "firstInterval", Color.web("#b5ff33"));
+		createItem(ChartType.BUBBLE_LOGARITHMIC, "secondInterval", Color.web("#fff033"));
+		createItem(ChartType.BUBBLE_LOGARITHMIC, "thirdInterval", Color.web("#f4e3ae"));
+		createItem(ChartType.BUBBLE_LOGARITHMIC, "fourthInterval", Color.web("#f78880"));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -112,13 +134,27 @@ public class MainConfiguration {
 				List<Integer> ids = Collections.emptyList();
 				if (property.clazz == Role.class) {
 					ObservableList<Role> roles = (ObservableList<Role>) property.getValue();
-					ids = roles.stream().map(Role::getRoleId).collect(Collectors.toList());
+					ids = roles.stream()
+							.map(Role::getRoleId)
+							.collect(Collectors.toList());
 				} else if (property.clazz == Group.class) {
 					ObservableList<Group> groups = (ObservableList<Group>) property.getValue();
-					ids = groups.stream().map(Group::getGroupId).collect(Collectors.toList());
+					ids = groups.stream()
+							.map(Group::getGroupId)
+							.collect(Collectors.toList());
 				} else if (property.clazz == LastActivity.class) {
 					ObservableList<LastActivity> lastActivity = (ObservableList<LastActivity>) property.getValue();
-					ids = lastActivity.stream().map(LastActivity::getIndex).collect(Collectors.toList());
+					ids = lastActivity.stream()
+							.map(LastActivity::getIndex)
+							.collect(Collectors.toList());
+				} else if (property.clazz == ChartType.class) {
+					ObservableList<ChartType> chartTypes = (ObservableList<ChartType>) property.getValue();
+					ids = ChartType.getNonDefaultValues()
+							.stream()
+							.filter(e -> !chartTypes.contains(e))
+							.map(ChartType::getId)
+							.collect(Collectors.toList());
+
 				}
 				jsonObject.put(VALUE, ids);
 			} else if (property.getValue() instanceof Color) {
@@ -178,12 +214,14 @@ public class MainConfiguration {
 	}
 
 	public <T> void setValue(String category, String name, T value) {
-		properties.get(convertToKey(category, name)).setValue(value);
+		properties.get(convertToKey(category, name))
+				.setValue(value);
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T getValue(String category, String name) {
-		return (T) properties.get(convertToKey(category, name)).getValue();
+		return (T) properties.get(convertToKey(category, name))
+				.getValue();
 
 	}
 
@@ -193,7 +231,8 @@ public class MainConfiguration {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getValue(ChartType category, String name) {
-		return (T) properties.get(category.name() + "." + name).getValue();
+		return (T) properties.get(category.name() + "." + name)
+				.getValue();
 
 	}
 
@@ -214,14 +253,13 @@ public class MainConfiguration {
 
 	private class CustomPropertyItem implements PropertySheet.Item {
 
-
 		private int order;
 		private String name;
 		private Object value;
 		private Class<?> clazz;
 		private String category;
 
-		public CustomPropertyItem(int order,  String category, String name, Object value, Class<?> clazz) {
+		public CustomPropertyItem(int order, String category, String name, Object value, Class<?> clazz) {
 			this.order = order;
 			this.category = category;
 			this.name = name;
@@ -251,8 +289,7 @@ public class MainConfiguration {
 
 		@Override
 		public String getDescription() {
-			// TODO
-			return null;
+			return getName();
 		}
 
 		@Override

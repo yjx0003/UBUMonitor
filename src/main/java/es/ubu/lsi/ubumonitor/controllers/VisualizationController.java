@@ -1,23 +1,18 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
-import java.io.File;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.sun.javafx.webkit.WebConsoleListener;
-
-import es.ubu.lsi.ubumonitor.controllers.charts.Tabs;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.GroupByAbstract;
-import es.ubu.lsi.ubumonitor.controllers.ubulogs.TypeTimes;
 import es.ubu.lsi.ubumonitor.model.LogStats;
+import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
+import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
+import es.ubu.lsi.ubumonitor.util.FileUtil;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.view.chart.VisualizationJavaConnector;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
@@ -33,16 +28,16 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 import netscape.javascript.JSObject;
 
 public class VisualizationController implements MainAction {
-	private static final Logger LOGGER = LoggerFactory.getLogger(VisualizationController.class);
 
+	private static final String CSV_FOLDER_PATH = "csvFolderPath";
+	private static final String YYYY_M_MDDHHMMSS = "yyyyMMddhhmmss";
 	private Controller controller = Controller.getInstance();
 	private MainController mainController;
-	private JavaConnector javaConnector;
+	private VisualizationJavaConnector javaConnector;
 	@FXML
 	private WebView webViewCharts;
 	private WebEngine webViewChartsEngine;
@@ -69,6 +64,16 @@ public class VisualizationController implements MainAction {
 
 	public void init(MainController mainController) {
 		this.mainController = mainController;
+
+		if (mainController.getSelectionController()
+				.getTabPane()
+				.getTabs()
+				.isEmpty()) {
+			mainController.getWebViewTabPane()
+					.getTabs()
+					.remove(mainController.getVisualizationTab());
+
+		}
 		initLogOptionsFilter();
 		initTabPaneWebView();
 		initContextMenu();
@@ -79,28 +84,27 @@ public class VisualizationController implements MainAction {
 		// Cargamos el html de los graficos y calificaciones
 		webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
 		webViewChartsEngine = webViewCharts.getEngine();
-		javaConnector = new JavaConnector(this);
+		javaConnector = new VisualizationJavaConnector(this);
+		progressBar.progressProperty()
+				.bind(webViewChartsEngine.getLoadWorker()
+						.progressProperty());
 
-		progressBar.progressProperty().bind(webViewChartsEngine.getLoadWorker().progressProperty());
-
-		WebConsoleListener.setDefaultListener((webView, message, lineNumber, sourceId) -> {
-			LOGGER.error("{} [{} at {}] ", message, sourceId, lineNumber);
-			// errorWindow(message + "[" + sourceId + " at " + lineNumber, false);
-		});
 		// Comprobamos cuando se carga la pagina para traducirla
-		webViewChartsEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
-			if (Worker.State.SUCCEEDED != newState)
-				return;
-			progressBar.setVisible(false);
-			JSObject window = (JSObject) webViewChartsEngine.executeScript("window");
-			window.setMember("javaConnector", javaConnector);
-			webViewChartsEngine.executeScript("setLanguage()");
-			webViewCharts.toFront();
-			javaConnector.setDefaultValues();
+		webViewChartsEngine.getLoadWorker()
+				.stateProperty()
+				.addListener((ov, oldState, newState) -> {
+					if (Worker.State.SUCCEEDED != newState)
+						return;
+					progressBar.setVisible(false);
+					JSObject window = (JSObject) webViewChartsEngine.executeScript("window");
+					window.setMember("javaConnector", javaConnector);
+					javaConnector.setDefaultValues();
+					webViewCharts.toFront();
 
-			javaConnector.updateChart();
-		});
-		webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html").toExternalForm());
+					javaConnector.updateChart();
+				});
+		webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html")
+				.toExternalForm());
 
 	}
 
@@ -109,22 +113,27 @@ public class VisualizationController implements MainAction {
 	 */
 	public void initLogOptionsFilter() {
 
-		textFieldMax.textProperty().addListener((ov, oldValue, newValue) -> {
-			if (newValue == null || newValue.isEmpty() || newValue.matches("\\d+")) {
-				updateMaxScale();
+		textFieldMax.textProperty()
+				.addListener((ov, oldValue, newValue) -> {
+					if (newValue == null || newValue.isEmpty() || newValue.matches("^[1-9]\\d{0,5}$")) {
+						updateMaxScale();
 
-			} else { // si no es un numero volvemos al valor anterior
-				textFieldMax.setText(oldValue);
-			}
-		});
-		LogStats logStats = controller.getActualCourse().getLogStats();
-		TypeTimes typeTime = controller.getMainConfiguration().getValue(MainConfiguration.GENERAL, "initialTypeTimes");
+					} else { // si no es un numero volvemos al valor anterior
+						textFieldMax.setText(oldValue);
+					}
+				});
+		LogStats logStats = controller.getActualCourse()
+				.getLogStats();
+		TypeTimes typeTime = controller.getMainConfiguration()
+				.getValue(MainConfiguration.GENERAL, "initialTypeTimes");
 		// añadimos los elementos de la enumeracion en el choicebox
 		ObservableList<GroupByAbstract<?>> typeTimes = FXCollections.observableArrayList(logStats.getList());
 		choiceBoxDate.setItems(typeTimes);
-		choiceBoxDate.getSelectionModel().select(logStats.getByType(typeTime));
+		choiceBoxDate.getSelectionModel()
+				.select(logStats.getByType(typeTime));
 
-		choiceBoxDate.valueProperty().addListener((ov, oldValue, newValue) -> applyFilterLogs());
+		choiceBoxDate.valueProperty()
+				.addListener((ov, oldValue, newValue) -> applyFilterLogs());
 
 		// traduccion de los elementos del choicebox
 		choiceBoxDate.setConverter(new StringConverter<GroupByAbstract<?>>() {
@@ -139,8 +148,10 @@ public class VisualizationController implements MainAction {
 			}
 		});
 
-		datePickerStart.setValue(controller.getActualCourse().getStart());
-		datePickerEnd.setValue(controller.getActualCourse().getEnd());
+		datePickerStart.setValue(controller.getActualCourse()
+				.getStart());
+		datePickerEnd.setValue(controller.getActualCourse()
+				.getEnd());
 
 		datePickerStart.setOnAction(event -> applyFilterLogs());
 		datePickerEnd.setOnAction(event -> applyFilterLogs());
@@ -161,8 +172,9 @@ public class VisualizationController implements MainAction {
 			}
 		});
 
-		optionsUbuLogs.managedProperty().bind(optionsUbuLogs.visibleProperty());
-		
+		optionsUbuLogs.managedProperty()
+				.bind(optionsUbuLogs.visibleProperty());
+
 	}
 
 	public GridPane getGridPaneOptionLogs() {
@@ -177,12 +189,16 @@ public class VisualizationController implements MainAction {
 		MenuItem exportCSVDesglosed = new MenuItem(I18n.get("text.exportcsvdesglosed"));
 		exportCSV.setOnAction(e -> exportCSV());
 		exportCSVDesglosed.setOnAction(e -> exportCSVDesglosed());
-		exportCSVDesglosed.visibleProperty().bind(mainController.getTabUbuLogs().selectedProperty());
+		exportCSVDesglosed.visibleProperty()
+				.bind(mainController.getSelectionController()
+						.getTabUbuLogs()
+						.selectedProperty());
 
 		MenuItem exportPNG = new MenuItem(I18n.get("text.exportpng"));
 		exportPNG.setOnAction(e -> save());
 
-		contextMenu.getItems().addAll(exportPNG, exportCSV, exportCSVDesglosed);
+		contextMenu.getItems()
+				.addAll(exportPNG, exportCSV, exportCSVDesglosed);
 		webViewCharts.setOnMouseClicked(e -> {
 			if (e.getButton() == MouseButton.SECONDARY) {
 				contextMenu.show(webViewCharts, e.getScreenX(), e.getScreenY());
@@ -195,68 +211,59 @@ public class VisualizationController implements MainAction {
 
 	@Override
 	public void save() {
-		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportpng"),
-				String.format("%s_%s_%s.png", controller.getActualCourse().getId(),
-						LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
-						javaConnector.getCurrentType().getChartType()),
-				ConfigHelper.getProperty("imageFolderPath", "./"), new FileChooser.ExtensionFilter(".png", "*.png"));
 
-		try {
-			File file = fileChooser.showSaveDialog(controller.getStage());
-			if (file != null) {
-				String str = javaConnector.export(file);
-				if (str == null)
-					return;
-				javaConnector.saveImage(str);
-				ConfigHelper.setProperty("imageFolderPath", file.getParent());
-			}
-		} catch (Exception e) {
-			LOGGER.error("Error al guardar el gráfico: {}", e);
-			UtilMethods.errorWindow(I18n.get("error.savechart"), e);
-		}
+		UtilMethods.fileAction(String.format("%s_%s_%s", controller.getActualCourse()
+				.getId(),
+				LocalDateTime.now()
+						.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),
+				javaConnector.getCurrentType()
+						.getChartType()),
+				ConfigHelper.getProperty("imageFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
+				file -> {
+
+					javaConnector.export(file);
+
+					ConfigHelper.setProperty("imageFolderPath", file.getParent());
+
+				}, false, FileUtil.PNG);
 
 	}
-	
+
 	public void exportCSV() {
 
-		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportcsv"),
-				String.format("%s_%s_%s.csv", controller.getActualCourse().getId(),
-						LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
-						javaConnector.getCurrentType().getChartType()),
-				ConfigHelper.getProperty("csvFolderPath", "./"), new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
+		UtilMethods.fileAction(String.format("%s_%s_%s", controller.getActualCourse()
+				.getId(),
+				LocalDateTime.now()
+						.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),
+				javaConnector.getCurrentType()
+						.getChartType()),
+				ConfigHelper.getProperty(CSV_FOLDER_PATH, "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
+				file -> {
 
-		File file = fileChooser.showSaveDialog(controller.getStage());
-		if (file != null) {
-			ConfigHelper.setProperty("csvFolderPath", file.getParent());
-			try {
-				javaConnector.getCurrentType().exportCSV(file.getAbsolutePath());
-				UtilMethods.infoWindow(I18n.get("message.export_csv") + file.getAbsolutePath());
-			} catch (IOException e) {
-				UtilMethods.errorWindow("Cannot save file", e);
-			}
+					javaConnector.getCurrentType().exportCSV(file.getAbsolutePath());
 
-		}
+					ConfigHelper.setProperty(CSV_FOLDER_PATH, file.getParent());
+
+				}, true, FileUtil.CSV);
+
 	}
 
 	public void exportCSVDesglosed() {
+		UtilMethods.fileAction(String.format("%s_%s_%s", controller.getActualCourse()
+				.getId(),
+				LocalDateTime.now()
+						.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),
+				javaConnector.getCurrentType()
+						.getChartType()),
+				ConfigHelper.getProperty(CSV_FOLDER_PATH, "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
+				file -> {
 
-		FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportcsvdesglosed"),
-				String.format("%s_%s_%s_breakdown.csv", controller.getActualCourse().getId(),
-						LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
-						javaConnector.getCurrentType().getChartType()),
-				ConfigHelper.getProperty("csvFolderPath", "./"), new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
+					javaConnector.getCurrentType()
+							.exportCSVDesglosed(file.getAbsolutePath());
+					ConfigHelper.setProperty(CSV_FOLDER_PATH, file.getParent());
 
-		File file = fileChooser.showSaveDialog(controller.getStage());
-		if (file != null) {
-			ConfigHelper.setProperty("csvFolderPath", file.getParent());
-			try {
-				javaConnector.getCurrentType().exportCSVDesglosed(file.getAbsolutePath());
-				UtilMethods.infoWindow(I18n.get("message.export_csv_desglossed") + file.getAbsolutePath());
-			} catch (IOException e) {
-				UtilMethods.errorWindow("Cannot save file", e);
-			}
+				}, true, FileUtil.CSV);
 
-		}
 	}
 
 	/**
@@ -265,7 +272,8 @@ public class VisualizationController implements MainAction {
 	 * @param value valor de escala maxima
 	 */
 	private void updateMaxScale() {
-		if (webViewChartsEngine.getLoadWorker().getState() == Worker.State.SUCCEEDED && textFieldMax.isFocused())
+		if (webViewChartsEngine.getLoadWorker()
+				.getState() == Worker.State.SUCCEEDED && textFieldMax.isFocused())
 			javaConnector.updateChart(false);
 
 	}
@@ -276,7 +284,10 @@ public class VisualizationController implements MainAction {
 	 * @param event evento
 	 */
 	public void applyFilterLogs() {
-		findMaxaAndUpdateChart();
+		if (mainController.getVisualizationTab()
+				.isSelected()) {
+			findMaxaAndUpdateChart();
+		}
 
 	}
 
@@ -314,22 +325,19 @@ public class VisualizationController implements MainAction {
 		javaConnector.setCurrentType(javaConnector.getCurrentTypeLogs());
 		findMaxaAndUpdateChart();
 
-		webViewChartsEngine.executeScript("manageButtons('" + Tabs.LOGS + "')");
-
 	}
 
 	@Override
 	public void onSetTabGrades() {
 		javaConnector.setCurrentType(javaConnector.getCurrentTypeGrades());
 		javaConnector.updateChart();
-		webViewChartsEngine.executeScript("manageButtons('" + Tabs.GRADES + "')");
+
 	}
 
 	@Override
 	public void onSetTabActivityCompletion() {
 		javaConnector.setCurrentType(javaConnector.getCurrentTypeActivityCompletion());
 		javaConnector.updateChart();
-		webViewChartsEngine.executeScript("manageButtons('" + Tabs.ACTIVITY_COMPLETION + "')");
 	}
 
 	@Override
@@ -366,7 +374,11 @@ public class VisualizationController implements MainAction {
 		javaConnector.updateChart();
 	}
 
+	@Override
+	public void onWebViewTabChange() {
+		javaConnector.updateTabImages();
 
+	}
 
 	@Override
 	public void applyConfiguration() {
@@ -386,11 +398,11 @@ public class VisualizationController implements MainAction {
 		this.controller = controller;
 	}
 
-	public JavaConnector getJavaConnector() {
+	public VisualizationJavaConnector getJavaConnector() {
 		return javaConnector;
 	}
 
-	public void setJavaConnector(JavaConnector javaConnector) {
+	public void setJavaConnector(VisualizationJavaConnector javaConnector) {
 		this.javaConnector = javaConnector;
 	}
 

@@ -11,7 +11,6 @@
     <script type="text/javascript" src="./lib/Chart.js"></script>
     <script type="text/javascript" src="./lib/color-hash.js"></script>
     <script type="text/javascript" src="./lib/html2canvas.js"></script>
-    <script type="text/javascript" src="./messages.js"></script>
     <script type="text/javascript" src="./lib/apexcharts.js"></script>
     <script type="text/javascript" src="./lib/chartjs-chart-box-and-violin-plot.js"></script>
     <script type="text/javascript" src="./lib/chartjs-plugin-datalabels.js"></script>
@@ -22,44 +21,27 @@
 
 <div id="all_tabs" class="controles">
     <div class="pestañas" id="GRADES">
-        <input type="button" class="btn" id="LINE" onclick='javaConnector.updateCharts("LINE");' />
-        <input type="button" class="btn" id="RADAR" onclick='javaConnector.updateCharts("RADAR");' />
-
-
-        <input type="button" class="btn" id="BOXPLOT" onclick='javaConnector.updateCharts("BOXPLOT");' />
-
-        <input type="button" class="btn" id="VIOLIN" onclick='javaConnector.updateCharts("VIOLIN");' />
-        <input type="button" class="btn" id="GRADE_REPORT_TABLE"
-            onclick='javaConnector.updateCharts("GRADE_REPORT_TABLE");' />
-        <input type="button" class="btn" id="CALIFICATION_BAR"
-            onclick='javaConnector.updateCharts("CALIFICATION_BAR");' />
+     
     </div>
     <div class="pestañas" id="LOGS">
-        <input type="button" class="btn" id="STACKED_BAR" onclick='javaConnector.updateCharts("STACKED_BAR");' />
-        <input type="button" class="btn" id="HEAT_MAP" onclick='javaConnector.updateCharts("HEAT_MAP");' />
-        <input type="button" class="btn" id="CUM_LINE" onclick='javaConnector.updateCharts("CUM_LINE");' />
-        <input type="button" class="btn" id="MEAN_DIFF" onclick='javaConnector.updateCharts("MEAN_DIFF");' />
-        <input type="button" class="btn" id="SCATTER" onclick='javaConnector.updateCharts("SCATTER");' />
-        <input type="button" class="btn" id="TOTAL_BAR" onclick='javaConnector.updateCharts("TOTAL_BAR");' />
-        
+
 
     </div>
     <div class="pestañas" id="ACTIVITY_COMPLETION">
-        <input type="button" class="btn" id="ACTIVITIES_TABLE"
-            onclick='javaConnector.updateCharts("ACTIVITIES_TABLE");' />
+        
     </div>
 
     <div class="opciones">
-        <input type="button" value="Leyenda" class="btn" id="btnLegend" onclick="hideLegend()" />
-        <input type="button" value="Media General" class="btn" id="btnMean" onclick="showGeneralMean()" />
-        <input type="button" class="btn" id="btnGroupMean" onclick="showGroupMean()" />
+        <button value="Leyenda" class="btn" id="btnLegend" onclick="hideLegend()" />
+        <button value="Media General" class="btn" id="btnMean" onclick="showGeneralMean()" />
+        <button class="btn" id="btnGroupMean" onclick="showGroupMean()" />
     </div>
 </div>
 
 <div id="chart-container" class="chart-container">
     <canvas id="myChart"></canvas>
 </div>
-<div id="apexchartsDiv"></div>
+<div id="apexchartsDiv" class="apexchart-container"></div>
 <div id="tabulatorDiv"></div>
 
 <script type="text/javascript">
@@ -79,9 +61,17 @@
             counter++;
         }
     };
+    
+    Chart.plugins.register({
+	  beforeDraw: function(chartInstance) {
+	    var ctx = chartInstance.chart.ctx;
+	    ctx.fillStyle = chartInstance.config.options.chartBackgroundColor;
+	    ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height);
+	  }
+	});
 
     Chart.defaults.scale.ticks.beginAtZero = true;
-    Chart.defaults.scale.ticks.stepSize = 1;
+    Chart.defaults.scale.ticks.precision = 0;
     Chart.defaults.scale.ticks.suggestedMax = 10;
     Chart.defaults.scale.ticks.suggestedMin = 0;
     Chart.defaults.scale.autoSkip = true;
@@ -170,12 +160,12 @@
 
 
 
-    function displayChartsButtons(div_id, type) {
+    function displayChartsButtons(div_id, type, listCharts) {
         let tabs = document.getElementById(div_id);
         let children = tabs.children;
-        for (i = 0; i < children.length; i++) {
-            if (children[i].tagName == "INPUT") {
-                children[i].style.display = div_id == type ? "inline" : "none";
+        for (let i = 0; i < children.length; i++) {
+            if (children[i].tagName == "BUTTON") {
+                children[i].style.display = div_id == type && listCharts.includes(children[i].id)  ? "inline" : "none";
             }
 
         }
@@ -187,7 +177,7 @@
             let tabs = document.getElementById(div_id);
             let children = tabs.children;
             for (i = 0; i < children.length; i++) {
-                if (children[i].tagName == "INPUT") {
+                if (children[i].tagName == "BUTTON") {
                     children[i].disabled = false;
                 }
 
@@ -203,8 +193,8 @@
         displayApexChart(true);
         displayChartjs(false);
         displayTabulator(false);
-
-
+		
+		manageButtons(options.tab, options.listCharts);
         disableTab(options.tab, options.button);
 
         displayLegendButton(options.useLegend);
@@ -233,7 +223,7 @@
         imageButton("btnMean", options.generalActive);
         imageButton("btnGroupMean", options.groupActive);
 
-
+		manageButtons(options.tab, options.listCharts);
         disableTab(options.tab, options.button);
 
         displayLegendButton(options.useLegend);
@@ -260,7 +250,7 @@
 
     }
 
-    function updateTabulator(columns, tabledata, options) {
+    function updateTabulator(data, options) {
 
         displayApexChart(false);
         displayChartjs(false);
@@ -269,11 +259,13 @@
         displayLegendButton(options.useLegend);
         displayGroupButton(options.useGroup);
         displayGeneralButton(options.useGeneral);
+        manageButtons(options.tab, options.listCharts);
         disableTab(options.tab, options.button);
         table.destroy()
         table = new Tabulator("#tabulatorDiv", options);
-        table.setColumns(columns);
-        table.setData(tabledata).then(function () {
+        table.setColumns(data.columns);
+        table.setData(data.tabledata).then(function () {
+        	
             table.redraw();
         })
 
@@ -304,14 +296,18 @@
             }
         });
     }
+    
+    function clearTabulator(){
+    	table.clearData();
+    }
 
 
-    function manageButtons(type) {
+    function manageButtons(type, listCharts) {
 
 
-        displayChartsButtons("GRADES", type);
-        displayChartsButtons("LOGS", type);
-        displayChartsButtons("ACTIVITY_COMPLETION", type);
+        displayChartsButtons("GRADES", type, listCharts);
+        displayChartsButtons("LOGS", type, listCharts);
+        displayChartsButtons("ACTIVITY_COMPLETION", type, listCharts);
 
     }
 
@@ -363,18 +359,28 @@
         })
 
     }
+    
+    function generateButtons(buttons){
+    	for (const value of buttons){
+			let button = document.createElement("BUTTON");
+			button.id = value.id;
+			button.innerText = value.text;
+			button.className = "btn";
+			//button.type = "button";
+			button.setAttribute( "onClick", "javascript: javaConnector.updateCharts(this.id);" );
+			
+			type = document.getElementById(value.type);
+			type.appendChild(button);
+    	}
+    }
 
     // Modifica el valor de los inputs segun el idioma pasado
     function getI18n(item) {
         document.getElementById(item).value = javaConnector.getI18n(item);
     }
 
-    // Establece el idioma
-    function setLanguage() {
-        let tabs = document.querySelectorAll("#all_tabs > div > input");
-        for (i = 0; i < tabs.length; i++) {
-            getI18n(tabs[i].id);
-        }
+    function translate(id, text){
+    	document.getElementById(id).innerText = text;
     }
 
 
@@ -397,9 +403,22 @@
     function colorHEX(color) {
         return colorHash.hex(color);
     }
+     function formatBoxplot(text, value){
+    	return text+ ": " + value.toLocaleString(locale,{maximumFractionDigits:2});
+    }
+    
+    function boxplotLabel(t, a, o, e) {
+	    if (-1 == e) return [formatBoxplot("n", a.datasets[t.datasetIndex].data[t.index].length), formatBoxplot("min ", o.min), formatBoxplot("whiskerMin", o.whiskerMin), formatBoxplot("q1", o.q1), formatBoxplot("median", o.median), formatBoxplot("q3", o.q3), formatBoxplot("whiskerMax", o.whiskerMax), formatBoxplot("max", o.max)];
+	    var r, s = a.datasets[t.datasetIndex].users[0] instanceof Array ? a.datasets[t.datasetIndex].users[t.index] : a.datasets[t.datasetIndex].users,
+	        n = a.datasets[t.datasetIndex].data[t.index],
+	        x = [];
+	    for (r = 0; r < n.length; r++) n[r] == o.outliers[e] && x.push(s[r] + " (" + n[r].toLocaleString(locale,{maximumFractionDigits:2}) + ")");
+	    return x
+	}
+    
+   
 
 </script>
 
-</body>
 
 </html>

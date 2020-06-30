@@ -3,6 +3,7 @@ package es.ubu.lsi.ubumonitor.controllers;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URL;
+import java.util.Locale;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.PopupWindow.AnchorLocation;
+import okhttp3.HttpUrl;
 
 public class MenuController {
 
@@ -339,10 +341,15 @@ public class MenuController {
 		controller.getStage()
 				.close();
 	}
-	
-	
+
 	public void userGuide() {
-		UtilMethods.openURL(AppInfo.USER_GUIDE);
+		HttpUrl url = new HttpUrl.Builder().scheme("https")
+				.host(AppInfo.USER_GUIDE)
+				.addPathSegment(Locale.getDefault()
+						.getLanguage())
+				.addPathSegment(AppInfo.VERSION)
+				.build();
+		UtilMethods.openURL(url.toString());
 	}
 
 }

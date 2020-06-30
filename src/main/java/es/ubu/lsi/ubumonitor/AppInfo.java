@@ -8,7 +8,9 @@ package es.ubu.lsi.ubumonitor;
  */
 public class AppInfo {
 
-	public static final String APPLICATION_VERSION = "v2.6.5-dev";
+	public static final String VERSION = "2.6.5";
+	
+	public static final String APPLICATION_VERSION = "v" + VERSION + "-dev";
 	
 	public static final String MODEL_VERSION = "v.1.1";
 
@@ -18,7 +20,7 @@ public class AppInfo {
 
 	public static final String GITHUB = "https://github.com/yjx0003/UBUMonitor";
 	
-	public static final String USER_GUIDE = "https://ubumonitordocs.readthedocs.io/es/2.6.5/";
+	public static final String USER_GUIDE = "ubumonitordocs.readthedocs.io";
 
 	public static final String RESOURCE_BUNDLE_FILE_NAME = "messages/Messages";
 

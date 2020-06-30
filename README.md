@@ -29,7 +29,7 @@ External **JavaScript** libraries are included in  [resources/graphics/lib/](res
 
 ### Java dependencies:
 * [Apache Commons CSV](https://commons.apache.org/proper/commons-csv/)
-  * Versión: **1.6**
+  * Versión: **1.8**
   * [Github](https://github.com/apache/commons-csv)
   * [Maven Repository](https://mvnrepository.com/artifact/org.apache.commons/commons-csv)
 * [Apache Commons Math](https://commons.apache.org/proper/commons-math/)
@@ -37,23 +37,19 @@ External **JavaScript** libraries are included in  [resources/graphics/lib/](res
   * [Github](https://github.com/apache/commons-math)
   * [Maven Repository](https://mvnrepository.com/artifact/org.apache.commons/commons-math3)
 * [Apache Log4j](http://logging.apache.org/log4j/1.2/)
-  * Versión: **1.2.17**
+  * Versión: **2.13.3**
   * [Github](https://github.com/apache/log4j)
   * [Maven Repository](https://mvnrepository.com/artifact/log4j/log4j)
 * [Apache POI](https://poi.apache.org/)
   * Versión: **4.1.1**
   * [Github](https://github.com/apache/poi)
   * [Maven Repository](https://mvnrepository.com/artifact/org.apache.poi/poi)  
-* [Gson](https://sites.google.com/site/gson/)
-  * Version: **2.8.5**
-  * [Github](https://github.com/google/gson)
-  * [Maven Repository](https://mvnrepository.com/artifact/com.google.code.gson/gson)
 * **JSON In Java**
-  * Versión: **20180813**
+  * Versión: **20190722**
   * [Github](https://github.com/stleary/JSON-java)
   * [Maven Repository](https://mvnrepository.com/artifact/org.json/json)
 * [JSoup Java HTML Parser](https://jsoup.org/)
-  * Versión: **1.11.3**
+  * Versión: **1.12.1**
   * [Github](https://github.com/jhy/jsoup)
   * [Maven Repository](https://mvnrepository.com/artifact/org.jsoup/jsoup/1.11.3)
 * [OkHttp](https://square.github.io/okhttp/)

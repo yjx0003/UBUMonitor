@@ -10,7 +10,7 @@ public class AppInfo {
 
 	public static final String VERSION = "2.6.5";
 	
-	public static final String APPLICATION_VERSION = "v" + VERSION + "-dev";
+	public static final String APPLICATION_VERSION = "v" + VERSION + "-stable";
 	
 	public static final String MODEL_VERSION = "v.1.1";
 

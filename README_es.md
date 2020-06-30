@@ -28,7 +28,7 @@ Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), d
 
 ### Dependencias de Java:
 * [Apache Commons CSV](https://commons.apache.org/proper/commons-csv/)
-  * Versión: **1.6**
+  * Versión: **1.8**
   * [Github](https://github.com/apache/commons-csv)
   * [Maven Repository](https://mvnrepository.com/artifact/org.apache.commons/commons-csv)
 * [Apache Commons Math](https://commons.apache.org/proper/commons-math/)
@@ -36,23 +36,19 @@ Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), d
   * [Github](https://github.com/apache/commons-math)
   * [Maven Repository](https://mvnrepository.com/artifact/org.apache.commons/commons-math3)
 * [Apache Log4j](http://logging.apache.org/log4j/1.2/)
-  * Versión: **1.2.17**
+  * Versión: **2.13.3**
   * [Github](https://github.com/apache/log4j)
   * [Maven Repository](https://mvnrepository.com/artifact/log4j/log4j)
 * [Apache POI](https://poi.apache.org/)
   * Versión: **4.1.1**
   * [Github](https://github.com/apache/poi)
   * [Maven Repository](https://mvnrepository.com/artifact/org.apache.poi/poi)  
-* [Gson](https://sites.google.com/site/gson/)
-  * Version: **2.8.5**
-  * [Github](https://github.com/google/gson)
-  * [Maven Repository](https://mvnrepository.com/artifact/com.google.code.gson/gson)
 * **JSON In Java**
-  * Versión: **20180813**
+  * Versión: **20190722**
   * [Github](https://github.com/stleary/JSON-java)
   * [Maven Repository](https://mvnrepository.com/artifact/org.json/json)
 * [JSoup Java HTML Parser](https://jsoup.org/)
-  * Versión: **1.11.3**
+  * Versión: **1.12.1**
   * [Github](https://github.com/jhy/jsoup)
   * [Maven Repository](https://mvnrepository.com/artifact/org.jsoup/jsoup/1.11.3)
 * [OkHttp](https://square.github.io/okhttp/)
@@ -76,9 +72,9 @@ Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), d
   * [Github](https://github.com/ThreeTen/threeten-extra)
   * [Maven Repository](https://mvnrepository.com/artifact/org.threeten/threeten-extra)
   
-### Dependencias de JavaScript:
+### Dependencias JavaScript:
 * [ApexCharts](https://apexcharts.com/)
-  * Versión: **3.10.1**
+  * Versión: **3.19.2**
   * [Github](https://github.com/apexcharts/apexcharts.js)
   * [JSDELIVR Repository](https://www.jsdelivr.com/package/npm/apexcharts)
 * [Chart.js](https://www.chartjs.org/)
@@ -86,17 +82,17 @@ Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), d
   * [Github](https://github.com/chartjs/Chart.js)
   * [CDNJS Repository](https://cdnjs.com/libraries/Chart.js/)
 * **Chart.js Box and Violin Plot**
-  * Versión: **2.2.1**
+  * Versión: **2.3.0**
   * [Github](https://github.com/datavisyn/chartjs-chart-box-and-violin-plot)
-  * [UNPKG](https://unpkg.com/chartjs-chart-box-and-violin-plot@2/build/Chart.BoxPlot.js)
+  * [JSDELIVR](https://www.jsdelivr.com/package/npm/chartjs-chart-box-and-violin-plot)
 * **color-hash**
   * Versión: **1.0.3**
   * [Github](https://github.com/zenozeng/color-hash)
   * [jsDelivr Repository](https://www.jsdelivr.com/package/npm/color-hash)
 * [Tabulator](http://tabulator.info/)
-  * Versión: **4.5.2**
+  * Versión: **4.6.3**
   * [Github](https://github.com/olifolkerd/tabulator)
-  * [UNPKG](https://unpkg.com/tabulator-tables@4.5.2/dist/js/tabulator.min.js)
+  * [CDNJS](https://cdnjs.com/libraries/tabulator)
 * [html2canvas](https://html2canvas.hertzen.com/)
   * Versión: **1.0.0-rc.5**
   * [Github](https://github.com/niklasvh/html2canvas/)

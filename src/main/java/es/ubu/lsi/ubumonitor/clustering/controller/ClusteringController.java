@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.clustering.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -55,6 +56,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
@@ -88,7 +91,7 @@ public class ClusteringController {
 	private PropertySheet propertySheet;
 
 	@FXML
-	private CheckComboBox<DataCollector> checkComboBoxLogs;
+	private CheckComboBox<LogCollector<?>> checkComboBoxLogs;
 
 	@FXML
 	private CheckBox checkBoxLogs;
@@ -122,6 +125,12 @@ public class ClusteringController {
 
 	@FXML
 	private ProgressIndicator progressExecute;
+	
+	@FXML
+	private DatePicker datePickerStart;
+	
+	@FXML
+	private DatePicker datePickerEnd;
 
 	/* Graficas */
 
@@ -213,7 +222,7 @@ public class ClusteringController {
 	private void initCollectors() {
 		gradesCollector = new GradesCollector(mainController);
 		activityCollector = new ActivityCollector(mainController);
-		List<DataCollector> list = new ArrayList<>();
+		List<LogCollector<?>> list = new ArrayList<>();
 		list.add(new LogCollector<>("component", mainController.getListViewComponents(), DataSetComponent.getInstance(),
 				t -> t.name().toLowerCase()));
 		list.add(new LogCollector<>("event", mainController.getListViewEvents(), DataSetComponentEvent.getInstance(),
@@ -224,6 +233,26 @@ public class ClusteringController {
 				DatasSetCourseModule.getInstance(), t -> t.getModuleType().getModName()));
 		checkComboBoxLogs.getItems().setAll(list);
 		checkComboBoxLogs.getCheckModel().checkAll();
+		
+		Controller controller = Controller.getInstance();
+		datePickerStart.setValue(controller.getActualCourse().getStart());
+		datePickerEnd.setValue(controller.getActualCourse().getEnd());
+		
+		datePickerStart.setDayCellFactory(picker -> new DateCell() {
+			@Override
+			public void updateItem(LocalDate date, boolean empty) {
+				super.updateItem(date, empty);
+				setDisable(empty || date.isAfter(datePickerEnd.getValue()));
+			}
+		});
+
+		datePickerEnd.setDayCellFactory(picker -> new DateCell() {
+			@Override
+			public void updateItem(LocalDate date, boolean empty) {
+				super.updateItem(date, empty);
+				setDisable(empty || date.isBefore(datePickerStart.getValue()) || date.isAfter(LocalDate.now()));
+			}
+		});
 	}
 
 	private void initService() {
@@ -324,7 +353,9 @@ public class ClusteringController {
 	private List<DataCollector> getSelectedCollectors() {
 		List<DataCollector> collectors = new ArrayList<>();
 		if (checkBoxLogs.isSelected()) {
-			collectors.addAll(checkComboBoxLogs.getCheckModel().getCheckedItems());
+			List<LogCollector<?>> logCollectors = checkComboBoxLogs.getCheckModel().getCheckedItems();
+			logCollectors.forEach(c -> c.setDate(datePickerStart.getValue(), datePickerEnd.getValue()));
+			collectors.addAll(logCollectors);
 		}
 		if (checkBoxGrades.isSelected()) {
 			collectors.add(gradesCollector);
@@ -359,7 +390,7 @@ public class ClusteringController {
 	/**
 	 * @return the checkComboBoxLogs
 	 */
-	public CheckComboBox<DataCollector> getCheckComboBoxLogs() {
+	public CheckComboBox<LogCollector<?>> getCheckComboBoxLogs() {
 		return checkComboBoxLogs;
 	}
 

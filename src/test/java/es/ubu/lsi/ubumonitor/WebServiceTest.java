@@ -7,9 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -28,6 +32,10 @@ import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Logs;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
 import es.ubu.lsi.ubumonitor.webservice.api.gradereport.GradereportUserGetGradesTable;
+import es.ubu.lsi.ubumonitor.webservice.api.mod.quiz.ModQuizGetQuizzesByCourses;
+import es.ubu.lsi.ubumonitor.webservice.api.mod.quiz.ModQuizGetUserAttempts;
+import es.ubu.lsi.ubumonitor.webservice.api.tool.mobile.ToolMobileCallExternalFunctions;
+import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
 import okhttp3.Response;
 
 @TestMethodOrder(OrderAnnotation.class)
@@ -37,12 +45,12 @@ public class WebServiceTest {
 	private static final String PASSWORD = "moodle";
 	private static final String HOST = "https://school.moodledemo.net";
 	private static final int COURSE_ID = 62;
+	private static WebService webService;
 
 	private static Controller CONTROLLER;
 
-	@Test
-	@Order(1)
-	public void loginTest() throws IOException {
+	@BeforeAll
+	public static void loginTest() throws IOException {
 		System.setProperty("logfile.name", "./log/" + AppInfo.APPLICATION_NAME_WITH_VERSION + "-test.log");
 		CONTROLLER = Controller.getInstance();
 		CONTROLLER.tryLogin(HOST, USERNAME, PASSWORD);
@@ -50,6 +58,8 @@ public class WebServiceTest {
 		CONTROLLER.setUsername(USERNAME);
 		CONTROLLER.setURLHost(new URL(HOST));
 		CONTROLLER.setPassword(PASSWORD);
+		CONTROLLER.setActualCourse(CONTROLLER.getDataBase().getCourses().getById(COURSE_ID));
+		webService = CONTROLLER.getWebService();
 	}
 
 	@Test
@@ -66,14 +76,15 @@ public class WebServiceTest {
 		List<Course> courses = CreatorUBUGradesController.getUserCourses(CONTROLLER.getUser().getId());
 		assertFalse(courses.isEmpty());
 		assertTrue(courses.stream().anyMatch(c -> c.getId() == COURSE_ID), "User not enrolled in the course id: " + COURSE_ID);
-		CONTROLLER.setActualCourse(CONTROLLER.getDataBase().getCourses().getById(COURSE_ID));
+		
 	}
 
 	@Test
 	@Order(4)
-	public void getEnrolledUsers() throws IOException {
+	public List<EnrolledUser> getEnrolledUsers() throws IOException {
 		List<EnrolledUser> enrolledUsers = CreatorUBUGradesController.createEnrolledUsers(COURSE_ID);
 		assertFalse(enrolledUsers.isEmpty());
+		return enrolledUsers;
 	}
 	
 	@Test
@@ -108,5 +119,68 @@ public class WebServiceTest {
 		LogCreator.parserResponse(logs, response);
 		CONTROLLER.getActualCourse().setLogs(logs);
 	}
+
+	@Test
+	@Order(9)
+	public void modQuizGetUserAttempts() throws IOException {
+		
+		
+		
+		List<Integer> userids = getEnrolledUsers().stream().map(EnrolledUser::getId).collect(Collectors.toList());
+		
+		
+		List<Integer> quizzesids = new ArrayList<>(); 
+		ModQuizGetQuizzesByCourses modQuizGetQuizzesByCourses = new ModQuizGetQuizzesByCourses(COURSE_ID);
+		
+		JSONArray jsonArray = new JSONObject(webService.getResponse(modQuizGetQuizzesByCourses).body().string()).getJSONArray("quizzes");
+		for(int i = 0; i< jsonArray.length();++i) {
+			quizzesids.add(jsonArray.getJSONObject(i).getInt("id"));
+		}
+		
+		ModQuizGetUserAttempts modQuizGetUserAttempts = new ModQuizGetUserAttempts();
+		for(Integer userid: userids) {
+			for(Integer quizid : quizzesids) {
+				
+				modQuizGetUserAttempts.setQuizid(quizid);
+				modQuizGetUserAttempts.setUserid(userid);
+				Response response = webService.getResponse(modQuizGetUserAttempts);
+				//System.out.println(response.request().url());
+				//System.out.println(response.body().string());
+			}
+		}
+		
+	}
+	@Test
+	@Order(10)
+	public void toolMobileCallExternalFunctions() throws IOException {
+		ToolMobileCallExternalFunctions toolMobileCallExternalFunctions = new ToolMobileCallExternalFunctions();
+		
+		
+		List<Integer> userids = getEnrolledUsers().stream().map(EnrolledUser::getId).collect(Collectors.toList());
+		
+		
+		List<Integer> quizzesids = new ArrayList<>(); 
+		ModQuizGetQuizzesByCourses modQuizGetQuizzesByCourses = new ModQuizGetQuizzesByCourses(COURSE_ID);
+		
+		JSONArray jsonArray = new JSONObject(webService.getResponse(modQuizGetQuizzesByCourses).body().string()).getJSONArray("quizzes");
+		for(int i = 0; i< jsonArray.length();++i) {
+			quizzesids.add(jsonArray.getJSONObject(i).getInt("id"));
+		}
+		
+		
+		for(Integer userid: userids) {
+			for(Integer quizid : quizzesids) {
+				ModQuizGetUserAttempts modQuizGetUserAttempts = new ModQuizGetUserAttempts();
+				modQuizGetUserAttempts.setQuizid(quizid);
+				modQuizGetUserAttempts.setUserid(userid);
+				toolMobileCallExternalFunctions.addFunction(modQuizGetUserAttempts);
+			}
+		}
+		
+		Response response = webService.getResponse(toolMobileCallExternalFunctions);
+		//System.out.println(response.request().url());
+		//System.out.println(response.body().string());
+	}
+	
 
 }

@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.webservice.api.mod.quiz;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import es.ubu.lsi.ubumonitor.webservice.webservices.Util;
@@ -13,6 +14,12 @@ public class ModQuizGetQuizzesByCourses extends WSFunctionAbstract{
 	public ModQuizGetQuizzesByCourses(Set<Integer> courseids) {
 		super(WSFunctionEnum.MOD_QUIZ_GET_QUIZZES_BY_COURSES);
 		this.courseids = courseids;
+	}
+	
+	public ModQuizGetQuizzesByCourses(Integer courseid) {
+		super(WSFunctionEnum.MOD_QUIZ_GET_QUIZZES_BY_COURSES);
+		this.courseids = new HashSet<>();
+		courseids.add(courseid);
 	}
 	
 	@Override

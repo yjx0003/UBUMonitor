@@ -121,8 +121,18 @@ public enum WSFunctionEnum {
 	 * provided all quizzes that the user can view will be returned.
 	 */
 	MOD_QUIZ_GET_QUIZZES_BY_COURSES("mod_quiz_get_quizzes_by_courses", 3.1),
-
+	
 	/**
+	 * Return a list of attempts for the given quiz and user. 
+	 */
+	MOD_QUIZ_GET_USER_ATTEMPTS("mod_quiz_get_user_attempts", 3.1),
+	
+	/**
+	 * Call multiple external functions and return all responses. 
+	 */
+ 	TOOL_MOBILE_CALL_EXTERNAL_FUNCTIONS("tool_mobile_call_external_functions", 3.7),
+	
+ 	/**
 	 * Creates an auto-login key for the current user. Is created only in https
 	 * sites and is restricted by time and ip address.
 	 */

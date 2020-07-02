@@ -144,8 +144,9 @@ public class WebServiceTest {
 				modQuizGetUserAttempts.setQuizid(quizid);
 				modQuizGetUserAttempts.setUserid(userid);
 				Response response = webService.getResponse(modQuizGetUserAttempts);
+				String value  = response.body().string();
 				//System.out.println(response.request().url());
-				//System.out.println(response.body().string());
+				//System.out.println(value);
 			}
 		}
 		
@@ -178,8 +179,9 @@ public class WebServiceTest {
 		}
 		
 		Response response = webService.getResponse(toolMobileCallExternalFunctions);
+		String value  = response.body().string();
 		//System.out.println(response.request().url());
-		//System.out.println(response.body().string());
+		//System.out.println(value);
 	}
 	
 

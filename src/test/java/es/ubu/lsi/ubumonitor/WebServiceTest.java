@@ -105,6 +105,7 @@ public class WebServiceTest {
 	@Test
 	@Order(6)
 	public void getActivityCompletion() throws IOException {
+		System.out.println(CONTROLLER.getActualCourse().getEnrolledUsers());
 		CreatorUBUGradesController.createActivitiesCompletionStatus(COURSE_ID, CONTROLLER.getActualCourse().getEnrolledUsers());
 	}
 	
@@ -168,20 +169,18 @@ public class WebServiceTest {
 			quizzesids.add(jsonArray.getJSONObject(i).getInt("id"));
 		}
 		
-		
-		for(Integer userid: userids) {
-			for(Integer quizid : quizzesids) {
+		for(Integer quizid: quizzesids) {
+			for(Integer userid : userids) {
 				ModQuizGetUserAttempts modQuizGetUserAttempts = new ModQuizGetUserAttempts();
 				modQuizGetUserAttempts.setQuizid(quizid);
 				modQuizGetUserAttempts.setUserid(userid);
 				toolMobileCallExternalFunctions.addFunction(modQuizGetUserAttempts);
 			}
 		}
-		
 		Response response = webService.getResponse(toolMobileCallExternalFunctions);
 		String value  = response.body().string();
-		//System.out.println(response.request().url());
-		//System.out.println(value);
+//		System.out.println(response.request().url());
+//		System.out.println(value);
 	}
 	
 

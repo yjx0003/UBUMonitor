@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -105,8 +106,8 @@ public class WebServiceTest {
 	@Test
 	@Order(6)
 	public void getActivityCompletion() throws IOException {
-		System.out.println(CONTROLLER.getActualCourse().getEnrolledUsers());
-		CreatorUBUGradesController.createActivitiesCompletionStatus(COURSE_ID, CONTROLLER.getActualCourse().getEnrolledUsers());
+		
+		CreatorUBUGradesController.createActivitiesCompletionStatus(COURSE_ID, getEnrolledUsers());
 	}
 	
 	@Test
@@ -177,10 +178,11 @@ public class WebServiceTest {
 				toolMobileCallExternalFunctions.addFunction(modQuizGetUserAttempts);
 			}
 		}
+		
 		Response response = webService.getResponse(toolMobileCallExternalFunctions);
-		String value  = response.body().string();
-//		System.out.println(response.request().url());
-//		System.out.println(value);
+		JSONObject value  = new JSONObject(response.body().string());
+		
+		assertEquals(quizzesids.size() * userids.size(), value.getJSONArray("responses").length());
 	}
 	
 

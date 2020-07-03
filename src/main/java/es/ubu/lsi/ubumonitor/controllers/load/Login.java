@@ -300,7 +300,7 @@ public class Login {
 		if (checkWebsService(httpUrl)) {
 			return httpUrl.toString();
 		}
-		throw new IllegalArgumentException(I18n.get("error.malformedurl"));
+		throw new IllegalArgumentException(I18n.get("error.host"));
 
 	}
 

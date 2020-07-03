@@ -1,6 +1,6 @@
 package es.ubu.lsi.ubumonitor.webservice.webservices;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public abstract class WSFunctionAbstract implements WSFunction {
@@ -10,7 +10,7 @@ public abstract class WSFunctionAbstract implements WSFunction {
 	
 	public WSFunctionAbstract(WSFunctionEnum webserviceFunctions) {
 		this.webserviceFunctions = webserviceFunctions;
-		parameters = new HashMap<>();
+		parameters = new LinkedHashMap<>();
 	}
 	
 	@Override

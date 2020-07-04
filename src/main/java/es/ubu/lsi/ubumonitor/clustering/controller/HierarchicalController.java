@@ -46,6 +46,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Spinner;
@@ -90,7 +91,7 @@ public class HierarchicalController {
 	private Pane pane;
 
 	@FXML
-	private CheckComboBox<DataCollector> checkComboBoxLogs;
+	private CheckComboBox<LogCollector<?>> checkComboBoxLogs;
 
 	@FXML
 	private CheckBox checkBoxLogs;
@@ -100,6 +101,12 @@ public class HierarchicalController {
 
 	@FXML
 	private CheckBox checkBoxActivity;
+	
+	@FXML
+	private DatePicker datePickerStart;
+
+	@FXML
+	private DatePicker datePickerEnd;
 
 	@FXML
 	private ChoiceBox<Distance<double[]>> choiceBoxDistance;
@@ -159,7 +166,7 @@ public class HierarchicalController {
 
 		gradesCollector = new GradesCollector(mainController);
 		activityCollector = new ActivityCollector(mainController);
-		List<DataCollector> list = new ArrayList<>();
+		List<LogCollector<?>> list = new ArrayList<>();
 		list.add(new LogCollector<>("component", mainController.getListViewComponents(), DataSetComponent.getInstance(),
 				t -> t.name().toLowerCase()));
 		list.add(new LogCollector<>("event", mainController.getListViewEvents(), DataSetComponentEvent.getInstance(),
@@ -181,6 +188,7 @@ public class HierarchicalController {
 		pane.heightProperty().addListener(listener);
 
 		initContextMenu(imageView);
+		JavaFXUtils.initDatePickers(datePickerStart, datePickerEnd);
 	}
 
 	private void initContextMenu(ImageView imageView) {
@@ -208,6 +216,8 @@ public class HierarchicalController {
 
 		List<DataCollector> collectors = new ArrayList<>();
 		if (checkBoxLogs.isSelected()) {
+			List<LogCollector<?>> logCollectors = checkComboBoxLogs.getCheckModel().getCheckedItems();
+			logCollectors.forEach(c -> c.setDate(datePickerStart.getValue(), datePickerEnd.getValue()));
 			collectors.addAll(checkComboBoxLogs.getCheckModel().getCheckedItems());
 		}
 		if (checkBoxGrades.isSelected()) {

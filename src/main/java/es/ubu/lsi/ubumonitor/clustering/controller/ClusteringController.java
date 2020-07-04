@@ -1,6 +1,5 @@
 package es.ubu.lsi.ubumonitor.clustering.controller;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,7 +55,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -234,25 +232,7 @@ public class ClusteringController {
 		checkComboBoxLogs.getItems().setAll(list);
 		checkComboBoxLogs.getCheckModel().checkAll();
 		
-		Controller controller = Controller.getInstance();
-		datePickerStart.setValue(controller.getActualCourse().getStart());
-		datePickerEnd.setValue(controller.getActualCourse().getEnd());
-		
-		datePickerStart.setDayCellFactory(picker -> new DateCell() {
-			@Override
-			public void updateItem(LocalDate date, boolean empty) {
-				super.updateItem(date, empty);
-				setDisable(empty || date.isAfter(datePickerEnd.getValue()));
-			}
-		});
-
-		datePickerEnd.setDayCellFactory(picker -> new DateCell() {
-			@Override
-			public void updateItem(LocalDate date, boolean empty) {
-				super.updateItem(date, empty);
-				setDisable(empty || date.isBefore(datePickerStart.getValue()) || date.isAfter(LocalDate.now()));
-			}
-		});
+		JavaFXUtils.initDatePickers(datePickerStart, datePickerEnd);
 	}
 
 	private void initService() {

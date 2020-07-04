@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
@@ -23,6 +24,7 @@
             <ColumnConstraints hgrow="NEVER" />
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints halignment="CENTER" hgrow="NEVER" />
             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -33,37 +35,17 @@
           <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <GridPane GridPane.columnIndex="2">
-               <GridPane.margin>
-                  <Insets left="10.0" />
-               </GridPane.margin>
-               <columnConstraints>
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-                  <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-               </columnConstraints>
-               <rowConstraints>
-                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-               </rowConstraints>
-               <children>
-                  <CheckBox fx:id="checkBoxLogs" mnemonicParsing="false" text="%tab.logs" />
-                  <CheckComboBox fx:id="checkComboBoxLogs" showCheckedCount="true" title="%clustering.logTypes" GridPane.columnIndex="1">
-                     <GridPane.margin>
-                        <Insets left="10.0" />
-                     </GridPane.margin>
-                  </CheckComboBox>
-               </children>
-            </GridPane>
             <CheckBox fx:id="checkBoxGrades" mnemonicParsing="false" text="%tab.grades" GridPane.columnIndex="2" GridPane.rowIndex="1">
                <GridPane.margin>
-                  <Insets left="10.0" />
+                  <Insets />
                </GridPane.margin>
             </CheckBox>
             <CheckBox fx:id="checkBoxActivity" mnemonicParsing="false" text="%tab.activityCompletion" GridPane.columnIndex="2" GridPane.rowIndex="2">
                <GridPane.margin>
-                  <Insets left="10.0" />
+                  <Insets />
                </GridPane.margin>
             </CheckBox>
-            <Button mnemonicParsing="false" onAction="#executeClustering" text="%clustering.execute" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+            <Button mnemonicParsing="false" onAction="#executeClustering" text="%clustering.execute" GridPane.columnIndex="4" GridPane.rowIndex="2" />
             <ChoiceBox fx:id="choiceBoxDistance" GridPane.columnIndex="1">
                <GridPane.margin>
                   <Insets />
@@ -80,10 +62,18 @@
                </GridPane.margin>
             </Label>
             <ChoiceBox fx:id="choiceBoxLinkage" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Separator orientation="VERTICAL" prefHeight="200.0" GridPane.columnIndex="4" GridPane.rowSpan="2147483647" />
-            <Label text="%clustering.numberOfClusters" GridPane.columnIndex="5" />
-            <Spinner fx:id="spinnerClusters" disable="true" editable="true" prefHeight="25.0" prefWidth="83.0" GridPane.columnIndex="5" GridPane.rowIndex="1" />
-            <Button fx:id="buttonExecute" disable="true" mnemonicParsing="false" onAction="#executePartition" text="%clustering.execute" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+            <Separator orientation="VERTICAL" prefHeight="200.0" GridPane.columnIndex="5" GridPane.rowSpan="2147483647" />
+            <Label text="%clustering.numberOfClusters" GridPane.columnIndex="6" />
+            <Spinner fx:id="spinnerClusters" disable="true" editable="true" prefHeight="25.0" prefWidth="83.0" GridPane.columnIndex="6" GridPane.rowIndex="1" />
+            <Button fx:id="buttonExecute" disable="true" mnemonicParsing="false" onAction="#executePartition" text="%clustering.execute" GridPane.columnIndex="6" GridPane.rowIndex="2" />
+            <CheckComboBox fx:id="checkComboBoxLogs" showCheckedCount="true" title="%clustering.logTypes" GridPane.columnIndex="3">
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
+            </CheckComboBox>
+            <CheckBox fx:id="checkBoxLogs" mnemonicParsing="false" text="%tab.logs" GridPane.columnIndex="2" />
+            <DatePicker fx:id="datePickerStart" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            <DatePicker fx:id="datePickerEnd" GridPane.columnIndex="3" GridPane.rowIndex="2" />
          </children>
       </GridPane>
    </top>

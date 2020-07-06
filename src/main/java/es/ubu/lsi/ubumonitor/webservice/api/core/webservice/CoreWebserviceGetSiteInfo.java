@@ -10,10 +10,4 @@ public class CoreWebserviceGetSiteInfo extends WSFunctionAbstract{
 		
 	}
 
-	@Override
-	public void addToMapParemeters() {
-		// no parameters
-		
-	}
-
 }

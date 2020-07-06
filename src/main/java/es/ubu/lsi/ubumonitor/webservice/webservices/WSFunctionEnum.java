@@ -112,6 +112,13 @@ public enum WSFunctionEnum {
 	MOD_ASSIGN_GET_ASSIGNMENTS("mod_assign_get_assignments", 2.4),
 
 	/**
+	 * Returns a list of forum instances in a provided set of courses, if no courses
+	 * are provided then all the forum instances the user has access to will be
+	 * returned.
+	 */
+	MOD_FORUM_GET_FORUMS_BY_COURSES("mod_forum_get_forums_by_courses", 2.5),
+
+	/**
 	 * Return information of a given lesson.
 	 */
 	MOD_LESSON_GET_LESSONS_BY_COURSES("mod_lesson_get_lessons_by_courses", 3.3),
@@ -121,18 +128,18 @@ public enum WSFunctionEnum {
 	 * provided all quizzes that the user can view will be returned.
 	 */
 	MOD_QUIZ_GET_QUIZZES_BY_COURSES("mod_quiz_get_quizzes_by_courses", 3.1),
-	
+
 	/**
-	 * Return a list of attempts for the given quiz and user. 
+	 * Return a list of attempts for the given quiz and user.
 	 */
 	MOD_QUIZ_GET_USER_ATTEMPTS("mod_quiz_get_user_attempts", 3.1),
-	
+
 	/**
-	 * Call multiple external functions and return all responses. 
+	 * Call multiple external functions and return all responses.
 	 */
- 	TOOL_MOBILE_CALL_EXTERNAL_FUNCTIONS("tool_mobile_call_external_functions", 3.7),
-	
- 	/**
+	TOOL_MOBILE_CALL_EXTERNAL_FUNCTIONS("tool_mobile_call_external_functions", 3.7),
+
+	/**
 	 * Creates an auto-login key for the current user. Is created only in https
 	 * sites and is restricted by time and ip address.
 	 */

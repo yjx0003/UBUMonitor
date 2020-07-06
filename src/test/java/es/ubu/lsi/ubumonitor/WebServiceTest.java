@@ -10,7 +10,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -98,7 +97,9 @@ public class WebServiceTest {
 	@Test
 	@Order(6)
 	public void getGradeItems() throws IOException {
-		JSONObject jsonObject = CreatorUBUGradesController.getJSONObjectResponse(new GradereportUserGetGradesTable(COURSE_ID, CONTROLLER.getUser().getId()));
+		GradereportUserGetGradesTable gradereportUserGetGradesTable = new GradereportUserGetGradesTable(COURSE_ID);
+		gradereportUserGetGradesTable.setUserid(CONTROLLER.getUser().getId());
+		JSONObject jsonObject = CreatorUBUGradesController.getJSONObjectResponse(gradereportUserGetGradesTable);
 		CreatorGradeItems creatorGradeItems = new CreatorGradeItems();
 		List<GradeItem> gradeItems = creatorGradeItems.createGradeItems(COURSE_ID, jsonObject);
 		assertFalse(gradeItems.isEmpty());
@@ -166,16 +167,19 @@ public class WebServiceTest {
 		ModQuizGetQuizzesByCourses modQuizGetQuizzesByCourses = new ModQuizGetQuizzesByCourses(COURSE_ID);
 		
 		JSONArray jsonArray = new JSONObject(webService.getResponse(modQuizGetQuizzesByCourses).body().string()).getJSONArray("quizzes");
+		
 		for(int i = 0; i< jsonArray.length();++i) {
-			quizzesids.add(jsonArray.getJSONObject(i).getInt("id"));
+			if(jsonArray.getJSONObject(i).getInt("visible")==1) {
+				quizzesids.add(jsonArray.getJSONObject(i).getInt("id"));
+			}
+
 		}
 		
 		for(Integer quizid: quizzesids) {
 			for(Integer userid : userids) {
-				ModQuizGetUserAttempts modQuizGetUserAttempts = new ModQuizGetUserAttempts();
-				modQuizGetUserAttempts.setQuizid(quizid);
-				modQuizGetUserAttempts.setUserid(userid);
-				toolMobileCallExternalFunctions.addFunction(modQuizGetUserAttempts);
+				ModQuizGetUserAttempts modQuizGetUserAttempts = new ModQuizGetUserAttempts(quizid, userid);
+				
+				toolMobileCallExternalFunctions.addExternalFunction(modQuizGetUserAttempts);
 			}
 		}
 		

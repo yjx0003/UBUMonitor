@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.webservice.webservices;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -97,30 +98,67 @@ public class WebService {
 		this.moodleWSRestFormat = moodleWSRestFormat;
 	}
 
-
 	public Response getResponse(WSFunction wsFunction) throws IOException {
 
-		wsFunction.clearParameters();
-		wsFunction.addToMapParemeters();
 		
+		wsFunction.addToMapParemeters();
+
 		Builder formBody = new FormBody.Builder();
 
 		formBody.add("wsfunction", wsFunction.getWSFunction()
 				.toString());
 		formBody.add("moodlewsrestformat", moodleWSRestFormat);
 		formBody.add("wstoken", token);
-
-		for (Map.Entry<String, String> param : wsFunction.getParameters()
-				.entrySet()) {
-			formBody.add(param.getKey(), param.getValue());
-
+		
+		for (String key : wsFunction.getParameters()
+				.keySet()) {
+			jsonToQueryParam(formBody, new StringBuilder(key), wsFunction.getParameters()
+					.get(key));
 		}
+
 		Request.Builder builder = new Request.Builder().url(hostWithWS);
 
 		builder.post(formBody.build());
 
 		return Connection.getResponse(builder.build());
 
+	}
+
+	private void jsonToQueryParam(Builder formBodyBuilder, StringBuilder stringBuilder, Object param) {
+
+		
+		if (param instanceof JSONObject) {
+			JSONObject jsonObject = (JSONObject) param;
+			for (String key : jsonObject.keySet()) {
+				StringBuilder newStringBuilder = new StringBuilder(stringBuilder);
+				newStringBuilder.append("[");
+				newStringBuilder.append(key);
+				newStringBuilder.append("]");
+				jsonToQueryParam(formBodyBuilder, newStringBuilder, jsonObject.get(key));
+			}
+		} else if (param instanceof Map) {
+			Map<?, ?> map = (Map<?, ?>) param;
+			for (Map.Entry<?, ?> entry : map.entrySet()) {
+				StringBuilder newStringBuilder = new StringBuilder(stringBuilder);
+				newStringBuilder.append("[");
+				newStringBuilder.append(entry.getKey());
+				newStringBuilder.append("]");
+				jsonToQueryParam(formBodyBuilder, newStringBuilder, entry.getValue());
+			}
+		} else if (param instanceof Iterable) {
+			Iterable<?> iterable = (Iterable<?>) param;
+			Iterator<?> iterator = iterable.iterator();
+			for (int i = 0; iterator.hasNext(); ++i) {
+				StringBuilder newStringBuilder = new StringBuilder(stringBuilder);
+				newStringBuilder.append("[");
+				newStringBuilder.append(i);
+				newStringBuilder.append("]");
+				jsonToQueryParam(formBodyBuilder, newStringBuilder, iterator.next());
+			}
+
+		} else {
+			formBodyBuilder.add(stringBuilder.toString(), param.toString());
+		}
 	}
 
 	public Response getAjaxResponse(WSFunction... wsFunctions) throws IOException {

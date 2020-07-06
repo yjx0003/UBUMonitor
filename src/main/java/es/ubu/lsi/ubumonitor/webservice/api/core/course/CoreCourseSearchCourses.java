@@ -5,30 +5,56 @@ import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionEnum;
 
 public class CoreCourseSearchCourses extends WSFunctionAbstract {
 
-	private String value;
-	private int page;
-	private int perpage;
-
-	public CoreCourseSearchCourses(String value) {
+	public CoreCourseSearchCourses() {
 
 		super(WSFunctionEnum.CORE_COURSE_SEARCH_COURSES);
-		this.value = value;
 	}
 
-	public CoreCourseSearchCourses(String value, int page, int perpage) {
+	private void setBy(String criterianame, Object criteriavalue) {
+		parameters.put("criterianame", criterianame);
+		parameters.put("criteriavalue", criteriavalue);
+	}
 
-		this(value);
-		this.page = page;
-		this.perpage = perpage;
+	/**
+	 * Search
+	 * 
+	 * @param value value to search
+	 */
+	public void setBySearch(String value) {
+		setBy("search", value);
+	}
+
+	/**
+	 * Modulelist (only admins)
+	 * 
+	 * @param value modulelist
+	 */
+	public void setByModuleList(String value) {
+		setBy("modulelist", value);
+	}
+
+	/**
+	 * Blocklist (only admins)
+	 * 
+	 * @param value
+	 */
+	public void setByBlocklist(String value) {
+		setBy("blocklist", value);
+	}
+
+	/**
+	 * Tag id.
+	 * 
+	 * @param tagid tag id
+	 */
+	public void setByTagid(int tagid) {
+		setBy("tagid", tagid);
 	}
 
 	@Override
 	public void addToMapParemeters() {
-		parameters.put("criterianame", "search");
-		parameters.put("criteriavalue", value);
-		parameters.put("page", Integer.toString(page));
-		parameters.put("perpage", Integer.toString(perpage));
-
+		if (!parameters.has("criterianame") || !parameters.has("criteriavalue")) {
+			throw new IllegalArgumentException("Missing criterianame and/or criteriavalue parameters");
+		}
 	}
-
 }

@@ -2,6 +2,7 @@ package es.ubu.lsi.ubumonitor.view.chart.risk;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -188,9 +189,11 @@ public class Bubble extends Chartjs {
 		Map<Long, Map<Long, List<EnrolledUser>>> lastAccess = new TreeMap<>();
 
 		for (EnrolledUser user : selectedEnrolledUser) {
-			long diffCourse = Math.min(Math.max(0L, ChronoUnit.DAYS.between(user.getLastcourseaccess(), lastLogTime)),
+			Instant lastCourseAccess = user.getLastcourseaccess() ==null ? Instant.EPOCH : user.getLastcourseaccess();
+			Instant lastMoodle = user.getLastaccess() == null ? Instant.EPOCH : user.getLastaccess();
+			long diffCourse = Math.min(Math.max(0L, ChronoUnit.DAYS.between(lastCourseAccess, lastLogTime)),
 					limit);
-			long diffServer = Math.min(Math.max(0, ChronoUnit.DAYS.between(user.getLastaccess(), lastLogTime)), limit);
+			long diffServer = Math.min(Math.max(0, ChronoUnit.DAYS.between(lastMoodle, lastLogTime)), limit);
 
 			lastAccess.computeIfAbsent(diffCourse, k -> new TreeMap<>())
 					.computeIfAbsent(diffServer, k -> new ArrayList<>())

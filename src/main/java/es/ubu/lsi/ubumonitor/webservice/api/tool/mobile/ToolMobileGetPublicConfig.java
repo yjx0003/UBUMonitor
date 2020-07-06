@@ -7,12 +7,6 @@ public class ToolMobileGetPublicConfig extends WSFunctionAbstract{
 
 	public ToolMobileGetPublicConfig() {
 		super(WSFunctionEnum.TOOL_MOBILE_GET_PUBLIC_CONFIG);
-
-	}
-
-	@Override
-	public void addToMapParemeters() {
-		//no parameters
 	}
 
 }

@@ -86,11 +86,12 @@ public class MainConfiguration {
 		createItem(ChartType.BOXPLOT_LOG_TIME, "horizontalMode", false);
 		createItem(ChartType.VIOLIN_LOG_TIME, "horizontalMode", false);
 		createItem(ChartType.CUM_LINE, "calculateMax", false);
-		createItem(ChartType.SESSION, "timeInterval", 60);
-
+	
 		createItem(ChartType.MEAN_DIFF, "calculateMax", false);
 		createItem(ChartType.MEAN_DIFF, "zeroLineColor", Color.web("#DC143C"));
 		createItem(ChartType.MEAN_DIFF, "zeroLineWidth", 3);
+		
+		createItem(ChartType.SESSION, "timeInterval", 60);
 
 		createItem(ChartType.BOXPLOT, "horizontalMode", false);
 

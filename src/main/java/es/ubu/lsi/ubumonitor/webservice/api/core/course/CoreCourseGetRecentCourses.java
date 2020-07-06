@@ -1,72 +1,55 @@
 package es.ubu.lsi.ubumonitor.webservice.api.core.course;
 
-import es.ubu.lsi.ubumonitor.webservice.webservices.Util;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionAbstract;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionEnum;
 
+/**
+ * List of courses a user has accessed most recently. WARNING: actually not
+ * works with web service, only works with AJAX.
+ * 
+ * @author Yi Peng
+ *
+ */
 public class CoreCourseGetRecentCourses extends WSFunctionAbstract {
-	/**
-	 * id of the user, default to current user
-	 */
-	private Integer userid;
-
-	/**
-	 * result set limit
-	 */
-	private Integer limit;
-
-	/**
-	 * Result set offset
-	 */
-	private Integer offset;
-
-	/**
-	 * Sort string
-	 */
-	private String sort;
 
 	public CoreCourseGetRecentCourses() {
 		super(WSFunctionEnum.CORE_COURSE_GET_RECENT_COURSES);
 	}
 
-	public Integer getUserid() {
-		return userid;
+	/**
+	 * ID of the user, default to current user.
+	 * 
+	 * @param userid id of the user
+	 */
+	public void setUserid(int userid) {
+		parameters.put("userid", userid);
 	}
 
-	public void setUserid(Integer userid) {
-		this.userid = userid;
+	/**
+	 * Result set limit (default: 0).
+	 * 
+	 * @param limit Result set limit
+	 */
+	public void setLimit(int limit) {
+		parameters.put("limit", limit);
 	}
 
-	public Integer getLimit() {
-		return limit;
+	/**
+	 * Result set offset (default: 0).
+	 * 
+	 * @param offset Result set offset
+	 */
+	public void setOffset(int offset) {
+		parameters.put("offset", offset);
 	}
 
-	public void setLimit(Integer limit) {
-		this.limit = limit;
-	}
-
-	public Integer getOffset() {
-		return offset;
-	}
-
-	public void setOffset(Integer offset) {
-		this.offset = offset;
-	}
-
-	public String getSort() {
-		return sort;
-	}
-
+	/**
+	 * Sort string column name (default: null)
+	 * 
+	 * @param sort column name
+	 */
 	public void setSort(String sort) {
-		this.sort = sort;
-	}
-
-	@Override
-	public void addToMapParemeters() {
-		Util.putIfNotNull(parameters, "userid", userid);
-		Util.putIfNotNull(parameters, "limit", limit);
-		Util.putIfNotNull(parameters, "offset", offset);
-		Util.putIfNotNull(parameters, "sort", sort);
+		parameters.put("sort", sort);
 	}
 
 }

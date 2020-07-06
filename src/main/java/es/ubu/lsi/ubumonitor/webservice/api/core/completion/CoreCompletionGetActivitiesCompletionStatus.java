@@ -3,22 +3,20 @@ package es.ubu.lsi.ubumonitor.webservice.api.core.completion;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionAbstract;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionEnum;
 
-public class CoreCompletionGetActivitiesCompletionStatus extends WSFunctionAbstract{
+public class CoreCompletionGetActivitiesCompletionStatus extends WSFunctionAbstract {
 
-	private int courseid;
-	private int userid;
-	
 	public CoreCompletionGetActivitiesCompletionStatus(int courseid, int userid) {
 		super(WSFunctionEnum.CORE_COMPLETION_GET_ACTIVITIES_COMPLETION_STATUS);
-		this.courseid = courseid;
-		this.userid = userid;
+		setUserid(userid);
+		setCourseid(courseid);
 	}
 
-	@Override
-	public void addToMapParemeters() {
-		parameters.put("courseid", String.valueOf(courseid));
-		parameters.put("userid", String.valueOf(userid));
-		
+	public void setUserid(int userid) {
+		parameters.put("userid", userid);
+	}
+
+	public void setCourseid(int courseid) {
+		parameters.put("courseid", courseid);
 	}
 
 }

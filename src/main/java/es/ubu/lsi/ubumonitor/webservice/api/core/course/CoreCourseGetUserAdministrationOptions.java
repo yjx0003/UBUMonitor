@@ -1,30 +1,32 @@
 package es.ubu.lsi.ubumonitor.webservice.api.core.course;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionAbstract;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionEnum;
 
+/**
+ * Return a list of administration options in a set of courses that are
+ * avaialable or not for the current user.
+ * 
+ * @author Yi Peng Ji
+ *
+ */
 public class CoreCourseGetUserAdministrationOptions extends WSFunctionAbstract {
-
-	private Collection<Integer> courseids;
 
 	public CoreCourseGetUserAdministrationOptions(Collection<Integer> courseids) {
 		super(WSFunctionEnum.CORE_COURSE_GET_USER_ADMINISTRATION_OPTIONS);
-		this.courseids = courseids;
-	}
-	
-	public CoreCourseGetUserAdministrationOptions(int courseid) {
-		this(Arrays.asList(courseid));
+		setCouseids(courseids);
 	}
 
-	@Override
-	public void addToMapParemeters() {
-		int i = 0;
-		for (Integer courseid : courseids) {
-			parameters.put("courseids[" + i + "]", courseid.toString());
-			++i;
+	/**
+	 * Course ids (required).
+	 * 
+	 * @param courseids courses ids
+	 */
+	public void setCouseids(Collection<Integer> courseids) {
+		if (courseids != null && !courseids.isEmpty()) {
+			parameters.put("courseids", courseids);
 		}
 	}
 

@@ -102,16 +102,16 @@ public class EnrolledUser implements Serializable {
 	/**
 	 * Optional. first access to the site (0 if never)
 	 */
-	private Instant firstaccess;
+	private Instant firstaccess = Instant.EPOCH;
 	/**
 	 * Optional. last access to the site (0 if never)
 	 */
-	private Instant lastaccess;
+	private Instant lastaccess = Instant.EPOCH;
 
 	/**
 	 * Optional. last access to the course (0 if never)
 	 */
-	private Instant lastcourseaccess;
+	private Instant lastcourseaccess = Instant.EPOCH;
 
 	/**
 	 * Optional. User profile description

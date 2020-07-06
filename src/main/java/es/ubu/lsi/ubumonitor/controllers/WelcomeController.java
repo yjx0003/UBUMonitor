@@ -743,9 +743,8 @@ public class WelcomeController implements Initializable {
 									.filter(user -> !actualCourse.getEnrolledUsers()
 											.contains(user))
 									.collect(Collectors.toSet());
-							List<String> ids = notEnrolled.stream()
+							List<Integer> ids = notEnrolled.stream()
 									.map(EnrolledUser::getId)
-									.map(Object::toString)
 									.collect(Collectors.toList());
 							LOGGER.info("Los ids de usuarios no matriculados: {}", ids);
 							CreatorUBUGradesController.searchUser(ids);
@@ -799,9 +798,10 @@ public class WelcomeController implements Initializable {
 		}
 
 		try {
-
+			CoreCourseSearchCourses coreCourseSearchCourses = new CoreCourseSearchCourses();
+			coreCourseSearchCourses.setBySearch(text);
 			JSONObject jsonObject = CreatorUBUGradesController
-					.getJSONObjectResponse(new CoreCourseSearchCourses(text, 0, 50));
+					.getJSONObjectResponse(coreCourseSearchCourses);
 			List<Course> courses = CreatorUBUGradesController.searchCourse(jsonObject);
 
 			if (courses.isEmpty()) {

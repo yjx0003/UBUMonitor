@@ -44,12 +44,12 @@ import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetCategories;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetContents;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetCoursesByField;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetEnrolledCoursesByTimelineClassification;
+import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetEnrolledCoursesByTimelineClassification.Classification;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetUserAdministrationOptions;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetUserNavigationOptions;
 import es.ubu.lsi.ubumonitor.webservice.api.core.enrol.CoreEnrolGetEnrolledUsers;
 import es.ubu.lsi.ubumonitor.webservice.api.core.enrol.CoreEnrolGetUsersCourses;
 import es.ubu.lsi.ubumonitor.webservice.api.core.users.CoreUserGetUsersByField;
-import es.ubu.lsi.ubumonitor.webservice.api.core.users.CoreUserGetUsersByField.Field;
 import es.ubu.lsi.ubumonitor.webservice.api.gradereport.GradereportUserGetGradeItems;
 import es.ubu.lsi.ubumonitor.webservice.api.gradereport.GradereportUserGetGradesTable;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionAbstract;
@@ -146,8 +146,9 @@ public class CreatorUBUGradesController {
 	 * @throws IOException si no ha podido conectarse al servidor moodle
 	 */
 	public static MoodleUser createMoodleUser(String username) throws IOException {
-		JSONObject jsonObject = getJSONArrayResponse(new CoreUserGetUsersByField(Field.USERNAME, username))
-				.getJSONObject(0);
+		CoreUserGetUsersByField coreUserGetUsersByField = new CoreUserGetUsersByField();
+		coreUserGetUsersByField.setUsername(username);
+		JSONObject jsonObject = getJSONArrayResponse(coreUserGetUsersByField).getJSONObject(0);
 
 		MoodleUser moodleUser = new MoodleUser();
 		moodleUser.setId(jsonObject.getInt("id"));
@@ -188,10 +189,9 @@ public class CreatorUBUGradesController {
 
 		createCourseCategories(ids);
 
-		moodleUser.setInProgressCourses(
-				coursesByTimeline(CoreCourseGetEnrolledCoursesByTimelineClassification.IN_PROGRESS));
-		moodleUser.setPastCourses(coursesByTimeline(CoreCourseGetEnrolledCoursesByTimelineClassification.PAST));
-		moodleUser.setFutureCourses(coursesByTimeline(CoreCourseGetEnrolledCoursesByTimelineClassification.FUTURE));
+		moodleUser.setInProgressCourses(coursesByTimeline(Classification.IN_PROGRESS));
+		moodleUser.setPastCourses(coursesByTimeline(Classification.PAST));
+		moodleUser.setFutureCourses(coursesByTimeline(Classification.FUTURE));
 		moodleUser.setRecentCourses(getRecentCourses(moodleUser.getId()));
 
 		return moodleUser;
@@ -224,7 +224,7 @@ public class CreatorUBUGradesController {
 
 	}
 
-	private static List<Course> coursesByTimeline(String classification) {
+	private static List<Course> coursesByTimeline(Classification classification) {
 		try {
 
 			JSONArray courses = getJSONObjectResponse(
@@ -299,8 +299,9 @@ public class CreatorUBUGradesController {
 	 * @throws IOException si hay algun problema conectarse a moodle
 	 */
 	public static void createCourseCategories(Set<Integer> ids) throws IOException {
-
-		JSONArray jsonArray = getJSONArrayResponse(new CoreCourseGetCategories(ids));
+		CoreCourseGetCategories coreCourseGetCategories = new CoreCourseGetCategories();
+		coreCourseGetCategories.appendIds(ids);
+		JSONArray jsonArray = getJSONArrayResponse(coreCourseGetCategories);
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject jsonObject = jsonArray.getJSONObject(i);
 
@@ -327,9 +328,7 @@ public class CreatorUBUGradesController {
 	 * @throws IOException si no ha podido conectarse
 	 */
 	public static List<EnrolledUser> createEnrolledUsers(int courseid) throws IOException {
-
-		JSONArray users = getJSONArrayResponse(CoreEnrolGetEnrolledUsers.newBuilder(courseid)
-				.build());
+		JSONArray users = getJSONArrayResponse(new CoreEnrolGetEnrolledUsers(courseid));
 
 		List<EnrolledUser> enrolledUsers = new ArrayList<>();
 
@@ -341,8 +340,11 @@ public class CreatorUBUGradesController {
 
 	}
 
-	public static List<EnrolledUser> searchUser(Collection<String> ids) throws IOException {
-		JSONArray array = getJSONArrayResponse(new CoreUserGetUsersByField(Field.ID, ids));
+	public static List<EnrolledUser> searchUser(Collection<Integer> ids) throws IOException {
+		CoreUserGetUsersByField coreUserGetUsersByField = new CoreUserGetUsersByField();
+		coreUserGetUsersByField.setIds(ids);
+
+		JSONArray array = getJSONArrayResponse(coreUserGetUsersByField);
 		List<EnrolledUser> users = new ArrayList<>();
 
 		for (int i = 0; i < array.length(); ++i) {
@@ -622,9 +624,9 @@ public class CreatorUBUGradesController {
 	 */
 	public static List<CourseModule> createSectionsAndModules(int courseid) throws IOException {
 
-		JSONArray jsonArray = getJSONArrayResponse(CoreCourseGetContents.newBuilder(courseid)
-				.setExcludecontents(true)
-				.build());
+		CoreCourseGetContents coreCourseGetContents = new CoreCourseGetContents(courseid);
+		coreCourseGetContents.appendExcludecontents(true);
+		JSONArray jsonArray = getJSONArrayResponse(coreCourseGetContents);
 
 		List<CourseModule> modulesList = new ArrayList<>();
 		for (int i = 0; i < jsonArray.length(); i++) {
@@ -722,13 +724,11 @@ public class CreatorUBUGradesController {
 	public static void createActivitiesCompletionStatus(int courseid, int userid) throws IOException {
 		JSONObject jsonObject = null;
 		try {
-			jsonObject = getJSONObjectResponse(
-					new CoreCompletionGetActivitiesCompletionStatus(courseid, userid));
-		}catch(Exception e) {
+			jsonObject = getJSONObjectResponse(new CoreCompletionGetActivitiesCompletionStatus(courseid, userid));
+		} catch (Exception e) {
 			LOGGER.warn("Cannot get activity completion for userid {} and courseid {}", userid, courseid);
 			return;
 		}
-		
 
 		SubDataBase<CourseModule> modules = CONTROLLER.getDataBase()
 				.getModules();
@@ -772,9 +772,12 @@ public class CreatorUBUGradesController {
 	 */
 	public static List<GradeItem> createGradeItems(int courseid, int userid) throws IOException {
 		try {
-			JSONObject jsonObject = getJSONObjectResponse(new GradereportUserGetGradesTable(courseid, userid));
+			GradereportUserGetGradesTable gradereportUserGetGradesTable = new GradereportUserGetGradesTable(courseid);
+			gradereportUserGetGradesTable.setCourseid(courseid);
+			gradereportUserGetGradesTable.setUserid(userid);
+			JSONObject jsonObject = getJSONObjectResponse(gradereportUserGetGradesTable);
 
-			return tryGetGradeItems(courseid, userid, jsonObject);
+			return tryGetGradeItems(courseid, jsonObject);
 
 		} catch (Exception e) {
 			LOGGER.error("Error al descargar los items de calificacione", e);
@@ -783,10 +786,10 @@ public class CreatorUBUGradesController {
 
 	}
 
-	public static List<GradeItem> tryGetGradeItems(int courseid, int userid, JSONObject jsonObject) throws IOException {
+	public static List<GradeItem> tryGetGradeItems(int courseid, JSONObject jsonObject) throws IOException {
 		try {
 			List<GradeItem> gradeItems = createHierarchyGradeItems(jsonObject);
-			getGradereportUserGetGradeItems(courseid, userid, gradeItems);
+			getGradereportUserGetGradeItems(courseid, gradeItems, jsonObject);
 			return gradeItems;
 		} catch (Exception e) {
 			CreatorGradeItems creatorGradeItems = new CreatorGradeItems();
@@ -794,14 +797,15 @@ public class CreatorUBUGradesController {
 		}
 	}
 
-	public static JSONObject getGradereportUserGetGradeItems(int courseid, int userid, List<GradeItem> gradeItems)
-			throws IOException {
+	public static JSONObject getGradereportUserGetGradeItems(int courseid, List<GradeItem> gradeItems,
+			JSONObject gradeItemsTable) throws IOException {
 		JSONObject jsonGradeItems;
 		try {
 			jsonGradeItems = getJSONObjectResponse(new GradereportUserGetGradeItems(courseid));
 
 		} catch (Exception e) {
-			jsonGradeItems = getJSONObjectResponse(new GradereportUserGetGradeItems(courseid, userid));
+
+			jsonGradeItems = gradeItemsTable;
 		}
 		setBasicAttributes(gradeItems, jsonGradeItems);
 		setEnrolledUserGrades(gradeItems, jsonGradeItems);
@@ -945,8 +949,9 @@ public class CreatorUBUGradesController {
 
 		jsonArray = getJSONObjectResponse(new CoreCourseGetUserNavigationOptions(courseids)).getJSONArray("courses");
 		findPermission(jsonArray, dataBaseCourse, "grades", Course::setGradeItemAccess);
-
-		jsonArray = getJSONObjectResponse(new CoreCourseGetCoursesByField(courseids)).getJSONArray("courses");
+		CoreCourseGetCoursesByField coreCourseGetCoursesByField =new CoreCourseGetCoursesByField();
+		coreCourseGetCoursesByField.setIds(courseids);
+		jsonArray = getJSONObjectResponse(coreCourseGetCoursesByField).getJSONArray("courses");
 
 		for (int i = 0; i < jsonArray.length(); ++i) {
 			JSONObject jsonObject = jsonArray.getJSONObject(i);

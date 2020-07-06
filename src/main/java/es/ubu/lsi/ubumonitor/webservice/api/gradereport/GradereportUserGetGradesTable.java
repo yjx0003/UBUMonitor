@@ -1,54 +1,50 @@
 package es.ubu.lsi.ubumonitor.webservice.api.gradereport;
 
-import es.ubu.lsi.ubumonitor.webservice.webservices.Util;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionAbstract;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionEnum;
 
-public class GradereportUserGetGradesTable extends WSFunctionAbstract{
+/**
+ * Get the user/s report grades table for a course.
+ * 
+ * @author Yi Peng Ji
+ *
+ */
+public class GradereportUserGetGradesTable extends WSFunctionAbstract {
 
-	private Integer courseid;
-	private Integer userid;
-	private Integer groupid;
-
-	public GradereportUserGetGradesTable(Integer courseid) {
-		super(WSFunctionEnum.GRADEREPORT_USER_GET_GRADES_TABLE);
-		this.courseid = courseid;
-	}
-	
-	public GradereportUserGetGradesTable(Integer courseid, int userid) {
-		this(courseid);
-		this.userid = userid;
+	public GradereportUserGetGradesTable(int courseid) {
+		this(WSFunctionEnum.GRADEREPORT_USER_GET_GRADES_TABLE, courseid);
 	}
 
-	public Integer getCourseid() {
-		return courseid;
+	protected GradereportUserGetGradesTable(WSFunctionEnum wsFunction, int courseid) {
+		super(wsFunction);
+		setCourseid(courseid);
 	}
 
-	public void setCourseid(Integer courseid) {
-		this.courseid = courseid;
+	/**
+	 * Course id
+	 * 
+	 * @param courseid
+	 */
+	public void setCourseid(int courseid) {
+		parameters.put("courseid", courseid);
 	}
 
-	public Integer getUserid() {
-		return userid;
+	/**
+	 * Return grades only for this user (optional).
+	 * 
+	 * @param userid user id
+	 */
+	public void setUserid(int userid) {
+		parameters.put("userid", userid);
 	}
 
-	public void setUserid(Integer userid) {
-		this.userid = userid;
-	}
-
-	public Integer getGroupid() {
-		return groupid;
-	}
-
-	public void setGroupid(Integer groupid) {
-		this.groupid = groupid;
-	}
-
-	@Override
-	public void addToMapParemeters() {
-		Util.putIfNotNull(parameters, "courseid", courseid);
-		Util.putIfNotNull(parameters, "userid", userid);
-		Util.putIfNotNull(parameters, "groupid", groupid);
+	/**
+	 * Get users from this group only.
+	 * 
+	 * @param groupid group id
+	 */
+	public void setGroupid(int groupid) {
+		parameters.put("groupid", groupid);
 	}
 
 }

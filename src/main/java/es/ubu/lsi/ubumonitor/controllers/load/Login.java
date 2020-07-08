@@ -105,15 +105,10 @@ public class Login {
 							.optJSONObject("data");
 			if (data != null) {
 
-				launchurl = data.getString("launchurl") + "?service=local_mobile&urlscheme=moodlemobile&passport=1";
+				launchurl = data.getString("launchurl") + "?service=moodle_mobile_app&urlscheme=moodlemobile&passport=1";
 				typeoflogin = data.optInt("typeoflogin", DEFAULT_TYPE_OF_LOGIN);
 				if (data.optInt("enablemobilewebservice", 1) == 0) {
 					throw new IllegalAccessError("Mobile web service not enabled");
-				}
-				try (Response responseLaunch = Connection.getResponse(launchurl)) {
-					if (responseLaunch.code() != 200) {
-						launchurl = null;
-					}
 				}
 			}
 		} catch (Exception e) {
@@ -143,7 +138,7 @@ public class Login {
 
 		if (launchurl != null && typeoflogin != DEFAULT_TYPE_OF_LOGIN) {
 
-			LOGGER.info("Login SSO with Launch url");
+			LOGGER.info("Login SSO with Launch ur {}", launchurl);
 			loginWebViewWithLaunchUrl(host, launchurl, Controller.getInstance()
 					.getStage());
 

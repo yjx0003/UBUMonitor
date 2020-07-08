@@ -342,16 +342,21 @@ public class CreatorUBUGradesController {
 	}
 
 	public static List<EnrolledUser> searchUser(Collection<String> ids) throws IOException {
-		JSONArray array = getJSONArrayResponse(new CoreUserGetUsersByField(Field.ID, ids));
-		List<EnrolledUser> users = new ArrayList<>();
+		try {
+			JSONArray array = getJSONArrayResponse(new CoreUserGetUsersByField(Field.ID, ids));
+			List<EnrolledUser> users = new ArrayList<>();
 
-		for (int i = 0; i < array.length(); ++i) {
-			users.add(userAttributes(array.getJSONObject(i)));
+			for (int i = 0; i < array.length(); ++i) {
+				users.add(userAttributes(array.getJSONObject(i)));
+			}
+			return users;
+
+		}catch(Exception e) {
+			return Collections.emptyList();
 		}
-		return users;
-
+		
 	}
-
+ 
 	/**
 	 * Crea el usuario matriculado a partir del json parcial de la respuesta de
 	 * moodle

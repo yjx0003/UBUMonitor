@@ -39,7 +39,7 @@ public class ActivityCollector extends DataCollector {
 		for (UserData userData : users) {
 			for (CourseModule courseModule : selected) {
 				ActivityCompletion activity = courseModule.getActivitiesCompletion().get(userData.getEnrolledUser());
-				State state = activity.getState();
+				State state = activity == null ? State.INCOMPLETE : activity.getState();
 				int value = (state == State.COMPLETE || state == State.COMPLETE_PASS) ? 1 : 0;
 				userData.addDatum(new Datum(getType(), courseModule.getModuleName(),
 						courseModule.getModuleType().getModName(), value));

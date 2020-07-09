@@ -8,17 +8,19 @@
 \usepackage{lmodern} % scalable font
 \usepackage{microtype}
 \usepackage{placeins}
-\usepackage{eurosym}
-\usepackage[backend=bibtex,dateabbrev=false]{biblatex}
-\addbibresource{bibliografiaAnexos.bib}
 
 \RequirePackage{booktabs}
 \RequirePackage[table]{xcolor}
 \RequirePackage{xtab}
 \RequirePackage{multirow}
+% Bibliography management
+\usepackage[numbers,sort]{natbib}
+
+
+\usepackage{longtable}
 
 % Links
-\usepackage[colorlinks]{hyperref}
+\PassOptionsToPackage{hyphens}{url}\usepackage[colorlinks]{hyperref}
 \hypersetup{
 	allcolors = {red}
 }
@@ -32,6 +34,12 @@
 % Párrafos
 \nonzeroparskip
 
+% Huérfanas y viudas
+\widowpenalty100000
+\clubpenalty100000
+
+% Evitar solapes en el header
+\nouppercaseheads
 
 % Imagenes
 \usepackage{graphicx}
@@ -52,7 +60,14 @@
 	\end{figure}
 }
 
-
+\newcommand{\imagenConTamano}[3]{
+	\begin{figure}[!h]
+		\centering
+		\includegraphics[width=#3\textwidth]{#1}
+		\caption{#2}\label{fig:#1}
+	\end{figure}
+	\FloatBarrier
+}
 
 % El comando \figura nos permite insertar figuras comodamente, y utilizando
 % siempre el mismo formato. Los parametros son:
@@ -304,6 +319,7 @@
 
 \renewcommand*\cftappendixname{\appendixname\ }
 
+\newcommand{\hubu}{\hline \rule{0pt}{2.7ex}}
 % Formato de portada
 \makeatletter
 \usepackage{xcolor}
@@ -348,9 +364,9 @@
 
 
 % Datos de portada
-\title{{\Huge UBUMonitor}\\[0.5cm]Monitorización de alumnos en la plataforma Moodle.}
-\author{Yi Peng Ji}
-\tutor{Dr. D. Raúl Marticorena Sánchez\\y Dr. D. Carlos Pardo Aguilar}
+\title{Aplicación de clustering de datos educacionales en Moodle \\Documentación Técnica}
+\author{Xing Long Ji}
+\tutor{Dr. D. Raúl Marticorena Sánchez}
 \date{\today}
 
 \begin{document}
@@ -396,6 +412,7 @@
 \include{./tex/E_Manual_usuario}
 
 
-\printbibliography
+\bibliography{bibliografiaAnexos}
+\bibliographystyle{plainnat}
 
 \end{document}

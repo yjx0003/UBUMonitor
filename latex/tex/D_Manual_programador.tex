@@ -1,337 +1,185 @@
 \apendice{Documentación técnica de programación}
 
 \section{Introducción}
-
-En esta sección del anexo se explicarán cómo están organizados los paquetes del proyecto; un manual para el programador sobre las herramientas que debe instalar para seguir el desarrollo; su compilación, instalación y ejecución del proyecto y las pruebas realizadas en la aplicación.
+En este capítulo se va a describir la documentación técnica de programación, incluyendo la estructura de directorios, el manual del programador y la instalación y ejecución del proyecto.
 
 \section{Estructura de directorios}
-
-El repositorio del proyecto está distribuido de la siguiente forma:
+Como este proyecto se integra en otro, solo se van a enumerar los directorios utilizados en este proyecto.
 
 \begin{itemize}
-	\item /doc/: los ficheros javadoc del proyecto.
-	\item /latex/: los elementos necesarios para generar la memoria y el anexo, tanto los ficheros .tex como los .pdf. También se incluye las imágenes y la bibliografía en formato .bib.
-	\item /lib/: librerías externas de Java.
-	\item /lib/src: el código fuente de las librerías externas de Java.
-	\item /lib/docs: los javadoc de las librerías externas de Java.
-	\item /python/: varios archivos de utilidad para los registros del curso:
-	\begin{itemize}
-		\item \textbf{Componentes y eventos.json}: fichero dividido en tres niveles que son Componentes, Eventos y Descripciones de los registros del curso.
-		\item \textbf{Contains checker.ibynb}: funciones de utilidad que comprueba en las Descripciones de los registros si existe o no un carácter o varios.
-		\item \textbf{Generador de código componentes y eventos.ipynb}: funciones que generan código Java automáticamente a partir del fichero JSON mencionado.
-		\item \textbf{Rastreador de componentes y eventos.ipynb}: programa de utilidad que escanea los registros del curso en formato CSV y con eso crea un fichero JSON con todos los Componentes, Eventos y Descripciones encontrados.
-	\end{itemize}
-
-	\item /resources/: recursos de apoyo para el programa.
-	\item /resources/css/: ficheros CSS que modifica la visualización y colores de la aplicación.
-	\item /resources/graphics/: ficheros HTML para dibujar las gráficas.
-	\item /resources/graphics/lib: librerías externas de JavaScript usado para las gráficas.
-	\item /resources/img/: todas las imágenes de la aplicación.
-	\item /resources/messages/: ficheros de internacionalización de textos.
-	\item /resources/view/: se encuentra los ficheros FXML.
-	\item /src/: código fuente del desarrollo.
-	\item /src/controllers/: paquete encargado del flujo de la ejecución.
-	\item /src/controllers/datasets/: dirige las generaciones de los datos en formato válido para Chart.js.
-	\item /src/controllers/ubugrades/: encargado de la generación de los cursos, usuarios matriculados, calificaciones, etc. Toda la parte de los servicios web.
-	\item /src/controllers/ubulogs/: gestiona la descarga de los registros y su posterior \textit{parseo}.
-	\item /src/conrollers/ubulogs/logtypes/: las clases encargadas de gestionar los ids de las Descripciones del registro.
-	\item /src/model/: representación de los datos, su lógica de negocio.
-	\item /src/model/mod: todas las clases de los tipos de módulos del curso.
-	\item /src/persistence/: encriptación y desencriptación de archivos de objetos Serializados.
-	\item /src/webservice/.../: paquete y subpaquetes encargados de llamar a las funciones de Moodle añadiendo los parámetros necesarios a la URL y recibir las respuestas.
-	
-
+	\item \texttt{/}: directorio raíz donde se incluyen la licencia, el README y el fichero pom de maven.
+	\item \texttt{/doc/}: javadoc del código fuente de la parte de \emph{clustering}.
+	\item \texttt{/latex/}: ficheros utilizados para la generación de la memoria y los anexos.
+	\item \texttt{/src/main/resources/}: contiene los recursos de la aplicación (internacionalización, imágenes, ficheros FXML, etc.).
+	\item \texttt{/src/main/resources/graphics/}: ficheros HTML donde se incluyen las gráficas.
+	\item \texttt{/src/main/resources/graphics/lib}: ficheros JavaScript de las bibliotecas externas de generación de gráficas.
+	\item \texttt{/src/main/resources/img/}: imágenes utilizadas en la aplicación.
+	\item \texttt{/src/main/resources/messages/}: ficheros de internacionalización de textos.
+	\item \texttt{/src/main/resources/view/}: fichero FXML usados por JavaFX para la interfaz gráfica.
+	\item \texttt{/src/main/java/es/ubu/lsi/ubumonitor/}: directorio donde se encuentran todos los ficheros Java.
+	\item \texttt{/src/main/java/es/ubu/lsi/ubumonitor/clustering}: directorio que incluye los ficheros java de este proyecto.
+	\item \texttt{/src/main/java/es/ubu/lsi/ubumonitor/clustering/algorithm}: incluye los diferentes algoritmos de \emph{clustering}.
+	\item \texttt{/src/main/java/es/ubu/lsi/ubumonitor/clustering/analysis}: incluye los diferentes tipos de análisis de clústeres.
+	\item \texttt{/src/main/java/es/ubu/lsi/ubumonitor/clustering/chart}: incluye las clases que gestionan las gráficas.
+	\item \texttt{/src/main/java/es/ubu/lsi/ubumonitor/clustering/data}:
+	incluye el modelado de datos.
+	\item \texttt{/src/main/java/es/ubu/lsi/ubumonitor/clustering/exception}: incluye excepciones propias del \emph{clustering}.
+	\item \texttt{/src/main/java/es/ubu/lsi/ubumonitor/clustering/util}: incluye métodos generales de utilidad.
+	\item \texttt{/src/main/java/es/ubu/lsi/ubumonitor/clustering/controller}: incluye las clases encargadas de la lógica de negocio y conecta la capa de datos con las vistas.
 \end{itemize}
 
-\section{Manual del programador} \label{sec:manual_programdor}
-
-Este manual sirve de referencia para personas que tomen el proyecto en el futuro. Se explicarán como construir el entorno de desarrollo, qué es lo que necesitan instalar.
+\section{Manual del programador}
+Este manual sirve como referencia a futuros desarrolladores que trabajen en este proyecto. En este manual se explica cómo se monta el entorno de desarrollo y las herramientas necesarias.
 
 \subsection{Instalación de Java}
+La aplicación está programada en Java 8, por lo que es necesario instalar el JDK 8. En este manual se explicará como descargar el JDK de Oracle y de Zulu, aunque se puede utilizar otras distribuciones.
 
-La aplicación está desarrollada en Java 8, por lo tanto para trabajar en ella necesitará tener el JDK 8. Durante el proyecto se ha trabajado con la \textbf{versión 1.8.0\_201} pero sería recomendable trabajar con la última disponible. Realizamos los siguientes pasos si queremos descargar la última versión de JDK: 
-
+Para instalar la distribución de Oracle:
 \begin{enumerate}
-	\item Entrar en la página de  \href{https://www.oracle.com/technetwork/java/javase/downloads/index.html}{descargas de Java}.
-	\item Buscamos \textbf{Java SE 8uxxx} siendo las xxx el número de actualización de Java 8. 
-	\item Descargamos el JDK.
-	\imagen{elegir_jdl}{Elegir la descarga de JDK.}
-	\item Leemos la licencia de uso de Oracle y aceptamos las condiciones.
-	\item Cuando hayamos aceptado la licencia de uso descargamos el ejecutable según el sistema operativo que tengamos.
-	
-	\textbf{Nota:} x86 es de 32 bits y x64 de 64 bits.
-	\imagen{descarga_java}{Descarga del JDK 8}
-	\item Seguir las instrucciones del instalador
-	
-	
+	\item Acceder a la pagina de  \href{https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html}{descarga del JDK 8}.
+	\item Buscamos la versión de correspondiente a nuestro sistema operativo.
+	\item Aceptamos la licencia de descarga.
+	\imagen{anexos/licencia}{Aceptar la licencia.}
+	\item Iniciamos sesión con la cuenta de Oracle o nos registramos si no teníamos cuenta.
+	\item Ejecutamos el \texttt{exe} descargado y presionamos \emph{Next}.
+	\imagen{anexos/jdk1}{Ventana del instalador.}
+	\item En la siguiente ventana podemos cambiar la ruta de instalación.
+	\imagen{anexos/jdk2}{Ventana de selección de la ruta.}
 \end{enumerate}
 
-Es recomendable desinstalar la versión antigua de Java si descargamos la última versión \cite{noauthor_por_nodate}.
-\subsection{Eclipse}
+Para instalar la distribución de Zulu:
+\begin{itemize}
+	\item Acceder a la pagina de  \href{https://www.azul.com/downloads/zulu-community/}{descarga de Zulu JDK}
+	\item Seleccionamos la versión de Java, el sistema operativo, la arquitectura y el paquete de java, importante seleccionar el \textbf{JDK FX} para incluir la biblioteca de JavaFX.
+	\imagen{anexos/zulu1}{Selección de la versión.}
+	\item Descargamos el zip.
+	\item Descomprimimos el zip.
+	\item Hay que añadir el Java al \emph{path} del sistema.
+	\imagenConTamano{anexos/zulu2}{Configuración del sistema.}{0.7}
+	\imagenConTamano{anexos/zulu3}{Configuración del sistema.}{0.7}
+	\imagen{anexos/zulu4}{Configuración del sistema.}
+	\item Añadir la ruta del bin.
+	
+\end{itemize}
 
-Durante el desarrollo se ha empleado la versión \textbf{Oxygen.1a Release (4.7.1a)} de Eclipse aunque no habría muchos problemas usar una versión más reciente. A continuación se muestra el método de descargar una versión portable de Eclipse:
+\subsection{Instalación de Eclipse}
+A continuación, vamos a instalar el IDE (\emph{Integrated Development Environment}). Para realizar el proyecto se ha utilizado eclipse. Para instalar eclipse seguimos los siguientes pasos.
 
 \begin{enumerate}
-	\item  Entrar en la página web descarga de \href{https://www.eclipse.org/downloads/packages/}{paquetes de Eclipse}.
-	\item Descargamos el paquete \textbf{Eclipse IDE for Java Developers}, en el sistema operativo que se tenga.
-	\imagen{descargar_eclipse}{Descarga del paquete de Eclipse.}
-	\item Pulsamos el botón de descarga \textbf{Download}.
-	\imagen{boton_descarga_eclipse}{Pulsar el botón de descarga.}
-	\item Descomprimir la carpeta dentro del ZIP.
-	\item Ejecutar \textbf{eclipse.exe} cuando se quiera usar.
+	\item Accedemos a la pagina de descarga \href{https://www.eclipse.org/downloads/packages/}{eclipse}.
+	\item Descargamos la versión de \textbf{Eclipse IDE for Java Developers}.
+	\imagen{anexos/eclipse1}{Eclipse IDE for Java Developers.}
+	\item Seleccionamos la versión de \textbf{Windows} y descargamos.
+	\item Una vez descargado, descomprimimos la carpeta eclipse.
+	\item Ejecutar \textbf{eclipse.exe} para abrir el IDE.
 \end{enumerate}
-
-
-\subsection{Instalación de e(fx)clipse}
-
-e(fx)clipse es una herramienta adicional de Eclipse que facilita el desarrollo de aplicaciones que usen JavaFX. 
-Para instalar e(fx)clipse realizamos los siguientes pasos:
-
-\begin{enumerate}
-	\item Seleccionamos el menú \textbf{Help} de la barra de herramientas de Eclipse.
-	\item Seleccionamos el elemento del menú \textbf{Install New Software...}
-	
-	\imagen{efxclipse}{Menú \textbf{Help} y seleccionar \textbf{Install New Software...}}
-	
-	\item Seleccionamos la opción \textbf{--All Available Sites --} de la lista desplegable de \textbf{Work with:}.
-	\item Escribimos e(fx)clipse en el cuadro de texto.
-	\item Marcamos solo la casilla que pone \textbf{e(fx)clipse - IDE}.
-	\item Pulsamos el botón \textbf{Next} y debería descargar e instalarse.
-	\imagen{efxclipse2}{Instalación de la herramienta.}
-\end{enumerate}
-
 
 \subsection{Instalación de Scene Builder}
-
-La herramienta del Scene Builder (2.0) se puede conseguir desde: 
-
-\href{http://www.oracle.com/technetwork/java/javase/downloads/javafxscenebuilder-1x-archive-2199384.html}{http://www.oracle.com/technetwork/java/javase/downloads/javafxscenebuilder-1x-archive-2199384.html}
-
-Después de entrar a la página se busca la versión 2.0 de Scene Builder, se acepta la licencia y descargamos la versión según el sistema operativo que se use.
-
-\imagen{descargar_scene_builder}{Aceptar la licencia de Oracle BSD y descargr.}
-
-Se sigue las instrucciones del instalador.
-
-
-\subsection{Instalación de Moodle}
-
-Para instalar Moodle en el equipo personal, se puede descargar desde la página oficial con todo incluido para su funcionamiento:
-
-\href{https://download.moodle.org/windows/}{https://download.moodle.org/windows/}
-
-Una vez descargado y descomprimido la carpeta, ejecutamos \textbf{StartMoodle.exe} que inicia la  arranque del servidor.
-
-Para acceder al sitio web de Moodle se usa el localhost: \href{http://localhost}{http://localhost}
-En la página web, la primera vez iniciará el proceso de instalación del servidor. Se sigue las instrucciones del instalador.
-
-Por defecto no están activados los servicios web de Moodle. Para habilitarlo seguimos los siguientes pasos después de iniciar sesión con la cuenta del administrador:
+En este proyecto se ha utilizado el Scene Builder de Gluon, aunque también se puede utilizar la propia herramienta de Oracle. A continuación se indican los pasos para instalar el de Gluon.
 
 \begin{enumerate}
-	
-	\item Pulsamos el botón \textbf{Administración del sitio}.
-	\item Entramos dentro de \textbf{Mobile Settings}.
-	\imagen{servicios_moodle}{Habilitar servicios web.}
-	\item Marcamos la casilla de \textbf{Habilitar servicio web para dispositivos móviles}.
-	\item Pulsamos en \textbf{Guardar cambios}
-	\imagen{servicios_moodle2}{Habilitar servicios web parte 2.}
+	\item Accedemos a la pagina de \href{https://gluonhq.com/products/scene-builder/}{Gluon}.
+	\item Buscamos la versión de Java 8 y descargamos el instalador.
+	\item Ejecutamos el instalador.
+	\item Aceptamos los términos y condiciones y damos a Next.
+	\imagen{anexos/scenebuilder1}{Ventana del instalador.}
+	\item Seleccionamos la ruta de instalacion y damos a Next.
+	\imagen{anexos/scenebuilder2}{Ventana de selección de ruta.}
+	\item Una vez instalado, hay que incluir la biblioteca de ControlsFX en el Scene Builder.
+	\item Acedemos al repositorio de \href{https://mvnrepository.com/artifact/org.controlsfx/controlsfx}{ControlsFX en Maven}
+	\item Buscamos la versión \textbf{8.40.16}.
+	\item Descargamos el \textbf{jar}.
+	\imagen{anexos/scenebuilder3}{Descargar el jar.}
+	\item Abrimos el Scene Builder y añadimos la biblioteca.
+	\imagen{anexos/scenebuilder4}{Pasos para abrir el gestor de bibliotecas.}
+	\item Seleccionamos la opción \textbf{Add Library/FXML from file system}.
+	\imagenConTamano{anexos/scenebuilder5}{Añadir la biblioteca.}{0.7}
 \end{enumerate}
 
-\subsubsection{Listado de funciones de los servicios web de Moodle}
-
-Moodle ofrece también un listado de funciones del servicio web junto con información de parámetros y el esqueleto del JSON que devuelve. Para acceder a ella es necesario haber iniciado sesión con la cuenta del administrador.
+\subsection{Configuración adicional}
+Se puede configurar Eclipse para que abra los ficheros FXML con el Scene Builder. Para esto hay que seguir los siguientes pasos.
 \begin{enumerate}
-	\item Después de iniciar sesión con el administrador. Pulsamos \textbf{Administración del sitio} y luego a la pestaña de \textbf{Extensiones}.
-	\imagen{api_moodle}{Acceso al listado de funciones del servicio web de Moodle.}
-	\item Bajamos abajo hasta la fila de \textbf{Servicios Web} y accedemos a \textbf{Documentación API}-
-	\imagen{documentacion_api_moodle}{Acceder a la Documentación API.}
-	\item Muestra un listado de todas las funciones que al desplegar se puede visualizar los parámetros y esqueletos de la información que devuelve.
-	\imagen{listado_de_funciones}{Listado de funciones del servicio web de Moodle.}
+	\item Abrimos Eclipse.
+	\item Vamos a \textbf{Window > Preferences}
+	\item Accedemos a \textbf{General > Editors >File Associations}
+	\imagen{anexos/eclipse2}{Preferencias de Eclipse.}
+	\item Presionamos \textbf{Add...} y escribimos \textbf{*.fxml}.
+	\item Seleccionamos \textbf{*.fxml} y presionamos en \textbf{Add...}
+	\imagenConTamano{anexos/eclipse3}{Configurar el editor.}{0.6}
+	\imagenConTamano{anexos/eclipse4}{Selección del editor.}{0.6}
+	\item Presionamos en \textbf{OK} y en \textbf{Apply and Close}.
 \end{enumerate}
 
-\subsection{Instalación de Jupyter Notebook}
-
-Según la página oficial de Jupyter Notebook \cite{noauthor_project_nodate}, lo más recomendable es instalarlo a través de Anaconda en:
-
-\href{https://www.anaconda.com/distribution/\#download-section}{https://www.anaconda.com/distribution/\#download-section}.
-
-La versión recomendable que se debe descargar es el que incluye Python 3.7 o superior debido a que los diccionarios están ordenados por orden de inserción.
-
-\subsection{Clasificación de registros}
-
-Para clasificar se ha partido de la premisa de que las columnas \textbf{Componente} y \textbf{Nombre de Evento} usa un esqueleto de \textbf{Descripción} único. 
-
-A partir de expresiones regulares, se ha buscado las posibles los ids de las descripciones y con esos números pasado a un delegado (clase) en función del Componente y Evento. 
-
-
-
-\imagen{tipos_logs}{Clasificación de los registros junto con sus delegados.}
-Esto está implementado con el patrón Fábrica (\textit{Factory pattern}) \cite{tutorialspoint.com_design_nodate}.
-
-\imagen{diagrama_factory}{Diagrama de clases implementado el patrón Fábrica}
-
-\subsubsection{Delegados}
-
-Los nombres de los delegados son códigos nemotécnicos en función el tipo de ids asigna. Por ejemplo en la siguiente imagen usa los códigos nemotécnicos User, Affected y Cmid. Está asignando el usuario, usuario afectado y el módulo del curso.
-\imagen{ejemplo_tipo_log}{Un delegado UserAffectedCmid}
-
-En la tabla \ref{tabla:tipos_delegados} se puede ver los códigos nemotécnicos usados y una pequeña descripción.
-
-\tablaSmall{Códigos nemotécnicos de los delegados.}{l c }{tipos_delegados}{ \multicolumn{1}{l}{Código nemotécnico} & Descripción \\}{ 
-	Affected         & id del usuario afectado                          \\
-	Attempt          & id del intento                                   \\
-	Calendar         & id del evento del calendario                     \\
-	Category         & id de la categoría                               \\
-	Chapter          & id del capitulo del libro                        \\
-	Choice           & id de elección (choice)                          \\
-	Cmid             & id del módulo del curso                          \\
-	Comment          & id del comentario                                \\
-	Competency       & id de competencia del curso                      \\
-	Course           & id del curso                                     \\
-	Discussion       & id de la discusión del foro                      \\
-	Evidence         & id de la evidencia                               \\
-	Field            & id del campo                                     \\
-	Files            & número de ficheros                               \\
-	Glossary         & id de la entrada al glosario                     \\
-	Grade            & id de calificación                               \\
-	Gradeitem        & id de grade ítem                                 \\
-	Group            & id del grupo                                     \\
-	Grouping         & id de grouping                                   \\
-	Item             & id de item                                       \\
-	Note             & id de note                                       \\
-	Option           & id de opción                                     \\
-	Override         & id de anulación (override)                       \\
-	Page             & id de la página                                  \\
-	Post             & id del post del foro                             \\
-	Question         & id de pregunta del cuestionario                  \\
-	Questioncategory & id de categoría de cuestionario                  \\
-	Record           & id de record                                     \\
-	Role             & id del rol                                       \\
-	Rule             & id de regla                                      \\
-	Scale            & id de escala                                     \\
-	Sco              & id del scorm package                             \\
-	Section          & número de sección                                \\
-	Submission       & id de la entrega                                 \\
-	Subscription     & id de subscripción al evento                 	\\
-	Tour             & id de tour                                       \\
-	User             & id del usuario del usuario que realiza la acción \\
-	Words            & número de palabras                               \\
-}
-
-\subsection{Uso de las herramientas de utilidad Python}
-
-En este apartado se comentará las tres herramientas existentes en Jupyter Notebook. Estos facilitan al programador crear ciertos códigos que tienen que ver con los registros del curso.
-
-\subsubsection{Rastreador de componentes y eventos} \label{rastreador_componentes_eventos}
-
-Programa que selecciona uno o varios CSV de los registros descargados en inglés. Y de forma opcional elegir el archivo JSON donde se actualizarán todos los \textbf{Componentes}, \textbf{Eventos} junto con las \textbf{Descripciones}. Si no se selecciona el fichero JSON generará uno nuevo de los registros del CSV.
-
-Se aporta ya un fichero JSON (\textbf{Componentes y eventos.json}) con \textbf{48 Componentes} y \textbf{193 Eventos} diferentes detectados hasta el momento. 
-
-Este fichero usa tres niveles:
+Adicionalmente podemos instalar un extensión para editar ficheros HTML.
+Para ello seguimos los siguientes pasos.
 \begin{enumerate}
-	\item En el primer nivel indica el Componente.
-	\item En el segundo nivel es el Evento.
-	\item En el tercer nivel es un listado del esqueleto de las Descripciones asociados al Componente y Evento.
+	\item Vamos a \textbf{Help > Eclipse Marketplace...}
+	\item Buscamos \textbf{html} e instalamos la primera.
+	\imagen{anexos/eclipse5}{Instalar HTML Editor (WTP).}
+	\item Seguimos las instrucciones del instalador.
 \end{enumerate}
 
-En la figura \ref{fig:json_componente_evento} podemos ver un extracto del JSON recuadrado los Componentes (en rojo) y los Eventos (en verde).
-
-\imagen{json_componente_evento}{Extracto de Componentes y eventos.json}
-
-Los pasos a seguir añadir nuevos elementos son:
-
+Para editar de forma más cómoda los \emph{Resource Bundles} se puede utilizar una extensión de Eclipse.
 \begin{enumerate}
-	\item Abrir el archivo \textbf{Rastreador de componentes y eventos.ipynb} con Jupyter Notebook.
-	\item El programa está preparado para ejecutar todas las celdas seguidas, elegimos el menú \textbf{Cell} y luego la opción \textbf{Run All}.
-	\imagen{rastreador}{Menú \textbf{Cell} y opción \textbf{Run All}}
-	\item Aparecerá una primera ventana que pide seleccionar los ficheros CSV de los registros en inglés.
-	\imagen{elegir_Csv}{Selección múltiple de los archivos CSV.}
-	\item A continuación se mostrará una nueva ventana que pide el fichero JSON.
-	\imagen{seleccion_json}{Seleccionar el archivo JSON.}
-	\item Si no hay ningún problema encontrado durante la ejecución de las celdas, ha salido todo bien. 
+	\item Vamos a \textbf{Help > Eclipse Marketplace...}
+	\item Buscamos \textbf{resource bundle} e instalamos la segunda.
+	\imagen{anexos/eclipse6}{Instalar ResourceBundle Editor.}
+	\item Seguimos las instrucciones del instalador.
 \end{enumerate}
-
-Uno de los problemas que se puede encontrar es que haya elegido accidentalmente un CSV en otro idioma que no sea en inglés. Una de las celdas saltará un error y las siguientes no se ejecutarán.
-
-Por ejemplo en la siguiente imagen se puede ver que salta un error de que no se encuentra la columna Component. Producido por el último fichero en \textit{parsearse} indicado en un recuadro en rojo.
-\imagen{key_error}{Error producido al usar un CSV que no está en inglés.}
-
-
-Para solucionar solo hay que volver ejecutar todas las celdas sin elegir ese archivo CSV que da problemas.
-
-\subsubsection{Generador de código componentes y eventos}
-
-Este segundo programa usa el fichero JSON generado comentado anteriormente (\ref{rastreador_componentes_eventos}) y va mostrando en pantalla lo que hay que copiar y pegar en el proyecto.
-
-Genera automáticamente las enumeraciones de los Componentes y Eventos, las traducciones del \textit{Resource Bundle} en inglés y las combinaciones de Componente y Evento existentes.
-
-\begin{enumerate}
-	\item Abrir el archivo \textbf{Generador de código componentes y eventos.ipynb} con Jupyter Notebook.
-	\item El programa está preparado para ejecutar todas las celdas seguidas, elegimos el menú \textbf{Cell} y luego la opción \textbf{Run All}.
-	\imagen{generador_java}{Menú \textbf{Cell} y opción \textbf{Run All}}
-	\item Lo primero que mostrará una ventana que pide seleccionar el archivo JSON.
-	\imagen{seleccion_json}{Seleccionar el archivo JSON.}
-	\item En las siguientes celdas se parará en una que pide que copiemos los componentes del Resource Bundle en español desde:
-	
-	\textbf{/resources/messages/messages\_es.properties}
-	\imagen{resource_bundle_es}{Celda que parará el flujo el ejecución.}
-	\imagen{copiarcomponentes}{Copiar los componentes que se encuentra en el Resource Bundle español.}
-	\item Cuando lo hayamos copiado, en el cuadro de texto Notebook pulsamos la tecla \textbf{Entar} para que siga ejecutando las siguientes celdas.
-	\item Realizamos las mismas acciones pero ahora con los eventos del Resource Bundle en español.
-	\imagen{copiar_eventos}{Copiar los eventos que se encuentra en el Resource Bundle español.}
-	\item Realizamos la misma acción con los tipos de logs que se encuentra en:
-	
-	 \textbf{/controllers/ubulogs/logtypes/Logtypes.java}
-	\imagen{copiar_logtypes}{Copiar los tipos de logs.}
-	\item El último paso es solo ir copiando y pegando las salidas de las celdas al proyecto de Java.
-\end{enumerate}
-
-
 
 \section{Compilación, instalación y ejecución del proyecto}
+En este apartado se explicará cómo importar el proyecto de GitHub a Eclipse, su compilación y ejecución.
 
-\subsection{Importar el proyecto a Eclipse}
-Lo primero de todo hay que descargar todo el ficheros fuentes desde el repositorio de GitHub y descargamos el ZIP:
-
-\href{https://github.com/yjx0003/UBUMonitor}{https://github.com/yjx0003/UBUMonitor}
-
-Para importar en Eclipse seguimos los siguientes pasos:
-
+\subsection{Importar el proyecto}
+El proyecto está alojado en el repositorio de GitHub: \href{https://github.com/xjx1001/UBUMonitor}{xjx1001/UBUMonitor}.
+Para importar el proyecto a Eclipse se deben seguir los siguientes pasos.
 \begin{enumerate}
-	\item Pulsar el menú \textbf{File} y elegir la opción \textbf{Import...}
-	\imagen{import_project}{Menú File y opción Import...}
-	\item Seleccionar la opción de \textbf{Existing Projects into
-		Workspace} y luego al botón \textbf{Next}.
-	\imagen{existing_project}{Existing Projects into
-		Workspace} 
-	\item Marcamos la opción \textbf{Select archive file} y seleccionamos el fichero ZIP descargado previamente del repositorio GitHub. Pulsamos Finish e importara el fichero.
-	
-	\imagen{import_projects}{Selección del archivo ZIP e importar proyecto.}
+	\item Abrimos el enlace del repositorio.
+	\item Descargamos el proyecto desde \textbf{Clone or download > Download ZIP}.
+	\imagen{anexos/github1}{Descarga del proyecto.}
+	\item Descomprimimos el ZIP en el workspace de Eclipse.
+	\item Abrimos Eclipse.
+	\item Vamos a \textbf{File > Import...}
+	\item Seleccionamos \textbf{Maven > Existing Maven Projects}.
+	\imagen{anexos/github2}{Selección del tipo de importación.}
+	\item Seleccionamos la carpeta descomprimida.
+	\item Presionamos \textbf{Finish}.
+\end{enumerate}
+
+\subsection{Ejecución de la aplicación}
+Para ejecutar la aplicación seguimos los siguientes pasos.
+\begin{enumerate}
+	\item Abrimos Eclipse.
+	\item Click derecho sobre el proyecto, \textbf{Run As > Java Aplication}
+	\imagenConTamano{anexos/execute1}{Ejecutar la aplicación.}{0.6}
+	\item Buscamos la clase \texttt{es.ubu.lsi.ubumonitor.controllers.UBUMonitor} y presionamos \textbf{OK}.
+	\item Para futuras ejecuciones se puede usar el botón \textbf{Run} (\texttt{Ctrl + F11})
 \end{enumerate}
 
 \subsection{Generación del ejecutable de la aplicación}
+Para generar el JAR ejecutable hay que utilizar Maven.
+\begin{enumerate}
+	\item Abrimos Eclipse.
+	\item Click derecho en el proyecto y damos \textbf{Run As > Maven build...}
+	\imagenConTamano{anexos/maven1}{Exportar la aplicación.}{0.6}
+	\item Ponemos \textbf{package} en \textbf{Goals} y le damos a \textbf{Run}\footnote{Puede ser necesario establecer el JRE del proyecto al JDK}.
+	\imagenConTamano{anexos/maven2}{Ejecutar Maven.}{0.7}
+	\item Cuando termine la ejecución el JAR estará en la siguiente ruta: \texttt{/workspace/nombre del proyecto/target/}
+\end{enumerate}
 
-Para generar el ejecutable jar de la aplicación debemos seleccionar la opción \textbf{Exportar...} con click derecho del ratón al proyecto.
-\imagen{export_jar}{Exportar jar}
-
-Seleccionamos la exportación del proyecto como \textbf{Runnable JAR file} dentro de la carpeta Java.
-
-\imagen{runnable_jar}{Seleccionar Runnable JAR file.}
-
-Seleccionar al opción \textbf{Extract required libraries into generated JAR} y exportar.
-
-\imagen{runnable_jar_2}{Configuración del Runnable JAR.}
-
-\subsection{Ejecución de la aplicación}
-
-Para ejecutar el proyecto desde Eclipse: Buscamos el archivo java \textbf{UBUMonitor} dentro del paquete \textbf{controllers} que es donde se encuentra el Main. Click derecho y \textbf{Run as...} -> \textbf{Java Application}
-
-\imagen{run}{Ejecución de la aplicación.}
-
-La ejecución del jar ejecutable es con doble \textit{click} directamente.
 \section{Pruebas del sistema}
+Las pruebas se realizaron utilizando el servidor \emph{demo} de Moodle, \href{https://school.moodledemo.net/}{Mount Orange School}, accediendo con el rol de profesor.
 
-Las pruebas de las nuevas funcionalidades se realizaron contra la el Moodle instalado en el equipo en la versión \textbf{3.5.4+} y el servidor \textit{demo} de Moodle \href{https://school.demo.moodle.net}{Mount Orange School} en la versión \textbf{3.7}. 
+Para probar la aplicación se han seguido los siguientes pasos:
+\begin{enumerate}
+	\item Abrir la aplicación, iniciar sesión y accedes a un curso.
+	\item Probar la ejecución de los algoritmos de \emph{clustering} con diferentes parámetros.
+	\item Comprobar que los resultados mostrados en las gráficas y en la tabla.
+	\item Probar con un mayor número de iteraciones y con la reducción de dimensiones.
+	\item Realizar un análisis con diferentes algoritmos y métodos.
+	\item Probar las exportaciones de las gráficas y la tabla en todos los formatos.
+	\item Ejecutar el algoritmo de \emph{clustering} jerárquico con diferentes tipos de distancias.
+	\item Ejecutar particiones de diferentes números de agrupaciones.
+	\item Probar las exportaciones.
+\end{enumerate}
 
-Cuando se tenía unos cambios grandes, los tutores realizaban pruebas contra UBUVirtual con datos reales de alumnos. Con esto daban el visto bueno o informes de errores encontrados.

@@ -1,117 +1,158 @@
 \capitulo{3}{Conceptos teóricos}
+La parte teórica principal de este proyecto es la minería de datos, concretamente la parte de agrupamiento o \emph{clustering}.
 
-En este apartado comentaremos sobre conceptos que aparecen en Moodle.
+\section{Minería de datos}
+La minería de datos \cite{wiki:mineria} es el proceso de encontrar patrones o relaciones en conjuntos grandes de datos. Este procedimiento se emplea para predecir valores y generar conocimiento sobre los datos.
 
-
-
-\section{Conceptos de Moodle}
-
-En este apartado se explicarán los diferentes conceptos que son especiales en Moodle. Además, estas definiciones son importantes porque se trabaja mucho con ellos en el proyecto.
-
-\subsection{Módulo del curso}
-El módulo del curso \cite{noauthor_course_nodate} (en inglés \textit{course module}) también abreviado como `cm', representa las \textbf{actividades} y \textbf{recursos} del curso (ejemplos en la figura \ref{fig:course_modules}). Estos contienen información sobre qué curso y sección se muestra, además de la configuración de visibilidad y otros datos relevantes. 
-
-\imagenflotante{course_modules}{Ejemplos de módulos del curso que actividades y recursos.}
-
-Los identificadores únicos de los módulos del curso se definen como \textbf{`cmid'} y cada tipo de módulo del curso posee un código nemotécnico.
-
-
-\subsubsection{Códigos nemotécnicos de los tipos de módulos del curso}
-Los códigos nemotécnicos se usa en Moodle para indentificar los diferentes tipos de módulos independientemente el idioma que esté el servidor de Moodle.
-
-Existen dos formas de buscar el código nemotécnico de un módulo del curso:
-\begin{itemize}
-	\item A través de la función de servicio web \textbf{\textit{core\_course\_get\_contents}} que devuelve los módulos que hay en la página principal del curso y contiene un campo de tipo de módulo tal y como se puede ver en la figura \ref{fig:modname}.
-	
-	\imagenflotante{modname}{Extracto de la función del servicio web}
-	\item Mediante el enlace al crear un módulo del curso. Figura \ref{fig:modnamelink}
-	\imagenflotante{modnamelink}{Enlace que se genera mientras se crea el módulo}
-	
-\end{itemize}
-
-\subsubsection{Tipos de módulos del curso}
-
-En la tabla \ref{tabla:herramientasportipodeuso} se  muestran los diferentes tipos de módulos que se han encontrado en Moodle.
-
- 
-\tablaSmall{Tabla de los diferentes tipos de módulos.}{l c c c c}{herramientasportipodeuso}
-{ \multicolumn{1}{l}{Código nemotécnico} & Nombre en español & Nombre en inglés \\}{ 
-assign             & Tarea                    & Assignment          \\
-book               & Libro                    & Book                \\
-chat               & Chat                     & Chat                \\
-choice             & Consulta                 & Choice              \\
-data               & Base de datos            & Database            \\
-lti                & Herramienta externa      & External tool       \\
-feedback           & Encuesta                 & Feedback            \\
-resource           & Archivo                  & File                \\
-folder             & Carpeta                  & Folder              \\
-forum              & Foro                     & Forum               \\
-glossary           & Glosario                 & Glossary            \\
-hotpot             & HotPot                   & HotPot              \\
-imscp              & Paquete de contenido IMS & IMS content package \\
-journal            & Diario                   & Journal             \\
-label              & Etiqueta                 & Label               \\
-lesson             & Lección                  & Lesson              \\
-page               & Página                   & Page                \\
-quiz               & Cuestionario             & Quiz                \\
-scorm              & Paquete SCORM            & SCORM package       \\
-survey             & Encuestas predefinidas   & Survey              \\
-url                & URL                      & URL                 \\
-wiki               & Wiki                     & Wiki                \\
-workshop           & Taller                   & Workshop            \\
-} 
-
-
-
-
-\subsection{Ítem de calificación}
-El Ítem de calificación\cite{noauthor_grade_nodate} (en inglés \textit{Grade item}), es cada fila de la tabla de calificaciones.
-Las carpetas de la tabla, aparte de Ítem de calificación, se considera también como categoría (\textit{category}).
-
-Los Ítem de calificación se puede mostrar mediante una tabla para un solo alumno (ver figura \ref{fig:item_calificacion}) o una tabla de todos los alumnos y todos los Ítems de calificaciones (ver figura \ref{fig:alternativa_grade_item})
-
-Hay que tener en cuenta que no todas las actividades o recursos de los módulos del curso son calificables.
-
-\imagenflotante{item_calificacion}{Ejemplo de una tabla con varios Ítem de calificación.}
-
-\imagenflotante{alternativa_grade_item}{Ejemplo de tabla parcial con los usuarios e Ítems de calificación}
-\subsection{Categorías de cursos}
-Las categorías de cursos\cite{noauthor_course_nodate-1} (en inglés \textit{course categories}) organizan los cursos de la página de Moodle de forma jerárquica (ejemplo en la figura \ref{fig:course_categories})
-\imagenflotante{course_categories}{Ejemplo de categorías del curso enmarcados en rojo.}
-
-\subsection{Registros}
-Los registros son informes de actividades realizadas por los usuarios, donde hay registros de sitio web y del curso. En este proyecto solo nos centraremos en el segundo caso. Estos se acceden desde el curso en la rueda de configuración \textit{Aún más... ->  Informes ->  Registros -> Conseguir estos registros}
-
-\imagen{registros}{Ejemplo de varias entradas de un registro.}
-
-\subsubsection{Columnas de los registros}
-Todas las entradas del registros se muestra en una tabla con varias columnas: 
+El proceso de minería está formado por los siguientes pasos:
 \begin{enumerate}
-	\item \textbf{Hora}: La fecha y hora.
-	\item \textbf{Nombre completo del usuario}: Nombre y apellidos del usuario que realiza el evento o acción.
-	\item \textbf{Usuario afectado}: Nombre y apellidos del usuario afectado por el evento o acción.
-	\item \textbf{Contexto del evento}: En qué lugar del curso se ha producido el registro.
-	\item \textbf{Componente}: puede indicar una actividad, un recurso o el sistema.
-	\item \textbf{Nombre del evento}: qué evento o acción se ha realizado.
-	\item \textbf{Descripción}: contiene la información de las anteriores columnas pero mostrando su identificador único (\textit{id}) en vez de los nombres usuarios. Cada descripción es única en función del \textbf{Componente} y \textbf{Nombre de evento}.
-	\item \textbf{Origen}: indica el tipo de fuente donde se ha generado el registro. Pueden ser:
-	\begin{itemize}
-		\item Servicio web (ws): servicios web de Moodle.
-		\item Web: página web.
-		\item CLI: desde el servidor.
-	\end{itemize}
-	\item \textbf{Dirección IP}: la dirección IP del dispositivo que ha activado el registro.
-	
+	\item Selección de datos: elegir con qué datos se quiere realizar el proceso, esto incluye los parámetros del algoritmo.
+	\item Transformación de los datos: adaptar los datos de forma apropiada a la minería, esto incluye técnicas como la normalización.
+	\item Aplicación de la minería de datos: ejecutar de métodos inteligentes para extraer patrones.
+	\item Extracción y evaluación de los patrones: identificar los patrones útiles y realizar un análisis de las asociaciones de los datos.
+	\item Interpretación y evaluación de los datos: validación de los datos y los patrones asociados.
 \end{enumerate}
 
-\subsubsection{Opciones y descarga}
-También ofrece la posibilidad de filtrar mediante diferente opciones y su descarga en varios formatos de texto (CSV, Excel, HTML, JSON, etc).
+\section{Clustering particional}
+El agrupamiento o \emph{clustering} \cite{BibEntry2016Mar} es una técnica que consiste en agrupar un conjunto de datos en grupos de elementos. Cada grupo o clúster está formada por objetos similares entre sí y distintos a otros de diferente clúster.
 
-\subsubsection{Problema de visualización}
+El \emph{clustering} es un método de aprendizaje no supervisado \cite{wiki:aprendizaje}, es decir, el modelo no tiene conocimiento sobre el clúster al que pertenece cada elemento. En este tipo de aprendizaje el procedimiento agrupa por las características de cada elemento. Por lo tanto, en este tipo de aprendizaje los grupos se forman en función de los datos.
 
-El problema de los registros que ofrece Moodle es la laxa forma de visualizar los datos a pesar de las opciones de filtrado. Sobre todo la información de las \textbf{Descripciones} es confusa al mostrar los id's de usuarios, módulos del curso, etc...
+\subsection{Medidas de distancia}
+Existen varias formas de medir la distancia entre dos puntos. El tipo de distancia empleado para realizar el \emph{clustering} influye en el resultado obtenido. Las más comunes son la distancia de Manhattan y la distancia euclidiana.
 
-En la figura \ref{fig:group_added} es un ejemplo de entrada del registro que es confuso, no se muestra que grupo es. Solo indica el identificador del grupo. Otro de los problemas, no permite agrupar los registros de todos los usuarios y contar.
-\imagenflotante{group_added}{Ejemplo de entrada de registro}
+\subsubsection{Distancia euclidiana}
+La distancia euclidiana o euclídea \cite{wiki:euclidiana} entre dos puntos es la línea recta que une ambos, se deduce por el teorema de Pitágoras.
 
+$\sqrt{\sum(a_{i} - b_{i})^{2}}$
 
+\subsubsection{Distancia de Manhattan}
+La distancia de Manhattan \cite{manhattan} entre dos puntos se define como la suma de las diferencias de cada coordenada en valor absoluto.
+
+$\sum|a_{i} - b_{i}|$
+
+\subsubsection{Distancia de Canberra}
+La distancia de Canberra \cite{canberra} es una métrica similar a la de Manhattan. La distinción es que la diferencia absoluta es dividida por la suma de los valores absolutos.
+
+$\sum \frac{|a_{i} - b_{i}|}{|a_{i}| + |b_{i}|}$
+
+\subsubsection{Distancia de Chebyshev}
+La distancia de Chebyshev o métrica máxima \cite{wiki:chebyshov} entre dos puntos es el valor máximo de las diferencias entre cada coordenada.
+
+$\max(|a_{i} - b_{i}|)$
+
+\imagenConTamano{memoria/chebyshov}{Distancia de Chebyshev en un tablero de ajedrez.}{0.6}
+
+\subsection{Algoritmos}
+Existen varios tipos de algoritmos para el \emph{clustering}.
+
+\subsubsection{k-means}
+K-medias o \emph{k-means} \cite{wiki:kmedias} es un método de agrupamiento que tiene por objetivo dividir el conjunto de datos en $\mathit{k}$ subconjuntos. Los grupos son definidos por su centroide, que es el valor medio de todos los elementos.
+
+Cada elemento se unirá al grupo cuyo centro esté más cerca. Los centros iniciales se eligen de forma aleatoria y se van ajustando a medida que se incluyen elementos. Este método trata de reducir la varianza dentro de cada grupo.
+
+En cada iteración se ejecutan dos pasos, en el primero se asigna cada elemento a un grupo y en el segundo se actualiza el centro de cada grupo. Finaliza cuando las asignaciones no cambian.
+
+Los parámetros necesarios para ejecutar este algoritmo son:
+\begin{itemize}
+	\tightlist
+	\item $k$ - número de agrupaciones o clústeres
+	\item iteraciones - número máximo de iteraciones a ejecutar
+	\item distancia - función para calcular la distancia entre dos puntos
+\end{itemize}
+
+\subsubsection{k-means++}
+\emph{K-means++} \cite{wiki:kmeans++} es un algoritmo para la selección inicial de los centroides de cada agrupamiento en el algoritmo \emph{k-means}. Este método elige como centroides iniciales, puntos del conjunto de datos. Elige los puntos en función de una probabilidad definida respecto a los centros elegidos. $P(x) = D(x)^{2}$ donde $D(x)$ es la distancia del punto al centro más cercano. Una vez seleccionado los centros se ejecuta el \emph{k-means} estándar.
+
+\subsubsection{x-means}
+\emph{X-means} \cite{Pelleg00x-means:extending} es un algoritmo que extiende de \emph{k-means} e incluye una estimación eficiente del número de agrupaciones. Soluciona uno de los principales problemas de \emph{k-means}, que el número de agrupaciones es decidido por el usuario. El algoritmo comienza con un clúster y en cada iteración ejecuta el algoritmo \emph{k-means} y con el resultado obtenido y mediante el criterio de información bayesiano determina los clústeres a dividir.
+Se tiene que indicar al algoritmo el máximo número de agrupaciones.
+
+\subsubsection{g-means}
+\emph{G-means} es otro algoritmo extendido de \emph{k-means} que trata de determinar el número de agrupaciones óptimo. Este algoritmo se basa en la hipótesis de que cada agrupación sigue un distribución normal. Ejecuta el \emph{k-means} incrementando el número de agrupaciones. Es necesario indicar el número máximo de agrupaciones.
+
+\subsubsection{Fuzzy clustering}
+El agrupamiento difuso o \emph{fuzzy clustering} \cite{wiki:fuzzy} es un tipo de agrupamiento basado en la lógica borrosa o difusa \cite{wiki:logicaDifusa}. Esto indica a grandes rasgos que existe una incertidumbre de la pertenencia de un punto a varios clústeres.
+
+El algoritmo de \emph{Fuzzy K-means} es una variante del \emph{k-means}, con la diferencia de que un punto no se asigna solo a un clúster, sino que un punto tiene un conjunto de pesos que indican el grado de pertenencia a cada clúster. 
+
+Los parámetros necesarios para ejecutar este algoritmo son lo mismos que en \emph{k-means} incluyendo el parámetro de borrosidad o \emph{fuzziness} que determina el nivel de borrosidad del clúster, con valores más elevados implica clústeres más borrosos.
+
+\subsubsection{DBSCAN}
+El agrupamiento espacial basado en densidad de aplicaciones con ruido o \emph{Density-based spatial clustering of applications with noise} (DBSCAN) \cite{DBSCAN_paper} es un algoritmo basado en la densidad. Agrupa en función de los vecinos más cercanos y eliminando los puntos aislados o zonas de poca densidad.
+
+Los parámetros necesarios para ejecutar este algoritmo son:
+\begin{itemize}
+	\tightlist
+	\item $\epsilon$ - el radio de vecindad respecto a un punto
+	\item minPts - número mínimo de puntos conectados por clúster
+\end{itemize} 
+
+En el primer paso del algoritmo, se determinan los puntos núcleo o \emph{core points}, que son los que tienen al menos $minPts$ puntos a una distancia $\epsilon$. Cada punto núcleo crea una zona de densidad con sus puntos vecino. Con estas zonas de densidad el algoritmo puede unir dos zonas si están cerca, aunque esta implementación es opcional.
+En el resultado se muestran solo las zonas de densidad, los puntos que no pertenecen a una zona de densidad no aparecen. Este es un algoritmo determinista a diferencia de los anteriores.
+
+\subsubsection{DENCLUE}
+DENCLUE (\emph{DENsity CLUstering}) \cite{REHIOUI2016560} es un algoritmo basado en la densidad. Este modelo esta basado en el KDE (\emph{kernel density estimation}). El KDE es una técnica para buscar zonas densas. Este algoritmo funciona muy bien con un conjunto de datos de muchas dimensiones.
+
+\subsection{Validación}
+La validación del \emph{clustering} \cite{clusteringValidation} se realizará para determinar los bueno que es el resultado del algoritmo de \emph{clustering}. En general, los métodos de validación se pueden clasificar en 3 grupos:
+\begin{enumerate}
+	\item Validación interna: evalúa las agrupaciones del \emph{clustering} sin información externa, solo basándose en los datos utilizados. Se puede utilizar para determinar en número de agrupaciones y el tipo de algoritmo de \emph{clustering} apropiado.
+	\item Validación externa: consiste en comparar los resultados obtenidos con un resultado conocido anteriormente. Se utiliza principalmente para comprobar si un número de grupos coincide.
+	\item Validación relativa: evalúa el \emph{clustering} variando los parámetros de ejecución, como el número de agrupaciones en \emph{k-means}. Esta validación puede ser utilizada también para determinar el número de agrupaciones.
+\end{enumerate}
+
+En este apartado se explicarán algunos de estos métodos.
+
+\subsubsection{Coeficiente de silueta}
+Coeficiente de silueta o \emph{silhouette coefficient} es una métrica de validación interna que mide cuán bien están agrupadas los elementos. Este coeficiente se obtiene del análisis de silueta.
+
+El análisis se realiza a cada elemento y consiste en calcular la distancia media entre las agrupaciones y el elemento. Los valores elevados (cercanos a 1) indican que el elemento está bien agrupado, valores bajos (cercanos a 0) indican que el elemento está entre dos agrupaciones y valores negativos indican que el elemento está colocado en el grupo incorrecto. El resultado del análisis se puede reflejar en un diagrama de barras.
+
+\imagen{memoria/silueta}{Análisis de silueta.}
+
+El coeficiente de silueta es calculado como la media de cada elemento, cuanto mayor valor es el coeficiente mejor es el \emph{clustering}.
+
+\subsubsection{Método del codo}
+El método del codo o \emph{elbow method} es una análisis que sirve para determinar el número de agrupaciones. Se basa en calcular la varianza dentro de cada grupo. El objetivo sería minimizar este número, cuya forma más sencilla es aumentar el número de agrupaciones. Por lo tanto a mayor número de agrupaciones menor es la varianza, cuyo mínimo seria tantos grupos como elementos. Este análisis se puede reflejar en un gráfico de líneas.
+
+\imagen{memoria/codo}{Representación del método del codo.}
+
+Observando la gráfica se puede deducir un valor óptimo de agrupaciones. Suele ser el punto donde deja de decrecer tan rápidamente, en la imagen está representada por una línea discontinua.
+
+\section{Reducción de dimensionalidad}
+La reducción de las dimensiones \cite{wiki:dimensiones} es un proceso que trata de eliminar algunas variables no muy determinantes en el conjunto de datos. En minería de datos este método se suele aplicar antes de ejecutar algún algoritmo para reducir la cantidad de datos y obtener un mejor rendimiento.
+
+\imagen{memoria/abstracto}{Abstracción de la reducción de la dimensionalidad}
+
+En este proyecto se ha aplicado esta técnica para generar las gráficas 2D y 3D. También se ha ofrecido al usuario la posibilidad de aplicar una reducción antes de ejecutar el \emph{clustering}.
+
+Existen varias técnicas, métodos y algoritmos para reducir la dimensionalidad.
+
+\subsection{Análisis de componentes principales}
+El análisis de componentes principales (PCA) \cite{PCA} es un método estadístico que permite reducir la complejidad de espacios muestrales con muchas dimensiones. Este método está clasificado como aprendizaje no supervisado.
+
+De forma resumida, este método calcula las componentes principales mediante una combinación lineal de las variables originales.
+
+\subsection{t-SNE}
+Otro algoritmo para reducir la dimensionalidad es el t-SNE \cite{wiki:TSNE}. Es un algoritmo de aprendizaje automático y no lineal a diferencia del PCA. Este algoritmo fue diseñado para reducir conjuntos de datos de muchas dimensiones a dos o tres dimensiones para su representación gráfica.
+
+En este caso se asigna a cada elemento de conjunto original un punto bidimensional o tridimensional de tal manera que los elementos similares son modelados por puntos cercanos y elementos disimilares por puntos lejanos.
+
+\section{Clustering jerárquico}
+El \emph{clustering} jerárquico \cite{hierarchical} es otra forma de agrupar un conjunto de elementos. Existen dos tipos, en función del tipo de construcción de la jerarquía, que pueden ser \emph{bottom-up} o \emph{top-down}. El resultado obtenido suele representarse en un dendrograma.
+\imagenConTamano{memoria/dendograma}{Ejemplo de un dendrograma.}{0.6}
+
+Los métodos \emph{bottom-up} o aglomerativos comienzan con cada elemento en un clúster, por lo que hay tantos clúster como elementos. En cada iteración se cogen los dos clústeres mas parecidos, hasta que todos los elementos pertenezcan a un clúster. Con esto se obtiene el dendrograma. Para determinar los dos clústeres mas parecidos hay que utilizar la medida de distancia entre clústeres, que se describen posteriormente. Existen varios tipos de medida para esto.
+
+Los métodos \emph{top-down} o divisivos comienzan con todos los elementos en un clúster y se va dividiendo, repartiendo los elementos del clúster en dos clústeres. Esta división se puede hacer mediante un algoritmo de \emph{clustering} normal como \emph{k-means}. Este método es mas rápido que el aglomerativo.
+
+\subsection{Distancia entre clústeres}
+Existen distintas opciones para calcular la distancia entre dos clústeres al realizar el clúster jerárquico:
+\begin{itemize}
+	\item Distancia entra las medias (centroides): es calculada como la distancia entre los centros de cada clúster.
+	\item Las dos instancias más cercanas (\emph{single linkage}): es calculada como la mínima distancia entre dos puntos de cada clúster.
+	\item Vecino mas lejano (\emph{full/complete linkage}): es calculada como la máxima distancia entre dos puntos de cada clúster.
+	\item Media de las distancias entre cada par de instancias (\emph{average linkage}): es calculada como la media de las distancias entre cada par de puntos de cada clúster.
+	\item Criterio de \emph{ward}: este método minimiza la varianza total dentro de cada clúster. Se calcula para cada par de clústeres.
+\end{itemize}

@@ -1,168 +1,118 @@
 \apendice{Plan de Proyecto Software}
 
 \section{Introducción}
-
-En este apartado se comentará la planificación temporal de proyecto junto con su viabilidad económica y legal.
+En este apartado se va a detallar la planificación temporal del proyecto, especificando las tareas. También se realizarán estimaciones económicas y la viabilidad legal.
 
 \section{Planificación temporal}
-
-El desarrollo de la aplicación esta planteado usando Scrum como metodología de gestión del proyecto. Aunque cabe destacar que está adaptado para trabajar con una persona a diferencia de los 4-8 usuales y también con reuniones semanales en vez de diarias. A continuación se muestran las características que se han seguido de la filosofía ágil:
-
-
+Se ha decidido seguir la metodología \emph{SCRUM} para la gestión del proyecto. Se ha adaptado esta técnica a las condiciones del TFG. Se han aplicado las siguientes características:
 \begin{itemize}
-	\item Desarrollo iterativo o incremental mediante interacciones (\textit{sprints}).
-	\item La duración de los \textit{sprints} han sido de uno a tres semanas y cada una de ellas contiene las tareas o \textit{issues} realizadas.
-	\item Reuniones semanales de más de una hora comentando el avance del desarrollo y presentando partes del producto final.
-	\item También se planifica las siguientes tareas a realizar durante las reuniones.
-	
+	\item El desarrollo se ha basado en ciclos o iteraciones denominadas \emph{sprints}.
+	\item La duración estimada de cada \emph{sprint} es de 2 semanas.
+	\item Los \emph{sprints} están formados por las tareas completadas.
+	\item A las tareas se les establece una estimación temporal en función de su dificultad. Esto se define mediante \emph{story points}.
+	\item Las tareas a realizar se deciden en la planificación del \emph{sprint}.
+	\item Al finalizar un \emph{sprint} se genera un entregable o incremento del producto.
 \end{itemize}
+A continuación se detallan los \emph{sprints}.
 
-\subsection{Sprint 0 (14/01/2019 - 08/02/2019)}
+\subsection{Sprint 1 (30/01/20 - 12/02/20)}
+En este primer \emph{sprint} se realizaron labores de investigación. Se revisó la documentación del proyecto UBUMonitor. También se investigó sobre bibliotecas de \emph{clustering} para Java. Una vez revisadas estas, se crearon los primeros prototipos. Se añadieron algunas funciones al prototipo como la selección de algoritmos y parámetros.
+\imagen{burndowns/sprint1}{\emph{Burndown} del Sprint 1.}
 
-Durante la primera semana se buscó reuniones con tres docentes de la Universidad (José Manuel Galán Ordax, Bruno Baruque Zanón y Rául Marticorena Sánchez) sobre posibles proyectos que tuvieran en mente.
+\subsection{Sprint 2 (13/02/20 - 26/02/20)}
+Se implementó un visualización en forma de tabla de los resultados obtenidos al realizar el \emph{clustering}. Se investigó sobre los algoritmos de reducción de dimensiones para implementar gráficos 2D y 3D. También se buscaron componentes y bibliotecas para representar gráficos de dispersión de puntos. Al final se implementó la reducción de dimensiones mediante el método PCA y una visualización 2D utilizando la biblioteca Chartjs.
+\imagen{burndowns/sprint2}{\emph{Burndown} del Sprint 2.}
 
-Después de hablar con los tres en esa semana, hubo varios de reflexión sobre la difícil elección del trabajo. Finalmente se elige el proyecto de Raúl Marticorena.
+\subsection{Sprint 3 (27/02/20 - 11/03/20)}
+Se implementaron opciones de exportación de datos, tanto del diagrama de dispersión de puntos como de la tabla. Se añadieron datos de calificaciones a la tabla de resultados. Se creó una ficha, accesible desde la tabla, con los datos utilizados para realizar el \emph{clustering} de un alumno. Se incorporaron nuevas interacciones en la gráfica y en la tabla, como el renombrado de agrupaciones.
+\imagen{burndowns/sprint3}{\emph{Burndown} del Sprint 3.}
 
-En la siguiente semana se prepara la primera reunión comentando en profundidad los detalles del trabajo y los objetivos finales que se espera.
+\subsection{Sprint 4 (12/03/20 - 25/03/20)}
+Se investigó sobre métricas de validación del resultado del \emph{clustering}, también se añadió la posibilidad de realizar un análisis para varias cantidades de agrupaciones. Se mejoraron aspectos en el número de decimales, tanto en los ficheros exportados como en pantalla.
+\imagen{burndowns/sprint4}{\emph{Burndown} del Sprint 4.}
 
-En este \textit{sprint} también se prepara las instalaciones de las herramientas de necesarias para el desarrollo. Se ha usado el manual del programador aportado por el autor de  UBUGrades 2.0 como medida de apoyo.
+\subsection{Sprint 5 (26/03/20 - 08/04/20)}
+Se incluyeron más métricas de validación. Se mejoró la gráfica de dispersión añadiendo el centroide de cada agrupación. También se modificó la gráfica de la silueta de un diagrama lineal a un diagrama de barras.
+\imagen{burndowns/sprint5}{\emph{Burndown} del Sprint 5.}
 
+\subsection{Sprint 6 (09/04/20 - 22/04/20)}
+Se ha comenzado a investigar sobre el \emph{clustering} jerárquico y sus implementaciones en Java. Se ha diseñado un prototipo de su funcionamiento. Se han mejorado los análisis del codo y la silueta mediante varias ejecuciones del algoritmo.
+\imagen{burndowns/sprint6}{\emph{Burndown} del Sprint 6.}
 
-\subsection{Sprint 1 (08/02/2019 - 15/02/2019)}
+\subsection{Sprint 7 (23/04/20 - 06/05/20)}
+En este periodo se han corregido errores de ejecución y se han mejorado aspectos de las gráficas. En cuanto a las gráficas, se ha añadido la media en el diagrama de silueta y se ha creado el dendrograma para mostrar el resultado del clúster jerárquico.
 
-Buscar la manera de guardar los datos extraídos del servicio web en ficheros locales cifrados usando la contraseña de acceso a Moodle como clave. Se decide usar el algoritmo de encriptación \textbf{Blowfish} \cite{noauthor_schneier_nodate} que permite claves de 32 hasta 448 bits. Cabe destacar que se han descartado los algoritmos de cifrado que usan tamaños específicos de claves. Un ejemplo de ellos es el algoritmo \textit{Advanced Encryption Standard} (AES) \cite{rouse_what_2017} que necesita claves de cifrado de 128, 192 o 256 bits.
+Además se ha añadido la opción de ejecutar varias veces el algoritmo de \emph{clustering} y mostrar el mejor resultado siguiendo el coeficiente de la silueta.
 
-Se acuerda empezar de nuevo el trabajo de UBULogs al no funcionar para la nueva versión de Moodle de la Universidad usando una alternativa diferente.
+En cuanto a la documentación, se ha avanzado bastante en la memoria y un poco en los anexos.
+\imagen{burndowns/sprint7}{\emph{Burndown} del Sprint 7.}
 
-También se arregla un error del anterior proyecto el cual trataba al nombre de usuario como si fuera un correo.
+\subsection{Sprint 8 (07/05/20 - 20/05/20)}
+En este \emph{sprint}, ademas de corregir errores en la aplicación, se ha movido la ejecución del \emph{clustering} a un hilo aparte, ya que tardaba bastante la ejecución si se establecían muchas iteraciones.
 
-\subsection{Sprint 2 (15/02/2019 - 13/03/2019)}
+Se ha añadido en las leyendes de todas la gráficas el número de puntos por clúster. Tambien se ha creado un panel para gestionar la etiquetas del clúster creadas a lo largo del tiempo.
+\imagen{burndowns/sprint8}{\emph{Burndown} del Sprint 8.}
 
-En este \textit{sprint} se busca la forma de iniciar sesión con el usuario y contraseña de Moodle y así poder descargar los registros del curso. Inicialmente se intentó usar solo el paquete \textbf{java.net} \cite{noauthor_java.net_nodate} para realizar las conexiones al no ser una de dependencia externa. Sin embargo los resultados fueron infructuosos y finalmente se empleó Jsoup \cite{noauthor_jsoup_nodate}, una librería muy famosa de web scraping.
+\subsection{Sprint 9 (21/05/20 - 03/06/20)}
+Se ha investigado sobre la biblioteca Smile que contiene, entre otras cosas, una gran cantidad de algoritmos de aprendizaje automático (\emph{machine learning}). La investigación se ha centrado en los algoritmos de \emph{clustering}. Una vez terminada la investigación se ha procedido a incluir los algoritmos en la aplicación. Aparte de esto, se ha continuado con la documentación.
+\imagen{burndowns/sprint9}{\emph{Burndown} del Sprint 9.}
 
-Además se decide modificar completamente las clases encargadas de recoger información de los servicios web de Moodle.
+\subsection{Sprint 10 (04/06/20 - 17/06/20)}
+Se ha mejorado la interfaz de usuario, moviendo los componentes y añadiendo los iconos de las bibliotecas a la lista de algoritmos. Se han corregido pequeños errores en la aplicación. Se ha implementado el filtro de datos, el cual elimina los valores constantes.
 
-\subsection{Sprint 3 (13/03/2019 - 21/03/2019)}
+En cuanto a la documentación, se ha avanzado bastante en la memoria y los anexos. Además, se ha iniciado la documentación con javadoc.
+\imagen{burndowns/sprint10}{\emph{Burndown} del Sprint 10.}
 
-Los objetivos fueron arreglar los errores encontrados en el anterior \textit{sprint} y cambiar el paquete model modificando las clases y añadiendo todos los tipos disponibles de actividades y recursos del curso.
+\subsection{Sprint 11 (18/06/20 - 01/07/20)}
+En este periodo se ha mejorado el \emph{clustering} jerárquico incluyendo la parte de particionamiento. Se ha completado la memoria y los anexos, y se ha terminado con la documentación de javadoc.
+\imagen{burndowns/sprint11}{\emph{Burndown} del Sprint 11.}
 
-\subsection{Sprint 4 (21/03/2019 - 26/03/2019}
-
-Centrado exclusivamente en recoger los datos de los servicios web y transformarlo en objetos de Java. La información que nos interesa son los usuarios matriculados, los contenidos (actividades y recursos), las calificaciones, los roles y grupos del curso.
-
-Todo esto se extrae de los JSON que devuelve el servicio web de Moodle, se han creado métodos que recogen los campos más útiles del JSON.
-
-\subsection{Sprint 5 (26/03/2019 - 03/04/2019)}
-
-Buscado la forma de encontrar cómo actualizar los datos, tanto de las calificaciones como de los registros del curso.
-
-En cuanto a los registros del curso se descubre una forma de descargar los datos por días a través de un parámetro de la URL. Los tiempos de actualización de datos baja considerablemente con este método al descargar registros parciales en vez de completos.
-
-También se refactoriza códigos de anteriores \textit{sprints} y \textbf{Carlos Pardo Aguilar} se incorpora como segundo tutor.
-
-Se acuerda en qué tipo de gráfica debe mostrar los registros del curso, barras apiladas.
-
-\subsection{Sprint 6 (03/04/2019 - 26/04/2019)}
-
-Los objetivos son arreglar los errores de programación encontrados. También aparece un bug de los servicios web con la función \textbf{gradereport\_user\_get\_grade\_items} que devuelve un mensaje de error si la \textbf{Retroalimentación} está oculta en el calificador.
-
-Después de varias propuestas se llega el consenso de usar la otra función 
-del servicio web \textbf{gradereport\_user\_get\_grades\_table} mucho más incómoda de trabajar. Este inconveniente ha supuesto un retraso de una semana en el proyecto.
-
-Se añadió un fichero de de configuración para guardar los nombres de usuario y el servidor de Moodle en la pantalla de inicio de sesión.
-
-\subsection{Sprint 7 (26/04/2019 - 11/05/2019)}
-
-Durante este proceso se implementó la agrupación de los registros por usuarios, componente y distintos tipos de tiempo (días, meses, años, etc) y finalmente contándolos. Se calcula también la media de todos los participantes según el número de registros.
-
-Con todos estos datos se crean métodos que transforma en formato específico de Chart.js.
-
-\subsection{Sprint 8 (11/05/2019 - 18/05/2019)}
-
-Durante este \textit{sprint} se ha buscado una manera de añadir fácilmente nuevos tipos de registros según el componente y evento. Finalmente se ha creado varias herramientas en Python que busca los diferentes tipos que hay a partir de los registros en CSV y los guarda en un fichero JSON. Con este fichero se ha creado otra herramienta para generar las enumeraciones Java de los componentes y eventos junto con las traducciones. Todo esto se comenta con más detalles en el manual del programador (\ref{sec:manual_programdor}).
-
-\subsection{Sprint 9 (18/05/2019 - 23/05/2019)}
-
-Los objetivos fueron empezar la documentación de la memoria y probar si se puede añadir la opción de agrupar por componente y evento en los registros. Para esto se creo una nueva rama con resultados satisfactorios.
-
-También se añadieron las fotografías de los participantes del curso.
-
-\subsection{Sprint 10 (23/05/2019 - 08/06/2019)}
-
-En este \textit{sprint} se añadieron varias mejoras de interacción con el usuario:
-\begin{itemize}
-	\item Valores predefinido en el campo \textit{host} de la pantalla de inicio.
-	\item Mostrar la categoría del curso al en la pantalla de selección del curso.
-	\item Añadir una opción de ajustar el valor máximo del eje Y en el gráfico de barras.
-\end{itemize}
-
-\subsection{Sprint 11 (08/06/2019 - 22/06/2019)}
-
-Los objetivos fueron completar la memoria, documentación de los métodos de Java, arreglar varios errores y refactorización del código arreglando la gran mayoría de \textit{code smells} detectados por Sonarqube y Codacy.
-
-\subsection{Sprint 12 (22/06/2019 - 30/06/2019)}
-
-Completar los apartados restantes del anexo y su revisión final.
+\subsection{Sprint 12 (02/07/20 - 17/07/20)}
+Ultimo \emph{sprint} del proyecto donde se ha realizado correcciones de la memoria y los anexos. Se ha realizado el vídeo de presentación y demostración del proyecto. Ademas se han corregido pequeños aspectos de la aplicación.
 
 \section{Estudio de viabilidad}
+
 \subsection{Viabilidad económica}
+En este apartado se explicarán los aspectos económicos del proyecto. Se va a tener en cuenta el coste en recursos humanos, el \emph{software} empleado y los equipos utilizados.
 
-Desarrollado por una sola persona durante 5 meses. Calculando usando salarios medios brutos de \EUR{19.485} para un programador junior \cite{noauthor_salarios_2019}.
- Empleando la calculadora de sueldos netos de Cinco Días \cite{pais_calculadora_nodate} nos da los resultados en costes anuales. Calculamos también el sueldo mensual y el coste en 5 meses:
+\subsubsection{Costes de personal}
+En el proyecto solo ha participado una persona por aproximadamente 6 meses. Se considera un salario de:
 
-\tablaSmallSinColores{Sueldos anuales, mensuales y de 5 meses.}{l r r r}{tabla_sueldos}
-{ \multicolumn{1}{l}{Concepto} & Coste anual & Coste mensual & Coste 5 meses \\}{
-	Sueldo bruto            & \EUR{19.485,00} & \EUR{1.623,75}      & \EUR{8.118,75}       \\
-	Retenciones por IRPF    & \EUR{2.221,30}  & \EUR{185,11}        & \EUR{925,54}         \\
-	Cuotas a la Seg. Social & \EUR{1.237,30}  & \EUR{103,11}        & \EUR{515,54}         \\
-	Sueldo neto             & \textbf{\EUR{16.026,40}} & \textbf{\EUR{1.335,53}}      & \textbf{\EUR{6.677,67}}       \\
+\tablaSmallSinColores{Costes de persona.}{l r}{costesPersonal}
+{\multicolumn{1}{l}{\textbf{Concepto}} & \textbf{Coste} \\}{
+Salario mensual neto & 2.000€\\
+Cuota a pagar en el IRPF & 300€\\
+Cuotas a la Seguridad Social & 566€\\
+\otoprule
+Sueldo bruto mensual & 2.866€\\
+\textbf{Total de 6 meses} & \textbf{17.196€}\\
 }
 
-En principio el producto no está pensado venderlo, la intención es que sea de código libre y gratuito. Los potenciales clientes serían las Universidades que usen Moodle, por lo que si podríamos cobrar por crear versiones específicas de la aplicación para cada una de las 80 Universidades de España \cite{noauthor_sobran_2017}. Al tener la aplicación una versión internacional se podría incluso usarse en Universidades extranjeras.
+\subsubsection{Coster \emph{software}}
+La herramientas y el \emph{software} empleado para realizar el proyecto no han supuesto ningún coste
+ya que eran gratuitas.
 
-Vendiendo licencias de la aplicación \EUR{50} a unas 150 Universidades cubriría todos los costos del desarrollo.
+\subsubsection{Costes \emph{hardware}}
+En este apartado se especificarán los costes en dispositivo \emph{hardware} utilizados en el desarrollo del proyecto. Se considera una amortización de 5 años y han sido utilizados durante 6 meses.
 
-Otra forma de ingresos sería a partir de donaciones de la comunidad.
+\tablaSmallSinColores{Costes de \emph{hardware}.}{l r r}{costesHardware}
+{\multicolumn{1}{l}{\textbf{Concepto}} & \textbf{Coste} & \textbf{Coste amortizado}\\}{
+	Ordenador de sobremesa & 650€ & 65€\\
+	Ordenador portátil & 500€ & 50€\\
+	\otoprule
+	\textbf{Total} & \textbf{1.150€} & \textbf{115€}\\
+}
 
+Para recuperar el dinero invertido en este proyecto, se podría ofrecer esta herramienta a las instituciones académicas que utilicen Moodle. Ya que la herramienta está en inglés, los potenciales clientes pueden ser países europeos, incluso Estados Unidos y Canadá. En Europa hay aproximadamente 50.000 servidores Moodle registrados \cite{moodleStats}. Si vendemos las licencias a 50€ a unas 400 instituciones se recuperaría el dinero invertido.
 
 \subsection{Viabilidad legal}
+En este apartado se hablará principalmente sobre las licencias del \emph{software} incluidas en la aplicación. A la hora de determinar si una biblioteca es válida para nuestro proyecto, se tiene en cuenta si la licencia es compatible con MIT. La licencia MIT permite que el \emph{software} sea redistribuido libremente, se ha empleado esta licencia porque la aplicación donde se incluye este proyecto tiene esta licencia.
 
-Se mantiene la licencia de MIT al ser una de las más permisivas para productos de código libre. Permite a la gente hacer casi todo lo que quieran con el proyecto, incluyendo crear y distribuir versiones de código cerrado.
+En este proyecto se han empleado las siguientes bibliotecas:
+\begin{itemize}
+	\item Apache Commons Math, que tiene licencia Apache \cite{apacheLicense}.
+	\item T-SNE-Java, que tiene licencia BSD-3 \cite{tsneLicense}.
+	\item Hierarchical-clustering-java, que tiene licencia Apache \cite{hierarchicalLicense}.
+	\item Smile (\emph{Statistical Machine Intelligence and Learning Engine}), que tiene licencia LGPL \cite{smileLicense}.
+\end{itemize}
 
-En el desarrollo del proyecto se han empleado varias librerías externas, algunas de ellas nuevas y otras que estaban en el anterior proyecto se han quitado en este desarrollo.
-
-En definitiva, se han usado varias librerías de Java, JavaScript y un paquete de iconos.
-
-\subsubsection{Dependecias de Java}
-En la siguiente tabla se muestran las dependencias de Java junto con su versión y licencia.
-\tablaSmallSinColores{Dependencias de Java.}{l c c}{dependencias_java}
-{ \multicolumn{1}{l}{Dependencia} & Versión & Licencia \\}{
-	Apache Commons CSV     & 1.6      & Apache-2.0   \\
-	Apache Commons Math    & 3.6.1    & Apache-2.0   \\
-	Apache Log4j           & 1.2.17   & Apache-2.0   \\
-	Gson                   & 2.8.5    & Apache-2.0   \\
-	JSON In Java           & 20180813 & JSON License          \\
-	JSoup Java HTML Parser & 1.11.3   & MIT          \\
-	SLF4J API Module       & 1.7.26   & MIT          \\
-	SLF4J LOG4J 12 Binding & 1.7.26   & MIT          \\
-	ThreeTen Extra         & 1.5.0    & BSD 3-Clause \\
-}
-
-\subsubsection{Dependencias de JavaScript}
-
-En esta otra tabla se muestra las dependencias de JavaScript. Cabe destacar que Google Charts no es de código libre, no permite descargar y usarlo en un fichero local sin conexión \cite{noauthor_frequently_nodate}.
-
-
-\tablaSmallSinColores{Dependencias de JavaScript.}{l c c}{dependencias_javascript}
-{ \multicolumn{1}{l}{Dependencia} & Versión & Licencia \\}{
-Chart.js      & 2.8.0       & MIT      \\
-color-hash    & 1.0.3       & MIT      \\
-Google Charts & Desconocida & Freeware  \\
-html2canvas   & 0.4.1       & MIT      \\
-}
-
-\subsubsection{Paquete de iconos}
-
-Se ha usado el paquete de iconos Font Awesome \cite{noauthor_font_nodate} que también se emplea en Moodle. 
-
-Los iconos de Font Awesome están sacados de \href{http://fa2png.io/r/font-awesome/}{fa2png} versión \textbf{4.7.0} y licencia \textbf{SIL OFL 1.1}.

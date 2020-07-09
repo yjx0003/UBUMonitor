@@ -1,130 +1,92 @@
 \capitulo{5}{Aspectos relevantes del desarrollo del proyecto}
+En este apartado se expondrán los aspectos relevantes del desarrollo del proyecto, definiendo los problemas y las decisiones tomadas.
 
-En este apartado se comenta los aspectos importantes que han surgido durante el desarrollo del proyecto. Las decisiones tomadas relativas a la funcionalidad de la aplicación y qué consecuencias han tenido. También explicaremos los problemas encontrados y las soluciones aplicadas.
+\section{Bibliotecas de clustering}
+Para el desarrollo del proyecto se necesitaban bibliotecas que implementaran algoritmos de \emph{clustering}. La mayoría de bibliotecas en Java tenían una licencia de uso incompatible a MIT (licencia de la aplicación). También se ha investigado sobre bibliotecas de otros lenguajes como Scala y Kotlin, pero se han descartado por el desconocimiento del lenguaje. Por lo tanto, en el proyecto se ha enfocado a dos bibliotecas: la de \href{http://commons.apache.org/proper/commons-math/userguide/ml.html}{Apache Commons Math} en su apartado de \emph{Machine Learning} y la de \href{https://haifengl.github.io/clustering.html}{Smile} en su apartado de \emph{clustering}.
 
-\section{Sin acceso a permisos de profesor en el Moodle de la Universidad (UBUVirtual)}
+\section{Selección de parámetros}
+Cada algoritmo de \emph{clustering} tiene diferentes parámetros de ejecución, por lo que es necesario indicar al usuario qué parámetros. En JavaFX no se incluye ningún componente que permita introducir datos en formato clave-valor. 
 
-Uno de los principales problemas para realizar las pruebas es que no se ha podido tener acceso a asignaturas con rol de profesor. Es decir, muchas funciones de Moodle no son accesibles con el rol de estudiante mientras que los profesores si lo tienen.
+Se han planteado dos soluciones: la primera es añadir componentes de selección (campo de texto, cuadro de elección) de forma dinámica y en función del algoritmo seleccionado mostrar los parámetros correspondientes. Esta solución requiere programar de forma primitiva la creación y gestión de los componentes.
+La otra alternativa es utilizar el componente \emph{PropertySheet} de la librería de extensión, ControlsFX, el cual muestra los parámetros en formato clave-valor. También permite la modificación de forma dinámica de los elementos. Esto nos permite mostrar los parámetros necesarios para cada algoritmo.
 
+\imagen{memoria/Kmeans}{\emph{PropertySheet} para el algoritmo \emph{KMeans}.}
+\imagen{memoria/FuzzyKmeans}{\emph{PropertySheet} para el algoritmo \emph{FuzzyKMeans}.}
 
-Se ha instalado una versión en el equipo para realizar las pruebas (se comentara con más detalle en la sección \ref{sec:instalacionMoodle}) . También se ha empleado una versión de prueba oficial del propio equipo de desarrollo \href{https://school.demo.moodle.net}{\textit{Mount Orange School}}.
- en la versión \textbf{3.7}\footnote{La mayoría de la imágenes mostradas de Moodle están capturadas de este servidor de pruebas}. Probablemente se use esta versión en el aula virtual de la Universidad de Burgos en el futuro.
+Se ha optado por resolver el problema con esta última alternativa.
 
-Las comprobaciones en un entorno real lo han realizado varios profesores docentes de la universidad, entre ellos los tutores, en UBUVirtual. 
+\section{Visualización del resultado del clustering}
+Para mostrar al usuario, el resultado del \emph{clustering} se ha implementado la visualización en forma de tabla y en una gráfica de dispersión, tanto en 2D como en 3D.
 
-Cabe destacar que los tutores probaron cada mejora implementada en un corto lapso de tiempo, en menos de 24 horas laborales ya tenía el visto bueno o errores encontrados. Esto ha facilitado mucho los tiempos de desarrollo de nuevas funcionalidades.
+En la gráfica de dispersión, a cada punto le corresponde unas coordenadas de tamaño 2 o 3 según la dimensionalidad de la gráfica. Como los datos utilizados para realizar el \emph{clustering} son de $n$ dimensiones, siendo $n$ el número de elementos seleccionados por el usuario, es necesario reducir la dimensión de los datos para que puedan ser mostrados en la gráfica.
 
-\section{Instalación de la versión limpia de Moodle} \label{sec:instalacionMoodle}
-Después de conocer la versión de Moodle que usa la Universidad (\textbf{3.5.1}) mediante  la función \textbf{\textit{core\_webservice\_get\_site\_info}}, se ha intentado instalar en mi equipo la misma versión pero ya no estaba disponible en la página de descargas \cite{noauthor_moodle_nodate}. Finalmente se ha usado la \textbf{3.5.4+}.
+Para resolver este problema se han empleado técnicas de reducción de dimensiones, ademas se ha investigado sobre las bibliotecas en Java que las implementan. Se han valorado el método de PCA y el de t-SNE y los resultados obtenidos son bastante similares, pero la velocidad del método t-SNE es mucho menor, por lo que se ha optado por la implementación de PCA.
 
-A pesar de usar una versión con cambios menores respecto al de la Universidad. Si que se encontró una diferencia reseñable. 
+\section{Análisis de silueta}
+La idea principal era buscar una biblioteca en Java que implementara el algoritmo del análisis de silueta. Como no se encontraron opciones válidas, se plantearon dos alternativas, buscar una biblioteca en otro lenguaje y tratar de ejecutarlo desde Java o hacer nuestra propia implementación del algoritmo.
 
-\subsection{Token para el ingreso} \label{sec:logintoken}
-A partir de las versiones de Moodle 3.1.15, 3.3.9, 3.4.6, 3.5.3 y 3.6.0 añaden una característica relacionada con la seguridad, el Token para ingreso \cite{noauthor_token_nodate} (en inglés \textit{login token}). Esta nueva funcionalidad ayuda a proteger frente a vulnerabilidades como el robo de sesión de los usuarios. 
+Se optó por la segunda opción, ya que el algoritmo no es muy complejo y si utilizábamos una implementación externa habría que adaptar la estructura de los datos. Para la implementación del algoritmo se siguió el pseudocódigo de \href{https://www.datanovia.com/en/lessons/cluster-validation-statistics-must-know-methods/#silhouette-coefficient}{DataNova}.
 
-Este token de ingreso aparece como un \textit{input} HTML oculto\cite{noauthor_html_nodate} al iniciar sesión y se envía en el formulario de ingreso junto con el usuario y contraseña.
+\section{Diagrama de dispersión 3D}
+Para la implementación del diagrama de dispersión 3D se han considerado diferentes opciones. Una de ellas era buscar algún componente de JavaFX que permitiera realizarlo de forma sencilla, otra opción era buscar una biblioteca en JavaScript e incorporarlo a un \emph{WebView} de JavaFX.
 
-\imagen{logintoken}{Ejemplo de Login Token en el inicio de sesión de la página \href{https://school.demo.moodle.net/login/index.php}{Mount Orange School}}
+La primera opción se descartó porque requería una programación de muy bajo nivel, especificando la posición exacta de cada elemento de la gráfica (ejes, cuadrículas, leyendas, puntos o esferas).
 
-Para solucionar este problema y que funcione en ambas versiones y futuras, cada vez que el usuario inicia sesión, se busca en la página el \textit{input logintoken} tal y como aparece en la figura \ref{fig:logintoken} con métodos de Web Scraping\cite{marti_que_2016}. Si lo encuentra manda el valor como parámetro adicional de la URL, en caso contrario no se manda este parámetro.
+Para la segunda opción se contemplaron varias bibliotecas, una de ellas es \href{https://plotly.com/}{plotly} que tenía una implementación específica para clústeres y muy atractiva, se puede observar un ejemplo en la figura \ref{fig:memoria/plotly}. Se descartó esta opción porque el componente \emph{WebView} de JavaFX no soportaba el motor gráfico WebGL. Otras bibliotecas similares también tenían este problema.
 
-Hay que destacar que el Token de ingreso solo afecta si se quiere iniciar sesión en la página del servicio de Moodle (necesario para poder descargar los registros del curso), en ningún caso es necesario para los servicios Web.
+Finalmente se optó por utilizar la biblioteca Highcharts que incluye el diagrama de dispersión, pero algo menos interactivo que las anteriormente valoradas. Se puede observar un ejemplo en la figura \ref{fig:memoria/highcharts}.
 
-\section{Empezar de cero la parte de los registros}
+\imagenConTamano{memoria/plotly}{Gráfico de clústeres 3D de plotly.}{0.7}
 
-Se decidió prescindir totalmente del trabajo de UBULogs y empezar de nuevo debido a las modificaciones de Moodle, como el token de ingreso (ver sección \ref{sec:logintoken}). 
+\imagenConTamano{memoria/highcharts}{Ejemplo del diagrama de dispersión 3D de highcharts.}{0.7}
 
-Se ha seguido por una vía diferente al mencionado proyecto, descargando los CSV directamente en memoria sin guardarlo en un fichero temporal. También se ha aplicado una mejora para bajarse los registros de forma diaria cuando se actualiza los datos.
+\section{Aleatoriedad de los resultados}
+Ejecutar algunos algoritmos con los mismos parámetros y datos generan resultados distintos. Esto se debe a que algunos algoritmos utilizan un RNG (\emph{random number generator}) en algún paso de la ejecución. Esto producía que el resultado del \emph{clustering} fuese mejor o peor aleatoriamente.
 
-Otra mejora reseñable, al estar las horas de los registros mostradas en función de la zona horaria usada por el usuario, se ha decidido tomar como referencia para la aplicación la zona horaria del servidor. No importa si el usuario esta usando otra que no sea la misma que el servidor.
+Para solucionar este problema se habilitó la posibilidad de que el usuario eligiera el número de iteraciones del algoritmo. Y para determinar lo bueno que es el \emph{clustering} se empleó el coeficiente de silueta.
 
-\section{Decisión sobre seguir el código fuente de UBUGrades o refactorizar}
+Al aplicar esta solución surgió un nuevo problema, la ejecución de muchas iteraciones bloqueaba el hilo principal de JavaFX y congelaba la aplicación. Para resolver esto se envió la ejecución a otro hilo utilizando la clase \emph{Service} de JavaFX.
 
-Cuando pasaron dos semanas desde el inicio del proyecto, acabé en la tesitura sobre seguir con el código fuente o refactorizar la parte lógica de la aplicación (back-end)\cite{noauthor_what_nodate} aplicando patrones de diseño para obtener mejor mantenibiliad. 
+\section{Nombre de los clústeres}
+Al ejecutar los algoritmos de \emph{clustering} el resultado es obtenido en una lista de clústeres, donde el identificador del clúster es el índice que ocupa en la lista. En las visualizaciones del \emph{clustering} se utiliza este número para reconocer a cada clúster.
 
-Dos de los temores de tomar la decisión de refactorizar fue quedarme a medio camino en la entrega del proyecto o problemas de integración con la vista e interacción con el usuario (front-end).
+Para resolver este problema se ha dado la posibilidad al usuario de renombrar o etiquetar el nombre de cada clúster.
+\imagen{memoria/etiquetar}{Solución al nombre de los clústeres}
 
-Finalmente, después de otras dos semanas de reflexión, se decide refactorizar el código de la parte del back-end  completamente. Al empezar de nuevo el código,  se dedica un esfuerzo extra en el proyecto para cumplir los tiempos.
+\section{Transformación y filtrado de datos}
+Después de que el usuario haya elegido los datos con los que realizar el \emph{clustering} hay que transformar los datos, ya que no tiene mucho sentido comparar calificaciones en un escala de 0 a 100 con el total de registros de un alumno.
 
-\section{Guardar los datos de los usuarios en ficheros locales}
+Para solucionar esta cuestión, se ha realizado una normalización lineal de los datos a una escala de 0 a 1.
 
-Uno de los problemas que tenía el anterior proyecto te obligaba descargar los datos del servidor de Moodle cada vez que accedías a la aplicación aunque no haya cambios importantes del curso.
+$X' = \frac{X - X_{min}}{X_{max} - X_{min}}$
 
-Una mejora que se ha implementado da la opción al usuario de guardar los datos en un fichero local y cargarlo de forma instantánea. Cabe destacar que el fichero local está cifrado, al contener datos sensibles, usando el algoritmo Blowfish \cite{noauthor_schneier_nodate} que está destinado para uso doméstico y además es seguro.
+En cuanto al filtrado de datos, puede ser razonable eliminar aquellos valores que son constantes a todos los alumnos, aunque con algunas pruebas realizadas el \emph{clustering} es a veces mejor con estos valores. Se ha optado por dejar esta opción a elección del usuario.
 
+\section{Clustering jerárquico}
+Para la realización del \emph{clustering} jerárquico se planteo inicialmente utilizar la biblioteca \href{https://github.com/lbehnke/hierarchical-clustering-java}{hierarchical-clustering-java}, la cual daba una implementación bastante sencilla de utilizar. Una vez integrada esta biblioteca en la aplicación se procedió a valorar las posibles representaciones del resultado obtenido en el \emph{clustering} jerárquico.
 
-\section{Error en la función gradereport\_user\_get\_grade\_items}
+Para la visualización se contemplaron dos opciones: la primera era utilizar el propio dendrograma que ofrecía la biblioteca en Java Swing \ref{fig:memoria/dendrograma1}, la segunda opción era coger los datos numéricos del resultado y utilizar una biblioteca de gráficas para su representación.
+\imagen{memoria/dendrograma1}{Dendrograma de la biblioteca.}
 
-Al igual que el anterior proyecto de UBUGrades, se volvió a implementar función del servicio web \textbf{\textit{gradereport\_user\_get\_grade\_items}} ya facilitaba en gran medida recoger las calificaciones de los alumnos(ver ejemplo en la figura \ref{fig:ejemplo_grade_items}). Aunque no devuelve bien la jerarquía.
+Para la segunda opción se realizó una implementacion empleando la biblioteca de Chart.js con la extensión \href{https://github.com/chartjs/awesome}{awesome} que ofrecía los dendrogramas.
+\imagen{memoria/dendrograma2}{Dendrograma de implementación propia.}
 
-\imagenflotante{ejemplo_grade_items}{Extracto de la respuesta \textbf{\textit{gradereport\_user\_get\_grade\_items}}}
+Inicialmente se opto por esta última opción, aunque no es muy buena, ya que no se podían ajustar los nodos en función de la distancia entre clústeres. Posteriormente se incluyo en la aplicación otra biblioteca de \emph{clustering}, el cual incluía una implementación del \emph{clustering} jerárquico aglomerativo.
 
-Después de implementar esta funcionalidad, cuando lo probó uno de tutores daba error en la respuesta del servicio web (imagen en la figura \ref{fig:excepctiongradeitems}). Finalmente se descubrió que era un error de Moodle cuando se oculta la columna de \textbf{Retroalimentación o Feedback} del calificador \cite{zadok_[mdl-64298]_nodate}. Este error aun no se ha solucionado en la versión 3.7 de Moodle.  
+La biblioteca \textbf{smile} permite ejecutar el \emph{clustering} jerárquico definiendo la medida de distancia entre punto y entre agrupaciones. El resultado obtenido es mostrado en una imagen que contiene el dendrograma.
+\imagen{memoria/dendrograma3}{Dendrograma de la biblioteca de smile.}
 
-\imagenflotante{excepctiongradeitems}{Mensaje de error cuando la retroalimentación del calificador está oculto}
+Se ha optado por continuar con esta opción ya que ofrece más posibilidades, aunque tiene un inconveniente, en el dendrograma no se muestra el nombre del alumno en la rama. Se ha solucionado este problema integrando la partición del \emph{clustering} jerárquico en un número determinado de agrupaciones.
+\imagen{memoria/particion}{Opción de dividir el resultado en agrupaciones.}
 
-Debido a este inconveniente, se decidió trabajar con otra función del servicio web, \textbf{\textit{gradereport\_user\_get\_grades\_table}}, mucho más incómoda para extraer datos debido a que las respuestas contienen HTML como se puede ver en la figura \ref{fig:grades_table}. Con está nueva forma implica varias cosas:
-\begin{itemize}
-	\item Se puede ocultar la columna de \textbf{Retroalimentación}.
-	\item Necesita que la columna de \textbf{Porcentaje} no esté oculto para calcular los valores de escalas.
-	\item Las carpetas (categorías) deben tener un cálculo de calificación total.
-	\item Los \textbf{Rangos} de mínimo y máximo no debería tener decimales ya que no se muestran. Por ejemplo, se puede ver en la figura \ref{fig:rangos_decimales} que la calificación máxima es 5.25 pero el rango que muestra es solo 0-5. La aplicación seguiría funcionando pero se mostraría como nota en las gráficas que ha sacado un 5.25 sobre 5 (5.25/5).
-	\imagenflotante{rangos_decimales}{Ejemplo de ítem de calificación usando rangos con decimales}+
-\end{itemize}
+\section{Calidad de código}
+Para establecer que el código programado cumpla unos mínimos de calidad, se han empleado herramientas de análisis de código. Las herramientas utilizadas son \href{https://www.codacy.com/}{Codacy} y \href{https://codeclimate.com/}{Code Climate}. Los resultados obtenidos por Codacy.
+\imagen{memoria/codacy}{Análisis por Codacy.}
+Se observa que se tienen 0\% de \emph{Issues}, el cual indica que no se tiene defectos de código o \emph{code smells}. La complejidad de los fichero indica la complejidad ciclomática de cada clase. Y la duplicidad de código es el porcentaje de código repetido que hay.
 
-Este imprevisto ha supuesto un retraso de una semana en el proyecto.
-
-\imagenflotante{grades_table}{Extracto de la función \textbf{\textit{gradereport\_user\_get\_grades\_table}}}
-
-\section{Idioma de los registros}
-Las descargas de los registros se realizan en inglés ya que ese paquete de idiomas está incluido en todos los servidores Moodle por defecto y no se puede eliminar.
-
-\section{Gráfica para mostrar los registros}
-
-Ha sido una tarea titánica buscar una forma de mostrar gráficamente los registros con un determinado número de usuarios, otros tantos de componentes/eventos y en diferentes forma de tiempo (días, meses, años, etc...).
-
-Se probado diferentes maneras de crear gráficas, experimentando varios plugins de Chart.js \cite{noauthor_plugins_nodate} como \textit{chartjs-plugin-datalabels} \cite{noauthor_chartjs-plugin-datalabels_nodate} o Chart.BarFunnel.js\cite{noauthor_bar_2019}. Se han creado varios prototipos con estas librerías pero finalmente se desecharon porque no daban muy buenos resultados y para no tener una excesiva dependencia a librerías externas.
-
-Todos los prototipos se realizaron con CodePen, como este:
-
-\href{https://codepen.io/yipengji/pen/yrPzLr}{https://codepen.io/yipengji/pen/yrPzLr}
-
-
-Finalmente se decidió usar barras apiladas por componente/evento, agrupadas en el eje X con el formato temporal y una barra por cada usuario tal y como se puede ver en el ejemplo de la figura \ref{fig:ejemplo_barras_apiladas}.
-
-\imagenflotante{ejemplo_barras_apiladas}{Ejemplo de barras apiladas con dos usuarios, cuatro componentes y de lunes a domingo}
+Y los resultado de Code Climate.
+\imagen{memoria/codeClimate}{Análisis por Code Climate.}
+En el analisis se muestra en número de \emph{code smells} y los bloques de código duplicado que hay. La mantenibilidad se calcula en función del tiempo necesario para corregir los defectos.
 
 
-\section{Más tiempo pensando que programando}
-
-En general, se ha dedicado más tiempo en pensar cómo estructurar el código que programando en sí. 
-
-Se ha hecho un gran esfuerzo para que el código sea mantenible en la mayoría de los paquetes excepto el de \textit{controllers} por falta de tiempo.
-
-Por ejemplo, es muy fácil añadir una nueva forma de agrupar los tiempos, y se puede agregar nuevas combinaciones de Componentes y Eventos de los registros del curso.
-
-\section{Herramienta para buscar los Componentes y Eventos únicos}\label{sec:componeteyevento}
-
-Se ha creado una herramienta en \textbf{\textit{Jupyter Notebook}} usando Python. Busca todas las combinaciones de \textbf{Componente}, \textbf{Nombre de evento} y \textbf{Descripción} diferentes. Todo esto se guardan en fichero JSON para facilitar la legibilidad y por si es necesario emplearlo en proyectos futuros.
-
-
-\section{Herramientas de generación de código Java}
-
-También se ha creado otra herramienta que usa el fichero JSON comentado anteriormente en la sección \ref{sec:componeteyevento} para generar código en Java de las enumeraciones de Componentes y Eventos, además de las traducciones en inglés o español.
-
-\section{Términos y condiciones de uso en Google Charts}
-Se descubrió que la librería Google Charts usada en el proyecto anterior no permite la descarga y uso en local en sus \textbf{Términos y condiciones de uso} \cite{noauthor_frequently_nodate}. Por tanto se ha eliminado el fichero de esa librería y puesto en la etiqueta HTML de JavaScript el enlace que proporciona Google \cite{noauthor_quick_nodate} en su lugar.
-
-\section{Evaluación del código}
-
-Al usar las herramientas de evaluación de código, SonarQube y Codacy, sin usar filtros de ficheros también evaluaba las librerías externas de JavaScript que está dentro del proyecto. Con estas dependencias, los informes de resultado eran bastantes malos por lo que se decidió ignorar estas librerías en el análisis de código.
-
-Al ejecutar las pruebas solo en la carpeta \textbf{src} de Java, pasa satisfactoriamente en Codac\cite{noauthor_ubumonitor_nodate-1} y Sonarqube \cite{noauthor_ubumonitor_nodate} que se ven en las imágenes \ref{fig:codacy_resultado} y \ref{fig:sonarqube_resultado} respectivamente.
-
-\imagenflotante{codacy_resultado}{Resultado de análisis de Codacy en el proyecto}
-
-\imagenflotante{sonarqube_resultado}{Resultado de análisis de Sonarqube en el proyecto}
-
-
-
-
+Cabe destacar que solo se han analizado los ficheros Java referentes a la parte de \emph{clustering} y se han ignorado el resto de ficheros que no forman parte de este proyecto.

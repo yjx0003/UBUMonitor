@@ -8,22 +8,19 @@
 \usepackage{lmodern} % Scalable font
 \usepackage{microtype}
 \usepackage{placeins}
-% Bibliography management
-\usepackage[backend=bibtex,dateabbrev=false]{biblatex}
-\addbibresource{bibliografia.bib}
 
 \RequirePackage{booktabs}
 \RequirePackage[table]{xcolor}
 \RequirePackage{xtab}
-\RequirePackage{multirow}
+% Bibliography management
+\usepackage[numbers,sort]{natbib}
+
 
 % Links
-\usepackage[colorlinks]{hyperref}
+\PassOptionsToPackage{hyphens}{url}\usepackage[colorlinks]{hyperref}
 \hypersetup{
 	allcolors = {red}
 }
-
-
 
 % Ecuaciones
 \usepackage{amsmath}
@@ -34,6 +31,9 @@
 % Párrafos
 \nonzeroparskip
 
+% Huérfanas y viudas
+\widowpenalty100000
+\clubpenalty100000
 
 % Imagenes
 \usepackage{graphicx}
@@ -52,6 +52,15 @@
 		\includegraphics[width=0.9\textwidth]{#1}
 		\caption{#2}\label{fig:#1}
 	\end{figure}
+}
+
+\newcommand{\imagenConTamano}[3]{
+	\begin{figure}[!h]
+		\centering
+		\includegraphics[width=#3\textwidth]{#1}
+		\caption{#2}\label{fig:#1}
+	\end{figure}
+	\FloatBarrier
 }
 
 
@@ -358,12 +367,12 @@
   }
 \makeatother
 
-\newcommand{\nombre}{Yi Peng Ji} %%% cambio de comando
+\newcommand{\nombre}{Xing Long Ji} %%% cambio de comando
 
 % Datos de portada
-\title{{\Huge UBUMonitor}\\[0.5cm]Monitorización de alumnos en la plataforma Moodle.}
+\title{Aplicación de clustering de datos educacionales en Moodle}
 \author{\nombre}
-\tutor{Dr. D. Raúl Marticorena Sánchez\\y Dr. D. Carlos Pardo Aguilar}
+\tutor{Dr. D. Raúl Marticorena Sánchez}
 \date{\today}
 
 \begin{document}
@@ -380,13 +389,13 @@
 
 \noindent\includegraphics[width=\textwidth]{cabecera}\vspace{1cm}
 
-\noindent Dr. D. Raúl Marticorena Sánchez y Dr. D. Carlos Pardo Aguilar, profesores del departamento de Ingeniería Civil, área de Lenguajes y Sistemas Informáticos.
+\noindent Dr. D. Raúl Marticorena Sánchez, profesor del departamento de Ingeniería Informática, área de Lenguajes y Sistemas Informáticos.
 
-\noindent Exponen:
+\noindent Expone:
 
-\noindent Que el alumno D. \nombre, con NIE X2149097T, ha realizado el Trabajo final de Grado en Ingeniería Informática titulado ``UBUMonitor - Monitorización de alumnos en la plataforma Moodle''. 
+\noindent Que el alumno D. \nombre, con DNI X3026017E, ha realizado el Trabajo final de Grado en Ingeniería Informática titulado aplicación de clustering de datos educacionales en Moodle. 
 
-\noindent Y que dicho trabajo ha sido realizado por el alumno bajo la dirección de los que suscriben, en virtud de lo cual se autoriza su presentación y defensa.
+\noindent Y que dicho trabajo ha sido realizado por el alumno bajo la dirección del que suscribe, en virtud de lo cual se autoriza su presentación y defensa.
 
 \begin{center} %\large
 En Burgos, {\large \today}
@@ -395,27 +404,27 @@ En Burgos, {\large \today}
 \vfill\vfill\vfill
 
 % Author and supervisor
-\begin{minipage}{0.45\textwidth}
-\begin{flushleft} %\large
-Vº. Bº. del Tutor:\\[2cm]
-Dr. D. Raúl Marticorena Sánchez
-\end{flushleft}
-\end{minipage}
-\hfill
-\begin{minipage}{0.45\textwidth}
-\begin{flushleft} %\large
-Vº. Bº. del co-tutor:\\[2cm]
-Dr. D. Carlos Pardo Aguilar
-\end{flushleft}
-\end{minipage}
-\hfill
-
-\vfill
+%\begin{minipage}{0.45\textwidth}
+%\begin{flushleft} %\large
+%Vº. Bº. del Tutor:\\[2cm]
+%D. nombre tutor
+%\end{flushleft}
+%\end{minipage}
+%\hfill
+%\begin{minipage}{0.45\textwidth}
+%\begin{flushleft} %\large
+%Vº. Bº. del co-tutor:\\[2cm]
+%D. nombre co-tutor
+%\end{flushleft}
+%\end{minipage}
+%\hfill
+%
+%\vfill
 
 % para casos con solo un tutor comentar lo anterior
 % y descomentar lo siguiente
-%Vº. Bº. del Tutor:\\[2cm]
-%D. nombre tutor
+Vº. Bº. del Tutor:\\[2cm]
+Dr. D. Raúl Marticorena Sánchez
 
 
 \newpage\null\thispagestyle{empty}\newpage
@@ -428,21 +437,16 @@ Dr. D. Carlos Pardo Aguilar
 % Abstract en castellano
 \renewcommand*\abstractname{Resumen}
 \begin{abstract}
-
-El auge de las tecnologías ha alcanzado el ámbito educacional con las aulas de aprendizaje \textit{online} y la enseñanza virtual con Moodle como uno de los protagonistas más importantes.
-
-Este hecho ha transformado también el método de seguimiento de la evolución del alumnado durante el curso.
-
-Moodle permite el seguimiento mediante la visualización de las calificaciones  y los registros de acceso de los alumnos. Sin embargo la forma de mostrar las calificaciones y registros de acceso al curso de los alumnos en Moodle es bastante laxa y poco práctica. Este inconveniente ha motivado la creación del presente proyecto como solución.
-
-UBUMonitor es una aplicación de escritorio hecho en Java orientado a docentes que usen los servicios de Moodle. Permite a los profesores, previa identificación, acceder a datos estadísticos diferentes sobre las calificaciones y registros de los alumnos y mostrarlos en distintos tipos de gráficas de una forma mucho más práctica y visual. 
-
-
+	El auge de las enseñanzas \emph{online} ha provocado el uso de plataformas de aprendizaje virtual como Moodle. Estas plataformas almacenan información de la actividad y las calificaciones de los alumnos. 
+	
+	El proyecto se basa en utilizar esta información y aplicar técnicas de minería de datos para extraer conocimiento útil para los docentes. Principalmente se van a aplicar métodos de \emph{clustering} o análisis de grupos.
+	
+	Esta herramienta integrada en la aplicación UBUMonitor, permite a los profesores realizar un análisis del agrupamiento con distintas características de los alumnos aplicando algoritmos de \emph{clustering} sobre los datos de Moodle.
 \end{abstract}
 
 \renewcommand*\abstractname{Descriptores}
 \begin{abstract}
-Moodle, Educational data mining, Visualización, JavaFX, Servicios web, JSON, ChartJs.
+Analítica de aprendizaje, analítica visual, minería de datos, \emph{clustering}, Moodle, Java, JavaFX
 \end{abstract}
 
 \clearpage
@@ -450,18 +454,16 @@ Moodle, Educational data mining, Visualización, JavaFX, Servicios web, JSON, Ch
 % Abstract en inglés
 \renewcommand*\abstractname{Abstract}
 \begin{abstract}
-The technology boom has reached the educational field with online learning classrooms and virtual teaching with Moodle as one of the most important protagonists.
+The rise of online teaching has led to the use of e-learning platforms such as Moodle. These platforms store information about the activity and the grades of the students. 
 
-This fact has also transformed the method of monitoring the evolution of students during the course.
+The project is based on using this information and using data mining techniques to extract useful knowledge for teachers. Mainly we will apply methods of clustering.
 
-Moodle allows students to monitor their grades and access records. However, the way in which grades and access records are displayed in Moodle is quite lax and impractical. This inconvenience has led to the creation of this project as a solution.
-
-UBUMonitor is a Java desktop application for teachers using Moodle services. It allows teachers, after identification, to access different statistical data on student grades and records and display them in different types of graphs, a much more practical and visual way. 
+This tool, integrated in the UBUMonitor application, allows teachers to perform an analysis with different characteristics of student by using clustering algorithms on Moodle data.
 \end{abstract}
 
 \renewcommand*\abstractname{Keywords}
 \begin{abstract}
-Moodle, Educational data mining, Visualization, JavaFX, Web services, JSON, ChartJs.
+Learning analytics, visual analytic, data mining, clustering, Moodle, Java, JavaFX
 \end{abstract}
 
 \clearpage
@@ -475,8 +477,8 @@ Moodle, Educational data mining, Visualization, JavaFX, Web services, JSON, Char
 
 \clearpage
 
-\listoftables
-\clearpage
+%\listoftables
+%\clearpage
 
 \mainmatter
 \include{./tex/1_Introduccion}
@@ -487,6 +489,7 @@ Moodle, Educational data mining, Visualization, JavaFX, Web services, JSON, Char
 \include{./tex/6_Trabajos_relacionados}
 \include{./tex/7_Conclusiones_Lineas_de_trabajo_futuras}
 
-\printbibliography
+\bibliography{bibliografia}
+\bibliographystyle{plainnat}
 
 \end{document}

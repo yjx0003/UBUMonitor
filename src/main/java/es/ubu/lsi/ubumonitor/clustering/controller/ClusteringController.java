@@ -232,7 +232,7 @@ public class ClusteringController {
 		checkComboBoxLogs.getItems().setAll(list);
 		checkComboBoxLogs.getCheckModel().checkAll();
 		
-		JavaFXUtils.initDatePickers(datePickerStart, datePickerEnd);
+		JavaFXUtils.initDatePickers(datePickerStart, datePickerEnd, checkBoxLogs);
 	}
 
 	private void initService() {

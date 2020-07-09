@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import javafx.beans.value.ChangeListener;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Spinner;
@@ -32,7 +33,7 @@ public class JavaFXUtils {
 		};
 	}
 
-	public static void initDatePickers(DatePicker datePickerStart, DatePicker datePickerEnd) {
+	public static void initDatePickers(DatePicker datePickerStart, DatePicker datePickerEnd, CheckBox checkBoxLogs) {
 		Controller controller = Controller.getInstance();
 		datePickerStart.setValue(controller.getActualCourse().getStart());
 		datePickerEnd.setValue(controller.getActualCourse().getEnd());
@@ -52,6 +53,10 @@ public class JavaFXUtils {
 				setDisable(empty || date.isBefore(datePickerStart.getValue()) || date.isAfter(LocalDate.now()));
 			}
 		});
+		
+		datePickerStart.disableProperty().bind(checkBoxLogs.selectedProperty().not());
+		datePickerEnd.disableProperty().bind(checkBoxLogs.selectedProperty().not());
+		
 	}
 
 	private JavaFXUtils() {

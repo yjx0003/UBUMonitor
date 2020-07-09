@@ -188,7 +188,7 @@ public class HierarchicalController {
 		pane.heightProperty().addListener(listener);
 
 		initContextMenu(imageView);
-		JavaFXUtils.initDatePickers(datePickerStart, datePickerEnd);
+		JavaFXUtils.initDatePickers(datePickerStart, datePickerEnd, checkBoxLogs);
 	}
 
 	private void initContextMenu(ImageView imageView) {

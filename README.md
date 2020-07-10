@@ -10,6 +10,8 @@ Este proyecto es un módulo de la aplicación [UBUMonitor](https://github.com/yj
 ### Descripción:
 Esta herramienta permitea los profesores realizar un análisis del agrupamiento con distintas características de los alumnos aplicando algoritmos de clustering sobre los datos de Moodle.
 
+![Preview](/latex/img/app_preview.png)
+
 ## Autor
 
 -   Xing Long Ji

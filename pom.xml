@@ -93,10 +93,6 @@
 			<artifactId>T-SNE-Java</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.github.lbehnke</groupId>
-			<artifactId>hierarchical-clustering-java</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.github.haifengl</groupId>
 			<artifactId>smile-core</artifactId>
 		</dependency>
@@ -185,11 +181,6 @@
 				<groupId>com.github.lejon</groupId>
 				<artifactId>T-SNE-Java</artifactId>
 				<version>2.5.0</version>
-			</dependency>
-			<dependency>
-				<groupId>com.github.lbehnke</groupId>
-				<artifactId>hierarchical-clustering-java</artifactId>
-				<version>1.2.0</version>
 			</dependency>
 			<dependency>
 				<groupId>com.github.haifengl</groupId>

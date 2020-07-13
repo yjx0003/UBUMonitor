@@ -113,6 +113,7 @@ public class Login {
 			}
 		} catch (Exception e) {
 			LOGGER.info("not toolMobileGetPublicConfig");
+			typeoflogin = DEFAULT_TYPE_OF_LOGIN;
 		}
 	}
 

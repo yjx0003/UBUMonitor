@@ -19,7 +19,7 @@
    <center>
       <StackPane>
          <children>
-            <WebView fx:id="webViewCharts" minHeight="200.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" />
+            <WebView fx:id="webViewCharts" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" />
             <BorderPane fx:id="borderPaneImage" style="-fx-background-color: white;">
                <center>
                   <ImageView fitHeight="300.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
@@ -50,12 +50,12 @@
          <children>
             <GridPane fx:id="gridPaneOptionLogs">
                <columnConstraints>
-                  <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" />
+                  <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" />
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
                </columnConstraints>
                <rowConstraints>
-                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                  <RowConstraints vgrow="SOMETIMES" />
+                  <RowConstraints vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
                   <ChoiceBox fx:id="choiceBoxDate" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
@@ -69,8 +69,8 @@
             </GridPane>
             <GridPane fx:id="dateGridPane" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowSpan="3">
                <columnConstraints>
-                  <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                  <ColumnConstraints halignment="LEFT" />
+                  <ColumnConstraints hgrow="SOMETIMES" />
                </columnConstraints>
                <rowConstraints>
                   <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />

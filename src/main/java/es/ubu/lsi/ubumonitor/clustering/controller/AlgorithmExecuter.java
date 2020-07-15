@@ -48,6 +48,8 @@ public class AlgorithmExecuter {
 		this.clusterer = algorithm.getClusterer();
 		this.distance = algorithm.getParameters().getValue(ClusteringParameter.DISTANCE_TYPE);
 		usersData = enrolledUsers.stream().map(UserData::new).collect(Collectors.toList());
+		if (usersData.size() < 2)
+			throw new IllegalStateException("clustering.error.notUsers");
 		dataCollectors.forEach(collector -> collector.collect(usersData));
 
 	}

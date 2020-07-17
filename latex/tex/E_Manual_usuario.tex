@@ -14,13 +14,13 @@ Para la instalación del programa solo hay que descargarse el \textbf{jar} desde
 Para ejecutar el \textbf{jar} hay que hacer doble click en el archivo, o mediante la consola del sistema. Para ejecutar mediante la consola:
 \begin{enumerate}
 	\item Abrimos la ubicacion del archivo jar en el explorador de archivos.
-	\item Escribimos \textbf{cmd} en la ruta y pulsamos \textbf{Enter} .
+	\item Escribimos \textbf{cmd} en la ruta y pulsamos \textbf{Enter}.
 	\imagen{anexos/instalacion1}{Escribir \textbf{cmd} en el recuadro marcado.}
 	\item Introducir el comando: \texttt{java -jar UBUMonitor-Clustering-vX.X.jar}
 	\item Presionar \textbf{Enter}.
 \end{enumerate}
 
-\section{Manual del usuario}
+\section{Manual de usuario}
 En este manual se explicaran todas las funcionalidades que tiene la aplicación.
 
 Para iniciar el programa ejecutamos el \emph{jar} que habíamos descargado.
@@ -30,7 +30,7 @@ Al ejecutar la aplicación, la primera pantalla que se muestra es la del inicio 
 
 \imagenConTamano{anexos/manual1}{Inicio de sesión.}{0.6}
 
-En esta pantalla también se puede modificar el idioma de la aplicación, en el menú desplegable de arriba. La opción de \textbf{modo offline} no puede ser marcada en la primera ejecución, ya que recoge los datos almacenados de forma local.
+En esta pantalla también se puede modificar el idioma de la aplicación, en el menú desplegable de arriba. La opción de \textbf{modo \emph{offline}} no puede ser marcada en la primera ejecución, ya que recoge los datos almacenados de forma local.
 
 Una vez rellenado los datos pulsamos en el botón \textbf{Entrar}.
 
@@ -44,7 +44,7 @@ A partir de aquí solo se explicará las funcionalidades refrentes a este proyec
 \imagen{anexos/manual3}{Pestaña de \emph{Clustering}.}
 
 \subsubsection{Ejecución del clustering} \label{sssection:ejecutar}
-Para comenzar la ejecución, primero hay que seleccionar los alumnos con los que se quiere realizar el \emph{clustering}. Para seleccionar los alumnos hacemos \texttt{Ctrl + click izquierdo} sobre el alumno. Es posible realizar filtros de usuarios en función del rol, grupo o último acceso al curso.
+Para comenzar la ejecución, primero hay que seleccionar los alumnos con los que se quiere realizar el \emph{clustering}. Para seleccionar los alumnos hacemos \texttt{Ctrl + click izquierdo} sobre el alumno o \texttt{Ctrl + A} para seleccionar todos. Es posible realizar filtros de usuarios en función del rol, grupo o último acceso al curso.
 \imagenConTamano{anexos/manual4}{Selección de alumnos.}{0.5}
 
 Después, hay que elegir con qué datos proporcionados por Moodle queremos trabajar. Para ello seleccionamos de igual manera que en la selección de alumnos. Se pueden seleccionar elementos de varias pestañas.
@@ -60,7 +60,7 @@ Ahora, hay que marcar los tipos de datos con los que se van a realizar el \emph{
 Además, se puede marcar la opción de filtrar datos, el cual elimina los valores constantes a todos los alumnos seleccionados antes de realizar el \emph{clustering}. Es recomendable marcar esta opción.
 
 Para finalizar, hay que decidir cuántas iteraciones del algoritmo se van a ejecutar. También existe la posibilidad de realizar una reducción de dimensionalidad, esta opción reduce la cantidad de datos, manteniendo solo los valores mas significativos. Puede ser útil si se trabajan con una gran cantidad de datos, esta opción reduciría el tiempo de ejecución.
-\imagenConTamano{anexos/manual8}{Tipos de datos.}{0.6}
+\imagenConTamano{anexos/manual8}{Ejecución del \emph{clustering}.}{0.6}
 
 \subsubsection{Errores al ejecutar}
 A continuación se van a enumerar los posibles errores al ejecutar:
@@ -80,7 +80,7 @@ La gráfica 2D es un diagrama de dispersión donde cada punto es un alumno y el 
 \imagen{anexos/manual12}{Diagrama de dispersión 2D.}
 
 La gráfica 3D es similar a la 2D, salvo que no se muestran los centroides.
-\imagen{anexos/manual13}{Diagrama de dispersión 2D.}
+\imagen{anexos/manual13}{Diagrama de dispersión 3D.}
 
 Ambos gráficos son interactivos, se puede ocultar los puntos de un clúster presionando sobre la leyenda.
 
@@ -119,7 +119,7 @@ Existen dos tipos de análisis, el del codo y el de silueta.
 Para realizar una agrupación jerárquica hay que cambiar de pestaña, de particional a jerárquico.
 \imagen{anexos/manual22}{Pestaña del \emph{clustering} jerárquico.}
 
-Antes de ejecutar hay que seleccionar los alumnos y los datos al igual que en el \emph{clustering} particional \ref{sssection:ejecutar}.
+Antes de ejecutar hay que seleccionar los alumnos y los datos al igual que en el \emph{clustering} particional, se pueden seguir las indicaciones en la sección \ref{sssection:ejecutar}.
 
 Se puede modificar la medida de distancia entre elementos y también la distancia entre agrupaciones.
 \imagenConTamano{anexos/manual23}{Selección de las medidas de distancia.}{0.7}

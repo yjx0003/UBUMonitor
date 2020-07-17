@@ -20,7 +20,7 @@ Para mostrar al usuario, el resultado del \emph{clustering} se ha implementado l
 
 En la gráfica de dispersión, a cada punto le corresponde unas coordenadas de tamaño 2 o 3 según la dimensionalidad de la gráfica. Como los datos utilizados para realizar el \emph{clustering} son de $n$ dimensiones, siendo $n$ el número de elementos seleccionados por el usuario, es necesario reducir la dimensión de los datos para que puedan ser mostrados en la gráfica.
 
-Para resolver este problema se han empleado técnicas de reducción de dimensiones, ademas se ha investigado sobre las bibliotecas en Java que las implementan. Se han valorado el método de PCA y el de t-SNE y los resultados obtenidos son bastante similares, pero la velocidad del método t-SNE es mucho menor, por lo que se ha optado por la implementación de PCA.
+Para resolver este problema se han empleado técnicas de reducción de dimensiones, ademas se ha investigado sobre las bibliotecas en Java que las implementan. Se han valorado el método de PCA y el de t-SNE y los resultados obtenidos son bastante similares, pero el tiempo de ejecución del método t-SNE es mucho mayor, por lo que se ha optado por la implementación de PCA.
 
 \section{Análisis de silueta}
 La idea principal era buscar una biblioteca en Java que implementara el algoritmo del análisis de silueta. Como no se encontraron opciones válidas, se plantearon dos alternativas, buscar una biblioteca en otro lenguaje y tratar de ejecutarlo desde Java o hacer nuestra propia implementación del algoritmo.
@@ -43,7 +43,7 @@ Finalmente se optó por utilizar la biblioteca Highcharts que incluye el diagram
 \section{Aleatoriedad de los resultados}
 Ejecutar algunos algoritmos con los mismos parámetros y datos generan resultados distintos. Esto se debe a que algunos algoritmos utilizan un RNG (\emph{random number generator}) en algún paso de la ejecución. Esto producía que el resultado del \emph{clustering} fuese mejor o peor aleatoriamente.
 
-Para solucionar este problema se habilitó la posibilidad de que el usuario eligiera el número de iteraciones del algoritmo. Y para determinar lo bueno que es el \emph{clustering} se empleó el coeficiente de silueta.
+Para solucionar este problema se habilitó la posibilidad de que el usuario eligiera el número de iteraciones del algoritmo, seleccionando el \emph{clustering} con mejor indicador. Para determinar lo bueno que es el \emph{clustering} se empleó el coeficiente de silueta.
 
 Al aplicar esta solución surgió un nuevo problema, la ejecución de muchas iteraciones bloqueaba el hilo principal de JavaFX y congelaba la aplicación. Para resolver esto se envió la ejecución a otro hilo utilizando la clase \emph{Service} de JavaFX.
 
@@ -60,7 +60,7 @@ Para solucionar esta cuestión, se ha realizado una normalización lineal de los
 
 $X' = \frac{X - X_{min}}{X_{max} - X_{min}}$
 
-En cuanto al filtrado de datos, puede ser razonable eliminar aquellos valores que son constantes a todos los alumnos, aunque con algunas pruebas realizadas el \emph{clustering} es a veces mejor con estos valores. Se ha optado por dejar esta opción a elección del usuario.
+En cuanto al filtrado de datos, puede ser razonable eliminar aquellos valores que son constantes a todos los alumnos. Se ha optado por dejar esta opción a elección del usuario.
 
 \section{Clustering jerárquico}
 Para la realización del \emph{clustering} jerárquico se planteo inicialmente utilizar la biblioteca \href{https://github.com/lbehnke/hierarchical-clustering-java}{hierarchical-clustering-java}, la cual daba una implementación bastante sencilla de utilizar. Una vez integrada esta biblioteca en la aplicación se procedió a valorar las posibles representaciones del resultado obtenido en el \emph{clustering} jerárquico.

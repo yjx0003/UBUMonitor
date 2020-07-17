@@ -11,10 +11,10 @@ Para el desarrollo del \emph{clustering} se han empleado las siguientes entidade
 \end{itemize}
 \imagen{anexos/diagramaDatos}{Diagrama de clases de las entidades.}
 
-Además se han diseñado clases para cada algoritmo de \emph{clustering}. Cada algoritmo hereda de la clase \emph{Algorithm}, lo cual mejora la expansibilidad del módulo.
+Además se han diseñado clases para cada algoritmo de \emph{clustering}. Cada algoritmo hereda de la clase \emph{Algorithm}, lo cual mejora la extensibilidad del módulo.
 \imagen{anexos/diagramaAlgoritmos}{Diagrama de clases de los algoritmos.}
 
-También se han diseñado clases para los diferentes tipos de análisis. Para ello se ha empleado el patrón de diseño método de la plantilla y el patrón fábrica. Utilizar estos patrones de diseño facilitan la expansibilidad, si en un futuro se añaden nuevos tipos de análisis.
+También se han diseñado clases para los diferentes tipos de análisis. Para ello se ha empleado el patrón de diseño método de la plantilla y el patrón fábrica. Utilizar estos patrones de diseño facilitan la extensibilidad, si en un futuro se añaden nuevos tipos de análisis.
 \imagen{anexos/diagramaAnalisis}{Diagrama de clases de los análisis.}
 
 \section{Diseño procedimental}
@@ -27,7 +27,7 @@ En el siguiente diagrama de secuencia se representa cómo es la ejecución de un
 El usuario inicia la ejecución de un algoritmo. El controlador recibe la petición de ejecución e inicializa el objeto \emph{AlgorithmExecuter} con los parámetros seleccionados por el usuario. Al inicializar se recogen y almacenan los datos seleccionados por el usuario. A continuación el controlador inicia la ejecución. Se obtiene el \emph{Clusterer} del algoritmo seleccionado con sus parámetros. El \emph{Clusterer} realiza el \emph{clustering} y después se realiza el análisis del resultado. Este proceso se lleva a cabo tantas veces como iteraciones se han indicado. Una vez terminado se devuelve el mejor resultado.
 
 \section{Diseño arquitectónico}
-Para el diseño arquitectónico se ha se empleado el patrón modelo-vista-presentador (MVP) que es una derivación del modelo-vista-controlador (MVC). Este patrón está formado por 3 componentes.
+Para el diseño arquitectónico se ha empleado el patrón modelo-vista-presentador (MVP) que es una derivación del modelo-vista-controlador (MVC). Este patrón está formado por 3 componentes.
 \begin{itemize}
 	\item \textbf{Modelo:} contiene la información que utiliza la aplicación. Gestiona los accesos y modificaciones de dicha información.
 	\item \textbf{Presentador:} actúa sobre las capas del modelo y la vista. Recoge los datos de la capa del modelo y los ajusta para mostrarlo en la vista.

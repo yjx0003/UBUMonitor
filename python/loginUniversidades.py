@@ -1,7 +1,11 @@
 import csv
 import json
 import requests
+import os
 
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
 
 MOODLE_URL= "moodleURL"
 
@@ -23,28 +27,43 @@ def fill_json(universities):
         try:
             r = requests.get(university[MOODLE_URL]+"/local/mobile/check.php?service=local_mobile")
 
-            university["local_mobile_check"] = r.json() if r.status_code == 200 else "Error: "+str(r.status_code)
+            university["local_mobile_check"] = r.json()
+
         except:
-             university["local_mobile_check"] = "Error decoding json: " + r.text
+            university["local_mobile_check"] = r.status_code
+        try:
+            r = requests.get(university[MOODLE_URL]+"/local/mobile/check.php?service=moodle_mobile_app")
+
+            university["moodle_mobile_app_check"] = r.json()
+
+        except:
+            university["moodle_mobile_app_check"] = r.status_code
         try:
             r = requests.post(university[MOODLE_URL]+"lib/ajax/service.php", json = PUBLIC_CONFIG)
-            university["tool_mobile_get_public_config"] = r.json() if r.status_code == 200 else "Error: "+str(r.status_code)
+            university["tool_mobile_get_public_config"] = r.json()
+            tool_mobile_get_public_config = r.json()
+
         except:
-            university["tool_mobile_get_public_config"] = "Error decoding json: " + r.text
-       
+            tool_mobile_get_public_config = 404
         try:
-           url =  university["tool_mobile_get_public_config"][0]["data"]["launchurl"] 
-           r = requests.get(url, params= {"service":"local_mobile", "passport":1})
-           university["launch"] = r.status_code
+           url =  tool_mobile_get_public_config[0]["data"]["launchurl"] 
+           r = requests.get(url, params= {"service":"moodle_mobile_app", "passport":1})
+           university["launch_moodle_mobile_app"] = r.status_code
         except:
-            university["launch"] = "no launch url"
+            university["launch_moodle_mobile_app"] = 404
+        try:
+           url =  tool_mobile_get_public_config[0]["data"]["launchurl"] 
+           r = requests.get(url, params= {"service":"local_mobile", "passport":1})
+           university["launchurl_local_mobile"] = r.status_code
+        except:
+            university["launchurl_local_mobile"] = 404
 
         try:
            url =  university[MOODLE_URL]+"/local/mobile/launch.php"
            r = requests.get(url, params= {"service":"local_mobile", "passport":1})
-           university["launchLocalMobile"] = r.status_code
+           university["/local/mobile/launch.php"] = r.status_code
         except:
-            university["launchLocalMobile"] = "no mobile launch url"
+            university["/local/mobile/launch.php"] = 404
 
 if __name__ == "__main__":
 

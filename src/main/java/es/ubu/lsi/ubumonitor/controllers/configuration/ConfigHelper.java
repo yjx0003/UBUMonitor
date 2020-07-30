@@ -46,6 +46,9 @@ public class ConfigHelper {
 		return properties.optString(key, defaultValue);
 	}
 
+	public static double getProperty(String key, double defaultValue) {
+		return properties.optDouble(key, defaultValue);
+	}
 	public static int getProperty(String key, int defaultValue) {
 		return properties.optInt(key, defaultValue);
 	}
@@ -54,16 +57,7 @@ public class ConfigHelper {
 		return properties.optBoolean(key, defaultValue);
 	}
 
-	public static void setProperty(String key, String value) {
-		properties.put(key, value);
-
-	}
-
-	public static void setProperty(String key, int value) {
-		properties.put(key, value);
-	}
-
-	public static void setProperty(String key, boolean value) {
+	public static void setProperty(String key, Object value) {
 		properties.put(key, value);
 	}
 

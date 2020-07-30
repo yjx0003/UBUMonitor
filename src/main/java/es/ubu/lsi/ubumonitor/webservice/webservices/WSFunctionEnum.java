@@ -110,7 +110,17 @@ public enum WSFunctionEnum {
 	 * Returns the courses and assignments for the users capability.
 	 */
 	MOD_ASSIGN_GET_ASSIGNMENTS("mod_assign_get_assignments", 2.4),
-
+	
+	/**
+	 * Returns a list of forum posts for a discussion. 
+	 */
+	MOD_FORUM_GET_FORUM_DISCUSSION_POSTS("mod_forum_get_forum_discussion_posts", 2.7),
+	
+	/**
+	 * Returns a list of forum discussions optionally sorted and paginated.
+	 */
+	MOD_FORUM_GET_FORUM_DISCUSSIONS("mod_forum_get_forum_discussions", 3.7),
+	
 	/**
 	 * Returns a list of forum instances in a provided set of courses, if no courses
 	 * are provided then all the forum instances the user has access to will be

@@ -20,10 +20,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
-import es.ubu.lsi.ubumonitor.controllers.load.CreatorGradeItems;
-import es.ubu.lsi.ubumonitor.controllers.load.CreatorUBUGradesController;
 import es.ubu.lsi.ubumonitor.controllers.load.DownloadLogController;
 import es.ubu.lsi.ubumonitor.controllers.load.LogCreator;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateActivityCompletion;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourse;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourseContent;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateEnrolledUsersCourse;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateGradeItem;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateMoodleUser;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.DataBase;
@@ -31,11 +35,12 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Logs;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
-import es.ubu.lsi.ubumonitor.webservice.api.gradereport.GradereportUserGetGradesTable;
+import es.ubu.lsi.ubumonitor.model.Section;
 import es.ubu.lsi.ubumonitor.webservice.api.mod.quiz.ModQuizGetQuizzesByCourses;
 import es.ubu.lsi.ubumonitor.webservice.api.mod.quiz.ModQuizGetUserAttempts;
 import es.ubu.lsi.ubumonitor.webservice.api.tool.mobile.ToolMobileCallExternalFunctions;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
+import javafx.util.Pair;
 import okhttp3.Response;
 
 @TestMethodOrder(OrderAnnotation.class)
@@ -46,6 +51,7 @@ public class WebServiceTest {
 	private static final String HOST = "https://school.moodledemo.net";
 	private static final int COURSE_ID = 62;
 	private static WebService webService;
+	private static DataBase dataBase;
 
 	private static Controller CONTROLLER;
 
@@ -60,12 +66,14 @@ public class WebServiceTest {
 		CONTROLLER.setPassword(PASSWORD);
 		CONTROLLER.setActualCourse(CONTROLLER.getDataBase().getCourses().getById(COURSE_ID));
 		webService = CONTROLLER.getWebService();
+		dataBase = CONTROLLER.getDataBase();
 	}
 
 	@Test
 	@Order(2)
 	public void createMoodleUserTest() throws IOException {
-		MoodleUser moodleUser = CreatorUBUGradesController.createMoodleUser(CONTROLLER.getUsername());
+		PopulateMoodleUser populateMoodleUser = new PopulateMoodleUser(webService);
+		MoodleUser moodleUser =populateMoodleUser.populateMoodleUser(CONTROLLER.getUsername(), HOST);
 		assertEquals(CONTROLLER.getUsername(), moodleUser.getUserName());
 		CONTROLLER.setUser(moodleUser);
 	}
@@ -73,7 +81,9 @@ public class WebServiceTest {
 	@Test
 	@Order(3)
 	public void getUserCourses() throws IOException {
-		List<Course> courses = CreatorUBUGradesController.getUserCourses(CONTROLLER.getUser().getId());
+		PopulateCourse populateCourse  = new PopulateCourse(dataBase, webService);
+		
+		List<Course> courses =populateCourse.createCourses(CONTROLLER.getUser().getId());
 		assertFalse(courses.isEmpty());
 		assertTrue(courses.stream().anyMatch(c -> c.getId() == COURSE_ID), "User not enrolled in the course id: " + COURSE_ID);
 		
@@ -82,7 +92,8 @@ public class WebServiceTest {
 	@Test
 	@Order(4)
 	public List<EnrolledUser> getEnrolledUsers() throws IOException {
-		List<EnrolledUser> enrolledUsers = CreatorUBUGradesController.createEnrolledUsers(COURSE_ID);
+		PopulateEnrolledUsersCourse populateEnrolledUsersCourse = new PopulateEnrolledUsersCourse(dataBase, webService);
+		List<EnrolledUser> enrolledUsers = populateEnrolledUsersCourse.createEnrolledUsers(COURSE_ID);
 		assertFalse(enrolledUsers.isEmpty());
 		return enrolledUsers;
 	}
@@ -90,25 +101,25 @@ public class WebServiceTest {
 	@Test
 	@Order(5)
 	public void getCourseModules() throws IOException {
-		List<CourseModule> courseModules = CreatorUBUGradesController.createSectionsAndModules(COURSE_ID);
-		assertFalse(courseModules.isEmpty());
+		PopulateCourseContent populateCourseContent = new PopulateCourseContent(webService, dataBase);
+		Pair<List<Section>, List<CourseModule>> pair = populateCourseContent.populateCourseContent(COURSE_ID);
+		assertFalse(pair.getKey().isEmpty());
+		assertFalse(pair.getValue().isEmpty());
 	}
 	
 	@Test
 	@Order(6)
 	public void getGradeItems() throws IOException {
-		GradereportUserGetGradesTable gradereportUserGetGradesTable = new GradereportUserGetGradesTable(COURSE_ID);
-		gradereportUserGetGradesTable.setUserid(CONTROLLER.getUser().getId());
-		JSONObject jsonObject = CreatorUBUGradesController.getJSONObjectResponse(gradereportUserGetGradesTable);
-		CreatorGradeItems creatorGradeItems = new CreatorGradeItems();
-		List<GradeItem> gradeItems = creatorGradeItems.createGradeItems(COURSE_ID, jsonObject);
+		PopulateGradeItem populateGradeItem = new PopulateGradeItem(dataBase, webService);
+		
+
+		List<GradeItem> gradeItems = populateGradeItem.createGradeItems(COURSE_ID, CONTROLLER.getUser().getId());
 		assertFalse(gradeItems.isEmpty());
 	}
 	@Test
 	@Order(6)
 	public void getActivityCompletion() throws IOException {
-		
-		CreatorUBUGradesController.createActivitiesCompletionStatus(COURSE_ID, getEnrolledUsers());
+			new PopulateActivityCompletion(dataBase, webService);	
 	}
 	
 	@Test
@@ -146,8 +157,8 @@ public class WebServiceTest {
 				
 				modQuizGetUserAttempts.setQuizid(quizid);
 				modQuizGetUserAttempts.setUserid(userid);
-				Response response = webService.getResponse(modQuizGetUserAttempts);
-				String value  = response.body().string();
+				//Response response = webService.getResponse(modQuizGetUserAttempts);
+				//String value  = response.body().string();
 				//System.out.println(response.request().url());
 				//System.out.println(value);
 			}

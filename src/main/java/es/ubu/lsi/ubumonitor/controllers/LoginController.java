@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.controlsfx.control.textfield.TextFields;
 import org.json.JSONException;
@@ -24,12 +25,16 @@ import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
-import es.ubu.lsi.ubumonitor.controllers.load.CreatorUBUGradesController;
+import es.ubu.lsi.ubumonitor.controllers.load.Constants;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourse;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourseCategories;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateMoodleUser;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.Languages;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetEnrolledCoursesByTimelineClassification.Classification;
 import es.ubu.lsi.ubumonitor.webservice.api.core.webservice.CoreWebserviceGetSiteInfo;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -412,11 +417,34 @@ public class LoginController implements Initializable {
 
 				try {
 					LOGGER.info("Recogiendo info del usuario");
-					String validUsername = CreatorUBUGradesController
-							.getJSONObjectResponse(new CoreWebserviceGetSiteInfo())
-							.getString("username");
+					String validUsername = UtilMethods
+							.getJSONObjectResponse(controller.getWebService(), new CoreWebserviceGetSiteInfo())
+							.getString(Constants.USERNAME);
+					PopulateMoodleUser populateMoodleUser = new PopulateMoodleUser(controller.getWebService());
+					MoodleUser moodleUser = populateMoodleUser.populateMoodleUser(validUsername, controller.getUrlHost()
+							.toString());
+					PopulateCourse populateCourse = new PopulateCourse(controller.getDataBase(),
+							controller.getWebService());
 
-					MoodleUser moodleUser = CreatorUBUGradesController.createMoodleUser(validUsername);
+					moodleUser.setCourses(populateCourse.createCourses(moodleUser.getId()));
+
+					moodleUser.setPastCourses(populateCourse.coursesByTimelineClassification(Classification.PAST));
+					moodleUser.setInProgressCourses(
+							populateCourse.coursesByTimelineClassification(Classification.IN_PROGRESS));
+					moodleUser.setFutureCourses(populateCourse.coursesByTimelineClassification(Classification.FUTURE));
+
+					populateCourse.createCourseAdministrationOptions(moodleUser.getCourses()
+							.stream()
+							.map(Course::getId)
+							.collect(Collectors.toList()));
+
+					PopulateCourseCategories populateCourseCategories = new PopulateCourseCategories(
+							controller.getDataBase(), controller.getWebService());
+					populateCourseCategories.populateCourseCategories(moodleUser.getCourses()
+							.stream()
+							.map(c -> c.getCourseCategory()
+									.getId())
+							.collect(Collectors.toList()));
 					controller.setUser(moodleUser);
 					controller.setUsername(txtUsername.getText());
 					controller.setPassword(txtPassword.getText());
@@ -477,10 +505,10 @@ public class LoginController implements Initializable {
 
 		File newPath = launcherConfigurationController.init(ConfigHelper.getProperty(ASK_AGAIN, true),
 				ConfigHelper.getProperty(BETA_TESTER, false), ConfigHelper.getProperty(APPLICATION_PATH));
-		
+
 		ConfigHelper.setProperty(APPLICATION_PATH, newPath.getName());
 		ConfigHelper.setProperty(ASK_AGAIN, launcherConfigurationController.isAskAgain());
-		ConfigHelper.setProperty(BETA_TESTER,launcherConfigurationController.isBetaTester());
+		ConfigHelper.setProperty(BETA_TESTER, launcherConfigurationController.isBetaTester());
 
 	}
 

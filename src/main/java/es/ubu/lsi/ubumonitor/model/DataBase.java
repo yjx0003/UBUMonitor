@@ -31,6 +31,8 @@ public class DataBase implements Serializable {
 	private SubDataBase<GradeItem> gradeItems;
 	private SubDataBase<CourseCategory> courseCategories;
 	private SubDataBase<Section> sections;
+	private SubDataBase<ForumDiscussion> forumDiscussions;
+	private SubDataBase<DiscussionPost> discussionPosts;
 
 	/**
 	 * Curso actual del usuario
@@ -46,6 +48,8 @@ public class DataBase implements Serializable {
 		gradeItems = new SubDataBase<>(GradeItem::new);
 		courseCategories = new SubDataBase<>(CourseCategory::new);
 		sections = new SubDataBase<>(Section::new);
+		forumDiscussions = new SubDataBase<>(ForumDiscussion::new);
+		discussionPosts = new SubDataBase<>(DiscussionPost::new);
 	}
 
 	/**
@@ -96,6 +100,14 @@ public class DataBase implements Serializable {
 
 	public SubDataBase<Section> getSections() {
 		return sections;
+	}
+
+	public SubDataBase<ForumDiscussion> getForumDiscussions() {
+		return forumDiscussions;
+	}
+	
+	public SubDataBase<DiscussionPost> getDiscussionPosts(){
+		return discussionPosts;
 	}
 
 	/**

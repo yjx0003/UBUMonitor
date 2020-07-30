@@ -50,9 +50,9 @@
 				<Image url="@../img/logo.png" />
 			</image>
 		</ImageView>
-		<Label fx:id="lblStatus" alignment="CENTER" layoutX="13.0" layoutY="489.0" minHeight="27.0" minWidth="375.0" prefHeight="31.0" prefWidth="375.0" style="-fx-text-fill: #ff5050;" textFill="#cd0909" wrapText="true">
+		<Label fx:id="lblStatus" alignment="CENTER" layoutX="13.0" layoutY="489.0" minHeight="27.0" minWidth="375.0" prefWidth="375.0" textAlignment="CENTER" textFill="#ff5050" wrapText="true">
          <font>
-            <Font name="System Bold" size="12.0" />
+            <Font size="12.0" />
          </font>
       </Label>
       <GridPane layoutX="60.0" layoutY="390.0" prefHeight="60.0" prefWidth="350.0">

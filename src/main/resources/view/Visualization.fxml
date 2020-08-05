@@ -50,7 +50,7 @@
          <children>
             <GridPane fx:id="gridPaneOptionLogs">
                <columnConstraints>
-                  <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" />
+                  <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" />
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
                </columnConstraints>
                <rowConstraints>
@@ -69,7 +69,7 @@
             </GridPane>
             <GridPane fx:id="dateGridPane" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowSpan="3">
                <columnConstraints>
-                  <ColumnConstraints halignment="LEFT" />
+                  <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" />
                   <ColumnConstraints hgrow="SOMETIMES" />
                </columnConstraints>
                <rowConstraints>

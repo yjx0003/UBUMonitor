@@ -41,6 +41,7 @@ public class Controller {
 
 	private DataBase dataBase;
 	private LocalDateTime loggedIn;
+	private Path hostUserModelversionArchivedDir;
 	private Path hostUserModelversionDir;
 	private Path hostUserDir;
 	private URL host;
@@ -228,13 +229,13 @@ public class Controller {
 	public Path getHostUserModelversionDir() {
 		return hostUserModelversionDir;
 	}
-
-	/**
-	 * @return the directoryCache
-	 */
-	public Path getHostUserModelversionCourseFile(Course course) {
-		return hostUserModelversionDir
-				.resolve(Paths.get(UtilMethods.removeReservedChar(course.toString()) + "-" + course.getId()));
+	
+	public Path getCourseFile(Course course) {
+		return Paths.get(getCoursePathName(course));
+	}
+	
+	public String getCoursePathName(Course course) {
+		return UtilMethods.removeReservedChar(course.toString()) + "-" + course.getId();
 	}
 
 	public Path getHostUserDir() {
@@ -264,6 +265,8 @@ public class Controller {
 				.getHost());
 		String userName = UtilMethods.removeReservedChar(this.getUsername());
 		this.hostUserModelversionDir = Paths.get(AppInfo.CACHE_DIR, hostName, userName, AppInfo.MODEL_VERSION);
+		this.hostUserModelversionArchivedDir = Paths.get(AppInfo.CACHE_DIR, hostName, userName, AppInfo.MODEL_VERSION,
+				AppInfo.ARCHIVED_DIR);
 		this.hostUserDir = Paths.get(AppInfo.CACHE_DIR, hostName, userName);
 		this.configuration = Paths.get(AppInfo.CONFIGURATION_DIR, hostName, userName);
 	}
@@ -354,11 +357,15 @@ public class Controller {
 	}
 
 	public void tryLogin(String host, String username, String password) throws IOException {
-		
+
 		login = new Login();
 		String validHost = login.checkUrlServer(host);
 		login.tryLogin(validHost, username, password);
 		this.host = new URL(validHost);
+	}
+
+	public Path getHostUserModelversionArchivedDir() {
+		return hostUserModelversionArchivedDir;
 	}
 
 }

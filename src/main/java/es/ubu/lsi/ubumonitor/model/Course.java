@@ -55,6 +55,7 @@ public class Course implements Serializable {
 	private Set<GradeItem> gradeItems;
 	private Set<Section> sections;
 	private Set<DiscussionPost> discussionPosts;
+	private Set<CourseEvent> courseEvents;
 	private Logs logs;
 	private Stats stats;
 	private LogStats logStats;
@@ -68,6 +69,8 @@ public class Course implements Serializable {
 	private ZonedDateTime updatedGradeItem;
 	private ZonedDateTime updatedActivityCompletion;
 	private ZonedDateTime updatedLog;
+
+
 
 	public Course() {
 		this.enrolledUsers = new HashSet<>();
@@ -438,18 +441,24 @@ public class Course implements Serializable {
 	 */
 	public void clearCourseData() {
 
-		this.enrolledUsers.clear();
-		this.roles.forEach(Role::clear); // eliminamos los usuarios de ese rol
-		this.roles.clear();
-		this.groups.forEach(Group::clear); // eliminamos los usuarios de ese grupo
-		this.groups.clear();
-		this.modules.clear();
-		this.sections.clear();
-
-		if (this.discussionPosts == null) {
-			this.discussionPosts = new HashSet<>();
+		this.enrolledUsers = new HashSet<>();
+		if(roles != null) {
+			this.roles.forEach(Role::clear); // eliminamos los usuarios de ese rol
 		}
-		this.discussionPosts.clear();
+		roles = new HashSet<>();
+		this.roles.clear();
+		if(groups != null) {
+			this.groups.forEach(Group::clear); // eliminamos los usuarios de ese grupo
+		}
+		groups = new HashSet<>();
+		
+		modules = new LinkedHashSet<>();
+		sections = new LinkedHashSet<>();
+
+		
+		discussionPosts = new HashSet<>();
+		setCourseEvents(new HashSet<>());
+	
 	}
 
 	public LogStats getLogStats() {
@@ -750,5 +759,23 @@ public class Course implements Serializable {
 
 	public void addDiscussionPosts(Collection<DiscussionPost> discussionPosts) {
 		this.discussionPosts.addAll(discussionPosts);
+	}
+
+	/**
+	 * @return the courseEvents
+	 */
+	public Set<CourseEvent> getCourseEvents() {
+		return courseEvents;
+	}
+
+	/**
+	 * @param courseEvents the courseEvents to set
+	 */
+	public void setCourseEvents(Set<CourseEvent> courseEvents) {
+		this.courseEvents = courseEvents;
+	}
+	
+	public void addCourseEvents(Collection<CourseEvent> courseEvents) {
+		this.courseEvents.addAll(courseEvents);
 	}
 }

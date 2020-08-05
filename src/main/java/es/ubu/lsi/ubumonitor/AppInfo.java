@@ -66,6 +66,8 @@ public class AppInfo {
 
 	public static final String VERSIONS_DIR = "versions/";
 
+	public static final String ARCHIVED_DIR = "Archived Courses";
+
 	
 
 	private AppInfo() {

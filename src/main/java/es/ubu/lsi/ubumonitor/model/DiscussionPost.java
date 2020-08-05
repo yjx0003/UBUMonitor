@@ -163,9 +163,25 @@ public class DiscussionPost implements Serializable{
 	public void setIsprivatereply(boolean isprivatereply) {
 		this.isprivatereply = isprivatereply;
 	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	
+	@Override
+	public int hashCode() {
+		return id;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof DiscussionPost))
+			return false;
+		DiscussionPost other = (DiscussionPost) obj;
+		return id == other.id;
+	}
+	
+	@Override
+	public String toString() {
+		return subject;
 	}
 	
 }

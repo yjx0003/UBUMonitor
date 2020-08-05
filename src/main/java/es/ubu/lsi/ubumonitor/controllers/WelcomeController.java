@@ -35,6 +35,7 @@ import es.ubu.lsi.ubumonitor.controllers.load.LogCreator;
 import es.ubu.lsi.ubumonitor.controllers.load.PopulateActivityCompletion;
 import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourse;
 import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourseContent;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourseEvent;
 import es.ubu.lsi.ubumonitor.controllers.load.PopulateEnrolledUsersCourse;
 import es.ubu.lsi.ubumonitor.controllers.load.PopulateForum;
 import es.ubu.lsi.ubumonitor.controllers.load.PopulateGradeItem;
@@ -391,7 +392,7 @@ public class WelcomeController implements Initializable {
 	private void checkFile(Course course) {
 		if (course == null)
 			return;
-		cacheFilePath = controller.getHostUserModelversionCourseFile(course);
+		cacheFilePath = controller.getHostUserModelversionDir().resolve(controller.getCourseFile(course));
 		LOGGER.debug("Buscando si existe {}", cacheFilePath);
 
 		File f = cacheFilePath.toFile();
@@ -714,6 +715,10 @@ public class WelcomeController implements Initializable {
 						.map(ForumDiscussion::getId)
 						.collect(Collectors.toList()));
 				actualCourse.addDiscussionPosts(discussionPosts);
+				
+				PopulateCourseEvent populateCourseEvent = new PopulateCourseEvent(dataBase, webService);
+				actualCourse.addCourseEvents(populateCourseEvent.populateCourseEvents(actualCourse.getId()));
+				
 				actualCourse.setUpdatedCourseData(ZonedDateTime.now());
 
 				if (checkBoxGradeItem.isSelected() && !isCancelled()) {

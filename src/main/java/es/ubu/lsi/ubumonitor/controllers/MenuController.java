@@ -2,7 +2,13 @@ package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Map.Entry;
 
@@ -352,4 +358,20 @@ public class MenuController {
 		UtilMethods.openURL(url.toString());
 	}
 
+	public void exportCourse() {
+		Course course = controller.getActualCourse();
+		Path source = controller.getHostUserModelversionDir()
+				.resolve(controller.getCourseFile(course));
+		LocalDate now = LocalDate.now();
+		Path destDir = controller.getHostUserModelversionArchivedDir();
+		Path dest = destDir
+				.resolve("(" + now.format(DateTimeFormatter.ISO_DATE) + ") " + controller.getCoursePathName(course));
+		
+		try {
+			Files.createDirectories(destDir);
+			Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			UtilMethods.errorWindow("Error when archiving the course", e);
+		}
+	}
 }

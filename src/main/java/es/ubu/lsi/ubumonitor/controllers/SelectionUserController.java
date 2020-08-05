@@ -419,4 +419,13 @@ public class SelectionUserController {
 	public AutoCompletionBinding<EnrolledUser> getAutoCompletionBinding() {
 		return autoCompletionBinding;
 	}
+	
+	public void selectAllUsers() {
+		listParticipants.getSelectionModel().selectAll();
+	}
+	
+	public void selectAllNonUsers() {
+		listParticipantsOut.getSelectionModel().selectAll();
+	}
+	
 }

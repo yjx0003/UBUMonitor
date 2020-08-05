@@ -1049,4 +1049,28 @@ public class SelectionController {
 		return tabPane;
 	}
 
+	public void selectAllComponents() {
+		listViewComponents.getSelectionModel().selectAll();
+	}
+	
+	public void selectAllComponentEvents() {
+		listViewEvents.getSelectionModel().selectAll();
+	}
+	
+	public void selectAllSections() {
+		listViewSection.getSelectionModel().selectAll();
+	}
+	
+	public void selectAllCourseModules() {
+		listViewCourseModule.getSelectionModel().selectAll();
+	}
+	
+	public void selectAllGradeItems() {
+		tvwGradeReport.getSelectionModel().selectAll();
+	}
+	
+	public void selectAllActivityCompletion() {
+		listViewActivity.getSelectionModel().selectAll();
+	}
+	
 }

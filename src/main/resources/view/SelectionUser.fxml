@@ -20,7 +20,7 @@
    <tabs>
       <Tab fx:id="tabEnrolled" closable="false" text="%tab.enrolleduser">
          <content>
-            <BorderPane prefHeight="200.0" prefWidth="200.0">
+            <BorderPane>
             	<center>
             		<ListView fx:id="listParticipants" prefHeight="200.0" prefWidth="200.0" styleClass="list-view-class" BorderPane.alignment="CENTER">
             			<placeholder>
@@ -29,11 +29,11 @@
             		</ListView>
             	</center>
             	<top>
-            		<GridPane vgap="5.0" BorderPane.alignment="CENTER">
+            		<GridPane hgap="5.0" vgap="5.0" BorderPane.alignment="CENTER">
             			<columnConstraints>
-            				<ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="100.0" />
-            				<ColumnConstraints hgrow="NEVER" maxWidth="100.0" minWidth="10.0" prefWidth="30.0" />
-            				<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
+            				<ColumnConstraints hgrow="SOMETIMES" />
+            				<ColumnConstraints hgrow="NEVER" />
+            				<ColumnConstraints hgrow="SOMETIMES" prefWidth="100.0" />
             			</columnConstraints>
             			<rowConstraints>
             				<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -41,22 +41,19 @@
             				<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             			</rowConstraints>
             			<children>
-            				<Label fx:id="lblCountParticipants" GridPane.hgrow="NEVER">
-            					<graphic>
-            						<ImageView pickOnBounds="true" preserveRatio="true">
-            							<image>
-            								<Image url="@../img/participants.png" />
-            							</image>
-            						</ImageView>
-            					</graphic>
-            					<GridPane.margin>
-            						<Insets left="5.0" />
-            					</GridPane.margin>
-            					<tooltip>
-            						<Tooltip text="%label.participants" />
-            					</tooltip>
-            				</Label>
-            				<TextField fx:id="tfdParticipants" promptText="%label.filter" GridPane.hgrow="NEVER" GridPane.rowIndex="1" />
+                        <Label fx:id="lblCountParticipants">
+                           <graphic>
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../img/participants.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="%label.participants" />
+                           </tooltip>
+                        </Label>
+            				<TextField fx:id="tfdParticipants" prefWidth="100.0" promptText="%label.filter" GridPane.hgrow="NEVER" GridPane.rowIndex="1" />
             				<Label GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
             					<graphic>
             						<ImageView pickOnBounds="true" preserveRatio="true">
@@ -96,7 +93,7 @@
             				<CheckComboBox fx:id="checkComboBoxRole" maxWidth="1.7976931348623157E308" showCheckedCount="true" title="" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" />
             				<CheckComboBox fx:id="checkComboBoxGroup" maxWidth="1.7976931348623157E308" showCheckedCount="true" title="" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
             				<CheckComboBox fx:id="checkComboBoxActivity" maxWidth="1.7976931348623157E308" showCheckedCount="true" title="" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
-                        <Button mnemonicParsing="false" text="Button" GridPane.rowIndex="2">
+                        <Button mnemonicParsing="false" onAction="#selectAllUsers" text="%button.selectall" wrapText="true" GridPane.rowIndex="2">
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin>
@@ -106,7 +103,7 @@
                         <Insets />
                      </BorderPane.margin>
                      <padding>
-                        <Insets bottom="5.0" />
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </padding>
             		</GridPane>
             	</top>
@@ -124,19 +121,19 @@
                   </ListView>
                </center>
                <top>
-                  <GridPane BorderPane.alignment="CENTER">
+                  <GridPane hgap="5.0" vgap="5.0" BorderPane.alignment="CENTER">
                     <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" />
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
                         <Label fx:id="labelNotEnrolled">
                            <graphic>
-                              <ImageView pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../img/participants.png" />
                                  </image>
@@ -150,9 +147,10 @@
                            </GridPane.margin>
                         </Label>
                         <TextField fx:id="textFieldNotEnrolled" layoutX="15.0" layoutY="40.0" promptText="%label.filter" GridPane.rowIndex="1" />
+                        <Button mnemonicParsing="false" onAction="#selectAllNonUsers" text="%button.selectall" GridPane.rowIndex="2" />
                      </children>
                      <padding>
-                        <Insets bottom="5.0" left="5.0" />
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </padding>
                   </GridPane>
                </top>

@@ -355,7 +355,6 @@ public class SelectionController {
 			checkComboBoxSectionAc.getItems()
 					.addAll(CONTROLLER.getActualCourse()
 							.getSections());
-
 			checkComboBoxSectionAc.getCheckModel()
 					.checkAll();
 			checkComboBoxSectionAc.getItemBooleanProperty(0)

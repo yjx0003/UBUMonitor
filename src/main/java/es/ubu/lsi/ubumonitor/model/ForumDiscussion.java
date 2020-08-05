@@ -169,4 +169,24 @@ public class ForumDiscussion implements Serializable {
 	public void setId(int id) {
 		this.id = id;
 	}
+	
+	@Override
+	public int hashCode() {
+		return id;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof ForumDiscussion))
+			return false;
+		ForumDiscussion other = (ForumDiscussion) obj;
+		return id == other.id;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }

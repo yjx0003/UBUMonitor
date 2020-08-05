@@ -74,8 +74,9 @@ public class MainController implements Initializable {
 
 	@FXML
 	private MenuController menuController;
+
 	@FXML
-	private SelectionController selectionController;
+	private SelectionMainController selectionMainController;
 
 	@FXML
 	private SelectionUserController selectionUserController;
@@ -92,7 +93,7 @@ public class MainController implements Initializable {
 					.getFullName());
 
 			controller.getStage()
-					.setOnHiding(event -> onClose());
+					.setOnCloseRequest(event -> onClose());
 
 			stats = controller.getStats();
 
@@ -102,9 +103,11 @@ public class MainController implements Initializable {
 
 			menuController.init(this);
 			selectionUserController.init(this);
-			selectionController.init(this);
+			selectionMainController.init(this);
 			initWebViewTabs();
 			initStatusBar();
+			
+		
 
 		} catch (Exception e) {
 			LOGGER.error("Error en la inicialización.", e);
@@ -120,6 +123,7 @@ public class MainController implements Initializable {
 				.selectedItemProperty()
 				.addListener((ob, old, newValue) -> {
 					onWebViewTabChange();
+					SelectionController selectionController = selectionMainController.getSelectionController();
 					if (selectionController.getTabUbuLogs()
 							.isSelected()) {
 						onSetTabLogs();
@@ -282,11 +286,18 @@ public class MainController implements Initializable {
 	}
 
 	private void onClose() {
-		ConfigHelper.setProperty("webViewTab", webViewTabPane.getSelectionModel()
-				.getSelectedIndex());
-		ConfigHelper.setProperty("tabPane", selectionController.getTabPane()
-				.getSelectionModel()
-				.getSelectedIndex());
+		try {
+			ConfigHelper.setProperty("webViewTab", webViewTabPane.getSelectionModel()
+					.getSelectedIndex());
+			ConfigHelper.setProperty("tabPane", selectionMainController.getSelectionController()
+					.getTabPane()
+					.getSelectionModel()
+					.getSelectedIndex());
+			ConfigHelper.setProperty("dividerPosition", splitPane.getDividerPositions()[0]);
+		} catch (Exception e) {
+			LOGGER.warn("Cannot save the properties onClose", e);
+		}
+
 	}
 
 	public StatusBar getStatusBar() {
@@ -306,7 +317,7 @@ public class MainController implements Initializable {
 	}
 
 	public SelectionController getSelectionController() {
-		return selectionController;
+		return selectionMainController.getSelectionController();
 	}
 
 	public SelectionUserController getSelectionUserController() {

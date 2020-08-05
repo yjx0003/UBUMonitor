@@ -4,16 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.text.Collator;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
-import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.DataBase;
 import es.ubu.lsi.ubumonitor.persistence.Serialization;
 import es.ubu.lsi.ubumonitor.util.I18n;
@@ -31,7 +30,6 @@ import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -43,6 +41,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TabPane;
@@ -65,10 +64,12 @@ public class WelcomeOfflineController implements Initializable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WelcomeOfflineController.class);
 
+	private static final Pattern PATTERN_COURSE_FILE = Pattern.compile("^(.+)-(\\d+)$"); // ^(.+)-(\\d+)$
+	private static final Pattern PATTERN_PREVIOUS_COURSE_FILE = Pattern
+			.compile("^\\((\\d{4}-\\d{2}-\\d{2})\\) (.+)-(\\d+)$"); // ^\((\d{4}-\d{2}-\d{2})\) (.+)-(\d+)$
 	/**
 	 * path con directorios de los ficheros cache
 	 */
-	private Path cacheFilePath;
 	private Controller controller = Controller.getInstance();
 
 	@FXML
@@ -76,7 +77,10 @@ public class WelcomeOfflineController implements Initializable {
 	@FXML
 	private Label lblUser;
 	@FXML
-	private ListView<Course> listCourses;
+	private ListView<File> listCourses;
+
+	@FXML
+	private ListView<File> listViewPreviousCourses;
 
 	@FXML
 	private TabPane tabPane;
@@ -110,8 +114,7 @@ public class WelcomeOfflineController implements Initializable {
 
 		try {
 			conexionLabel.setText(I18n.get("text.online_" + !controller.isOfflineMode()));
-			lblUser.setText(I18n.get("label.welcome") + " " + controller.getUser()
-					.getFullName());
+			lblUser.setText(I18n.get("label.welcome") + " " + controller.getUsername());
 			LOGGER.info("Cargando cursos...");
 
 			anchorPane.disableProperty()
@@ -129,31 +132,27 @@ public class WelcomeOfflineController implements Initializable {
 
 			tabPane.getSelectionModel()
 					.selectedItemProperty()
-					.addListener((ov, value, newValue) -> {
-						ListView<Course> listView = (ListView<Course>) value.getContent();
+					.addListener((ov, oldValue, newValue) -> {
+						ListView<File> listView = (ListView<File>) oldValue.getContent();
 						listView.getSelectionModel()
 								.clearSelection();
 
 					});
-
+			
+			// select tab and file from properties
 			Platform.runLater(() -> {
-				ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel()
+				tabPane.getSelectionModel()
+						.select(ConfigHelper.getProperty("tabIndexOfflineMode", 0));
+				ListView<File> listView = (ListView<File>) tabPane.getSelectionModel()
 						.getSelectedItem()
 						.getContent();
-				Course course = controller.getUser()
-						.getCourseById(ConfigHelper.getProperty("actualCourse", -1));
-
-				listView.getSelectionModel()
-						.select(course);
-				listView.scrollTo(course);
-				if (Files.isDirectory(controller.getHostUserDir())
-						&& !Files.isDirectory(controller.getHostUserModelversionDir())) {
-					UtilMethods.infoWindow(I18n.get("text.modelversionchanged"));
-					controller.getHostUserModelversionDir()
-							.toFile()
-							.mkdirs();
+				String pathLastCache = ConfigHelper.getProperty("listViewIndexOfflineMode", null);
+				if (pathLastCache != null) {
+					File file = new File(pathLastCache);
+					listView.getSelectionModel()
+							.select(file);
+					listView.scrollTo(file);
 				}
-
 			});
 
 		} catch (Exception e) {
@@ -163,46 +162,65 @@ public class WelcomeOfflineController implements Initializable {
 	}
 
 	private void initListViews() {
-		Comparator<Course> courseComparator = Comparator.comparing(Course::getFullName)
-				.thenComparing(c -> c.getCourseCategory()
-						.getName());
 
-		initListView(controller.getUser()
-				.getCourses(), listCourses, courseComparator);
+		File[] files = controller.getHostUserModelversionDir()
+				.toFile()
+				.listFiles((dir, name) -> PATTERN_COURSE_FILE.matcher(name)
+						.matches());
+
+		File[] previousCourses = controller.getHostUserModelversionArchivedDir()
+				.toFile()
+				.listFiles((dir, name) -> PATTERN_PREVIOUS_COURSE_FILE.matcher(name)
+						.matches());
+		Comparator<File> comparator = Comparator.comparing(File::getName, Collator.getInstance());
+		initListView(files, listCourses, comparator);
+		initListView(previousCourses, listViewPreviousCourses, comparator);
 
 	}
 
-	private void initListView(List<Course> courseList, ListView<Course> listView, Comparator<Course> comparator) {
-		ObservableList<Course> observableList = FXCollections.observableArrayList(courseList);
-		if (comparator != null) {
-			observableList.sort(comparator);
+	private void initListView(File[] files, ListView<File> listView, Comparator<File> comparator) {
+		if(files == null || files.length == 0) {
+			return;
 		}
+		
+		ObservableList<File> observableList = FXCollections.observableArrayList(files);
+
+		observableList.sort(comparator);
+
 		listView.setItems(observableList);
 		listView.getSelectionModel()
 				.selectedItemProperty()
 				.addListener((ov, value, newValue) -> checkFile(newValue));
+		listView.setCellFactory(callback -> new ListCell<File>() {
+			@Override
+			public void updateItem(File file, boolean empty) {
+				super.updateItem(file, empty);
+				if (empty || file == null) {
+					setText(null);
+				} else {
+					setText(file.getName());
+				}
+			}
+
+		});
 
 	}
 
-	private Course getSelectedCourse() {
+	private File getSelectedCourse() {
 		@SuppressWarnings("unchecked")
-		ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel()
+		ListView<File> listView = (ListView<File>) tabPane.getSelectionModel()
 				.getSelectedItem()
 				.getContent();
 		return listView.getSelectionModel()
 				.getSelectedItem();
 	}
 
-	private void checkFile(Course newValue) {
-		if (newValue == null)
+	private void checkFile(File file) {
+		if (file == null)
 			return;
-		cacheFilePath = controller.getHostUserModelversionCourseFile(newValue);
 
-		LOGGER.debug("Buscando si existe {}", cacheFilePath);
-
-		File f = cacheFilePath.toFile();
-		if (f.exists() && f.isFile()) {
-			long lastModified = f.lastModified();
+		if (file.isFile()) {
+			long lastModified = file.lastModified();
 
 			LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastModified),
 					ZoneId.systemDefault());
@@ -219,28 +237,26 @@ public class WelcomeOfflineController implements Initializable {
 	 * @param event El evento.
 	 */
 
-	public void enterCourse(ActionEvent event) {
+	public void enterCourse() {
 
 		// Guardamos en una variable el curso seleccionado por el usuario
 
-		Course selectedCourse = getSelectedCourse();
+		File selectedCourse = getSelectedCourse();
 		if (selectedCourse == null) {
 			lblNoSelect.setVisible(true);
 			return;
 		}
 		lblNoSelect.setVisible(false);
-		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getFullName());
-
-		ConfigHelper.setProperty("actualCourse", getSelectedCourse().getId());
+		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getName());
 
 		// if loading cache
-		loadData(controller.getPassword());
+		loadData(selectedCourse, controller.getPassword());
 		loadNextWindow();
 
 	}
 
 	public void removeCourse() throws IOException {
-		Course selectedCourse = getSelectedCourse();
+		File selectedCourse = getSelectedCourse();
 		if (selectedCourse == null) {
 			lblNoSelect.setText(I18n.get("error.nocourse"));
 			return;
@@ -256,9 +272,9 @@ public class WelcomeOfflineController implements Initializable {
 
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.isPresent() && result.get() == ButtonType.OK) {
-			Files.delete(cacheFilePath.toAbsolutePath());
+			Files.delete(selectedCourse.toPath());
 			@SuppressWarnings("unchecked")
-			ListView<Course> listView = (ListView<Course>) tabPane.getSelectionModel()
+			ListView<File> listView = (ListView<File>) tabPane.getSelectionModel()
 					.getSelectedItem()
 					.getContent();
 			listView.getItems()
@@ -270,20 +286,20 @@ public class WelcomeOfflineController implements Initializable {
 		}
 	}
 
-	private void loadData(String password) {
+	private void loadData(File file, String password) {
 
 		DataBase dataBase;
 		try {
 
-			dataBase = (DataBase) Serialization.decrypt(password, cacheFilePath.toString());
+			dataBase = (DataBase) Serialization.decrypt(password, file.toString());
 			controller.setDataBase(dataBase);
 			isBBDDLoaded = true;
-			controller.setDefaultUpdate(ZonedDateTime.ofInstant(Instant.ofEpochSecond(cacheFilePath.toFile()
-					.lastModified()), ZoneId.systemDefault()));
+			controller.setDefaultUpdate(
+					ZonedDateTime.ofInstant(Instant.ofEpochSecond(file.lastModified()), ZoneId.systemDefault()));
 			TimeZone.setDefault(TimeZone.getTimeZone(dataBase.getUserZoneId()));
-			return;
+
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
-			incorrectPasswordWindow();
+			incorrectPasswordWindow(file);
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
 			UtilMethods.errorWindow(e.getMessage(), e);
@@ -294,10 +310,9 @@ public class WelcomeOfflineController implements Initializable {
 
 		}
 
-
 	}
 
-	private void incorrectPasswordWindow() {
+	private void incorrectPasswordWindow(File file) {
 		Dialog<String> dialog = new Dialog<>();
 		dialog.setTitle(I18n.get("title.passwordIncorrect"));
 
@@ -343,7 +358,7 @@ public class WelcomeOfflineController implements Initializable {
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
 			controller.setPassword(result.get());
-			loadData(result.get());
+			loadData(file, result.get());
 		}
 
 	}
@@ -352,14 +367,16 @@ public class WelcomeOfflineController implements Initializable {
 		if (!isBBDDLoaded) {
 			return;
 		}
+		ConfigHelper.setProperty("tabIndexOfflineMode", tabPane.getSelectionModel()
+				.getSelectedIndex());
 
+		File file = getSelectedCourse();
+		ConfigHelper.setProperty("listViewIndexOfflineMode", file.toString());
 		UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), false);
-		controller.getStage()
-				.setResizable(true);
-		controller.getStage()
-				.setMaximized(true);
-		controller.getStage()
-				.show();
+		Stage stage = controller.getStage();
+		stage.setResizable(true);
+		stage.setMaximized(true);
+		stage.show();
 
 	}
 
@@ -368,7 +385,7 @@ public class WelcomeOfflineController implements Initializable {
 	 * 
 	 * @param actionEvent El ActionEvent.
 	 */
-	public void logOut(ActionEvent actionEvent) {
+	public void logOut() {
 		LOGGER.info("Cerrando sesión de usuario");
 
 		UtilMethods.changeScene(getClass().getResource("/view/Login.fxml"), controller.getStage());

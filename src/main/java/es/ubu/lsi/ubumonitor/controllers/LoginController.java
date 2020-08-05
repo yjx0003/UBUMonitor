@@ -5,17 +5,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.text.Collator;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.controlsfx.control.textfield.TextFields;
@@ -254,7 +249,7 @@ public class LoginController implements Initializable {
 	 * 
 	 * @param event El ActionEvent.
 	 */
-	public void login(ActionEvent event) {
+	public void login() {
 		if (txtHost.getText()
 				.trim()
 				.isEmpty()
@@ -291,27 +286,6 @@ public class LoginController implements Initializable {
 
 	}
 
-	private List<Course> findCacheCourses() {
-
-		File dir = controller.getHostUserModelversionDir()
-				.toFile();
-		if (!dir.exists() || !dir.isDirectory()) {
-			return Collections.emptyList();
-		}
-
-		Pattern pattern = Pattern.compile("(.+)-(\\d+)$");
-		List<Course> courses = new ArrayList<>();
-		for (File cache : dir.listFiles()) {
-			Matcher matcher = pattern.matcher(cache.getName());
-			if (matcher.find()) {
-				Course course = new Course(Integer.valueOf(matcher.group(2)));
-				course.setFullName(matcher.group(1));
-				courses.add(course);
-			}
-		}
-		return courses;
-	}
-
 	private boolean offlineMode() throws MalformedURLException {
 
 		controller.setURLHost(new URL(txtHost.getText()));
@@ -319,9 +293,11 @@ public class LoginController implements Initializable {
 		controller.setUsername(txtUsername.getText());
 		controller.setPassword(txtPassword.getText());
 		onSuccessLogin();
-		List<Course> courses = findCacheCourses();
-		if (Files.isDirectory(controller.getHostUserDir())
-				&& !Files.isDirectory(controller.getHostUserModelversionDir()) || courses.isEmpty()) {
+
+		File hostUserDir = controller.getHostUserDir().toFile();
+		File hostUserModelversionDir = controller.getHostUserModelversionDir().toFile();
+		if (hostUserDir.isDirectory()
+				&& !hostUserModelversionDir.isDirectory() || hostUserModelversionDir.listFiles().length == 0) {
 
 			ButtonType option = UtilMethods
 					.confirmationWindow(I18n.get("text.modelversionchanged") + "\n" + I18n.get("text.wantonlinemode"));
@@ -331,17 +307,12 @@ public class LoginController implements Initializable {
 						.mkdirs();
 				chkOfflineMode.setSelected(false);
 
-				login(null);
+				login();
 
 			}
 			return false;
 		}
 
-		MoodleUser user = new MoodleUser();
-		user.setFullName(txtUsername.getText()); // because we have not a fullname of the user in offline mode
-		controller.setUser(user);
-		user.getCourses()
-				.addAll(courses);
 
 		return true;
 	}

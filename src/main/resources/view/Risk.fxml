@@ -21,7 +21,7 @@
             <WebView fx:id="webViewCharts" minHeight="200.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" />
             <BorderPane fx:id="borderPaneImage" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: white;">
                <center>
-                  <ImageView pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+                  <ImageView fitHeight="300.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
                      <image>
                         <Image url="@../img/logo.png" />
                      </image>

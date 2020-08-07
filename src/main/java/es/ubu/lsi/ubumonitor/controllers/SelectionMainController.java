@@ -12,12 +12,15 @@ public class SelectionMainController {
 
 	public void init(MainController mainController) {
 		selectionController.init(mainController);
-		//selectionForumController
-		
+		selectionForumController.init(mainController);
 	}
 	
 	public SelectionController getSelectionController() {
 		return selectionController;
+	}
+	
+	public SelectionForumController getSelectionForumController() {
+		return selectionForumController;
 	}
 	
 }

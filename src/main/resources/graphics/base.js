@@ -212,11 +212,6 @@
         javaConnector.updateChartFromJS();
     }
 
- 
-
-
-    
-
 
     function exportChartjs() {
         return myChart.toBase64Image();
@@ -246,10 +241,19 @@
 			button.id = value.id;
 			button.innerText = value.text;
 			button.className = "btn";
-			//button.type = "button";
 			button.setAttribute( "onClick", "javascript: javaConnector.updateCharts(this.id);" );
+			type = document.getElementById(value.type)
 			
-			type = document.getElementById(value.type);
+			if (!type) {
+				all_tabs = document.getElementById("all_tabs");
+				
+				type = document.createElement("DIV");
+				type.id = value.type;
+				type.className = "pestañas";
+				all_tabs.insertBefore(type, document.getElementById("tabs_options"));
+			}
+			 
+			
 			type.appendChild(button);
     	}
     }

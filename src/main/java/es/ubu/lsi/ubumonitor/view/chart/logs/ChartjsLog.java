@@ -17,11 +17,11 @@ import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 
 public abstract class ChartjsLog extends ChartLogs {
-
+	
 
 	public ChartjsLog(MainController mainController, ChartType chartType) {
 		super(mainController, chartType);
-
+		
 	}
 
 	protected JSArray createLabels(List<String> rangeDates) {

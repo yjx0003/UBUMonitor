@@ -8,8 +8,10 @@ import java.util.Map;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.controllers.SelectionController;
 import es.ubu.lsi.ubumonitor.controllers.VisualizationController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
@@ -35,7 +37,9 @@ import es.ubu.lsi.ubumonitor.view.chart.logs.TotalBar;
 import es.ubu.lsi.ubumonitor.view.chart.logs.ViolinLog;
 import es.ubu.lsi.ubumonitor.view.chart.logs.ViolinLogTime;
 import javafx.concurrent.Worker.State;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TreeView;
 import javafx.scene.web.WebEngine;
 
 public class VisualizationJavaConnector {
@@ -73,20 +77,26 @@ public class VisualizationJavaConnector {
 		tabActivityCompletion = mainController.getSelectionController()
 				.getTabActivity();
 		mapChart = new EnumMap<>(ChartType.class);
+
+		DatePicker datePickerStart = visualizationController.getDatePickerStart();
+		DatePicker datePickerEnd = visualizationController.getDatePickerEnd();
+		SelectionController selectionController = mainController.getSelectionController();
+		TreeView<GradeItem> treeViewGradeItem = selectionController.getTvwGradeReport();
 		addChart(new Heatmap(mainController));
 		addChart(new Stackedbar(mainController));
-		addChart(new Line(mainController));
-		addChart(new Radar(mainController));
+		addChart(new Line(mainController, treeViewGradeItem));
+		addChart(new Radar(mainController, treeViewGradeItem));
 		addChart(new Scatter(mainController));
 		addChart(new ScatterUser(mainController));
-		addChart(new BoxPlot(mainController));
+		addChart(new BoxPlot(mainController, selectionController.getTvwGradeReport()));
 		addChart(new TotalBar(mainController));
-		addChart(new Violin(mainController));
-		addChart(new GradeReportTable(mainController));
+		addChart(new Violin(mainController, treeViewGradeItem));
+		addChart(new GradeReportTable(mainController, treeViewGradeItem));
 		addChart(new CumLine(mainController));
 		addChart(new MeanDiff(mainController));
-		addChart(new ActivitiesStatusTable(mainController));
-		addChart(new CalificationBar(mainController));
+		addChart(new ActivitiesStatusTable(mainController, datePickerStart, datePickerEnd,
+				selectionController.getListViewActivity()));
+		addChart(new CalificationBar(mainController, treeViewGradeItem));
 		addChart(new SessionChart(mainController));
 		addChart(new BoxplotLogTime(mainController));
 		addChart(new ViolinLogTime(mainController));
@@ -97,10 +107,6 @@ public class VisualizationJavaConnector {
 	}
 
 	private void addChart(Chart chart) {
-		chart.setChoiceBoxDate(visualizationController.getChoiceBoxDate());
-		chart.setDatePickerStart(visualizationController.getDatePickerStart());
-		chart.setDatePickerEnd(visualizationController.getDatePickerEnd());
-		chart.setWebView(visualizationController.getWebViewCharts());
 		chart.setWebViewChartsEngine(visualizationController.getWebViewChartsEngine());
 		mapChart.put(chart.getChartType(), chart);
 	}
@@ -223,6 +229,7 @@ public class VisualizationJavaConnector {
 	}
 
 	public void setDefaultValues() {
+
 		webViewChartsEngine.executeScript("setLocale('" + Locale.getDefault()
 				.toLanguageTag() + "')");
 
@@ -234,12 +241,16 @@ public class VisualizationJavaConnector {
 			jsObject.putWithQuote("type", chartType.getTab());
 			jsArray.add(jsObject);
 		}
-	
+
 		webViewChartsEngine.executeScript("generateButtons(" + jsArray + ")");
-		webViewChartsEngine.executeScript(String.format("translate(%s,'%s')", "'btnLegend'",UtilMethods.escapeJavaScriptText( I18n.get("btnLegend"))));
-		webViewChartsEngine.executeScript(String.format("translate(%s,'%s')", "'btnMean'",UtilMethods.escapeJavaScriptText( I18n.get("btnMean"))));
-		webViewChartsEngine.executeScript(String.format("translate(%s,'%s')", "'btnGroupMean'", UtilMethods.escapeJavaScriptText(I18n.get("btnGroupMean"))));
-		
+		webViewChartsEngine.executeScript("createChartDivs()");
+		webViewChartsEngine.executeScript(String.format("translate(%s,'%s')", "'btnLegend'",
+				UtilMethods.escapeJavaScriptText(I18n.get("btnLegend"))));
+		webViewChartsEngine.executeScript(String.format("translate(%s,'%s')", "'btnMean'",
+				UtilMethods.escapeJavaScriptText(I18n.get("btnMean"))));
+		webViewChartsEngine.executeScript(String.format("translate(%s,'%s')", "'btnGroupMean'",
+				UtilMethods.escapeJavaScriptText(I18n.get("btnGroupMean"))));
+
 		setCurrentTypeLogs(DEFAULT_LOG_CHART);
 		setCurrentTypeGrades(DEFAULT_GRADE_CHART);
 		setCurrentTypeActivityCompletion(DEFAULT_ACTIVITY_COMPLETION_CHART);
@@ -337,7 +348,5 @@ public class VisualizationJavaConnector {
 		webViewChartsEngine.executeScript(String.format("imageButton('%s',%s)", "btnGroupMean", groupActive));
 
 	}
-	
-	
 
 }

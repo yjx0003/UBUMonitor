@@ -21,7 +21,7 @@ public class ViolinLog extends BoxplotLog {
 		jsObject.put("tooltipDecimals", 0);
 		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
 		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
-		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{suggestedMax:" + getSuggestedMax()
+		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{suggestedMax:" + getSuggestedMax(textFieldMax.getText())
 				+ ",stepSize:0}}],xAxes:[{" + xLabel + "}]}");
 
 		return jsObject.toString();

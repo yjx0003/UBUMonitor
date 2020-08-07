@@ -5,5 +5,6 @@
 <StackPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.controllers.SelectionMainController">
    <children>
       <fx:include fx:id="selection" source="Selection.fxml" />
+      <fx:include fx:id="selectionForum" source="SelectionForum.fxml" />
    </children>
 </StackPane>

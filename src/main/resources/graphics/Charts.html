@@ -21,18 +21,8 @@
 </head>
 
 <div id="all_tabs" class="controles">
-    <div class="pestañas" id="GRADES">
-     
-    </div>
-    <div class="pestañas" id="LOGS">
 
-
-    </div>
-    <div class="pestañas" id="ACTIVITY_COMPLETION">
-        
-    </div>
-
-    <div class="opciones">
+    <div id="tabs_options" class="opciones">
         <button value="Leyenda" class="btn" id="btnLegend" onclick="hideLegend()" />
         <button value="Media General" class="btn" id="btnMean" onclick="showGeneralMean()" />
         <button class="btn" id="btnGroupMean" onclick="showGroupMean()" />
@@ -71,7 +61,6 @@
 
     Chart.defaults.scale.ticks.beginAtZero = true;
     Chart.defaults.scale.ticks.precision = 0;
-    Chart.defaults.scale.ticks.suggestedMax = 10;
     Chart.defaults.scale.ticks.suggestedMin = 0;
     Chart.defaults.scale.autoSkip = true;
     Chart.defaults.global.plugins.datalabels.display = false
@@ -81,43 +70,50 @@
     var height = "93%";
     var locale = 'en-UK';
  
- 
-    //------------------------------------------Variables globales-------------------------------------------------------------
-
-    //
-    var colorHash = new ColorHash();
-    var ctx = document.getElementById('myChart');
-
-    var myChart = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: [],
-            datasets: []
-        },
-        options: {
-            tab: "grade_tabs",
-            button: "btnLine",
-            typeGraph: "line"
-        }
-    });
-
-    var myApexChart = new ApexCharts(document.getElementById('apexchartsDiv'), { tab: "log_tabs", button: "btnHeatmap", typeGraph: "heatmap", tooltip: { x: { show: !0 } }, plotOptions: { heatmap: { enableShades: !1, colorScale: { ranges: [{ from: -1, to: 0, color: "#f78880", name: "0" }, { from: 1, to: 1, color: "#f4e3ae" }, { from: 1, to: 1, color: "#fff033" }, { from: 1, to: 1, color: "#b5ff33" }, { from: 1, to: 1, color: "#38e330" }, { from: 2, to: Number.POSITIVE_INFINITY, color: "#67b92e", name: "+2" }] } } }, legend: { position: "top" }, chart: { type: "heatmap", events: { dataPointSelection: function (o, e, t) { javaConnector.dataPointSelection(t.w.config.series.length - 1 - t.seriesIndex) } }, height: height, toolbar: { show: !1 }, animations: { enabled: !1 } }, dataLabels: { formatter: function (o, e) { return 0 == o ? "" : o }, style: { colors: ["#000000"] } }, colors: ["#00A100"], series: [], xaxis: { categories: [] } });
-    myApexChart.render();
-
-    var table = new Tabulator("#tabulatorDiv", {
-
-        tab: "activity_tabs",
-        button: "ACTIVITIES_TABLE",
-        invalidOptionWarnings: false,
-        height: height,
-        //placeholder: "No data",
-        tooltipsHeader: true,
-        virtualDom: true,
-        layout: "fitColumns", //fit columns to width of table (optional)
-        rowClick: function (e, row) {
-            javaConnector.dataPointSelection(row.getPosition());
-
-        },
-    });
+  	var colorHash;
+	var ctx;
+	var myChart;
+	var myApexChart;
+	var table;
+  	
+  	function createChartDivs(){
+	  	  //------------------------------------------Variables globales-------------------------------------------------------------
+	
+	    //
+	    colorHash = new ColorHash();
+	    ctx = document.getElementById('myChart');
+	
+	    myChart = new Chart(ctx, {
+	        type: "line",
+	        data: {
+	            labels: [],
+	            datasets: []
+	        },
+	        options: {
+	            tab: "grade_tabs",
+	            button: "btnLine",
+	            typeGraph: "line"
+	        }
+	    });
+	
+	    myApexChart = new ApexCharts(document.getElementById('apexchartsDiv'), { tab: "log_tabs", button: "btnHeatmap", typeGraph: "heatmap", tooltip: { x: { show: !0 } }, plotOptions: { heatmap: { enableShades: !1, colorScale: { ranges: [{ from: -1, to: 0, color: "#f78880", name: "0" }, { from: 1, to: 1, color: "#f4e3ae" }, { from: 1, to: 1, color: "#fff033" }, { from: 1, to: 1, color: "#b5ff33" }, { from: 1, to: 1, color: "#38e330" }, { from: 2, to: Number.POSITIVE_INFINITY, color: "#67b92e", name: "+2" }] } } }, legend: { position: "top" }, chart: { type: "heatmap", events: { dataPointSelection: function (o, e, t) { javaConnector.dataPointSelection(t.w.config.series.length - 1 - t.seriesIndex) } }, height: height, toolbar: { show: !1 }, animations: { enabled: !1 } }, dataLabels: { formatter: function (o, e) { return 0 == o ? "" : o }, style: { colors: ["#000000"] } }, colors: ["#00A100"], series: [], xaxis: { categories: [] } });
+	    myApexChart.render();
+	
+	   	table = new Tabulator("#tabulatorDiv", {
+	
+	        tab: "activity_tabs",
+	        button: "ACTIVITIES_TABLE",
+	        invalidOptionWarnings: false,
+	        height: height,
+	        //placeholder: "No data",
+	        tooltipsHeader: true,
+	        virtualDom: true,
+	        layout: "fitColumns", //fit columns to width of table (optional)
+	        rowClick: function (e, row) {
+	            javaConnector.dataPointSelection(row.getPosition());
+	
+	        },
+	    });
+  	}
 </script>
 </html>

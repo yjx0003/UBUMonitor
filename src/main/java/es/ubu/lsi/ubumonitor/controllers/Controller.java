@@ -15,6 +15,8 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.javafx.webkit.WebConsoleListener;
+
 import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
@@ -86,6 +88,8 @@ public class Controller {
 	}
 
 	public void initialize() throws IOException {
+		WebConsoleListener.setDefaultListener((wb, message, lineNumber, sourceId) -> LOGGER
+				.info("{} in {} at line number: {}", message, wb, lineNumber));
 		ConfigHelper.initialize(AppInfo.PROPERTIES_PATH);
 		setDataBase(new DataBase());
 		// Si no existe el recurso de idioma especificado cargamos el Español
@@ -229,11 +233,11 @@ public class Controller {
 	public Path getHostUserModelversionDir() {
 		return hostUserModelversionDir;
 	}
-	
+
 	public Path getCourseFile(Course course) {
 		return Paths.get(getCoursePathName(course));
 	}
-	
+
 	public String getCoursePathName(Course course) {
 		return UtilMethods.removeReservedChar(course.toString()) + "-" + course.getId();
 	}

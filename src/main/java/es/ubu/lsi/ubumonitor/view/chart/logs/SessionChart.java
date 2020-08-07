@@ -255,7 +255,7 @@ public class SessionChart extends ChartjsLog {
 
 		jsObject.putWithQuote("typeGraph", "bar");
 		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",stacked: true,ticks:{suggestedMax:"
-				+ getSuggestedMax() + ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + ",stacked: true}]}");
+				+ getSuggestedMax(textFieldMax.getText()) + ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + ",stacked: true}]}");
 		jsObject.put("tooltips",
 				"{callbacks:{label:function(a,e){return e.datasets[a.datasetIndex].label+': '+a.yLabel+' (avg: '+Math.round(a.yLabel/e.datasets[a.datasetIndex].n[a.index]*100)/100+')'},afterLabel:function(a,e){return'"
 						+ I18n.get("text.session") + "'+e.datasets[a.datasetIndex].n[a.index]}}}");

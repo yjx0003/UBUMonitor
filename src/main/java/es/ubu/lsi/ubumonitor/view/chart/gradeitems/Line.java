@@ -12,18 +12,20 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import javafx.scene.control.TreeView;
 
 public class Line extends ChartjsGradeItem {
 
-	public Line(MainController mainController) {
-		super(mainController, ChartType.LINE);
+	public Line(MainController mainController, TreeView<GradeItem> treeViewGradeItem) {
+		super(mainController, ChartType.LINE, treeViewGradeItem);
 
 	}
 
 	@Override
 	public String getOptions(JSObject jsObject) {
 		jsObject.putWithQuote("typeGraph", "line");
-		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + "}],xAxes:[{" + getXScaleLabel() + "}]}");
+		jsObject.put("scales",
+				"{yAxes:[{ticks:{max:10,stepSize:1}," + getYScaleLabel() + "}],xAxes:[{" + getXScaleLabel() + "}]}");
 		return jsObject.toString();
 	}
 
@@ -32,12 +34,13 @@ public class Line extends ChartjsGradeItem {
 		List<String> header = new ArrayList<>();
 		header.add("userid");
 		header.add("fullname");
-		List<GradeItem> gradeItems = getSelectedGradeItems();
+		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		for (GradeItem gradeItem : gradeItems) {
 			header.add(gradeItem.getItemname());
 		}
-	
-		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
+
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
+				CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
 			for (EnrolledUser enrolledUser : getSelectedEnrolledUser()) {
 				printer.print(enrolledUser.getId());
 				printer.print(enrolledUser.getFullName());

@@ -37,6 +37,10 @@ import javafx.scene.control.DatePicker;
 
 public class RiskEvolution extends RiskBarTemporal {
 
+	private DatePicker datePickerStart;
+	private DatePicker datePickerEnd;
+	private ChoiceBox<GroupByAbstract<?>> choiceBoxDate;
+	
 	public RiskEvolution(MainController mainController, DatePicker datePickerStart, DatePicker datePickerEnd,
 			ChoiceBox<GroupByAbstract<?>> choiceBoxDate) {
 		super(mainController, ChartType.RISK_EVOLUTION);

@@ -17,12 +17,14 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import javafx.scene.control.TreeView;
 import javafx.scene.paint.Color;
 
 public class CalificationBar extends ChartjsGradeItem {
 
-	public CalificationBar(MainController mainController) {
-		super(mainController, ChartType.CALIFICATION_BAR);
+	
+	public CalificationBar(MainController mainController, TreeView<GradeItem> treeViewGradeItem) {
+		super(mainController, ChartType.CALIFICATION_BAR, treeViewGradeItem);
 		useGeneralButton = false;
 		useGroupButton = false;
 	}
@@ -100,7 +102,7 @@ public class CalificationBar extends ChartjsGradeItem {
 	public void exportCSV(String path) throws IOException {
 		List<String> header = new ArrayList<>();
 		header.add("stats");
-		List<GradeItem> gradeItems = getSelectedGradeItems();
+		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		for (GradeItem gradeItem : gradeItems) {
 			header.add(gradeItem.getItemname());
 		}

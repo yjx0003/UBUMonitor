@@ -179,7 +179,7 @@ public class ScatterUser extends ChartjsLog {
 		List<String> list = new ArrayList<>();
 		list.add("userid");
 		list.add("fullname");
-		String selectedTab = tabPaneUbuLogs.getSelectionModel()
+		String selectedTab = tabPaneSelection.getSelectionModel()
 				.getSelectedItem()
 				.getText();
 		if (hasId()) {

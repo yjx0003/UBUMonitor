@@ -166,7 +166,7 @@ public class TotalBar extends ChartjsLog {
 
 	@Override
 	public String getXAxisTitle() {
-		return tabPaneUbuLogs.getSelectionModel()
+		return tabPaneSelection.getSelectionModel()
 				.getSelectedItem()
 				.getText();
 
@@ -235,7 +235,7 @@ public class TotalBar extends ChartjsLog {
 
 	@Override
 	protected String[] getCSVHeader() {
-		String selectedTab = tabPaneUbuLogs.getSelectionModel()
+		String selectedTab = tabPaneSelection.getSelectionModel()
 				.getSelectedItem()
 				.getText();
 		MainConfiguration mainConfiguration = Controller.getInstance()
@@ -314,7 +314,7 @@ public class TotalBar extends ChartjsLog {
 
 	@Override
 	protected String[] getCSVDesglosedHeader() {
-		String selectedTab = tabPaneUbuLogs.getSelectionModel()
+		String selectedTab = tabPaneSelection.getSelectionModel()
 				.getSelectedItem()
 				.getText();
 		MainConfiguration mainConfiguration = Controller.getInstance()

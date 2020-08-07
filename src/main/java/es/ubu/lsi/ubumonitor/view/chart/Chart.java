@@ -13,30 +13,18 @@ import org.controlsfx.control.CheckComboBox;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.SelectionController;
 import es.ubu.lsi.ubumonitor.controllers.SelectionUserController;
-import es.ubu.lsi.ubumonitor.controllers.VisualizationController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
-import es.ubu.lsi.ubumonitor.model.Component;
-import es.ubu.lsi.ubumonitor.model.ComponentEvent;
-import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
-import es.ubu.lsi.ubumonitor.model.Section;
 import es.ubu.lsi.ubumonitor.model.Stats;
-import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.collections.ObservableList;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.paint.Color;
@@ -48,20 +36,6 @@ public abstract class Chart implements ExportableChart {
 	protected WebView webView;
 	protected WebEngine webViewChartsEngine;
 	protected CheckComboBox<Group> slcGroup;
-	protected TabPane tabPaneUbuLogs;
-	protected Tab tabUbuLogs;
-	protected Tab tabUbuLogsComponent;
-	protected Tab tabUbuLogsEvent;
-	protected Tab tabUbuLogsSection;
-	protected Tab tabUbuLogsCourseModule;
-	protected ListView<Component> listViewComponents;
-	protected ListView<ComponentEvent> listViewEvents;
-	protected ListView<Section> listViewSection;
-	protected ListView<CourseModule> listViewCourseModule;
-	protected ChoiceBox<GroupByAbstract<?>> choiceBoxDate;
-	protected DatePicker datePickerStart;
-	protected DatePicker datePickerEnd;
-	protected TreeView<GradeItem> tvwGradeReport;
 	protected Stats stats;
 	protected ChartType chartType;
 	protected boolean useLegend;
@@ -74,32 +48,16 @@ public abstract class Chart implements ExportableChart {
 
 	protected boolean useNegativeValues;
 	protected boolean useOptions;
-	protected VisualizationController visualizationController;
 	protected Controller controller = Controller.getInstance();
 	protected MainController mainController;
-	protected SelectionController selectionController;
 	protected SelectionUserController selectionUserController;
 	protected static final double OPACITY = 0.2;
 
 	public Chart(MainController mainController, ChartType chartType) {
-		this.visualizationController = mainController.getVisualizationController();
-		this.selectionController = mainController.getSelectionController();
+	
 		this.selectionUserController = mainController.getSelectionUserController();
 		this.slcGroup = selectionUserController.getCheckComboBoxGroup();
-
-		this.tabUbuLogs = selectionController.getTabUbuLogs();
-		this.tabUbuLogsComponent = selectionController.getTabUbuLogsComponent();
-		this.tabUbuLogsEvent = selectionController.getTabUbuLogsEvent();
-		this.tabUbuLogsSection = selectionController.getTabUbuLogsSection();
-		this.tabUbuLogsCourseModule = selectionController.getTabUbuLogsCourseModule();
-		this.listViewComponents = selectionController.getListViewComponents();
-		this.listViewEvents = selectionController.getListViewEvents();
-		this.listViewSection = selectionController.getListViewSection();
-		this.listViewCourseModule = selectionController.getListViewCourseModule();
 		this.stats = mainController.getStats();
-		this.tvwGradeReport = selectionController.getTvwGradeReport();
-		this.tabPaneUbuLogs = selectionController.getTabPaneUbuLogs();
-
 		this.mainController = mainController;
 		this.chartType = chartType;
 
@@ -170,7 +128,7 @@ public abstract class Chart implements ExportableChart {
 				(int) (color.getBlue() * 255), opacity);
 	}
 
-	public List<GradeItem> getSelectedGradeItems() {
+	public List<GradeItem> getSelectedGradeItems(TreeView<GradeItem> tvwGradeReport) {
 		return tvwGradeReport.getSelectionModel()
 				.getSelectedItems()
 				.stream()
@@ -234,9 +192,7 @@ public abstract class Chart implements ExportableChart {
 				.getValue(getChartType(), "calculateMax", false);
 	}
 
-	public long getSuggestedMax() {
-		String maxString = visualizationController.getTextFieldMax()
-				.getText();
+	public long getSuggestedMax(String maxString) {
 		if (maxString == null || maxString.isEmpty()) {
 			return 0;
 		}
@@ -295,68 +251,9 @@ public abstract class Chart implements ExportableChart {
 		return slcGroup;
 	}
 
-	public TabPane getTabPaneUbuLogs() {
-		return tabPaneUbuLogs;
-	}
-
-	public Tab getTabUbuLogs() {
-		return tabUbuLogs;
-	}
-
-	public Tab getTabUbuLogsComponent() {
-		return tabUbuLogsComponent;
-	}
-
-	public Tab getTabUbuLogsEvent() {
-		return tabUbuLogsEvent;
-	}
-
-	public Tab getTabUbuLogsSection() {
-		return tabUbuLogsSection;
-	}
-
-	public Tab getTabUbuLogsCourseModule() {
-		return tabUbuLogsCourseModule;
-	}
-
-	public ListView<Component> getListViewComponents() {
-		return listViewComponents;
-	}
-
-	public ListView<ComponentEvent> getListViewEvents() {
-		return listViewEvents;
-	}
-
-	public ListView<Section> getListViewSection() {
-		return listViewSection;
-	}
-
-	public ListView<CourseModule> getListViewCourseModule() {
-		return listViewCourseModule;
-	}
-
-	public ChoiceBox<GroupByAbstract<?>> getChoiceBoxDate() {
-		return choiceBoxDate;
-	}
-
-	public DatePicker getDatePickerStart() {
-		return datePickerStart;
-	}
-
-	public DatePicker getDatePickerEnd() {
-		return datePickerEnd;
-	}
-
-	public TreeView<GradeItem> getTvwGradeReport() {
-		return tvwGradeReport;
-	}
 
 	public Stats getStats() {
 		return stats;
-	}
-
-	public VisualizationController getVisualizationController() {
-		return visualizationController;
 	}
 
 	public Controller getController() {
@@ -365,10 +262,6 @@ public abstract class Chart implements ExportableChart {
 
 	public MainController getMainController() {
 		return mainController;
-	}
-
-	public SelectionController getSelectionController() {
-		return selectionController;
 	}
 
 	public SelectionUserController getSelectionUserController() {
@@ -386,18 +279,6 @@ public abstract class Chart implements ExportableChart {
 	public void setWebView(WebView webViewCharts) {
 		this.webView = webViewCharts;
 
-	}
-
-	public void setChoiceBoxDate(ChoiceBox<GroupByAbstract<?>> choiceBoxDate) {
-		this.choiceBoxDate = choiceBoxDate;
-	}
-
-	public void setDatePickerStart(DatePicker datePickerStart) {
-		this.datePickerStart = datePickerStart;
-	}
-
-	public void setDatePickerEnd(DatePicker datePickerEnd) {
-		this.datePickerEnd = datePickerEnd;
 	}
 
 	public boolean isUseLogs() {

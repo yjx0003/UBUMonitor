@@ -19,13 +19,15 @@ import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Chartjs;
+import javafx.scene.control.TreeView;
 
 public abstract class ChartjsGradeItem extends Chartjs {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChartjsGradeItem.class);
-
-	public ChartjsGradeItem(MainController mainController, ChartType chartType) {
+	protected TreeView<GradeItem> treeViewGradeItem;
+	public ChartjsGradeItem(MainController mainController, ChartType chartType, TreeView<GradeItem> treeViewGradeItem) {
 		super(mainController, chartType);
+		this.treeViewGradeItem = treeViewGradeItem;
 		useGeneralButton = true;
 		useLegend = true;
 		useGroupButton = true;
@@ -104,7 +106,7 @@ public abstract class ChartjsGradeItem extends Chartjs {
 
 	@Override
 	public void update() {
-		String dataset = createDataset(getSelectedEnrolledUser(), getSelectedGradeItems());
+		String dataset = createDataset(getSelectedEnrolledUser(), getSelectedGradeItems(treeViewGradeItem));
 		String options = getOptions();
 		LOGGER.debug(dataset);
 		LOGGER.debug(options);

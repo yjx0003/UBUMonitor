@@ -93,7 +93,7 @@ public class RiskController implements MainAction {
 					updateChart();
 
 				});
-		webViewChartsEngine.load(getClass().getResource("/graphics/RiskCharts.html")
+		webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html")
 				.toExternalForm());
 
 	}

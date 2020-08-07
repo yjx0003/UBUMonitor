@@ -23,12 +23,14 @@ import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Tabulator;
+import javafx.scene.control.TreeView;
 
 public class GradeReportTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GradeReportTable.class);
-
-	public GradeReportTable(MainController mainController) {
+	private TreeView<GradeItem> treeViewGradeItem;
+	public GradeReportTable(MainController mainController,TreeView<GradeItem> treeViewGradeItem) {
 		super(mainController, ChartType.GRADE_REPORT_TABLE);
+		this.treeViewGradeItem = treeViewGradeItem;
 		useGeneralButton = true;
 		useGroupButton = true;
 
@@ -37,7 +39,7 @@ public class GradeReportTable extends Tabulator {
 	@Override
 	public void update() {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		List<GradeItem> gradeItems = getSelectedGradeItems();
+		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		String columns = createColumns(gradeItems);
 		String tableData = createData(enrolledUsers, gradeItems);
 		JSObject data = new JSObject();
@@ -162,7 +164,7 @@ public class GradeReportTable extends Tabulator {
 		List<String> header = new ArrayList<>();
 		header.add("userid");
 		header.add("fullname");
-		List<GradeItem> gradeItems = getSelectedGradeItems();
+		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		for (GradeItem gradeItem : gradeItems) {
 			header.add(gradeItem.getItemname());
 		}

@@ -38,6 +38,9 @@ public class RiskBarTemporal extends RiskBar {
 
 	private static final ComponentEvent COURSE_ACCESS_EVENT = ComponentEvent.get(Component.SYSTEM, Event.COURSE_VIEWED);
 
+	private DatePicker datePickerStart;
+	private DatePicker datePickerEnd;
+	
 	public RiskBarTemporal(MainController mainController, DatePicker datePickerStart, DatePicker datePickerEnd) {
 		super(mainController, ChartType.RISK_BAR_TEMPORAL, Tabs.RISK);
 		this.datePickerStart = datePickerStart;

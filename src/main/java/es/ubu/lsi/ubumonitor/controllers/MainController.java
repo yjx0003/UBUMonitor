@@ -80,6 +80,11 @@ public class MainController implements Initializable {
 
 	@FXML
 	private SelectionUserController selectionUserController;
+	
+	@FXML
+	private Tab forumTab;
+	@FXML
+	private ForumController forumController;
 
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades de
@@ -326,6 +331,14 @@ public class MainController implements Initializable {
 
 	public Tab getRiskTab() {
 		return riskTab;
+	}
+
+	public ForumController getForumController() {
+		return forumController;
+	}
+
+	public Tab getForumTab() {
+		return forumTab;
 	}
 
 }

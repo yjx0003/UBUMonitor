@@ -20,11 +20,12 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import javafx.scene.control.TreeView;
 
 public class Violin extends ChartjsGradeItem {
 
-	public Violin(MainController mainController) {
-		super(mainController, ChartType.VIOLIN);
+	public Violin(MainController mainController, TreeView<GradeItem> treeViewGradeItem) {
+		super(mainController, ChartType.VIOLIN, treeViewGradeItem);
 	}
 
 	@Override
@@ -107,8 +108,8 @@ public class Violin extends ChartjsGradeItem {
 
 		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
 		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
-
-		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{min:0}}],xAxes:[{" + xLabel + ",ticks:{min:0}}]}");
+		
+		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{min:0,max:10}}],xAxes:[{" + xLabel + ",ticks:{min:0,max:10}}]}");
 		return jsObject.toString();
 	}
 
@@ -117,7 +118,7 @@ public class Violin extends ChartjsGradeItem {
 		List<String> header = new ArrayList<>();
 		header.add("violin");
 		header.add("stats");
-		List<GradeItem> gradeItems = getSelectedGradeItems();
+		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		for (GradeItem gradeItem : gradeItems) {
 			header.add(gradeItem.getItemname());
 		}

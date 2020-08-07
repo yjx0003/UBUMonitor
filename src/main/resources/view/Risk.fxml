@@ -28,7 +28,7 @@
                   </ImageView>
                </center>
                <bottom>
-                  <ProgressBar fx:id="progressBar" prefHeight="35.0" prefWidth="200.0" progress="0.0" BorderPane.alignment="TOP_CENTER" />
+                  <ProgressBar fx:id="progressBar" progress="0.0" BorderPane.alignment="TOP_CENTER" />
                </bottom>
             </BorderPane>
          </children>

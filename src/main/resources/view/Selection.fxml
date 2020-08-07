@@ -43,7 +43,7 @@
                                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-												<TextField fx:id="componentTextField" promptText="%label.filter" />
+												<TextField fx:id="componentTextField" prefWidth="100.0" promptText="%label.filter" />
                                     <Button mnemonicParsing="false" onAction="#selectAllComponents" text="%button.selectall" GridPane.rowIndex="1" />
                                  </children>
                                  <padding>
@@ -75,7 +75,7 @@
                                  </rowConstraints>
                                  <children>
                                     <Button mnemonicParsing="false" onAction="#selectAllComponentEvents" text="%button.selectall" GridPane.rowIndex="1" />
-      												<TextField fx:id="componentEventTextField" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+      												<TextField fx:id="componentEventTextField" prefWidth="100.0" promptText="%label.filter" />
                                  </children>
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -98,15 +98,15 @@
                            <top>
                               <GridPane hgap="5.0" vgap="5.0" BorderPane.alignment="CENTER">
                                 <columnConstraints>
-                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-                                  <ColumnConstraints hgrow="SOMETIMES" />
+                                  <ColumnConstraints hgrow="NEVER" />
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="141.0" minWidth="108.0" prefWidth="141.0" />
                                 </columnConstraints>
                                 <rowConstraints>
                                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-												<TextField fx:id="sectionTextField" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+												<TextField fx:id="sectionTextField" prefWidth="100.0" promptText="%label.filter" />
 												<CheckBox fx:id="checkBoxSection" mnemonicParsing="false" text="%label.withhidden" GridPane.columnIndex="1" />
                                     <Button mnemonicParsing="false" onAction="#selectAllSections" text="%button.selectall" GridPane.rowIndex="1" />
                                  </children>
@@ -131,7 +131,7 @@
                            <top>
                               <GridPane hgap="5.0" vgap="5.0" BorderPane.alignment="CENTER">
                                 <columnConstraints>
-                                  <ColumnConstraints hgrow="SOMETIMES" />
+                                  <ColumnConstraints hgrow="NEVER" />
                                   <ColumnConstraints hgrow="SOMETIMES" />
                                 </columnConstraints>
                                 <rowConstraints>
@@ -140,17 +140,11 @@
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-												<TextField fx:id="courseModuleTextField" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" GridPane.rowIndex="1" />
+												<TextField fx:id="courseModuleTextField" prefWidth="100.0" promptText="%label.filter" GridPane.rowIndex="1" />
 												<CheckBox fx:id="checkBoxCourseModule" mnemonicParsing="false" text="%label.withhidden" GridPane.columnIndex="1" />
 												<CheckBox fx:id="checkBoxActivityCompleted" mnemonicParsing="false" text="%label.withcompletion" />
-												<CheckComboBox fx:id="checkComboBoxCourseModule" prefHeight="31.0" prefWidth="108.0" showCheckedCount="true" title="" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                       <tooltip>
-                                          <Tooltip text="%text.coursemodule" />
-                                       </tooltip></CheckComboBox>
-                                    <CheckComboBox fx:id="checkComboBoxSection" prefHeight="31.0" prefWidth="108.0" showCheckedCount="true" title="" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                       <tooltip>
-                                          <Tooltip text="%text.section" />
-                                       </tooltip></CheckComboBox>
+												<CheckComboBox fx:id="checkComboBoxCourseModule" prefWidth="120.0" showCheckedCount="true" title=" " GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <CheckComboBox fx:id="checkComboBoxSection" prefWidth="120.0" showCheckedCount="true" title=" " GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                     <Button mnemonicParsing="false" onAction="#selectAllCourseModules" text="%button.selectall" GridPane.rowIndex="2" />
                                  </children>
                                  <padding>
@@ -182,7 +176,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-								<TextField fx:id="tfdItems" promptText="%label.filter" />
+								<TextField fx:id="tfdItems" prefWidth="100.0" promptText="%label.filter" />
 								<ChoiceBox fx:id="slcType" GridPane.columnIndex="1" GridPane.rowIndex="1">
                            <tooltip>
                               <Tooltip text="%text.coursemodule" />
@@ -210,7 +204,7 @@
                <top>
                   <GridPane hgap="5.0" vgap="5.0" BorderPane.alignment="CENTER">
                     <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" />
+                      <ColumnConstraints hgrow="NEVER" />
                       <ColumnConstraints hgrow="SOMETIMES" />
                     </columnConstraints>
                     <rowConstraints>
@@ -219,17 +213,10 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-								<TextField fx:id="activityTextField" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" GridPane.rowIndex="1" />
+								<TextField fx:id="activityTextField" prefWidth="100.0" promptText="%label.filter" GridPane.rowIndex="1" />
 								<CheckBox fx:id="checkBoxActivity" mnemonicParsing="false" text="%label.withhidden" GridPane.columnIndex="1" />
-								<CheckComboBox fx:id="checkComboBoxModuleType" prefHeight="31.0" prefWidth="108.0" showCheckedCount="true" title="" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                           <tooltip>
-                              <Tooltip text="%text.coursemodule" />
-                           </tooltip></CheckComboBox>
-                        <CheckComboBox fx:id="checkComboBoxSectionAc" prefHeight="31.0" prefWidth="108.0" showCheckedCount="true" title="" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                           <tooltip>
-                              <Tooltip text="%text.section" />
-                           </tooltip>
-                        </CheckComboBox>
+								<CheckComboBox fx:id="checkComboBoxModuleType" maxWidth="1.7976931348623157E308" prefWidth="120.0" showCheckedCount="true" title=" " GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <CheckComboBox fx:id="checkComboBoxSectionAc" maxWidth="1.7976931348623157E308" prefWidth="120.0" showCheckedCount="true" title=" " GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Button mnemonicParsing="false" onAction="#selectAllActivityCompletion" text="%button.selectall" GridPane.rowIndex="2" />
                      </children>
                      <padding>

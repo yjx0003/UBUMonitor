@@ -106,19 +106,19 @@ public class MeanDiff extends ChartjsLog {
 	public String calculateMax() {
 		long maxYAxis = 1L;
 		List<EnrolledUser> users = getUsers();
-		if (tabUbuLogsComponent.isSelected()) {
+		if (tabComponent.isSelected()) {
 			maxYAxis = choiceBoxDate.getValue().getComponents().getMeanDifferenceMax(users,
-					listViewComponents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					listViewComponent.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
-		} else if (tabUbuLogsEvent.isSelected()) {
+		} else if (tabEvent.isSelected()) {
 			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getMeanDifferenceMax(users,
-					listViewEvents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					listViewEvent.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
-		} else if (tabUbuLogsSection.isSelected()) {
+		} else if (tabSection.isSelected()) {
 			maxYAxis = choiceBoxDate.getValue().getSections().getMeanDifferenceMax(users,
 					listViewSection.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
-		} else if (tabUbuLogsCourseModule.isSelected()) {
+		} else if (tabCourseModule.isSelected()) {
 			maxYAxis = choiceBoxDate.getValue().getCourseModules().getMeanDifferenceMax(users,
 					listViewCourseModule.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
@@ -136,7 +136,7 @@ public class MeanDiff extends ChartjsLog {
 						+ mainConfiguration.getValue(getChartType(), "zeroLineWidth") + ",zeroLineBorderDash:["
 						+ mainConfiguration.getValue(MainConfiguration.GENERAL, "borderLength") + ","
 						+ mainConfiguration.getValue(MainConfiguration.GENERAL, "borderSpace")
-						+ "]},ticks:{suggestedMax:" + getSuggestedMax() + ",suggestedMin:" + -getSuggestedMax()
+						+ "]},ticks:{suggestedMax:" + getSuggestedMax(textFieldMax.getText()) + ",suggestedMin:" + -getSuggestedMax(textFieldMax.getText())
 						+ ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
 		jsObject.put("tooltips",
 				"{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+\" : \"+Math.round(100*a.yLabel)/100}}}");
@@ -242,7 +242,7 @@ public class MeanDiff extends ChartjsLog {
 		List<String> list = new ArrayList<>();
 		list.add("userid");
 		list.add("fullname");
-		String selectedTab = tabPaneUbuLogs.getSelectionModel().getSelectedItem().getText();
+		String selectedTab = tabPaneSelection.getSelectionModel().getSelectedItem().getText();
 		if(hasId()) {
 			list.add(selectedTab + "_id");
 		}

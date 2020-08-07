@@ -141,7 +141,7 @@ public class SelectionController {
 
 	@FXML
 	private CheckComboBox<Section> checkComboBoxSection;
-	
+
 	@FXML
 	private CheckComboBox<Section> checkComboBoxSectionAc;
 
@@ -149,6 +149,12 @@ public class SelectionController {
 
 	public void init(MainController mainController) {
 		this.mainController = mainController;
+
+		// bind the content to visualization or risk tab
+		tabPane.visibleProperty()
+				.bind(mainController.getVisualizationTab()
+						.selectedProperty());
+
 		tabPane.getSelectionModel()
 				.select(ConfigHelper.getProperty("tabPane", tabPane.getSelectionModel()
 						.getSelectedIndex()));
@@ -206,13 +212,14 @@ public class SelectionController {
 		GradeItem grcl = CONTROLLER.getActualCourse()
 				.getRootGradeItem();
 		// Establecemos la raiz del Treeview
-		
+
 		if (grcl != null) {
 			TreeItem<GradeItem> root = new TreeItem<>(grcl);
 			root.setExpanded(true);
 			setIcon(root);
 			// Llamamos recursivamente para llenar el Treeview
-			int limitLevel = CONTROLLER.getMainConfiguration().getValue(MainConfiguration.GENERAL, "limitLevelGradeItem");
+			int limitLevel = CONTROLLER.getMainConfiguration()
+					.getValue(MainConfiguration.GENERAL, "limitLevelGradeItem");
 			setTreeview(root, grcl, 1, Math.max(limitLevel, 0));
 
 			// Establecemos la raiz en el TreeView
@@ -344,11 +351,11 @@ public class SelectionController {
 					filterCourseModules.setPredicate(getActivityPredicade());
 					listViewActivity.setCellFactory(getListCellCourseModule());
 				});
-		
+
 		if (!CONTROLLER.getActualCourse()
 				.getSections()
 				.isEmpty()) {
-			
+
 			DUMMY_SECTION.setName(I18n.get(TEXT_SELECTALL));
 			checkComboBoxSectionAc.getItems()
 					.add(DUMMY_SECTION);
@@ -378,16 +385,17 @@ public class SelectionController {
 					});
 		}
 		filterCourseModules.setPredicate(getActivityPredicade());
-		
-		
 
 	}
 
 	private Predicate<? super CourseModule> getActivityPredicade() {
 		return cm -> containsTextField(activityTextField.getText(), cm.getModuleName())
-				&& (checkBoxActivity.isSelected() || cm.isVisible()) 
-				&& (checkComboBoxModuleType.getCheckModel().getCheckedItems().contains(cm.getModuleType()))
-				&& (checkComboBoxSectionAc.getCheckModel().getCheckedItems().contains(cm.getSection()));
+				&& (checkBoxActivity.isSelected() || cm.isVisible()) && (checkComboBoxModuleType.getCheckModel()
+						.getCheckedItems()
+						.contains(cm.getModuleType()))
+				&& (checkComboBoxSectionAc.getCheckModel()
+						.getCheckedItems()
+						.contains(cm.getSection()));
 	}
 
 	/**
@@ -520,8 +528,9 @@ public class SelectionController {
 				.getUniqueComponentsEvents();
 
 		// Ordenamos los componentes segun los nombres internacionalizados
-		uniqueComponentsEvents.sort(Comparator.comparing((ComponentEvent c) -> I18n.get(c.getComponent()), Collator.getInstance())
-				.thenComparing((ComponentEvent c) -> I18n.get(c.getEventName()), Collator.getInstance()));
+		uniqueComponentsEvents
+				.sort(Comparator.comparing((ComponentEvent c) -> I18n.get(c.getComponent()), Collator.getInstance())
+						.thenComparing((ComponentEvent c) -> I18n.get(c.getEventName()), Collator.getInstance()));
 
 		ObservableList<ComponentEvent> observableListComponents = FXCollections
 				.observableArrayList(uniqueComponentsEvents);
@@ -695,7 +704,7 @@ public class SelectionController {
 			if (!CONTROLLER.getActualCourse()
 					.getSections()
 					.isEmpty()) {
-				
+
 				DUMMY_SECTION.setName(I18n.get(TEXT_SELECTALL));
 				checkComboBoxSection.getItems()
 						.add(DUMMY_SECTION);
@@ -1050,27 +1059,33 @@ public class SelectionController {
 	}
 
 	public void selectAllComponents() {
-		listViewComponents.getSelectionModel().selectAll();
+		listViewComponents.getSelectionModel()
+				.selectAll();
 	}
-	
+
 	public void selectAllComponentEvents() {
-		listViewEvents.getSelectionModel().selectAll();
+		listViewEvents.getSelectionModel()
+				.selectAll();
 	}
-	
+
 	public void selectAllSections() {
-		listViewSection.getSelectionModel().selectAll();
+		listViewSection.getSelectionModel()
+				.selectAll();
 	}
-	
+
 	public void selectAllCourseModules() {
-		listViewCourseModule.getSelectionModel().selectAll();
+		listViewCourseModule.getSelectionModel()
+				.selectAll();
 	}
-	
+
 	public void selectAllGradeItems() {
-		tvwGradeReport.getSelectionModel().selectAll();
+		tvwGradeReport.getSelectionModel()
+				.selectAll();
 	}
-	
+
 	public void selectAllActivityCompletion() {
-		listViewActivity.getSelectionModel().selectAll();
+		listViewActivity.getSelectionModel()
+				.selectAll();
 	}
-	
+
 }

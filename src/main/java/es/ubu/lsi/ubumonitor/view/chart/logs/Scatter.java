@@ -167,7 +167,7 @@ public class Scatter extends ChartjsLog {
 		List<String> list = new ArrayList<>();
 		list.add("userid");
 		list.add("fullname");
-		String selectedTab = tabPaneUbuLogs.getSelectionModel().getSelectedItem().getText();
+		String selectedTab = tabPaneSelection.getSelectionModel().getSelectedItem().getText();
 		if(hasId()) {
 			list.add(selectedTab + "_id");
 		}

@@ -85,6 +85,7 @@ public class RiskJavaConnector {
 	}
 
 	public void setDefaultValues() {
+
 		JSArray jsArray = new JSArray();
 		for (ChartType chartType : mapChart.keySet()) {
 			JSObject jsObject = new JSObject();
@@ -95,6 +96,7 @@ public class RiskJavaConnector {
 		}
 	
 		webViewChartsEngine.executeScript("generateButtons(" + jsArray + ")");
+		webViewChartsEngine.executeScript("createChartDivs()");
 		webViewChartsEngine.executeScript(String.format("translate(%s,'%s')", "'btnLegend'",UtilMethods.escapeJavaScriptText( I18n.get("btnLegend"))));
 		webViewChartsEngine.executeScript(String.format("translate(%s,'%s')", "'btnMean'",UtilMethods.escapeJavaScriptText( I18n.get("btnMean"))));
 		webViewChartsEngine.executeScript(String.format("translate(%s,'%s')", "'btnGroupMean'", UtilMethods.escapeJavaScriptText(I18n.get("btnGroupMean"))));

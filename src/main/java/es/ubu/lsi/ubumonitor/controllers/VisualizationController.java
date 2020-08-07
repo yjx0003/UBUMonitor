@@ -88,7 +88,7 @@ public class VisualizationController implements MainAction {
 		progressBar.progressProperty()
 				.bind(webViewChartsEngine.getLoadWorker()
 						.progressProperty());
-
+		
 		// Comprobamos cuando se carga la pagina para traducirla
 		webViewChartsEngine.getLoadWorker()
 				.stateProperty()

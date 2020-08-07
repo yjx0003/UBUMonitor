@@ -29,6 +29,11 @@
 									<fx:include fx:id="risk" source="Risk.fxml" />
 
 								</Tab>
+                  <Tab fx:id="forumTab" text="%tab.forum">
+                     <content>
+                        <fx:include fx:id="forum" source="ForumView.fxml" />
+                     </content>
+                  </Tab>
 
 							</tabs>
 						</TabPane>

@@ -18,6 +18,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -39,16 +41,26 @@ public class SelectionForumController {
 	@FXML
 	private CheckBox checkBoxForum;
 
-	public void init(MainController mainController) {
-		// listViewForum.visibleProperty().bind(mainController.get);
+	@FXML
+	private TabPane tabPane;
 
+	public void init(MainController mainController) {
+
+		tabPane.visibleProperty()
+				.bind(mainController.getForumTab()
+						.selectedProperty());
+
+		fillForumListView(mainController);
+	}
+
+	private void fillForumListView(MainController mainController) {
 		filteredForum = new FilteredList<>(Controller.getInstance()
 				.getActualCourse()
 				.getModules()
 				.stream()
 				.filter(cm -> cm.getModuleType() == ModuleType.FORUM)
 				.collect(Collectors.toCollection(FXCollections::observableArrayList)));
-
+		listViewForum.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		listViewForum.setItems(filteredForum);
 
 		Section dummySection = new Section(-1);
@@ -68,7 +80,7 @@ public class SelectionForumController {
 		checkComboBoxForumSection.getCheckModel()
 				.getCheckedItems()
 				.addListener((Change<? extends Section> c) -> onChange());
-		filteredForum.setPredicate(getForumPredicate());
+		onChange();
 	}
 
 	private <T> void fillCheckComboBox(T dummy, Collection<T> values, CheckComboBox<T> checkComboBox) {
@@ -139,6 +151,7 @@ public class SelectionForumController {
 	}
 
 	public void selectAll() {
+
 		listViewForum.getSelectionModel()
 				.selectAll();
 	}

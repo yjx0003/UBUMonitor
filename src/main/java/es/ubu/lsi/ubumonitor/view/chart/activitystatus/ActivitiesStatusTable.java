@@ -25,13 +25,22 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Tabulator;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.ListView;
 
 public class ActivitiesStatusTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActivitiesStatusTable.class);
 	private DateTimeWrapper dateTimeWrapper;
+	private DatePicker datePickerStart;
+	private DatePicker datePickerEnd;
+	private ListView<CourseModule> listViewActivity;
 
-	public ActivitiesStatusTable(MainController mainController) {
+	public ActivitiesStatusTable(MainController mainController, DatePicker datePickerStart, DatePicker datePickerEnd,
+			ListView<CourseModule> listViewActivity) {
 		super(mainController, ChartType.ACTIVITIES_TABLE);
+		this.datePickerStart = datePickerStart;
+		this.datePickerEnd = datePickerEnd;
+		this.listViewActivity = listViewActivity;
 		dateTimeWrapper = new DateTimeWrapper();
 
 		useRangeDate = true;
@@ -166,8 +175,7 @@ public class ActivitiesStatusTable extends Tabulator {
 	public void update() {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 
-		List<CourseModule> courseModules = selectionController.getListViewActivity()
-				.getSelectionModel()
+		List<CourseModule> courseModules = listViewActivity.getSelectionModel()
 				.getSelectedItems();
 		String columns = createColumns(courseModules);
 		String tableData = createData(enrolledUsers, courseModules);
@@ -203,7 +211,7 @@ public class ActivitiesStatusTable extends Tabulator {
 				.atStartOfDay(ZoneId.systemDefault())
 				.toInstant();
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		List<CourseModule> courseModules = selectionController.getListViewActivity()
+		List<CourseModule> courseModules = listViewActivity
 				.getSelectionModel()
 				.getSelectedItems();
 		List<String> header = new ArrayList<>();
@@ -244,7 +252,7 @@ public class ActivitiesStatusTable extends Tabulator {
 				}
 				printer.print(completed);
 				printer.print(courseModules.size());
-				printer.print(completed / (double)courseModules.size() * 100);
+				printer.print(completed / (double) courseModules.size() * 100);
 				printer.println();
 
 			}

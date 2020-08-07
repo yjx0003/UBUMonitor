@@ -242,7 +242,7 @@ public class BoxplotLogTime extends ChartjsLog {
 		jsObject.put("tooltipDecimals", 0);
 		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
 		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
-		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{suggestedMax:" + getSuggestedMax()
+		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{suggestedMax:" + getSuggestedMax(textFieldMax.getText())
 				+ ",stepSize:0}}],xAxes:[{" + xLabel + "}]}");
 		JSObject callbacks = new JSObject();
 		callbacks.put("afterTitle", "function(t,e){return e.datasets[t[0].datasetIndex].label}");

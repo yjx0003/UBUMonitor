@@ -20,11 +20,15 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import javafx.scene.control.TreeView;
 
 public class BoxPlot extends ChartjsGradeItem {
 
-	public BoxPlot(MainController mainController) {
-		super(mainController, ChartType.BOXPLOT);
+	
+
+	public BoxPlot(MainController mainController, TreeView<GradeItem> treeViewGradeItems) {
+		super(mainController, ChartType.BOXPLOT, treeViewGradeItems);
+
 	}
 
 	@Override
@@ -119,7 +123,7 @@ public class BoxPlot extends ChartjsGradeItem {
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBoxplot" : "boxplot");
 		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
 		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
-		jsObject.put("scales", "{yAxes:[{" + yLabel + "}],xAxes:[{" + xLabel + "}]}");
+		jsObject.put("scales", "{yAxes:[{ticks:{max:10,stepSize:1}," + yLabel + "}],xAxes:[{ticks:{max:10,stepSize:1}" + xLabel + "}]}");
 
 		JSObject callbacks = new JSObject();
 		callbacks.put("afterTitle", "function(t,e){return e.datasets[t[0].datasetIndex].label}");
@@ -134,7 +138,7 @@ public class BoxPlot extends ChartjsGradeItem {
 		List<String> header = new ArrayList<>();
 		header.add("boxplot");
 		header.add("stats");
-		List<GradeItem> gradeItems = getSelectedGradeItems();
+		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		for (GradeItem gradeItem : gradeItems) {
 			header.add(gradeItem.getItemname());
 		}

@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import org.controlsfx.control.CheckComboBox?>
 
-<TabPane fx:id="tabPane" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.controllers.SelectionController">
+<TabPane fx:id="tabPane" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.controllers.SelectionForumController">
 	<tabs>
 		<Tab fx:id="tabActivity" closable="false" text="%tab.forum">
 			<content>
@@ -39,12 +39,12 @@
                         <RowConstraints vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <CheckComboBox fx:id="checkComboBoxForumSection" prefHeight="31.0" prefWidth="108.0" showCheckedCount="true" title="" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <CheckComboBox fx:id="checkComboBoxForumSection" prefWidth="120.0" showCheckedCount="true" title="" GridPane.columnIndex="1" GridPane.rowIndex="1">
                            <tooltip>
                               <Tooltip text="%tab.section" />
                            </tooltip></CheckComboBox>
 								<CheckBox fx:id="checkBoxForum" mnemonicParsing="false" text="%label.withhidden" GridPane.columnIndex="1" />
-								<TextField fx:id="textFieldForum" prefHeight="28.0" prefWidth="108.0" promptText="%label.filter" />
+								<TextField fx:id="textFieldForum" prefWidth="100.0" promptText="%label.filter" />
                         <Button mnemonicParsing="false" onAction="#selectAll" text="%button.selectall" GridPane.rowIndex="1" />
                      </children>
                      <padding>

@@ -7,61 +7,41 @@ import java.util.Locale;
 import java.util.Map;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
-import es.ubu.lsi.ubumonitor.controllers.RiskController;
+import es.ubu.lsi.ubumonitor.controllers.ForumController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
-import es.ubu.lsi.ubumonitor.view.chart.risk.Bubble;
-import es.ubu.lsi.ubumonitor.view.chart.risk.BubbleLogarithmic;
-import es.ubu.lsi.ubumonitor.view.chart.risk.RiskBar;
-import es.ubu.lsi.ubumonitor.view.chart.risk.RiskBarTemporal;
-import es.ubu.lsi.ubumonitor.view.chart.risk.RiskEvolution;
+import es.ubu.lsi.ubumonitor.view.chart.forum.ForumTable;
 import javafx.concurrent.Worker.State;
 import javafx.scene.web.WebEngine;
 
-public class RiskJavaConnector {
+public class ForumConnector {
 
-	private static final ChartType DEFAULT_CHART = ChartType.DEFAULT_RISK;
+	private static final ChartType DEFAULT_CHART = ChartType.DEFAULT_FORUM;
 
 	private Chart currentType;
 	private WebEngine webViewChartsEngine;
-	private RiskController riskController;
+
 	private Map<ChartType, Chart> mapChart;
 
-	public RiskJavaConnector(RiskController riskController) {
-		this.riskController = riskController;
-		webViewChartsEngine = riskController.getWebViewChartsEngine();
-
+	public ForumConnector(ForumController forumController) {
+		webViewChartsEngine = forumController.getWebChartsEngine();
 		mapChart = new EnumMap<>(ChartType.class);
-		addChart(new Bubble(riskController.getMainController()));
-		addChart(new BubbleLogarithmic(riskController.getMainController()));
-		addChart(new RiskBar(riskController.getMainController()));
-		addChart(new RiskBarTemporal(riskController.getMainController(), riskController.getDatePickerStart(),
-				riskController.getDatePickerEnd()));
-		addChart(new RiskEvolution(riskController.getMainController(), riskController.getDatePickerStart(),
-				riskController.getDatePickerEnd(), riskController.getChoiceBoxDate()));
-
+		addChart(new ForumTable(forumController.getMainController(), forumController.getWebViewCharts(),
+				forumController.getMainController()
+						.getSelectionMainController()
+						.getSelectionForumController()
+						.getListViewForum()));
 	}
 
-	public void addChart(Chart chart) {
-		if (Controller.getInstance()
-				.getActualCourse()
-				.getUpdatedLog() != null || !chart.isUseLogs()) {
-			chart.setWebViewChartsEngine(webViewChartsEngine);
-			mapChart.put(chart.chartType, chart);
-		}
-
+	private void addChart(Chart chart) {
+		chart.setWebViewChartsEngine(webViewChartsEngine);
+		mapChart.put(chart.getChartType(), chart);
 	}
 
-	private void manageOptions() {
-		riskController.getGridPaneOptionLogs()
-				.setVisible(currentType.isUseGroupBy());
-		riskController.getDateGridPane()
-				.setVisible(currentType.isUseRangeDate());
-		riskController.getOptionsUbuLogs()
-				.setVisible(currentType.isUseOptions());
+	public void manageOptions() {
 	}
 
 	public void updateChart() {
@@ -184,5 +164,4 @@ public class RiskJavaConnector {
 		currentType.export(file);
 
 	}
-
 }

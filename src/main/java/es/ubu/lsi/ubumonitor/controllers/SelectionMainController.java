@@ -9,10 +9,15 @@ public class SelectionMainController {
 	
 	@FXML
 	private SelectionForumController selectionForumController;
+	
+	@FXML
+	private SelectionEmptyController selectionEmptyController;
 
 	public void init(MainController mainController) {
 		selectionController.init(mainController);
 		selectionForumController.init(mainController);
+		selectionEmptyController.init(mainController);
+		
 	}
 	
 	public SelectionController getSelectionController() {

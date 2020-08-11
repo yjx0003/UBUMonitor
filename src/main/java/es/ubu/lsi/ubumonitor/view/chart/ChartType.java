@@ -38,16 +38,19 @@ public enum ChartType {
 	BUBBLE(Tabs.RISK, 21),
 	BUBBLE_LOGARITHMIC(Tabs.RISK, 22),
 	RISK_BAR_TEMPORAL(Tabs.RISK, 18),
-	RISK_EVOLUTION(Tabs.RISK, 19);
+	RISK_EVOLUTION(Tabs.RISK, 19),
+	
+	FORUM_TABLE(Tabs.FORUM, 23);
 	
 
 	private Tabs tab;
 	private int id;
 
-	private static final ChartType DEFAULT_LOGS = TOTAL_BAR;
-	private static final ChartType DEFAULT_GRADES = LINE;
-	private static final ChartType DEFAULT_ACTIVITY_COMPLETION = ACTIVITIES_TABLE;
-	private static final ChartType DEFAULT_RISK = RISK_BAR;
+	public static final ChartType DEFAULT_LOGS = TOTAL_BAR;
+	public static final ChartType DEFAULT_GRADES = LINE;
+	public static final ChartType DEFAULT_ACTIVITY_COMPLETION = ACTIVITIES_TABLE;
+	public static final ChartType DEFAULT_RISK = RISK_BAR;
+	public static final ChartType DEFAULT_FORUM = FORUM_TABLE;
 
 	private static Map<Integer, ChartType> map = new HashMap<>();
 
@@ -81,23 +84,7 @@ public enum ChartType {
 	public static ChartType getById(int id) {
 		return map.get(id);
 	}
-
-	public static ChartType getDefaultLogs() {
-		return DEFAULT_LOGS;
-	}
-
-	public static ChartType getDefaultGrades() {
-		return DEFAULT_GRADES;
-	}
-
-	public static ChartType getDefaultActivityCompletion() {
-		return DEFAULT_ACTIVITY_COMPLETION;
-	}
-
-	public static ChartType getDefaultRisk() {
-		return DEFAULT_RISK;
-	}
-
+	
 	public static List<ChartType> getNonDefaultValues() {
 		return NON_DEFAULT_VALUES;
 	}

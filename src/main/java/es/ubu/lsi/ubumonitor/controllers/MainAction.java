@@ -3,31 +3,33 @@ package es.ubu.lsi.ubumonitor.controllers;
 public interface MainAction {
 
 	public void onWebViewTabChange();
-	
-	public void updateTreeViewGradeItem();
+
+	public default void updateTreeViewGradeItem() {}
 
 	public void updateListViewEnrolledUser();
 
 	public void updatePredicadeEnrolledList();
 
-	public void updateListViewActivity();
+	public default void updateListViewActivity() {} 
 
-	public void onSetTabLogs();
+	public default void onSetTabLogs() {}
 
-	public void onSetTabGrades();
+	public default void onSetTabGrades() {}
 
-	public void onSetTabActivityCompletion();
+	public default void onSetTabActivityCompletion() {}
 
-	public void onSetSubTabLogs();
+	public default void onSetSubTabLogs() {}
 
-	public void updateListViewComponents();
+	public default void updateListViewComponents() {}
 
-	public void updateListViewEvents();
+	public default void updateListViewEvents() {}
 
-	public void updateListViewSection();
+	public default void updateListViewSection() {}
 
-	public void updateListViewCourseModule();
+	public default void updateListViewCourseModule() {}
 	
+	public default void updateListViewForum() {}
+
 	public void save();
 
 	public void applyConfiguration();

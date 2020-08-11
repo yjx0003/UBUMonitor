@@ -227,12 +227,6 @@ public class RiskController implements MainAction {
 	}
 
 	@Override
-	public void updateTreeViewGradeItem() {
-		// do nothing
-
-	}
-
-	@Override
 	public void updateListViewEnrolledUser() {
 		updateChart();
 
@@ -241,60 +235,6 @@ public class RiskController implements MainAction {
 	@Override
 	public void updatePredicadeEnrolledList() {
 		updateChart();
-	}
-
-	@Override
-	public void updateListViewActivity() {
-		// do nothing
-
-	}
-
-	@Override
-	public void onSetTabLogs() {
-		// do nothing
-
-	}
-
-	@Override
-	public void onSetTabGrades() {
-		// do nothing
-
-	}
-
-	@Override
-	public void onSetTabActivityCompletion() {
-		// do nothing
-
-	}
-
-	@Override
-	public void onSetSubTabLogs() {
-		// do nothing
-
-	}
-
-	@Override
-	public void updateListViewComponents() {
-		// do nothing
-
-	}
-
-	@Override
-	public void updateListViewEvents() {
-		// do nothing
-
-	}
-
-	@Override
-	public void updateListViewSection() {
-		// do nothing
-
-	}
-
-	@Override
-	public void updateListViewCourseModule() {
-		// do nothing
-
 	}
 
 	@Override
@@ -365,10 +305,6 @@ public class RiskController implements MainAction {
 
 	public DatePicker getDatePickerEnd() {
 		return datePickerEnd;
-	}
-
-	public Controller getController() {
-		return controller;
 	}
 
 

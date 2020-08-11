@@ -24,12 +24,13 @@ import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Tabulator;
 import javafx.scene.control.TreeView;
+import javafx.scene.web.WebView;
 
 public class GradeReportTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GradeReportTable.class);
 	private TreeView<GradeItem> treeViewGradeItem;
-	public GradeReportTable(MainController mainController,TreeView<GradeItem> treeViewGradeItem) {
-		super(mainController, ChartType.GRADE_REPORT_TABLE);
+	public GradeReportTable(MainController mainController,TreeView<GradeItem> treeViewGradeItem, WebView webView) {
+		super(mainController, ChartType.GRADE_REPORT_TABLE, webView);
 		this.treeViewGradeItem = treeViewGradeItem;
 		useGeneralButton = true;
 		useGroupButton = true;

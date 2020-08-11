@@ -23,6 +23,7 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import javafx.scene.web.WebView;
 
 public class TableLog extends TabulatorLogs {
 
@@ -38,8 +39,8 @@ public class TableLog extends TabulatorLogs {
 
 	private DateTimeWrapper dateTimeWrapper;
 
-	public TableLog(MainController mainController) {
-		super(mainController, ChartType.TABLE_LOG);
+	public TableLog(MainController mainController, WebView webView) {
+		super(mainController, ChartType.TABLE_LOG, webView);
 		dateTimeWrapper = new DateTimeWrapper();
 		useRangeDate = true;
 	}

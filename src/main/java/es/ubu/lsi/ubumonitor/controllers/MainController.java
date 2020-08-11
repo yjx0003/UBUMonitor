@@ -86,6 +86,12 @@ public class MainController implements Initializable {
 	private Tab forumTab;
 	@FXML
 	private ForumController forumController;
+	
+	@FXML
+	private Tab clusteringTab;
+	
+	@FXML
+	private GeneralController clusteringController;
 
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades de
@@ -110,6 +116,9 @@ public class MainController implements Initializable {
 			menuController.init(this);
 			selectionUserController.init(this);
 			selectionMainController.init(this);
+			clusteringController.init(this);
+			
+			
 			initWebViewTabs();
 			initStatusBar();
 			
@@ -347,6 +356,14 @@ public class MainController implements Initializable {
 
 	public SelectionMainController getSelectionMainController() {
 		return selectionMainController;
+	}
+
+	public Tab getClusteringTab() {
+		return clusteringTab;
+	}
+
+	public GeneralController getClusteringController() {
+		return clusteringController;
 	}
 
 }

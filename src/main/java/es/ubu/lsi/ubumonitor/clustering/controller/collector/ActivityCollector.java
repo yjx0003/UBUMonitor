@@ -27,7 +27,7 @@ public class ActivityCollector extends DataCollector {
 	 */
 	public ActivityCollector(MainController mainController) {
 		super("clustering.type.activity");
-		courseModules = mainController.getListViewActivity();
+		courseModules = mainController.getSelectionController().getListViewActivity();
 	}
 
 	/**

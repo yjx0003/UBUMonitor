@@ -3,7 +3,7 @@ package es.ubu.lsi.ubumonitor.clustering.analysis;
 import es.ubu.lsi.ubumonitor.clustering.algorithm.Algorithm;
 import es.ubu.lsi.ubumonitor.clustering.analysis.methods.AnalysisMethod;
 import es.ubu.lsi.ubumonitor.clustering.analysis.methods.SilhouetteMethod;
-import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.util.I18n;
 
 public class SilhouetteFactory extends AnalysisFactory {
 

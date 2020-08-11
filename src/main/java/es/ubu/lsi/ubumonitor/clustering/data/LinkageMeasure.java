@@ -2,7 +2,7 @@ package es.ubu.lsi.ubumonitor.clustering.data;
 
 import java.util.function.BiFunction;
 
-import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import smile.clustering.linkage.CompleteLinkage;
 import smile.clustering.linkage.Linkage;
 import smile.clustering.linkage.SingleLinkage;

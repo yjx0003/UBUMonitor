@@ -24,7 +24,7 @@ public class GradesCollector extends DataCollector {
 	 */
 	public GradesCollector(MainController mainController) {
 		super("clustering.type.grade");
-		gradeItems = mainController.getTvwGradeReport();
+		gradeItems = mainController.getSelectionController().getTvwGradeReport();
 	}
 
 	/**

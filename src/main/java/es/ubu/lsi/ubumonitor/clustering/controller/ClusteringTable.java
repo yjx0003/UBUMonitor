@@ -20,7 +20,7 @@ import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
 import es.ubu.lsi.ubumonitor.clustering.util.TextFieldPropertyEditorFactory;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
-import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
@@ -69,8 +69,11 @@ public class ClusteringTable {
 
 	private static final Controller CONTROLLER = Controller.getInstance();
 
-	private static final ObservableList<String> LABELS_LIST = FXCollections
-			.observableArrayList(ConfigHelper.getArray("labels"));
+	private static final ObservableList<String> LABELS_LIST = ConfigHelper.getArray("labels")
+			.toList()
+			.stream()
+			.map(Object::toString)
+			.collect(Collectors.toCollection(FXCollections::observableArrayList));
 
 	private MainController mainController;
 
@@ -120,7 +123,7 @@ public class ClusteringTable {
 	public void init(MainController controller) {
 		this.mainController = controller;
 		checkBoxExportGrades.disableProperty()
-				.bind(controller.getTvwGradeReport().getSelectionModel().selectedItemProperty().isNull());
+				.bind(controller.getSelectionController().getTvwGradeReport().getSelectionModel().selectedItemProperty().isNull());
 
 		initTable();
 		initLabels();
@@ -183,7 +186,7 @@ public class ClusteringTable {
 
 	private void initGradeColumns() {
 		List<Color> colors = Arrays.asList(Color.RED, Color.ORANGE, Color.GREEN, Color.PURPLE);
-		TreeView<GradeItem> gradeItem = mainController.getTvwGradeReport();
+		TreeView<GradeItem> gradeItem = mainController.getSelectionController().getTvwGradeReport();
 		gradeItem.getSelectionModel().getSelectedItems().addListener((Change<?> change) -> {
 			List<TreeItem<GradeItem>> selected = gradeItem.getSelectionModel().getSelectedItems();
 			ObservableList<TableColumn<UserData, ?>> columns = tableView.getColumns();
@@ -271,7 +274,7 @@ public class ClusteringTable {
 			if (file != null) {
 				boolean exportGrades = checkBoxExportGrades.isSelected();
 				if (exportGrades) {
-					List<TreeItem<GradeItem>> treeItems = mainController.getTvwGradeReport().getSelectionModel()
+					List<TreeItem<GradeItem>> treeItems = mainController.getSelectionController().getTvwGradeReport().getSelectionModel()
 							.getSelectedItems();
 					List<GradeItem> grades = treeItems.stream().map(TreeItem::getValue).collect(Collectors.toList());
 					ExportUtil.exportClustering(file, clusters, grades.toArray(new GradeItem[0]));

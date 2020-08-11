@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.clustering.analysis.methods.AnalysisMethod;
 import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
-import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import javafx.concurrent.Worker;

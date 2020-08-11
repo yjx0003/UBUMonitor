@@ -3,7 +3,7 @@ package es.ubu.lsi.ubumonitor.clustering.exception;
 import java.text.MessageFormat;
 
 import es.ubu.lsi.ubumonitor.clustering.data.ClusteringParameter;
-import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.util.I18n;
 
 /**
  * Excepción de un valor inválido para un parámetro del algoritmo.

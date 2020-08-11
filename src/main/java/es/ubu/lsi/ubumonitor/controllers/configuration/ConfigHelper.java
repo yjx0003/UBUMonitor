@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -85,10 +86,6 @@ public class ConfigHelper {
 	
 	public static void setArray(String key, List<String> array) {
 		setProperty(key, new JSONArray(array).toString());
-	}
-	
-	public static List<String> getArray(String key) {
-		return new JSONArray(getProperty(key, "[]")).toList().stream().map(Object::toString).collect(Collectors.toList());
 	}
 
 	public static void save() {

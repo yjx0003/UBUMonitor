@@ -29,13 +29,13 @@ import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.clustering.util.JavaFXUtils;
 import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
-import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponent;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetComponentEvent;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DataSetSection;
-import es.ubu.lsi.ubumonitor.controllers.datasets.DatasSetCourseModule;
+import es.ubu.lsi.ubumonitor.model.datasets.DataSetComponent;
+import es.ubu.lsi.ubumonitor.model.datasets.DataSetComponentEvent;
+import es.ubu.lsi.ubumonitor.model.datasets.DataSetSection;
+import es.ubu.lsi.ubumonitor.model.datasets.DatasSetCourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.beans.value.ChangeListener;
@@ -139,7 +139,7 @@ public class HierarchicalController {
 
 		clusteringTableController.init(mainController);
 
-		listParticipants = mainController.getListParticipants();
+		listParticipants = mainController.getSelectionUserController().getListParticipants();
 		choiceBoxDistance.setConverter(new StringConverter<Distance<double[]>>() {
 
 			@Override
@@ -167,13 +167,13 @@ public class HierarchicalController {
 		gradesCollector = new GradesCollector(mainController);
 		activityCollector = new ActivityCollector(mainController);
 		List<LogCollector<?>> list = new ArrayList<>();
-		list.add(new LogCollector<>("component", mainController.getListViewComponents(), DataSetComponent.getInstance(),
+		list.add(new LogCollector<>("component", mainController.getSelectionController().getListViewComponents(), DataSetComponent.getInstance(),
 				t -> t.name().toLowerCase()));
-		list.add(new LogCollector<>("event", mainController.getListViewEvents(), DataSetComponentEvent.getInstance(),
+		list.add(new LogCollector<>("event", mainController.getSelectionController().getListViewEvents(), DataSetComponentEvent.getInstance(),
 				t -> t.getComponent().name().toLowerCase()));
-		list.add(new LogCollector<>("section", mainController.getListViewSection(), DataSetSection.getInstance(),
+		list.add(new LogCollector<>("section", mainController.getSelectionController().getListViewSection(), DataSetSection.getInstance(),
 				t -> t.isVisible() ? "visible" : "not_visible"));
-		list.add(new LogCollector<>("coursemodule", mainController.getListViewCourseModule(),
+		list.add(new LogCollector<>("coursemodule", mainController.getSelectionController().getListViewCourseModule(),
 				DatasSetCourseModule.getInstance(), t -> t.getModuleType().getModName()));
 
 		checkComboBoxLogs.getItems().setAll(list);

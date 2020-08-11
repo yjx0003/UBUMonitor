@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 import javax.imageio.ImageIO;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
-import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.embed.swing.SwingFXUtils;

@@ -7,7 +7,7 @@ import org.apache.commons.math3.ml.distance.EarthMoversDistance;
 import org.apache.commons.math3.ml.distance.EuclideanDistance;
 import org.apache.commons.math3.ml.distance.ManhattanDistance;
 
-import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.util.I18n;
 
 /**
  * Enumeración de la medidas de distancia.

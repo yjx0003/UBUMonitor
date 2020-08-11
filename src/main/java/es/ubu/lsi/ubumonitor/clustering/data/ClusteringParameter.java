@@ -1,6 +1,6 @@
 package es.ubu.lsi.ubumonitor.clustering.data;
 
-import es.ubu.lsi.ubumonitor.controllers.I18n;
+import es.ubu.lsi.ubumonitor.util.I18n;
 
 /**
  * Enumeración de los diferentes parametros para un algoritmo de clustering.

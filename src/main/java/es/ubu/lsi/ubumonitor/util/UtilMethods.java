@@ -96,8 +96,7 @@ public class UtilMethods {
 	 */
 	public static String escapeJavaScriptText(String input) {
 
-		return input.replace("'", "\\\'")
-				.replaceAll("\\R", "");
+		return input.replace("'", "\\\'").replaceAll("\\R", "");
 
 	}
 
@@ -108,9 +107,7 @@ public class UtilMethods {
 	 * @return
 	 */
 	public static <E> String join(List<E> datasets) {
-		return datasets.stream()
-				.map(E::toString)
-				.collect(Collectors.joining(","));
+		return datasets.stream().map(E::toString).collect(Collectors.joining(","));
 	}
 
 	/**
@@ -122,9 +119,7 @@ public class UtilMethods {
 	 */
 	public static <T> String joinWithQuotes(List<T> list) {
 		// https://stackoverflow.com/a/18229122
-		return list.stream()
-				.map(s -> "'" + escapeJavaScriptText(s.toString()) + "'")
-				.collect(Collectors.joining(","));
+		return list.stream().map(s -> "'" + escapeJavaScriptText(s.toString()) + "'").collect(Collectors.joining(","));
 	}
 
 	/**
@@ -193,8 +188,7 @@ public class UtilMethods {
 		expContent.add(textArea, 0, 1);
 
 		// Set expandable Exception into the dialog pane.
-		alert.getDialogPane()
-				.setExpandableContent(expContent);
+		alert.getDialogPane().setExpandableContent(expContent);
 		alert.showAndWait();
 		return alert.getResult();
 	}
@@ -304,15 +298,12 @@ public class UtilMethods {
 				String[] browsers = { "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" };
 				String browser = null;
 				for (int count = 0; count < browsers.length && browser == null; count++)
-					if (Runtime.getRuntime()
-							.exec(new String[] { "which", browsers[count] })
-							.waitFor() == 0)
+					if (Runtime.getRuntime().exec(new String[] { "which", browsers[count] }).waitFor() == 0)
 						browser = browsers[count];
 				if (browser == null)
 					throw new IllegalStateException("Could not find web browser");
 				else
-					Runtime.getRuntime()
-							.exec(new String[] { browser, url });
+					Runtime.getRuntime().exec(new String[] { browser, url });
 			}
 		} catch (Exception e) {
 			errorWindow("Cannot open " + url + " in web browser", e);
@@ -337,8 +328,7 @@ public class UtilMethods {
 		fileChooser.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		fileChooser.setInitialFileName(initialFileName);
 		fileChooser.setInitialDirectory(new File(initialDirectory));
-		fileChooser.getExtensionFilters()
-				.addAll(extensionFilters);
+		fileChooser.getExtensionFilters().addAll(extensionFilters);
 		return fileChooser;
 	}
 

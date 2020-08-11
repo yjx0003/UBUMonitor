@@ -1,11 +1,12 @@
 \capitulo{1}{Introducción}
+La analítica de aprendizaje \cite{Analiticas_aprendizaje} se puede definir como medición, recopilación análisis e interpretación de los datos del alumnado. Normalmente este tipo de análisis se lleva a cabo en entornos virtuales de aprendizaje \cite{EVA}. Con este método se pretende conseguir un mayor conocimiento sobre el aprendizaje y mejorar los entornos de enseñanza. La analítica se puede aplicar de forma individual o grupal para determinar un progreso y los conocimientos adquiridos.
 
-El presente proyecto es una continuación de dos trabajos anteriores, UBUGrades 2.0 \cite{nogal_santamaria_continuacion_2017} de Félix Nogal Santamaría y UBULogs \cite{fernandez_armengol_aplicacion_2017} de Oscar Fernández Armengol. 
+Esta técnica es más fácilmente aplicable a un ámbito virtual, donde la medición y recopilación de datos es más sencilla, ya que, la mayoría de los entornos virtuales de aprendizaje llevan incorporadas herramientas para este fin. Una vez recogidos los datos se pueden aplicar diferentes técnicas de análisis tales como la predicción de valores, la división de los datos en grupos o establecer relaciones entre datos.
 
-En ambos trabajos, la idea principal de la aplicación es el seguimiento de las calificaciones por una parte y registros de eventos por otra. Todo esto representado mediante diversas gráficas de una forma sencilla y visual.
+La minería de datos es un proceso cuyo objetivo es descubrir patrones en un conjunto amplio de datos. Se emplean métodos de inteligencia artificial, aprendizaje automático y estadística.
 
-El desarrollo de la nueva aplicación ha integrado ambos proyectos usando UBUGrades como base, sin embargo, UBULogs no funcionaba correctamente debido a los últimos cambios en Moodle. Este hecho ha motivado empezar de cero en esta parte siguiendo una vía alternativa.
+El agrupamiento o \emph{clustering} es una técnica de minería de datos dedicada a agrupar un conjunto de datos en función de la similitud de estos. Esta técnica de agrupamiento se puede aplicar a diversos ámbitos como, la clasificación de animales o plantas, para reconocer enfermedades o para identificar los hábitos que tienen personas.
 
-Se ha centrado también el trabajo en la refactorización del código, guardar los datos en ficheros cifrados y nuevos gráficos para los registros de accesos.
+En este proyecto se va a emplear este método para agrupar a los alumnos basándose en los datos proporcionados por la plataforma Moodle, tales como las calificaciones, los registros y las actividades completadas. Se tratará de identificar posibles patrones entre la actividad en la plataforma de un alumno y sus calificaciones.
 
-En resumidas cuentas, esta nueva versión del proyecto permite visualizar en diferentes gráficas las calificaciones de los alumnos por una parte y sobre los registros de eventos por otra parte. Todo esto con medidas de almacenaje de datos en local, y cifrados al contener información sensible. Esto posibilita acceder a los datos sin tener que realizar peticiones de recuperación de datos al servidor constantemente cada vez que se use la aplicación.
+Este proyecto se integrará en la aplicación UBUMonitor \cite{yjx00032020Feb}, la cual extrae los datos del servidor Moodle y muestra las calificaciones y los registros del curso visualmente.

@@ -1,1 +1,11 @@
-controllers.ubulogs
+es.ubu.lsi.ubumonitor.clustering.algorithm
+es.ubu.lsi.ubumonitor.clustering.algorithm.apache
+es.ubu.lsi.ubumonitor.clustering.algorithm.smile
+es.ubu.lsi.ubumonitor.clustering.analysis
+es.ubu.lsi.ubumonitor.clustering.analysis.methods
+es.ubu.lsi.ubumonitor.clustering.chart
+es.ubu.lsi.ubumonitor.clustering.controller
+es.ubu.lsi.ubumonitor.clustering.controller.collector
+es.ubu.lsi.ubumonitor.clustering.data
+es.ubu.lsi.ubumonitor.clustering.exception
+es.ubu.lsi.ubumonitor.clustering.util

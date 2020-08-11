@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Cluster Chart</title>
+<link rel="stylesheet" type="text/css" href="../css/chart.css" />
+<script type="text/javascript" src="./lib/Chart.js"></script>
+<script type="text/javascript" src="./lib/color-hash.js"></script>
+</head>
+
+
+<canvas id="myChart" style="height: 100vh"></canvas>
+
+
+<script type="text/javascript">
+	var colorHash = new ColorHash();
+	var ctx = document.getElementById("myChart");
+	var count = 0;
+	Chart.defaults.global.onClick = function(event, array) {
+		let element = myChart.getElementsAtEventForMode(event, "point", {
+			intersect : false
+		});
+		let index = count++ % element.length;
+		if (element.length > 0) {
+			javaConnector.selectUser(element[index]._datasetIndex,
+					element[index]._index);
+		}
+	}
+
+	var flagX = false;
+	var flagY = false;
+
+	var myChart = new Chart(
+			ctx,
+			{
+				type : "scatter",
+				data : {
+					datasets : []
+				},
+				options : {
+					animation : false,
+					responsive : true,
+					maintainAspectRatio : false,
+					tooltips : {
+						callbacks : {
+							label : function(tooltipItem, data) {
+								var label = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].user;
+								return label + ': ('
+										+ tooltipItem.xLabel.toFixed(2) + ', '
+										+ tooltipItem.yLabel.toFixed(2) + ')';
+							}
+						}
+					},
+					elements : {
+						point : {
+							radius : 6,
+							hoverRadius : 8
+						}
+					},
+					layout : {
+						padding : {
+							left : 50,
+							right : 50,
+							top : 30,
+							bottom : 50
+						}
+					}
+				}
+			});
+
+	function resetTicks() {
+		delete myChart.options.scales.xAxes[0].ticks.suggestedMin;
+		delete myChart.options.scales.xAxes[0].ticks.suggestedMax;
+		delete myChart.options.scales.yAxes[0].ticks.suggestedMin;
+		delete myChart.options.scales.yAxes[0].ticks.suggestedMax;
+
+		myChart.options.scales.xAxes[0].ticks.callback = function(value, index,
+				values) {
+			return value;
+		}
+		myChart.options.scales.yAxes[0].ticks.callback = function(value, index,
+				values) {
+			return value;
+		}
+		myChart.update();
+		myChart.options.scales.xAxes[0].ticks.callback = function(value, index,
+				values) {
+			if (flagX) {
+				myChart.options.scales.xAxes[0].ticks.suggestedMin = values[0];
+				myChart.options.scales.xAxes[0].ticks.suggestedMax = values[values.length - 1];
+				flagX = false;
+			}
+			return value;
+		}
+
+		myChart.options.scales.yAxes[0].ticks.callback = function(value, index,
+				values) {
+			if (flagY) {
+				myChart.options.scales.yAxes[0].ticks.suggestedMin = values[values.length - 1];
+				myChart.options.scales.yAxes[0].ticks.suggestedMax = values[0];
+				flagY = false;
+			}
+			return value;
+		}
+		flagX = true;
+		flagY = true;
+		myChart.update();
+	}
+
+	function updateChart(data) {
+		myChart.data = data;
+		resetTicks();
+	}
+
+	function rename(names) {
+		names.forEach((value,index,array) => myChart.data.datasets[index].label = value);
+		myChart.update();
+	}
+
+</script>
+</html>

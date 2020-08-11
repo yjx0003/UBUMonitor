@@ -82,6 +82,14 @@ public class ConfigHelper {
 	public static boolean has(String key) {
 		return properties.has(key);
 	}
+	
+	public static void setArray(String key, List<String> array) {
+		setProperty(key, new JSONArray(array).toString());
+	}
+	
+	public static List<String> getArray(String key) {
+		return new JSONArray(getProperty(key, "[]")).toList().stream().map(Object::toString).collect(Collectors.toList());
+	}
 
 	public static void save() {
 		save(path);

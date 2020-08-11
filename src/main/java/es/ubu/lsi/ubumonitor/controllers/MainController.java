@@ -11,6 +11,7 @@ import org.controlsfx.control.StatusBar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.ubu.lsi.ubumonitor.clustering.controller.GeneralController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigurationController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;

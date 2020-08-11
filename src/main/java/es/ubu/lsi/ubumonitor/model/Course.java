@@ -778,4 +778,8 @@ public class Course implements Serializable {
 	public void addCourseEvents(Collection<CourseEvent> courseEvents) {
 		this.courseEvents.addAll(courseEvents);
 	}
+	
+	public Set<DiscussionPost> getDiscussionPosts(){
+		return discussionPosts;
+	}
 }

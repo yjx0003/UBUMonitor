@@ -708,7 +708,6 @@ public class WelcomeController implements Initializable {
 				List<ForumDiscussion> forumDiscussions = populateForum.populateForumDiscussions(pair.getValue()
 						.stream()
 						.filter(cm -> cm.getModuleType() == ModuleType.FORUM)
-						.map(CourseModule::getInstance)
 						.collect(Collectors.toList()));
 
 				List<DiscussionPost> discussionPosts = populateForum.populateDiscussionPosts(forumDiscussions.stream()

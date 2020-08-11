@@ -6,5 +6,6 @@
    <children>
       <fx:include fx:id="selection" source="Selection.fxml" />
       <fx:include fx:id="selectionForum" source="SelectionForum.fxml" />
+      <fx:include fx:id="selectionEmpty" source="SelectionEmpty.fxml" />
    </children>
 </StackPane>

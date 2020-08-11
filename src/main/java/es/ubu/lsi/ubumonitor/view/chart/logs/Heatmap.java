@@ -23,18 +23,20 @@ import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import javafx.scene.web.WebView;
 
 public class Heatmap extends ChartLogs {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Heatmap.class);
-
+	private WebView webView;
 	private DescriptiveStatistics descriptiveStatistics;
 
-	public Heatmap(MainController mainController) {
+	public Heatmap(MainController mainController, WebView webView) {
 		super(mainController, ChartType.HEAT_MAP);
 		descriptiveStatistics = new DescriptiveStatistics();
 		useGroupBy = true;
 		useLegend = true;
+		this.webView  =webView;
 	}
 
 	@Override

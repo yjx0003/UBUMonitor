@@ -156,4 +156,8 @@ public class SelectionForumController {
 				.selectAll();
 	}
 
+	public ListView<CourseModule> getListViewForum() {
+		return listViewForum;
+	}
+
 }

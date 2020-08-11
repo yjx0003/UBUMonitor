@@ -41,12 +41,13 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TreeView;
 import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 
 public class VisualizationJavaConnector {
 
-	private static final ChartType DEFAULT_LOG_CHART = ChartType.getDefaultLogs();
-	private static final ChartType DEFAULT_GRADE_CHART = ChartType.getDefaultGrades();
-	private static final ChartType DEFAULT_ACTIVITY_COMPLETION_CHART = ChartType.getDefaultActivityCompletion();
+	private static final ChartType DEFAULT_LOG_CHART = ChartType.DEFAULT_LOGS;
+	private static final ChartType DEFAULT_GRADE_CHART = ChartType.DEFAULT_GRADES;
+	private static final ChartType DEFAULT_ACTIVITY_COMPLETION_CHART = ChartType.DEFAULT_ACTIVITY_COMPLETION;
 
 	private WebEngine webViewChartsEngine;
 
@@ -82,7 +83,8 @@ public class VisualizationJavaConnector {
 		DatePicker datePickerEnd = visualizationController.getDatePickerEnd();
 		SelectionController selectionController = mainController.getSelectionController();
 		TreeView<GradeItem> treeViewGradeItem = selectionController.getTvwGradeReport();
-		addChart(new Heatmap(mainController));
+		WebView webView = visualizationController.getWebViewCharts();
+		addChart(new Heatmap(mainController, webView));
 		addChart(new Stackedbar(mainController));
 		addChart(new Line(mainController, treeViewGradeItem));
 		addChart(new Radar(mainController, treeViewGradeItem));
@@ -91,16 +93,16 @@ public class VisualizationJavaConnector {
 		addChart(new BoxPlot(mainController, selectionController.getTvwGradeReport()));
 		addChart(new TotalBar(mainController));
 		addChart(new Violin(mainController, treeViewGradeItem));
-		addChart(new GradeReportTable(mainController, treeViewGradeItem));
+		addChart(new GradeReportTable(mainController, treeViewGradeItem, webView));
 		addChart(new CumLine(mainController));
 		addChart(new MeanDiff(mainController));
 		addChart(new ActivitiesStatusTable(mainController, datePickerStart, datePickerEnd,
-				selectionController.getListViewActivity()));
+				selectionController.getListViewActivity(), webView));
 		addChart(new CalificationBar(mainController, treeViewGradeItem));
 		addChart(new SessionChart(mainController));
 		addChart(new BoxplotLogTime(mainController));
 		addChart(new ViolinLogTime(mainController));
-		addChart(new TableLog(mainController));
+		addChart(new TableLog(mainController, webView));
 		addChart(new BoxplotLog(mainController));
 		addChart(new ViolinLog(mainController));
 		currentType = mapChart.get(DEFAULT_LOG_CHART);

@@ -7,12 +7,15 @@ import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import javafx.scene.web.WebView;
 
 public abstract class ApexCharts extends Chart {
 
-	public ApexCharts(MainController mainController, ChartType chartType) {
+	private WebView webView;
+	public ApexCharts(MainController mainController, ChartType chartType, WebView webView) {
 		super(mainController, chartType);
 		useLegend = true;
+		this.webView = webView;
 	}
 
 	@Override

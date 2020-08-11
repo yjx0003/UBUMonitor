@@ -6,11 +6,13 @@ import java.io.IOException;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import javafx.scene.web.WebView;
 
 public abstract class TabulatorLogs extends ChartLogs {
-
-	public TabulatorLogs(MainController mainController, ChartType chartType) {
+	private WebView webView;
+	public TabulatorLogs(MainController mainController, ChartType chartType, WebView webView) {
 		super(mainController, chartType);
+		
 	}
 
 	@Override

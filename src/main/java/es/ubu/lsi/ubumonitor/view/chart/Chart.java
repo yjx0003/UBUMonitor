@@ -29,11 +29,10 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 
 public abstract class Chart implements ExportableChart {
 
-	protected WebView webView;
+
 	protected WebEngine webViewChartsEngine;
 	protected CheckComboBox<Group> slcGroup;
 	protected Stats stats;
@@ -54,7 +53,7 @@ public abstract class Chart implements ExportableChart {
 	protected static final double OPACITY = 0.2;
 
 	public Chart(MainController mainController, ChartType chartType) {
-	
+		
 		this.selectionUserController = mainController.getSelectionUserController();
 		this.slcGroup = selectionUserController.getCheckComboBoxGroup();
 		this.stats = mainController.getStats();
@@ -274,11 +273,6 @@ public abstract class Chart implements ExportableChart {
 
 	public boolean isUseOptions() {
 		return useOptions;
-	}
-
-	public void setWebView(WebView webViewCharts) {
-		this.webView = webViewCharts;
-
 	}
 
 	public boolean isUseLogs() {

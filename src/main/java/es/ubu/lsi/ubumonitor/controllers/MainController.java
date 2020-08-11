@@ -145,8 +145,11 @@ public class MainController implements Initializable {
 		tabMap.put(visualizationTab, visualizationController);
 
 		riskController.init(this);
-
+		
 		tabMap.put(riskTab, riskController);
+		
+		forumController.init(this);
+		tabMap.put(forumTab, forumController);
 	}
 
 	private void initStatusBar() {
@@ -339,6 +342,10 @@ public class MainController implements Initializable {
 
 	public Tab getForumTab() {
 		return forumTab;
+	}
+
+	public SelectionMainController getSelectionMainController() {
+		return selectionMainController;
 	}
 
 }

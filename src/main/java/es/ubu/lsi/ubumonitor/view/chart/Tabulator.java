@@ -9,12 +9,14 @@ import es.ubu.lsi.ubumonitor.controllers.MainController;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.WritableImage;
+import javafx.scene.web.WebView;
 
 public abstract class Tabulator extends Chart {
 
-
-	public Tabulator(MainController mainController, ChartType chartType) {
+	private WebView webView;
+	public Tabulator(MainController mainController, ChartType chartType, WebView webView) {
 		super(mainController, chartType);
+		this.webView = webView;
 	}
 
 	@Override

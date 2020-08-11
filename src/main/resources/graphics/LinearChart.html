@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Charts</title>
+<link rel="stylesheet" type="text/css" href="../css/chart.css" />
+<script type="text/javascript" src="./lib/Chart.js"></script>
+</head>
+
+<canvas id="myChart" style="height: 100%; width: 100.0%;"></canvas>
+
+<script type="text/javascript">
+	var ctx = document.getElementById("myChart");
+
+	var myChart = new Chart(
+			ctx,
+			{
+				type : 'line',
+				data : {
+					labels : [],
+					datasets : []
+				},
+				options : {
+					animation : false,
+					responsive : true,
+					maintainAspectRatio : false,
+					legend : {
+						display : false
+					},
+					tooltips : {
+						callbacks : {
+							label : function(tooltipItem, data) {
+								return tooltipItem.yLabel.toFixed(2);
+							}
+						}
+					},
+					scales : {
+						yAxes : [ {
+							scaleLabel : {
+								display : true,
+								fontStyle : "bold",
+								fontSize : 14
+							}
+						} ],
+						xAxes : [ {
+							scaleLabel : {
+								display : true,
+								fontStyle : "bold",
+								fontSize : 14
+							}
+						} ]
+
+					},
+					elements : {
+						line : {
+							fill : false,
+						}
+
+					},
+					layout : {
+						padding : {
+							left : 50,
+							right : 50,
+							top : 30,
+							bottom : 50
+						}
+					}
+				}
+			});
+
+	function updateChart(data, xAxes, yAxes) {
+		myChart.options.scales.xAxes[0].scaleLabel.labelString = xAxes;
+		myChart.options.scales.yAxes[0].scaleLabel.labelString = yAxes;
+		myChart.data = data;
+		myChart.update();
+	}
+</script>
+</html>

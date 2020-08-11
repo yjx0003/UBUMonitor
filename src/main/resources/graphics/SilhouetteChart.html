@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Charts</title>
+<link rel="stylesheet" type="text/css" href="../css/chart.css" />
+<script type="text/javascript" src="./lib/Chart.js"></script>
+<script type="text/javascript" src="./lib/color-hash.js"></script>
+</head>
+
+<canvas id="myChart" style="height: 100%; width: 100.0%;"></canvas>
+
+<script type="text/javascript">
+	var colorHash = new ColorHash();
+	var ctx = document.getElementById("myChart");
+	var clusterNames = [];
+	var colors = [];
+	
+	var myChart = new Chart(ctx, {
+		type : 'line',
+		data : {
+			datasets : [],
+			labels : []
+		},
+		options : {
+			animation : false,
+			responsive : true,
+			maintainAspectRatio : false,
+			tooltips : {
+				callbacks : {
+					label : function(tooltipItem, data) {
+						return tooltipItem.yLabel.toFixed(2);
+					}
+				}
+			},
+			scales : {
+				xAxes : [ {
+					categoryPercentage : 1.1,
+					barPercentage : 1.0,
+					ticks : {
+						display : false
+					},
+					gridLines : {
+						display : false
+					}
+				} ],
+				yAxes : [ {
+					ticks : {
+						max : 1.1,
+						suggestedMin : 0
+					},
+					scaleLabel : {
+						display : true,
+						fontStyle : "bold",
+						fontSize : 14,
+					}
+				} ]
+
+			},
+			legend: {
+                onClick: (e) => e.stopPropagation(),
+                labels: {
+		            generateLabels: function(chart) {
+		                 return clusterNames.map((name, i) => {
+		                	 return {
+		                		 text : name,
+		                		 fillStyle: colors[i],
+		                		 index : i
+		                	 }
+		                 })
+		            }
+		        }
+            },
+            elements : {
+				line : {
+					fill : false
+				},
+        		point : {
+					radius : 0
+				}
+			},
+			hover : {
+				mode : null
+			},
+			layout : {
+				padding : {
+					left : 50,
+					right : 50,
+					top : 30,
+					bottom : 50
+				}
+			}
+		}
+	});
+
+	function updateChart(data, names, c, yAxes) {
+		myChart.options.scales.yAxes[0].scaleLabel.labelString = yAxes;
+		myChart.data = data;
+		clusterNames = names;
+		colors = c;
+		myChart.update();
+	}
+
+	function rename(names) {
+		clusterNames = names;
+		myChart.update();
+	}
+
+	function update() {
+		myChart.update();
+	}
+
+</script>
+</html>

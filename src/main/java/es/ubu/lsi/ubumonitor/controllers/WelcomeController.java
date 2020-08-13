@@ -762,7 +762,7 @@ public class WelcomeController implements Initializable {
 								LOGGER.info("Log descargado");
 								updateMessage(I18n.get("label.parselog"));
 								Logs logs = new Logs(downloadLogController.getServerTimeZone());
-								LogCreator.parserResponse(logs, response);
+								LogCreator.parserResponse(logs, response.body().charStream());
 								actualCourse.setLogs(logs);
 
 							} else {

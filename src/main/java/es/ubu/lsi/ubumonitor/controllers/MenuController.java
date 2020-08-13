@@ -2,12 +2,14 @@ package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Map.Entry;
@@ -21,15 +23,20 @@ import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigurationController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.controllers.load.Connection;
+import es.ubu.lsi.ubumonitor.controllers.load.LogCreator;
 import es.ubu.lsi.ubumonitor.export.CSVBuilderAbstract;
 import es.ubu.lsi.ubumonitor.export.CSVExport;
 import es.ubu.lsi.ubumonitor.export.dashboard.Excel;
 import es.ubu.lsi.ubumonitor.export.photos.UserPhoto;
 import es.ubu.lsi.ubumonitor.model.Course;
+import es.ubu.lsi.ubumonitor.model.Logs;
+import es.ubu.lsi.ubumonitor.persistence.Serialization;
 import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.FileUtil;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -264,7 +271,7 @@ public class MenuController {
 					ConfigurationController.loadConfiguration(controller.getMainConfiguration(), file.toPath());
 					changeConfiguration();
 					ConfigHelper.setProperty("configurationFolderPath", file.getParent());
-				}, FileUtil.JSON);
+				}, false, FileUtil.JSON);
 
 	}
 
@@ -366,7 +373,7 @@ public class MenuController {
 		Path destDir = controller.getHostUserModelversionArchivedDir();
 		Path dest = destDir
 				.resolve("(" + now.format(DateTimeFormatter.ISO_DATE) + ") " + controller.getCoursePathName(course));
-		
+
 		try {
 			Files.createDirectories(destDir);
 			Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING);
@@ -374,4 +381,47 @@ public class MenuController {
 			UtilMethods.errorWindow("Error when archiving the course", e);
 		}
 	}
+
+	public void importLogs() {
+		UtilMethods.fileAction(null, ConfigHelper.getProperty("csvFolderPath", "./"), controller.getStage(),
+				FileUtil.FileChooserType.OPEN, file -> {
+					Service<Void> service = new Service<Void>() {
+
+						@Override
+						protected Task<Void> createTask() {
+							return getImportLogsWorker(file);
+						}
+
+					};
+					service.setOnSucceeded(e ->
+
+				UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), true));
+
+					service.setOnFailed(e -> UtilMethods.errorWindow("Cannot import the log", e.getSource()
+							.getException()));
+
+					service.start();
+				}, false, FileUtil.CSV);
+	}
+
+	private Task<Void> getImportLogsWorker(File file) {
+
+		return new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				LogCreator.setDateTimeFormatter(ZoneId.systemDefault());
+				Logs logs = new Logs(ZoneId.systemDefault());
+
+				LogCreator.parserResponse(logs, new FileReader(file));
+				controller.getActualCourse()
+						.setLogs(logs);
+				Serialization.encrypt(controller.getPassword(), controller.getHostUserModelversionDir()
+						.resolve(controller.getCourseFile(controller.getActualCourse()))
+						.toString(), controller.getDataBase());
+				
+				return null;
+			}
+		};
+	}
+
 }

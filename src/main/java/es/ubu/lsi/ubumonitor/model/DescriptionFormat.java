@@ -35,5 +35,9 @@ public enum DescriptionFormat {
 	public static DescriptionFormat get(int number) {
 		return map.get(number);
 	}
+	
+	public int getNumber() {
+		return number;
+	}
 
 }

@@ -130,7 +130,7 @@ public class WebServiceTest {
 		Response response = downloadLogController.downloadLog(true);
 	
 		Logs logs = new Logs(downloadLogController.getServerTimeZone());
-		LogCreator.parserResponse(logs, response);
+		LogCreator.parserResponse(logs, response.body().charStream());
 		CONTROLLER.getActualCourse().setLogs(logs);
 	}
 

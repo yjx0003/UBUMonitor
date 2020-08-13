@@ -86,6 +86,11 @@ public enum WSFunctionEnum {
 	CORE_ENROL_GET_USERS_COURSES("core_enrol_get_users_courses", 2.0),
 
 	/**
+	 *  Send instant messages 
+	 */
+	CORE_MESSAGE_SEND_INSTANT_MESSAGES("CORE_MESSAGE_SEND_INSTANT_MESSAGES", 2.1),
+	
+	/**
 	 * Retrieve users information for a specified unique field - If you want to do a
 	 * user search, use core_user_get_users().
 	 */

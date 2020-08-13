@@ -76,14 +76,17 @@ public class RiskController implements MainAction {
 		progressBar.progressProperty()
 				.bind(webViewChartsEngine.getLoadWorker()
 						.progressProperty());
-
+	
 		// Comprobamos cuando se carga la pagina para traducirla
 		webViewChartsEngine.getLoadWorker()
 				.stateProperty()
 				.addListener((ov, oldState, newState) -> {
 					if (Worker.State.SUCCEEDED != newState)
 						return;
-
+					if (webViewChartsEngine.getDocument() == null) {
+						webViewChartsEngine.reload();
+						return;
+					}
 					progressBar.setVisible(false);
 					JSObject window = (JSObject) webViewChartsEngine.executeScript("window");
 					window.setMember("javaConnector", javaConnector);

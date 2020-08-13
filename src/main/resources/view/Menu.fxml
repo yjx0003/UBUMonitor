@@ -46,6 +46,7 @@
             <Menu text="%menu.edit">
                <items>
                   <MenuItem fx:id="MIClearSelection" onAction="#clearSelection" text="%menu.clearselection" />
+                  <MenuItem onAction="#importLogs" text="%menu.importlogs" />
                </items>
             </Menu>
             <Menu text="%menu.view">

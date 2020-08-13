@@ -1,16 +1,21 @@
 package es.ubu.lsi.ubumonitor.view.chart.forum;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.DiscussionPost;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
@@ -29,8 +34,30 @@ public class ForumTable extends Tabulator {
 
 	@Override
 	public void exportCSV(String path) throws IOException {
-		// TODO Auto-generated method stub
+		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
+		List<DiscussionPost> discussionPosts = getSelectedDiscussionPosts();
+		List<String> header = new ArrayList<>();
+		header.add("user");
+		header.addAll(enrolledUsers.stream()
+				.map(EnrolledUser::getFullName)
+				.collect(Collectors.toList()));
 
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
+				CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
+			for (EnrolledUser from : enrolledUsers) {
+				printer.print(from.getFullName());
+				for (EnrolledUser to : enrolledUsers) {
+
+					long countPosts = discussionPosts.stream()
+							.filter(discussionPost -> from.equals(discussionPost.getUser())
+									&& discussionPost.getParent() != null && to.equals(discussionPost.getParent()
+											.getUser()))
+							.count();
+					printer.print(countPosts);
+				}
+				printer.println();
+			}
+		}
 	}
 
 	@Override
@@ -47,18 +74,9 @@ public class ForumTable extends Tabulator {
 	@Override
 	public void update() {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Set<CourseModule> selectedForums = new HashSet<>(forums.getSelectionModel()
-				.getSelectedItems());
-		List<DiscussionPost> discussionPosts = Controller.getInstance()
-				.getActualCourse()
-				.getDiscussionPosts()
-				.stream()
-				.filter(discussionPost -> selectedForums.contains(discussionPost.getDiscussion()
-						.getForum()))
-				.collect(Collectors.toList());
-		System.out.println(Controller.getInstance().getActualCourse().getDiscussionPosts().size());
-		Controller.getInstance().getActualCourse().getDiscussionPosts().forEach(d->System.out.println(d.getDiscussion().getForum()));
-		discussionPosts.forEach(d->System.out.println(d.getParent().getUser()));
+
+		List<DiscussionPost> discussionPosts = getSelectedDiscussionPosts();
+
 		JSArray tabledata = createData(enrolledUsers, discussionPosts);
 		JSArray columns = createColumns(enrolledUsers);
 		JSObject dataset = new JSObject();
@@ -68,10 +86,22 @@ public class ForumTable extends Tabulator {
 		webViewChartsEngine.executeScript("updateTabulator(" + dataset + "," + options + ")");
 	}
 
+	public List<DiscussionPost> getSelectedDiscussionPosts() {
+		Set<CourseModule> selectedForums = new HashSet<>(forums.getSelectionModel()
+				.getSelectedItems());
+		return Controller.getInstance()
+				.getActualCourse()
+				.getDiscussionPosts()
+				.stream()
+				.filter(discussionPost -> selectedForums.contains(discussionPost.getDiscussion()
+						.getForum()))
+				.collect(Collectors.toList());
+	}
+
 	private JSArray createColumns(List<EnrolledUser> enrolledUsers) {
 		JSArray jsArray = new JSArray();
 		JSObject jsObject = new JSObject();
-		jsObject.putWithQuote("title", "user"); //TODO 
+		jsObject.putWithQuote("title", I18n.get("text.selectedUsers"));
 		jsObject.putWithQuote("field", "user");
 		jsObject.put("hozAlign", "'center'");
 		jsObject.put("sorter", "'string'");
@@ -101,12 +131,10 @@ public class ForumTable extends Tabulator {
 								&& discussionPost.getParent() != null && to.equals(discussionPost.getParent()
 										.getUser()))
 						.count();
-				jsObject.put("ID"+to.getId(), countPosts);
-			
-				
+				jsObject.put("ID" + to.getId(), countPosts);
+
 			}
 		}
 		return jsArray;
 	}
-
 }

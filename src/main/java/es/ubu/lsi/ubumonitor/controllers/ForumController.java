@@ -58,7 +58,10 @@ public class ForumController implements MainAction{
 				.addListener((ov, oldState, newState) -> {
 					if (Worker.State.SUCCEEDED != newState)
 						return;
-
+					if (webViewChartsEngine.getDocument() == null) {
+						webViewChartsEngine.reload();
+						return;
+					}
 					progressBar.setVisible(false);
 					JSObject window = (JSObject) webViewChartsEngine.executeScript("window");
 					window.setMember("javaConnector", javaConnector);

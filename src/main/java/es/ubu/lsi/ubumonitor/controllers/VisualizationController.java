@@ -88,13 +88,21 @@ public class VisualizationController implements MainAction {
 		progressBar.progressProperty()
 				.bind(webViewChartsEngine.getLoadWorker()
 						.progressProperty());
-		
+		webViewChartsEngine.getLoadWorker()
+				.exceptionProperty()
+				.addListener((ov, oldState, newState) -> {
+					System.out.println(newState);
+				});
 		// Comprobamos cuando se carga la pagina para traducirla
 		webViewChartsEngine.getLoadWorker()
 				.stateProperty()
 				.addListener((ov, oldState, newState) -> {
 					if (Worker.State.SUCCEEDED != newState)
 						return;
+					if (webViewChartsEngine.getDocument() == null) {
+						webViewChartsEngine.reload();
+						return;
+					}
 					progressBar.setVisible(false);
 					JSObject window = (JSObject) webViewChartsEngine.executeScript("window");
 					window.setMember("javaConnector", javaConnector);
@@ -240,7 +248,8 @@ public class VisualizationController implements MainAction {
 				ConfigHelper.getProperty(CSV_FOLDER_PATH, "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
 				file -> {
 
-					javaConnector.getCurrentType().exportCSV(file.getAbsolutePath());
+					javaConnector.getCurrentType()
+							.exportCSV(file.getAbsolutePath());
 
 					ConfigHelper.setProperty(CSV_FOLDER_PATH, file.getParent());
 

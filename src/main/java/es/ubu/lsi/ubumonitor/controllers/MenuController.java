@@ -29,6 +29,7 @@ import es.ubu.lsi.ubumonitor.export.CSVExport;
 import es.ubu.lsi.ubumonitor.export.dashboard.Excel;
 import es.ubu.lsi.ubumonitor.export.photos.UserPhoto;
 import es.ubu.lsi.ubumonitor.model.Course;
+import es.ubu.lsi.ubumonitor.model.LogStats;
 import es.ubu.lsi.ubumonitor.model.Logs;
 import es.ubu.lsi.ubumonitor.persistence.Serialization;
 import es.ubu.lsi.ubumonitor.util.Charsets;
@@ -383,25 +384,23 @@ public class MenuController {
 	}
 
 	public void importLogs() {
-		UtilMethods.fileAction(null, ConfigHelper.getProperty("csvFolderPath", "./"), controller.getStage(),
+		UtilMethods.fileAction(null, ConfigHelper.getProperty("importLogsFolderPath", "./"), controller.getStage(),
 				FileUtil.FileChooserType.OPEN, file -> {
-					Service<Void> service = new Service<Void>() {
-
-						@Override
-						protected Task<Void> createTask() {
-							return getImportLogsWorker(file);
-						}
-
-					};
-					service.setOnSucceeded(e ->
-
-				UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), true));
-
-					service.setOnFailed(e -> UtilMethods.errorWindow("Cannot import the log", e.getSource()
-							.getException()));
-
-					service.start();
+					ConfigHelper.setProperty("importLogsFolderPath", file.toString());
+					createServiceImportLogs(file);
 				}, false, FileUtil.CSV);
+	}
+
+	public void createServiceImportLogs(File file) {
+		Task<Void> task = getImportLogsWorker(file);
+		task.setOnSucceeded(e -> {
+			UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), true);
+		});
+		task.setOnFailed(e -> UtilMethods.errorWindow("Cannot import the log", e.getSource()
+				.getException()));
+		Thread thread = new Thread(task);
+		thread.setDaemon(true);
+		thread.start();
 	}
 
 	private Task<Void> getImportLogsWorker(File file) {
@@ -411,14 +410,13 @@ public class MenuController {
 			protected Void call() throws Exception {
 				LogCreator.setDateTimeFormatter(ZoneId.systemDefault());
 				Logs logs = new Logs(ZoneId.systemDefault());
-
+				Course course = controller.getActualCourse();
 				LogCreator.parserResponse(logs, new FileReader(file));
-				controller.getActualCourse()
-						.setLogs(logs);
+				course.setLogs(logs);
+				course.setLogStats(new LogStats(logs.getList()));
 				Serialization.encrypt(controller.getPassword(), controller.getHostUserModelversionDir()
-						.resolve(controller.getCourseFile(controller.getActualCourse()))
+						.resolve(controller.getCourseFile(course))
 						.toString(), controller.getDataBase());
-				
 				return null;
 			}
 		};

@@ -36,7 +36,6 @@ import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.FileUtil;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
-import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

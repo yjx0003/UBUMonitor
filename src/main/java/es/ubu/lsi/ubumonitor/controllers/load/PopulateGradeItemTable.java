@@ -91,13 +91,12 @@ public class PopulateGradeItemTable {
 
 				jsonObject = userTable;
 			}
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			LOGGER.error("Error al parsear las calificaciones.", e);
-			return Collections.emptyList();
+			jsonObject = userTable;
 		}
 
 		List<GradeItem> gradeItems = createHierarchyGradeItems(jsonObject);
-
 		setEnrolledUserGrades(jsonObject, gradeItems);
 
 		return gradeItems;

@@ -123,13 +123,13 @@ public class BoxPlot extends ChartjsGradeItem {
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBoxplot" : "boxplot");
 		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
 		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
-		jsObject.put("scales", "{yAxes:[{ticks:{max:10,stepSize:1}," + yLabel + "}],xAxes:[{ticks:{max:10,stepSize:1}" + xLabel + "}]}");
+		jsObject.put("scales", "{yAxes:[{ticks:{max:10,stepSize:1}," + yLabel + "}],xAxes:[{ticks:{max:10,stepSize:1}," + xLabel + "}]}");
 
 		JSObject callbacks = new JSObject();
 		callbacks.put("afterTitle", "function(t,e){return e.datasets[t[0].datasetIndex].label}");
 		callbacks.put("boxplotLabel", "boxplotLabel");
 		jsObject.put("tooltips", "{callbacks:" + callbacks + "}");
-
+		System.out.println(jsObject);
 		return jsObject.toString();
 	}
 

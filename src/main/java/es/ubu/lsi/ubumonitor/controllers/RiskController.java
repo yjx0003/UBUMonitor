@@ -72,11 +72,12 @@ public class RiskController implements MainAction {
 		// Cargamos el html de los graficos y calificaciones
 		webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
 		webViewChartsEngine = webViewCharts.getEngine();
-		javaConnector = new RiskJavaConnector(this);
+		javaConnector = new RiskJavaConnector(webViewCharts, Controller.getInstance()
+				.getMainConfiguration(), mainController, this);
 		progressBar.progressProperty()
 				.bind(webViewChartsEngine.getLoadWorker()
 						.progressProperty());
-	
+
 		// Comprobamos cuando se carga la pagina para traducirla
 		webViewChartsEngine.getLoadWorker()
 				.stateProperty()
@@ -91,7 +92,7 @@ public class RiskController implements MainAction {
 					JSObject window = (JSObject) webViewChartsEngine.executeScript("window");
 					window.setMember("javaConnector", javaConnector);
 					webViewCharts.toFront();
-					javaConnector.setDefaultValues();
+					javaConnector.inititDefaultValues();
 
 					updateChart();
 
@@ -102,8 +103,6 @@ public class RiskController implements MainAction {
 	}
 
 	private void initOptions() {
-		
-		
 
 		datePickerStart.setValue(controller.getActualCourse()
 				.getStart());
@@ -128,7 +127,7 @@ public class RiskController implements MainAction {
 				setDisable(empty || date.isBefore(datePickerStart.getValue()) || date.isAfter(LocalDate.now()));
 			}
 		});
-		
+
 		LogStats logStats = controller.getActualCourse()
 				.getLogStats();
 		TypeTimes typeTime = controller.getMainConfiguration()
@@ -153,7 +152,6 @@ public class RiskController implements MainAction {
 				return I18n.get(typeTimes.getTypeTime());
 			}
 		});
-
 
 		optionsUbuLogs.managedProperty()
 				.bind(optionsUbuLogs.visibleProperty());
@@ -205,10 +203,6 @@ public class RiskController implements MainAction {
 
 	}
 
-	public ProgressBar getProgressBar() {
-		return progressBar;
-	}
-
 	public WebView getWebViewCharts() {
 		return webViewCharts;
 	}
@@ -224,7 +218,7 @@ public class RiskController implements MainAction {
 	@Override
 	public void onWebViewTabChange() {
 
-		javaConnector.updateTabImages();
+		javaConnector.updateOptionsImages();
 		javaConnector.updateChart();
 
 	}
@@ -247,15 +241,14 @@ public class RiskController implements MainAction {
 				.getId(),
 				LocalDateTime.now()
 						.format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
-				javaConnector.getCurrentType()
+				javaConnector.getCurrentChart()
 						.getChartType()),
 				ConfigHelper.getProperty("imageFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
 				file -> {
-					
-						javaConnector.export(file);
-						ConfigHelper.setProperty("imageFolderPath", file.getParent());
 
-					
+					javaConnector.exportImage(file);
+					ConfigHelper.setProperty("imageFolderPath", file.getParent());
+
 				}, false, FileUtil.PNG);
 
 	}
@@ -265,11 +258,11 @@ public class RiskController implements MainAction {
 				.getId(),
 				LocalDateTime.now()
 						.format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
-				javaConnector.getCurrentType()
+				javaConnector.getCurrentChart()
 						.getChartType()),
 				ConfigHelper.getProperty("csvFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
 				file -> {
-					javaConnector.getCurrentType()
+					javaConnector.getCurrentChart()
 							.exportCSV(file.getAbsolutePath());
 					ConfigHelper.setProperty("csvFolderPath", file.getParent());
 				}, FileUtil.CSV);
@@ -309,6 +302,5 @@ public class RiskController implements MainAction {
 	public DatePicker getDatePickerEnd() {
 		return datePickerEnd;
 	}
-
 
 }

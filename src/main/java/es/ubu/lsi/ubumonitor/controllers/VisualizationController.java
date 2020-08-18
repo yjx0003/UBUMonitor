@@ -84,7 +84,8 @@ public class VisualizationController implements MainAction {
 		// Cargamos el html de los graficos y calificaciones
 		webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
 		webViewChartsEngine = webViewCharts.getEngine();
-		javaConnector = new VisualizationJavaConnector(this);
+		javaConnector = new VisualizationJavaConnector(webViewCharts, Controller.getInstance()
+				.getMainConfiguration(), mainController, this);
 		progressBar.progressProperty()
 				.bind(webViewChartsEngine.getLoadWorker()
 						.progressProperty());
@@ -106,7 +107,7 @@ public class VisualizationController implements MainAction {
 					progressBar.setVisible(false);
 					JSObject window = (JSObject) webViewChartsEngine.executeScript("window");
 					window.setMember("javaConnector", javaConnector);
-					javaConnector.setDefaultValues();
+					javaConnector.inititDefaultValues();
 					webViewCharts.toFront();
 
 					javaConnector.updateChart();
@@ -224,12 +225,12 @@ public class VisualizationController implements MainAction {
 				.getId(),
 				LocalDateTime.now()
 						.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),
-				javaConnector.getCurrentType()
+				javaConnector.getCurrentChart()
 						.getChartType()),
 				ConfigHelper.getProperty("imageFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
 				file -> {
 
-					javaConnector.export(file);
+					javaConnector.exportImage(file);
 
 					ConfigHelper.setProperty("imageFolderPath", file.getParent());
 
@@ -243,12 +244,12 @@ public class VisualizationController implements MainAction {
 				.getId(),
 				LocalDateTime.now()
 						.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),
-				javaConnector.getCurrentType()
+				javaConnector.getCurrentChart()
 						.getChartType()),
 				ConfigHelper.getProperty(CSV_FOLDER_PATH, "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
 				file -> {
 
-					javaConnector.getCurrentType()
+					javaConnector.getCurrentChart()
 							.exportCSV(file.getAbsolutePath());
 
 					ConfigHelper.setProperty(CSV_FOLDER_PATH, file.getParent());
@@ -262,12 +263,12 @@ public class VisualizationController implements MainAction {
 				.getId(),
 				LocalDateTime.now()
 						.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),
-				javaConnector.getCurrentType()
+				javaConnector.getCurrentChart()
 						.getChartType()),
 				ConfigHelper.getProperty(CSV_FOLDER_PATH, "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
 				file -> {
 
-					javaConnector.getCurrentType()
+					javaConnector.getCurrentChart()
 							.exportCSVDesglosed(file.getAbsolutePath());
 					ConfigHelper.setProperty(CSV_FOLDER_PATH, file.getParent());
 
@@ -331,21 +332,21 @@ public class VisualizationController implements MainAction {
 
 	@Override
 	public void onSetTabLogs() {
-		javaConnector.setCurrentType(javaConnector.getCurrentTypeLogs());
+		javaConnector.setCurrentChart(javaConnector.getChartLogs());
 		findMaxaAndUpdateChart();
 
 	}
 
 	@Override
 	public void onSetTabGrades() {
-		javaConnector.setCurrentType(javaConnector.getCurrentTypeGrades());
+		javaConnector.setCurrentChart(javaConnector.getChartGrades());
 		javaConnector.updateChart();
 
 	}
 
 	@Override
 	public void onSetTabActivityCompletion() {
-		javaConnector.setCurrentType(javaConnector.getCurrentTypeActivityCompletion());
+		javaConnector.setCurrentChart(javaConnector.getChartActivityCompletion());
 		javaConnector.updateChart();
 	}
 
@@ -385,7 +386,7 @@ public class VisualizationController implements MainAction {
 
 	@Override
 	public void onWebViewTabChange() {
-		javaConnector.updateTabImages();
+		javaConnector.updateOptionsImages();
 
 	}
 
@@ -397,14 +398,6 @@ public class VisualizationController implements MainAction {
 
 	public MainController getMainController() {
 		return mainController;
-	}
-
-	public Controller getController() {
-		return controller;
-	}
-
-	public void setController(Controller controller) {
-		this.controller = controller;
 	}
 
 	public VisualizationJavaConnector getJavaConnector() {
@@ -437,14 +430,6 @@ public class VisualizationController implements MainAction {
 
 	public void setTextFieldMax(TextField textFieldMax) {
 		this.textFieldMax = textFieldMax;
-	}
-
-	public ProgressBar getProgressBar() {
-		return progressBar;
-	}
-
-	public void setProgressBar(ProgressBar progressBar) {
-		this.progressBar = progressBar;
 	}
 
 	public GridPane getOptionsUbuLogs() {

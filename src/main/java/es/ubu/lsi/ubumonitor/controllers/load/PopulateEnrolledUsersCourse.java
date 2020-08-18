@@ -114,6 +114,12 @@ public class PopulateEnrolledUsersCourse {
 	}
 
 	private List<Group> createGroups(JSONArray jsonArray) {
+		
+		if(jsonArray== null) {
+			return Collections.emptyList();
+		}
+		
+		
 		List<Group> groups = new ArrayList<>();
 		for (int i = 0; i < jsonArray.length(); ++i) {
 			JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -131,6 +137,10 @@ public class PopulateEnrolledUsersCourse {
 	}
 
 	private List<Role> createRoles(JSONArray jsonArray) {
+		if(jsonArray== null) {
+			return Collections.emptyList();
+		}
+		
 		List<Role> roles = new ArrayList<>();
 		for (int i = 0; i < jsonArray.length(); ++i) {
 			JSONObject jsonObject = jsonArray.getJSONObject(i);

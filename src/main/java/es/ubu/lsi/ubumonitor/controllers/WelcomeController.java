@@ -729,6 +729,7 @@ public class WelcomeController implements Initializable {
 					List<GradeItem> gradeItems = populateGradeItem.createGradeItems(actualCourse.getId(),
 							controller.getUser()
 									.getId());
+					System.out.println(gradeItems);
 
 					actualCourse.setGradeItems(new HashSet<>(gradeItems));
 					// Establecemos las estadisticas

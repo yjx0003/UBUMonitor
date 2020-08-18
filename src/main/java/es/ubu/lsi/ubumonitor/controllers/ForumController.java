@@ -47,7 +47,7 @@ public class ForumController implements MainAction{
 		// Cargamos el html de los graficos y calificaciones
 		webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
 		webViewChartsEngine = webViewCharts.getEngine();
-		javaConnector = new ForumConnector(this);
+		javaConnector = new ForumConnector(webViewCharts, Controller.getInstance().getMainConfiguration(), mainController);
 		progressBar.progressProperty()
 				.bind(webViewChartsEngine.getLoadWorker()
 						.progressProperty());
@@ -66,7 +66,7 @@ public class ForumController implements MainAction{
 					JSObject window = (JSObject) webViewChartsEngine.executeScript("window");
 					window.setMember("javaConnector", javaConnector);
 					webViewCharts.toFront();
-					javaConnector.setDefaultValues();
+					javaConnector.inititDefaultValues();
 
 					updateChart();
 
@@ -111,7 +111,7 @@ public class ForumController implements MainAction{
 	@Override
 	public void onWebViewTabChange() {
 
-		javaConnector.updateTabImages();
+		javaConnector.updateOptionsImages();
 		javaConnector.updateChart();
 
 	}
@@ -134,12 +134,12 @@ public class ForumController implements MainAction{
 				.getId(),
 				LocalDateTime.now()
 						.format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
-				javaConnector.getCurrentType()
+				javaConnector.getCurrentChart()
 						.getChartType()),
 				ConfigHelper.getProperty("imageFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
 				file -> {
 					
-						javaConnector.export(file);
+						javaConnector.exportImage(file);
 						ConfigHelper.setProperty("imageFolderPath", file.getParent());
 
 					
@@ -152,11 +152,11 @@ public class ForumController implements MainAction{
 				.getId(),
 				LocalDateTime.now()
 						.format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss")),
-				javaConnector.getCurrentType()
+				javaConnector.getCurrentChart()
 						.getChartType()),
 				ConfigHelper.getProperty("csvFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
 				file -> {
-					javaConnector.getCurrentType()
+					javaConnector.getCurrentChart()
 							.exportCSV(file.getAbsolutePath());
 					ConfigHelper.setProperty("csvFolderPath", file.getParent());
 				}, FileUtil.CSV);

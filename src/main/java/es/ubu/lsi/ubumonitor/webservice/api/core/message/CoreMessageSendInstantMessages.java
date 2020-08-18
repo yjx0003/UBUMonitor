@@ -24,9 +24,17 @@ public class CoreMessageSendInstantMessages extends WSFunctionAbstract {
 		if (textformat != null) {
 			message.put("textformat", textformat.getNumber());
 		}
-		if(clientmsgid!=null){
+		if (clientmsgid != null) {
 			message.put("clientmsgid", clientmsgid);
 		}
 		messages.put(message);
+	}
+
+	public void append(int touserid, String text) {
+		append(touserid, text, null, null);
+	}
+
+	public void append(int touserid, String text, DescriptionFormat textFormat) {
+		append(touserid, text, textFormat, null);
 	}
 }

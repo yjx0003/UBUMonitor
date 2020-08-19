@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.apache.commons.csv.CSVPrinter;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
@@ -128,7 +127,7 @@ public class MeanDiff extends ChartjsLog {
 
 	@Override
 	public String getOptions(JSObject jsObject) {
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+	
 		jsObject.putWithQuote("typeGraph", "line");
 		jsObject.put("scales",
 				"{yAxes:[{" + getYScaleLabel() + ",gridLines:{zeroLineColor:"

@@ -1,8 +1,5 @@
 package es.ubu.lsi.ubumonitor.view.chart;
 
-import java.io.File;
-import java.io.IOException;
-
 public interface JavaConnector {
 	public void updateChart();
 
@@ -13,8 +10,6 @@ public interface JavaConnector {
 	public boolean toggleGroup();
 
 	public void updateOptionsImages();
-
-	public void exportImage(File file) throws IOException;
 
 	public void inititDefaultValues();
 
@@ -30,5 +25,7 @@ public interface JavaConnector {
 	public void updateCharts(String typeChart);
 
 	public void setCurrentChart(Chart chart);
+
+	public void addChart(Chart chart);
 
 }

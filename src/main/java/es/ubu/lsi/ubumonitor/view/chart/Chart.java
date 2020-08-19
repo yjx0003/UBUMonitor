@@ -15,6 +15,7 @@ import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.SelectionUserController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
@@ -32,7 +33,6 @@ import javafx.scene.web.WebEngine;
 
 public abstract class Chart implements ExportableChart {
 
-
 	protected WebEngine webViewChartsEngine;
 	protected CheckComboBox<Group> slcGroup;
 	protected Stats stats;
@@ -49,11 +49,13 @@ public abstract class Chart implements ExportableChart {
 	protected boolean useOptions;
 	protected Controller controller = Controller.getInstance();
 	protected MainController mainController;
+	protected MainConfiguration mainConfiguration;
 	protected SelectionUserController selectionUserController;
+	protected Course actualCourse;
 	protected static final double OPACITY = 0.2;
 
 	public Chart(MainController mainController, ChartType chartType) {
-		
+
 		this.selectionUserController = mainController.getSelectionUserController();
 		this.slcGroup = selectionUserController.getCheckComboBoxGroup();
 		this.stats = mainController.getStats();
@@ -153,8 +155,7 @@ public abstract class Chart implements ExportableChart {
 	public abstract void export(File file) throws IOException;
 
 	public JSObject getDefaultOptions() {
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
+
 		JSObject jsObject = new JSObject();
 		jsObject.put("chartBackgroundColor",
 				colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "chartBackgroundColor")));
@@ -232,9 +233,7 @@ public abstract class Chart implements ExportableChart {
 
 	@Override
 	public Writer getWritter(String path) throws IOException {
-		Charsets charset = Controller.getInstance()
-				.getMainConfiguration()
-				.getValue(MainConfiguration.GENERAL, "charset");
+		Charsets charset = mainConfiguration.getValue(MainConfiguration.GENERAL, "charset");
 		return new OutputStreamWriter(new FileOutputStream(path), charset.get());
 	}
 
@@ -249,7 +248,6 @@ public abstract class Chart implements ExportableChart {
 	public CheckComboBox<Group> getSlcGroup() {
 		return slcGroup;
 	}
-
 
 	public Stats getStats() {
 		return stats;
@@ -278,7 +276,21 @@ public abstract class Chart implements ExportableChart {
 	public boolean isUseLogs() {
 		return useLogs;
 	}
-	
-	
+
+	public MainConfiguration getMainConfiguration() {
+		return mainConfiguration;
+	}
+
+	public void setMainConfiguration(MainConfiguration mainConfiguration) {
+		this.mainConfiguration = mainConfiguration;
+	}
+
+	public Course getActualCourse() {
+		return actualCourse;
+	}
+
+	public void setActualCourse(Course actualCourse) {
+		this.actualCourse = actualCourse;
+	}
 
 }

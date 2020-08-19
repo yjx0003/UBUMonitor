@@ -13,7 +13,6 @@ import java.util.stream.Stream;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
@@ -41,8 +40,6 @@ public class TotalBar extends ChartjsLog {
 	@Override
 	public String getOptions(JSObject jsObject) {
 
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBar" : "bar");
 		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
@@ -58,13 +55,10 @@ public class TotalBar extends ChartjsLog {
 	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet) {
 
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
+
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance()
-				.getActualCourse()
-				.getLogStats()
+		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
 				.getByType(TypeTimes.DAY);
 		Map<EnrolledUser, Map<E, List<Integer>>> map;
 
@@ -175,15 +169,12 @@ public class TotalBar extends ChartjsLog {
 	@Override
 	protected <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
+
 		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
 		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance()
-				.getActualCourse()
-				.getLogStats()
+		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
 				.getByType(TypeTimes.DAY);
 		Map<EnrolledUser, Map<E, List<Integer>>> map = dataSet.getUserCounts(groupBy, selectedUsers, typeLogs,
 				dateStart, dateEnd);
@@ -238,8 +229,7 @@ public class TotalBar extends ChartjsLog {
 		String selectedTab = tabPaneSelection.getSelectionModel()
 				.getSelectedItem()
 				.getText();
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
+
 		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
 		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
 
@@ -268,16 +258,11 @@ public class TotalBar extends ChartjsLog {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		List<EnrolledUser> filteredUsers = getUsers();
 
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
-
 		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance()
-				.getActualCourse()
-				.getLogStats()
+		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
 				.getByType(TypeTimes.DAY);
 		Map<EnrolledUser, Map<E, List<Integer>>> map = dataSet.getUserCounts(groupBy, filteredUsers, typeLogs,
 				dateStart, dateEnd);
@@ -317,8 +302,7 @@ public class TotalBar extends ChartjsLog {
 		String selectedTab = tabPaneSelection.getSelectionModel()
 				.getSelectedItem()
 				.getText();
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
+
 		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
 
 		List<String> list = new ArrayList<>();

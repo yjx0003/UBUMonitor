@@ -40,7 +40,7 @@ public class RiskEvolution extends RiskBarTemporal {
 	private DatePicker datePickerStart;
 	private DatePicker datePickerEnd;
 	private ChoiceBox<GroupByAbstract<?>> choiceBoxDate;
-	
+
 	public RiskEvolution(MainController mainController, DatePicker datePickerStart, DatePicker datePickerEnd,
 			ChoiceBox<GroupByAbstract<?>> choiceBoxDate) {
 		super(mainController, ChartType.RISK_EVOLUTION);
@@ -59,9 +59,7 @@ public class RiskEvolution extends RiskBarTemporal {
 		LocalDate start = datePickerStart.getValue();
 		LocalDate end = datePickerEnd.getValue();
 		List<EnrolledUser> users = getSelectedEnrolledUser();
-		GroupByAbstract<?> groupBy = Controller.getInstance()
-				.getActualCourse()
-				.getLogStats()
+		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
 				.getByType(TypeTimes.DAY);
 		List<String> range = groupBy.getRangeString(start, end);
 		List<String> header = Stream.of("userid", "fullname")
@@ -144,7 +142,8 @@ public class RiskEvolution extends RiskBarTemporal {
 
 		for (Map.Entry<T, List<LocalDateTime>> entry : mapTimes.entrySet()) {
 			for (LocalDateTime localDateTime : entry.getValue()) {
-				ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault()).plusDays(1);
+				ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault())
+						.plusDays(1);
 				Map<LastActivity, List<EnrolledUser>> users = new HashMap<>();
 				for (EnrolledUser user : selectedEnrolledUser) {
 					ZonedDateTime lastDateTime = getLastLog(l -> l.getTime()
@@ -197,12 +196,17 @@ public class RiskEvolution extends RiskBarTemporal {
 		}
 		return datasets;
 	}
-	
+
 	@Override
 	public String getXAxisTitle() {
-		String start = datePickerStart.getValue().atStartOfDay().format(Controller.DATE_TIME_FORMATTER);
-		String end = datePickerEnd.getValue().plusDays(1).atStartOfDay().format(Controller.DATE_TIME_FORMATTER);
-		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"),
-				I18n.get(choiceBoxDate.getValue().getTypeTime()), start, end);
+		String start = datePickerStart.getValue()
+				.atStartOfDay()
+				.format(Controller.DATE_TIME_FORMATTER);
+		String end = datePickerEnd.getValue()
+				.plusDays(1)
+				.atStartOfDay()
+				.format(Controller.DATE_TIME_FORMATTER);
+		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"), I18n.get(choiceBoxDate.getValue()
+				.getTypeTime()), start, end);
 	}
 }

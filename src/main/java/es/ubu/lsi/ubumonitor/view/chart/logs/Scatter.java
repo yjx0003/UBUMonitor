@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.csv.CSVPrinter;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
+
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.LogLine;
@@ -55,7 +55,7 @@ public class Scatter extends ChartjsLog {
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = actualCourse.getLogStats().getByType(TypeTimes.DAY);
 		Map<EnrolledUser, Map<E, List<LogLine>>> map = dataSet.getUserLogs(groupBy, selectedUsers, typeLogs, dateStart,
 				dateEnd);
 		Map<E, JSArray> dataMap = new HashMap<>();
@@ -97,7 +97,7 @@ public class Scatter extends ChartjsLog {
 	protected <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = actualCourse.getLogStats().getByType(TypeTimes.DAY);
 		List<?> rangeDates = groupBy.getRange(dateStart, dateEnd);
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
@@ -125,7 +125,7 @@ public class Scatter extends ChartjsLog {
 	protected String[] getCSVHeader() {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = actualCourse.getLogStats().getByType(TypeTimes.DAY);
 		List<String> range = groupBy.getRangeString(dateStart, dateEnd);
 		range.add(0, "userid");
 		range.add(1, "fullname");
@@ -137,7 +137,7 @@ public class Scatter extends ChartjsLog {
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = actualCourse.getLogStats().getByType(TypeTimes.DAY);
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
 				dateStart, dateEnd);
@@ -163,7 +163,7 @@ public class Scatter extends ChartjsLog {
 	protected String[] getCSVDesglosedHeader() {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance().getActualCourse().getLogStats().getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = actualCourse.getLogStats().getByType(TypeTimes.DAY);
 		List<String> list = new ArrayList<>();
 		list.add("userid");
 		list.add("fullname");

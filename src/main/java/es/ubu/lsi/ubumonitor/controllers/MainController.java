@@ -151,14 +151,14 @@ public class MainController implements Initializable {
 					}
 				});
 
-		visualizationController.init(this);
+		visualizationController.init(this,visualizationTab, controller.getActualCourse(), controller.getMainConfiguration(), controller.getStage());
 		tabMap.put(visualizationTab, visualizationController);
 
-		riskController.init(this);
+		riskController.init(this, riskTab, controller.getActualCourse(), controller.getMainConfiguration(), controller.getStage());
 		
 		tabMap.put(riskTab, riskController);
 		
-		forumController.init(this);
+		forumController.init(this, forumTab, controller.getActualCourse(), controller.getMainConfiguration(), controller.getStage());
 		tabMap.put(forumTab, forumController);
 	}
 
@@ -212,7 +212,7 @@ public class MainController implements Initializable {
 	 */
 	public void saveChart(ActionEvent actionEvent) throws IOException {
 
-		getActions().save();
+		getActions().saveImage();
 	}
 
 	public SplitPane getSplitPaneLeft() {

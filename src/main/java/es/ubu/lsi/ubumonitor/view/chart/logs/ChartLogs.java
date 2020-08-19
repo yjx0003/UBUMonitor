@@ -8,7 +8,6 @@ import org.apache.commons.csv.CSVPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.SelectionController;
 import es.ubu.lsi.ubumonitor.controllers.VisualizationController;
@@ -46,8 +45,7 @@ public abstract class ChartLogs extends Chart {
 	protected ListView<ComponentEvent> listViewEvent;
 	protected ListView<Section> listViewSection;
 	protected ListView<CourseModule> listViewCourseModule;
-	
-	
+
 	private String max;
 
 	public ChartLogs(MainController mainController, ChartType chartType) {
@@ -154,12 +152,12 @@ public abstract class ChartLogs extends Chart {
 
 	}
 
+	@Override
 	public boolean isCalculateMaxActivated() {
-		return Controller.getInstance()
-				.getMainConfiguration()
-				.getValue(getChartType(), "calculateMax", false);
+		return mainConfiguration.getValue(getChartType(), "calculateMax", false);
 	}
-	
+
+	@Override
 	public long getSuggestedMax(String maxString) {
 		if (maxString == null || maxString.isEmpty()) {
 			return 0;
@@ -167,7 +165,7 @@ public abstract class ChartLogs extends Chart {
 		return Long.valueOf(maxString);
 
 	}
-	
+
 	protected abstract String getJSFunction(String dataset, String options);
 
 	public abstract <E> String createData(List<E> typeLogs, DataSet<E> dataSet);

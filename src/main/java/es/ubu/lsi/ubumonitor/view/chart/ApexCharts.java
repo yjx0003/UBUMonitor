@@ -36,7 +36,7 @@ public abstract class ApexCharts extends Chart {
 	}
 	
 	public String getXScaleLabel() {
-		MainConfiguration mainConfiguration = controller.getMainConfiguration();
+		
 		JSObject jsObject = new JSObject();
 
 		boolean display = mainConfiguration.getValue(MainConfiguration.GENERAL, "displayXScaleTitle");
@@ -56,7 +56,7 @@ public abstract class ApexCharts extends Chart {
 	}
 
 	public String getYScaleLabel() {
-		MainConfiguration mainConfiguration = controller.getMainConfiguration();
+	
 		JSObject jsObject = new JSObject();
 
 		boolean display = mainConfiguration.getValue(MainConfiguration.GENERAL, "displayYScaleTitle");

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -40,15 +41,19 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.PopupWindow.AnchorLocation;
+import javafx.stage.Stage;
 import okhttp3.HttpUrl;
 
 public class MenuController {
@@ -366,17 +371,54 @@ public class MenuController {
 	}
 
 	public void exportCourse() {
-		Course course = controller.getActualCourse();
-		Path source = controller.getHostUserModelversionDir()
-				.resolve(controller.getCourseFile(course));
-		LocalDate now = LocalDate.now();
-		Path destDir = controller.getHostUserModelversionArchivedDir();
-		Path dest = destDir
-				.resolve("(" + now.format(DateTimeFormatter.ISO_DATE) + ") " + controller.getCoursePathName(course));
+		try {
+			Course course = controller.getActualCourse();
+			Path source = controller.getHostUserModelversionDir()
+					.resolve(controller.getCourseFile(course));
+			LocalDate now = LocalDate.now();
+			Path destDir = controller.getHostUserModelversionArchivedDir();
 
+			TextInputDialog textInputDialog = new TextInputDialog(
+					"(" + now.format(DateTimeFormatter.ISO_DATE) + ") " + controller.getCoursePathName(course));
+
+			textInputDialog.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
+			textInputDialog.setHeaderText("text.coursename");
+			Stage stageAlert = (Stage) textInputDialog.getDialogPane()
+					.getScene()
+					.getWindow();
+			stageAlert.getIcons()
+					.add(new Image("/img/logo_min.png"));
+			Button okButton = (Button) textInputDialog.getDialogPane()
+					.lookupButton(ButtonType.OK);
+			okButton.addEventFilter(ActionEvent.ACTION, event -> {
+				Path dest = destDir.resolve(Paths.get(textInputDialog.getEditor()
+						.getText()));
+				if (dest.toFile()
+						.isFile()) {
+					event.consume();
+					ButtonType buttonType = UtilMethods.confirmationWindow("text.override");
+					if (buttonType == ButtonType.OK) {
+						textInputDialog.close();
+						exportCourse(source, destDir, dest);
+					}
+				} else {
+					textInputDialog.close();
+					exportCourse(source, destDir, dest);
+
+				}
+			});
+
+			textInputDialog.showAndWait();
+		} catch (Exception e) {
+			UtilMethods.errorWindow("Error when archiving the course", e);
+		}
+	}
+
+	public void exportCourse(Path source, Path destDir, Path dest) {
 		try {
 			Files.createDirectories(destDir);
 			Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING);
+			UtilMethods.infoWindow(I18n.get("info.courseexported"));
 		} catch (IOException e) {
 			UtilMethods.errorWindow("Error when archiving the course", e);
 		}
@@ -392,9 +434,8 @@ public class MenuController {
 
 	public void createServiceImportLogs(File file) {
 		Task<Void> task = getImportLogsWorker(file);
-		task.setOnSucceeded(e -> {
-			UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), true);
-		});
+		task.setOnSucceeded(
+				e -> UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), true));
 		task.setOnFailed(e -> UtilMethods.errorWindow("Cannot import the log", e.getSource()
 				.getException()));
 		Thread thread = new Thread(task);

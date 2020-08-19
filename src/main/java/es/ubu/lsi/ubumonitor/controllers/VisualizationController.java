@@ -1,17 +1,15 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
-import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.LogStats;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
-import es.ubu.lsi.ubumonitor.util.FileUtil;
 import es.ubu.lsi.ubumonitor.util.I18n;
-import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.view.chart.Chart;
+import es.ubu.lsi.ubumonitor.view.chart.JavaConnector;
 import es.ubu.lsi.ubumonitor.view.chart.VisualizationJavaConnector;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,29 +20,16 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
-import netscape.javascript.JSObject;
 
-public class VisualizationController implements MainAction {
+public class VisualizationController extends WebViewController {
 
-	private static final String CSV_FOLDER_PATH = "csvFolderPath";
-	private static final String YYYY_M_MDDHHMMSS = "yyyyMMddhhmmss";
-	private Controller controller = Controller.getInstance();
-	private MainController mainController;
-	private VisualizationJavaConnector javaConnector;
-	@FXML
-	private WebView webViewCharts;
-	private WebEngine webViewChartsEngine;
 	@FXML
 	private TextField textFieldMax;
-	@FXML
-	private ProgressBar progressBar;
 
 	@FXML
 	private GridPane optionsUbuLogs;
@@ -62,9 +47,18 @@ public class VisualizationController implements MainAction {
 	@FXML
 	private DatePicker datePickerEnd;
 
-	public void init(MainController mainController) {
-		this.mainController = mainController;
+	private VisualizationJavaConnector javaConnector;
 
+	private SelectionController selectionController;
+
+	
+	@Override
+	public void init(MainController mainController, Tab tab, Course actualCourse, MainConfiguration mainConfiguration,
+			Stage stage) {
+		this.selectionController = mainController.getSelectionController();
+		javaConnector = new VisualizationJavaConnector(webViewCharts, mainConfiguration, mainController, this, actualCourse);
+		init(tab, actualCourse, mainConfiguration, stage, javaConnector);
+		
 		if (mainController.getSelectionController()
 				.getTabPane()
 				.getTabs()
@@ -75,47 +69,8 @@ public class VisualizationController implements MainAction {
 
 		}
 		initLogOptionsFilter();
-		initTabPaneWebView();
-		initContextMenu();
-
 	}
 
-	private void initTabPaneWebView() {
-		// Cargamos el html de los graficos y calificaciones
-		webViewCharts.setContextMenuEnabled(false); // Desactiva el click derecho
-		webViewChartsEngine = webViewCharts.getEngine();
-		javaConnector = new VisualizationJavaConnector(webViewCharts, Controller.getInstance()
-				.getMainConfiguration(), mainController, this);
-		progressBar.progressProperty()
-				.bind(webViewChartsEngine.getLoadWorker()
-						.progressProperty());
-		webViewChartsEngine.getLoadWorker()
-				.exceptionProperty()
-				.addListener((ov, oldState, newState) -> {
-					System.out.println(newState);
-				});
-		// Comprobamos cuando se carga la pagina para traducirla
-		webViewChartsEngine.getLoadWorker()
-				.stateProperty()
-				.addListener((ov, oldState, newState) -> {
-					if (Worker.State.SUCCEEDED != newState)
-						return;
-					if (webViewChartsEngine.getDocument() == null) {
-						webViewChartsEngine.reload();
-						return;
-					}
-					progressBar.setVisible(false);
-					JSObject window = (JSObject) webViewChartsEngine.executeScript("window");
-					window.setMember("javaConnector", javaConnector);
-					javaConnector.inititDefaultValues();
-					webViewCharts.toFront();
-
-					javaConnector.updateChart();
-				});
-		webViewChartsEngine.load(getClass().getResource("/graphics/Charts.html")
-				.toExternalForm());
-
-	}
 
 	/**
 	 * Inicializa los elementos de las opciones de logs.
@@ -131,10 +86,8 @@ public class VisualizationController implements MainAction {
 						textFieldMax.setText(oldValue);
 					}
 				});
-		LogStats logStats = controller.getActualCourse()
-				.getLogStats();
-		TypeTimes typeTime = controller.getMainConfiguration()
-				.getValue(MainConfiguration.GENERAL, "initialTypeTimes");
+		LogStats logStats = actualCourse.getLogStats();
+		TypeTimes typeTime = mainConfiguration.getValue(MainConfiguration.GENERAL, "initialTypeTimes");
 		// añadimos los elementos de la enumeracion en el choicebox
 		ObservableList<GroupByAbstract<?>> typeTimes = FXCollections.observableArrayList(logStats.getList());
 		choiceBoxDate.setItems(typeTimes);
@@ -157,10 +110,8 @@ public class VisualizationController implements MainAction {
 			}
 		});
 
-		datePickerStart.setValue(controller.getActualCourse()
-				.getStart());
-		datePickerEnd.setValue(controller.getActualCourse()
-				.getEnd());
+		datePickerStart.setValue(actualCourse.getStart());
+		datePickerEnd.setValue(actualCourse.getEnd());
 
 		datePickerStart.setOnAction(event -> applyFilterLogs());
 		datePickerEnd.setOnAction(event -> applyFilterLogs());
@@ -190,89 +141,19 @@ public class VisualizationController implements MainAction {
 		return gridPaneOptionLogs;
 	}
 
-	private void initContextMenu() {
-		ContextMenu contextMenu = new ContextMenu();
-		contextMenu.setAutoHide(true);
+	@Override
+	public ContextMenu initContextMenu() {
+		ContextMenu contextMenu = super.initContextMenu();
 
-		MenuItem exportCSV = new MenuItem(I18n.get("text.exportcsv"));
 		MenuItem exportCSVDesglosed = new MenuItem(I18n.get("text.exportcsvdesglosed"));
-		exportCSV.setOnAction(e -> exportCSV());
 		exportCSVDesglosed.setOnAction(e -> exportCSVDesglosed());
 		exportCSVDesglosed.visibleProperty()
-				.bind(mainController.getSelectionController()
-						.getTabUbuLogs()
+				.bind(selectionController.getTabUbuLogs()
 						.selectedProperty());
 
-		MenuItem exportPNG = new MenuItem(I18n.get("text.exportpng"));
-		exportPNG.setOnAction(e -> save());
-
 		contextMenu.getItems()
-				.addAll(exportPNG, exportCSV, exportCSVDesglosed);
-		webViewCharts.setOnMouseClicked(e -> {
-			if (e.getButton() == MouseButton.SECONDARY) {
-				contextMenu.show(webViewCharts, e.getScreenX(), e.getScreenY());
-			} else {
-				contextMenu.hide();
-			}
-		});
-
-	}
-
-	@Override
-	public void save() {
-
-		UtilMethods.fileAction(String.format("%s_%s_%s", controller.getActualCourse()
-				.getId(),
-				LocalDateTime.now()
-						.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),
-				javaConnector.getCurrentChart()
-						.getChartType()),
-				ConfigHelper.getProperty("imageFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
-				file -> {
-
-					javaConnector.exportImage(file);
-
-					ConfigHelper.setProperty("imageFolderPath", file.getParent());
-
-				}, false, FileUtil.PNG);
-
-	}
-
-	public void exportCSV() {
-
-		UtilMethods.fileAction(String.format("%s_%s_%s", controller.getActualCourse()
-				.getId(),
-				LocalDateTime.now()
-						.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),
-				javaConnector.getCurrentChart()
-						.getChartType()),
-				ConfigHelper.getProperty(CSV_FOLDER_PATH, "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
-				file -> {
-
-					javaConnector.getCurrentChart()
-							.exportCSV(file.getAbsolutePath());
-
-					ConfigHelper.setProperty(CSV_FOLDER_PATH, file.getParent());
-
-				}, true, FileUtil.CSV);
-
-	}
-
-	public void exportCSVDesglosed() {
-		UtilMethods.fileAction(String.format("%s_%s_%s", controller.getActualCourse()
-				.getId(),
-				LocalDateTime.now()
-						.format(DateTimeFormatter.ofPattern(YYYY_M_MDDHHMMSS)),
-				javaConnector.getCurrentChart()
-						.getChartType()),
-				ConfigHelper.getProperty(CSV_FOLDER_PATH, "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
-				file -> {
-
-					javaConnector.getCurrentChart()
-							.exportCSVDesglosed(file.getAbsolutePath());
-					ConfigHelper.setProperty(CSV_FOLDER_PATH, file.getParent());
-
-				}, true, FileUtil.CSV);
+				.add(exportCSVDesglosed);
+		return contextMenu;
 
 	}
 
@@ -282,7 +163,7 @@ public class VisualizationController implements MainAction {
 	 * @param value valor de escala maxima
 	 */
 	private void updateMaxScale() {
-		if (webViewChartsEngine.getLoadWorker()
+		if (webEngine.getLoadWorker()
 				.getState() == Worker.State.SUCCEEDED && textFieldMax.isFocused())
 			javaConnector.updateChart(false);
 
@@ -294,8 +175,7 @@ public class VisualizationController implements MainAction {
 	 * @param event evento
 	 */
 	public void applyFilterLogs() {
-		if (mainController.getVisualizationTab()
-				.isSelected()) {
+		if (tab.isSelected()) {
 			findMaxaAndUpdateChart();
 		}
 
@@ -396,84 +276,40 @@ public class VisualizationController implements MainAction {
 
 	}
 
-	public MainController getMainController() {
-		return mainController;
-	}
-
-	public VisualizationJavaConnector getJavaConnector() {
+	@Override
+	public JavaConnector getJavaConnector() {
 		return javaConnector;
-	}
-
-	public void setJavaConnector(VisualizationJavaConnector javaConnector) {
-		this.javaConnector = javaConnector;
-	}
-
-	public WebView getWebViewCharts() {
-		return webViewCharts;
-	}
-
-	public void setWebViewCharts(WebView webViewCharts) {
-		this.webViewCharts = webViewCharts;
-	}
-
-	public WebEngine getWebViewChartsEngine() {
-		return webViewChartsEngine;
-	}
-
-	public void setWebViewChartsEngine(WebEngine webViewChartsEngine) {
-		this.webViewChartsEngine = webViewChartsEngine;
 	}
 
 	public TextField getTextFieldMax() {
 		return textFieldMax;
 	}
 
-	public void setTextFieldMax(TextField textFieldMax) {
-		this.textFieldMax = textFieldMax;
-	}
-
 	public GridPane getOptionsUbuLogs() {
 		return optionsUbuLogs;
-	}
-
-	public void setOptionsUbuLogs(GridPane optionsUbuLogs) {
-		this.optionsUbuLogs = optionsUbuLogs;
 	}
 
 	public ChoiceBox<GroupByAbstract<?>> getChoiceBoxDate() {
 		return choiceBoxDate;
 	}
 
-	public void setChoiceBoxDate(ChoiceBox<GroupByAbstract<?>> choiceBoxDate) {
-		this.choiceBoxDate = choiceBoxDate;
-	}
-
 	public GridPane getDateGridPane() {
 		return dateGridPane;
-	}
-
-	public void setDateGridPane(GridPane dateGridPane) {
-		this.dateGridPane = dateGridPane;
 	}
 
 	public DatePicker getDatePickerStart() {
 		return datePickerStart;
 	}
 
-	public void setDatePickerStart(DatePicker datePickerStart) {
-		this.datePickerStart = datePickerStart;
-	}
-
 	public DatePicker getDatePickerEnd() {
 		return datePickerEnd;
 	}
 
-	public void setDatePickerEnd(DatePicker datePickerEnd) {
-		this.datePickerEnd = datePickerEnd;
+	@Override
+	public Chart getCurrentChart() {
+		return javaConnector.getCurrentChart();
 	}
 
-	public void setMainController(MainController mainController) {
-		this.mainController = mainController;
-	}
+	
 
 }

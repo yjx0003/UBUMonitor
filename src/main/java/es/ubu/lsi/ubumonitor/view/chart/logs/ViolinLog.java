@@ -1,8 +1,6 @@
 package es.ubu.lsi.ubumonitor.view.chart.logs;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 
@@ -14,8 +12,7 @@ public class ViolinLog extends BoxplotLog {
 
 	@Override
 	public String getOptions(JSObject jsObject) {
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
+
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalViolin" : "violin");
 		jsObject.put("tooltipDecimals", 0);

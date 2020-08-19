@@ -2,6 +2,7 @@ package es.ubu.lsi.ubumonitor.view.chart;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.view.chart.forum.ForumTable;
 import javafx.concurrent.Worker.State;
 import javafx.scene.web.WebView;
@@ -9,9 +10,8 @@ import javafx.scene.web.WebView;
 public class ForumConnector extends JavaConnectorAbstract {
 
 	private static final ChartType DEFAULT_CHART = ChartType.DEFAULT_FORUM;
-
-	public ForumConnector(WebView webView, MainConfiguration mainConfiguration, MainController mainController) {
-		super(webView, mainConfiguration, mainController);
+	public ForumConnector(WebView webView, MainConfiguration mainConfiguration, MainController mainController, Course actualCourse) {
+		super(webView, mainConfiguration, mainController, actualCourse);
 		
 		addChart(new ForumTable(mainController, webView,
 				mainController
@@ -21,10 +21,7 @@ public class ForumConnector extends JavaConnectorAbstract {
 		currentChart = charts.get(DEFAULT_CHART);
 	}
 
-	private void addChart(Chart chart) {
-		chart.setWebViewChartsEngine(webEngine);
-		charts.put(chart.getChartType(), chart);
-	}
+	
 
 	public void manageOptions() {
 	}

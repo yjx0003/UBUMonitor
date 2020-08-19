@@ -1,13 +1,12 @@
 package es.ubu.lsi.ubumonitor.view.chart;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
@@ -23,12 +22,14 @@ public abstract class JavaConnectorAbstract implements JavaConnector {
 	protected Chart currentChart;
 	protected MainController mainController;
 	protected WebView webView;
+	protected Course actualCourse;
 
-	public JavaConnectorAbstract(WebView webView, MainConfiguration mainConfiguration, MainController mainController) {
+	public JavaConnectorAbstract(WebView webView, MainConfiguration mainConfiguration, MainController mainController,Course actualCourse) {
 		this.webView = webView;
 		this.webEngine = webView.getEngine();
 		this.mainConfiguration = mainConfiguration;
 		this.mainController = mainController;
+		this.actualCourse = actualCourse;
 		charts = new EnumMap<>(ChartType.class);
 
 	}
@@ -65,10 +66,7 @@ public abstract class JavaConnectorAbstract implements JavaConnector {
 
 	}
 
-	@Override
-	public void exportImage(File file) throws IOException {
-		currentChart.export(file);
-	}
+	
 
 	@Override
 	public void inititDefaultValues() {
@@ -136,5 +134,13 @@ public abstract class JavaConnectorAbstract implements JavaConnector {
 	@Override
 	public void setCurrentChart(Chart chart) {
 		currentChart = chart;
+	}
+	
+	@Override
+	public void addChart(Chart chart) {
+		chart.setWebViewChartsEngine(webEngine);
+		chart.setMainConfiguration(mainConfiguration);
+		chart.setActualCourse(actualCourse);
+		charts.put(chart.getChartType(), chart);
 	}
 }

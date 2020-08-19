@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.DiscussionPost;
@@ -89,9 +88,7 @@ public class ForumTable extends Tabulator {
 	public List<DiscussionPost> getSelectedDiscussionPosts() {
 		Set<CourseModule> selectedForums = new HashSet<>(forums.getSelectionModel()
 				.getSelectedItems());
-		return Controller.getInstance()
-				.getActualCourse()
-				.getDiscussionPosts()
+		return actualCourse.getDiscussionPosts()
 				.stream()
 				.filter(discussionPost -> selectedForums.contains(discussionPost.getDiscussion()
 						.getForum()))

@@ -18,7 +18,6 @@ import org.apache.commons.csv.CSVPrinter;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.LastActivity;
 import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
@@ -201,8 +200,7 @@ public class BubbleLogarithmic extends Chartjs {
 	}
 
 	private LastActivityFactory generateLastActivityFactory() {
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
+	
 		Color c25 = mainConfiguration.getValue(chartType, "firstInterval");
 		Color c50 = mainConfiguration.getValue(chartType, "secondInterval");
 		Color c75 = mainConfiguration.getValue(chartType, "thirdInterval");

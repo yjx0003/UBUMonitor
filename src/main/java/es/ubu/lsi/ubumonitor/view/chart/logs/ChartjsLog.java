@@ -59,7 +59,7 @@ public abstract class ChartjsLog extends ChartLogs {
 	
 
 	public String getXScaleLabel() {
-		MainConfiguration mainConfiguration = controller.getMainConfiguration();
+		
 		JSObject jsObject = new JSObject();
 		jsObject.put("display", mainConfiguration.getValue(MainConfiguration.GENERAL, "displayXScaleTitle"));
 		jsObject.putWithQuote("labelString", getXAxisTitle());
@@ -73,7 +73,7 @@ public abstract class ChartjsLog extends ChartLogs {
 
 
 	public String getYScaleLabel() {
-		MainConfiguration mainConfiguration = controller.getMainConfiguration();
+		
 		JSObject jsObject = new JSObject();
 		jsObject.put("display", mainConfiguration.getValue(MainConfiguration.GENERAL, "displayYScaleTitle"));
 		jsObject.putWithQuote("labelString", getYAxisTitle());

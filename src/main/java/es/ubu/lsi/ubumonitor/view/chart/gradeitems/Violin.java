@@ -9,7 +9,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
@@ -31,7 +30,7 @@ public class Violin extends ChartjsGradeItem {
 	@Override
 	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
 		JSObject data = new JSObject();
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		
 		data.put("labels", "[" + UtilMethods.joinWithQuotes(selectedGradeItems) + "]");
 		JSArray datasets = new JSArray();
 
@@ -40,7 +39,7 @@ public class Violin extends ChartjsGradeItem {
 
 		}
 
-		datasets.add(createData(Controller.getInstance().getActualCourse().getEnrolledUsers(), selectedGradeItems,
+		datasets.add(createData(actualCourse.getEnrolledUsers(), selectedGradeItems,
 				I18n.get("text.all"),
 				!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")));
 
@@ -100,7 +99,7 @@ public class Violin extends ChartjsGradeItem {
 
 	@Override
 	public String getOptions(JSObject jsObject) {
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 	
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalViolin" : "violin");
@@ -130,7 +129,7 @@ public class Violin extends ChartjsGradeItem {
 				exportCSV(printer, enrolledUser, gradeItems, "selected users");
 
 			}
-			MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+			
 			if((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")){
 				exportCSV(printer, controller.getActualCourse().getEnrolledUsers(), gradeItems, "all");
 			}

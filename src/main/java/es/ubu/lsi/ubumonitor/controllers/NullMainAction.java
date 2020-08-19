@@ -38,7 +38,7 @@ public class NullMainAction implements MainAction {
 	}
 
 	@Override
-	public void save() {
+	public void saveImage() {
 		// do nothing
 
 	}

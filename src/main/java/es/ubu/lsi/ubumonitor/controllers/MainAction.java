@@ -30,7 +30,7 @@ public interface MainAction {
 	
 	public default void updateListViewForum() {}
 
-	public void save();
+	public void saveImage();
 
 	public void applyConfiguration();
 

@@ -4,6 +4,7 @@ import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.SelectionController;
 import es.ubu.lsi.ubumonitor.controllers.VisualizationController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.view.chart.activitystatus.ActivitiesStatusTable;
 import es.ubu.lsi.ubumonitor.view.chart.gradeitems.BoxPlot;
@@ -50,8 +51,8 @@ public class VisualizationJavaConnector extends JavaConnectorAbstract {
 	private VisualizationController visualizationController;
 
 	public VisualizationJavaConnector(WebView webView, MainConfiguration mainConfiguration,
-			MainController mainController, VisualizationController visualizationController) {
-		super(webView, mainConfiguration, mainController);
+			MainController mainController, VisualizationController visualizationController, Course actualCourse) {
+		super(webView, mainConfiguration, mainController, actualCourse);
 
 		this.visualizationController = visualizationController;
 
@@ -88,11 +89,6 @@ public class VisualizationJavaConnector extends JavaConnectorAbstract {
 		addChart(new BoxplotLog(mainController));
 		addChart(new ViolinLog(mainController));
 		currentChart = charts.get(DEFAULT_LOG_CHART);
-	}
-
-	private void addChart(Chart chart) {
-		chart.setWebViewChartsEngine(webEngine);
-		charts.put(chart.getChartType(), chart);
 	}
 
 	public void updateCharts(String typeChart) {

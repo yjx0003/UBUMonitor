@@ -12,9 +12,7 @@ import org.apache.commons.csv.CSVPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.ActivityCompletion;
 import es.ubu.lsi.ubumonitor.model.ActivityCompletion.State;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
@@ -96,8 +94,6 @@ public class ActivitiesStatusTable extends Tabulator {
 	}
 
 	private String getProgressParam(int max) {
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
 		JSObject jsObject = new JSObject();
 		jsObject.put("min", 0);
 		jsObject.put("max", max);

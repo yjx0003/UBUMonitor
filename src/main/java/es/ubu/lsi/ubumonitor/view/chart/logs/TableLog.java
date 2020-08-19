@@ -47,8 +47,7 @@ public class TableLog extends TabulatorLogs {
 
 	private <E> List<LogLine> createLogLines(List<EnrolledUser> users, List<E> typeLogs, DataSet<E> dataSet) {
 
-		GroupByAbstract<?> groupBy = Controller.getInstance()
-				.getActualCourse()
+		GroupByAbstract<?> groupBy = actualCourse
 				.getLogStats()
 				.getByType(TypeTimes.DAY);
 

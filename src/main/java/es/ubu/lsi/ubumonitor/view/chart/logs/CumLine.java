@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.apache.commons.csv.CSVPrinter;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
@@ -67,16 +66,9 @@ public class CumLine extends ChartjsLog {
 		dataset.putWithQuote("label", generalMeanTranslate);
 		dataset.put("borderColor", hex(generalMeanTranslate));
 		dataset.put("backgroundColor", rgba(generalMeanTranslate, OPACITY));
-		dataset.put("borderDash", "[" + Controller.getInstance()
-				.getMainConfiguration()
-				.getValue(MainConfiguration.GENERAL, "borderLength") + ","
-				+ Controller.getInstance()
-						.getMainConfiguration()
-						.getValue(MainConfiguration.GENERAL, "borderSpace")
-				+ "]");
-		dataset.put("hidden", !(boolean) Controller.getInstance()
-				.getMainConfiguration()
-				.getValue(MainConfiguration.GENERAL, "generalActive"));
+		dataset.put("borderDash", "[" + mainConfiguration.getValue(MainConfiguration.GENERAL, "borderLength") + ","
+				+ mainConfiguration.getValue(MainConfiguration.GENERAL, "borderSpace") + "]");
+		dataset.put("hidden", !(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive"));
 		JSArray results = new JSArray();
 		double cumResult = 0;
 		for (int j = 0; j < rangeDates.size(); j++) {
@@ -154,8 +146,8 @@ public class CumLine extends ChartjsLog {
 
 		jsObject.putWithQuote("typeGraph", "line");
 
-		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",ticks:{suggestedMax:" + getSuggestedMax(textFieldMax.getText())
-				+ ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
+		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",ticks:{suggestedMax:"
+				+ getSuggestedMax(textFieldMax.getText()) + ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
 		jsObject.put("tooltips",
 				"{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+' : '+Math.round(100*a.yLabel)/100}}}");
 		return jsObject.toString();

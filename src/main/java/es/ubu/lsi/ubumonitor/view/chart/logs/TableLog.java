@@ -93,7 +93,7 @@ public class TableLog extends TabulatorLogs {
 		jsObject.putWithQuote("field", field);
 		jsObject.putWithQuote("sorter", sorter);
 		jsObject.put("headerFilter", true);
-		jsObject.put("align", "'center'");
+		jsObject.put("hozAlign", "'center'");
 		jsArray.add(jsObject);
 		return jsObject;
 	}

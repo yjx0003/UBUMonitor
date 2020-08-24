@@ -31,7 +31,7 @@ public abstract class ApexCharts extends Chart {
 	}
 
 	@Override
-	public void export(File file) throws IOException {
+	public void exportImage(File file) throws IOException {
 		UtilMethods.snapshotNode(file, webView);
 	}
 	

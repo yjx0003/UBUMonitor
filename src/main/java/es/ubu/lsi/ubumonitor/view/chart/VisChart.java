@@ -11,23 +11,23 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.image.WritableImage;
 import javafx.scene.web.WebView;
 
-public abstract class Tabulator extends Chart {
-
+public abstract class VisChart extends Chart {
 	private WebView webView;
-	public Tabulator(MainController mainController, ChartType chartType, WebView webView) {
+	public VisChart(MainController mainController, ChartType chartType, WebView webView) {
 		super(mainController, chartType);
-		this.webView = webView;
+		this.webView =webView;
 	}
+
 
 	@Override
 	public void clear() {
-		webViewChartsEngine.executeScript("clearTabulator()");
+		webViewChartsEngine.executeScript("clearVisChart()");
 
 	}
 
 	@Override
 	public void hideLegend() {
-		// do nothing
+		//do nothing
 
 	}
 

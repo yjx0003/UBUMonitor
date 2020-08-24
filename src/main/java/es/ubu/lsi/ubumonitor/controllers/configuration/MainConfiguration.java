@@ -121,6 +121,8 @@ public class MainConfiguration {
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "secondInterval", Color.web("#fff033"));
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "thirdInterval", Color.web("#f4e3ae"));
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "fourthInterval", Color.web("#f78880"));
+		
+		createItem(ChartType.FORUM_BAR, "horizontalMode", false);
 	}
 
 	@SuppressWarnings("unchecked")

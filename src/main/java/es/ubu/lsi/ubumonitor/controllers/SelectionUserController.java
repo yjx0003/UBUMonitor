@@ -111,7 +111,7 @@ public class SelectionUserController {
 						selectionController.getTabUbuGrades()
 								.setDisable(false);
 					}
-					this.mainController.updateListViewEnrolledUser();
+					this.mainController.getActions().updateListViewEnrolledUser();
 				});
 
 		initEnrolledUsers();
@@ -186,7 +186,7 @@ public class SelectionUserController {
 		observableUsers.sort(EnrolledUser.getNameComparator());
 		filteredEnrolledList = new FilteredList<>(observableUsers);
 		filteredEnrolledList.predicateProperty()
-				.addListener(p -> mainController.updatePredicadeEnrolledList());
+				.addListener(p -> mainController.getActions().updatePredicadeEnrolledList());
 		// Activamos la selección múltiple en la lista de participantes
 		listParticipants.getSelectionModel()
 				.setSelectionMode(SelectionMode.MULTIPLE);
@@ -194,7 +194,7 @@ public class SelectionUserController {
 		listParticipants.getSelectionModel()
 				.getSelectedItems()
 				.addListener(
-						(Change<? extends EnrolledUser> usersSelected) -> mainController.updateListViewEnrolledUser());
+						(Change<? extends EnrolledUser> usersSelected) -> mainController.getActions().updateListViewEnrolledUser());
 
 		/// Mostramos la lista de participantes
 		listParticipants.setItems(filteredEnrolledList);
@@ -252,7 +252,7 @@ public class SelectionUserController {
 		user.sort(Comparator.comparing(EnrolledUser::getFullName, Comparator.nullsLast(Collator.getInstance())));
 		FilteredList<EnrolledUser> filteredListNotEnrolled = new FilteredList<>(user);
 		filteredListNotEnrolled.predicateProperty()
-				.addListener(value -> mainController.updatePredicadeEnrolledList());
+				.addListener(value -> mainController.getActions().updatePredicadeEnrolledList());
 		listParticipantsOut.setItems(filteredListNotEnrolled);
 		listParticipantsOut.getSelectionModel()
 				.setSelectionMode(SelectionMode.MULTIPLE);
@@ -298,7 +298,7 @@ public class SelectionUserController {
 		listParticipantsOut.getSelectionModel()
 				.getSelectedItems()
 				.addListener((Change<? extends EnrolledUser> usersSelected) -> {
-					mainController.updateListViewEnrolledUser();
+					mainController.getActions().updateListViewEnrolledUser();
 					autoCompletionBindingNotEnrolled.dispose();
 					autoCompletionBinding = UtilMethods.createAutoCompletionBinding(textFieldNotEnrolled,
 							filteredListNotEnrolled);

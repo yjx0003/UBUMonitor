@@ -60,7 +60,8 @@ public class SelectionForumController {
 				.stream()
 				.filter(cm -> cm.getModuleType() == ModuleType.FORUM)
 				.collect(Collectors.toCollection(FXCollections::observableArrayList)));
-		listViewForum.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		listViewForum.getSelectionModel()
+				.setSelectionMode(SelectionMode.MULTIPLE);
 		listViewForum.setItems(filteredForum);
 
 		Section dummySection = new Section(-1);
@@ -69,8 +70,10 @@ public class SelectionForumController {
 				.getActualCourse()
 				.getSections(), checkComboBoxForumSection);
 
-		filteredForum.predicateProperty()
-				.addListener(p -> mainController.updateListViewEnrolledUser());
+		listViewForum.getSelectionModel()
+				.getSelectedItems()
+				.addListener((Change<? extends CourseModule> courseModule) -> mainController.getActions()
+						.updateListViewForum());
 
 		textFieldForum.textProperty()
 				.addListener((ob, oldValue, newValue) -> onChange());

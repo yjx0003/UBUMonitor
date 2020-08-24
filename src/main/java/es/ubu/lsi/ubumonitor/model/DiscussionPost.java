@@ -164,6 +164,10 @@ public class DiscussionPost implements Serializable{
 		this.isprivatereply = isprivatereply;
 	}
 	
+	public CourseModule getForum() {
+		return getDiscussion().getForum();
+	}
+	
 	@Override
 	public int hashCode() {
 		return id;

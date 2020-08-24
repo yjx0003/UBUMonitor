@@ -111,6 +111,7 @@ public class Constants {
 	public static final String FORMAT = "format";
 	public static final String EVENTTYPE = "eventtype";
 	public static final String TIMEDURATION = "timeduration";
+	public static final String PROFILEIMAGEURLSMALL = "profileimageurlsmall";
 	
 
 	private Constants() {

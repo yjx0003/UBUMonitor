@@ -32,7 +32,7 @@ public abstract class Chartjs extends Chart {
 	}
 
 	@Override
-	public void export(File file) throws IOException {
+	public void exportImage(File file) throws IOException {
 		String str = (String) webViewChartsEngine.executeScript("exportChartjs()");
 		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
 		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));

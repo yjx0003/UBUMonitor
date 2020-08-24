@@ -3,6 +3,7 @@ package es.ubu.lsi.ubumonitor.controllers.load;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -101,14 +102,15 @@ public class PopulateEnrolledUsersCourse {
 		enrolledUser.setCountry(user.optString(Constants.COUNTRY));
 		enrolledUser.setProfileimageurl(user.optString(Constants.PROFILEIMAGEURL));
 		enrolledUser.setEmail(user.optString(Constants.EMAIL));
-
+		
 		String imageUrl = user.optString(Constants.PROFILEIMAGEURL, null);
 		enrolledUser.setProfileimageurlsmall(imageUrl);
 
 		if (imageUrl != null) {
 			byte[] imageBytes = UtilMethods.downloadImage(imageUrl);
-
 			enrolledUser.setImageBytes(imageBytes);
+			enrolledUser.setImageBase64("data:image/png;base64,"+Base64.getEncoder().encodeToString(imageBytes));
+			
 		}
 		return enrolledUser;
 	}

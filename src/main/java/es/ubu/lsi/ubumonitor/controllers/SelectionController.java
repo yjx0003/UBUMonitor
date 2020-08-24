@@ -231,7 +231,7 @@ public class SelectionController {
 			// Generamos el gráfico con los elementos selecionados
 			tvwGradeReport.getSelectionModel()
 					.getSelectedItems()
-					.addListener((Change<? extends TreeItem<GradeItem>> g) -> mainController.updateTreeViewGradeItem());
+					.addListener((Change<? extends TreeItem<GradeItem>> g) -> mainController.getActions().updateTreeViewGradeItem());
 		}
 
 	}
@@ -240,7 +240,7 @@ public class SelectionController {
 		if (!tabActivity.isSelected()) {
 			return;
 		}
-		mainController.onSetTabActivityCompletion();
+		mainController.getActions().onSetTabActivityCompletion();
 	}
 
 	private void initTabActivityCompletion() {
@@ -256,7 +256,7 @@ public class SelectionController {
 		// grafica y la escala
 		listViewActivity.getSelectionModel()
 				.getSelectedItems()
-				.addListener((Change<? extends CourseModule> courseModule) -> mainController.updateListViewActivity());
+				.addListener((Change<? extends CourseModule> courseModule) -> mainController.getActions().updateListViewActivity());
 
 		listViewActivity.setCellFactory(getListCellCourseModule());
 
@@ -423,7 +423,7 @@ public class SelectionController {
 		for (Tab tab : tabs) {
 			tab.setOnSelectionChanged(event -> {
 				if (tab.isSelected()) {
-					mainController.onSetSubTabLogs();
+					mainController.getActions().onSetSubTabLogs();
 
 				}
 			});
@@ -439,7 +439,7 @@ public class SelectionController {
 		// grafica y la escala
 		listViewComponents.getSelectionModel()
 				.getSelectedItems()
-				.addListener((Change<? extends Component> c) -> mainController.updateListViewComponents()
+				.addListener((Change<? extends Component> c) -> mainController.getActions().updateListViewComponents()
 
 				);
 
@@ -498,7 +498,7 @@ public class SelectionController {
 	public void initListViewComponentsEvents() {
 		listViewEvents.getSelectionModel()
 				.getSelectedItems()
-				.addListener((Change<? extends ComponentEvent> c) -> mainController.updateListViewEvents());
+				.addListener((Change<? extends ComponentEvent> c) -> mainController.getActions().updateListViewEvents());
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
@@ -564,7 +564,7 @@ public class SelectionController {
 		// grafica y la escala
 		listViewSection.getSelectionModel()
 				.getSelectedItems()
-				.addListener((Change<? extends Section> section) -> mainController.updateListViewSection());
+				.addListener((Change<? extends Section> section) -> mainController.getActions().updateListViewSection());
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
@@ -641,7 +641,7 @@ public class SelectionController {
 		listViewCourseModule.getSelectionModel()
 				.getSelectedItems()
 				.addListener(
-						(Change<? extends CourseModule> courseModule) -> mainController.updateListViewCourseModule());
+						(Change<? extends CourseModule> courseModule) -> mainController.getActions().updateListViewCourseModule());
 
 		listViewCourseModule.setCellFactory(getListCellCourseModule());
 
@@ -817,7 +817,7 @@ public class SelectionController {
 		if (!tabUbuLogs.isSelected()) {
 			return;
 		}
-		mainController.onSetTabLogs();
+		mainController.getActions().onSetTabLogs();
 	}
 
 	/**
@@ -838,7 +838,7 @@ public class SelectionController {
 		if (!tabUbuGrades.isSelected()) {
 			return;
 		}
-		mainController.onSetTabGrades();
+		mainController.getActions().onSetTabGrades();
 	}
 
 	/**

@@ -40,7 +40,9 @@ public enum ChartType {
 	RISK_BAR_TEMPORAL(Tabs.RISK, 18),
 	RISK_EVOLUTION(Tabs.RISK, 19),
 	
-	FORUM_TABLE(Tabs.FORUM, 23);
+	FORUM_TABLE(Tabs.FORUM, 23), 
+	FORUM_BAR(Tabs.FORUM, 24), 
+	FORUM_NETWORK(Tabs.FORUM, 25);
 	
 
 	private Tabs tab;

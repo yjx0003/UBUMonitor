@@ -73,6 +73,11 @@ html,body
    	font-weight: bold;
 }
 
+#visDiv{
+	height:95vh;
+	width:100%;
+}
+
 .apexchart-container
 {
 	clear: both;

@@ -44,6 +44,11 @@ public class ForumController extends WebViewController {
 		updateChart();
 
 	}
+	
+	@Override
+	public void updateListViewForum() {
+		updateChart();
+	}
 
 	@Override
 	public Chart getCurrentChart() {

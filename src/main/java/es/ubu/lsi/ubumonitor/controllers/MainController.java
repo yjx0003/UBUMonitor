@@ -137,17 +137,17 @@ public class MainController implements Initializable {
 		webViewTabPane.getSelectionModel()
 				.selectedItemProperty()
 				.addListener((ob, old, newValue) -> {
-					onWebViewTabChange();
+					getActions().onWebViewTabChange();
 					SelectionController selectionController = selectionMainController.getSelectionController();
 					if (selectionController.getTabUbuLogs()
 							.isSelected()) {
-						onSetTabLogs();
+						getActions().onSetTabLogs();
 					} else if (selectionController.getTabUbuGrades()
 							.isSelected()) {
-						onSetTabGrades();
+						getActions().onSetTabGrades();
 					} else if (selectionController.getTabActivity()
 							.isSelected()) {
-						onSetTabActivityCompletion();
+						getActions().onSetTabActivityCompletion();
 					}
 				});
 
@@ -239,68 +239,9 @@ public class MainController implements Initializable {
 		return tabMap;
 	}
 
-	private MainAction getActions() {
+	public MainAction getActions() {
 		return tabMap.getOrDefault(webViewTabPane.getSelectionModel()
 				.getSelectedItem(), NullMainAction.getInstance());
-	}
-
-	public void updateTreeViewGradeItem() {
-		getActions().updateTreeViewGradeItem();
-	}
-
-	public void updateListViewEnrolledUser() {
-		getActions().updateListViewEnrolledUser();
-	}
-
-	public void updatePredicadeEnrolledList() {
-		getActions().updatePredicadeEnrolledList();
-	}
-
-	public void updateListViewActivity() {
-		getActions().updateListViewActivity();
-
-	}
-
-	public void onSetTabLogs() {
-		getActions().onSetTabLogs();
-
-	}
-
-	public void onSetTabGrades() {
-		getActions().onSetTabGrades();
-	}
-
-	public void onSetTabActivityCompletion() {
-		getActions().onSetTabActivityCompletion();
-	}
-
-	public void onSetSubTabLogs() {
-		getActions().onSetSubTabLogs();
-	}
-
-	public void updateListViewComponents() {
-		getActions().updateListViewComponents();
-	}
-
-	public void updateListViewEvents() {
-		getActions().updateListViewEvents();
-	}
-
-	public void updateListViewSection() {
-		getActions().updateListViewSection();
-	}
-
-	public void updateListViewCourseModule() {
-		getActions().updateListViewCourseModule();
-	}
-
-	public void onWebViewTabChange() {
-		getActions().onWebViewTabChange();
-	}
-
-	public void applyConfiguration() {
-		getActions().applyConfiguration();
-
 	}
 
 	private void onClose() {

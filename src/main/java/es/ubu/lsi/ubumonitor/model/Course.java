@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -765,6 +766,9 @@ public class Course implements Serializable {
 	 * @return the courseEvents
 	 */
 	public Set<CourseEvent> getCourseEvents() {
+		if(courseEvents == null) {
+			return Collections.emptySet();
+		}
 		return courseEvents;
 	}
 
@@ -780,6 +784,9 @@ public class Course implements Serializable {
 	}
 	
 	public Set<DiscussionPost> getDiscussionPosts(){
+		if(discussionPosts == null) {
+			return Collections.emptySet();
+		}
 		return discussionPosts;
 	}
 }

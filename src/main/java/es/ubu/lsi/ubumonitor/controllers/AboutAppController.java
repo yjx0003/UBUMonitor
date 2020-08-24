@@ -50,6 +50,10 @@ public class AboutAppController implements Initializable {
 	public void openGithub() {
 		UtilMethods.openURL(AppInfo.GITHUB);
 	}
+	
+	public void openUBU() {
+		UtilMethods.openURL("https://www.ubu.es/");
+	}
 
 	public void openAuthor1() {
 		UtilMethods.mailTo("ypji@ubu.es");
@@ -63,6 +67,9 @@ public class AboutAppController implements Initializable {
 		UtilMethods.mailTo("cpardo@ubu.es");
 	}
 
+	public void openAuthor4() {
+		UtilMethods.mailTo("xjx1001@alu.ubu.es");
+	}
 	private void append(String key, String value) {
 		appInfo.append(key + value + "\n");
 

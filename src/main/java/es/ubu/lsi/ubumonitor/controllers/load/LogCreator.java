@@ -148,7 +148,7 @@ public class LogCreator {
 		Set<String> headers = csvParser.getHeaderMap()
 				.keySet();
 		LOGGER.info("Los nombres de las columnas del csv son: {}", headers);
-		if (headers.stream()
+		if (!headers.isEmpty() && headers.stream()
 				.noneMatch(ALL_COLUMNS::contains)) {
 			throw new IllegalArgumentException("Logs must be in english");
 		}
@@ -217,6 +217,8 @@ public class LogCreator {
 		log.setTime(zdt);
 
 		if (headers.contains(LogCreator.ORIGIN)) {
+			
+		
 			log.setOrigin(Origin.get(csvRecord.get(LogCreator.ORIGIN)));
 
 		}

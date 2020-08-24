@@ -87,7 +87,7 @@ public abstract class WebViewController implements MainAction {
 				.format(FILE_FORMATTER), getCurrentChart().getChartType()),
 				ConfigHelper.getProperty("imageFolderPath", "./"), stage, FileUtil.FileChooserType.SAVE, file -> {
 
-					getCurrentChart().export(file);
+					getCurrentChart().exportImage(file);
 					ConfigHelper.setProperty("imageFolderPath", file.getParent());
 
 				}, false, FileUtil.PNG);

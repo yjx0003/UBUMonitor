@@ -1,4 +1,4 @@
-
+*{outline:none;}
 html,body
 {
 	overflow-x:hidden;
@@ -73,7 +73,8 @@ html,body
    	font-weight: bold;
 }
 
-#visDiv{
+.visDiv{
+	 outline: 0;
 	height:95vh;
 	width:100%;
 }

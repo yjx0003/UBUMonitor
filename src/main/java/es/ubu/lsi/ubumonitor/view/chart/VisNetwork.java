@@ -11,9 +11,9 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.image.WritableImage;
 import javafx.scene.web.WebView;
 
-public abstract class VisChart extends Chart {
+public abstract class VisNetwork extends Chart {
 	private WebView webView;
-	public VisChart(MainController mainController, ChartType chartType, WebView webView) {
+	public VisNetwork(MainController mainController, ChartType chartType, WebView webView) {
 		super(mainController, chartType);
 		this.webView =webView;
 	}
@@ -21,7 +21,7 @@ public abstract class VisChart extends Chart {
 
 	@Override
 	public void clear() {
-		webViewChartsEngine.executeScript("clearVisChart()");
+		webViewChartsEngine.executeScript("clearVisNetwork()");
 
 	}
 

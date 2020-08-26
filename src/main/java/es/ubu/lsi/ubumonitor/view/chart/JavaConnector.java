@@ -27,5 +27,9 @@ public interface JavaConnector {
 	public void setCurrentChart(Chart chart);
 
 	public void addChart(Chart chart);
+	
+	public default void updateChartFromJS() {
+		
+	}
 
 }

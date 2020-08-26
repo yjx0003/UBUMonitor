@@ -92,7 +92,7 @@ public class SelectionUserController {
 
 	public void init(MainController mainController) {
 		this.mainController = mainController;
-
+		tabNotEnrolled.disableProperty().bind(mainController.getClusteringTab().selectedProperty());
 		tabPane.getSelectionModel()
 				.selectedItemProperty()
 				.addListener((ov, old, newValue) -> {
@@ -113,7 +113,7 @@ public class SelectionUserController {
 					}
 					this.mainController.getActions().updateListViewEnrolledUser();
 				});
-
+		
 		initEnrolledUsers();
 		initNotEnrolledUsers();
 		tabListView = new HashMap<>();

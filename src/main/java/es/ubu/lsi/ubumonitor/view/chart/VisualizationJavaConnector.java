@@ -229,4 +229,9 @@ public class VisualizationJavaConnector extends JavaConnectorAbstract {
 		return currentChartActivityCompletion;
 	}
 
+	@Override
+	public void updateChartFromJS() {
+		manageOptions();
+		currentChart.update();
+	}
 }

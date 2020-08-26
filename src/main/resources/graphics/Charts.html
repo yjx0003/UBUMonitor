@@ -6,7 +6,7 @@
    <title>Charts</title>
    <link rel="stylesheet" type="text/css" href="../css/tabulator.css" />
    <link rel="stylesheet" type="text/css" href="../css/chart.css" />
-   <link rel="stylesheet" type="text/css" href="../css/vis.css" />
+   <link rel="stylesheet" type="text/css" href="../css/vis-timeline-graph2d.min.css" />
    <script type="text/javascript" src="./lib/moment-with-locale.js"></script>
    <script type="text/javascript" src="./lib/Chart.js"></script>
    <script type="text/javascript" src="./lib/color-hash.js"></script>
@@ -15,7 +15,8 @@
    <script type="text/javascript" src="./lib/chartjs-chart-box-and-violin-plot.js"></script>
    <script type="text/javascript" src="./lib/chartjs-plugin-datalabels.js"></script>
    <script type="text/javascript" src="./lib/tabulator.js"></script>
-   <script type="text/javascript" src="./lib/vis.js"></script>
+   <script type="text/javascript" src="./lib/visNetwork.js"></script>
+   <script type="text/javascript" src="./lib/visTimeline.js"></script>
    <script type="text/javascript">
       Chart.defaults.global.animation.duration = 0;
       Chart.defaults.global.elements.line.fill = false;
@@ -56,7 +57,8 @@
       var myChart;
       var myApexChart;
       var table;
-	  var visChart;
+	  var visNetwork;
+	  var visTimeline;
       function createChartDivs() {
          //------------------------------------------Variables globales-------------------------------------------------------------
 
@@ -97,7 +99,8 @@
          });
          
          
-         visChart = new vis.Network(document.getElementById('visDiv'),{}, {});
+         visNetwork = new vis.Network(document.getElementById('visNetworkDiv'),{}, {});
+         visTimeline = new vis.Timeline(document.getElementById('visTimelineDiv'), {}, {});
       }
 
       //------------------------------------------Funciones------------------------------------------------------------------
@@ -112,34 +115,22 @@
          }
       }
 
-      function displayLegendButton(value) {
-         document.getElementById('btnLegend').style.display = value ? "inline" : "none";
-      }
+    function displayLegendButton(value) {
+    
+        document.getElementById('btnLegend').style.display = value ? "inline" : "none";
+    }
 
-      function displayGroupButton(value) {
-         document.getElementById('btnGroupMean').style.display = value ? "inline" : "none";
-      }
+    function displayGroupButton(value) {
+        document.getElementById('btnGroupMean').style.display = value ? "inline" : "none";
+    }
 
-      function displayGeneralButton(value) {
-         document.getElementById('btnMean').style.display = value ? "inline" : "none";
+    function displayGeneralButton(value) {
+        document.getElementById('btnMean').style.display = value ? "inline" : "none";
+    }
+      
+      function displayButton(element, value) {
+      	 document.getElementById(element).style.display = value ? "block" : "none";
       }
-
-      function displayApexChart(value) {
-         document.getElementById('apexchartsDiv').style.display = value ? "block" : "none";
-      }
-      function displayTabulator(value) {
-         document.getElementById('tabulatorDiv').style.display = value ? "block" : "none";
-      }
-
-
-      function displayChartjs(value) {
-         document.getElementById('chart-container').style.display = value ? "block" : "none";
-      }
-
-      function displayVisChart(value) {
-         document.getElementById('visDiv').style.display = value ? "block" : "none";
-      }
-
 
       function displayChartsButtons(div_id, type, listCharts) {
 
@@ -174,14 +165,7 @@
 
 
       function updateApexCharts(series, categories, options) {
-         hiddenCharts("apexcharts");
-         
-         manageButtons(options.tab, options.listCharts);
-         disableTab(options.tab, options.button);
-
-         displayLegendButton(options.useLegend);
-         displayGroupButton(options.useGroup);
-         displayGeneralButton(options.useGeneral);
+         hiddenCharts("apexcharts", options);
 
          options.series = series;
          options.xaxis.categories = categories;
@@ -198,12 +182,7 @@
       }
 
       function updateChartjs(dataset, options) {
-         hiddenCharts("chartjs");
-         manageButtons(options.tab, options.listCharts);
-         disableTab(options.tab, options.button);
-         displayLegendButton(options.useLegend);
-         displayGroupButton(options.useGroup);
-         displayGeneralButton(options.useGeneral);
+         hiddenCharts("chartjs", options);
          
          imageButton("btnLegend", options.legendActive);
          imageButton("btnMean", options.generalActive);
@@ -236,13 +215,7 @@
 
       function updateTabulator(data, options) {
 
-         hiddenCharts("tabulator");
-         disableTab(options.tab, options.button);
-         displayLegendButton(options.useLegend);
-         displayGroupButton(options.useGroup);
-         displayGeneralButton(options.useGeneral);
-         manageButtons(options.tab, options.listCharts);
-         disableTab(options.tab, options.button);
+         hiddenCharts("tabulator", options);
          
 
          table.destroy()
@@ -256,26 +229,43 @@
 
       }
 	  
-      function updateVisChart(data, options){
-         hiddenCharts("vis");
-         disableTab(options.tab, options.button);
-         displayLegendButton(options.useLegend);
-         displayGroupButton(options.useGroup);
-         displayGeneralButton(options.useGeneral);
-         manageButtons(options.tab, options.listCharts);
-         disableTab(options.tab, options.button);
+      function updateVisNetwork(data, options){
+         hiddenCharts("visNetwork", options);
+  
          
 
-         visChart.setData(data);
-         visChart.setOptions(options.options);
+         visNetwork.setData(data);
+         visNetwork.setOptions(options.options);
+
+      }
+      
+      
+      function updateVisTimeline(data, options){
+         hiddenCharts("visTimeline", options);
+  
+         
+
+         visTimeline.setData(data);
+         visTimeline.setOptions(options.options);
 
       }
 
-      function hiddenCharts(value){
-         displayApexChart(value=="apexcharts");
-         displayChartjs(value=="chartjs");
-         displayTabulator(value=="tabulator");
-         displayVisChart(value=="vis");
+      function hiddenCharts(value, options){
+     
+     	
+     
+         displayButton('apexchartsDiv', value=="apexcharts");
+         displayButton('chart-container', value=="chartjs");
+         displayButton('tabulatorDiv', value=="tabulator");
+         displayButton('visNetworkDiv', value=="visNetwork");
+         displayButton('visTimelineDiv', value=="visTimeline");
+         
+         manageButtons(options.tab, options.listCharts);
+         disableTab(options.tab, options.button);
+
+         displayLegendButton(options.useLegend);
+         displayGroupButton(options.useGroup);
+         displayGeneralButton(options.useGeneral);
       }
 	
       function clearChartjs() {
@@ -315,27 +305,31 @@
 
       }
       
-      function clearVisChart(){
-      	visChart.setData([]);
+      function clearVisNetwork(){
+      	visNetwork.setData([]);
+      }
+      
+      function clearVisTimeline(){
+      	visNetwork.setData([]);
       }
 
       //Funcion que muestra u oculta la leyenda del gráfico
       function hideLegend() {
-         imageButton("btnLegend", javaConnector.swapLegend());
+         imageButton("btnLegend", javaConnector.toggleLegend());
 
          javaConnector.updateChartFromJS();
       }
 
       function showGeneralMean() {
 
-         imageButton("btnMean", javaConnector.swapGeneral());
+         imageButton("btnMean", javaConnector.toggleGeneral());
 
          javaConnector.updateChartFromJS();
       }
 
       function showGroupMean() {
 
-         imageButton("btnGroupMean", javaConnector.swapGroup());
+         imageButton("btnGroupMean", javaConnector.toggleGroup());
 
          javaConnector.updateChartFromJS();
       }
@@ -443,7 +437,8 @@
    </div>
    <div id="apexchartsDiv" class="apexchart-container"></div>
    <div id="tabulatorDiv"></div>
-   <div id="visDiv"></div>
+   <div id="visNetworkDiv" class="visDiv"></div>
+   <div id="visTimelineDiv" class="visDiv"></div>
 </body>
 
 </html>

@@ -16,11 +16,11 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
-import es.ubu.lsi.ubumonitor.view.chart.VisChart;
+import es.ubu.lsi.ubumonitor.view.chart.VisNetwork;
 import javafx.scene.control.ListView;
 import javafx.scene.web.WebView;
 
-public class ForumNetwork extends VisChart {
+public class ForumNetwork extends VisNetwork {
 
 	private ListView<CourseModule> listViewForum;
 
@@ -60,7 +60,8 @@ public class ForumNetwork extends VisChart {
 	public String getOptions(JSObject jsObject) {
 		JSObject options = new JSObject();
 		options.put("edges", "{arrows:'to', scaling:{max:10}}");
-		options.put("nodes", "{shape:'circularImage',brokenImage:'../img/default_user.png'}");
+		options.put("nodes", "{scaling:{min:20,max:40},shape:'circularImage',brokenImage:'../img/default_user.png'}");
+		options.put("interaction", "{navigationButtons:true,keyboard:true}");
 		jsObject.put("options", options);
 		return jsObject.toString();
 	}
@@ -110,7 +111,7 @@ public class ForumNetwork extends VisChart {
 
 		data.put("nodes", nodes);
 		data.put("edges", edges);
-		webViewChartsEngine.executeScript("updateVisChart(" + data + "," + getOptions() + ")");
+		webViewChartsEngine.executeScript("updateVisNetwork(" + data + "," + getOptions() + ")");
 	}
 
 	public List<DiscussionPost> getSelectedDiscussionPosts() {

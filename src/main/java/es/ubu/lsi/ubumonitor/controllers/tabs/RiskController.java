@@ -1,7 +1,9 @@
-package es.ubu.lsi.ubumonitor.controllers;
+package es.ubu.lsi.ubumonitor.controllers.tabs;
 
 import java.time.LocalDate;
 
+import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.controllers.WebViewAction;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.LogStats;
@@ -21,7 +23,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
-public class RiskController extends WebViewController {
+public class RiskController extends WebViewAction {
 
 	@FXML
 	private GridPane optionsUbuLogs;
@@ -44,10 +46,10 @@ public class RiskController extends WebViewController {
 	@Override
 	public void init(MainController mainController, Tab tab, Course actualCourse, MainConfiguration mainConfiguration,
 			Stage stage) {
-		javaConnector = new RiskJavaConnector(webViewCharts, mainConfiguration, mainController, this, actualCourse);
+		javaConnector = new RiskJavaConnector(webViewController.getWebViewCharts(), mainConfiguration, mainController, this, actualCourse);
 		init(tab, actualCourse, mainConfiguration, stage, javaConnector);
 
-		VisualizationController visualizationController = mainController.getVisualizationController();
+		VisualizationController visualizationController = mainController.getWebViewTabsController().getVisualizationController();
 		initOptions(visualizationController.getDatePickerStart(), visualizationController.getDatePickerEnd(),
 				visualizationController.getChoiceBoxDate());
 

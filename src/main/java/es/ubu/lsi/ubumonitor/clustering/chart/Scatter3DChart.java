@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.clustering.controller.AlgorithmExecuter;
-import es.ubu.lsi.ubumonitor.clustering.controller.ClusteringController;
+import es.ubu.lsi.ubumonitor.clustering.controller.PartitionalClusteringController;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
@@ -31,7 +31,7 @@ public class Scatter3DChart extends ClusteringChart {
 
 	private List<Map<UserData, double[]>> points;
 
-	public Scatter3DChart(ClusteringController controller) {
+	public Scatter3DChart(PartitionalClusteringController controller) {
 		super(controller.getWebView3DScatter());
 		getWebEngine().load(getClass().getResource("/graphics/Cluster3DChart.html").toExternalForm());
 	}

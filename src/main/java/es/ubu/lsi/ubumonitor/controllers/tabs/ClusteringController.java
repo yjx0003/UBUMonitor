@@ -1,5 +1,7 @@
-package es.ubu.lsi.ubumonitor.clustering.controller;
+package es.ubu.lsi.ubumonitor.controllers.tabs;
 
+import es.ubu.lsi.ubumonitor.clustering.controller.HierarchicalController;
+import es.ubu.lsi.ubumonitor.clustering.controller.PartitionalClusteringController;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import javafx.fxml.FXML;
 
@@ -9,10 +11,10 @@ import javafx.fxml.FXML;
  * @author Xing Long Ji
  *
  */
-public class GeneralController {
+public class ClusteringController {
 
 	@FXML
-	private ClusteringController classicController;
+	private PartitionalClusteringController classicController;
 
 	@FXML
 	private HierarchicalController hierarchicalController;

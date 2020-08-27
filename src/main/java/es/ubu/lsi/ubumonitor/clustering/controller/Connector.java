@@ -14,7 +14,7 @@ import javafx.scene.control.TableView;
  */
 public class Connector {
 
-	private ClusteringController clusteringController;
+	private PartitionalClusteringController clusteringController;
 	private List<ClusterWrapper> clusters;
 
 	/**
@@ -22,7 +22,7 @@ public class Connector {
 	 * 
 	 * @param controller controladro
 	 */
-	public Connector(ClusteringController controller) {
+	public Connector(PartitionalClusteringController controller) {
 		this.clusteringController = controller;
 	}
 

@@ -40,8 +40,8 @@ public enum ChartType {
 	RISK_BAR_TEMPORAL(Tabs.RISK, 18),
 	RISK_EVOLUTION(Tabs.RISK, 19),
 	
-	FORUM_TABLE(Tabs.FORUM, 23), 
 	FORUM_BAR(Tabs.FORUM, 24), 
+	FORUM_TABLE(Tabs.FORUM, 23), 
 	FORUM_NETWORK(Tabs.FORUM, 25);
 	
 
@@ -52,13 +52,13 @@ public enum ChartType {
 	public static final ChartType DEFAULT_GRADES = LINE;
 	public static final ChartType DEFAULT_ACTIVITY_COMPLETION = ACTIVITIES_TABLE;
 	public static final ChartType DEFAULT_RISK = RISK_BAR;
-	public static final ChartType DEFAULT_FORUM = FORUM_TABLE;
+	public static final ChartType DEFAULT_FORUM = FORUM_BAR;
 
 	private static Map<Integer, ChartType> map = new HashMap<>();
 
 	private static final List<ChartType> NON_DEFAULT_VALUES = new ArrayList<>();
 	private static final Set<ChartType> DEFAULT_VALUES = Stream
-			.of(DEFAULT_LOGS, DEFAULT_GRADES, DEFAULT_ACTIVITY_COMPLETION, DEFAULT_RISK)
+			.of(DEFAULT_LOGS, DEFAULT_GRADES, DEFAULT_ACTIVITY_COMPLETION, DEFAULT_RISK, DEFAULT_FORUM)
 			.collect(Collectors.toSet());
 	static {
 		for (ChartType chartType : ChartType.values()) {

@@ -152,8 +152,8 @@ public class SelectionController {
 
 		// bind the content to visualization or risk tab
 		tabPane.visibleProperty()
-				.bind(mainController.getVisualizationTab()
-						.selectedProperty().or(mainController.getClusteringTab().selectedProperty()));
+				.bind(mainController.getWebViewTabsController().getVisualizationTab()
+						.selectedProperty().or(mainController.getWebViewTabsController().getClusteringTab().selectedProperty()));
 
 		tabPane.getSelectionModel()
 				.select(ConfigHelper.getProperty("tabPane", tabPane.getSelectionModel()

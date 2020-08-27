@@ -71,9 +71,9 @@ import javafx.scene.web.WebView;
  * @author Xing Long Ji
  *
  */
-public class ClusteringController {
+public class PartitionalClusteringController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PartitionalClusteringController.class);
 
 	private MainController mainController;
 

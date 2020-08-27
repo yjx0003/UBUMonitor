@@ -2,8 +2,8 @@ package es.ubu.lsi.ubumonitor.view.chart;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.SelectionController;
-import es.ubu.lsi.ubumonitor.controllers.VisualizationController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.controllers.tabs.VisualizationController;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.view.chart.activitystatus.ActivitiesStatusTable;

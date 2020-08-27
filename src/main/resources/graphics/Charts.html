@@ -57,8 +57,8 @@
       var myChart;
       var myApexChart;
       var table;
-	  var visNetwork;
-	  var visTimeline;
+      var visNetwork;
+      var visTimeline;
       function createChartDivs() {
          //------------------------------------------Variables globales-------------------------------------------------------------
 
@@ -97,9 +97,9 @@
 
             },
          });
-         
-         
-         visNetwork = new vis.Network(document.getElementById('visNetworkDiv'),{}, {});
+
+
+         visNetwork = new vis.Network(document.getElementById('visNetworkDiv'), {}, {});
          visTimeline = new vis.Timeline(document.getElementById('visTimelineDiv'), {}, {});
       }
 
@@ -115,21 +115,21 @@
          }
       }
 
-    function displayLegendButton(value) {
-    
-        document.getElementById('btnLegend').style.display = value ? "inline" : "none";
-    }
+      function displayLegendButton(value) {
 
-    function displayGroupButton(value) {
-        document.getElementById('btnGroupMean').style.display = value ? "inline" : "none";
-    }
+         document.getElementById('btnLegend').style.display = value ? "inline" : "none";
+      }
 
-    function displayGeneralButton(value) {
-        document.getElementById('btnMean').style.display = value ? "inline" : "none";
-    }
-      
+      function displayGroupButton(value) {
+         document.getElementById('btnGroupMean').style.display = value ? "inline" : "none";
+      }
+
+      function displayGeneralButton(value) {
+         document.getElementById('btnMean').style.display = value ? "inline" : "none";
+      }
+
       function displayButton(element, value) {
-      	 document.getElementById(element).style.display = value ? "block" : "none";
+         document.getElementById(element).style.display = value ? "block" : "none";
       }
 
       function displayChartsButtons(div_id, type, listCharts) {
@@ -183,15 +183,15 @@
 
       function updateChartjs(dataset, options) {
          hiddenCharts("chartjs", options);
-         
+
          imageButton("btnLegend", options.legendActive);
          imageButton("btnMean", options.generalActive);
          imageButton("btnGroupMean", options.groupActive);
 
-        
-        
 
-         
+
+
+
          if (!options.legend) {
             options.legend = {};
          }
@@ -216,7 +216,7 @@
       function updateTabulator(data, options) {
 
          hiddenCharts("tabulator", options);
-         
+
 
          table.destroy()
          table = new Tabulator("#tabulatorDiv", options);
@@ -228,38 +228,35 @@
 
 
       }
-	  
-      function updateVisNetwork(data, options){
+
+      function updateVisNetwork(data, options) {
          hiddenCharts("visNetwork", options);
-  
-         
 
-         visNetwork.setData(data);
          visNetwork.setOptions(options.options);
-
+   		 visNetwork.setData(data);
       }
-      
-      
-      function updateVisTimeline(data, options){
+
+
+      function updateVisTimeline(data, options) {
          hiddenCharts("visTimeline", options);
-  
-         
+
+
 
          visTimeline.setData(data);
          visTimeline.setOptions(options.options);
 
       }
 
-      function hiddenCharts(value, options){
-     
-     	
-     
-         displayButton('apexchartsDiv', value=="apexcharts");
-         displayButton('chart-container', value=="chartjs");
-         displayButton('tabulatorDiv', value=="tabulator");
-         displayButton('visNetworkDiv', value=="visNetwork");
-         displayButton('visTimelineDiv', value=="visTimeline");
-         
+      function hiddenCharts(value, options) {
+
+
+
+         displayButton('apexchartsDiv', value == "apexcharts");
+         displayButton('chart-container', value == "chartjs");
+         displayButton('tabulatorDiv', value == "tabulator");
+         displayButton('visNetworkDiv', value == "visNetwork");
+         displayButton('visTimelineDiv', value == "visTimeline");
+
          manageButtons(options.tab, options.listCharts);
          disableTab(options.tab, options.button);
 
@@ -267,7 +264,7 @@
          displayGroupButton(options.useGroup);
          displayGeneralButton(options.useGeneral);
       }
-	
+
       function clearChartjs() {
          myChart.destroy();
          myChart = new Chart(ctx, {
@@ -304,13 +301,13 @@
          displayChartsButtons("ACTIVITY_COMPLETION", type, listCharts);
 
       }
-      
-      function clearVisNetwork(){
-      	visNetwork.setData([]);
+
+      function clearVisNetwork() {
+         visNetwork.setData([]);
       }
-      
-      function clearVisTimeline(){
-      	visNetwork.setData([]);
+
+      function clearVisTimeline() {
+         visNetwork.setData([]);
       }
 
       //Funcion que muestra u oculta la leyenda del gráfico

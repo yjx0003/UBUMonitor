@@ -59,11 +59,100 @@ public class ForumNetwork extends VisNetwork {
 	@Override
 	public String getOptions(JSObject jsObject) {
 		JSObject options = new JSObject();
-		options.put("edges", "{arrows:'to', scaling:{max:10}}");
-		options.put("nodes", "{scaling:{min:20,max:40},shape:'circularImage',brokenImage:'../img/default_user.png'}");
-		options.put("interaction", "{navigationButtons:true,keyboard:true}");
+		
+		options.put("edges", getEdgesOptions());
+
+		options.put("nodes", getNodesOptions());
+		options.put("physics", getPhysicsOptions());
+		options.put("interaction", getInteractionOptions());
 		jsObject.put("options", options);
+		
 		return jsObject.toString();
+	}
+
+	private JSObject getEdgesOptions() {
+		JSObject edges = new JSObject();
+		edges.put("arrows", "'to'");
+		edges.put("arrowStrikethrough", false);
+		edges.put("smooth", "{type:'continuous'}");
+		edges.put("dashes", getValue("edges.dashes"));
+		JSObject scaling = new JSObject();
+		scaling.put("max", getValue("edges.scaling.max"));
+		scaling.put("min", getValue("edges.scaling.min"));
+		edges.put("scaling", scaling);
+		return edges;
+	}
+
+	private JSObject getNodesOptions() {
+		JSObject nodes = new JSObject();
+		nodes.put("shape", "'circularImage'");
+		nodes.put("brokenImage", "'../img/default_user.png'");
+		JSObject scaling = new JSObject();
+		scaling.put("max", getValue("nodes.scaling.max"));
+		scaling.put("min", getValue("nodes.scaling.min"));
+		return nodes;
+	}
+
+	private JSObject getPhysicsOptions() {
+		JSObject physics = new JSObject();
+		Solver solver = getValue("physics.solver");
+		physics.putWithQuote("solver", solver.getName());
+		switch(solver) {
+		case BARNES_HUT:
+			JSObject barnesHut = new JSObject();
+			barnesHut.put("theta", getValue("physics.barnesHut.theta"));
+			barnesHut.put("gravitationalConstant", getValue("physics.barnesHut.gravitationalConstant"));
+			barnesHut.put("centralGravity", getValue("physics.barnesHut.centralGravity"));
+			barnesHut.put("springLength", getValue("physics.barnesHut.springLength"));
+			barnesHut.put("springConstant", getValue("physics.barnesHut.springConstant"));
+			barnesHut.put("damping", getValue("physics.barnesHut.damping"));
+			barnesHut.put("avoidOverlap", getValue("physics.barnesHut.avoidOverlap"));
+			physics.put("barnesHut", barnesHut);
+			break;
+		case FORCE_ATLAS_2_BASED:
+			JSObject forceAtlas2Based = new JSObject();
+			forceAtlas2Based.put("theta", getValue("physics.forceAtlas2Based.theta"));
+			forceAtlas2Based.put("gravitationalConstant", getValue("physics.forceAtlas2Based.gravitationalConstant"));
+			forceAtlas2Based.put("centralGravity", getValue("physics.forceAtlas2Based.centralGravity"));
+			forceAtlas2Based.put("springLength", getValue("physics.forceAtlas2Based.springLength"));
+			forceAtlas2Based.put("springConstant", getValue("physics.forceAtlas2Based.springConstant"));
+			forceAtlas2Based.put("damping", getValue("physics.forceAtlas2Based.damping"));
+			forceAtlas2Based.put("avoidOverlap", getValue("physics.forceAtlas2Based.avoidOverlap"));
+			physics.put("forceAtlas2Based", forceAtlas2Based);
+			break;
+		case REPULSION:
+			JSObject repulsion = new JSObject();
+			repulsion.put("nodeDistance", getValue("physics.repulsion.nodeDistance"));
+			repulsion.put("centralGravity", getValue("physics.repulsion.centralGravity"));
+			repulsion.put("springLength", getValue("physics.repulsion.springLength"));
+			repulsion.put("sprinConstant", getValue("physics.repulsion.springConstant"));
+			repulsion.put("damping", getValue("physics.repulsion.damping"));
+			physics.put("repulsion", repulsion);
+			break;
+		default:
+			//default barneshut with default parameters
+			break;
+			
+		}
+		
+
+		
+
+		return physics;
+
+	}
+
+	private JSObject getInteractionOptions() {
+		JSObject interaction = new JSObject();
+		interaction.put("keyboard", getValue("interaction.keyboard"));
+		interaction.put("multiselect", getValue("interaction.multiselect"));
+		interaction.put("navigationButtons", getValue("interaction.navigationButtons"));
+		interaction.put("tooltipDelay", getValue("interaction.tooltipDelay"));
+		return interaction;
+	}
+	
+	private <T> T getValue(String key) {
+		return mainConfiguration.getValue(this.chartType, key);
 	}
 
 	@Override
@@ -73,7 +162,7 @@ public class ForumNetwork extends VisNetwork {
 		JSObject data = new JSObject();
 
 		JSArray nodes = new JSArray();
-
+		
 		JSArray edges = new JSArray();
 		for (EnrolledUser from : users) {
 			JSObject node = new JSObject();
@@ -96,10 +185,11 @@ public class ForumNetwork extends VisNetwork {
 					edge.put("to", to.getId());
 					edge.put("title", countPosts);
 					edge.put("value", countPosts);
-
 					edges.add(edge);
-					totalPosts += countPosts;
 				}
+
+				totalPosts += countPosts;
+
 			}
 			node.put("value", totalPosts);
 			if (totalPosts > 0) {
@@ -123,4 +213,19 @@ public class ForumNetwork extends VisNetwork {
 				.collect(Collectors.toList());
 	}
 
+	public enum Solver {
+		BARNES_HUT("barnesHut"),
+		FORCE_ATLAS_2_BASED("forceAtlas2Based"),
+		REPULSION("repulsion");
+
+		private String name;
+
+		private Solver(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+	}
 }

@@ -2,8 +2,8 @@ package es.ubu.lsi.ubumonitor.view.chart;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.RiskController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
+import es.ubu.lsi.ubumonitor.controllers.tabs.RiskController;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.view.chart.risk.Bubble;
 import es.ubu.lsi.ubumonitor.view.chart.risk.BubbleLogarithmic;

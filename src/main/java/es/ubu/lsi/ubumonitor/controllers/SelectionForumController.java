@@ -47,7 +47,7 @@ public class SelectionForumController {
 	public void init(MainController mainController) {
 
 		tabPane.visibleProperty()
-				.bind(mainController.getForumTab()
+				.bind(mainController.getWebViewTabsController().getForumTab()
 						.selectedProperty());
 
 		fillForumListView(mainController);

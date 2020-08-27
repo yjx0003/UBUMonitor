@@ -12,6 +12,9 @@ public class SelectionMainController {
 	
 	@FXML
 	private SelectionEmptyController selectionEmptyController;
+	
+	@FXML
+	private SelectionCourseModuleController selectionCourseController;
 
 	public void init(MainController mainController) {
 		selectionController.init(mainController);

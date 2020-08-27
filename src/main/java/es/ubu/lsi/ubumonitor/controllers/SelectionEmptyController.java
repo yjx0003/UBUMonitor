@@ -8,6 +8,6 @@ public class SelectionEmptyController {
 	private Label label;
 	
 	public void init(MainController mainController) {
-		label.visibleProperty().bind(mainController.getRiskTab().selectedProperty());
+		label.visibleProperty().bind(mainController.getWebViewTabsController().getRiskTab().selectedProperty());
 	}
 }

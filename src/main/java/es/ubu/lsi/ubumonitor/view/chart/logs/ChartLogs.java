@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.SelectionController;
-import es.ubu.lsi.ubumonitor.controllers.VisualizationController;
+import es.ubu.lsi.ubumonitor.controllers.tabs.VisualizationController;
 import es.ubu.lsi.ubumonitor.model.Component;
 import es.ubu.lsi.ubumonitor.model.ComponentEvent;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
@@ -51,7 +51,7 @@ public abstract class ChartLogs extends Chart {
 	public ChartLogs(MainController mainController, ChartType chartType) {
 		super(mainController, chartType);
 		SelectionController selectionController = mainController.getSelectionController();
-		VisualizationController visualizationController = mainController.getVisualizationController();
+		VisualizationController visualizationController = mainController.getWebViewTabsController().getVisualizationController();
 		this.datePickerStart = visualizationController.getDatePickerStart();
 		this.datePickerEnd = visualizationController.getDatePickerEnd();
 		this.choiceBoxDate = visualizationController.getChoiceBoxDate();

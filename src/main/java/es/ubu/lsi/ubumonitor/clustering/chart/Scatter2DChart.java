@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.clustering.controller.AlgorithmExecuter;
-import es.ubu.lsi.ubumonitor.clustering.controller.ClusteringController;
+import es.ubu.lsi.ubumonitor.clustering.controller.PartitionalClusteringController;
 import es.ubu.lsi.ubumonitor.clustering.controller.Connector;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
@@ -43,7 +43,7 @@ public class Scatter2DChart extends ClusteringChart {
 	 * 
 	 * @param clusteringController controlador general
 	 */
-	public Scatter2DChart(ClusteringController clusteringController) {
+	public Scatter2DChart(PartitionalClusteringController clusteringController) {
 		super(clusteringController.getWebViewScatter());
 
 		WebEngine webEngine = getWebEngine();

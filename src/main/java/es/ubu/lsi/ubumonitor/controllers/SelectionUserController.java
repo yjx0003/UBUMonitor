@@ -92,7 +92,8 @@ public class SelectionUserController {
 
 	public void init(MainController mainController) {
 		this.mainController = mainController;
-		tabNotEnrolled.disableProperty().bind(mainController.getClusteringTab().selectedProperty());
+	
+		tabNotEnrolled.disableProperty().bind(mainController.getWebViewTabsController().getClusteringTab().selectedProperty());
 		tabPane.getSelectionModel()
 				.selectedItemProperty()
 				.addListener((ov, old, newValue) -> {

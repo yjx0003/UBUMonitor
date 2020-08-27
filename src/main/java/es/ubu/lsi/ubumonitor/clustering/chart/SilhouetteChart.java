@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.clustering.analysis.methods.SilhouetteMethod;
-import es.ubu.lsi.ubumonitor.clustering.controller.ClusteringController;
+import es.ubu.lsi.ubumonitor.clustering.controller.PartitionalClusteringController;
 import es.ubu.lsi.ubumonitor.clustering.data.ClusterWrapper;
 import es.ubu.lsi.ubumonitor.clustering.data.Distance;
 import es.ubu.lsi.ubumonitor.clustering.data.UserData;
@@ -44,7 +44,7 @@ public class SilhouetteChart extends ClusteringChart {
 	 * 
 	 * @param clusteringController controlador general
 	 */
-	public SilhouetteChart(ClusteringController clusteringController) {
+	public SilhouetteChart(PartitionalClusteringController clusteringController) {
 		super(clusteringController.getWebViewSilhouette());
 		getWebEngine().load(getClass().getResource("/graphics/SilhouetteChart.html").toExternalForm());
 	}

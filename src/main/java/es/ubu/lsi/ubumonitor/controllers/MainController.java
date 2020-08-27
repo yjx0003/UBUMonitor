@@ -11,7 +11,6 @@ import org.controlsfx.control.StatusBar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.ubumonitor.clustering.controller.GeneralController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigurationController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
@@ -28,7 +27,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -57,20 +55,6 @@ public class MainController implements Initializable {
 
 	private Stats stats;
 
-	@FXML
-	private TabPane webViewTabPane;
-
-	@FXML
-	private Tab visualizationTab;
-
-	@FXML
-	private VisualizationController visualizationController;
-
-	@FXML
-	private Tab riskTab;
-	@FXML
-	private RiskController riskController;
-
 	private Map<Tab, MainAction> tabMap = new HashMap<>();
 
 	@FXML
@@ -81,17 +65,9 @@ public class MainController implements Initializable {
 
 	@FXML
 	private SelectionUserController selectionUserController;
-	
+
 	@FXML
-	private Tab forumTab;
-	@FXML
-	private ForumController forumController;
-	
-	@FXML
-	private Tab clusteringTab;
-	
-	@FXML
-	private GeneralController clusteringController;
+	private WebViewTabsController webViewTabsController;
 
 	/**
 	 * Muestra los usuarios matriculados en el curso, así como las actividades de
@@ -116,50 +92,13 @@ public class MainController implements Initializable {
 			menuController.init(this);
 			selectionUserController.init(this);
 			selectionMainController.init(this);
-			clusteringController.init(this);
-			
-			
-			initWebViewTabs();
+			webViewTabsController.init(this, controller.getActualCourse(), controller.getMainConfiguration(), controller.getStage());
+
 			initStatusBar();
-			
-		
 
 		} catch (Exception e) {
 			LOGGER.error("Error en la inicialización.", e);
 		}
-	}
-
-	private void initWebViewTabs() {
-
-		webViewTabPane.getSelectionModel()
-				.select(ConfigHelper.getProperty("webViewTab", webViewTabPane.getSelectionModel()
-						.getSelectedIndex()));
-		webViewTabPane.getSelectionModel()
-				.selectedItemProperty()
-				.addListener((ob, old, newValue) -> {
-					getActions().onWebViewTabChange();
-					SelectionController selectionController = selectionMainController.getSelectionController();
-					if (selectionController.getTabUbuLogs()
-							.isSelected()) {
-						getActions().onSetTabLogs();
-					} else if (selectionController.getTabUbuGrades()
-							.isSelected()) {
-						getActions().onSetTabGrades();
-					} else if (selectionController.getTabActivity()
-							.isSelected()) {
-						getActions().onSetTabActivityCompletion();
-					}
-				});
-
-		visualizationController.init(this,visualizationTab, controller.getActualCourse(), controller.getMainConfiguration(), controller.getStage());
-		tabMap.put(visualizationTab, visualizationController);
-
-		riskController.init(this, riskTab, controller.getActualCourse(), controller.getMainConfiguration(), controller.getStage());
-		
-		tabMap.put(riskTab, riskController);
-		
-		forumController.init(this, forumTab, controller.getActualCourse(), controller.getMainConfiguration(), controller.getStage());
-		tabMap.put(forumTab, forumController);
 	}
 
 	private void initStatusBar() {
@@ -223,30 +162,20 @@ public class MainController implements Initializable {
 		return stats;
 	}
 
-	public RiskController getRiskController() {
-		return riskController;
-	}
-
-	public TabPane getWebViewTabPane() {
-		return webViewTabPane;
-	}
-
-	public Tab getVisualizationTab() {
-		return visualizationTab;
-	}
-
 	public Map<Tab, MainAction> getTabMap() {
 		return tabMap;
 	}
 
 	public MainAction getActions() {
-		return tabMap.getOrDefault(webViewTabPane.getSelectionModel()
+		return tabMap.getOrDefault(webViewTabsController.getTabPane()
+				.getSelectionModel()
 				.getSelectedItem(), NullMainAction.getInstance());
 	}
 
 	private void onClose() {
 		try {
-			ConfigHelper.setProperty("webViewTab", webViewTabPane.getSelectionModel()
+			ConfigHelper.setProperty("webViewTab", webViewTabsController.getTabPane()
+					.getSelectionModel()
 					.getSelectedIndex());
 			ConfigHelper.setProperty("tabPane", selectionMainController.getSelectionController()
 					.getTabPane()
@@ -267,10 +196,6 @@ public class MainController implements Initializable {
 		return splitPane;
 	}
 
-	public VisualizationController getVisualizationController() {
-		return visualizationController;
-	}
-
 	public MenuController getMenuController() {
 		return menuController;
 	}
@@ -283,28 +208,12 @@ public class MainController implements Initializable {
 		return selectionUserController;
 	}
 
-	public Tab getRiskTab() {
-		return riskTab;
-	}
-
-	public ForumController getForumController() {
-		return forumController;
-	}
-
-	public Tab getForumTab() {
-		return forumTab;
-	}
-
 	public SelectionMainController getSelectionMainController() {
 		return selectionMainController;
 	}
 
-	public Tab getClusteringTab() {
-		return clusteringTab;
-	}
-
-	public GeneralController getClusteringController() {
-		return clusteringController;
+	public WebViewTabsController getWebViewTabsController() {
+		return webViewTabsController;
 	}
 
 }

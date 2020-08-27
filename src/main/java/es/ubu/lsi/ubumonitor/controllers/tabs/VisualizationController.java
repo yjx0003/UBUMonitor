@@ -1,7 +1,10 @@
-package es.ubu.lsi.ubumonitor.controllers;
+package es.ubu.lsi.ubumonitor.controllers.tabs;
 
 import java.time.LocalDate;
 
+import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.controllers.SelectionController;
+import es.ubu.lsi.ubumonitor.controllers.WebViewAction;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.LogStats;
@@ -26,7 +29,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
-public class VisualizationController extends WebViewController {
+public class VisualizationController extends WebViewAction {
 
 	@FXML
 	private TextField textFieldMax;
@@ -52,20 +55,22 @@ public class VisualizationController extends WebViewController {
 	private SelectionController selectionController;
 
 	
+	
+	
 	@Override
 	public void init(MainController mainController, Tab tab, Course actualCourse, MainConfiguration mainConfiguration,
 			Stage stage) {
 		this.selectionController = mainController.getSelectionController();
-		javaConnector = new VisualizationJavaConnector(webViewCharts, mainConfiguration, mainController, this, actualCourse);
+		javaConnector = new VisualizationJavaConnector(webViewController.getWebViewCharts(), mainConfiguration, mainController, this, actualCourse);
 		init(tab, actualCourse, mainConfiguration, stage, javaConnector);
 		
 		if (mainController.getSelectionController()
 				.getTabPane()
 				.getTabs()
 				.isEmpty()) {
-			mainController.getWebViewTabPane()
+			mainController.getWebViewTabsController().getTabPane()
 					.getTabs()
-					.remove(mainController.getVisualizationTab());
+					.remove(mainController.getWebViewTabsController().getVisualizationTab());
 
 		}
 		initLogOptionsFilter();

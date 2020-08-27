@@ -25,6 +25,7 @@ import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import es.ubu.lsi.ubumonitor.view.chart.forum.ForumNetwork;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -123,6 +124,38 @@ public class MainConfiguration {
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "fourthInterval", Color.web("#f78880"));
 		
 		createItem(ChartType.FORUM_BAR, "horizontalMode", false);
+		
+		createItem(ChartType.FORUM_NETWORK, "edges.dashes", false);
+		createItem(ChartType.FORUM_NETWORK, "edges.scaling.max", 5);
+		createItem(ChartType.FORUM_NETWORK, "edges.scaling.min", 1);
+		createItem(ChartType.FORUM_NETWORK, "nodes.scaling.max", 40);
+		createItem(ChartType.FORUM_NETWORK, "nodes.scaling.min", 20);
+		createItem(ChartType.FORUM_NETWORK, "physics.solver", ForumNetwork.Solver.FORCE_ATLAS_2_BASED);
+		createItem(ChartType.FORUM_NETWORK, "physics.barnesHut.theta", 0.5);
+		createItem(ChartType.FORUM_NETWORK, "physics.barnesHut.gravitationalConstant", -2000);
+		createItem(ChartType.FORUM_NETWORK, "physics.barnesHut.centralGravity", 0.3);
+		createItem(ChartType.FORUM_NETWORK, "physics.barnesHut.springLength", 95);
+		createItem(ChartType.FORUM_NETWORK, "physics.barnesHut.springConstant", 0.04);
+		createItem(ChartType.FORUM_NETWORK, "physics.barnesHut.damping", 0.09);
+		createItem(ChartType.FORUM_NETWORK, "physics.barnesHut.avoidOverlap", 0.0);
+		createItem(ChartType.FORUM_NETWORK, "physics.forceAtlas2Based.theta", 0.5);
+		createItem(ChartType.FORUM_NETWORK, "physics.forceAtlas2Based.gravitationalConstant", -50);
+		createItem(ChartType.FORUM_NETWORK, "physics.forceAtlas2Based.centralGravity", 0.01);
+		createItem(ChartType.FORUM_NETWORK, "physics.forceAtlas2Based.springLength", 100);
+		createItem(ChartType.FORUM_NETWORK, "physics.forceAtlas2Based.springConstant", 0.08);
+		createItem(ChartType.FORUM_NETWORK, "physics.forceAtlas2Based.damping", 0.4);
+		createItem(ChartType.FORUM_NETWORK, "physics.forceAtlas2Based.avoidOverlap", 0.0);
+		createItem(ChartType.FORUM_NETWORK, "physics.repulsion.nodeDistance", 100);
+		createItem(ChartType.FORUM_NETWORK, "physics.repulsion.centralGravity", 0.2);
+		createItem(ChartType.FORUM_NETWORK, "physics.repulsion.springLength", 200);
+		createItem(ChartType.FORUM_NETWORK, "physics.repulsion.springConstant", 0.05);
+		createItem(ChartType.FORUM_NETWORK, "physics.repulsion.damping", 0.09);
+		createItem(ChartType.FORUM_NETWORK, "interaction.keyboard", true);
+		createItem(ChartType.FORUM_NETWORK, "interaction.multiselect", true);
+		createItem(ChartType.FORUM_NETWORK, "interaction.navigationButtons", true);
+		createItem(ChartType.FORUM_NETWORK, "interaction.tooltipDelay", 300);
+		
+		
 	}
 
 	@SuppressWarnings("unchecked")

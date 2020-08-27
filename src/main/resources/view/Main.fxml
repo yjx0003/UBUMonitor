@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import org.controlsfx.control.StatusBar?>
 
@@ -10,38 +8,14 @@
 	<center>
 		<SplitPane fx:id="splitPane" dividerPositions="0.4" BorderPane.alignment="CENTER">
 			<items>
-						<SplitPane fx:id="splitPaneLeft" dividerPositions="0.5" maxWidth="500.0" orientation="VERTICAL" SplitPane.resizableWithParent="false">
-							<items>
+				<SplitPane fx:id="splitPaneLeft" dividerPositions="0.5" maxWidth="500.0" orientation="VERTICAL" SplitPane.resizableWithParent="false">
+					<items>
 
-								<fx:include fx:id="selectionUser" source="SelectionUser.fxml" />
-                  <fx:include fx:id="selectionMain" source="SelectionMain.fxml" />
-							</items>
-						</SplitPane>
-						<TabPane fx:id="webViewTabPane" tabClosingPolicy="UNAVAILABLE">
-							<tabs>
-								<Tab fx:id="visualizationTab" closable="false" text="%tab.visualization">
-
-									<fx:include fx:id="visualization" source="Visualization.fxml" />
-
-								</Tab>
-								<Tab fx:id="riskTab" closable="false" text="%tab.risk">
-
-									<fx:include fx:id="risk" source="Risk.fxml" />
-
-								</Tab>
-                  <Tab fx:id="forumTab" text="%tab.forum">
-                     <content>
-                        <fx:include fx:id="forum" source="ForumView.fxml" />
-                     </content>
-                  </Tab>
-                  <Tab fx:id="clusteringTab" text="%tab.clustering">
-                     <content>
-                        <fx:include fx:id="clustering" source="Clustering.fxml" />
-                     </content>
-                  </Tab>
-
-							</tabs>
-						</TabPane>
+						<fx:include fx:id="selectionUser" source="SelectionUser.fxml" />
+						<fx:include fx:id="selectionMain" source="SelectionMain.fxml" />
+					</items>
+				</SplitPane>
+				<fx:include fx:id="webViewTabs" source="WebViewTabs.fxml" />
 			</items>
 		</SplitPane>
 	</center>

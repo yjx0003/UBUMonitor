@@ -231,7 +231,10 @@
 
       function updateVisNetwork(data, options) {
          hiddenCharts("visNetwork", options);
-
+         
+		 visNetwork.on("stabilizationIterationsDone", function () {
+    		visNetwork.setOptions( { physics:{enabled: options.physicsAfterDraw }} );
+		 });
          visNetwork.setOptions(options.options);
    		 visNetwork.setData(data);
       }

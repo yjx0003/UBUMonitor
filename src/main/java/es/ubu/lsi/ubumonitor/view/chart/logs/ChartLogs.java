@@ -31,6 +31,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 
 public abstract class ChartLogs extends Chart {
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChartLogs.class);
 	protected DatePicker datePickerStart;
 	protected DatePicker datePickerEnd;
@@ -56,7 +57,7 @@ public abstract class ChartLogs extends Chart {
 		this.datePickerEnd = visualizationController.getDatePickerEnd();
 		this.choiceBoxDate = visualizationController.getChoiceBoxDate();
 		this.textFieldMax = visualizationController.getTextFieldMax();
-		this.tabPaneSelection = selectionController.getTabPane();
+		this.tabPaneSelection = selectionController.getTabPaneUbuLogs();
 		this.tabComponent = selectionController.getTabUbuLogsComponent();
 		this.tabEvent = selectionController.getTabUbuLogsEvent();
 		this.tabSection = selectionController.getTabUbuLogsSection();

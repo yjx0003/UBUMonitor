@@ -26,6 +26,7 @@ import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.forum.ForumNetwork;
+
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -33,6 +34,7 @@ import javafx.scene.paint.Color;
 
 public class MainConfiguration {
 
+	public static final String HORIZONTAL_MODE = "horizontalMode";
 	private static final String VALUE = "value";
 	public static final String GENERAL = "general";
 	private Map<String, CustomPropertyItem> properties = new LinkedHashMap<>();
@@ -72,7 +74,7 @@ public class MainConfiguration {
 		createItem(GENERAL, "fontColorXScaleTitle", Color.BLACK);
 		
 
-		createItem(ChartType.TOTAL_BAR, "horizontalMode", false);
+		createItem(ChartType.TOTAL_BAR, HORIZONTAL_MODE, false);
 		createItem(ChartType.STACKED_BAR, "calculateMax", false);
 		createItem(ChartType.HEAT_MAP, "calculateMax", true);
 		createItem(ChartType.HEAT_MAP, "useQuartile", false);
@@ -82,10 +84,10 @@ public class MainConfiguration {
 		createItem(ChartType.HEAT_MAP, "thirdInterval", Color.web("#b5ff33"));
 		createItem(ChartType.HEAT_MAP, "fourthInterval", Color.web("#38e330"));
 		createItem(ChartType.HEAT_MAP, "moreMax", Color.web("#67b92e"));
-		createItem(ChartType.BOXPLOT_LOG, "horizontalMode", true);
-		createItem(ChartType.VIOLIN_LOG, "horizontalMode", true);
-		createItem(ChartType.BOXPLOT_LOG_TIME, "horizontalMode", false);
-		createItem(ChartType.VIOLIN_LOG_TIME, "horizontalMode", false);
+		createItem(ChartType.BOXPLOT_LOG, HORIZONTAL_MODE, true);
+		createItem(ChartType.VIOLIN_LOG, HORIZONTAL_MODE, true);
+		createItem(ChartType.BOXPLOT_LOG_TIME, HORIZONTAL_MODE, false);
+		createItem(ChartType.VIOLIN_LOG_TIME, HORIZONTAL_MODE, false);
 		createItem(ChartType.CUM_LINE, "calculateMax", false);
 	
 		createItem(ChartType.MEAN_DIFF, "calculateMax", false);
@@ -94,14 +96,14 @@ public class MainConfiguration {
 		
 		createItem(ChartType.SESSION, "timeInterval", 60);
 
-		createItem(ChartType.BOXPLOT, "horizontalMode", false);
+		createItem(ChartType.BOXPLOT, HORIZONTAL_MODE, false);
 
-		createItem(ChartType.VIOLIN, "horizontalMode", false);
+		createItem(ChartType.VIOLIN, HORIZONTAL_MODE, false);
 
 		createItem(ChartType.GRADE_REPORT_TABLE, "failGradeColor", Color.web("#DC143C"));
 		createItem(ChartType.GRADE_REPORT_TABLE, "passGradeColor", Color.web("#2DC214"));
 
-		createItem(ChartType.CALIFICATION_BAR, "horizontalMode", false);
+		createItem(ChartType.CALIFICATION_BAR, HORIZONTAL_MODE, false);
 		createItem(ChartType.CALIFICATION_BAR, "emptyGradeColor", Color.web("#D3D3D3", 0.3));
 		createItem(ChartType.CALIFICATION_BAR, "failGradeColor", Color.web("#DC143C", 0.3));
 		createItem(ChartType.CALIFICATION_BAR, "passGradeColor", Color.web("#2DC214", 0.3));
@@ -123,11 +125,14 @@ public class MainConfiguration {
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "thirdInterval", Color.web("#f4e3ae"));
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "fourthInterval", Color.web("#f78880"));
 		
-		createItem(ChartType.FORUM_BAR, "horizontalMode", false);
+		createItem(ChartType.FORUM_BAR, HORIZONTAL_MODE, false);
 		
+		createItem(ChartType.FORUM_NETWORK, "usePhoto", true);
+		createItem(ChartType.FORUM_NETWORK, "physicsAfterDraw", true);
 		createItem(ChartType.FORUM_NETWORK, "edges.dashes", false);
-		createItem(ChartType.FORUM_NETWORK, "edges.scaling.max", 5);
+		createItem(ChartType.FORUM_NETWORK, "edges.scaling.max", 10);
 		createItem(ChartType.FORUM_NETWORK, "edges.scaling.min", 1);
+		createItem(ChartType.FORUM_NETWORK, "nodes.borderWidth", 1);
 		createItem(ChartType.FORUM_NETWORK, "nodes.scaling.max", 40);
 		createItem(ChartType.FORUM_NETWORK, "nodes.scaling.min", 20);
 		createItem(ChartType.FORUM_NETWORK, "physics.solver", ForumNetwork.Solver.FORCE_ATLAS_2_BASED);
@@ -154,6 +159,8 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_NETWORK, "interaction.multiselect", true);
 		createItem(ChartType.FORUM_NETWORK, "interaction.navigationButtons", true);
 		createItem(ChartType.FORUM_NETWORK, "interaction.tooltipDelay", 300);
+		createItem(ChartType.FORUM_NETWORK, "layout.randomSeed", "");
+		createItem(ChartType.FORUM_NETWORK, "layout.clusterThreshold", 150);
 		
 		
 	}

@@ -285,7 +285,7 @@ public class HierarchicalController {
 			String fileName = String.format("%s_%s_HIERARCHICAL.png", CONTROLLER.getActualCourse().getId(),
 					LocalDateTime.now().format(DTF));
 
-			FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportpng"), fileName,
+			FileChooser fileChooser = UtilMethods.createFileChooser(fileName,
 					ConfigHelper.getProperty("csvFolderPath", "./"), new ExtensionFilter("PNG (*.png)", "*.png"));
 
 			File file = fileChooser.showSaveDialog(CONTROLLER.getStage());

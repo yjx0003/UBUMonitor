@@ -331,12 +331,19 @@ public class UtilMethods {
 		}
 	}
 
+
 	public static FileChooser createFileChooser(String initialFileName, String initialDirectory,
 			FileChooser.ExtensionFilter... extensionFilters) {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		fileChooser.setInitialFileName(initialFileName);
-		fileChooser.setInitialDirectory(new File(initialDirectory));
+		if (initialDirectory != null) {
+			File dir = new File(initialDirectory);
+			if(dir.isDirectory()) {
+				fileChooser.setInitialDirectory(dir);
+			}
+		}
+		
 		fileChooser.getExtensionFilters()
 				.addAll(extensionFilters);
 		return fileChooser;
@@ -619,17 +626,7 @@ public class UtilMethods {
 
 	}
 
-	public static FileChooser createFileChooser(String title, String initialFileName, String initialDirectory,
-			FileChooser.ExtensionFilter... extensionFilters) {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle(title);
-		fileChooser.setInitialFileName(initialFileName);
-		fileChooser.setInitialDirectory(new File(initialDirectory));
-		fileChooser.getExtensionFilters()
-				.addAll(extensionFilters);
-		return fileChooser;
-	}
-	
+
 	public static String colorToRGB(Color color) {
 
 		return String.format("'rgba(%s,%s,%s,%s)'", color.getRed(), color.getGreen(), color.getBlue(),

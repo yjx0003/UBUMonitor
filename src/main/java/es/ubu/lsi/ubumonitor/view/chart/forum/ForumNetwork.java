@@ -4,15 +4,19 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.lang3.StringUtils;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.DiscussionPost;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
@@ -21,7 +25,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.web.WebView;
 
 public class ForumNetwork extends VisNetwork {
-
+	private static final Pattern INITIAL_LETTER_PATTERN = Pattern.compile("\\b[a-zA-Z]|,");
 	private ListView<CourseModule> listViewForum;
 
 	public ForumNetwork(MainController mainController, WebView webView, ListView<CourseModule> listViewForum) {
@@ -59,14 +63,15 @@ public class ForumNetwork extends VisNetwork {
 	@Override
 	public String getOptions(JSObject jsObject) {
 		JSObject options = new JSObject();
-		
-		options.put("edges", getEdgesOptions());
 
+		jsObject.put("physicsAfterDraw", getValue("physicsAfterDraw"));
+		options.put("edges", getEdgesOptions());
 		options.put("nodes", getNodesOptions());
 		options.put("physics", getPhysicsOptions());
 		options.put("interaction", getInteractionOptions());
+		options.put("layout", getLayoutOptions());
 		jsObject.put("options", options);
-		
+
 		return jsObject.toString();
 	}
 
@@ -74,7 +79,7 @@ public class ForumNetwork extends VisNetwork {
 		JSObject edges = new JSObject();
 		edges.put("arrows", "'to'");
 		edges.put("arrowStrikethrough", false);
-		edges.put("smooth", "{type:'continuous'}");
+		edges.put("smooth", false);
 		edges.put("dashes", getValue("edges.dashes"));
 		JSObject scaling = new JSObject();
 		scaling.put("max", getValue("edges.scaling.max"));
@@ -85,19 +90,26 @@ public class ForumNetwork extends VisNetwork {
 
 	private JSObject getNodesOptions() {
 		JSObject nodes = new JSObject();
-		nodes.put("shape", "'circularImage'");
-		nodes.put("brokenImage", "'../img/default_user.png'");
+		if ((boolean) getValue("usePhoto")) {
+			nodes.put("shape", "'circularImage'");
+			nodes.put("brokenImage", "'../img/default_user.png'");
+		} else {
+			nodes.put("shape", "'circle'");
+		}
+		nodes.put("borderWidth", getValue("nodes.borderWidth"));
 		JSObject scaling = new JSObject();
 		scaling.put("max", getValue("nodes.scaling.max"));
 		scaling.put("min", getValue("nodes.scaling.min"));
+		nodes.put("scaling", scaling);
 		return nodes;
 	}
 
 	private JSObject getPhysicsOptions() {
 		JSObject physics = new JSObject();
+		physics.put("enabled", true);
 		Solver solver = getValue("physics.solver");
 		physics.putWithQuote("solver", solver.getName());
-		switch(solver) {
+		switch (solver) {
 		case BARNES_HUT:
 			JSObject barnesHut = new JSObject();
 			barnesHut.put("theta", getValue("physics.barnesHut.theta"));
@@ -130,13 +142,10 @@ public class ForumNetwork extends VisNetwork {
 			physics.put("repulsion", repulsion);
 			break;
 		default:
-			//default barneshut with default parameters
+			// default barneshut with default parameters
 			break;
-			
-		}
-		
 
-		
+		}
 
 		return physics;
 
@@ -150,7 +159,17 @@ public class ForumNetwork extends VisNetwork {
 		interaction.put("tooltipDelay", getValue("interaction.tooltipDelay"));
 		return interaction;
 	}
-	
+
+	private JSObject getLayoutOptions() {
+		JSObject layout = new JSObject();
+		String randomSeed = getValue("layout.randomSeed");
+
+		layout.put("randomSeed", StringUtils.isBlank(randomSeed) ? null : randomSeed);
+
+		layout.put("clusterThreshold", getValue("layout.clusterThreshold"));
+		return layout;
+	}
+
 	private <T> T getValue(String key) {
 		return mainConfiguration.getValue(this.chartType, key);
 	}
@@ -160,17 +179,19 @@ public class ForumNetwork extends VisNetwork {
 		List<EnrolledUser> users = getSelectedEnrolledUser();
 		List<DiscussionPost> discussionPosts = getSelectedDiscussionPosts();
 		JSObject data = new JSObject();
-
-		JSArray nodes = new JSArray();
 		
+		JSArray nodes = new JSArray();
+
 		JSArray edges = new JSArray();
 		for (EnrolledUser from : users) {
 			JSObject node = new JSObject();
 			nodes.add(node);
 			node.put("id", from.getId());
 			node.putWithQuote("title", from.getFullName());
-			node.put("color", rgb(from.getId()));
+			node.put("color", rgb(from.getId() * 31));
+
 			node.put("image", "'" + from.getImageBase64() + "'");
+
 			long totalPosts = 0;
 			for (EnrolledUser to : users) {
 				long countPosts = discussionPosts.stream()
@@ -193,8 +214,13 @@ public class ForumNetwork extends VisNetwork {
 			}
 			node.put("value", totalPosts);
 			if (totalPosts > 0) {
+				Matcher m = INITIAL_LETTER_PATTERN.matcher(from.getFullName());
+				StringBuilder builder = new StringBuilder();
+				while (m.find()) {
+					builder.append(m.group());
+				}
+				node.put("label", "'" + builder + " (" + totalPosts + ")'");
 
-				node.put("label", "'" + totalPosts + "'");
 			}
 
 		}
@@ -214,9 +240,7 @@ public class ForumNetwork extends VisNetwork {
 	}
 
 	public enum Solver {
-		BARNES_HUT("barnesHut"),
-		FORCE_ATLAS_2_BASED("forceAtlas2Based"),
-		REPULSION("repulsion");
+		BARNES_HUT("barnesHut"), FORCE_ATLAS_2_BASED("forceAtlas2Based"), REPULSION("repulsion");
 
 		private String name;
 
@@ -226,6 +250,10 @@ public class ForumNetwork extends VisNetwork {
 
 		public String getName() {
 			return name;
+		}
+		@Override
+		public String toString() {
+			return I18n.get(name());
 		}
 	}
 }

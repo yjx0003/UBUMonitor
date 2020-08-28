@@ -67,8 +67,8 @@ public class ForumBar extends Chartjs {
 	public String getOptions(JSObject jsObject) {
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBar" : "bar");
-		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
-		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
+		String xLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
+		String yLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
 		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{stepSize:0}}],xAxes:[{" + xLabel
 				+ (useHorizontal ? ",ticks:{maxTicksLimit:10}" : "") + "}]}");
 		jsObject.put("onClick", null);

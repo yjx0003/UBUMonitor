@@ -266,7 +266,7 @@ public class ClusteringTable {
 	 */
 	public void exportTable() {
 		try {
-			FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportcsv"),
+			FileChooser fileChooser = UtilMethods.createFileChooser(
 					String.format("%s_%s_CLUSTERING_TABLE.csv", CONTROLLER.getActualCourse().getId(),
 							LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss"))),
 					ConfigHelper.getProperty("csvFolderPath", "./"), new ExtensionFilter("CSV (*.csv)", "*.csv"));

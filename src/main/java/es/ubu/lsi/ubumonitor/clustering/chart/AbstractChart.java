@@ -76,7 +76,7 @@ public abstract class AbstractChart {
 		try {
 			String fileName = getFileName(FILE_NAME_CSV);
 
-			FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportcsv"), fileName,
+			FileChooser fileChooser = UtilMethods.createFileChooser(fileName,
 					ConfigHelper.getProperty("csvFolderPath", "./"), EXTENSION_CSV);
 
 			File file = fileChooser.showSaveDialog(controller.getStage());
@@ -105,7 +105,7 @@ public abstract class AbstractChart {
 		try {
 			String fileName = getFileName(FILE_NAME_PNG);
 
-			FileChooser fileChooser = UtilMethods.createFileChooser(I18n.get("text.exportpng"), fileName,
+			FileChooser fileChooser = UtilMethods.createFileChooser(fileName,
 					ConfigHelper.getProperty("csvFolderPath", "./"), EXTENSION_PNG);
 
 			File file = fileChooser.showSaveDialog(controller.getStage());

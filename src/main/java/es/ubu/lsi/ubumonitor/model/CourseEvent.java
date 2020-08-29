@@ -12,6 +12,7 @@ public class CourseEvent implements Serializable {
 	private String description;
 	private DescriptionFormat format;
 	private EnrolledUser user;
+	private CourseModule courseModule;
 	private String eventtype;
 	private Instant timestart;
 	private int timeduration;
@@ -97,6 +98,13 @@ public class CourseEvent implements Serializable {
 	public int getId() {
 		return id;
 	}
+	public void setCourseModule(CourseModule courseModule) {
+		this.courseModule = courseModule;
+	}
+	
+	public CourseModule getCourseModule() {
+		return courseModule;
+	}
 
 	@Override
 	public int hashCode() {
@@ -112,5 +120,7 @@ public class CourseEvent implements Serializable {
 		CourseEvent other = (CourseEvent) obj;
 		return id == other.id;
 	}
+
+	
 
 }

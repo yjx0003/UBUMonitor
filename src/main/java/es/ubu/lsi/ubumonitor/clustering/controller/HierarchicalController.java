@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.imageio.ImageIO;
-
 import org.apache.commons.math3.ml.clustering.Cluster;
 import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.PropertySheet;
@@ -29,19 +27,18 @@ import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.clustering.util.JavaFXUtils;
 import es.ubu.lsi.ubumonitor.clustering.util.SimplePropertySheetItem;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
-import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSetComponent;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSetComponentEvent;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSetSection;
 import es.ubu.lsi.ubumonitor.model.datasets.DatasSetCourseModule;
-import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -53,7 +50,6 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
@@ -300,8 +296,7 @@ public class HierarchicalController {
 	}
 
 	private void exportImage(File file) throws IOException {
-		WritableImage image = imageView.snapshot(new SnapshotParameters(), null);
-		ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+		UtilMethods.snapshotNode(file, imageView);
 	}
 
 	private void updateRename(List<ClusterWrapper> clusters) {

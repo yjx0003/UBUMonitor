@@ -19,11 +19,13 @@ import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.Component;
 import es.ubu.lsi.ubumonitor.model.ComponentEvent;
+import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.ModuleType;
 import es.ubu.lsi.ubumonitor.model.Section;
 import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
@@ -50,14 +52,14 @@ import javafx.util.StringConverter;
 
 public class SelectionController {
 
-	private static final String TEXT_SELECTALL = "text.selectall";
-	private static final Controller CONTROLLER = Controller.getInstance();
+	public static final String TEXT_SELECTALL = "text.selectall";
+
 	private static final String ALL = "text.all";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SelectionController.class);
 
 	private static final Image NONE_ICON = new Image("/img/manual.png");
-	private static final Section DUMMY_SECTION = new Section(-1);
+	
 
 	@FXML
 	private TreeView<GradeItem> tvwGradeReport;
@@ -147,22 +149,26 @@ public class SelectionController {
 
 	private MainController mainController;
 
-	public void init(MainController mainController) {
+	public void init(MainController mainController, Course actualCourse) {
 		this.mainController = mainController;
 
 		// bind the content to visualization or risk tab
 		tabPane.visibleProperty()
-				.bind(mainController.getWebViewTabsController().getVisualizationTab()
-						.selectedProperty().or(mainController.getWebViewTabsController().getClusteringTab().selectedProperty()));
+				.bind(mainController.getWebViewTabsController()
+						.getVisualizationTab()
+						.selectedProperty()
+						.or(mainController.getWebViewTabsController()
+								.getClusteringTab()
+								.selectedProperty()));
 
 		tabPane.getSelectionModel()
 				.select(ConfigHelper.getProperty("tabPane", tabPane.getSelectionModel()
 						.getSelectedIndex()));
 		initTabGrades();
-		initTabLogs();
-		initTabActivityCompletion();
+		initTabLogs(actualCourse);
+		initTabActivityCompletion(actualCourse);
 
-		initiGradeItems();
+		initiGradeItems(actualCourse);
 		if (tabPane.getTabs()
 				.isEmpty()) {
 			tabPane.setVisible(false);
@@ -172,24 +178,22 @@ public class SelectionController {
 
 	}
 
-	private void initiGradeItems() {
+	private void initiGradeItems(Course actualCourse) {
 
-		if (CONTROLLER.getActualCourse()
-				.getUpdatedGradeItem() == null) {
+		if (actualCourse.getUpdatedGradeItem() == null) {
 			tabPane.getTabs()
 					.remove(tabUbuGrades);
 			return;
 		}
 		ObservableList<ModuleType> observableListModules = FXCollections.observableArrayList();
 		observableListModules.add(null); // opción por si no se filtra por grupo
-		observableListModules.addAll(CONTROLLER.getActualCourse()
-				.getUniqueGradeModuleTypes());
+		observableListModules.addAll(actualCourse.getUniqueGradeModuleTypes());
 
 		slcType.setItems(observableListModules);
 		slcType.getSelectionModel()
 				.selectFirst(); // seleccionamos el nulo
 		slcType.valueProperty()
-				.addListener((ov, oldValue, newValue) -> filterCalifications());
+				.addListener((ov, oldValue, newValue) -> filterCalifications(actualCourse));
 
 		slcType.setConverter(new StringConverter<ModuleType>() {
 			@Override
@@ -207,10 +211,9 @@ public class SelectionController {
 		});
 
 		// Inicializamos el listener del textField del calificador
-		tfdItems.setOnAction((ActionEvent event) -> filterCalifications());
+		tfdItems.setOnAction((ActionEvent event) -> filterCalifications(actualCourse));
 		// Establecemos la estructura en árbol del calificador
-		GradeItem grcl = CONTROLLER.getActualCourse()
-				.getRootGradeItem();
+		GradeItem grcl = actualCourse.getRootGradeItem();
 		// Establecemos la raiz del Treeview
 
 		if (grcl != null) {
@@ -218,7 +221,8 @@ public class SelectionController {
 			root.setExpanded(true);
 			setIcon(root);
 			// Llamamos recursivamente para llenar el Treeview
-			int limitLevel = CONTROLLER.getMainConfiguration()
+			int limitLevel = Controller.getInstance()
+					.getMainConfiguration()
 					.getValue(MainConfiguration.GENERAL, "limitLevelGradeItem");
 			setTreeview(root, grcl, 1, Math.max(limitLevel, 0));
 
@@ -231,7 +235,8 @@ public class SelectionController {
 			// Generamos el gráfico con los elementos selecionados
 			tvwGradeReport.getSelectionModel()
 					.getSelectedItems()
-					.addListener((Change<? extends TreeItem<GradeItem>> g) -> mainController.getActions().updateTreeViewGradeItem());
+					.addListener((Change<? extends TreeItem<GradeItem>> g) -> mainController.getActions()
+							.updateTreeViewGradeItem());
 		}
 
 	}
@@ -240,12 +245,12 @@ public class SelectionController {
 		if (!tabActivity.isSelected()) {
 			return;
 		}
-		mainController.getActions().onSetTabActivityCompletion();
+		mainController.getActions()
+				.onSetTabActivityCompletion();
 	}
 
-	private void initTabActivityCompletion() {
-		if (CONTROLLER.getActualCourse()
-				.getUpdatedActivityCompletion() == null) {
+	private void initTabActivityCompletion(Course actualCourse) {
+		if (actualCourse.getUpdatedActivityCompletion() == null) {
 			tabPane.getTabs()
 					.remove(tabActivity);
 			return;
@@ -256,12 +261,12 @@ public class SelectionController {
 		// grafica y la escala
 		listViewActivity.getSelectionModel()
 				.getSelectedItems()
-				.addListener((Change<? extends CourseModule> courseModule) -> mainController.getActions().updateListViewActivity());
+				.addListener((Change<? extends CourseModule> courseModule) -> mainController.getActions()
+						.updateListViewActivity());
 
 		listViewActivity.setCellFactory(getListCellCourseModule());
 
-		Set<CourseModule> courseModules = CONTROLLER.getActualCourse()
-				.getModules();
+		Set<CourseModule> courseModules = actualCourse.getModules();
 		Set<CourseModule> courseModuleWithActivityCompletion = new LinkedHashSet<>();
 		for (CourseModule courseModule : courseModules) {
 			if (!courseModule.getActivitiesCompletion()
@@ -279,8 +284,7 @@ public class SelectionController {
 
 		ObservableList<ModuleType> observableListModuleTypes = FXCollections.observableArrayList();
 
-		observableListModuleTypes.addAll(CONTROLLER.getActualCourse()
-				.getModules()
+		observableListModuleTypes.addAll(actualCourse.getModules()
 				.stream()
 				.filter(c -> !c.getActivitiesCompletion()
 						.isEmpty())
@@ -352,16 +356,14 @@ public class SelectionController {
 					listViewActivity.setCellFactory(getListCellCourseModule());
 				});
 
-		if (!CONTROLLER.getActualCourse()
-				.getSections()
+		if (!actualCourse.getSections()
 				.isEmpty()) {
 
-			DUMMY_SECTION.setName(I18n.get(TEXT_SELECTALL));
+			SelectionCourseModuleController.DUMMY_SECTION.setName(I18n.get(TEXT_SELECTALL));
 			checkComboBoxSectionAc.getItems()
-					.add(DUMMY_SECTION);
+					.add(SelectionCourseModuleController.DUMMY_SECTION);
 			checkComboBoxSectionAc.getItems()
-					.addAll(CONTROLLER.getActualCourse()
-							.getSections());
+					.addAll(actualCourse.getSections());
 			checkComboBoxSectionAc.getCheckModel()
 					.checkAll();
 			checkComboBoxSectionAc.getItemBooleanProperty(0)
@@ -389,7 +391,7 @@ public class SelectionController {
 	}
 
 	private Predicate<? super CourseModule> getActivityPredicade() {
-		return cm -> containsTextField(activityTextField.getText(), cm.getModuleName())
+		return cm -> UtilMethods.containsTextField(activityTextField.getText(), cm.getModuleName())
 				&& (checkBoxActivity.isSelected() || cm.isVisible()) && (checkComboBoxModuleType.getCheckModel()
 						.getCheckedItems()
 						.contains(cm.getModuleType()))
@@ -401,9 +403,8 @@ public class SelectionController {
 	/**
 	 * Inicializa la lista de componentes de la pestaña Registros
 	 */
-	public void initTabLogs() {
-		if (CONTROLLER.getActualCourse()
-				.getUpdatedLog() == null) {
+	public void initTabLogs(Course actualCourse) {
+		if (actualCourse.getUpdatedLog() == null) {
 			tabPane.getTabs()
 					.remove(tabUbuLogs);
 			return;
@@ -412,10 +413,10 @@ public class SelectionController {
 
 		initTabLogs(tabUbuLogsComponent, tabUbuLogsEvent, tabUbuLogsSection, tabUbuLogsCourseModule);
 
-		initListViewComponents();
-		initListViewComponentsEvents();
-		initListViewSections();
-		initListViewCourseModules();
+		initListViewComponents(actualCourse);
+		initListViewComponentsEvents(actualCourse);
+		initListViewSections(actualCourse);
+		initListViewCourseModules(actualCourse);
 
 	}
 
@@ -423,7 +424,8 @@ public class SelectionController {
 		for (Tab tab : tabs) {
 			tab.setOnSelectionChanged(event -> {
 				if (tab.isSelected()) {
-					mainController.getActions().onSetSubTabLogs();
+					mainController.getActions()
+							.onSetSubTabLogs();
 
 				}
 			});
@@ -434,12 +436,13 @@ public class SelectionController {
 	/**
 	 * Inicializa el listado de componentes de la pestaña Componentes en
 	 */
-	public void initListViewComponents() {
+	public void initListViewComponents(Course actualCourse) {
 		// cada vez que se seleccione nuevos elementos del list view actualizamos la
 		// grafica y la escala
 		listViewComponents.getSelectionModel()
 				.getSelectedItems()
-				.addListener((Change<? extends Component> c) -> mainController.getActions().updateListViewComponents()
+				.addListener((Change<? extends Component> c) -> mainController.getActions()
+						.updateListViewComponents()
 
 				);
 
@@ -465,8 +468,7 @@ public class SelectionController {
 			}
 		});
 
-		List<Component> uniqueComponents = CONTROLLER.getActualCourse()
-				.getUniqueComponents();
+		List<Component> uniqueComponents = actualCourse.getUniqueComponents();
 
 		// Ordenamos los componentes segun los nombres internacionalizados
 		uniqueComponents.sort(Comparator.comparing(I18n::get, Collator.getInstance()));
@@ -495,10 +497,11 @@ public class SelectionController {
 	/**
 	 * Inicializa los elementos de la pestaña eventos.
 	 */
-	public void initListViewComponentsEvents() {
+	public void initListViewComponentsEvents(Course actualCourse) {
 		listViewEvents.getSelectionModel()
 				.getSelectedItems()
-				.addListener((Change<? extends ComponentEvent> c) -> mainController.getActions().updateListViewEvents());
+				.addListener((Change<? extends ComponentEvent> c) -> mainController.getActions()
+						.updateListViewEvents());
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
@@ -524,8 +527,7 @@ public class SelectionController {
 			}
 		});
 
-		List<ComponentEvent> uniqueComponentsEvents = CONTROLLER.getActualCourse()
-				.getUniqueComponentsEvents();
+		List<ComponentEvent> uniqueComponentsEvents = actualCourse.getUniqueComponentsEvents();
 
 		// Ordenamos los componentes segun los nombres internacionalizados
 		uniqueComponentsEvents
@@ -559,19 +561,19 @@ public class SelectionController {
 	/**
 	 * Inicializa el listado de componentes de la pestaña Componentes en
 	 */
-	public void initListViewSections() {
+	public void initListViewSections(Course actualCourse) {
 		// cada vez que se seleccione nuevos elementos del list view actualizamos la
 		// grafica y la escala
 		listViewSection.getSelectionModel()
 				.getSelectedItems()
-				.addListener((Change<? extends Section> section) -> mainController.getActions().updateListViewSection());
+				.addListener((Change<? extends Section> section) -> mainController.getActions()
+						.updateListViewSection());
 
 		// Cambiamos el nombre de los elementos en funcion de la internacionalizacion y
 		// ponemos un icono
 		listViewSection.setCellFactory(getListCellSection());
 
-		Set<Section> sections = CONTROLLER.getActualCourse()
-				.getSections();
+		Set<Section> sections = actualCourse.getSections();
 
 		ObservableList<Section> observableListComponents = FXCollections.observableArrayList(sections);
 		FilteredList<Section> filterSections = new FilteredList<>(observableListComponents, getSectionPredicate());
@@ -627,26 +629,25 @@ public class SelectionController {
 	}
 
 	private Predicate<Section> getSectionPredicate() {
-		return s -> containsTextField(sectionTextField.getText(), s.getName())
+		return s -> UtilMethods.containsTextField(sectionTextField.getText(), s.getName())
 				&& (checkBoxSection.isSelected() || s.isVisible());
 	}
 
 	/**
 	 * Inicializa el listado de componentes de la pestaña Componentes en
 	 */
-	public void initListViewCourseModules() {
+	public void initListViewCourseModules(Course actualCourse) {
 
 		// cada vez que se seleccione nuevos elementos del list view actualizamos la
 		// grafica y la escala
 		listViewCourseModule.getSelectionModel()
 				.getSelectedItems()
-				.addListener(
-						(Change<? extends CourseModule> courseModule) -> mainController.getActions().updateListViewCourseModule());
+				.addListener((Change<? extends CourseModule> courseModule) -> mainController.getActions()
+						.updateListViewCourseModule());
 
 		listViewCourseModule.setCellFactory(getListCellCourseModule());
 
-		Set<CourseModule> courseModules = CONTROLLER.getActualCourse()
-				.getModules();
+		Set<CourseModule> courseModules = actualCourse.getModules();
 
 		ObservableList<CourseModule> observableListComponents = FXCollections.observableArrayList(courseModules);
 
@@ -656,8 +657,7 @@ public class SelectionController {
 				.setSelectionMode(SelectionMode.MULTIPLE);
 
 		ObservableList<ModuleType> observableListModuleTypes = FXCollections
-				.observableArrayList(CONTROLLER.getActualCourse()
-						.getUniqueCourseModulesTypes());
+				.observableArrayList(actualCourse.getUniqueCourseModulesTypes());
 		observableListModuleTypes.sort(Comparator.nullsFirst(Comparator.comparing(I18n::get, Collator.getInstance())));
 		if (!observableListModuleTypes.isEmpty()) {
 			observableListModuleTypes.add(0, ModuleType.DUMMY);
@@ -701,16 +701,14 @@ public class SelectionController {
 
 					});
 
-			if (!CONTROLLER.getActualCourse()
-					.getSections()
+			if (!actualCourse.getSections()
 					.isEmpty()) {
 
-				DUMMY_SECTION.setName(I18n.get(TEXT_SELECTALL));
+				SelectionCourseModuleController.DUMMY_SECTION.setName(I18n.get(TEXT_SELECTALL));
 				checkComboBoxSection.getItems()
-						.add(DUMMY_SECTION);
+						.add(SelectionCourseModuleController.DUMMY_SECTION);
 				checkComboBoxSection.getItems()
-						.addAll(CONTROLLER.getActualCourse()
-								.getSections());
+						.addAll(actualCourse.getSections());
 
 				checkComboBoxSection.getCheckModel()
 						.checkAll();
@@ -788,7 +786,7 @@ public class SelectionController {
 
 	private Predicate<CourseModule> getCourseModulePredicate() {
 
-		return cm -> containsTextField(courseModuleTextField.getText(), cm.getModuleName())
+		return cm -> UtilMethods.containsTextField(courseModuleTextField.getText(), cm.getModuleName())
 				&& (checkBoxCourseModule.isSelected() || cm.isVisible()) && (checkComboBoxCourseModule.getCheckModel()
 						.getCheckedItems()
 						.contains(cm.getModuleType()))
@@ -799,14 +797,7 @@ public class SelectionController {
 						.contains(cm.getSection()));
 	}
 
-	private boolean containsTextField(String newValue, String element) {
-		if (newValue == null || newValue.isEmpty()) {
-			return true;
-		}
-		String textField = newValue.toLowerCase();
-		return element.toLowerCase()
-				.contains(textField);
-	}
+	
 
 	/**
 	 * Metodo que se activa cuando se modifica la pestaña de logs o calificaciones
@@ -817,7 +808,8 @@ public class SelectionController {
 		if (!tabUbuLogs.isSelected()) {
 			return;
 		}
-		mainController.getActions().onSetTabLogs();
+		mainController.getActions()
+				.onSetTabLogs();
 	}
 
 	/**
@@ -838,7 +830,8 @@ public class SelectionController {
 		if (!tabUbuGrades.isSelected()) {
 			return;
 		}
-		mainController.getActions().onSetTabGrades();
+		mainController.getActions()
+				.onSetTabGrades();
 	}
 
 	/**
@@ -887,12 +880,10 @@ public class SelectionController {
 	 * Filtra la lista de actividades del calificador según el tipo y el patrón
 	 * introducidos.
 	 */
-	public void filterCalifications() {
+	public void filterCalifications(Course actualCourse) {
 		try {
-			GradeItem root = CONTROLLER.getActualCourse()
-					.getRootGradeItem();
-			Set<GradeItem> gradeItems = CONTROLLER.getActualCourse()
-					.getGradeItems();
+			GradeItem root = actualCourse.getRootGradeItem();
+			Set<GradeItem> gradeItems = actualCourse.getGradeItems();
 			// Establecemos la raiz del Treeview
 			TreeItem<GradeItem> treeItemRoot = new TreeItem<>(root);
 			setIcon(treeItemRoot);

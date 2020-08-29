@@ -36,7 +36,8 @@ public class ForumTable extends Tabulator {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 		List<DiscussionPost> discussionPosts = getSelectedDiscussionPosts();
 		List<String> header = new ArrayList<>();
-		header.add("user");
+		header.add("userId");
+		header.add("userFullname");
 		header.addAll(enrolledUsers.stream()
 				.map(EnrolledUser::getFullName)
 				.collect(Collectors.toList()));
@@ -44,6 +45,7 @@ public class ForumTable extends Tabulator {
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
 				CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
 			for (EnrolledUser from : enrolledUsers) {
+				printer.print(from.getId());
 				printer.print(from.getFullName());
 				for (EnrolledUser to : enrolledUsers) {
 

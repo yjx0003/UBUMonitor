@@ -90,8 +90,8 @@ public class MainController implements Initializable {
 					controller.getConfiguration(controller.getActualCourse()));
 
 			menuController.init(this);
-			selectionUserController.init(this);
-			selectionMainController.init(this);
+			selectionUserController.init(this, controller.getActualCourse(), controller.getMainConfiguration());
+			selectionMainController.init(this, controller.getActualCourse());
 			webViewTabsController.init(this, controller.getActualCourse(), controller.getMainConfiguration(), controller.getStage());
 
 			initStatusBar();

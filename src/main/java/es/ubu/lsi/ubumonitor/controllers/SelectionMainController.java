@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
+import es.ubu.lsi.ubumonitor.model.Course;
 import javafx.fxml.FXML;
 
 public class SelectionMainController {
@@ -14,12 +15,13 @@ public class SelectionMainController {
 	private SelectionEmptyController selectionEmptyController;
 	
 	@FXML
-	private SelectionCourseModuleController selectionCourseController;
+	private SelectionCourseModuleController selectionCourseModuleController;
 
-	public void init(MainController mainController) {
-		selectionController.init(mainController);
-		selectionForumController.init(mainController);
-		selectionEmptyController.init(mainController);
+	public void init(MainController mainController, Course actualCourse) {
+		selectionController.init(mainController, actualCourse);
+		selectionForumController.init(mainController, actualCourse);
+		selectionEmptyController.init(mainController, actualCourse);
+		selectionCourseModuleController.init(mainController, actualCourse);
 		
 	}
 	
@@ -29,6 +31,10 @@ public class SelectionMainController {
 	
 	public SelectionForumController getSelectionForumController() {
 		return selectionForumController;
+	}
+	
+	public SelectionCourseModuleController getSelectionCourseModuleController() {
+		return selectionCourseModuleController;
 	}
 	
 }

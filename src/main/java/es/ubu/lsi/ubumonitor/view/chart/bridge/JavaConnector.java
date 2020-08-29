@@ -1,4 +1,6 @@
-package es.ubu.lsi.ubumonitor.view.chart;
+package es.ubu.lsi.ubumonitor.view.chart.bridge;
+
+import es.ubu.lsi.ubumonitor.view.chart.Chart;
 
 public interface JavaConnector {
 	public void updateChart();

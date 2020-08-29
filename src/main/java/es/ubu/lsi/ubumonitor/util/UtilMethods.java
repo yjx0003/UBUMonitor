@@ -331,7 +331,6 @@ public class UtilMethods {
 		}
 	}
 
-
 	public static FileChooser createFileChooser(String initialFileName, String initialDirectory,
 			FileChooser.ExtensionFilter... extensionFilters) {
 		FileChooser fileChooser = new FileChooser();
@@ -339,11 +338,11 @@ public class UtilMethods {
 		fileChooser.setInitialFileName(initialFileName);
 		if (initialDirectory != null) {
 			File dir = new File(initialDirectory);
-			if(dir.isDirectory()) {
+			if (dir.isDirectory()) {
 				fileChooser.setInitialDirectory(dir);
 			}
 		}
-		
+
 		fileChooser.getExtensionFilters()
 				.addAll(extensionFilters);
 		return fileChooser;
@@ -502,7 +501,7 @@ public class UtilMethods {
 		WritableImage image = node.snapshot(new SnapshotParameters(), null);
 
 		ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-		showExportedFile(file);
+		
 	}
 
 	public static void openFileFolder(File file) {
@@ -626,11 +625,19 @@ public class UtilMethods {
 
 	}
 
-
 	public static String colorToRGB(Color color) {
 
 		return String.format("'rgba(%s,%s,%s,%s)'", color.getRed(), color.getGreen(), color.getBlue(),
 				color.getAlpha());
+	}
+
+	public static boolean containsTextField(String newValue, String element) {
+		if (newValue == null || newValue.isEmpty()) {
+			return true;
+		}
+		String textField = newValue.toLowerCase();
+		return element.toLowerCase()
+				.contains(textField);
 	}
 
 }

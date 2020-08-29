@@ -11,9 +11,8 @@ import es.ubu.lsi.ubumonitor.model.LogStats;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.util.I18n;
-import es.ubu.lsi.ubumonitor.view.chart.Chart;
-import es.ubu.lsi.ubumonitor.view.chart.JavaConnector;
-import es.ubu.lsi.ubumonitor.view.chart.VisualizationJavaConnector;
+import es.ubu.lsi.ubumonitor.view.chart.bridge.JavaConnector;
+import es.ubu.lsi.ubumonitor.view.chart.bridge.VisualizationJavaConnector;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
@@ -64,6 +63,7 @@ public class VisualizationController extends WebViewAction {
 		javaConnector = new VisualizationJavaConnector(webViewController.getWebViewCharts(), mainConfiguration, mainController, this, actualCourse);
 		init(tab, actualCourse, mainConfiguration, stage, javaConnector);
 		
+		//remove Visualizarion Tab if has not Logs, Grades and Activity Completion graph
 		if (mainController.getSelectionController()
 				.getTabPane()
 				.getTabs()
@@ -308,11 +308,6 @@ public class VisualizationController extends WebViewAction {
 
 	public DatePicker getDatePickerEnd() {
 		return datePickerEnd;
-	}
-
-	@Override
-	public Chart getCurrentChart() {
-		return javaConnector.getCurrentChart();
 	}
 
 	

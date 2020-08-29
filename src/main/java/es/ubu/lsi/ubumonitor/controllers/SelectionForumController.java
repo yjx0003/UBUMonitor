@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.controlsfx.control.CheckComboBox;
 
 import es.ubu.lsi.ubumonitor.AppInfo;
+import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.ModuleType;
 import es.ubu.lsi.ubumonitor.model.Section;
@@ -44,18 +45,17 @@ public class SelectionForumController {
 	@FXML
 	private TabPane tabPane;
 
-	public void init(MainController mainController) {
+	public void init(MainController mainController, Course actualCourse) {
 
 		tabPane.visibleProperty()
 				.bind(mainController.getWebViewTabsController().getForumTab()
 						.selectedProperty());
 
-		fillForumListView(mainController);
+		fillForumListView(mainController, actualCourse);
 	}
 
-	private void fillForumListView(MainController mainController) {
-		filteredForum = new FilteredList<>(Controller.getInstance()
-				.getActualCourse()
+	private void fillForumListView(MainController mainController, Course actualCourse) {
+		filteredForum = new FilteredList<>(actualCourse
 				.getModules()
 				.stream()
 				.filter(cm -> cm.getModuleType() == ModuleType.FORUM)
@@ -66,8 +66,7 @@ public class SelectionForumController {
 
 		Section dummySection = new Section(-1);
 		dummySection.setName(I18n.get("text.selectall"));
-		fillCheckComboBox(dummySection, Controller.getInstance()
-				.getActualCourse()
+		fillCheckComboBox(dummySection, actualCourse
 				.getSections(), checkComboBoxForumSection);
 
 		listViewForum.getSelectionModel()

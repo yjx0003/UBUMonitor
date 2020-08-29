@@ -9,6 +9,8 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -31,7 +33,10 @@
                   <GridPane hgap="5.0" vgap="5.0" BorderPane.alignment="CENTER">
                     <columnConstraints>
                       <ColumnConstraints hgrow="NEVER" />
-                      <ColumnConstraints hgrow="SOMETIMES" />
+                        <ColumnConstraints hgrow="NEVER" />
+                      <ColumnConstraints hgrow="NEVER" />
+                        <ColumnConstraints hgrow="NEVER" />
+                        <ColumnConstraints hgrow="SOMETIMES" />
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -39,13 +44,22 @@
                         <RowConstraints vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <CheckComboBox fx:id="checkComboBoxForumSection" prefWidth="120.0" showCheckedCount="true" title="" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                           <tooltip>
-                              <Tooltip text="%tab.section" />
-                           </tooltip></CheckComboBox>
-								<CheckBox fx:id="checkBoxForum" mnemonicParsing="false" text="%label.withhidden" GridPane.columnIndex="1" />
+                        <CheckComboBox fx:id="checkComboBoxForumSection" prefWidth="120.0" showCheckedCount="true" title="" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+								<CheckBox fx:id="checkBoxForum" mnemonicParsing="false" text="%label.withhidden" GridPane.columnIndex="4" />
 								<TextField fx:id="textFieldForum" prefWidth="100.0" promptText="%label.filter" />
                         <Button mnemonicParsing="false" onAction="#selectAll" text="%button.selectall" GridPane.rowIndex="1" />
+                        <Label GridPane.columnIndex="2" GridPane.rowIndex="1">
+                           <graphic>
+                              <ImageView pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../img/sections.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="%text.section" />
+                           </tooltip>
+                        </Label>
                      </children>
                      <padding>
                         <Insets bottom="5.0" left="5.0" top="5.0" />

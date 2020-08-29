@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import es.ubu.lsi.ubumonitor.model.CourseEvent;
 import es.ubu.lsi.ubumonitor.model.DataBase;
 import es.ubu.lsi.ubumonitor.model.DescriptionFormat;
+import es.ubu.lsi.ubumonitor.model.ModuleType;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.webservice.api.core.calendar.CoreCalendarGetCalendarEvents;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
@@ -29,6 +30,8 @@ public class PopulateCourseEvent {
 		try {
 			CoreCalendarGetCalendarEvents coreCalendarGetCalendarEvents = new CoreCalendarGetCalendarEvents();
 			coreCalendarGetCalendarEvents.setCourseids(Collections.singleton(courseid));
+			coreCalendarGetCalendarEvents.setSiteevents(false);
+			coreCalendarGetCalendarEvents.setUserevents(false);
 			JSONObject jsonObject = UtilMethods.getJSONObjectResponse(webService, coreCalendarGetCalendarEvents);
 			return populateCourseEvents(jsonObject);
 		} catch (Exception e) {
@@ -55,13 +58,26 @@ public class PopulateCourseEvent {
 		courseEvent.setName(jsonObject.optString(Constants.NAME));
 		courseEvent.setDescription(jsonObject.optString(Constants.DESCRIPTION));
 		courseEvent.setFormat(DescriptionFormat.get(jsonObject.optInt(Constants.FORMAT)));
-		courseEvent.setUser(dataBase.getUsers().getById(jsonObject.optInt(Constants.USERID)));
+		courseEvent.setUser(dataBase.getUsers()
+				.getById(jsonObject.optInt(Constants.USERID)));
+		int instance = jsonObject.optInt(Constants.INSTANCE);
+		ModuleType moduleType = ModuleType.get(jsonObject.optString(Constants.MODULENAME));	
+		if (instance != 0 && moduleType!=null) {
+			courseEvent.setCourseModule(dataBase.getModules()
+					.getMap()
+					.values()
+					.stream()
+					.filter(cm -> cm.getInstance() == instance && cm.getModuleType() == moduleType)
+					.findFirst()
+					.orElse(null));
+		}
+
 		courseEvent.setEventtype(jsonObject.optString(Constants.EVENTTYPE));
 		courseEvent.setTimestart(Instant.ofEpochSecond(jsonObject.optLong(Constants.TIMESTART)));
 		courseEvent.setTimeduration(jsonObject.optInt(Constants.TIMEDURATION));
 		courseEvent.setTimemodified(Instant.ofEpochSecond(jsonObject.optLong(Constants.TIMEMODIFIED)));
 		courseEvent.setVisible(jsonObject.optInt(Constants.VISIBLE) == 1);
-		
+
 		return courseEvent;
 	}
 

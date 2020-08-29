@@ -1,4 +1,4 @@
-package es.ubu.lsi.ubumonitor.view.chart;
+package es.ubu.lsi.ubumonitor.view.chart.bridge;
 
 import java.util.EnumMap;
 import java.util.Locale;
@@ -11,6 +11,9 @@ import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.view.chart.Chart;
+import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import javafx.concurrent.Worker.State;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
@@ -143,4 +146,26 @@ public abstract class JavaConnectorAbstract implements JavaConnector {
 		chart.setActualCourse(actualCourse);
 		charts.put(chart.getChartType(), chart);
 	}
+	
+	@Override
+	public void updateCharts(String typeChart) {
+		Chart chart = charts.get(ChartType.valueOf(typeChart));
+		if (currentChart.getChartType() != chart.getChartType()) {
+			currentChart.clear();
+			currentChart = chart;
+		}
+		currentChart.update();
+	}
+	
+
+	@Override
+	public void updateChart() {
+		if (webEngine.getLoadWorker()
+				.getState() != State.SUCCEEDED) {
+			return;
+		}
+		currentChart.update();
+
+	}
+
 }

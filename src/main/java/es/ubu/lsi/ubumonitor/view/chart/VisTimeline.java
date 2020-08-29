@@ -7,24 +7,24 @@ import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.scene.web.WebView;
 
-public abstract class Tabulator extends Chart {
-
+public abstract class VisTimeline extends Chart {
+	
 	private WebView webView;
 
-	public Tabulator(MainController mainController, ChartType chartType, WebView webView) {
+	public VisTimeline(MainController mainController, ChartType chartType, WebView webView) {
 		super(mainController, chartType);
-		this.webView = webView;
+
 	}
 
 	@Override
 	public void clear() {
-		webViewChartsEngine.executeScript("clearTabulator()");
+		webViewChartsEngine.executeScript("clearVisTimeline()");
 
 	}
 
 	@Override
 	public void hideLegend() {
-		// do nothing
+		//not use
 
 	}
 
@@ -32,7 +32,6 @@ public abstract class Tabulator extends Chart {
 	public void exportImage(File file) throws IOException {
 		UtilMethods.snapshotNode(file, webView);
 		UtilMethods.showExportedFile(file);
-
 	}
 
 }

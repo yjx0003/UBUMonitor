@@ -10,8 +10,7 @@ import es.ubu.lsi.ubumonitor.model.LogStats;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.util.I18n;
-import es.ubu.lsi.ubumonitor.view.chart.Chart;
-import es.ubu.lsi.ubumonitor.view.chart.RiskJavaConnector;
+import es.ubu.lsi.ubumonitor.view.chart.bridge.RiskJavaConnector;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -168,11 +167,6 @@ public class RiskController extends WebViewAction {
 
 	public DatePicker getDatePickerEnd() {
 		return datePickerEnd;
-	}
-
-	@Override
-	public Chart getCurrentChart() {
-		return javaConnector.getCurrentChart();
 	}
 
 }

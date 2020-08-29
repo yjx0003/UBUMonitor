@@ -130,11 +130,11 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_NETWORK, "usePhoto", true);
 		createItem(ChartType.FORUM_NETWORK, "physicsAfterDraw", true);
 		createItem(ChartType.FORUM_NETWORK, "edges.dashes", false);
-		createItem(ChartType.FORUM_NETWORK, "edges.scaling.max", 10);
 		createItem(ChartType.FORUM_NETWORK, "edges.scaling.min", 1);
+		createItem(ChartType.FORUM_NETWORK, "edges.scaling.max", 10);
 		createItem(ChartType.FORUM_NETWORK, "nodes.borderWidth", 1);
-		createItem(ChartType.FORUM_NETWORK, "nodes.scaling.max", 40);
 		createItem(ChartType.FORUM_NETWORK, "nodes.scaling.min", 20);
+		createItem(ChartType.FORUM_NETWORK, "nodes.scaling.max", 40);
 		createItem(ChartType.FORUM_NETWORK, "physics.solver", ForumNetwork.Solver.FORCE_ATLAS_2_BASED);
 		createItem(ChartType.FORUM_NETWORK, "physics.barnesHut.theta", 0.5);
 		createItem(ChartType.FORUM_NETWORK, "physics.barnesHut.gravitationalConstant", -2000);

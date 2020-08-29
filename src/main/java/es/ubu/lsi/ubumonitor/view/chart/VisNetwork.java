@@ -3,21 +3,17 @@ package es.ubu.lsi.ubumonitor.view.chart;
 import java.io.File;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
-
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.SnapshotParameters;
-import javafx.scene.image.WritableImage;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.scene.web.WebView;
 
 public abstract class VisNetwork extends Chart {
 	private WebView webView;
+
 	public VisNetwork(MainController mainController, ChartType chartType, WebView webView) {
 		super(mainController, chartType);
-		this.webView =webView;
+		this.webView = webView;
 	}
-
 
 	@Override
 	public void clear() {
@@ -27,15 +23,14 @@ public abstract class VisNetwork extends Chart {
 
 	@Override
 	public void hideLegend() {
-		//do nothing
+		// do nothing
 
 	}
 
 	@Override
 	public void exportImage(File file) throws IOException {
-		WritableImage image = webView.snapshot(new SnapshotParameters(), null);
-
-		ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+		UtilMethods.snapshotNode(file, webView);
+		UtilMethods.showExportedFile(file);
 
 	}
 

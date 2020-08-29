@@ -61,7 +61,7 @@
       var visTimeline;
       function createChartDivs() {
          //------------------------------------------Variables globales-------------------------------------------------------------
-
+         
          //
          colorHash = new ColorHash();
          ctx = document.getElementById('myChart');
@@ -244,9 +244,9 @@
          hiddenCharts("visTimeline", options);
 
 
-
-         visTimeline.setData(data);
          visTimeline.setOptions(options.options);
+         visTimeline.setData(data);
+         
 
       }
 

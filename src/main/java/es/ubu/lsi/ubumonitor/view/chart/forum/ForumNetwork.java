@@ -164,7 +164,7 @@ public class ForumNetwork extends VisNetwork {
 		JSObject layout = new JSObject();
 		String randomSeed = getValue("layout.randomSeed");
 
-		layout.put("randomSeed", StringUtils.isBlank(randomSeed) ? null : randomSeed);
+		layout.put("randomSeed", StringUtils.isBlank(randomSeed) ? "undefined" : randomSeed);
 
 		layout.put("clusterThreshold", getValue("layout.clusterThreshold"));
 		return layout;

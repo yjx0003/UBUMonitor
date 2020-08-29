@@ -11,6 +11,8 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.control.TreeView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -132,7 +134,11 @@
                               <GridPane hgap="5.0" vgap="5.0" BorderPane.alignment="CENTER">
                                 <columnConstraints>
                                   <ColumnConstraints hgrow="NEVER" />
-                                  <ColumnConstraints hgrow="SOMETIMES" />
+                                    <ColumnConstraints hgrow="NEVER" />
+                                  <ColumnConstraints hgrow="NEVER" />
+                                    <ColumnConstraints hgrow="NEVER" />
+                                    <ColumnConstraints hgrow="NEVER" />
+                                    <ColumnConstraints hgrow="SOMETIMES" />
                                 </columnConstraints>
                                 <rowConstraints>
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -141,11 +147,35 @@
                                 </rowConstraints>
                                  <children>
 												<TextField fx:id="courseModuleTextField" prefWidth="100.0" promptText="%label.filter" GridPane.rowIndex="1" />
-												<CheckBox fx:id="checkBoxCourseModule" mnemonicParsing="false" text="%label.withhidden" GridPane.columnIndex="1" />
+												<CheckBox fx:id="checkBoxCourseModule" mnemonicParsing="false" text="%label.withhidden" GridPane.columnIndex="5" />
 												<CheckBox fx:id="checkBoxActivityCompleted" mnemonicParsing="false" text="%label.withcompletion" />
-												<CheckComboBox fx:id="checkComboBoxCourseModule" prefWidth="120.0" showCheckedCount="true" title=" " GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                    <CheckComboBox fx:id="checkComboBoxSection" prefWidth="120.0" showCheckedCount="true" title=" " GridPane.columnIndex="1" GridPane.rowIndex="1" />
+												<CheckComboBox fx:id="checkComboBoxCourseModule" prefWidth="120.0" showCheckedCount="true" title=" " GridPane.columnIndex="5" GridPane.rowIndex="2" />
+                                    <CheckComboBox fx:id="checkComboBoxSection" prefWidth="120.0" showCheckedCount="true" title=" " GridPane.columnIndex="5" GridPane.rowIndex="1" />
                                     <Button mnemonicParsing="false" onAction="#selectAllCourseModules" text="%button.selectall" GridPane.rowIndex="2" />
+                                    <Label GridPane.columnIndex="3" GridPane.rowIndex="1">
+                                       <graphic>
+                                          <ImageView pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../img/sections.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                       <tooltip>
+                                          <Tooltip text="%text.section" />
+                                       </tooltip>
+                                    </Label>
+                                    <Label layoutX="159.0" layoutY="53.0" GridPane.columnIndex="3" GridPane.rowIndex="2">
+                                       <graphic>
+                                          <ImageView pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../img/coursemodules.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                       <tooltip>
+                                          <Tooltip text="%text.coursemodule" />
+                                       </tooltip>
+                                    </Label>
                                  </children>
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -169,7 +199,9 @@
                   <GridPane hgap="5.0" vgap="5.0" BorderPane.alignment="CENTER">
                     <columnConstraints>
                       <ColumnConstraints hgrow="SOMETIMES" />
-                      <ColumnConstraints hgrow="SOMETIMES" />
+                        <ColumnConstraints hgrow="NEVER" />
+                      <ColumnConstraints hgrow="NEVER" />
+                        <ColumnConstraints hgrow="SOMETIMES" />
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -177,11 +209,23 @@
                     </rowConstraints>
                      <children>
 								<TextField fx:id="tfdItems" prefWidth="100.0" promptText="%label.filter" />
-								<ChoiceBox fx:id="slcType" GridPane.columnIndex="1" GridPane.rowIndex="1">
+								<ChoiceBox fx:id="slcType" GridPane.columnIndex="3" GridPane.rowIndex="1">
                            <tooltip>
                               <Tooltip text="%text.coursemodule" />
                            </tooltip></ChoiceBox>
                         <Button mnemonicParsing="false" onAction="#selectAllGradeItems" text="%button.selectall" GridPane.rowIndex="1" />
+                        <Label GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <graphic>
+                              <ImageView pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../img/coursemodules.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="%text.coursemodule" />
+                           </tooltip>
+                        </Label>
                      </children>
                      <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -205,7 +249,9 @@
                   <GridPane hgap="5.0" vgap="5.0" BorderPane.alignment="CENTER">
                     <columnConstraints>
                       <ColumnConstraints hgrow="NEVER" />
-                      <ColumnConstraints hgrow="SOMETIMES" />
+                        <ColumnConstraints hgrow="NEVER" />
+                      <ColumnConstraints hgrow="NEVER" />
+                        <ColumnConstraints hgrow="SOMETIMES" />
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -214,10 +260,34 @@
                     </rowConstraints>
                      <children>
 								<TextField fx:id="activityTextField" prefWidth="100.0" promptText="%label.filter" GridPane.rowIndex="1" />
-								<CheckBox fx:id="checkBoxActivity" mnemonicParsing="false" text="%label.withhidden" GridPane.columnIndex="1" />
-								<CheckComboBox fx:id="checkComboBoxModuleType" maxWidth="1.7976931348623157E308" prefWidth="120.0" showCheckedCount="true" title=" " GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <CheckComboBox fx:id="checkComboBoxSectionAc" maxWidth="1.7976931348623157E308" prefWidth="120.0" showCheckedCount="true" title=" " GridPane.columnIndex="1" GridPane.rowIndex="1" />
+								<CheckBox fx:id="checkBoxActivity" mnemonicParsing="false" text="%label.withhidden" GridPane.columnIndex="3" />
+								<CheckComboBox fx:id="checkComboBoxModuleType" maxWidth="1.7976931348623157E308" prefWidth="120.0" showCheckedCount="true" title=" " GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                        <CheckComboBox fx:id="checkComboBoxSectionAc" maxWidth="1.7976931348623157E308" prefWidth="120.0" showCheckedCount="true" title=" " GridPane.columnIndex="3" GridPane.rowIndex="1" />
                         <Button mnemonicParsing="false" onAction="#selectAllActivityCompletion" text="%button.selectall" GridPane.rowIndex="2" />
+                        <Label GridPane.columnIndex="2" GridPane.rowIndex="1">
+                           <graphic>
+                              <ImageView pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../img/sections.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="%text.section" />
+                           </tooltip>
+                        </Label>
+                        <Label GridPane.columnIndex="2" GridPane.rowIndex="2">
+                           <graphic>
+                              <ImageView pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../img/coursemodules.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="%text.coursemodule" />
+                           </tooltip>
+                        </Label>
                      </children>
                      <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

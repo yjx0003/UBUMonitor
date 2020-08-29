@@ -3,6 +3,7 @@ package es.ubu.lsi.ubumonitor.controllers;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.controllers.tabs.ForumController;
+import es.ubu.lsi.ubumonitor.controllers.tabs.CalendarEventController;
 import es.ubu.lsi.ubumonitor.controllers.tabs.ClusteringController;
 import es.ubu.lsi.ubumonitor.controllers.tabs.RiskController;
 import es.ubu.lsi.ubumonitor.controllers.tabs.VisualizationController;
@@ -37,19 +38,25 @@ public class WebViewTabsController {
 
 	@FXML
 	private ClusteringController clusteringController;
+	
+	@FXML
+	private Tab calendarEventTab;
+	
+	@FXML
+	private CalendarEventController calendarEventController;
 
 	private MainController mainController;
 	
 	public void init(MainController mainController, Course actualCourse, MainConfiguration mainConfiguration, Stage stage) {
 		this.mainController = mainController;
 		
-		clusteringController.init(mainController);
+		
 		initWebViewTabs(actualCourse, mainConfiguration, stage);
 	}
 	
 	
 	private void initWebViewTabs(Course actualCourse, MainConfiguration mainConfiguration, Stage stage) {
-
+		clusteringController.init(mainController);
 		tabPane.getSelectionModel()
 				.select(ConfigHelper.getProperty("webViewTab", tabPane.getSelectionModel()
 						.getSelectedIndex()));
@@ -70,17 +77,18 @@ public class WebViewTabsController {
 					}
 				});
 
-		visualizationController.init(mainController,visualizationTab, actualCourse, mainConfiguration, stage);
-		mainController.getTabMap().put(visualizationTab, visualizationController);
-
-		riskController.init(mainController, riskTab, actualCourse, mainConfiguration, stage);
 		
-		mainController.getTabMap().put(riskTab, riskController);
+		add(visualizationController, mainController, visualizationTab, actualCourse, mainConfiguration, stage);
+		add(riskController, mainController, riskTab, actualCourse, mainConfiguration, stage);
+		add(forumController, mainController, forumTab, actualCourse, mainConfiguration, stage);
+		add(calendarEventController, mainController, calendarEventTab, actualCourse, mainConfiguration, stage);
 		
-		forumController.init(mainController, forumTab, actualCourse, mainConfiguration, stage);
-		mainController.getTabMap().put(forumTab, forumController);
 	}
 
+	private void add(WebViewAction webViewAction, MainController mainController, Tab tab, Course actualCourse, MainConfiguration mainConfiguration, Stage stage) {
+		webViewAction.init(mainController, tab, actualCourse, mainConfiguration, stage);
+		mainController.getTabMap().put(tab, webViewAction);
+	}
 
 	public TabPane getTabPane() {
 		return tabPane;
@@ -129,6 +137,16 @@ public class WebViewTabsController {
 
 	public MainController getMainController() {
 		return mainController;
+	}
+
+
+	public Tab getCalendarEventTab() {
+		return calendarEventTab;
+	}
+
+
+	public CalendarEventController getCalendarEventController() {
+		return calendarEventController;
 	}
 
 }

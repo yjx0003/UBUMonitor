@@ -5,17 +5,12 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import javax.imageio.ImageIO;
-
 import es.ubu.lsi.ubumonitor.controllers.Controller;
-import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -82,7 +77,7 @@ public abstract class AbstractChart {
 			File file = fileChooser.showSaveDialog(controller.getStage());
 			if (file != null) {
 				exportData(file);
-				UtilMethods.infoWindow(I18n.get("message.export_csv") + file.getAbsolutePath());
+				UtilMethods.showExportedFile(file);
 			}
 		} catch (IOException e) {
 			UtilMethods.errorWindow(I18n.get("error.savecsvfiles"), e);
@@ -111,7 +106,7 @@ public abstract class AbstractChart {
 			File file = fileChooser.showSaveDialog(controller.getStage());
 			if (file != null) {
 				exportImage(file);
-				UtilMethods.infoWindow(I18n.get("message.export_png") + file.getAbsolutePath());
+				UtilMethods.showExportedFile(file);
 			}
 		} catch (IOException e) {
 			UtilMethods.errorWindow(I18n.get("error.savechart"), e);
@@ -119,8 +114,7 @@ public abstract class AbstractChart {
 	}
 
 	private void exportImage(File file) throws IOException {
-		WritableImage image = webView.snapshot(new SnapshotParameters(), null);
-		ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+		UtilMethods.snapshotNode(file, webView);
 	}
 
 	/**

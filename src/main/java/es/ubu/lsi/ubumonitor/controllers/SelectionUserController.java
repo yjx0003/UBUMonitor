@@ -49,7 +49,6 @@ import javafx.scene.input.MouseButton;
 public class SelectionUserController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SelectionUserController.class);
 	public static final Image DEFAULT_IMAGE = new Image("/img/default_user.png", 50, 50, false, false);
-	private static final Controller CONTROLLER = Controller.getInstance();
 
 	@FXML
 	private Label labelNotEnrolled;
@@ -90,10 +89,13 @@ public class SelectionUserController {
 	private MainController mainController;
 	private Map<Tab, ListView<EnrolledUser>> tabListView;
 
-	public void init(MainController mainController) {
+	public void init(MainController mainController, Course course, MainConfiguration mainConfiguration) {
 		this.mainController = mainController;
-	
-		tabNotEnrolled.disableProperty().bind(mainController.getWebViewTabsController().getClusteringTab().selectedProperty());
+
+		tabNotEnrolled.disableProperty()
+				.bind(mainController.getWebViewTabsController()
+						.getClusteringTab()
+						.selectedProperty());
 		tabPane.getSelectionModel()
 				.selectedItemProperty()
 				.addListener((ov, old, newValue) -> {
@@ -112,31 +114,30 @@ public class SelectionUserController {
 						selectionController.getTabUbuGrades()
 								.setDisable(false);
 					}
-					this.mainController.getActions().updateListViewEnrolledUser();
+					this.mainController.getActions()
+							.updateListViewEnrolledUser();
 				});
-		
-		initEnrolledUsers();
-		initNotEnrolledUsers();
+
+		initEnrolledUsers(course, mainConfiguration);
+		initNotEnrolledUsers(course);
 		tabListView = new HashMap<>();
 		tabListView.put(tabEnrolled, listParticipants);
 		tabListView.put(tabNotEnrolled, listParticipantsOut);
 	}
 
-	private void initEnrolledUsers() {
+	private void initEnrolledUsers(Course course, MainConfiguration mainConfiguration) {
 		// Mostramos nº participantes
 
 		tfdParticipants.setOnAction(event -> filterParticipants());
 
-		initEnrolledUsersListView();
+		initEnrolledUsersListView(course);
 		autoCompletionBinding = UtilMethods.createAutoCompletionBinding(tfdParticipants, filteredEnrolledList);
 		checkComboBoxGroup.getItems()
-				.setAll(CONTROLLER.getActualCourse()
-						.getGroups()
+				.setAll(course.getGroups()
 						.stream()
 						.sorted(Comparator.comparing(Group::getGroupName, Comparator.nullsLast(Collator.getInstance())))
 						.collect(Collectors.toList()));
-		ObservableList<Group> groups = CONTROLLER.getMainConfiguration()
-				.getValue(MainConfiguration.GENERAL, "initialGroups");
+		ObservableList<Group> groups = mainConfiguration.getValue(MainConfiguration.GENERAL, "initialGroups");
 		if (groups != null) {
 			groups.forEach(checkComboBoxGroup.getCheckModel()::check);
 		}
@@ -146,9 +147,9 @@ public class SelectionUserController {
 				.addListener((Change<? extends Group> g) -> filterParticipants());
 
 		checkComboBoxRole.getItems()
-				.addAll(CONTROLLER.getActualCourse()
-						.getRoles());
-		ObservableList<Role> roles = CONTROLLER.getMainConfiguration()
+				.addAll(course.getRoles());
+		ObservableList<Role> roles = Controller.getInstance()
+				.getMainConfiguration()
 				.getValue(MainConfiguration.GENERAL, "initialRoles");
 		if (roles != null) {
 			roles.forEach(checkComboBoxRole.getCheckModel()::check);
@@ -159,8 +160,8 @@ public class SelectionUserController {
 
 		checkComboBoxActivity.getItems()
 				.addAll(LastActivityFactory.DEFAULT.getAllLastActivity());
-		ObservableList<LastActivity> lastActivities = CONTROLLER.getMainConfiguration()
-				.getValue(MainConfiguration.GENERAL, "initialLastActivity");
+		ObservableList<LastActivity> lastActivities = mainConfiguration.getValue(MainConfiguration.GENERAL,
+				"initialLastActivity");
 		if (lastActivities != null) {
 			lastActivities.forEach(checkComboBoxActivity.getCheckModel()::check);
 		}
@@ -178,24 +179,24 @@ public class SelectionUserController {
 	/**
 	 * Inicializa la lista de usuarios.
 	 */
-	private void initEnrolledUsersListView() {
+	private void initEnrolledUsersListView(Course course) {
 
-		Set<EnrolledUser> users = CONTROLLER.getActualCourse()
-				.getEnrolledUsers();
+		Set<EnrolledUser> users = course.getEnrolledUsers();
 
 		ObservableList<EnrolledUser> observableUsers = FXCollections.observableArrayList(users);
 		observableUsers.sort(EnrolledUser.getNameComparator());
 		filteredEnrolledList = new FilteredList<>(observableUsers);
 		filteredEnrolledList.predicateProperty()
-				.addListener(p -> mainController.getActions().updatePredicadeEnrolledList());
+				.addListener(p -> mainController.getActions()
+						.updatePredicadeEnrolledList());
 		// Activamos la selección múltiple en la lista de participantes
 		listParticipants.getSelectionModel()
 				.setSelectionMode(SelectionMode.MULTIPLE);
 
 		listParticipants.getSelectionModel()
 				.getSelectedItems()
-				.addListener(
-						(Change<? extends EnrolledUser> usersSelected) -> mainController.getActions().updateListViewEnrolledUser());
+				.addListener((Change<? extends EnrolledUser> usersSelected) -> mainController.getActions()
+						.updateListViewEnrolledUser());
 
 		/// Mostramos la lista de participantes
 		listParticipants.setItems(filteredEnrolledList);
@@ -212,7 +213,8 @@ public class SelectionUserController {
 				} else {
 					Instant lastCourseAccess = user.getLastcourseaccess();
 					Instant lastAccess = user.getLastaccess();
-					Instant lastLogInstant = CONTROLLER.getUpdatedCourseData()
+					Instant lastLogInstant = Controller.getInstance()
+							.getUpdatedCourseData()
 							.toInstant();
 
 					setText(user + "\n" + I18n.get("label.course")
@@ -246,14 +248,15 @@ public class SelectionUserController {
 		});
 	}
 
-	private void initNotEnrolledUsers() {
-		Course course = CONTROLLER.getActualCourse();
+	private void initNotEnrolledUsers(Course course) {
+		
 
 		ObservableList<EnrolledUser> user = FXCollections.observableArrayList(course.getNotEnrolledUser());
 		user.sort(Comparator.comparing(EnrolledUser::getFullName, Comparator.nullsLast(Collator.getInstance())));
 		FilteredList<EnrolledUser> filteredListNotEnrolled = new FilteredList<>(user);
 		filteredListNotEnrolled.predicateProperty()
-				.addListener(value -> mainController.getActions().updatePredicadeEnrolledList());
+				.addListener(value -> mainController.getActions()
+						.updatePredicadeEnrolledList());
 		listParticipantsOut.setItems(filteredListNotEnrolled);
 		listParticipantsOut.getSelectionModel()
 				.setSelectionMode(SelectionMode.MULTIPLE);
@@ -267,7 +270,7 @@ public class SelectionUserController {
 					setGraphic(null);
 				} else {
 					Instant lastAccess = user.getLastaccess();
-					Instant lastLogInstant = CONTROLLER.getUpdatedCourseData()
+					Instant lastLogInstant = Controller.getInstance().getUpdatedCourseData()
 							.toInstant();
 
 					setText(user + "\n" + I18n.get("text.moodle")
@@ -299,7 +302,8 @@ public class SelectionUserController {
 		listParticipantsOut.getSelectionModel()
 				.getSelectedItems()
 				.addListener((Change<? extends EnrolledUser> usersSelected) -> {
-					mainController.getActions().updateListViewEnrolledUser();
+					mainController.getActions()
+							.updateListViewEnrolledUser();
 					autoCompletionBindingNotEnrolled.dispose();
 					autoCompletionBinding = UtilMethods.createAutoCompletionBinding(textFieldNotEnrolled,
 							filteredListNotEnrolled);
@@ -323,7 +327,7 @@ public class SelectionUserController {
 
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/UserInfo.fxml"), I18n.getResourceBundle());
 
-		UtilMethods.createDialog(loader, CONTROLLER.getStage());
+		UtilMethods.createDialog(loader, Controller.getInstance().getStage());
 
 		UserInfoController userInfoController = loader.getController();
 		userInfoController.init(mainController, enrolledUser);
@@ -342,7 +346,7 @@ public class SelectionUserController {
 				.getCheckedItems();
 		String textField = tfdParticipants.getText()
 				.toLowerCase();
-		Instant lastLogInstant = CONTROLLER.getUpdatedCourseData()
+		Instant lastLogInstant = Controller.getInstance().getUpdatedCourseData()
 				.toInstant();
 		filteredEnrolledList.setPredicate(e -> (checkUserHasRole(rol, e)) && (checkUserHasGroup(group, e))
 				&& (textField.isEmpty() || e.getFullName()
@@ -420,13 +424,15 @@ public class SelectionUserController {
 	public AutoCompletionBinding<EnrolledUser> getAutoCompletionBinding() {
 		return autoCompletionBinding;
 	}
-	
+
 	public void selectAllUsers() {
-		listParticipants.getSelectionModel().selectAll();
+		listParticipants.getSelectionModel()
+				.selectAll();
 	}
-	
+
 	public void selectAllNonUsers() {
-		listParticipantsOut.getSelectionModel().selectAll();
+		listParticipantsOut.getSelectionModel()
+				.selectAll();
 	}
-	
+
 }

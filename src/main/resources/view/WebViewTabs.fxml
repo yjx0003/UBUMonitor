@@ -20,6 +20,11 @@
             <fx:include fx:id="forum" source="tabs/ForumView.fxml" />
          </content>
       </Tab>
+      <Tab fx:id="calendarEventTab" text="%tab.calendarevent">
+         <content>
+            <fx:include fx:id="calendarEvent" source="tabs/CalendarEvent.fxml" />
+         </content>
+      </Tab>
       <Tab fx:id="clusteringTab" text="%tab.clustering">
          <content>
             <fx:include fx:id="clustering" source="tabs/Clustering.fxml" />

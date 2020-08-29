@@ -53,6 +53,7 @@ public class Heatmap extends ChartLogs {
 	@Override
 	public void exportImage(File file) throws IOException {
 		UtilMethods.snapshotNode(file, webView);
+		UtilMethods.showExportedFile(file);
 	}
 
 	public String getXScaleLabel() {

@@ -112,6 +112,7 @@ public class Constants {
 	public static final String EVENTTYPE = "eventtype";
 	public static final String TIMEDURATION = "timeduration";
 	public static final String PROFILEIMAGEURLSMALL = "profileimageurlsmall";
+	public static final String MODULENAME = "modulename";
 	
 
 	private Constants() {

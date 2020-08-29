@@ -1,4 +1,4 @@
-package es.ubu.lsi.ubumonitor.view.chart;
+package es.ubu.lsi.ubumonitor.view.chart.bridge;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.SelectionController;
@@ -6,6 +6,9 @@ import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.controllers.tabs.VisualizationController;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.view.chart.Chart;
+import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import es.ubu.lsi.ubumonitor.view.chart.Tabs;
 import es.ubu.lsi.ubumonitor.view.chart.activitystatus.ActivitiesStatusTable;
 import es.ubu.lsi.ubumonitor.view.chart.gradeitems.BoxPlot;
 import es.ubu.lsi.ubumonitor.view.chart.gradeitems.CalificationBar;
@@ -26,7 +29,6 @@ import es.ubu.lsi.ubumonitor.view.chart.logs.TableLog;
 import es.ubu.lsi.ubumonitor.view.chart.logs.TotalBar;
 import es.ubu.lsi.ubumonitor.view.chart.logs.ViolinLog;
 import es.ubu.lsi.ubumonitor.view.chart.logs.ViolinLogTime;
-import javafx.concurrent.Worker.State;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TreeView;
@@ -34,9 +36,6 @@ import javafx.scene.web.WebView;
 
 public class VisualizationJavaConnector extends JavaConnectorAbstract {
 
-	private static final ChartType DEFAULT_LOG_CHART = ChartType.DEFAULT_LOGS;
-	private static final ChartType DEFAULT_GRADE_CHART = ChartType.DEFAULT_GRADES;
-	private static final ChartType DEFAULT_ACTIVITY_COMPLETION_CHART = ChartType.DEFAULT_ACTIVITY_COMPLETION;
 
 	private Tab tabLogs;
 
@@ -88,9 +87,10 @@ public class VisualizationJavaConnector extends JavaConnectorAbstract {
 		addChart(new TableLog(mainController, webView));
 		addChart(new BoxplotLog(mainController));
 		addChart(new ViolinLog(mainController));
-		currentChart = charts.get(DEFAULT_LOG_CHART);
+		currentChart = charts.get(ChartType.getDefault(Tabs.LOGS));
 	}
 
+	@Override
 	public void updateCharts(String typeChart) {
 		Chart chart = charts.get(ChartType.valueOf(typeChart));
 		if (tabLogs.isSelected()) {
@@ -137,16 +137,11 @@ public class VisualizationJavaConnector extends JavaConnectorAbstract {
 	}
 
 	public void updateChart(boolean calculateMax) {
-		if (webEngine.getLoadWorker()
-				.getState() != State.SUCCEEDED) {
-			return;
-		}
+		super.updateChart();
 		if (calculateMax) {
 			setMax();
 		}
 		manageOptions();
-		currentChart.update();
-
 	}
 
 	@Override
@@ -195,9 +190,9 @@ public class VisualizationJavaConnector extends JavaConnectorAbstract {
 	public void inititDefaultValues() {
 
 		super.inititDefaultValues();
-		setChartLogs(DEFAULT_LOG_CHART);
-		setChartGrades(DEFAULT_GRADE_CHART);
-		setChartActivityCompletion(DEFAULT_ACTIVITY_COMPLETION_CHART);
+		setChartLogs(ChartType.getDefault(Tabs.LOGS));
+		setChartGrades(ChartType.getDefault(Tabs.GRADES));
+		setChartActivityCompletion(ChartType.getDefault(Tabs.ACTIVITY_COMPLETION));
 		if (tabLogs.isSelected()) {
 
 			setCurrentChart(getChartLogs());

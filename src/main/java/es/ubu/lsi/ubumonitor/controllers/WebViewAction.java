@@ -10,7 +10,7 @@ import es.ubu.lsi.ubumonitor.util.FileUtil;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.Chart;
-import es.ubu.lsi.ubumonitor.view.chart.JavaConnector;
+import es.ubu.lsi.ubumonitor.view.chart.bridge.JavaConnector;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
@@ -52,7 +52,9 @@ public abstract class WebViewAction implements MainAction {
 		initContextMenu();
 	}
 
-	public abstract Chart getCurrentChart();
+	public Chart getCurrentChart() {
+		return getJavaConnector().getCurrentChart();
+	}
 
 	public abstract JavaConnector getJavaConnector();
 

@@ -29,7 +29,7 @@ public interface MainAction {
 	public default void updateListViewCourseModule() {}
 	
 	public default void updateListViewForum() {}
-
+	
 	public void saveImage();
 
 	public void applyConfiguration();

@@ -121,7 +121,7 @@ public class BoxPlot extends ChartjsGradeItem {
 		callbacks.put("afterTitle", "function(t,e){return e.datasets[t[0].datasetIndex].label}");
 		callbacks.put("boxplotLabel", "boxplotLabel");
 		jsObject.put("tooltips", "{callbacks:" + callbacks + "}");
-		System.out.println(jsObject);
+		
 		return jsObject.toString();
 	}
 

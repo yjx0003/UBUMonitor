@@ -110,6 +110,7 @@ public enum Event {
 	GROUP_MEMBER_ADDED("Group member added"),
 	GROUP_MEMBER_REMOVED("Group member removed"),
 	GROUP_UPDATED("Group updated"),
+	H5P_CONTENT_VIEWED("H5P content viewed"),
 	HOTPOT_ATTEMPT_STARTED("HotPot attempt started"),
 	HOTPOT_ATTEMPT_SUBMITTED("HotPot attempt submitted"),
 	ITEM_CREATED("Item created"),

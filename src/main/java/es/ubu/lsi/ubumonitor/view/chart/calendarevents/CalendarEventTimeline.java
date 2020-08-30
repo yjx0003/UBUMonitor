@@ -1,11 +1,15 @@
 package es.ubu.lsi.ubumonitor.view.chart.calendarevents;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -111,29 +115,98 @@ public class CalendarEventTimeline extends VisTimeline {
 	}
 
 	private JSArray createItems(List<CourseEvent> calendarEvents) {
-		JSArray items = new JSArray();
-		for (CourseEvent calendarEvent : calendarEvents) {
-			JSObject item = new JSObject();
-			item.put("id", calendarEvent.getId());
+		Map<CourseEvent, CourseEvent> map = createOpenCloseCourseEvent(calendarEvents);
 
-			ModuleType moduleType = Optional.ofNullable(calendarEvent)
+		JSArray items = new JSArray();
+		for (Map.Entry<CourseEvent, CourseEvent> entry : map.entrySet()) {
+
+			CourseEvent open = entry.getKey();
+			CourseEvent close = entry.getValue();
+
+			JSObject item = new JSObject();
+			item.put("id", open.getId());
+
+			ModuleType moduleType = Optional.ofNullable(open)
 					.map(CourseEvent::getCourseModule)
 					.map(CourseModule::getModuleType)
 					.orElse(ModuleType.MODULE);
 
 			item.put("group", moduleType.ordinal());
 			String image = "<img style='vertical-align:middle' src='../img/" + moduleType + ".png'>	";
-			item.putWithQuote("content", image + calendarEvent.getName());
-			item.putWithQuote("title", image + calendarEvent.getDescription());
-			item.putWithQuote("start", calendarEvent.getTimestart());
-			if (calendarEvent.getTimeduration() != 0) {
-				item.putWithQuote("end", calendarEvent.getTimestart()
-						.plusSeconds(calendarEvent.getTimeduration()));
+			item.putWithQuote("content", image + open.getName());
+
+			item.putWithQuote("start", open.getTimestart());
+
+			if (close != null) {
+
+				String title = MessageFormat.format(I18n.get("text.daydifference"), open.getTimestart()
+						.until(close.getTimestart(), ChronoUnit.DAYS),
+						open.getTimestart()
+								.until(close.getTimestart(), ChronoUnit.HOURS) % 24,
+						image, open.getDescription());
+				item.putWithQuote("title", title);
+				item.putWithQuote("end", close.getTimestart());
+				item.put("type", "'range'");
+			} else if (open.getTimeduration() != 0) {
+				Instant end = open.getTimestart()
+						.plusSeconds(open.getTimeduration());
+				String title = MessageFormat.format(I18n.get("text.daydifference"), open.getTimestart()
+						.until(end, ChronoUnit.DAYS),
+						open.getTimestart()
+								.until(end, ChronoUnit.HOURS) % 24,
+						image, open.getDescription());
+				item.putWithQuote("end", end);
+				item.putWithQuote("title", title);
+				item.put("type", "'range'");
+			} else {
+				item.putWithQuote("title",
+						"<p>" + image
+								+ Controller.DATE_TIME_FORMATTER
+										.format(LocalDateTime.ofInstant(open.getTimestart(), ZoneId.systemDefault()))
+								+ "<p>" + open.getDescription());
+				item.put("type", "'point'");
 			}
 
 			items.add(item);
 		}
+
 		return items;
+	}
+
+	private Map<CourseEvent, CourseEvent> createOpenCloseCourseEvent(List<CourseEvent> calendarEvents) {
+		Map<CourseEvent, CourseEvent> map = new HashMap<>();
+		Map<String, Set<CourseEvent>> eventsByType = calendarEvents.stream()
+				.filter(e -> e.getEventtype() != null)
+				.collect(Collectors.groupingBy(CourseEvent::getEventtype, Collectors.toSet()));
+		Set<CourseEvent> openEvents = eventsByType.get("open");
+		Set<CourseEvent> closeEvents = eventsByType.get("close");
+
+		if (openEvents != null && closeEvents != null) {
+			for (CourseEvent openEvent : openEvents) {
+				CourseModule openCourseModule = openEvent.getCourseModule();
+				if (openCourseModule != null) {
+					CourseEvent closeEvent = closeEvents.stream()
+							.filter(close -> openCourseModule.equals(close.getCourseModule()))
+							.findFirst()
+							.orElse(null);
+					closeEvents.remove(closeEvent);
+					map.put(openEvent, closeEvent);
+				}
+
+			}
+			// add orphan close events to map
+			closeEvents.forEach(closeEvent -> map.put(closeEvent, null));
+			eventsByType.remove("open");
+			eventsByType.remove("close");
+
+		}
+		for (Set<CourseEvent> events : eventsByType.values()) {
+			for (CourseEvent event : events) {
+				map.put(event, null);
+			}
+		}
+		return map;
+
 	}
 
 	public List<CourseEvent> getSelectedCalendarEvents() {

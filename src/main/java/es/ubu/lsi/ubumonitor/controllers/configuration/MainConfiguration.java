@@ -128,8 +128,10 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_BAR, HORIZONTAL_MODE, false);
 		
 		createItem(ChartType.FORUM_NETWORK, "usePhoto", true);
+		createItem(ChartType.FORUM_NETWORK, "useInitialNames", true);
 		createItem(ChartType.FORUM_NETWORK, "physicsAfterDraw", true);
 		createItem(ChartType.FORUM_NETWORK, "edges.dashes", false);
+		createItem(ChartType.FORUM_NETWORK, "edges.arrows.to.scaleFactor", 1.0);
 		createItem(ChartType.FORUM_NETWORK, "edges.scaling.min", 1);
 		createItem(ChartType.FORUM_NETWORK, "edges.scaling.max", 10);
 		createItem(ChartType.FORUM_NETWORK, "nodes.borderWidth", 1);

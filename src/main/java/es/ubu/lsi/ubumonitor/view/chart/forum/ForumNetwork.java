@@ -25,7 +25,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.web.WebView;
 
 public class ForumNetwork extends VisNetwork {
-	private static final Pattern INITIAL_LETTER_PATTERN = Pattern.compile("\\b[a-zA-Z]|,");
+	private static final Pattern INITIAL_LETTER_PATTERN = Pattern.compile("\\b\\w|,\\s");
 	private ListView<CourseModule> listViewForum;
 
 	public ForumNetwork(MainController mainController, WebView webView, ListView<CourseModule> listViewForum) {
@@ -77,9 +77,8 @@ public class ForumNetwork extends VisNetwork {
 
 	private JSObject getEdgesOptions() {
 		JSObject edges = new JSObject();
-		edges.put("arrows", "'to'");
+		edges.put("arrows", "{to:{enabled:true,scaleFactor:" + getValue("edges.arrows.to.scaleFactor") + "}}");
 		edges.put("arrowStrikethrough", false);
-		edges.put("smooth", false);
 		edges.put("dashes", getValue("edges.dashes"));
 		JSObject scaling = new JSObject();
 		scaling.put("max", getValue("edges.scaling.max"));
@@ -179,7 +178,7 @@ public class ForumNetwork extends VisNetwork {
 		List<EnrolledUser> users = getSelectedEnrolledUser();
 		List<DiscussionPost> discussionPosts = getSelectedDiscussionPosts();
 		JSObject data = new JSObject();
-		
+
 		JSArray nodes = new JSArray();
 
 		JSArray edges = new JSArray();
@@ -214,12 +213,16 @@ public class ForumNetwork extends VisNetwork {
 			}
 			node.put("value", totalPosts);
 			if (totalPosts > 0) {
-				Matcher m = INITIAL_LETTER_PATTERN.matcher(from.getFullName());
-				StringBuilder builder = new StringBuilder();
-				while (m.find()) {
-					builder.append(m.group());
+				if ((boolean) getValue("useInitialNames")) {
+					Matcher m = INITIAL_LETTER_PATTERN.matcher(from.getFullName());
+					StringBuilder builder = new StringBuilder();
+					while (m.find()) {
+						builder.append(m.group());
+					}
+					node.put("label", "'" + builder + " (" + totalPosts + ")'");
+				} else {
+					node.put("label", "'" +totalPosts + "'");
 				}
-				node.put("label", "'" + builder + " (" + totalPosts + ")'");
 
 			}
 
@@ -251,6 +254,7 @@ public class ForumNetwork extends VisNetwork {
 		public String getName() {
 			return name;
 		}
+
 		@Override
 		public String toString() {
 			return I18n.get(name());

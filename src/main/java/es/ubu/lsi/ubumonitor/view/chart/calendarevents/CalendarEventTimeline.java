@@ -79,7 +79,8 @@ public class CalendarEventTimeline extends VisTimeline {
 		if (!Instant.EPOCH.equals(startDate)) {
 			options.putWithQuote("end", endDate);
 		}
-
+		options.put("minHeight", "'90vh'");
+		options.put("tooltip", "{overflowMethod:'cap'}");
 		jsObject.put("options", options);
 		return jsObject.toString();
 	}

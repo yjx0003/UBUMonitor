@@ -27,6 +27,7 @@ public enum ModuleType {
 	KALTURA_VIDEO_RESOURCE("kalvidres"),
 	GLOSSARY("glossary"),
 	GUIA_DOCENTE("guiadocente"),
+	H5P("h5pactivity"),
 	HOT_POT("hotpot"),
 	IMS_PACKAGE("imscp"),
 	JOURNAL("journal"),

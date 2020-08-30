@@ -382,7 +382,10 @@ public class MenuController {
 					"(" + now.format(DateTimeFormatter.ISO_DATE) + ") " + controller.getCoursePathName(course));
 
 			textInputDialog.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
-			textInputDialog.setHeaderText("text.coursename");
+			textInputDialog.setHeaderText(I18n.get("text.coursename"));
+			textInputDialog.setContentText(I18n.get("text.coursenametextfield"));
+			textInputDialog.getEditor().setMinWidth(500);
+			
 			Stage stageAlert = (Stage) textInputDialog.getDialogPane()
 					.getScene()
 					.getWindow();

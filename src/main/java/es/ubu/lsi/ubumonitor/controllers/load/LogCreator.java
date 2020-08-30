@@ -47,7 +47,8 @@ public class LogCreator {
 
 	private static final Set<String> NOT_AVAIBLE_COMPONENTS = new TreeSet<>();
 	private static final Set<String> NOT_AVAIBLE_EVENTS = new TreeSet<>();
-
+	
+	// Recoge los numeros entre comillas simples o dobles
 	// Sin escapar: (['"])(?<idQuote>\d+)\1|[^'"](?<idNoQuote>\d+)[^'"]
 	private static final Pattern INTEGER_PATTERN = Pattern
 			.compile("(['\"])(?<idQuote>-?\\d+)\\1|[^'\"](?<idNoQuote>\\d+)[^'\"]");

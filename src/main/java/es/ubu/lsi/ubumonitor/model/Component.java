@@ -32,6 +32,8 @@ public enum Component {
 	GRADE_HISTORY("Grade history"),
 	GRADER_REPORT("Grader report"),
 	GUIA_DOCENTE("Guía Docente"),
+	H5P("H5P"),
+	H5P_PACKAGE("H5P Package"),
 	HOTPOT_MODULE("HotPot module"),
 	IMS_CONTENT_PACKAGE("IMS content package"),
 	JOURNAL("Journal"),

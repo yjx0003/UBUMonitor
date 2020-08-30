@@ -92,6 +92,9 @@ public class SelectionUserController {
 	public void init(MainController mainController, Course course, MainConfiguration mainConfiguration) {
 		this.mainController = mainController;
 
+		
+		tabPane.visibleProperty().bind(mainController.getWebViewTabsController().getCalendarEventTab().selectedProperty().not());
+		
 		tabNotEnrolled.disableProperty()
 				.bind(mainController.getWebViewTabsController()
 						.getClusteringTab()

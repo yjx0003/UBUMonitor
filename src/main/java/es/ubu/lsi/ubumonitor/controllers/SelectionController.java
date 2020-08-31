@@ -26,7 +26,6 @@ import es.ubu.lsi.ubumonitor.model.ModuleType;
 import es.ubu.lsi.ubumonitor.model.Section;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
@@ -169,13 +168,7 @@ public class SelectionController {
 		initTabActivityCompletion(actualCourse);
 
 		initiGradeItems(actualCourse);
-		if (tabPane.getTabs()
-				.isEmpty()) {
-			tabPane.setVisible(false);
-			Platform.runLater(() -> mainController.getSplitPaneLeft()
-					.setDividerPositions(1.0));
-		}
-
+	
 	}
 
 	private void initiGradeItems(Course actualCourse) {

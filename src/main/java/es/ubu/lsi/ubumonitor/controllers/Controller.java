@@ -212,10 +212,6 @@ public class Controller {
 		dataBase.setActualCourse(selectedCourse);
 	}
 
-	public String getSesskey() {
-		return login.getSesskey();
-	}
-
 	public LocalDateTime getLoggedIn() {
 		return loggedIn;
 	}

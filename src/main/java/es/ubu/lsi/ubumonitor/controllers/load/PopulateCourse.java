@@ -20,13 +20,15 @@ import es.ubu.lsi.ubumonitor.model.SubDataBase;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetCoursesByField;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetEnrolledCoursesByTimelineClassification;
+import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetEnrolledCoursesByTimelineClassification.Classification;
+import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetRecentCourses;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetUserAdministrationOptions;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetUserNavigationOptions;
-import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetEnrolledCoursesByTimelineClassification.Classification;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseSearchCourses;
 import es.ubu.lsi.ubumonitor.webservice.api.core.enrol.CoreEnrolGetUsersCourses;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionEnum;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
+import okhttp3.Response;
 
 public class PopulateCourse {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PopulateCourse.class);
@@ -99,9 +101,9 @@ public class PopulateCourse {
 		return course;
 
 	}
-	
-	public List<Course> searchCourse(String value){
-		
+
+	public List<Course> searchCourse(String value) {
+
 		try {
 			CoreCourseSearchCourses coreCourseSearchCourses = new CoreCourseSearchCourses();
 			coreCourseSearchCourses.setBySearch(value);
@@ -139,19 +141,20 @@ public class PopulateCourse {
 		try {
 			JSONObject jsonObject = UtilMethods.getJSONObjectResponse(webService,
 					new CoreCourseGetEnrolledCoursesByTimelineClassification(classification));
-			return coursesByTimelineClassification(jsonObject);
+			return coursesByTimelineClassification(jsonObject.getJSONArray(Constants.COURSES));
 		} catch (Exception e) {
+			LOGGER.error("Cannot get timeline courses:", e);
 			return EMPTY_LIST_COURSE;
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param jsonObject
 	 * @return
 	 */
-	public List<Course> coursesByTimelineClassification(JSONObject jsonObject) {
-		JSONArray jsonArray = jsonObject.getJSONArray(Constants.COURSES);
+	public List<Course> coursesByTimelineClassification(JSONArray jsonArray) {
+
 		List<Course> courses = new ArrayList<>();
 		for (int i = 0; i < jsonArray.length(); i++) {
 			Course course = dataBase.getCourses()
@@ -162,9 +165,24 @@ public class PopulateCourse {
 		return courses;
 	}
 
+	public List<Course> recentCourses() {
+		try {
+
+			Response response = webService.getAjaxResponse(new CoreCourseGetRecentCourses());
+			JSONArray jsonArray = new JSONArray(response.body()
+					.string());
+
+			return coursesByTimelineClassification(jsonArray.getJSONObject(0)
+					.getJSONArray(Constants.DATA));
+		} catch (Exception e) {
+			LOGGER.error("Cannot get recent courses:", e);
+			return EMPTY_LIST_COURSE;
+		}
+	}
+
 	public void createCourseAdministrationOptions(Collection<Integer> courseids) {
 
-		if(courseids==null || courseids.isEmpty()) {
+		if (courseids == null || courseids.isEmpty()) {
 			return;
 		}
 		SubDataBase<Course> dataBaseCourse = dataBase.getCourses();

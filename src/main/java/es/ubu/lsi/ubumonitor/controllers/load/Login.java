@@ -50,7 +50,6 @@ public class Login {
 	private static final Pattern PATTERN_TOKEN = Pattern.compile("^\\w+:::(\\w+)(:::(\\w+))?");
 	private static final int DEFAULT_TYPE_OF_LOGIN = 1;
 
-	private String sesskey;
 	private WebService webService;
 	private int typeoflogin;
 	private String launchurl;
@@ -106,6 +105,7 @@ public class Login {
 			JSONObject data = new JSONArray(new JSONTokener(response.body()
 					.byteStream())).getJSONObject(0)
 							.optJSONObject("data");
+		
 			if (data != null) {
 
 				launchurl = data.getString("launchurl")
@@ -122,7 +122,7 @@ public class Login {
 	}
 
 	public void reLogin(String host, String username, String password) throws IOException {
-		sesskey = null;
+		webService.setSesskey(null);
 		launchurl = null;
 		login(typeoflogin, host, launchurl, username, password);
 
@@ -178,11 +178,13 @@ public class Login {
 					.body()
 					.string();
 
-			sesskey = findSesskey(html);
+			String sesskey = findSesskey(html);
 			if (sesskey == null) {
 				LOGGER.info("cannot login in the login/index.php page, trying with webview");
 				loginWithWebView(host + HOST_LOGIN_DEFAULT_PATH, Controller.getInstance()
 						.getStage());
+			} else {
+				webService.setSesskey(sesskey);
 			}
 		}
 	}
@@ -196,9 +198,10 @@ public class Login {
 				try (Response response = Connection.getResponse(webView.getEngine()
 						.getLocation())) {
 
-					sesskey = findSesskey(response.body()
+					String sesskey = findSesskey(response.body()
 							.string());
 					if (sesskey != null) {
+						webService.setSesskey(sesskey);
 						popup.close();
 					}
 				} catch (Exception e) {
@@ -216,8 +219,8 @@ public class Login {
 			Stage popup = UtilMethods.createStage(owner, Modality.WINDOW_MODAL);
 			setWebview(launchurl, popup, launcherLogin(host, popup));
 			try (Response sesskeyResponse = Connection.getResponse(host)) {
-				sesskey = findSesskey(sesskeyResponse.body()
-						.string());
+				webService.setSesskey(findSesskey(sesskeyResponse.body()
+						.string()));
 
 			} catch (Exception e) {
 				LOGGER.error("Error al intentar recuperarr la sesskey", e);
@@ -281,7 +284,6 @@ public class Login {
 					} else {
 						throw new IllegalAccessError("Cannot get the token in the decoded: " + matcher);
 					}
-					
 
 				}
 			} catch (Exception e) {
@@ -349,14 +351,6 @@ public class Login {
 		}
 
 		return url;
-	}
-
-	public String getSesskey() {
-		return sesskey;
-	}
-
-	public void setSesskey(String sesskey) {
-		this.sesskey = sesskey;
 	}
 
 	public WebService getWebService() {

@@ -292,6 +292,7 @@ public class WelcomeOfflineController implements Initializable {
 		try {
 
 			dataBase = (DataBase) Serialization.decrypt(password, file.toString());
+			dataBase.checkSubDatabases();
 			controller.setDataBase(dataBase);
 			isBBDDLoaded = true;
 			controller.setDefaultUpdate(

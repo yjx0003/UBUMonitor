@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,10 +24,18 @@ import javax.imageio.ImageIO;
 
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.Style;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
+import es.ubu.lsi.ubumonitor.controllers.load.Connection;
+import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionAbstract;
+import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -50,9 +59,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import okhttp3.Response;
 
 public class UtilMethods {
 	private static final Random RANDOM = new Random();
+
+	private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
 	private UtilMethods() {
 	}
@@ -324,7 +336,13 @@ public class UtilMethods {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		fileChooser.setInitialFileName(initialFileName);
-		fileChooser.setInitialDirectory(new File(initialDirectory));
+		if (initialDirectory != null) {
+			File dir = new File(initialDirectory);
+			if (dir.isDirectory()) {
+				fileChooser.setInitialDirectory(dir);
+			}
+		}
+
 		fileChooser.getExtensionFilters()
 				.addAll(extensionFilters);
 		return fileChooser;
@@ -483,7 +501,7 @@ public class UtilMethods {
 		WritableImage image = node.snapshot(new SnapshotParameters(), null);
 
 		ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-		showExportedFile(file);
+		
 	}
 
 	public static void openFileFolder(File file) {
@@ -520,6 +538,106 @@ public class UtilMethods {
 			errorWindow("Cannot open in this System operative", e);
 		}
 
+	}
+
+	/**
+	 * Descarga una imagen de moodle, necesario usar los cookies en versiones
+	 * posteriores al 3.5
+	 * 
+	 * @param url url de la image
+	 * @return array de bytes de la imagen o un array de byte vacío si la url es
+	 *         null
+	 * @throws IOException si hay algun problema al descargar la imagen
+	 */
+	public static byte[] downloadImage(String url) {
+		if (url == null) {
+			return EMPTY_BYTE_ARRAY;
+		}
+
+		try {
+			return Connection.getResponse(url)
+					.body()
+					.bytes();
+		} catch (Exception e) {
+			return EMPTY_BYTE_ARRAY;
+		}
+
+	}
+
+	/**
+	 * Busca la zona horaria del servidor a partir del perfil del usuario.
+	 * 
+	 * @return zona horaria del servidor.
+	 * @throws IOException si no puede conectarse con el servidor
+	 */
+	public static ZoneId findServerTimezone(String host) {
+
+		try {
+			// vamos a la edicion del perfil de usuario para ver la zona horaria del
+			// servidor
+			Document d = Jsoup.parse(Connection.getResponse(host + "/user/edit.php?lang=en")
+					.body()
+					.string());
+
+			// timezone tendra una estructuctura parecida a: Server timezone (Europe/Madrid)
+			// lo unico que nos interesa es lo que hay dentro de los parentesis:
+			// Europe/Madrid
+			String timezone = d.selectFirst("select#id_timezone option[value=99]")
+					.text();
+
+			String timezoneParsed = timezone.substring(17, timezone.length() - 1);
+			return ZoneId.of(timezoneParsed);
+		} catch (Exception e) {
+			return ZoneId.of("UTC");
+		}
+
+	}
+
+	public static JSONArray getJSONArrayResponse(WebService webService, WSFunctionAbstract webServiceFunction)
+			throws IOException {
+		try (Response response = webService.getResponse(webServiceFunction)) {
+			String string = response.body()
+					.string();
+
+			if (string.startsWith("{")) {
+				JSONObject jsonObject = new JSONObject(string);
+				throw new IllegalStateException(webServiceFunction + "\n" + jsonObject.optString("exception") + "\n"
+						+ jsonObject.optString("message"));
+			}
+
+			return new JSONArray(string);
+
+		}
+
+	}
+
+	public static JSONObject getJSONObjectResponse(WebService webService, WSFunctionAbstract webServiceFunction)
+			throws IOException {
+		try (Response response = webService.getResponse(webServiceFunction)) {
+			JSONObject jsonObject = new JSONObject(new JSONTokener(response.body()
+					.byteStream()));
+			if (jsonObject.has("exception")) {
+				throw new IllegalStateException(webServiceFunction + "\n" + jsonObject.optString("exception") + "\n"
+						+ jsonObject.optString("message"));
+			}
+			return jsonObject;
+		}
+
+	}
+
+	public static String colorToRGB(Color color) {
+
+		return String.format("'rgba(%s,%s,%s,%s)'", color.getRed(), color.getGreen(), color.getBlue(),
+				color.getAlpha());
+	}
+
+	public static boolean containsTextField(String newValue, String element) {
+		if (newValue == null || newValue.isEmpty()) {
+			return true;
+		}
+		String textField = newValue.toLowerCase();
+		return element.toLowerCase()
+				.contains(textField);
 	}
 
 }

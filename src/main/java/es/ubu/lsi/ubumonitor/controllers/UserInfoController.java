@@ -19,11 +19,14 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 
 public class UserInfoController {
 	private MainController mainController;
@@ -144,7 +147,17 @@ public class UserInfoController {
 		coursesColumn.setCellValueFactory(v -> new SimpleStringProperty(v.getValue()
 				.getFullName()));
 		coursesColumn.setComparator(String::compareToIgnoreCase);
+		coursesColumn.setCellFactory(tc -> {
+		    TableCell<Course, String> cell = new TableCell<>();
+		    Text text = new Text();
+		    cell.setGraphic(text);
+		    cell.setPrefHeight(Region.USE_COMPUTED_SIZE);
+		    text.wrappingWidthProperty().bind(coursesColumn.widthProperty());
+		    text.textProperty().bind(cell.itemProperty());
+		    return cell ;
+		});
 		tableView.setItems(courses);
+		
 		labelNcourses.setText(String.valueOf(courses.size()));
 
 	}

@@ -32,7 +32,7 @@ public abstract class Chartjs extends Chart {
 	}
 
 	@Override
-	public void export(File file) throws IOException {
+	public void exportImage(File file) throws IOException {
 		String str = (String) webViewChartsEngine.executeScript("exportChartjs()");
 		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
 		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
@@ -43,7 +43,7 @@ public abstract class Chartjs extends Chart {
 	}
 
 	public String getXScaleLabel() {
-		MainConfiguration mainConfiguration = controller.getMainConfiguration();
+
 		JSObject jsObject = new JSObject();
 		jsObject.put("display", mainConfiguration.getValue(MainConfiguration.GENERAL, "displayXScaleTitle"));
 		jsObject.putWithQuote("labelString", getXAxisTitle());
@@ -56,7 +56,7 @@ public abstract class Chartjs extends Chart {
 	}
 
 	public String getYScaleLabel() {
-		MainConfiguration mainConfiguration = controller.getMainConfiguration();
+		
 		JSObject jsObject = new JSObject();
 		jsObject.put("display", mainConfiguration.getValue(MainConfiguration.GENERAL, "displayYScaleTitle"));
 		jsObject.putWithQuote("labelString", getYAxisTitle());

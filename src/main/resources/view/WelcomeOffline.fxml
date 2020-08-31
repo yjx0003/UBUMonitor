@@ -42,12 +42,24 @@
          <children>
             <TabPane fx:id="tabPane" prefHeight="290.0" prefWidth="650.0" styleClass="tab-pane-class" tabClosingPolicy="UNAVAILABLE">
               <tabs>
-                <Tab text="%text.cache">
+                <Tab fx:id="tabCache" text="%text.cache">
                      <content>
                   		<ListView fx:id="listCourses" styleClass="list-view-intro" stylesheets="@/css/style.css">
       						<placeholder>
                   				<Label text="%label.never" />
               				</placeholder>
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                        </ListView>
+                     </content>
+                  </Tab>
+                  <Tab fx:id="tabPreviousCache" text="%text.previouscache">
+                     <content>
+                        <ListView fx:id="listViewPreviousCourses" styleClass="list-view-intro" stylesheets="@/css/style.css">
+                           <placeholder>
+                              <Label text="%label.never" />
+                           </placeholder>
                            <cursor>
                               <Cursor fx:constant="DEFAULT" />
                            </cursor>
@@ -60,7 +72,7 @@
             <Label fx:id="lblDateUpdate" layoutX="300.0" layoutY="310.0" prefHeight="21.0" prefWidth="146.0" />
          </children>
       </AnchorPane>
-		<Button fx:id="btnEntrar" defaultButton="true" layoutX="200.0" layoutY="540.0" mnemonicParsing="false" onAction="#enterCourse" prefHeight="39.0" prefWidth="86.0" style="-fx-font-size: 16;" styleClass="rich-blue" stylesheets="@/css/style.css" text="%btn.enter">
+		<Button fx:id="btnEntrar" defaultButton="true" layoutX="200.0" layoutY="540.0" mnemonicParsing="false" onAction="#enterCourse" prefHeight="39.0" prefWidth="86.0" styleClass="accept_button" stylesheets="@/css/style.css" text="%btn.enter">
 			<font>
 				<Font size="19.0" />
 			</font>
@@ -96,7 +108,7 @@
             <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" text="%label.host" GridPane.rowIndex="2" />
             <Label fx:id="labelLoggedIn" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <Label fx:id="labelHost" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Button mnemonicParsing="false" onAction="#logOut" text="%button.logout" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP" />
+            <Button mnemonicParsing="false" onAction="#logOut" styleClass="accept_button" text="%button.logout" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP" />
             <Label fx:id="conexionLabel" text="Label" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
          </children>
          <cursor>

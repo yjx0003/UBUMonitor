@@ -39,10 +39,8 @@ public class Logs implements Serializable {
 	 * Constructor que le pasa la zona horaria usado de los logs y las lineas de
 	 * log.
 	 * 
-	 * @param zoneId
-	 *            zona horaria
-	 * @param logLines
-	 *            lista de lineas de logs
+	 * @param zoneId   zona horaria
+	 * @param logLines lista de lineas de logs
 	 */
 	public Logs(ZoneId zoneId) {
 		this.zoneId = zoneId;
@@ -64,14 +62,15 @@ public class Logs implements Serializable {
 	 * @return última linea del log o null si está vacio
 	 */
 	public ZonedDateTime getLastZonedDatetime() {
-		return isEmpty(logLines) ? null : logLines.get(logLines.size() - 1).getTime();
+		return isEmpty(logLines) ? null
+				: logLines.get(logLines.size() - 1)
+						.getTime();
 	}
 
 	/**
 	 * Añade los nuevas lineas de log, deben estar en orden ascendente por tiempo.
 	 * 
-	 * @param logLines
-	 *            los loglines nuevos
+	 * @param logLines los loglines nuevos
 	 */
 	public void addAll(List<LogLine> logLines) {
 
@@ -87,15 +86,21 @@ public class Logs implements Serializable {
 	 * Convierte los log de una zona horaria a la zona horaria de los logs
 	 * anteriores.
 	 * 
-	 * @param logLines
-	 *            las nuevas lineas de log
+	 * @param logLines las nuevas lineas de log
 	 */
 	private void changeZoneId(List<LogLine> logLines) {
-		if (!logLines.get(0).getTime().getZone().equals(this.zoneId)) {
+		if (!logLines.get(0)
+				.getTime()
+				.getZone()
+				.equals(this.zoneId)) {
 			LOGGER.info("Se ha detectado que el usuario ha cambiado de zona horaria: {}.Inicialmente se usaba: {}",
-					logLines.get(0).getTime().getZone(), zoneId);
+					logLines.get(0)
+							.getTime()
+							.getZone(),
+					zoneId);
 			for (LogLine logLine : logLines) {
-				ZonedDateTime changeZone = logLine.getTime().withZoneSameInstant(zoneId);
+				ZonedDateTime changeZone = logLine.getTime()
+						.withZoneSameInstant(zoneId);
 				logLine.setTime(changeZone);
 			}
 		}
@@ -104,8 +109,7 @@ public class Logs implements Serializable {
 	/**
 	 * Comporueba si las nuevas lineas es nulo o está vacío.
 	 * 
-	 * @param logLines
-	 *            las nuevas lineas de log
+	 * @param logLines las nuevas lineas de log
 	 * @return true si es nulo o vacío, false en caso contrario
 	 */
 	public boolean isEmpty(List<LogLine> logLines) {

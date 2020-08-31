@@ -7,7 +7,6 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
@@ -19,21 +18,22 @@ import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Chartjs;
+import javafx.scene.control.TreeView;
 
 public abstract class ChartjsGradeItem extends Chartjs {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChartjsGradeItem.class);
-
-	public ChartjsGradeItem(MainController mainController, ChartType chartType) {
+	protected TreeView<GradeItem> treeViewGradeItem;
+	public ChartjsGradeItem(MainController mainController, ChartType chartType, TreeView<GradeItem> treeViewGradeItem) {
 		super(mainController, chartType);
+		this.treeViewGradeItem = treeViewGradeItem;
 		useGeneralButton = true;
 		useLegend = true;
 		useGroupButton = true;
 	}
 
 	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
+
 		int borderLength = mainConfiguration.getValue(MainConfiguration.GENERAL, "borderLength");
 		int borderSpace = mainConfiguration.getValue(MainConfiguration.GENERAL, "borderSpace");
 		JSObject data = new JSObject();
@@ -104,7 +104,7 @@ public abstract class ChartjsGradeItem extends Chartjs {
 
 	@Override
 	public void update() {
-		String dataset = createDataset(getSelectedEnrolledUser(), getSelectedGradeItems());
+		String dataset = createDataset(getSelectedEnrolledUser(), getSelectedGradeItems(treeViewGradeItem));
 		String options = getOptions();
 		LOGGER.debug(dataset);
 		LOGGER.debug(options);

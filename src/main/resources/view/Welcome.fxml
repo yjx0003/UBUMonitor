@@ -183,7 +183,7 @@
             </GridPane>
          </children>
       </AnchorPane>
-		<Button fx:id="btnEntrar" defaultButton="true" layoutX="200.0" layoutY="540.0" mnemonicParsing="false" onAction="#enterCourse" prefHeight="39.0" prefWidth="86.0" style="-fx-font-size: 16;" styleClass="rich-blue" stylesheets="@/css/style.css" text="%btn.enter">
+		<Button fx:id="btnEntrar" defaultButton="true" layoutX="200.0" layoutY="540.0" mnemonicParsing="false" onAction="#enterCourse" prefHeight="39.0" prefWidth="86.0" styleClass="accept_button" stylesheets="@/css/style.css" text="%btn.enter">
 			<font>
 				<Font size="19.0" />
 			</font>
@@ -211,24 +211,20 @@
             <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" text="%label.host" GridPane.rowIndex="1" />
             <Label fx:id="labelLoggedIn" wrapText="true" GridPane.columnIndex="1" />
             <Label fx:id="labelHost" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Button fx:id="buttonLogout" mnemonicParsing="false" onAction="#logOut" text="%button.logout" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+            <Button fx:id="buttonLogout" mnemonicParsing="false" onAction="#logOut" styleClass="accept_button" text="%button.logout" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
             <Label fx:id="conexionLabel" text="Label" GridPane.columnIndex="2" GridPane.halignment="RIGHT" />
          </children>
          <cursor>
             <Cursor fx:constant="DEFAULT" />
          </cursor>
       </GridPane>
-      <Button fx:id="btnRemove" layoutX="500.0" layoutY="540.0" mnemonicParsing="false" onAction="#removeCourse" prefHeight="39.0" prefWidth="86.0" style="-fx-font-size: 16;" stylesheets="@/css/style.css" text="%btn.remove">
+      <Button fx:id="btnRemove" layoutX="500.0" layoutY="540.0" mnemonicParsing="false" onAction="#removeCourse" prefHeight="39.0" prefWidth="86.0" styleClass="danger_button" stylesheets="@/css/style.css" text="%btn.remove">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
          <font>
-            <Font size="19.0" />
+            <Font name="System Bold" size="13.0" />
          </font>
-         <styleClass>
-            <String fx:value="rich-blue" />
-            <String fx:value="danger_button" />
-         </styleClass>
       </Button>
       <Label fx:id="lblUser" layoutX="310.0" layoutY="75.0" prefHeight="32.0" prefWidth="410.0" text="Nombre de usuario">
          <font>

@@ -23,6 +23,7 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import javafx.scene.web.WebView;
 
 public class TableLog extends TabulatorLogs {
 
@@ -38,16 +39,15 @@ public class TableLog extends TabulatorLogs {
 
 	private DateTimeWrapper dateTimeWrapper;
 
-	public TableLog(MainController mainController) {
-		super(mainController, ChartType.TABLE_LOG);
+	public TableLog(MainController mainController, WebView webView) {
+		super(mainController, ChartType.TABLE_LOG, webView);
 		dateTimeWrapper = new DateTimeWrapper();
 		useRangeDate = true;
 	}
 
 	private <E> List<LogLine> createLogLines(List<EnrolledUser> users, List<E> typeLogs, DataSet<E> dataSet) {
 
-		GroupByAbstract<?> groupBy = Controller.getInstance()
-				.getActualCourse()
+		GroupByAbstract<?> groupBy = actualCourse
 				.getLogStats()
 				.getByType(TypeTimes.DAY);
 
@@ -93,7 +93,7 @@ public class TableLog extends TabulatorLogs {
 		jsObject.putWithQuote("field", field);
 		jsObject.putWithQuote("sorter", sorter);
 		jsObject.put("headerFilter", true);
-		jsObject.put("align", "'center'");
+		jsObject.put("hozAlign", "'center'");
 		jsArray.add(jsObject);
 		return jsObject;
 	}

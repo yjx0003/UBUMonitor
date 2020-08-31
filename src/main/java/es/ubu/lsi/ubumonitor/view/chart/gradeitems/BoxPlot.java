@@ -9,7 +9,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
@@ -20,18 +19,19 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import javafx.scene.control.TreeView;
 
 public class BoxPlot extends ChartjsGradeItem {
 
-	public BoxPlot(MainController mainController) {
-		super(mainController, ChartType.BOXPLOT);
+	public BoxPlot(MainController mainController, TreeView<GradeItem> treeViewGradeItems) {
+		super(mainController, ChartType.BOXPLOT, treeViewGradeItems);
+
 	}
 
 	@Override
 	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
 		JSObject data = new JSObject();
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
+
 		data.put("labels", "[" + UtilMethods.joinWithQuotes(selectedGradeItems) + "]");
 		JSArray datasets = new JSArray();
 
@@ -40,17 +40,16 @@ public class BoxPlot extends ChartjsGradeItem {
 
 		}
 
-		datasets.add(createData(Controller.getInstance()
-				.getActualCourse()
-				.getEnrolledUsers(), selectedGradeItems, I18n.get("text.all"),
+		datasets.add(createData(actualCourse.getEnrolledUsers(), selectedGradeItems, I18n.get("text.all"),
 				!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")));
 
 		for (Group group : slcGroup.getCheckModel()
 				.getCheckedItems()) {
 			if (group != null) {
-				
-				datasets.add(createData(new ArrayList<>(group.getEnrolledUsers()), selectedGradeItems, group.getGroupName(),
-						!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")));
+
+				datasets.add(
+						createData(new ArrayList<>(group.getEnrolledUsers()), selectedGradeItems, group.getGroupName(),
+								!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")));
 			}
 
 		}
@@ -65,8 +64,6 @@ public class BoxPlot extends ChartjsGradeItem {
 
 		JSObject dataset = getDefaulDatasetProperties(text, hidden);
 		JSArray usersArrays = new JSArray();
-		
-		
 
 		JSArray data = new JSArray();
 
@@ -113,19 +110,18 @@ public class BoxPlot extends ChartjsGradeItem {
 	@Override
 	public String getOptions(JSObject jsObject) {
 
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBoxplot" : "boxplot");
 		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
 		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
-		jsObject.put("scales", "{yAxes:[{" + yLabel + "}],xAxes:[{" + xLabel + "}]}");
+		jsObject.put("scales", "{yAxes:[{ticks:{max:10,stepSize:1}," + yLabel + "}],xAxes:[{ticks:{max:10,stepSize:1},"
+				+ xLabel + "}]}");
 
 		JSObject callbacks = new JSObject();
 		callbacks.put("afterTitle", "function(t,e){return e.datasets[t[0].datasetIndex].label}");
 		callbacks.put("boxplotLabel", "boxplotLabel");
 		jsObject.put("tooltips", "{callbacks:" + callbacks + "}");
-
+		
 		return jsObject.toString();
 	}
 
@@ -134,12 +130,11 @@ public class BoxPlot extends ChartjsGradeItem {
 		List<String> header = new ArrayList<>();
 		header.add("boxplot");
 		header.add("stats");
-		List<GradeItem> gradeItems = getSelectedGradeItems();
+		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		for (GradeItem gradeItem : gradeItems) {
 			header.add(gradeItem.getItemname());
 		}
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
+
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
 				CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
 			List<EnrolledUser> enrolledUser = getSelectedEnrolledUser();

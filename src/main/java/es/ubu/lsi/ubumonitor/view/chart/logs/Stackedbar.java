@@ -34,19 +34,19 @@ public class Stackedbar extends ChartjsLog {
 
 		long maxYAxis = 1L;
 		List<EnrolledUser> users = getUsers();
-		if (tabUbuLogsComponent.isSelected()) {
+		if (tabComponent.isSelected()) {
 			maxYAxis = choiceBoxDate.getValue().getComponents().getMaxElement(users,
-					listViewComponents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					listViewComponent.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
-		} else if (tabUbuLogsEvent.isSelected()) {
+		} else if (tabEvent.isSelected()) {
 			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getMaxElement(users,
-					listViewEvents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
+					listViewEvent.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
-		} else if (tabUbuLogsSection.isSelected()) {
+		} else if (tabSection.isSelected()) {
 			maxYAxis = choiceBoxDate.getValue().getSections().getMaxElement(users,
 					listViewSection.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
-		} else if (tabUbuLogsCourseModule.isSelected()) {
+		} else if (tabCourseModule.isSelected()) {
 			maxYAxis = choiceBoxDate.getValue().getCourseModules().getMaxElement(users,
 					listViewCourseModule.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
 					datePickerEnd.getValue());
@@ -64,7 +64,7 @@ public class Stackedbar extends ChartjsLog {
 	@Override
 	public String getOptions(JSObject jsObject) {
 
-		long suggestedMax = getSuggestedMax();
+		long suggestedMax = getSuggestedMax(textFieldMax.getText());
 
 		jsObject.putWithQuote("typeGraph", "bar");
 
@@ -238,7 +238,7 @@ public class Stackedbar extends ChartjsLog {
 		List<String> list = new ArrayList<>();
 		list.add("userid");
 		list.add("fullname");
-		String selectedTab = tabPaneUbuLogs.getSelectionModel().getSelectedItem().getText();
+		String selectedTab = tabPaneSelection.getSelectionModel().getSelectedItem().getText();
 		if (hasId()) {
 			list.add(selectedTab + "_id");
 		}

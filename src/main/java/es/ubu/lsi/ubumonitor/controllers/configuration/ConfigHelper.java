@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -46,6 +47,9 @@ public class ConfigHelper {
 		return properties.optString(key, defaultValue);
 	}
 
+	public static double getProperty(String key, double defaultValue) {
+		return properties.optDouble(key, defaultValue);
+	}
 	public static int getProperty(String key, int defaultValue) {
 		return properties.optInt(key, defaultValue);
 	}
@@ -54,16 +58,7 @@ public class ConfigHelper {
 		return properties.optBoolean(key, defaultValue);
 	}
 
-	public static void setProperty(String key, String value) {
-		properties.put(key, value);
-
-	}
-
-	public static void setProperty(String key, int value) {
-		properties.put(key, value);
-	}
-
-	public static void setProperty(String key, boolean value) {
+	public static void setProperty(String key, Object value) {
 		properties.put(key, value);
 	}
 
@@ -87,6 +82,10 @@ public class ConfigHelper {
 	
 	public static boolean has(String key) {
 		return properties.has(key);
+	}
+	
+	public static void setArray(String key, List<String> array) {
+		setProperty(key, new JSONArray(array).toString());
 	}
 
 	public static void save() {

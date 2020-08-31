@@ -9,10 +9,4 @@ public class ToolMobileGetAutologinKey extends WSFunctionAbstract{
 		super(WSFunctionEnum.TOOL_MOBILE_GET_AUTOLOGIN_KEY);
 	}
 
-	@Override
-	public void addToMapParemeters() {
-		// no parameters
-		
-	}
-
 }

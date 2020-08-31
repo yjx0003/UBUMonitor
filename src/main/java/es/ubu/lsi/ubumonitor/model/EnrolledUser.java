@@ -102,16 +102,16 @@ public class EnrolledUser implements Serializable {
 	/**
 	 * Optional. first access to the site (0 if never)
 	 */
-	private Instant firstaccess;
+	private Instant firstaccess = Instant.EPOCH;
 	/**
 	 * Optional. last access to the site (0 if never)
 	 */
-	private Instant lastaccess;
+	private Instant lastaccess = Instant.EPOCH;
 
 	/**
 	 * Optional. last access to the course (0 if never)
 	 */
-	private Instant lastcourseaccess;
+	private Instant lastcourseaccess = Instant.EPOCH;
 
 	/**
 	 * Optional. User profile description
@@ -146,6 +146,8 @@ public class EnrolledUser implements Serializable {
 	private String profileimageurl;
 
 	private byte[] imageBytes;
+	
+	private String imageBase64;
 
 	public EnrolledUser(int id) {
 		this.id = id;
@@ -406,6 +408,14 @@ public class EnrolledUser implements Serializable {
 
 	public static Comparator<EnrolledUser> getNameComparator() {
 		return Comparator.comparing(EnrolledUser::getFullName, Comparator.nullsLast(Collator.getInstance()));
+	}
+
+	public String getImageBase64() {
+		return imageBase64;
+	}
+
+	public void setImageBase64(String imageBase64) {
+		this.imageBase64 = imageBase64;
 	}
 
 }

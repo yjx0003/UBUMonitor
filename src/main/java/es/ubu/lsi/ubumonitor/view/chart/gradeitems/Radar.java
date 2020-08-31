@@ -12,19 +12,20 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import javafx.scene.control.TreeView;
 
 public class Radar extends ChartjsGradeItem {
 
 	private static final GradeItem DUMMY = new GradeItem(-1);
 
-	public Radar(MainController mainController) {
-		super(mainController, ChartType.RADAR);
+	public Radar(MainController mainController, TreeView<GradeItem> treeViewGradeItem) {
+		super(mainController, ChartType.RADAR, treeViewGradeItem);
 	
 	}
 
 	@Override
-	public List<GradeItem> getSelectedGradeItems() {
-		List<GradeItem> gradeItems = super.getSelectedGradeItems();
+	public List<GradeItem> getSelectedGradeItems(TreeView<GradeItem> treeViewGradeItem) {
+		List<GradeItem> gradeItems = super.getSelectedGradeItems(treeViewGradeItem);
 		for (int i = gradeItems.size(); i < 3; i++) {
 			gradeItems.add(DUMMY);
 		}
@@ -34,7 +35,7 @@ public class Radar extends ChartjsGradeItem {
 	@Override
 	public String getOptions(JSObject jsObject) {
 		jsObject.putWithQuote("typeGraph", "radar");
-
+		jsObject.put("scale", "{ticks:{max:10,stepSize:1}}");
 		return jsObject.toString();
 	}
 
@@ -43,7 +44,7 @@ public class Radar extends ChartjsGradeItem {
 		List<String> header = new ArrayList<>();
 		header.add("userid");
 		header.add("fullname");
-		List<GradeItem> gradeItems = getSelectedGradeItems();
+		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		for (GradeItem gradeItem : gradeItems) {
 			header.add(gradeItem.getItemname());
 		}

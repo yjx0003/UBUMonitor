@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.apache.commons.csv.CSVPrinter;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
@@ -67,16 +66,9 @@ public class CumLine extends ChartjsLog {
 		dataset.putWithQuote("label", generalMeanTranslate);
 		dataset.put("borderColor", hex(generalMeanTranslate));
 		dataset.put("backgroundColor", rgba(generalMeanTranslate, OPACITY));
-		dataset.put("borderDash", "[" + Controller.getInstance()
-				.getMainConfiguration()
-				.getValue(MainConfiguration.GENERAL, "borderLength") + ","
-				+ Controller.getInstance()
-						.getMainConfiguration()
-						.getValue(MainConfiguration.GENERAL, "borderSpace")
-				+ "]");
-		dataset.put("hidden", !(boolean) Controller.getInstance()
-				.getMainConfiguration()
-				.getValue(MainConfiguration.GENERAL, "generalActive"));
+		dataset.put("borderDash", "[" + mainConfiguration.getValue(MainConfiguration.GENERAL, "borderLength") + ","
+				+ mainConfiguration.getValue(MainConfiguration.GENERAL, "borderSpace") + "]");
+		dataset.put("hidden", !(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive"));
 		JSArray results = new JSArray();
 		double cumResult = 0;
 		for (int j = 0; j < rangeDates.size(); j++) {
@@ -125,22 +117,22 @@ public class CumLine extends ChartjsLog {
 	public String calculateMax() {
 		long maxYAxis = 1L;
 		List<EnrolledUser> users = getUsers();
-		if (tabUbuLogsComponent.isSelected()) {
+		if (tabComponent.isSelected()) {
 			maxYAxis = choiceBoxDate.getValue()
 					.getComponents()
-					.getCumulativeMax(users, listViewComponents.getSelectionModel()
+					.getCumulativeMax(users, listViewComponent.getSelectionModel()
 							.getSelectedItems(), datePickerStart.getValue(), datePickerEnd.getValue());
-		} else if (tabUbuLogsEvent.isSelected()) {
+		} else if (tabEvent.isSelected()) {
 			maxYAxis = choiceBoxDate.getValue()
 					.getComponentsEvents()
-					.getCumulativeMax(users, listViewEvents.getSelectionModel()
+					.getCumulativeMax(users, listViewEvent.getSelectionModel()
 							.getSelectedItems(), datePickerStart.getValue(), datePickerEnd.getValue());
-		} else if (tabUbuLogsSection.isSelected()) {
+		} else if (tabSection.isSelected()) {
 			maxYAxis = choiceBoxDate.getValue()
 					.getSections()
 					.getCumulativeMax(users, listViewSection.getSelectionModel()
 							.getSelectedItems(), datePickerStart.getValue(), datePickerEnd.getValue());
-		} else if (tabUbuLogsCourseModule.isSelected()) {
+		} else if (tabCourseModule.isSelected()) {
 			maxYAxis = choiceBoxDate.getValue()
 					.getCourseModules()
 					.getCumulativeMax(users, listViewCourseModule.getSelectionModel()
@@ -154,8 +146,8 @@ public class CumLine extends ChartjsLog {
 
 		jsObject.putWithQuote("typeGraph", "line");
 
-		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",ticks:{suggestedMax:" + getSuggestedMax()
-				+ ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
+		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",ticks:{suggestedMax:"
+				+ getSuggestedMax(textFieldMax.getText()) + ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
 		jsObject.put("tooltips",
 				"{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+' : '+Math.round(100*a.yLabel)/100}}}");
 		return jsObject.toString();
@@ -251,7 +243,7 @@ public class CumLine extends ChartjsLog {
 		List<String> list = new ArrayList<>();
 		list.add("userid");
 		list.add("fullname");
-		String selectedTab = tabPaneUbuLogs.getSelectionModel()
+		String selectedTab = tabPaneSelection.getSelectionModel()
 				.getSelectedItem()
 				.getText();
 		if (hasId()) {

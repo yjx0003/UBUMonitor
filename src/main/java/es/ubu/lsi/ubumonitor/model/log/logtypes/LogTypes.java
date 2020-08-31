@@ -141,6 +141,9 @@ public class LogTypes {
 		TYPES.put(get(GUIA_DOCENTE, SUBJECT_MODIFIED), Ignore.getInstance()); 
 		TYPES.put(get(GUIA_DOCENTE, UNIT_MODIFIED), Ignore.getInstance()); 
 
+		TYPES.put(get(H5P, COURSE_MODULE_VIEWED), UserCmid.getInstance()); 
+		TYPES.put(get(H5P_PACKAGE, H5P_CONTENT_VIEWED), User.getInstance()); 
+		
 		TYPES.put(get(HOTPOT_MODULE, COURSE_MODULE_INSTANCE_LIST_VIEWED), UserCourse.getInstance());
 		TYPES.put(get(HOTPOT_MODULE, COURSE_MODULE_VIEWED), UserCmid.getInstance());
 		TYPES.put(get(HOTPOT_MODULE, HOTPOT_ATTEMPT_STARTED), UserCmid.getInstance());

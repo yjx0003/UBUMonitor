@@ -11,7 +11,6 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
@@ -23,12 +22,16 @@ import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Tabulator;
+import javafx.scene.control.TreeView;
+import javafx.scene.web.WebView;
 
 public class GradeReportTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GradeReportTable.class);
+	private TreeView<GradeItem> treeViewGradeItem;
 
-	public GradeReportTable(MainController mainController) {
-		super(mainController, ChartType.GRADE_REPORT_TABLE);
+	public GradeReportTable(MainController mainController, TreeView<GradeItem> treeViewGradeItem, WebView webView) {
+		super(mainController, ChartType.GRADE_REPORT_TABLE, webView);
+		this.treeViewGradeItem = treeViewGradeItem;
 		useGeneralButton = true;
 		useGroupButton = true;
 
@@ -37,7 +40,7 @@ public class GradeReportTable extends Tabulator {
 	@Override
 	public void update() {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		List<GradeItem> gradeItems = getSelectedGradeItems();
+		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		String columns = createColumns(gradeItems);
 		String tableData = createData(enrolledUsers, gradeItems);
 		JSObject data = new JSObject();
@@ -94,15 +97,11 @@ public class GradeReportTable extends Tabulator {
 			}
 			array.add(jsObject.toString());
 		}
-		if (useGeneralButton && (boolean) Controller.getInstance()
-				.getMainConfiguration()
-				.getValue(MainConfiguration.GENERAL, "generalActive")) {
+		if (useGeneralButton && (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")) {
 
 			array.add(addStats(gradeItems, I18n.get("chartlabel.generalMean"), stats.getGeneralStats()));
 		}
-		if (useGroupButton && (boolean) Controller.getInstance()
-				.getMainConfiguration()
-				.getValue(MainConfiguration.GENERAL, "groupActive")) {
+		if (useGroupButton && (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")) {
 			for (Group group : slcGroup.getItems()) {
 				if (group != null) {
 					array.add(addStats(gradeItems,
@@ -142,8 +141,7 @@ public class GradeReportTable extends Tabulator {
 	}
 
 	private String getProgressParam() {
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
+		
 		JSObject jsObject = new JSObject();
 		jsObject.put("min", 0.0);
 		jsObject.put("max", 10);
@@ -162,7 +160,7 @@ public class GradeReportTable extends Tabulator {
 		List<String> header = new ArrayList<>();
 		header.add("userid");
 		header.add("fullname");
-		List<GradeItem> gradeItems = getSelectedGradeItems();
+		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		for (GradeItem gradeItem : gradeItems) {
 			header.add(gradeItem.getItemname());
 		}

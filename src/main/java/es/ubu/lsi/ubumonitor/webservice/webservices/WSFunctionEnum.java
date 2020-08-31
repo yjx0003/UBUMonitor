@@ -86,6 +86,11 @@ public enum WSFunctionEnum {
 	CORE_ENROL_GET_USERS_COURSES("core_enrol_get_users_courses", 2.0),
 
 	/**
+	 *  Send instant messages 
+	 */
+	CORE_MESSAGE_SEND_INSTANT_MESSAGES("CORE_MESSAGE_SEND_INSTANT_MESSAGES", 2.1),
+	
+	/**
 	 * Retrieve users information for a specified unique field - If you want to do a
 	 * user search, use core_user_get_users().
 	 */
@@ -110,6 +115,23 @@ public enum WSFunctionEnum {
 	 * Returns the courses and assignments for the users capability.
 	 */
 	MOD_ASSIGN_GET_ASSIGNMENTS("mod_assign_get_assignments", 2.4),
+	
+	/**
+	 * Returns a list of forum posts for a discussion. 
+	 */
+	MOD_FORUM_GET_FORUM_DISCUSSION_POSTS("mod_forum_get_forum_discussion_posts", 2.7),
+	
+	/**
+	 * Returns a list of forum discussions optionally sorted and paginated.
+	 */
+	MOD_FORUM_GET_FORUM_DISCUSSIONS("mod_forum_get_forum_discussions", 3.7),
+	
+	/**
+	 * Returns a list of forum instances in a provided set of courses, if no courses
+	 * are provided then all the forum instances the user has access to will be
+	 * returned.
+	 */
+	MOD_FORUM_GET_FORUMS_BY_COURSES("mod_forum_get_forums_by_courses", 2.5),
 
 	/**
 	 * Return information of a given lesson.
@@ -121,6 +143,16 @@ public enum WSFunctionEnum {
 	 * provided all quizzes that the user can view will be returned.
 	 */
 	MOD_QUIZ_GET_QUIZZES_BY_COURSES("mod_quiz_get_quizzes_by_courses", 3.1),
+
+	/**
+	 * Return a list of attempts for the given quiz and user.
+	 */
+	MOD_QUIZ_GET_USER_ATTEMPTS("mod_quiz_get_user_attempts", 3.1),
+
+	/**
+	 * Call multiple external functions and return all responses.
+	 */
+	TOOL_MOBILE_CALL_EXTERNAL_FUNCTIONS("tool_mobile_call_external_functions", 3.7),
 
 	/**
 	 * Creates an auto-login key for the current user. Is created only in https

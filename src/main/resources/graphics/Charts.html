@@ -3,422 +3,442 @@
 <meta charset="UTF-8">
 
 <head>
-    <title>Charts</title>
-    <link rel="stylesheet" type="text/css" href="../css/tabulator.css" />
-    <link rel="stylesheet" type="text/css" href="../css/chart.css" />
-
-    <script type="text/javascript" src="./lib/moment-with-locale.js"></script>
-    <script type="text/javascript" src="./lib/Chart.js"></script>
-    <script type="text/javascript" src="./lib/color-hash.js"></script>
-    <script type="text/javascript" src="./lib/html2canvas.js"></script>
-    <script type="text/javascript" src="./lib/apexcharts.js"></script>
-    <script type="text/javascript" src="./lib/chartjs-chart-box-and-violin-plot.js"></script>
-    <script type="text/javascript" src="./lib/chartjs-plugin-datalabels.js"></script>
-    <script type="text/javascript" src="./lib/tabulator.js"></script>
-
-
-</head>
-
-<div id="all_tabs" class="controles">
-    <div class="pestañas" id="GRADES">
-     
-    </div>
-    <div class="pestañas" id="LOGS">
-
-
-    </div>
-    <div class="pestañas" id="ACTIVITY_COMPLETION">
-        
-    </div>
-
-    <div class="opciones">
-        <button value="Leyenda" class="btn" id="btnLegend" onclick="hideLegend()" />
-        <button value="Media General" class="btn" id="btnMean" onclick="showGeneralMean()" />
-        <button class="btn" id="btnGroupMean" onclick="showGroupMean()" />
-    </div>
-</div>
-
-<div id="chart-container" class="chart-container">
-    <canvas id="myChart"></canvas>
-</div>
-<div id="apexchartsDiv" class="apexchart-container"></div>
-<div id="tabulatorDiv"></div>
-
-<script type="text/javascript">
-    //------------------------------------------Opciones para los graficos------------------------------------------------------------------
-
-    Chart.defaults.global.animation.duration = 0;
-    Chart.defaults.global.elements.line.fill = false;
-    Chart.defaults.global.elements.line.tension = 0;
-    Chart.defaults.global.maintainAspectRatio = false;
-    Chart.defaults.global.hover.animationDuration = 0;
-    Chart.defaults.global.legend.labels.usePointStyle = true;
-    Chart.defaults.global.legend.position = "top";
-    Chart.defaults.global.onClick = function (event, array) {
-        let element = myChart.getElementsAtEventForMode(event, "point", { intersect: false });
-        if (element.length > 0) {
+   <title>Charts</title>
+   <link rel="stylesheet" type="text/css" href="../css/tabulator.css" />
+   <link rel="stylesheet" type="text/css" href="../css/chart.css" />
+   <link rel="stylesheet" type="text/css" href="../css/vis-timeline-graph2d.min.css" />
+   <script type="text/javascript" src="./lib/moment-with-locale.js"></script>
+   <script type="text/javascript" src="./lib/Chart.js"></script>
+   <script type="text/javascript" src="./lib/color-hash.js"></script>
+   <script type="text/javascript" src="./lib/html2canvas.js"></script>
+   <script type="text/javascript" src="./lib/apexcharts.js"></script>
+   <script type="text/javascript" src="./lib/chartjs-chart-box-and-violin-plot.js"></script>
+   <script type="text/javascript" src="./lib/chartjs-plugin-datalabels.js"></script>
+   <script type="text/javascript" src="./lib/tabulator.js"></script>
+   <script type="text/javascript" src="./lib/visNetwork.js"></script>
+   <script type="text/javascript" src="./lib/visTimeline.js"></script>
+   <script type="text/javascript">
+      Chart.defaults.global.animation.duration = 0;
+      Chart.defaults.global.elements.line.fill = false;
+      Chart.defaults.global.elements.line.tension = 0;
+      Chart.defaults.global.maintainAspectRatio = false;
+      Chart.defaults.global.hover.animationDuration = 0;
+      Chart.defaults.global.legend.labels.usePointStyle = true;
+      Chart.defaults.global.legend.position = "top";
+      Chart.defaults.global.onClick = function (event, array) {
+         let element = myChart.getElementsAtEventForMode(event, "point", { intersect: false });
+         if (element.length > 0) {
             javaConnector.dataPointSelection(element[counter % element.length]._datasetIndex);
             counter++;
-        }
-    };
-    
-    Chart.plugins.register({
-	  beforeDraw: function(chartInstance) {
-	    var ctx = chartInstance.chart.ctx;
-	    ctx.fillStyle = chartInstance.config.options.chartBackgroundColor;
-	    ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height);
-	  }
-	});
+         }
+      };
 
-    Chart.defaults.scale.ticks.beginAtZero = true;
-    Chart.defaults.scale.ticks.precision = 0;
-    Chart.defaults.scale.ticks.suggestedMax = 10;
-    Chart.defaults.scale.ticks.suggestedMin = 0;
-    Chart.defaults.scale.autoSkip = true;
-    Chart.defaults.global.plugins.datalabels.display = false
+      Chart.plugins.register({
+         beforeDraw: function (chartInstance) {
+            var ctx = chartInstance.chart.ctx;
+            ctx.fillStyle = chartInstance.config.options.chartBackgroundColor;
+            ctx.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height);
+         }
+      });
 
-
-    var counter = 0;
-    var height = "93%";
-    var locale = 'en-UK';
+      Chart.defaults.scale.ticks.beginAtZero = true;
+      Chart.defaults.scale.ticks.precision = 0;
+      Chart.defaults.scale.ticks.suggestedMin = 0;
+      Chart.defaults.scale.autoSkip = true;
+      Chart.defaults.global.plugins.datalabels.display = false
 
 
-    //------------------------------------------Variables globales-------------------------------------------------------------
+      var counter = 0;
+      var height = "93%";
+      var locale = 'en-UK';
 
-    //
-    var colorHash = new ColorHash();
-    var ctx = document.getElementById('myChart');
+      var colorHash;
+      var ctx;
+      var myChart;
+      var myApexChart;
+      var table;
+      var visNetwork;
+      var visTimeline;
+      function createChartDivs() {
+         //------------------------------------------Variables globales-------------------------------------------------------------
+         
+         //
+         colorHash = new ColorHash();
+         ctx = document.getElementById('myChart');
 
-    var myChart = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: [],
-            datasets: []
-        },
-        options: {
-            tab: "grade_tabs",
-            button: "btnLine",
-            typeGraph: "line"
-        }
-    });
+         myChart = new Chart(ctx, {
+            type: "line",
+            data: {
+               labels: [],
+               datasets: []
+            },
+            options: {
+               tab: "grade_tabs",
+               button: "btnLine",
+               typeGraph: "line"
+            }
+         });
 
-    var myApexChart = new ApexCharts(document.getElementById('apexchartsDiv'), { tab: "log_tabs", button: "btnHeatmap", typeGraph: "heatmap", tooltip: { x: { show: !0 } }, plotOptions: { heatmap: { enableShades: !1, colorScale: { ranges: [{ from: -1, to: 0, color: "#f78880", name: "0" }, { from: 1, to: 1, color: "#f4e3ae" }, { from: 1, to: 1, color: "#fff033" }, { from: 1, to: 1, color: "#b5ff33" }, { from: 1, to: 1, color: "#38e330" }, { from: 2, to: Number.POSITIVE_INFINITY, color: "#67b92e", name: "+2" }] } } }, legend: { position: "top" }, chart: { type: "heatmap", events: { dataPointSelection: function (o, e, t) { javaConnector.dataPointSelection(t.w.config.series.length - 1 - t.seriesIndex) } }, height: height, toolbar: { show: !1 }, animations: { enabled: !1 } }, dataLabels: { formatter: function (o, e) { return 0 == o ? "" : o }, style: { colors: ["#000000"] } }, colors: ["#00A100"], series: [], xaxis: { categories: [] } });
-    myApexChart.render();
+         myApexChart = new ApexCharts(document.getElementById('apexchartsDiv'), { tab: "log_tabs", button: "btnHeatmap", typeGraph: "heatmap", tooltip: { x: { show: !0 } }, plotOptions: { heatmap: { enableShades: !1, colorScale: { ranges: [{ from: -1, to: 0, color: "#f78880", name: "0" }, { from: 1, to: 1, color: "#f4e3ae" }, { from: 1, to: 1, color: "#fff033" }, { from: 1, to: 1, color: "#b5ff33" }, { from: 1, to: 1, color: "#38e330" }, { from: 2, to: Number.POSITIVE_INFINITY, color: "#67b92e", name: "+2" }] } } }, legend: { position: "top" }, chart: { type: "heatmap", events: { dataPointSelection: function (o, e, t) { javaConnector.dataPointSelection(t.w.config.series.length - 1 - t.seriesIndex) } }, height: height, toolbar: { show: !1 }, animations: { enabled: !1 } }, dataLabels: { formatter: function (o, e) { return 0 == o ? "" : o }, style: { colors: ["#000000"] } }, colors: ["#00A100"], series: [], xaxis: { categories: [] } });
+         myApexChart.render();
 
-    var table = new Tabulator("#tabulatorDiv", {
+         table = new Tabulator("#tabulatorDiv", {
 
-        tab: "activity_tabs",
-        button: "ACTIVITIES_TABLE",
-        invalidOptionWarnings: false,
-        height: height,
-        //placeholder: "No data",
-        tooltipsHeader: true,
-        virtualDom: true,
-        layout: "fitColumns", //fit columns to width of table (optional)
-        rowClick: function (e, row) {
-            javaConnector.dataPointSelection(row.getPosition());
+            tab: "activity_tabs",
+            button: "ACTIVITIES_TABLE",
+            invalidOptionWarnings: false,
+            height: height,
+            //placeholder: "No data",
+            tooltipsHeader: true,
+            virtualDom: true,
+            layout: "fitColumns", //fit columns to width of table (optional)
+            rowClick: function (e, row) {
+               javaConnector.dataPointSelection(row.getPosition());
 
-        },
-    });
-
-
-    //------------------------------------------Funciones------------------------------------------------------------------
+            },
+         });
 
 
-    function imageButton(id, value) {
-        if (value) {
+         visNetwork = new vis.Network(document.getElementById('visNetworkDiv'), {}, {});
+         visTimeline = new vis.Timeline(document.getElementById('visTimelineDiv'), {}, {});
+      }
+
+      //------------------------------------------Funciones------------------------------------------------------------------
+
+
+      function imageButton(id, value) {
+         if (value) {
             document.getElementById(id).style.backgroundImage = 'url(./../img/visibility.png)';
 
-        } else {
+         } else {
             document.getElementById(id).style.backgroundImage = 'url(./../img/visibility_off.png)';
-        }
-    }
+         }
+      }
 
-    function displayLegendButton(value) {
-        document.getElementById('btnLegend').style.display = value ? "inline" : "none";
-    }
+      function displayLegendButton(value) {
 
-    function displayGroupButton(value) {
-        document.getElementById('btnGroupMean').style.display = value ? "inline" : "none";
-    }
+         document.getElementById('btnLegend').style.display = value ? "inline" : "none";
+      }
 
-    function displayGeneralButton(value) {
-        document.getElementById('btnMean').style.display = value ? "inline" : "none";
-    }
+      function displayGroupButton(value) {
+         document.getElementById('btnGroupMean').style.display = value ? "inline" : "none";
+      }
 
-    function displayApexChart(value) {
-        document.getElementById('apexchartsDiv').style.display = value ? "block" : "none";
-    }
-    function displayTabulator(value) {
-        document.getElementById('tabulatorDiv').style.display = value ? "block" : "none";
-    }
+      function displayGeneralButton(value) {
+         document.getElementById('btnMean').style.display = value ? "inline" : "none";
+      }
 
+      function displayButton(element, value) {
+         document.getElementById(element).style.display = value ? "block" : "none";
+      }
 
-    function displayChartjs(value) {
-        document.getElementById('chart-container').style.display = value ? "block" : "none";
-    }
+      function displayChartsButtons(div_id, type, listCharts) {
 
+         let tabs = document.getElementById(div_id);
+         if (tabs) {
+            let children = tabs.children;
+            for (let i = 0; i < children.length; i++) {
+               if (children[i].tagName == "BUTTON") {
+                  children[i].style.display = div_id == type && listCharts.includes(children[i].id) ? "inline" : "none";
+               }
 
-
-    function displayChartsButtons(div_id, type, listCharts) {
-        let tabs = document.getElementById(div_id);
-        let children = tabs.children;
-        for (let i = 0; i < children.length; i++) {
-            if (children[i].tagName == "BUTTON") {
-                children[i].style.display = div_id == type && listCharts.includes(children[i].id)  ? "inline" : "none";
             }
+         }
+      }
 
-        }
-    }
+      function disableTab(div_id, noDisable) {
+         let tabs = document.getElementById(div_id);
+         if (document.getElementById(noDisable).disabled == false && tabs) {
 
-    function disableTab(div_id, noDisable) {
-
-        if (document.getElementById(noDisable).disabled == false) {
-            let tabs = document.getElementById(div_id);
             let children = tabs.children;
             for (i = 0; i < children.length; i++) {
-                if (children[i].tagName == "BUTTON") {
-                    children[i].disabled = false;
-                }
+               if (children[i].tagName == "BUTTON") {
+                  children[i].disabled = false;
+               }
 
             }
             document.getElementById(noDisable).disabled = true;
-        }
+         }
 
 
-    }
+      }
 
 
-    function updateApexCharts(series, categories, options) {
-        displayApexChart(true);
-        displayChartjs(false);
-        displayTabulator(false);
-		
-		manageButtons(options.tab, options.listCharts);
-        disableTab(options.tab, options.button);
+      function updateApexCharts(series, categories, options) {
+         hiddenCharts("apexcharts", options);
 
-        displayLegendButton(options.useLegend);
-        displayGroupButton(options.useGroup);
-        displayGeneralButton(options.useGeneral);
-
-        options.series = series;
-        options.xaxis.categories = categories;
-        options.legend.show = options.useLegend && options.legendActive;
-        if (myApexChart.w.config.chart.type == options.typeGraph) {
+         options.series = series;
+         options.xaxis.categories = categories;
+         options.legend.show = options.useLegend && options.legendActive;
+         if (myApexChart.w.config.chart.type == options.typeGraph) {
 
             myApexChart.updateOptions(options);
-        } else {
+         } else {
 
             myApexChart.destroy();
             myApexChart = new ApexCharts(document.getElementById('apexchartsDiv'), options);
             myApexChart.render();
-        }
-    }
+         }
+      }
 
-    function updateChartjs(dataset, options) {
-        displayApexChart(false);
-        displayChartjs(true);
-        displayTabulator(false);
-        imageButton("btnLegend", options.legendActive);
-        imageButton("btnMean", options.generalActive);
-        imageButton("btnGroupMean", options.groupActive);
+      function updateChartjs(dataset, options) {
+         hiddenCharts("chartjs", options);
 
-		manageButtons(options.tab, options.listCharts);
-        disableTab(options.tab, options.button);
+         imageButton("btnLegend", options.legendActive);
+         imageButton("btnMean", options.generalActive);
+         imageButton("btnGroupMean", options.groupActive);
 
-        displayLegendButton(options.useLegend);
-        displayGroupButton(options.useGroup);
-        displayGeneralButton(options.useGeneral);
-		if(!options.legend){
-			options.legend={};
-		}
-		options.legend.display = options.legendActive;
-        if (myChart.config.type == options.typeGraph) {
+
+
+
+
+         if (!options.legend) {
+            options.legend = {};
+         }
+         options.legend.display = options.legendActive;
+         if (myChart.config.type == options.typeGraph) {
             myChart.data = dataset;
             myChart.options = options;
-            myChart.update();        
-            
-            
-        } else {
+            myChart.update();
+
+
+         } else {
             myChart.destroy();
             myChart = new Chart(ctx, {
-                type: options.typeGraph,
-                data: dataset,
-                options: options
+               type: options.typeGraph,
+               data: dataset,
+               options: options
             });
-        }
+         }
 
-    }
+      }
 
-    function updateTabulator(data, options) {
+      function updateTabulator(data, options) {
 
-        displayApexChart(false);
-        displayChartjs(false);
-        displayTabulator(true);
-        disableTab(options.tab, options.button);
-        displayLegendButton(options.useLegend);
-        displayGroupButton(options.useGroup);
-        displayGeneralButton(options.useGeneral);
-        manageButtons(options.tab, options.listCharts);
-        disableTab(options.tab, options.button);
-        table.destroy()
-        table = new Tabulator("#tabulatorDiv", options);
-        table.setColumns(data.columns);
-        table.setData(data.tabledata).then(function () {
-        	
+         hiddenCharts("tabulator", options);
+
+
+         table.destroy()
+         table = new Tabulator("#tabulatorDiv", options);
+         table.setColumns(data.columns);
+         table.setData(data.tabledata).then(function () {
+
             table.redraw();
-        })
+         })
 
 
-    }
+      }
+
+      function updateVisNetwork(data, options) {
+         hiddenCharts("visNetwork", options);
+         
+		 visNetwork.on("stabilizationIterationsDone", function () {
+    		visNetwork.setOptions( { physics:{enabled: options.physicsAfterDraw }} );
+		 });
+         visNetwork.setOptions(options.options);
+   		 visNetwork.setData(data);
+      }
+
+
+      function updateVisTimeline(data, options) {
+         hiddenCharts("visTimeline", options);
+
+
+         visTimeline.setOptions(options.options);
+         visTimeline.setData(data);
+         
+
+      }
+
+      function hiddenCharts(value, options) {
 
 
 
-    function clearChartjs() {
-        myChart.destroy();
-        myChart = new Chart(ctx, {
+         displayButton('apexchartsDiv', value == "apexcharts");
+         displayButton('chart-container', value == "chartjs");
+         displayButton('tabulatorDiv', value == "tabulator");
+         displayButton('visNetworkDiv', value == "visNetwork");
+         displayButton('visTimelineDiv', value == "visTimeline");
+
+         manageButtons(options.tab, options.listCharts);
+         disableTab(options.tab, options.button);
+
+         displayLegendButton(options.useLegend);
+         displayGroupButton(options.useGroup);
+         displayGeneralButton(options.useGeneral);
+      }
+
+      function clearChartjs() {
+         myChart.destroy();
+         myChart = new Chart(ctx, {
             type: "bar",
             data: {
-                labels: [],
-                datasets: []
+               labels: [],
+               datasets: []
             },
             options: {
-                type: "line",
-                data: {
-                    labels: [],
-                    datasets: []
-                },
-                options: {
-                    tab: "grade_tabs",
-                    button: "btnLine",
-                    typeGraph: "line"
-                }
+               type: "line",
+               data: {
+                  labels: [],
+                  datasets: []
+               },
+               options: {
+                  tab: "grade_tabs",
+                  button: "btnLine",
+                  typeGraph: "line"
+               }
             }
-        });
-    }
-    
-    function clearTabulator(){
-    	table.clearData();
-    }
+         });
+      }
+
+      function clearTabulator() {
+         table.clearData();
+      }
 
 
-    function manageButtons(type, listCharts) {
+      function manageButtons(type, listCharts) {
 
 
-        displayChartsButtons("GRADES", type, listCharts);
-        displayChartsButtons("LOGS", type, listCharts);
-        displayChartsButtons("ACTIVITY_COMPLETION", type, listCharts);
+         displayChartsButtons("GRADES", type, listCharts);
+         displayChartsButtons("LOGS", type, listCharts);
+         displayChartsButtons("ACTIVITY_COMPLETION", type, listCharts);
 
-    }
+      }
 
-    //Funcion que muestra u oculta la leyenda del gráfico
-    function hideLegend() {
-        imageButton("btnLegend", javaConnector.swapLegend());
-        
-        javaConnector.updateChartFromJS();
-    }
+      function clearVisNetwork() {
+         visNetwork.setData([]);
+      }
 
-    function showGeneralMean() {
-   
-        imageButton("btnMean",  javaConnector.swapGeneral());
-       
-        javaConnector.updateChartFromJS();
-    }
+      function clearVisTimeline() {
+         visNetwork.setData([]);
+      }
 
-    function showGroupMean() {
-     
-        imageButton("btnGroupMean",javaConnector.swapGroup());
-        
-        javaConnector.updateChartFromJS();
-    }
+      //Funcion que muestra u oculta la leyenda del gráfico
+      function hideLegend() {
+         imageButton("btnLegend", javaConnector.toggleLegend());
 
- 
+         javaConnector.updateChartFromJS();
+      }
+
+      function showGeneralMean() {
+
+         imageButton("btnMean", javaConnector.toggleGeneral());
+
+         javaConnector.updateChartFromJS();
+      }
+
+      function showGroupMean() {
+
+         imageButton("btnGroupMean", javaConnector.toggleGroup());
+
+         javaConnector.updateChartFromJS();
+      }
 
 
-    
+      function exportChartjs() {
+         return myChart.toBase64Image();
+      }
 
+      function exportApexcharts() {
 
-    function exportChartjs() {
-        return myChart.toBase64Image();
-    }
-
-    function exportApexcharts() {
-
-        myApexChart.dataURI().then(function (uri) {
+         myApexChart.dataURI().then(function (uri) {
             javaConnector.saveImage(uri);
-        }).catch(function (error) {
+         }).catch(function (error) {
             javaConnector.showErrorWindow("Cannot download image:" + error.message);
-        })
+         })
 
-    }
-    function genericExport(id) {
-        html2canvas(document.getElementById(id), { logging: false }).then(function (canvas) {
+      }
+      function genericExport(id) {
+         html2canvas(document.getElementById(id), { logging: false }).then(function (canvas) {
             javaConnector.saveImage(canvas.toDataURL());
-        }).catch(function (error) {
+         }).catch(function (error) {
             javaConnector.showErrorWindow("Cannot download image:" + error.message);
-        })
+         })
 
-    }
-    
-    function generateButtons(buttons){
-    	for (const value of buttons){
-			let button = document.createElement("BUTTON");
-			button.id = value.id;
-			button.innerText = value.text;
-			button.className = "btn";
-			//button.type = "button";
-			button.setAttribute( "onClick", "javascript: javaConnector.updateCharts(this.id);" );
-			
-			type = document.getElementById(value.type);
-			type.appendChild(button);
-    	}
-    }
+      }
 
-    // Modifica el valor de los inputs segun el idioma pasado
-    function getI18n(item) {
-        document.getElementById(item).value = javaConnector.getI18n(item);
-    }
+      function generateButtons(buttons) {
+         for (const value of buttons) {
+            let button = document.createElement("BUTTON");
+            button.id = value.id;
+            button.innerText = value.text;
+            button.className = "btn";
+            button.setAttribute("onClick", "javascript: javaConnector.updateCharts(this.id);");
+            type = document.getElementById(value.type)
 
-    function translate(id, text){
-    	document.getElementById(id).innerText = text;
-    }
+            if (!type) {
+               all_tabs = document.getElementById("all_tabs");
+
+               type = document.createElement("DIV");
+               type.id = value.type;
+               type.className = "pestañas";
+               all_tabs.insertBefore(type, document.getElementById("tabs_options"));
+            }
 
 
+            type.appendChild(button);
+         }
+      }
 
-    function setLocale(newLocale) {
-        locale = newLocale;
-        moment.locale(newLocale);
-    }
-    function colorRGB(color) {
-        let colors = colorHash.rgb(color);
-        return "rgb(" + colors[0] + "," + colors[1] + "," + colors[2] + ")";
-    }
+      // Modifica el valor de los inputs segun el idioma pasado
+      function getI18n(item) {
+         document.getElementById(item).value = javaConnector.getI18n(item);
+      }
 
-    function colorRGBA(color, alpha) {
-        let colors = colorHash.rgb(color);
-        return "rgba(" + colors[0] + "," + colors[1] + "," + colors[2] + "," + alpha + ")";
-    }
-    //Funcion que devuelve un color en formato hexadecimal
-    //en base a el string que se le pasa
-    function colorHEX(color) {
-        return colorHash.hex(color);
-    }
-     function formatBoxplot(text, value){
-    	return text+ ": " + value.toLocaleString(locale,{maximumFractionDigits:2});
-    }
-    
-    function boxplotLabel(t, a, o, e) {
-	    if (-1 == e) return [formatBoxplot("n", a.datasets[t.datasetIndex].data[t.index].length), formatBoxplot("min ", o.min), formatBoxplot("whiskerMin", o.whiskerMin), formatBoxplot("q1", o.q1), formatBoxplot("median", o.median), formatBoxplot("q3", o.q3), formatBoxplot("whiskerMax", o.whiskerMax), formatBoxplot("max", o.max)];
-	    var r, s = a.datasets[t.datasetIndex].users[0] instanceof Array ? a.datasets[t.datasetIndex].users[t.index] : a.datasets[t.datasetIndex].users,
-	        n = a.datasets[t.datasetIndex].data[t.index],
-	        x = [];
-	    for (r = 0; r < n.length; r++) n[r] == o.outliers[e] && x.push(s[r] + " (" + n[r].toLocaleString(locale,{maximumFractionDigits:2}) + ")");
-	    return x
-	}
-    
-   
+      function translate(id, text) {
+         document.getElementById(id).innerText = text;
+      }
 
-</script>
 
+
+      function setLocale(newLocale) {
+         locale = newLocale;
+         moment.locale(newLocale);
+      }
+      function colorRGB(color) {
+         let colors = colorHash.rgb(color);
+         return "rgb(" + colors[0] + "," + colors[1] + "," + colors[2] + ")";
+      }
+
+      function colorRGBA(color, alpha) {
+         let colors = colorHash.rgb(color);
+         return "rgba(" + colors[0] + "," + colors[1] + "," + colors[2] + "," + alpha + ")";
+      }
+      //Funcion que devuelve un color en formato hexadecimal
+      //en base a el string que se le pasa
+      function colorHEX(color) {
+         return colorHash.hex(color);
+      }
+      function formatBoxplot(text, value) {
+         return text + ": " + value.toLocaleString(locale, { maximumFractionDigits: 2 });
+      }
+
+      function boxplotLabel(t, a, o, e) {
+         if (-1 == e) return [formatBoxplot("n", a.datasets[t.datasetIndex].data[t.index].length), formatBoxplot("min ", o.min), formatBoxplot("whiskerMin", o.whiskerMin), formatBoxplot("q1", o.q1), formatBoxplot("median", o.median), formatBoxplot("q3", o.q3), formatBoxplot("whiskerMax", o.whiskerMax), formatBoxplot("max", o.max)];
+         var r, s = a.datasets[t.datasetIndex].users[0] instanceof Array ? a.datasets[t.datasetIndex].users[t.index] : a.datasets[t.datasetIndex].users,
+            n = a.datasets[t.datasetIndex].data[t.index],
+            x = [];
+         for (r = 0; r < n.length; r++) n[r] == o.outliers[e] && x.push(s[r] + " (" + n[r].toLocaleString(locale, { maximumFractionDigits: 2 }) + ")");
+         return x
+      }
+   </script>
+</head>
+
+<body>
+   <div id="all_tabs" class="controles">
+      <div id="tabs_options" class="opciones">
+         <button value="Leyenda" class="btn" id="btnLegend" onclick="hideLegend()"></button>
+         <button value="Media General" class="btn" id="btnMean" onclick="showGeneralMean()"></button>
+         <button class="btn" id="btnGroupMean" onclick="showGroupMean()"></button>
+      </div>
+   </div>
+   <div id="chart-container" class="chart-container">
+      <canvas id="myChart"></canvas>
+   </div>
+   <div id="apexchartsDiv" class="apexchart-container"></div>
+   <div id="tabulatorDiv"></div>
+   <div id="visNetworkDiv" class="visDiv"></div>
+   <div id="visTimelineDiv" class="visDiv"></div>
+</body>
 
 </html>

@@ -1,4 +1,4 @@
-
+*{outline:none;}
 html,body
 {
 	overflow-x:hidden;
@@ -71,6 +71,12 @@ html,body
 	background-color: #f0f0f0f0;
 	color: #000000;
    	font-weight: bold;
+}
+
+.visDiv{
+	 outline: 0;
+	height:95vh;
+	width:100%;
 }
 
 .apexchart-container

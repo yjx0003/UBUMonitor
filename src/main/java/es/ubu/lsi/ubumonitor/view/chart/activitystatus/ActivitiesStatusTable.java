@@ -12,9 +12,7 @@ import org.apache.commons.csv.CSVPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.ActivityCompletion;
 import es.ubu.lsi.ubumonitor.model.ActivityCompletion.State;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
@@ -25,13 +23,23 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Tabulator;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.ListView;
+import javafx.scene.web.WebView;
 
 public class ActivitiesStatusTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActivitiesStatusTable.class);
 	private DateTimeWrapper dateTimeWrapper;
+	private DatePicker datePickerStart;
+	private DatePicker datePickerEnd;
+	private ListView<CourseModule> listViewActivity;
 
-	public ActivitiesStatusTable(MainController mainController) {
-		super(mainController, ChartType.ACTIVITIES_TABLE);
+	public ActivitiesStatusTable(MainController mainController, DatePicker datePickerStart, DatePicker datePickerEnd,
+			ListView<CourseModule> listViewActivity, WebView webView) {
+		super(mainController, ChartType.ACTIVITIES_TABLE, webView);
+		this.datePickerStart = datePickerStart;
+		this.datePickerEnd = datePickerEnd;
+		this.listViewActivity = listViewActivity;
 		dateTimeWrapper = new DateTimeWrapper();
 
 		useRangeDate = true;
@@ -86,8 +94,6 @@ public class ActivitiesStatusTable extends Tabulator {
 	}
 
 	private String getProgressParam(int max) {
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
 		JSObject jsObject = new JSObject();
 		jsObject.put("min", 0);
 		jsObject.put("max", max);
@@ -166,8 +172,7 @@ public class ActivitiesStatusTable extends Tabulator {
 	public void update() {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 
-		List<CourseModule> courseModules = selectionController.getListViewActivity()
-				.getSelectionModel()
+		List<CourseModule> courseModules = listViewActivity.getSelectionModel()
 				.getSelectedItems();
 		String columns = createColumns(courseModules);
 		String tableData = createData(enrolledUsers, courseModules);
@@ -203,7 +208,7 @@ public class ActivitiesStatusTable extends Tabulator {
 				.atStartOfDay(ZoneId.systemDefault())
 				.toInstant();
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		List<CourseModule> courseModules = selectionController.getListViewActivity()
+		List<CourseModule> courseModules = listViewActivity
 				.getSelectionModel()
 				.getSelectedItems();
 		List<String> header = new ArrayList<>();
@@ -244,7 +249,7 @@ public class ActivitiesStatusTable extends Tabulator {
 				}
 				printer.print(completed);
 				printer.print(courseModules.size());
-				printer.print(completed / (double)courseModules.size() * 100);
+				printer.print(completed / (double) courseModules.size() * 100);
 				printer.println();
 
 			}

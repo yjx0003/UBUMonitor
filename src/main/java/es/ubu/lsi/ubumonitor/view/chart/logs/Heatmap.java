@@ -13,7 +13,6 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
@@ -23,18 +22,20 @@ import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import javafx.scene.web.WebView;
 
 public class Heatmap extends ChartLogs {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Heatmap.class);
-
+	private WebView webView;
 	private DescriptiveStatistics descriptiveStatistics;
 
-	public Heatmap(MainController mainController) {
+	public Heatmap(MainController mainController, WebView webView) {
 		super(mainController, ChartType.HEAT_MAP);
 		descriptiveStatistics = new DescriptiveStatistics();
 		useGroupBy = true;
 		useLegend = true;
+		this.webView = webView;
 	}
 
 	@Override
@@ -50,12 +51,13 @@ public class Heatmap extends ChartLogs {
 	}
 
 	@Override
-	public void export(File file) throws IOException {
+	public void exportImage(File file) throws IOException {
 		UtilMethods.snapshotNode(file, webView);
+		UtilMethods.showExportedFile(file);
 	}
 
 	public String getXScaleLabel() {
-		MainConfiguration mainConfiguration = controller.getMainConfiguration();
+	
 		JSObject jsObject = new JSObject();
 
 		boolean display = mainConfiguration.getValue(MainConfiguration.GENERAL, "displayXScaleTitle");
@@ -74,7 +76,7 @@ public class Heatmap extends ChartLogs {
 	}
 
 	public String getYScaleLabel() {
-		MainConfiguration mainConfiguration = controller.getMainConfiguration();
+	
 		JSObject jsObject = new JSObject();
 
 		boolean display = mainConfiguration.getValue(MainConfiguration.GENERAL, "displayYScaleTitle");
@@ -99,29 +101,33 @@ public class Heatmap extends ChartLogs {
 
 		long maxYAxis = 1L;
 		List<EnrolledUser> users = getUsers();
-		if (tabUbuLogsComponent.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getComponents().getMaxElement(users,
-					listViewComponents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
-					datePickerEnd.getValue());
-		} else if (tabUbuLogsEvent.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getMaxElement(users,
-					listViewEvents.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
-					datePickerEnd.getValue());
-		} else if (tabUbuLogsSection.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getSections().getMaxElement(users,
-					listViewSection.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
-					datePickerEnd.getValue());
-		} else if (tabUbuLogsCourseModule.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getCourseModules().getMaxElement(users,
-					listViewCourseModule.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
-					datePickerEnd.getValue());
+		if (tabComponent.isSelected()) {
+			maxYAxis = choiceBoxDate.getValue()
+					.getComponents()
+					.getMaxElement(users, listViewComponent.getSelectionModel()
+							.getSelectedItems(), datePickerStart.getValue(), datePickerEnd.getValue());
+		} else if (tabEvent.isSelected()) {
+			maxYAxis = choiceBoxDate.getValue()
+					.getComponentsEvents()
+					.getMaxElement(users, listViewEvent.getSelectionModel()
+							.getSelectedItems(), datePickerStart.getValue(), datePickerEnd.getValue());
+		} else if (tabSection.isSelected()) {
+			maxYAxis = choiceBoxDate.getValue()
+					.getSections()
+					.getMaxElement(users, listViewSection.getSelectionModel()
+							.getSelectedItems(), datePickerStart.getValue(), datePickerEnd.getValue());
+		} else if (tabCourseModule.isSelected()) {
+			maxYAxis = choiceBoxDate.getValue()
+					.getCourseModules()
+					.getMaxElement(users, listViewCourseModule.getSelectionModel()
+							.getSelectedItems(), datePickerStart.getValue(), datePickerEnd.getValue());
 		}
 		return Long.toString(maxYAxis);
 	}
 
 	@Override
 	public String getOptions(JSObject jsObject) {
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+
 		String zeroValue = colorToRGB(mainConfiguration.getValue(getChartType(), "zeroValue"));
 		String firstInterval = colorToRGB(mainConfiguration.getValue(getChartType(), "firstInterval"));
 		String secondInterval = colorToRGB(mainConfiguration.getValue(getChartType(), "secondInterval"));
@@ -144,7 +150,7 @@ public class Heatmap extends ChartLogs {
 			quartileColor(zeroValue, firstInterval, secondInterval, thirdInterval, fourthInterval, jsObject);
 		} else {
 			intervalColor(zeroValue, firstInterval, secondInterval, thirdInterval, fourthInterval, moreMax,
-					getSuggestedMax(), jsObject);
+					getSuggestedMax(textFieldMax.getText()), jsObject);
 		}
 
 		return jsObject.toString();
@@ -180,8 +186,8 @@ public class Heatmap extends ChartLogs {
 
 	@Override
 	public String getXAxisTitle() {
-		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"),
-				I18n.get(choiceBoxDate.getValue().getTypeTime()));
+		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"), I18n.get(choiceBoxDate.getValue()
+				.getTypeTime()));
 	}
 
 	@Override
@@ -208,7 +214,6 @@ public class Heatmap extends ChartLogs {
 				dateStart, dateEnd);
 		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
 
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
 		boolean useQuartile = mainConfiguration.getValue(getChartType(), "useQuartile");
 
 		if (useQuartile) {
@@ -283,8 +288,7 @@ public class Heatmap extends ChartLogs {
 	}
 
 	@Override
-	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs)
-			throws IOException {
+	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
@@ -320,8 +324,10 @@ public class Heatmap extends ChartLogs {
 		List<String> list = new ArrayList<>();
 		list.add("userid");
 		list.add("fullname");
-		String selectedTab = tabPaneUbuLogs.getSelectionModel().getSelectedItem().getText();
-		if(hasId()) {
+		String selectedTab = tabPaneSelection.getSelectionModel()
+				.getSelectedItem()
+				.getText();
+		if (hasId()) {
 			list.add(selectedTab + "_id");
 		}
 		list.add(selectedTab);

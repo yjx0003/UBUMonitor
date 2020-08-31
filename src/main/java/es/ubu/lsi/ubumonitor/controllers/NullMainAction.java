@@ -26,12 +26,6 @@ public class NullMainAction implements MainAction {
 	}
 
 	@Override
-	public void updateTreeViewGradeItem() {
-		// do nothing
-
-	}
-
-	@Override
 	public void updateListViewEnrolledUser() {
 		// do nothing
 
@@ -44,61 +38,7 @@ public class NullMainAction implements MainAction {
 	}
 
 	@Override
-	public void updateListViewActivity() {
-		// do nothing
-
-	}
-
-	@Override
-	public void onSetTabLogs() {
-		// do nothing
-
-	}
-
-	@Override
-	public void onSetTabGrades() {
-		// do nothing
-
-	}
-
-	@Override
-	public void onSetTabActivityCompletion() {
-		// do nothing
-
-	}
-
-	@Override
-	public void onSetSubTabLogs() {
-		// do nothing
-
-	}
-
-	@Override
-	public void updateListViewComponents() {
-		// do nothing
-
-	}
-
-	@Override
-	public void updateListViewEvents() {
-		// do nothing
-
-	}
-
-	@Override
-	public void updateListViewSection() {
-		// do nothing
-
-	}
-
-	@Override
-	public void updateListViewCourseModule() {
-		// do nothing
-
-	}
-
-	@Override
-	public void save() {
+	public void saveImage() {
 		// do nothing
 
 	}
@@ -114,6 +54,5 @@ public class NullMainAction implements MainAction {
 		// do nothing
 		
 	}
-
 
 }

@@ -8,6 +8,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.controlsfx.control.NotificationPane;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -22,6 +23,7 @@ import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.webservice.api.tool.mobile.ToolMobileGetPublicConfig;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Worker;
@@ -30,6 +32,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.util.Duration;
 import okhttp3.FormBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -105,7 +108,8 @@ public class Login {
 							.optJSONObject("data");
 			if (data != null) {
 
-				launchurl = data.getString("launchurl") + "?service=moodle_mobile_app&urlscheme=moodlemobile&passport=1";
+				launchurl = data.getString("launchurl")
+						+ "?service=moodle_mobile_app&urlscheme=moodlemobile&passport=1";
 				typeoflogin = data.optInt("typeoflogin", DEFAULT_TYPE_OF_LOGIN);
 				if (data.optInt("enablemobilewebservice", 1) == 0) {
 					throw new IllegalAccessError("Mobile web service not enabled");
@@ -113,6 +117,7 @@ public class Login {
 			}
 		} catch (Exception e) {
 			LOGGER.info("not toolMobileGetPublicConfig");
+			typeoflogin = DEFAULT_TYPE_OF_LOGIN;
 		}
 	}
 
@@ -210,6 +215,13 @@ public class Login {
 
 			Stage popup = UtilMethods.createStage(owner, Modality.WINDOW_MODAL);
 			setWebview(launchurl, popup, launcherLogin(host, popup));
+			try (Response sesskeyResponse = Connection.getResponse(host)) {
+				sesskey = findSesskey(sesskeyResponse.body()
+						.string());
+
+			} catch (Exception e) {
+				LOGGER.error("Error al intentar recuperarr la sesskey", e);
+			}
 
 		}, Platform::runLater)
 				.join();
@@ -221,6 +233,10 @@ public class Login {
 	public void setWebview(String launchurl, Stage popup, ChangeListener<Worker.State> listenner) {
 
 		webView = new WebView();
+		NotificationPane notificationPane = new NotificationPane();
+		notificationPane.setContent(webView);
+
+		notificationPane.setText(I18n.get("notificationLoginSSO"));
 		webView.getEngine()
 				.getLoadWorker()
 				.stateProperty()
@@ -228,7 +244,15 @@ public class Login {
 		webView.getEngine()
 				.load(launchurl);
 		popup.setMaximized(true);
-		popup.setScene(new Scene(webView, 960, 600));
+
+		popup.setScene(new Scene(notificationPane, 960, 600));
+		Platform.runLater(() -> {
+			notificationPane.show();
+			PauseTransition pauseTransition = new PauseTransition(Duration.seconds(10));
+			pauseTransition.setOnFinished(event -> notificationPane.hide());
+			pauseTransition.play();
+		});
+
 		popup.showAndWait();
 
 	}
@@ -257,17 +281,14 @@ public class Login {
 					} else {
 						throw new IllegalAccessError("Cannot get the token in the decoded: " + matcher);
 					}
-					popup.close();
-					try (Response sesskeyResponse = Connection.getResponse(host)) {
-						sesskey = findSesskey(sesskeyResponse.body()
-								.string());
-
-					}
+					
 
 				}
 			} catch (Exception e) {
 				LOGGER.error("Error al intentar loguearse", e);
 				throw new IllegalStateException("No se ha podido loguear al servidor");
+			} finally {
+				popup.close();
 			}
 		};
 	}
@@ -295,7 +316,7 @@ public class Login {
 		if (checkWebsService(httpUrl)) {
 			return httpUrl.toString();
 		}
-		throw new IllegalArgumentException(I18n.get("error.malformedurl"));
+		throw new IllegalArgumentException(I18n.get("error.host"));
 
 	}
 

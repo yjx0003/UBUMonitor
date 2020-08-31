@@ -1,10 +1,13 @@
 package es.ubu.lsi.ubumonitor.controllers.load;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +47,8 @@ public class LogCreator {
 
 	private static final Set<String> NOT_AVAIBLE_COMPONENTS = new TreeSet<>();
 	private static final Set<String> NOT_AVAIBLE_EVENTS = new TreeSet<>();
-
+	
+	// Recoge los numeros entre comillas simples o dobles
 	// Sin escapar: (['"])(?<idQuote>\d+)\1|[^'"](?<idNoQuote>\d+)[^'"]
 	private static final Pattern INTEGER_PATTERN = Pattern
 			.compile("(['\"])(?<idQuote>-?\\d+)\\1|[^'\"](?<idNoQuote>\\d+)[^'\"]");
@@ -58,6 +62,9 @@ public class LogCreator {
 	public static final String DESCRIPTION = "Description";
 	public static final String ORIGIN = "Origin";
 	public static final String IP_ADRESS = "IP address";
+
+	private static final Set<String> ALL_COLUMNS = new HashSet<>(Arrays.asList(TIME, USER_FULL_NAME, AFFECTED_USER,
+			EVENT_CONTEXT, COMPONENT, EVENT_NAME, DESCRIPTION, ORIGIN, IP_ADRESS));
 
 	/**
 	 * Cambia la zona horia del formateador de tiempo
@@ -89,7 +96,8 @@ public class LogCreator {
 		LOGGER.info("La fecha del ultimo log antes de actualizar es {}", lastDateTime);
 		while (now.isAfter(lastDateTime)) {
 			Response response = download.downloadLog(lastDateTime, false);
-			parserResponse(logs, response);
+			parserResponse(logs, response.body()
+					.charStream());
 			lastDateTime = lastDateTime.plusDays(1);
 		}
 		if (!NOT_AVAIBLE_COMPONENTS.isEmpty()) {
@@ -115,10 +123,9 @@ public class LogCreator {
 		return download;
 	}
 
-	public static void parserResponse(Logs logs, Response response) throws IOException {
+	public static void parserResponse(Logs logs, Reader reader) throws IOException {
 
-		try (CSVParser csvParser = new CSVParser(response.body()
-				.charStream(), CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
+		try (CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
 			List<LogLine> logList = LogCreator.createLogs(csvParser);
 			logs.addAll(logList);
 		}
@@ -142,6 +149,10 @@ public class LogCreator {
 		Set<String> headers = csvParser.getHeaderMap()
 				.keySet();
 		LOGGER.info("Los nombres de las columnas del csv son: {}", headers);
+		if (!headers.isEmpty() && headers.stream()
+				.noneMatch(ALL_COLUMNS::contains)) {
+			throw new IllegalArgumentException("Logs must be in english");
+		}
 		for (CSVRecord csvRecord : csvParser) {
 			LogLine logLine = createLog(headers, csvRecord);
 
@@ -200,13 +211,15 @@ public class LogCreator {
 			}
 		}
 
-		if (headers.contains(LogCreator.TIME)) {
-			String time = csvRecord.get(LogCreator.TIME);
-			ZonedDateTime zdt = ZonedDateTime.parse(time, dateTimeFormatter);
-			log.setTime(zdt);
-		}
+		//considering Time column always first
+		String time = csvRecord.get(0);
+
+		ZonedDateTime zdt = ZonedDateTime.parse(time, dateTimeFormatter);
+		log.setTime(zdt);
 
 		if (headers.contains(LogCreator.ORIGIN)) {
+			
+		
 			log.setOrigin(Origin.get(csvRecord.get(LogCreator.ORIGIN)));
 
 		}

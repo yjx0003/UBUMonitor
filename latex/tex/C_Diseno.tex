@@ -1,134 +1,43 @@
 \apendice{Especificación de diseño}
 
 \section{Introducción}
-
-En este anexo se va a comentar los aspectos más relevantes del diseño de esta aplicación.
-
+En este apartado se van a tratar los aspectos referentes al diseño de la aplicación.
 \section{Diseño de datos}
+Para el desarrollo del \emph{clustering} se han empleado las siguientes entidades:
+\begin{itemize}
+	\item Dato (\emph{Datum}): entidad que almacena un dato de Moodle (registro, calificación o finalización de la actividad), el nombre del elemento, su icono representativo y un valor numérico.
+	\item Datos del usuario (\emph{User Data}): entidad que almacena el usuario y una lista de datos. Además almacena los valores de estos datos normalizados.
+	\item Agrupación (\emph{Cluster}): entidad que almacena los usuario de una agrupación. Además se incluye el identificador numérico y el nombre del clúster.
+\end{itemize}
+\imagen{anexos/diagramaDatos}{Diagrama de clases de las entidades.}
 
-Toda la información que se almacena en Moodle es con bases de datos con un campo numérico de identificador único (\textit{ID}) para cada uno de los elementos (usuarios, cursos, módulos del curso). Para simular este efecto en Java se ha creado una clase que incluye varios HashMap para los elementos comentados anteriormente usando los identificadores de cada tipo como clave del HashMap tal y como se puede ver en la figura \ref{fig:database_java}. Está clase también es la encargada de instanciar cada uno de los tipos con el objetivo de tener instancias únicas para cada identificador.
+Además se han diseñado clases para cada algoritmo de \emph{clustering}. Cada algoritmo hereda de la clase \emph{Algorithm}, lo cual mejora la extensibilidad del módulo.
+\imagen{anexos/diagramaAlgoritmos}{Diagrama de clases de los algoritmos.}
 
-\imagen{database_java}{Simulación de base de datos.}
-
+También se han diseñado clases para los diferentes tipos de análisis. Para ello se ha empleado el patrón de diseño método de la plantilla y el patrón fábrica. Utilizar estos patrones de diseño facilitan la extensibilidad, si en un futuro se añaden nuevos tipos de análisis.
+\imagen{anexos/diagramaAnalisis}{Diagrama de clases de los análisis.}
 
 \section{Diseño procedimental}
+En este apartado se especificarán los aspectos mas relevantes de la ejecución de un algoritmo de \emph{clustering}.
 
-En este apartado informa sobre las conexiones realizadas en la plataforma de Moodle durante la ejecución del producto. Comunicándose con los servicios web de REST API, también se inicia sesión en la web para realizar acciones no disponibles como la descarga de los registros. Todas las peticiones HTTP y recibir las respuestas lo realiza librería jsoup.
+En el siguiente diagrama de secuencia se representa cómo es la ejecución de un algoritmo de \emph{clustering}, los objetos que intervienen y cómo interaccionan.
 
-Estas comunicaciones lo dividiremos en dos partes:
+\imagen{anexos/secuencia1}{Diagrama de secuencia.}
 
-\subsection{Inicio de sesión}
-
-Al introducir los datos de usuario, contraseña y \textit{host} en la aplicación, se inicia sesión tanto en el servicio de REST API como en la web para \textit{web scraping}.
-
-Los pasos que sigue la aplicación en el inicio de sesión son:
-\begin{enumerate}
-	\item Busca el \textit{token} del REST API a partir del usuario y contraseña como parámetros de URL.
-	\item Busca el \textit{login token} de inicio de sesión en la web.
-	\item Inicia sesión usando el \textit{login token} como parámetro adicional si existe, guarda los \textit{cookies} de sesión para futuras peticiones. 
-	\item En la API recupera la información del usuario conectado usando la función del servicio web \textbf{core\_user\_get\_users\_by\_field}.
-	\item Descarga la imagen del usuario conectado.
-	\item Recupera de los servicios web la información de los cursos matriculados por el usuario con la función \textbf{core\_enrol\_get\_users\_courses}.
-	\item Con la función de la API \textbf{core\_course\_get\_categories} devuelve la información de las categorías en el que se encuentran los cursos.
-\end{enumerate}
-Estos pasos se visualizan también en el diagrama de secuencias de la figura \ref{fig:diagrama_secuencia_login}.
-
-\imagenflotante{diagrama_secuencia_login}{Diagrama de secuencia del inicio de sesión.}
-
-
-
-\subsection{Elección del curso}
-
-Después de elegir el curso, la aplicación descargará información de la REST API y también los registros del curso. 
-
-\subsubsection{REST API}
-
-De la información que se busca en los servicios web de Moodle:
-
-
-\begin{enumerate}
-	\item A través de la función \textbf{core\_enrol\_get\_enrolled\_users} recogemos la información de los usuario matriculados del curso junto con sus roles y grupos.
-	\item Descargamos cada uno de las fotos de los usuarios matriculados.
-	\item Se busca la información de los módulos del curso que hay con la función
-	\textbf{core\_course\_get\_contents}.
-	\item Con la función \textbf{gradereport\_user\_get\_grades\_table} nos proporciona los calificadores de todos los alumnos.
-	
-\end{enumerate}
-
-Esta información queda reflejada en el diagrama de secuencia de la figura \ref{fig:diagrama_secuencia_webservice}
-\imagenflotante{diagrama_secuencia_webservice}{Diagrama de secuencia de recogida de datos de los servicios web.}
-
-\subsubsection{Descarga de registros}
-
-En la descarga de los registros es diferente si tiene el fichero de caché guardado previamente o no.
-
-\begin{itemize}
-	\item Cuando existe el archivo caché
-	\begin{enumerate}
-		\item Si la zona horaria del usuario es la misma que el servidor (99) hay que buscarlo en el perfil del usuario mediante \textit{web scraping}. 
-		\item Luego va descargando los registros de forma diaria desde la fecha del último registro hasta la fecha y hora actual.
-	\end{enumerate}
-	\item Cuando no existe el archivo caché
-	\begin{enumerate}
-		\item Busca la zona horaria del servidor a partir del perfil del usuario.
-		\item Descarga los registros completos del curso.
-	\end{enumerate}
-\end{itemize}
-
-En el diagrama de secuencia de la figura \ref{fig:diagrama_secuencia_logs} recoge los pasos que se realiza en la descarga de registros.
-
-\imagen{diagrama_secuencia_logs}{Diagrama de secuencia de descarga de los registros del curso.}
+El usuario inicia la ejecución de un algoritmo. El controlador recibe la petición de ejecución e inicializa el objeto \emph{AlgorithmExecuter} con los parámetros seleccionados por el usuario. Al inicializar se recogen y almacenan los datos seleccionados por el usuario. A continuación el controlador inicia la ejecución. Se obtiene el \emph{Clusterer} del algoritmo seleccionado con sus parámetros. El \emph{Clusterer} realiza el \emph{clustering} y después se realiza el análisis del resultado. Este proceso se lleva a cabo tantas veces como iteraciones se han indicado. Una vez terminado se devuelve el mejor resultado.
 
 \section{Diseño arquitectónico}
+Para el diseño arquitectónico se ha empleado el patrón modelo-vista-presentador (MVP) que es una derivación del modelo-vista-controlador (MVC). Este patrón está formado por 3 componentes.
+\begin{itemize}
+	\item \textbf{Modelo:} contiene la información que utiliza la aplicación. Gestiona los accesos y modificaciones de dicha información.
+	\item \textbf{Presentador:} actúa sobre las capas del modelo y la vista. Recoge los datos de la capa del modelo y los ajusta para mostrarlo en la vista.
+	\item \textbf{Vista:} tiene la interfaz de usuario donde se muestran los datos. Además crea los eventos que envía al presentador.
+\end{itemize}
 
-\subsection{Arquitectura cliente-servidor}
-Esta arquitectura consiste en un cliente que realiza peticiones a un servidor que le da respuestas. En este caso, el cliente sería la aplicación y el servidor es la plataforma de Moodle y sus servicios web (REST API) y la web.
+\imagenConTamano{anexos/mvp}{Diagrama del patrón modelo-vista-presentador.}{0.7}
 
-En la figura \ref{fig:diagrama_despliegue} se visualiza un diagrama de despliegue que muestra la conexión de la aplicación con el servidor Moodle a través de Internet.
+El componente de vista está formado por los componentes gráficos de JavaFX. El componente presentador está formado principalmente por las clases del paquete \emph{controller}. Y el modelo por las entidades mencionadas en el diseño de datos.
+\imagen{anexos/diagramaPaquetes}{Diagrama de paquetes simplificado.}
 
-
-\imagen{diagrama_despliegue}{Diagrama de despliegue de la aplicación.}
-
-
-\section{Diseño de la interfaz}
-En cuanto al diseño de la interfaz se ha mantenido el del proyecto de UBUGrades añadiendo las nuevas características del presente desarrollo. Uno de los cambios fue el logo de la aplicación.
-
-
-\subsection{Pantalla de inicio de sesión}
-En la pantalla de inicio de sesión se añadieron más idiomas: catalán, alemán, portugués, francés e italiano.
-
-También se añadieron dos casillas: para recordar el usuario y el \textit{host}. 
-
-Estos cambios se puede apreciar en la figura \ref{fig:comparacion_login}
-\imagenflotante{comparacion_login}{Comparativa de la pantalla de inicio de sesión de UBUGrades (izda.) y UBUMonitor (dcha.)}
-
-\subsection{Pantalla de selección del curso}
-
-En la ventana de selección del curso se añadió información de las categorías del curso.
-
-Otra de las características, fue la información de la fecha de la última vez que se ha actualizado los datos y la opción de actualizar estos datos.
-
-Las diferencias se puede ver en las  figuras \ref{fig:pantalla_ubugrades} y \ref{fig:pantalla_ubumonitor}.
-
-\imagenflotante{pantalla_ubugrades}{Pantalla de selección del curso en UBUGrades.}
-
-\imagenflotante{pantalla_ubumonitor}{Pantalla de selección del curso en UBUMonitor.}
-
-\subsection{Pantalla de visualización de gráficas.}
-
-En esta pantalla ha sufrido varios cambios destacables.
-
-Por una parte, en el listado de usuarios se han añadido las fotografías asociadas de Moodle y el último acceso a la plataforma de los usuarios hasta el momento. Las comparativas se ven en la figura \ref{fig:comparacion_lista_usuarios}.
-
-\imagenflotante{comparacion_lista_usuarios}{Comparación de la lista de usuarios.}
-
-En el calificador se añadieron imágenes de todos los módulos del curso y en un tamaño más grande en la figura \ref{fig:comparacion_grades}. 
-\imagenflotante{comparacion_grades}{Comparación del calificador.}
-
-Se añadieron varias pestañas para dividir las calificaciones de los registros y dentro de los registros se subdividen en componentes y de componentes-eventos (figura \ref{fig:lista_componentes_eventos}).
-
-\imagenflotante{lista_componentes_eventos}{Listado de componentes y de componentes-eventos.}
-
-En las gráficas de los registros se han añadido varias opciones de filtrado (figura \ref{fig:opciones_graficas_registros}).
-
-\imagen{opciones_graficas_registros}{Las opciones de las gráficas de registros.}
+A continuación se representa el diagrama de despliega de la aplicación.
+\imagen{anexos/diagramaDespliegue}{Diagrama de despliegue.}

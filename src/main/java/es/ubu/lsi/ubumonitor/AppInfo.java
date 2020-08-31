@@ -8,7 +8,7 @@ package es.ubu.lsi.ubumonitor;
  */
 public class AppInfo {
 
-	public static final String VERSION = "2.6.5";
+	public static final String VERSION = "2.6.6";
 	
 	public static final String APPLICATION_VERSION = "v" + VERSION + "-stable";
 	
@@ -65,6 +65,8 @@ public class AppInfo {
 	public static final String PATTERN_FILE = "^UBUMonitor.+.jar$";
 
 	public static final String VERSIONS_DIR = "versions/";
+
+	public static final String ARCHIVED_DIR = "Archived Courses";
 
 	
 

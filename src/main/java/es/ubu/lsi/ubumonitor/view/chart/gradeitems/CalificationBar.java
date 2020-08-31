@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
@@ -17,12 +16,14 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import javafx.scene.control.TreeView;
 import javafx.scene.paint.Color;
 
 public class CalificationBar extends ChartjsGradeItem {
 
-	public CalificationBar(MainController mainController) {
-		super(mainController, ChartType.CALIFICATION_BAR);
+	
+	public CalificationBar(MainController mainController, TreeView<GradeItem> treeViewGradeItem) {
+		super(mainController, ChartType.CALIFICATION_BAR, treeViewGradeItem);
 		useGeneralButton = false;
 		useGroupButton = false;
 	}
@@ -36,7 +37,7 @@ public class CalificationBar extends ChartjsGradeItem {
 		List<Integer> countNaN = new ArrayList<>();
 		List<Integer> countLessCut = new ArrayList<>();
 		List<Integer> countGreaterCut = new ArrayList<>();
-		double cutGrade = Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL,
+		double cutGrade = mainConfiguration.getValue(MainConfiguration.GENERAL,
 				"cutGrade");
 		for (GradeItem gradeItem : selectedGradeItems) {
 			int nan = 0;
@@ -56,7 +57,7 @@ public class CalificationBar extends ChartjsGradeItem {
 			countLessCut.add(less);
 			countGreaterCut.add(greater);
 		}
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+
 		JSArray datasets = new JSArray();
 		datasets.add(createData(I18n.get("text.empty"), countNaN,
 				mainConfiguration.getValue(getChartType(), "emptyGradeColor")));
@@ -80,7 +81,7 @@ public class CalificationBar extends ChartjsGradeItem {
 
 	@Override
 	public String getOptions(JSObject jsObject) {
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+	
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBar" : "bar");
 		
@@ -100,13 +101,13 @@ public class CalificationBar extends ChartjsGradeItem {
 	public void exportCSV(String path) throws IOException {
 		List<String> header = new ArrayList<>();
 		header.add("stats");
-		List<GradeItem> gradeItems = getSelectedGradeItems();
+		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		for (GradeItem gradeItem : gradeItems) {
 			header.add(gradeItem.getItemname());
 		}
 	
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
-			double cutGrade = Controller.getInstance().getMainConfiguration().getValue(MainConfiguration.GENERAL,
+			double cutGrade = mainConfiguration.getValue(MainConfiguration.GENERAL,
 					"cutGrade");
 			List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 			List<Integer> countNaN = new ArrayList<>(gradeItems.size());

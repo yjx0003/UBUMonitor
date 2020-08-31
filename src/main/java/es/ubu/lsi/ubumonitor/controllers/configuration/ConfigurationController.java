@@ -104,7 +104,7 @@ public class ConfigurationController implements Initializable {
 	}
 
 	public void applyConfiguration() {
-		mainController.applyConfiguration();
+		mainController.getActions().applyConfiguration();
 	}
 
 	public void restoreConfiguration() {

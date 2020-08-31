@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -35,8 +36,6 @@ public class Course implements Serializable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Course.class);
 
-	
-
 	private int id;
 	private String shortName;
 	private String fullName;
@@ -56,6 +55,8 @@ public class Course implements Serializable {
 	private Set<CourseModule> modules;
 	private Set<GradeItem> gradeItems;
 	private Set<Section> sections;
+	private Set<DiscussionPost> discussionPosts;
+	private Set<CourseEvent> courseEvents;
 	private Logs logs;
 	private Stats stats;
 	private LogStats logStats;
@@ -70,6 +71,8 @@ public class Course implements Serializable {
 	private ZonedDateTime updatedActivityCompletion;
 	private ZonedDateTime updatedLog;
 
+
+
 	public Course() {
 		this.enrolledUsers = new HashSet<>();
 		this.notEnrolledUsers = new HashSet<>();
@@ -80,6 +83,7 @@ public class Course implements Serializable {
 		this.sections = new LinkedHashSet<>();
 		this.logs = new Logs(ZoneId.systemDefault());
 		this.logStats = new LogStats(logs.getList());
+		this.discussionPosts = new HashSet<>();
 	}
 
 	public Course(int id) {
@@ -437,14 +441,25 @@ public class Course implements Serializable {
 	 * Elimina todos los elementos del curso excepto los logs.
 	 */
 	public void clearCourseData() {
-		
-		this.enrolledUsers.clear();
-		this.roles.forEach(Role::clear); // eliminamos los usuarios de ese rol
+
+		this.enrolledUsers = new HashSet<>();
+		if(roles != null) {
+			this.roles.forEach(Role::clear); // eliminamos los usuarios de ese rol
+		}
+		roles = new HashSet<>();
 		this.roles.clear();
-		this.groups.forEach(Group::clear); // eliminamos los usuarios de ese grupo
-		this.groups.clear();
-		this.modules.clear();
-		this.sections.clear();
+		if(groups != null) {
+			this.groups.forEach(Group::clear); // eliminamos los usuarios de ese grupo
+		}
+		groups = new HashSet<>();
+		
+		modules = new LinkedHashSet<>();
+		sections = new LinkedHashSet<>();
+
+		
+		discussionPosts = new HashSet<>();
+		setCourseEvents(new HashSet<>());
+	
 	}
 
 	public LogStats getLogStats() {
@@ -542,14 +557,13 @@ public class Course implements Serializable {
 	 * @return student roles or all roles of the course
 	 */
 	public Set<Role> getStudentRole() {
-		Set<Role> studentRoles =  roles.stream()
+		Set<Role> studentRoles = roles.stream()
 				.filter(r -> "student".equals(r.getRoleShortName()))
 				.collect(Collectors.toSet());
-		if(studentRoles.isEmpty()) {
+		if (studentRoles.isEmpty()) {
 			return roles;
 		}
 		return studentRoles;
-				
 
 	}
 
@@ -712,11 +726,67 @@ public class Course implements Serializable {
 	public Set<EnrolledUser> getNotEnrolledUser() {
 		return this.notEnrolledUsers;
 	}
-	
+
 	public static Comparator<Course> getCourseComparator() {
 		return Comparator.comparing(Course::getFullName, Comparator.nullsLast(Collator.getInstance()))
 				.thenComparing(c -> c.getCourseCategory()
 						.getName(), Comparator.nullsLast(Collator.getInstance()));
 	}
 
+	public void addGroups(Collection<Group> groups) {
+		this.groups.addAll(groups);
+
+	}
+
+	public void addRoles(Collection<Role> roles) {
+		this.roles.addAll(roles);
+
+	}
+
+	public void addEnrolledUsers(Collection<EnrolledUser> enrolledUsers) {
+		this.enrolledUsers.addAll(enrolledUsers);
+
+	}
+
+	public void addSections(Collection<Section> sections) {
+		this.sections.addAll(sections);
+	}
+
+	public void addCourseModules(Collection<CourseModule> courseModules) {
+
+		this.modules.addAll(courseModules);
+
+	}
+
+	public void addDiscussionPosts(Collection<DiscussionPost> discussionPosts) {
+		this.discussionPosts.addAll(discussionPosts);
+	}
+
+	/**
+	 * @return the courseEvents
+	 */
+	public Set<CourseEvent> getCourseEvents() {
+		if(courseEvents == null) {
+			return Collections.emptySet();
+		}
+		return courseEvents;
+	}
+
+	/**
+	 * @param courseEvents the courseEvents to set
+	 */
+	public void setCourseEvents(Set<CourseEvent> courseEvents) {
+		this.courseEvents = courseEvents;
+	}
+	
+	public void addCourseEvents(Collection<CourseEvent> courseEvents) {
+		this.courseEvents.addAll(courseEvents);
+	}
+	
+	public Set<DiscussionPost> getDiscussionPosts(){
+		if(discussionPosts == null) {
+			return Collections.emptySet();
+		}
+		return discussionPosts;
+	}
 }

@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
@@ -35,6 +34,7 @@ public class BoxplotLog extends ChartjsLog {
 
 	public BoxplotLog(MainController mainController, ChartType chartType) {
 		super(mainController, chartType);
+
 		useGroupButton = true;
 		useRangeDate = true;
 		useLegend = true;
@@ -49,9 +49,7 @@ public class BoxplotLog extends ChartjsLog {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance()
-				.getActualCourse()
-				.getLogStats()
+		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
 				.getByType(TypeTimes.DAY);
 
 		return createData(typeLogs, dataSet, groupActive, selectedUsers, dateStart, dateEnd, groupBy);
@@ -182,9 +180,7 @@ public class BoxplotLog extends ChartjsLog {
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance()
-				.getActualCourse()
-				.getLogStats()
+		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
 				.getByType(TypeTimes.DAY);
 
 		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, selectedUsers, typeLogs,
@@ -219,9 +215,7 @@ public class BoxplotLog extends ChartjsLog {
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = Controller.getInstance()
-				.getActualCourse()
-				.getLogStats()
+		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
 				.getByType(TypeTimes.DAY);
 
 		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, selectedUsers, typeLogs,
@@ -252,14 +246,12 @@ public class BoxplotLog extends ChartjsLog {
 	@Override
 	public String getOptions(JSObject jsObject) {
 
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBoxplot" : "boxplot");
 		jsObject.put("tooltipDecimals", 0);
 		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
 		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
-		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{suggestedMax:" + getSuggestedMax()
+		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{suggestedMax:" + getSuggestedMax(textFieldMax.getText())
 				+ ",stepSize:0}}],xAxes:[{" + xLabel + "}]}");
 		JSObject callbacks = new JSObject();
 		callbacks.put("afterTitle", "function(t,e){return e.datasets[t[0].datasetIndex].label}");
@@ -276,7 +268,7 @@ public class BoxplotLog extends ChartjsLog {
 
 	@Override
 	public String getXAxisTitle() {
-		return tabPaneUbuLogs.getSelectionModel()
+		return tabPaneSelection.getSelectionModel()
 				.getSelectedItem()
 				.getText();
 

@@ -15,7 +15,6 @@ import java.util.stream.Stream;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
@@ -235,14 +234,12 @@ public class BoxplotLogTime extends ChartjsLog {
 	@Override
 	public String getOptions(JSObject jsObject) {
 
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBoxplot" : "boxplot");
 		jsObject.put("tooltipDecimals", 0);
 		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
 		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
-		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{suggestedMax:" + getSuggestedMax()
+		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{suggestedMax:" + getSuggestedMax(textFieldMax.getText())
 				+ ",stepSize:0}}],xAxes:[{" + xLabel + "}]}");
 		JSObject callbacks = new JSObject();
 		callbacks.put("afterTitle", "function(t,e){return e.datasets[t[0].datasetIndex].label}");

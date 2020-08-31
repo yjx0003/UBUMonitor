@@ -1,181 +1,139 @@
 \apendice{Documentación de usuario}
 
 \section{Introducción}
+En este apartado se indicarán los requisitos necesarios para utilizar la aplicación, ademas de una guía de instalación. Se incluye un manual de usuario para el uso de la aplicación.
 
-En este manual se explica los requerimientos de la aplicación, su ejecución en el ordenador e instrucciones de cómo usarlo correctamente.
-
-
-\section{Requisitos de usuarios} \label{sec:requisitos_usuarios}
-
+\section{Requisitos de usuarios}
 \begin{itemize}
-	
-	\item Tener instalado \href{https://www.java.com/es/download/}{Java 8}. 
-	\item Obtener el jar ejecutable de la última versión disponible en:
-	
-	\href{https://github.com/yjx0003/UBUMonitor/releases/latest}{https://github.com/yjx0003/UBUMonitor/releases/latest}
-	\item Debe disponer conexión a Internet.
-	\item Una cuenta de Moodle con acceso a asignaturas con rol de Profesor.
+	\item Tener el \textbf{JRE de Java 8} instalado. Se puede utilizar el de \href{https://www.java.com/es/download/}{Oracle} o el de \href{https://www.azul.com/downloads/zulu-community/?version=java-8-lts&os=windows&architecture=x86-64-bit&package=jre}{Zulu}. Se recomienda utilizar la distribución de Zulu.
+	\item Conexión a internet.
+	\item Acceso a un servidor Moodle con rol de profesor.
 \end{itemize}
-
-
-
 \section{Instalación}
+Para la instalación del programa solo hay que descargarse el \textbf{jar} desde el \href{https://github.com/xjx1001/UBUMonitor/releases/latest}{repositorio de GitHub}.
+Para ejecutar el \textbf{jar} hay que hacer doble click en el archivo, o mediante la consola del sistema. Para ejecutar mediante la consola:
+\begin{enumerate}
+	\item Abrimos la ubicacion del archivo jar en el explorador de archivos.
+	\item Escribimos \textbf{cmd} en la ruta y pulsamos \textbf{Enter}.
+	\imagen{anexos/instalacion1}{Escribir \textbf{cmd} en el recuadro marcado.}
+	\item Introducir el comando: \texttt{java -jar UBUMonitor-Clustering-vX.X.jar}
+	\item Presionar \textbf{Enter}.
+\end{enumerate}
 
-La aplicación no necesita instalar nada más a parte de poseer Java 8.
+\section{Manual de usuario}
+En este manual se explicaran todas las funcionalidades que tiene la aplicación.
 
-\section{Manual del usuario}
-
-Después de ejecutar el jar previamente descargado, inicialmente nos mostrará una pantalla de inicio.
-Este manual de usuario también se encuentra en:
-
-
+Para iniciar el programa ejecutamos el \emph{jar} que habíamos descargado.
 
 \subsection{Inicio de sesión}
+Al ejecutar la aplicación, la primera pantalla que se muestra es la del inicio de sesión. Para esto se pide el usuario, la contraseña y la url del servidor Moodle.
 
-En esta primera pantalla es la de inicio de sesión. Ahí introducimos las credenciales de usuario, contraseña y en el campos host la URL de la página web de la plataforma Moodle.
-\imagen{manual_login}{Primera pantalla de inicio de sesión.}
-Da la opción de recordar el usuario y host para los siguientes usos de la aplicación. Esa información se guarda en un fichero \textbf{config.properties} si marcamos una o ambas opciones.
+\imagenConTamano{anexos/manual1}{Inicio de sesión.}{0.6}
 
-En la esquina superior derecha nos permite cambiar el idioma de la aplicación y el botón \textbf{Borrar} para eliminar el texto de los tres campos. 
+En esta pantalla también se puede modificar el idioma de la aplicación, en el menú desplegable de arriba. La opción de \textbf{modo \emph{offline}} no puede ser marcada en la primera ejecución, ya que recoge los datos almacenados de forma local.
 
-Después de introducir las credenciales pulsamos el botón de \textbf{Entrar}. Si los datos son válidos cargará la siguiente pantalla y si no mostrará un mensaje de error.
-
+Una vez rellenado los datos pulsamos en el botón \textbf{Entrar}.
 
 \subsection{Elección del curso}
+En esta pantalla se muestra los cursos a los que tiene acceso el usuario. Si estamos en \textbf{modo \emph{offline}} solo se mostrarán aquellos cursos que se han accedido previamente. Si estamos en \textbf{modo \emph{online}} nos permitirá actualizar los datos de un curso, esta actualización es obligada si es la primera vez que se accede al curso.
 
-En esta pantalla muestra un listado de cursos que está matriculado el usuario y permite seleccionar uno de ellos y acceder a la siguiente pantalla. Cuando se elige uno de los curso cambia la información de fecha de la última actualización en local. Esta fecha se muestra en función del fichero local que este guardado en el directorio \textbf{cache} con la opción de marcar o no la casilla de actualizar los datos. En caso contrario indica el texto \textbf{Nunca} y se deshabilita marca la casilla.
+\imagenConTamano{anexos/manual2}{Selección de un curso en modo online.}{0.7}
 
+\subsection{Clustering}
+A partir de aquí solo se explicará las funcionalidades refrentes a este proyecto (la parte de \emph{clustering}). Para ello, una vez accedido a un curso, presionamos en la pestaña de \textbf{\emph{clustering}}.
+\imagen{anexos/manual3}{Pestaña de \emph{Clustering}.}
 
-\imagen{seleccion_curso}{Pantalla de selección de curso}
+\subsubsection{Ejecución del clustering} \label{sssection:ejecutar}
+Para comenzar la ejecución, primero hay que seleccionar los alumnos con los que se quiere realizar el \emph{clustering}. Para seleccionar los alumnos hacemos \texttt{Ctrl + click izquierdo} sobre el alumno o \texttt{Ctrl + A} para seleccionar todos. Es posible realizar filtros de usuarios en función del rol, grupo o último acceso al curso.
+\imagenConTamano{anexos/manual4}{Selección de alumnos.}{0.5}
 
-Cuando se haya seleccionado un curso y pulsamos en el botón \textbf{Entrar}, si la casilla de actualizar los datos está seleccionado, carga fichero en local o crea en caso de que no exista y actualiza los datos del curso (usuarios matriculados, calificaciones, registros, etc...). El fichero local se \textbf{cifra} usando la contraseña de Moodle como clave. Este proceso puede tardar varios minutos si los registros son muy grandes. Si no está marcado descifra el fichero y lo carga de forma instantánea. 
+Después, hay que elegir con qué datos proporcionados por Moodle queremos trabajar. Para ello seleccionamos de igual manera que en la selección de alumnos. Se pueden seleccionar elementos de varias pestañas.
+\imagenConTamano{anexos/manual5}{Selección de datos.}{0.5}
 
-Carga la siguiente después de finalizar cualquiera de los dos procesos.
+A continuación, hay que seleccionar el algoritmo y sus parámetros de ejecución. Cada algoritmo tiene diferentes parámetros, por lo que primero hay que seleccionar el algoritmo y luego los parámetros.
+\imagen{anexos/manual6}{Selección del algoritmo y sus parámetros.}
+El \textbf{\emph{tooltip}} de cada parámetro da una pequeña explicación. 
 
-\subsubsection{Contraseña modificada}
+Ahora, hay que marcar los tipos de datos con los que se van a realizar el \emph{clustering}, marcar un tipo de dato significa que se van a utilizar los datos seleccionados anteriormente. Si se seleccionan los registros, hay que marcar los tipos, que por defecto están marcados todos, y en intervalo de días. El inicio es el selector de fechas superior y el final es el inferior, por defecto esta el inicio de curso configurado en Moodle y el día actual. Esta opción es útil para realizar el \emph{clustering} en un instante de pasado concreto.
+\imagenConTamano{anexos/manual7}{Tipos de datos.}{0.8}
 
-En caso de que se haya modificado la contraseña de Moodle, muestra una ventana emergente de que se ha detectado un cambio en la contraseña y que pide la anterior que tuvieras en la fecha señalada.
+Además, se puede marcar la opción de filtrar datos, el cual elimina los valores constantes a todos los alumnos seleccionados antes de realizar el \emph{clustering}. Es recomendable marcar esta opción.
 
-\imagen{contrasena_antigua}{Ventana emergente pidiendo la contraseña antigua.}
+Para finalizar, hay que decidir cuántas iteraciones del algoritmo se van a ejecutar. También existe la posibilidad de realizar una reducción de dimensionalidad, esta opción reduce la cantidad de datos, manteniendo solo los valores mas significativos. Puede ser útil si se trabajan con una gran cantidad de datos, esta opción reduciría el tiempo de ejecución.
+\imagenConTamano{anexos/manual8}{Ejecución del \emph{clustering}.}{0.6}
 
-Cuando se haya introducido correctamente la contraseña antigua, el fichero en cache local se guarda con la nueva.
-
-\section{Visualización de gráficas}
-
-Ventana principal de visualización de gráficas del calificador y de los registros.
-
-En esta ventana muestra los diferentes menús existentes, la lista de usuarios matriculados y las elecciones de diferentes gráficos.
-
-\imagen{vetana_graficas}{Pantalla inicial de la aplicación.}
-
-\subsubsection{Barra de herramientas}
-
-En la parte superior de la ventana muestra una barra de herramientas con diferentes opciones:
-
+\subsubsection{Errores al ejecutar}
+A continuación se van a enumerar los posibles errores al ejecutar:
 \begin{itemize}
-	\item \textbf{Archivo}
-	\begin{itemize}
-		\item Cambiar asignatura: vuelve a la ventana de Elección del curso
-		\item Guardar gráfico como...: Permite guardar en formato PNG el gráfico actual \item mostrado en la aplicación.
-		\item Guardar todo como...: Permite guardar en formato HTML todos los gráficos.
-		\item Cerrar sesión: Cierra la sesión y vuelve a la pantalla de inicio.
-		\item Salir: Cierra la aplicación.
-	\end{itemize}
-
-	\item \textbf{Editar}
-	\begin{itemize}
-		\item Borrar selección: Quita la selección de todos los listados disponibles.
-	\end{itemize}
-	\item \textbf{Ayuda}
-		\begin{itemize}
-		\item Acerca de la aplicación: Abre en la ventana del navegador el proyecto de GitHub.
-	\end{itemize}
+	\item No hay usuarios seleccionados: se produce cuando no se ha seleccionado ningún usuario o solo un usuario.
+	\imagenConTamano{anexos/manual9}{No hay usuarios seleccionados}{0.6}
+	\item No hay datos seleccionados: se produce cuando no se ha seleccionado ningún elemento de las listas marcadas en los tipos de datos. También se produce cuando no se ha marcado ningún tipo de dato.
+	\imagenConTamano{anexos/manual10}{No hay datos seleccionados}{0.6}
+	\item Error en un parámetro del algoritmo: se produce cuando se ha introducido un valor inválido en algún parámetro.
+	\imagenConTamano{anexos/manual11}{Error en un parámetro del algoritmo }{0.6}
 \end{itemize}
 
-También muestra los datos del usuario actual, el curso seleccionado y la página de la plataforma de Moodle (host).
+\subsubsection{Resultado del clustering}
+Cuando termine de ejecutar el resultado de la ejecución se mostrará en gráficas y en tabla. Inicialmente los nombres de los clústeres son números.
 
-\subsubsection{Listado de usuarios matriculados}
-\imagen{usuarios_matriculados}{Listado de usuario matriculados en el curso.}
+La gráfica 2D es un diagrama de dispersión donde cada punto es un alumno y el color representa el clúster al que pertenece, adicionalmente se muestra el centroide de cada clúster si el algoritmo ejecutado no está basado en densidades.
+\imagen{anexos/manual12}{Diagrama de dispersión 2D.}
 
-En este apartado se muestra el listado de los usuarios matriculados en el curso junto con su fotografía y el tiempo desde su último acceso a la plataforma de Moodle ya sea en minutos horas o días. Se toma como referencia la hora del sistema. Es de selección múltiple, elegir varios usuarios mientras se mantiene pulsando la tecla Control.
+La gráfica 3D es similar a la 2D, salvo que no se muestran los centroides.
+\imagen{anexos/manual13}{Diagrama de dispersión 3D.}
 
-También da la opción de aplicar tres filtros juntos de forma conjunta:
+Ambos gráficos son interactivos, se puede ocultar los puntos de un clúster presionando sobre la leyenda.
 
-\begin{itemize}
-	\item Campo de texto: filtrar el listado por nombre y/o apellidos.
-	\item Selector de rol: seleccionar el rol por el que se quiere filtrar.
-	\item Selector de grupo: grupo por el que se quiere filtrar.
-\end{itemize}
+En el análisis de silueta se muestra el diagrama de barras representado el análisis realizado. El valor del ancho de silueta indica lo bien que está clasificado un alumno. Cuanto mayor es el valor, mejor está clasificado. La linea gris representa la media.
+\imagen{anexos/manual14}{Análisis de silueta.}
 
-\subsubsection{Gráficas de calificaciones}
+En la tabla \ref{fig:anexos/manual15} se muestran los alumnos con los que se han realizado el \emph{clustering}. Puede que no salgan todos, ya que algunos algoritmos basados en densidades eliminan el ruido. Se muestra la foto del alumno, su nombre completo y el clúster al que pertenece.
+\imagenConTamano{anexos/manual15}{Tabla del \emph{clustering}.}{0.7}
 
-\begin{itemize}
-	\item \textbf{Listado de elementos del calificador (Grade Items)}
-		\begin{itemize}
-			\item Listado de elementos del calificador (Grade Items). 
-			
-			En la pestaña de calificaciones muestra la jerarquía del calificador junto con sus filtros. Es de selección múltiple. En cualquier momento se puede desplegar y hacer más grande esta zona para ver mejor los nombres.
-			\imagen{listado_calificaciones}{Listado de calificaciones.}
-			Existe dos tipos de filtros que se usan de modo conjunto:
-			\begin{itemize}
-				\item Campo de texto: por nombre del elemento del calificador.
-				\item Selector de tipo: según el tipo que sea  (foro, tarea, cuestionario, et...)
-			\end{itemize}
-			También tiene varias pestañas de ocultar la leyenda, media general y media del grupo.
-		\end{itemize}
-	\item \textbf{Gráfico de líneas}
-	
-		Muestra un gráfico de líneas donde se representan las notas de los alumnos para cada elemento del calificador seleccionado.
-		\imagen{grafico_lineas}{Gráfico de líneas de las calificaciones.}
-	\item \textbf{Gráfico radar}
-	
-		Gráfico de tipo radar o también conocido como diagrama de araña. Muy útil para comparar dos participantes del curso.
-		\imagen{grafico_radar}{Gráfico radar de las calificaciones.}
-	\item \textbf{Gráfico BoxPlot general}
-	
-		Muestra la información de un boxplot o diagrama de caja y bigotes mediante un gráfico de lineas. En este gráfico representa también los máximos, mínimos, la mediana así como los cuartiles primero y tercero.
-		\imagen{boxplot_general}{Gráfico de BoxPlot general de las calificaciones.}
-		
-	\item \textbf{Gráfico BoxPlot grupo}
-	
-	Muestra la misma información que el gráfico anterior pero para un grupo concreto. Para que este gráfico sea visible debemos seleccionar primero un grupo.
-	
-	\imagen{boxplot_grupo}{Gráfico BoxPlot de grupo de las calificaciones.}
-	
-	\item  \textbf{Tabla de calificaciones}
-	
-	Muestra una tabla con las calificaciones así como la media general y la media de cada uno de los grupos del curso.
-	\imagen{tabla_calificaciones}{Tabla de calificaciones de tres personas y las medias del grupo y general.}
-\end{itemize}
+En el menú desplegable se pueden filtrar los alumnos por clúster. Adicionalmente se mostrará en la tabla las calificaciones seleccionadas, las notas están en el intervalo [0, 100]. El intervalo [0, 25] es de color rojo, [25, 50] de color amarillo, [50, 75] de color verde y [75, 100] de color morado.
+\imagenConTamano{anexos/manual16}{Tabla con calificaciones.}{0.7}
 
-\subsubsection{Gráficas de los registros}
+En la tabla al hacer doble-click o click derecho sobre un alumno nos mostrará información de este alumno utilizado en el \emph{clustering}.
+\imagen{anexos/manual19}{Información de un alumno.}
 
-\begin{itemize}
-	\item \textbf{Opciones de los registros}
-	
-	Al pulsar la pestaña de Registros aparece varias opciones en la pantalla inferior.
-	\imagen{opciones_registros}{Opciones para las gráfica de registros.}
-	\begin{itemize}
-		\item Cambiar escala máxima sugerida: permite modificar la escala máxima del eje Y. Se actualiza los valores al cambiar los componentes y/o eventos seleccionados o  las otras opciones. Aporta información útil también al mostrar que existe un usuario con esa escala.
-		\item Agrupar por: agrupa los registros en diferentes formas de tiempo (día, mes, año, etc...). 
-		\item Fecha de referencia inicial: la fecha de inicio orientativo que se muestra al agrupar.
-		\item Fecha de referencia final:  fecha límite orientativo que se muestra al agrupar.
-	\end{itemize}
-	Hay que tener en cuenta que la fecha de referencia  incial y final no toman todos los datos al realizar las agrupaciones. Por ejemplo al agrupar por meses y una fecha inicial del 17/06/2019 a 24/06/2019 no mostrará los registros entre esos dos días si no que mostrara todas las de junio.
-	También las agrupaciones por Hora y Día de la semana no usa el selector de fechas, por lo tanto se deshabilitan.
-	
-	\item \textbf{Componente}
-	
-	Lista los registros del curso en función del Componente que sea. Solo se visualizan componentes que hayan generado los usuarios matriculados en el curso actualmente.
-	\imagen{lista_componentes}{Listado de componentes ordenados alfabéticamente.}
-	
-	\item \textbf{Evento}
-	
-	Lista los registros del curso en función del Componente y Evento que sea. Se muestran solo los componentes y eventos generados por los usuarios actuales matriculados en el curso. 
-	\imagen{listado_componente_evento}{Listado de componente y evento ordenados alfabéticamente por componente.}
-	
-	\item \textbf{Gráfica de barras apiladas}
-	
-	Para ambos tipos de subpestañas (Componentes y Eventos)  la gráfica que se usa para mostrar los registros del curso son barras apiladas. Muestra en barras cada uno de los usuarios seleccionados con los componentes y/o eventos apilados con diferentes colores cada uno. También se apilan las líneas que indican el valor medio de los usuarios filtrados en ese momento.
-	\imagen{grafica_barras}{Gráfica de barras apiladas con dos participantes y tres componentes agrupados por día de la semana.}
-\end{itemize}
+Las flechas de abajo sirven para pasar al siguiente o anterior alumno. En la tabla se marca al alumno que se está visualizando actualmente.
+
+\subsubsection{Modificar los nombres}
+La aplicación permite modificar los nombres de los clústeres, esta modificación será efectiva en todas las gráficas y en la tabla. Para realizar esto vamos a la pestaña \textbf{Etiquetar}.
+\imagenConTamano{anexos/manual17}{Etiquetar.}{0.5}
+
+Las etiquetas que utilicemos se guardarán, y aparecerán en el autocompletar cuando las volvamos a escribir.
+
+La etiquetas creadas se pueden eliminar en la pestaña \textbf{Gestionar etiquetas}.
+\imagenConTamano{anexos/manual18}{Gestionar etiquetas.}{0.5}
+
+\subsubsection{Realizar un análisis}
+Para ejecutar un análisis hay que seguir los mismos pasos que para ejecutar un algoritmo. El análisis solo se puede realizar con algoritmos que tengan el paramento \textbf{Nº de agrupaciones}. Solo cambia el ultimo paso, en vez de presionar al botón de ejecutar hay que presionar el de analizar. El selector de rangos indica con cuántas agrupaciones se tiene que realizar el \emph{clustering}. 
+
+Existen dos tipos de análisis, el del codo y el de silueta.
+
+\imagenConTamano{anexos/manual20}{Análisis del codo.}{0.6}
+\imagenConTamano{anexos/manual21}{Análisis de silueta.}{0.6}
+
+\subsection{Clustering jerárquico}
+Para realizar una agrupación jerárquica hay que cambiar de pestaña, de particional a jerárquico.
+\imagen{anexos/manual22}{Pestaña del \emph{clustering} jerárquico.}
+
+Antes de ejecutar hay que seleccionar los alumnos y los datos al igual que en el \emph{clustering} particional, se pueden seguir las indicaciones en la sección \ref{sssection:ejecutar}.
+
+Se puede modificar la medida de distancia entre elementos y también la distancia entre agrupaciones.
+\imagenConTamano{anexos/manual23}{Selección de las medidas de distancia.}{0.7}
+
+Después de ejecutar se mostrara el dendrograma resultante de la ejecución.
+\imagen{anexos/manual24}{Dendrograma resultante.}
+
+Una vez ejecutado el \emph{clustering} jerárquico se pueden realizar particiones en cualquier número de agrupaciones.
+\imagenConTamano{anexos/manual25}{Selección del número de agrupaciones}{0.7}
+
+Una vez ejecutado se mostrara el resultado en la tabla. Esta tabla es la misma que en el \emph{clustering} particional, tiene las mismas funciones.
+\imagenConTamano{anexos/manual26}{Tabla del resultado.}{0.7}
+
+\subsection{Exportación de los resultados}
+Todas la gráficas se pueden exportar a CSV y a PNG, la tabla se puede exportar solo a CSV. Para exportar cualquier gráfica hay que hacer click derecho en la gráfica y seleccionar el tipo de exportación. Después hay que indicar dónde queremos guardar el fichero de la exportación.
+
+Para la tabla, se pueden exportar los datos de calificación mostrados en esta, para ello hay que marcar la opción \textbf{Exportar calificaciones}. Esta opción esta deshabilitada si en la tabla no se muestra ninguna calificación.

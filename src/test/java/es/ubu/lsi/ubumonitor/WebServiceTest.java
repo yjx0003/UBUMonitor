@@ -7,19 +7,27 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
-import es.ubu.lsi.ubumonitor.controllers.load.CreatorGradeItems;
-import es.ubu.lsi.ubumonitor.controllers.load.CreatorUBUGradesController;
 import es.ubu.lsi.ubumonitor.controllers.load.DownloadLogController;
 import es.ubu.lsi.ubumonitor.controllers.load.LogCreator;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateActivityCompletion;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourse;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourseContent;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateEnrolledUsersCourse;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateGradeItem;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateMoodleUser;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.DataBase;
@@ -27,7 +35,12 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Logs;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
-import es.ubu.lsi.ubumonitor.webservice.api.gradereport.GradereportUserGetGradesTable;
+import es.ubu.lsi.ubumonitor.model.Section;
+import es.ubu.lsi.ubumonitor.webservice.api.mod.quiz.ModQuizGetQuizzesByCourses;
+import es.ubu.lsi.ubumonitor.webservice.api.mod.quiz.ModQuizGetUserAttempts;
+import es.ubu.lsi.ubumonitor.webservice.api.tool.mobile.ToolMobileCallExternalFunctions;
+import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
+import javafx.util.Pair;
 import okhttp3.Response;
 
 @TestMethodOrder(OrderAnnotation.class)
@@ -37,12 +50,13 @@ public class WebServiceTest {
 	private static final String PASSWORD = "moodle";
 	private static final String HOST = "https://school.moodledemo.net";
 	private static final int COURSE_ID = 62;
+	private static WebService webService;
+	private static DataBase dataBase;
 
 	private static Controller CONTROLLER;
 
-	@Test
-	@Order(1)
-	public void loginTest() throws IOException {
+	@BeforeAll
+	public static void loginTest() throws IOException {
 		System.setProperty("logfile.name", "./log/" + AppInfo.APPLICATION_NAME_WITH_VERSION + "-test.log");
 		CONTROLLER = Controller.getInstance();
 		CONTROLLER.tryLogin(HOST, USERNAME, PASSWORD);
@@ -50,12 +64,16 @@ public class WebServiceTest {
 		CONTROLLER.setUsername(USERNAME);
 		CONTROLLER.setURLHost(new URL(HOST));
 		CONTROLLER.setPassword(PASSWORD);
+		CONTROLLER.setActualCourse(CONTROLLER.getDataBase().getCourses().getById(COURSE_ID));
+		webService = CONTROLLER.getWebService();
+		dataBase = CONTROLLER.getDataBase();
 	}
 
 	@Test
 	@Order(2)
 	public void createMoodleUserTest() throws IOException {
-		MoodleUser moodleUser = CreatorUBUGradesController.createMoodleUser(CONTROLLER.getUsername());
+		PopulateMoodleUser populateMoodleUser = new PopulateMoodleUser(webService);
+		MoodleUser moodleUser =populateMoodleUser.populateMoodleUser(CONTROLLER.getUsername(), HOST);
 		assertEquals(CONTROLLER.getUsername(), moodleUser.getUserName());
 		CONTROLLER.setUser(moodleUser);
 	}
@@ -63,38 +81,45 @@ public class WebServiceTest {
 	@Test
 	@Order(3)
 	public void getUserCourses() throws IOException {
-		List<Course> courses = CreatorUBUGradesController.getUserCourses(CONTROLLER.getUser().getId());
+		PopulateCourse populateCourse  = new PopulateCourse(dataBase, webService);
+		
+		List<Course> courses =populateCourse.createCourses(CONTROLLER.getUser().getId());
 		assertFalse(courses.isEmpty());
 		assertTrue(courses.stream().anyMatch(c -> c.getId() == COURSE_ID), "User not enrolled in the course id: " + COURSE_ID);
-		CONTROLLER.setActualCourse(CONTROLLER.getDataBase().getCourses().getById(COURSE_ID));
+		
 	}
 
 	@Test
 	@Order(4)
-	public void getEnrolledUsers() throws IOException {
-		List<EnrolledUser> enrolledUsers = CreatorUBUGradesController.createEnrolledUsers(COURSE_ID);
+	public List<EnrolledUser> getEnrolledUsers() throws IOException {
+		PopulateEnrolledUsersCourse populateEnrolledUsersCourse = new PopulateEnrolledUsersCourse(dataBase, webService);
+		List<EnrolledUser> enrolledUsers = populateEnrolledUsersCourse.createEnrolledUsers(COURSE_ID);
 		assertFalse(enrolledUsers.isEmpty());
+		return enrolledUsers;
 	}
 	
 	@Test
 	@Order(5)
 	public void getCourseModules() throws IOException {
-		List<CourseModule> courseModules = CreatorUBUGradesController.createSectionsAndModules(COURSE_ID);
-		assertFalse(courseModules.isEmpty());
+		PopulateCourseContent populateCourseContent = new PopulateCourseContent(webService, dataBase);
+		Pair<List<Section>, List<CourseModule>> pair = populateCourseContent.populateCourseContent(COURSE_ID);
+		assertFalse(pair.getKey().isEmpty());
+		assertFalse(pair.getValue().isEmpty());
 	}
 	
 	@Test
 	@Order(6)
 	public void getGradeItems() throws IOException {
-		JSONObject jsonObject = CreatorUBUGradesController.getJSONObjectResponse(new GradereportUserGetGradesTable(COURSE_ID, CONTROLLER.getUser().getId()));
-		CreatorGradeItems creatorGradeItems = new CreatorGradeItems();
-		List<GradeItem> gradeItems = creatorGradeItems.createGradeItems(COURSE_ID, jsonObject);
+		PopulateGradeItem populateGradeItem = new PopulateGradeItem(dataBase, webService);
+		
+
+		List<GradeItem> gradeItems = populateGradeItem.createGradeItems(COURSE_ID, CONTROLLER.getUser().getId());
 		assertFalse(gradeItems.isEmpty());
 	}
 	@Test
 	@Order(6)
 	public void getActivityCompletion() throws IOException {
-		CreatorUBUGradesController.createActivitiesCompletionStatus(COURSE_ID, CONTROLLER.getActualCourse().getEnrolledUsers());
+			new PopulateActivityCompletion(dataBase, webService);	
 	}
 	
 	@Test
@@ -105,8 +130,75 @@ public class WebServiceTest {
 		Response response = downloadLogController.downloadLog(true);
 	
 		Logs logs = new Logs(downloadLogController.getServerTimeZone());
-		LogCreator.parserResponse(logs, response);
+		LogCreator.parserResponse(logs, response.body().charStream());
 		CONTROLLER.getActualCourse().setLogs(logs);
 	}
+
+	@Test
+	@Order(9)
+	public void modQuizGetUserAttempts() throws IOException {
+		
+		
+		
+		List<Integer> userids = getEnrolledUsers().stream().map(EnrolledUser::getId).collect(Collectors.toList());
+		
+		
+		List<Integer> quizzesids = new ArrayList<>(); 
+		ModQuizGetQuizzesByCourses modQuizGetQuizzesByCourses = new ModQuizGetQuizzesByCourses(COURSE_ID);
+		
+		JSONArray jsonArray = new JSONObject(webService.getResponse(modQuizGetQuizzesByCourses).body().string()).getJSONArray("quizzes");
+		for(int i = 0; i< jsonArray.length();++i) {
+			quizzesids.add(jsonArray.getJSONObject(i).getInt("id"));
+		}
+		
+		ModQuizGetUserAttempts modQuizGetUserAttempts = new ModQuizGetUserAttempts();
+		for(Integer userid: userids) {
+			for(Integer quizid : quizzesids) {
+				
+				modQuizGetUserAttempts.setQuizid(quizid);
+				modQuizGetUserAttempts.setUserid(userid);
+				//Response response = webService.getResponse(modQuizGetUserAttempts);
+				//String value  = response.body().string();
+				//System.out.println(response.request().url());
+				//System.out.println(value);
+			}
+		}
+		
+	}
+	@Test
+	@Order(10)
+	public void toolMobileCallExternalFunctions() throws IOException {
+		ToolMobileCallExternalFunctions toolMobileCallExternalFunctions = new ToolMobileCallExternalFunctions();
+		
+		
+		List<Integer> userids = getEnrolledUsers().stream().map(EnrolledUser::getId).collect(Collectors.toList());
+		
+		
+		List<Integer> quizzesids = new ArrayList<>(); 
+		ModQuizGetQuizzesByCourses modQuizGetQuizzesByCourses = new ModQuizGetQuizzesByCourses(COURSE_ID);
+		
+		JSONArray jsonArray = new JSONObject(webService.getResponse(modQuizGetQuizzesByCourses).body().string()).getJSONArray("quizzes");
+		
+		for(int i = 0; i< jsonArray.length();++i) {
+			if(jsonArray.getJSONObject(i).getInt("visible")==1) {
+				quizzesids.add(jsonArray.getJSONObject(i).getInt("id"));
+			}
+
+		}
+		
+		for(Integer quizid: quizzesids) {
+			for(Integer userid : userids) {
+				ModQuizGetUserAttempts modQuizGetUserAttempts = new ModQuizGetUserAttempts(quizid, userid);
+				
+				toolMobileCallExternalFunctions.addExternalFunction(modQuizGetUserAttempts);
+			}
+		}
+		
+		Response response = webService.getResponse(toolMobileCallExternalFunctions);
+		JSONObject value  = new JSONObject(response.body().string());
+		
+		assertEquals(quizzesids.size() * userids.size(), value.getJSONArray("responses").length());
+	}
+	
 
 }

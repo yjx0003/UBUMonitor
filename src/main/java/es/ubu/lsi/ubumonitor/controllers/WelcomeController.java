@@ -30,22 +30,34 @@ import org.slf4j.LoggerFactory;
 import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.load.Connection;
-import es.ubu.lsi.ubumonitor.controllers.load.CreatorUBUGradesController;
 import es.ubu.lsi.ubumonitor.controllers.load.DownloadLogController;
 import es.ubu.lsi.ubumonitor.controllers.load.LogCreator;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateActivityCompletion;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourse;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourseContent;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourseEvent;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateEnrolledUsersCourse;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateForum;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateGradeItem;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.CourseCategory;
+import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.DataBase;
+import es.ubu.lsi.ubumonitor.model.DiscussionPost;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.ForumDiscussion;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.LogStats;
 import es.ubu.lsi.ubumonitor.model.Logs;
+import es.ubu.lsi.ubumonitor.model.ModuleType;
+import es.ubu.lsi.ubumonitor.model.Section;
 import es.ubu.lsi.ubumonitor.model.Stats;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.persistence.Serialization;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseSearchCourses;
+import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -79,6 +91,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import okhttp3.Response;
 
 /**
@@ -379,7 +392,7 @@ public class WelcomeController implements Initializable {
 	private void checkFile(Course course) {
 		if (course == null)
 			return;
-		cacheFilePath = controller.getHostUserModelversionCourseFile(course);
+		cacheFilePath = controller.getHostUserModelversionDir().resolve(controller.getCourseFile(course));
 		LOGGER.debug("Buscando si existe {}", cacheFilePath);
 
 		File f = cacheFilePath.toFile();
@@ -601,7 +614,7 @@ public class WelcomeController implements Initializable {
 
 			@Override
 			protected Task<Void> createTask() {
-				return getUserDataWorker(controller.getActualCourse());
+				return getUserDataWorker(controller.getWebService(), controller.getDataBase());
 			}
 
 		};
@@ -609,7 +622,6 @@ public class WelcomeController implements Initializable {
 				.bind(service.messageProperty());
 		service.setOnSucceeded(v -> {
 			controller.setDefaultUpdate(ZonedDateTime.now());
-			
 
 			loadNextWindow();
 		});
@@ -672,18 +684,40 @@ public class WelcomeController implements Initializable {
 	 * 
 	 * @return La tarea a realizar.
 	 */
-	private Task<Void> getUserDataWorker(Course actualCourse) {
+	private Task<Void> getUserDataWorker(WebService webService, DataBase dataBase) {
 		return new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
-
+				Course actualCourse = dataBase.getActualCourse();
 				LOGGER.info("Cargando datos del curso: {}", actualCourse.getFullName());
 				// Establecemos los usuarios matriculados
 
 				actualCourse.clearCourseData();
 				updateMessage(I18n.get("label.loadingcoursedata"));
-				CreatorUBUGradesController.createEnrolledUsers(actualCourse.getId());
-				CreatorUBUGradesController.createSectionsAndModules(actualCourse.getId());
+				PopulateEnrolledUsersCourse populateEnrolledUsersCourse = new PopulateEnrolledUsersCourse(dataBase,
+						webService);
+				actualCourse.addEnrolledUsers(populateEnrolledUsersCourse.createEnrolledUsers(actualCourse.getId()));
+
+				PopulateCourseContent populateCourseContent = new PopulateCourseContent(webService, dataBase);
+				Pair<List<Section>, List<CourseModule>> pair = populateCourseContent
+						.populateCourseContent(actualCourse.getId());
+				actualCourse.addSections(pair.getKey());
+				actualCourse.addCourseModules(pair.getValue());
+
+				PopulateForum populateForum = new PopulateForum(dataBase, webService);
+				List<ForumDiscussion> forumDiscussions = populateForum.populateForumDiscussions(pair.getValue()
+						.stream()
+						.filter(cm -> cm.getModuleType() == ModuleType.FORUM)
+						.collect(Collectors.toList()));
+
+				List<DiscussionPost> discussionPosts = populateForum.populateDiscussionPosts(forumDiscussions.stream()
+						.map(ForumDiscussion::getId)
+						.collect(Collectors.toList()));
+				actualCourse.addDiscussionPosts(discussionPosts);
+				
+				PopulateCourseEvent populateCourseEvent = new PopulateCourseEvent(dataBase, webService);
+				actualCourse.addCourseEvents(populateCourseEvent.populateCourseEvents(actualCourse.getId()));
+				
 				actualCourse.setUpdatedCourseData(ZonedDateTime.now());
 
 				if (checkBoxGradeItem.isSelected() && !isCancelled()) {
@@ -691,9 +725,11 @@ public class WelcomeController implements Initializable {
 							.clear();
 					updateMessage(I18n.get("label.loadingqualifier"));
 					// Establecemos calificador del curso
-					List<GradeItem> gradeItems = CreatorUBUGradesController.createGradeItems(actualCourse.getId(),
+					PopulateGradeItem populateGradeItem = new PopulateGradeItem(dataBase, webService);
+					List<GradeItem> gradeItems = populateGradeItem.createGradeItems(actualCourse.getId(),
 							controller.getUser()
 									.getId());
+					
 					actualCourse.setGradeItems(new HashSet<>(gradeItems));
 					// Establecemos las estadisticas
 					Stats stats = new Stats(actualCourse);
@@ -705,7 +741,9 @@ public class WelcomeController implements Initializable {
 							.forEach(m -> m.getActivitiesCompletion()
 									.clear());
 					updateMessage(I18n.get("label.loadingActivitiesCompletion"));
-					CreatorUBUGradesController.createActivitiesCompletionStatus(actualCourse.getId(),
+					PopulateActivityCompletion populateActivityCompletion = new PopulateActivityCompletion(dataBase,
+							webService);
+					populateActivityCompletion.creeateActivitiesCompletionStatus(actualCourse.getId(),
 							actualCourse.getEnrolledUsers());
 					actualCourse.setUpdatedActivityCompletion(ZonedDateTime.now());
 				}
@@ -724,7 +762,7 @@ public class WelcomeController implements Initializable {
 								LOGGER.info("Log descargado");
 								updateMessage(I18n.get("label.parselog"));
 								Logs logs = new Logs(downloadLogController.getServerTimeZone());
-								LogCreator.parserResponse(logs, response);
+								LogCreator.parserResponse(logs, response.body().charStream());
 								actualCourse.setLogs(logs);
 
 							} else {
@@ -743,12 +781,11 @@ public class WelcomeController implements Initializable {
 									.filter(user -> !actualCourse.getEnrolledUsers()
 											.contains(user))
 									.collect(Collectors.toSet());
-							List<String> ids = notEnrolled.stream()
+							List<Integer> ids = notEnrolled.stream()
 									.map(EnrolledUser::getId)
-									.map(Object::toString)
 									.collect(Collectors.toList());
 							LOGGER.info("Los ids de usuarios no matriculados: {}", ids);
-							CreatorUBUGradesController.searchUser(ids);
+							populateEnrolledUsersCourse.searchUser(ids);
 							actualCourse.setNotEnrolledUser(notEnrolled);
 							actualCourse.setUpdatedLog(ZonedDateTime.now());
 
@@ -766,11 +803,10 @@ public class WelcomeController implements Initializable {
 						}
 					}
 				}
-				if(!isCancelled()) {
+				if (!isCancelled()) {
 					updateMessage(I18n.get("label.savelocal"));
 					saveData();
 				}
-			
 
 				return null;
 			}
@@ -799,15 +835,21 @@ public class WelcomeController implements Initializable {
 		}
 
 		try {
-
-			JSONObject jsonObject = CreatorUBUGradesController
-					.getJSONObjectResponse(new CoreCourseSearchCourses(text, 0, 50));
-			List<Course> courses = CreatorUBUGradesController.searchCourse(jsonObject);
+			PopulateCourse populateCourse = new PopulateCourse(controller.getDataBase(), controller.getWebService());
+			CoreCourseSearchCourses coreCourseSearchCourses = new CoreCourseSearchCourses();
+			coreCourseSearchCourses.setBySearch(text);
+			JSONObject jsonObject = UtilMethods.getJSONObjectResponse(controller.getWebService(),
+					coreCourseSearchCourses);
+			List<Course> courses = populateCourse.searchCourse(jsonObject);
 
 			if (courses.isEmpty()) {
 				UtilMethods.warningWindow(I18n.get("warning.nofound"));
 
 			} else {
+
+				populateCourse.createCourseAdministrationOptions(courses.stream()
+						.map(Course::getId)
+						.collect(Collectors.toList()));
 				Collections.sort(courses, Comparator.comparing(Course::hasCourseAccess, Comparator.reverseOrder())
 						.thenComparing(Course.getCourseComparator()));
 				listViewSearch.getItems()

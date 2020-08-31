@@ -1,156 +1,83 @@
 \capitulo{4}{Técnicas y herramientas}
+En este apartado se detallarán las técnicas y herramientas usadas durante el desarrollo del proyecto.
 
-En este apartado se explicarán las técnicas y herramientas usadas para el desarrollo del proyecto.
+\section{Técnicas y metodologías}
+\subsection{Metodología SCRUM}
+Para la gestión del proyecto se ha seguido la metodología ágil SCRUM \cite{wiki:scrum}, aplicando una estrategia de desarrollo incremental. El flujo de trabajo está basado en \emph{sprints}, que son los periodos en los que se realizan las tareas. Al final de cada \emph{sprint} se presentan los avances logrados y un resultado intermedio del proyecto desarrollado. Se realizan revisiones y reuniones al final de cada \emph{sprint}, en estas reuniones se especifican las metas para el próximo \emph{sprint}.
 
-\section{Metodología SCRUM}
+\subsection{Control de versiones}
+Se ha empleado la herramienta Git \cite{wiki:git} para el control de versiones. Para el uso de esta se ha empleado la herramienta incluida en eclipse.
 
-Se ha seguido una de las metodologías ágiles conocida como SCRUM adaptada para una sola persona con reuniones semanales en vez de diarias. Con una estrategia iterativa (incremental) con entregas parciales en los \textit{sprints}.
+Se ha usado como repositorio de \emph{hosting} \href{https://github.com/}{GitHub} y la extensión \href{https://www.zenhub.com/}{ZenHub} para la gestión ágil.
 
-\section{Moodle}
-\href{https://moodle.org}{Moodle} es una herramienta de gestión del aprendizaje y de distribución libre. Está desarrollado principalmente en Linux usando Apache, PostgreSQL/MySQL/MariaDB y PHP (también conocida como plataforma LAMP) \cite{noauthor_35/instalacion_nodate}.
+\subsection{Codacy}
+\href{https://www.codacy.com/}{Codacy} es una herramienta de análisis automático de código. Se emplea para detectar código duplicado y \emph{code smells}, entre otros. Se ha utilizado esta herramienta para asegurar una calidad de código adecuada.
 
-Ayuda a los docentes en la educación a distancia y en la gestión de los diferentes modos de calificación.
+\subsection{Code Climate}
+\href{https://codeclimate.com/}{Code Climate} es una herramienta similar a la anterior que evalúa la mantenibilidad del código de un programa. Para ello detecta la duplicidad y la complejidad del código. Se ha empleado esta herramienta para garantizar un buen código.
 
+\section{Lenguajes y bibliotecas}
+\subsection{Java}
+Java \cite{java} es un lenguaje de programación multiplataforma y orientado a objetos. Se ha empleado este lenguaje porque la aplicación donde se integra este proyecto está desarrollada en Java.
 
+\subsection{JavaFX}
+JavaFX \cite{JavaFX} es un conjunto de paquetes gráficos y herramientas para el diseño y despliegue de aplicaciones, que funcionan en diversas plataformas al igual que Java. Esta tecnología es accesible desde una aplicación desarrollada en Java.
 
+Soporta la personalización de los componentes gráficos mediante el uso de hojas de estilos en cascada (CSS) \cite{CSS}. Este simple sistema se puede modificar el diseño (p. ej. los colores, la fuente y los espaciados) de los componentes.
 
-En la página oficial de Moodle ofrece varias versiones de prueba que cualquiera puede acceder con unos usuarios y contraseña predefinidos.
+Para el desarrollo de interfaces se emplean herramientas interactivas que permiten diseñar interfaces de usuario rápidamente.
 
-\section{REST API}
-REST \cite{noauthor_api_nodate} son todas las interfaces entre sistemas que usa HTTP para conseguir datos o realizar operaciones sobre esos datos en todos los formatos posibles, como puede ser XML y JSON.
+En este proyecto se ha utilizado una biblioteca de extensión de JavaFX, denominado \href{https://github.com/controlsfx/controlsfx}{ControlsFX}, la cual incluye más componentes y herramientas complementarias.
 
-En Moodle la funcionalidad de REST API se conoce como \textit{Web Services} que a partir de un \textit{token} generado previamente por la función \textbf{\textit{moodle\_mobile\_app}} permite el acceso a otras funciones del servicio. Puede ser desde ver las calificaciones de alumnos hasta crear actividades o tareas.
+\subsection{JavaScript}
+JavaScript (JS) \cite{JavaScript} es un lenguaje de programación interpretado, orientado a objetos, imperativo, basado en prototipos y 
+dinámicamente tipado. Aunque, este lenguaje es utilizado principalmente para páginas web en el lado del cliente, se puede utilizar para otros propósitos.
 
-\section{Java}
-Java es un lenguaje de programación orientado a objetos, diseñado para escribir el código una vez y ejecutar en cualquier otro dispositivo sin tener que recompilar siempre y cuando se tenga instalado\textit{Java Runtime Enviroment (JRE)}. Actualmente es uno de los lenguajes programación con mayor popularidad de uso, tanto en el ámbito de desarrollo como en el de usuarios.
-
-El desarrollo, al igual que el anterior proyecto UBUGrades y UBULogs, se ha seguido con Java 8 al ser una edición con soporte extendido \cite{noauthor_oracle_nodate}.
-
-\section{JavaFX}
-Es un paquete gráfico que permite crear aplicación interactivas. Viene incluido en Java 8 dentro de la \textit{Java Development Kit (JDK)} y en \textit{Java Runtime Enviroment (JRE)} por lo que se puede ejecutar en otro dispositivo sin tener que instalar librerías adicionales.
-
-\subsection{Scene Builder}
-Es una herramienta que permite diseñar de una forma sencilla ventanas gráficas sin programar código. Los elementos de la ventana se añaden arrastrando y soltando (\textit{Drag and drop}) dentro de la herramienta.
-
-\imagen{SceneBuilder}{Herramienta de Scene Builder}
-
-Con Scene Builder generará un archivo FXML, muy parecido al formato XML, donde se guarda las posiciones de los elementos de la ventana gráfica. Desde Java solo tiene que cargar el fichero FXML.
-
-\section{JavaScript}
-Lenguaje de programación orientado a páginas web, usado principalmente en el lado del cliente. Al ser compatible con todos los navegadores web del mercado, se ha vuelto un estándar de facto.
-
-En el proyecto se sigue usando Charts.js para la visualización las nuevas gráficas.
-
-\section{CodePen}
-\href{https://codepen.io}{CodePen} es una herramienta web que permite crear prototipos de páginas HTML, CSS y JavaScript y ver los resultados en tiempo real.
-
-Usado para probar prototipos de gráficas con los registros del curso.
-
-\section{JSON}
-
-\textit{JavaScript Object Notation (JSON)}, formato de texto sencillo para el intercambio de datos. En principio se usaba como subconjunto de notación en JavaScript pero debido a su masiva popularidad en otros ámbitos, se considera hoy en día como lenguaje independiente.
-
-Los datos de Moodle que se recibe mediante REST API está en formato de texto JSON.
-
-\section{Eclipse}
-
-\href{https://www.eclipse.org/}{Eclipse} es uno de los entornos de desarrollo (IDE) más famosos, junto con
-\href{https://www.jetbrains.com}{\textit{IntelliJ IDEA}} y \href{https://netbeans.org/}{\textit{NetBeans}}, para Java. De código abierto con la capacidad de añadir nuevas características mediante plugins.
-
-Se ha decidido emplear Eclipse frente a las otras alternativas por comodidad y es la herramienta que se maneja durante la carrera.
-
-\section{GitHub}
-Es una plataforma de desarrollo colaborativo para alojar proyectos usando el sistema de control de versiones Git. UBUGrades está alojado en GitHub.
-
-Adicionalmente se ha usado la extensión del navegador ZenHub que se integra en GitHub y permite el uso de \textit{canvas} para la organización de los \textit{issues}.
-
-
-\section{LaTeX}
-
-Sistema de composición de textos dirigido a la creación de documentos con una buena calidad tipográfica. Actualmente muy popular en el ámbito de la investigación con artículos y libros científicos.
-
-El presente proyecto está realizado en \LaTeX usando las versiones portables de MiKTeX y TeXstudio. 
-
-\subsection{MiKTeX}
-
-\href{https://miktex.org/}{MiKTeX} es una distribución de \LaTeX diferentes plataformas de sistemas operativos, es de código libre y viene incluido con múltiples paquetes de tipografías y macros.
-
-\subsection{TeXstudio}
-
-\href{https://www.texstudio.org/}{TeXstudio} es un entorno de desarrollo integrado (IDE) de edición de texto, código abierto con resaltado de sintaxis orientado a la creación de documentos \LaTeX.
-
-\section{Zotero}
-\href{https://www.zotero.org/}{Zotero} es un gestor de referencias bibliográficas de código libre creado por el Center for History and New Media de la Universidad George Mason.
-
-\section{Python}
-\href{https://www.python.org/}{Python} es un lenguaje de programación interpretado, orientado a objetos, dinámicamente tipado y de alto nivel. Este lenguaje es muy atractivo para crear prototipos de forma sencilla y rápida. 
-
-Se ha empleado Python con el IDE \href{https://jupyter.org/}{Jupyter Notebook} programando varias funciones de utilidad para el programador. Una de estas funcionalidades genera código Java automáticamente.
-
-\section{Dependencias externas de Java}
-En este apartado se explicarán las librerías externas de Java usadas durante el desarrollo del proyecto. 
-
-\subsection{Apache Commons CSV}
-\href{https://commons.apache.org/proper/commons-csv/
-}{Apache Commons CSV 1.6} permite la lectura y/o escritura de textos en \textit{comma-separated values} comúnmente conocido como formato \textbf{CSV}. 
-El proyecto lo emplea para separar cada uno de las columnas y sus elementos de los registros del curso.
-
-\subsection{Apache Commons Math}
-\href{https://commons.apache.org/proper/commons-math/}{Apache Commons Math
-3.6.1} es una librería orientado a las matemáticas y estadísticas.
-Nos posibilita sacar datos estadísticos como las medias, desviaciones, máximos y mínimos solo enviando los valores.
-
-Utilizado en el proyecto para las medias del curso tanto en las calificaciones como los registros.
-
-\subsection{Gson}
-\href{https://github.com/google/gson}{Gson 2.8.5} ofrece la importación y exportación de textos JSON a partir de los métodos \textit{toJson()} y \textit{fromJson()}.
-
-Ignorado de momento para el proyecto. A implementar en el futuro para guardar los datos de los registros de todos los usuarios.
-
-\subsection{SLF4J y Log4j}
-Ambas librerías está dedicado a registrar en fichero y/o consola las acciones realizadas durante la ejecución del programa. De gran utilidad para encontrar errores del programa. 
-Hay que tener en cuenta que \href{https://www.slf4j.org/}{SLF4J} es la capa de abstracción y \href{https://logging.apache.org/log4j}{Log4j} la implementación.
-
-\subsection{jsoup}
-\href{https://jsoup.org/}{jsoup 1.11.3} es una librería que trabaja con textos HTML, desde la descarga de páginas web hasta su tratamiento y extracción de datos de manera sencilla y cómoda.
-
-Ha resultado ser realmente útil, muy polivalente en las funcionalidades. Empleado para la descarga de los registros, las imágenes de los usuarios y analizar el contenido en una de las funciones de Moodle que devuelve como HTML.
-
-\subsection{ThreeTen Extra}
-\href{https://www.threeten.org/threeten-extra/}{ThreeTen Extra 1.5.0} proporciona varias formas de medir el tiempo no disponibles en el paquete de Java Time. Las clases de ThreeTen Extra son complementarias y extienden de Java Time.
-
-Ejemplos aplicados en el proyecto han sido la combinación de número de semana y año, o trimestre y año.
-
-\section{Librerías de JavaScript}
-
-Al manejar una ventana de navegador web para mostrar las gráficas, se han apoyado por varias librerías de JavaScript.
+Se ha empleado este lenguaje junto a HTML para crear y gestionar las gráficas.
 
 \subsection{Chart.js}
-\href{https://www.chartjs.org/}{Chart.js} es una librería de de visualización de datos convertidos en múltiples tipos de gráficas.
+\href{https://www.chartjs.org/}{Chart.js} es una biblioteca JavaScript de código abierto y gratuito. Se emplea para representar gráficas a partir de un conjunto de datos. Incluye una gran variedad de gráficas interactivas. Se ha decidido utilizar esta biblioteca porque el proyecto anterior ya lo usaba. Tiene licencia de uso MIT \cite{chartjsLicense}.
 
-Se ha mantenido está librería por su facilidad de crear las gráficas y sus múltiples opciones. Sin embargo por un error de la librería en el anterior proyecto, se ha actualizado Chart.js a la última versión disponible \href{https://www.chartjs.org/dist/2.8.0/Chart.min.js}{v2.8.0}.
+\subsection{Highcharts}
+\href{https://www.highcharts.com/}{Highcharts} es una biblioteca escrita en JavaScript basada en gráficos vectoriales escalables (SVG). Esta biblioteca proporciona una gran variedad de gráficas, tanto en 2D como en 3D. Tiene una licencia que permite el uso gratuito para un propósito no comercial. Se ha empleado esta biblioteca para el diagrama de dispersión 3D.
 
-\subsection{Google Charts}
+\subsection{Apache Commons Math}
+\href{http://commons.apache.org/proper/commons-math/}{\emph{Apache Commons Math}} es una biblioteca de Java que contiene funciones matemáticas y estadísticas no disponible en el propio lenguaje. Se ha utilizado esta biblioteca porque en el apartado de \emph{machine learning} contiene una implementación de los principales algoritmos de \emph{clustering}. Tiene licencia Apache \cite{apacheLicense}.
 
-\href{https://developers.google.com/chart/}{Google Charts} es una librería gratuita de gráficas muy fáciles de usar, dispone de múltiples tipos de gráficas interactivas. En sus términos y condiciones de uso no permite descargar el fichero JavaScript y usarlo en local \cite{noauthor_frequently_nodate}. En vez de eso, hay que utilizar el enlace que proporciona Google \cite{noauthor_quick_nodate}.
+\subsection{Smile}
+\href{https://haifengl.github.io/}{Smile} es una biblioteca en Java de aprendizaje automático (\emph{machine learning}). Incluye tanto aprendizaje supervisado como no supervisado. En este proyecto se ha empleado sus implementaciones de algoritmos de \emph{clustering}. Tiene una gran variedad de algoritmos para realizar agrupaciones. Tiene licencia LGPL \cite{smileLicense}.
 
-Se usa para mostrar la tabla de calificaciones de los alumnos. 
+Se han valorado otras bibliotecas de \emph{clustering}, pero sus licencias han resultado ser incompatibles con el proyecto.
+\begin{itemize}
+	\item Weka que tiene licencia GPL \cite{wekaLicense}.
+	\item ELKI Data Mining que tiene licencia AGPL \cite{ELKILicense}.
+\end{itemize}
 
-\subsection{color-hash}
 
-color-hash \cite{zeng_generate_2019} es una librería que permite generar colores en función de la cadena de texto usado.
+\section{Herramientas de desarrollo}
+\subsection{Eclipse}
+\href{https://www.eclipse.org/}{Eclipse} es un entorno de desarrollo integrado multiplataforma y de código abierto. Se emplea principalmente para desarrollar aplicaciones Java, aunque también soporta otros lenguajes.
 
-\subsection{html2canvas}
+\subsection{Scene Builder}
+\href{https://gluonhq.com/products/scene-builder/}{Scene Builder} es una herramienta para la creación de diseños gráficos de JavaFX. Permite crear diferentes contenedores o \emph{layouts}, que definen la posición y el orden de los elementos. Esta herramienta posibilita de manera sencilla la incorporación de componentes a los diversos contenedores y una visualización del resultado.
 
-\href{https://html2canvas.hertzen.com/}{html2canvas}
-Realiza capturas de pantalla en una página web con JavaScript.
+Oracle proporciona una herramienta de este estilo de forma gratuita, aunque se ha optado por usar la aplicación de Scene Builder de Gluon que permite la incorporación de bibliotecas de extensión de JavaFX.
 
-\section{Paquete de iconos Font Awesome}
+\subsection{Maven}
+\href{http://maven.apache.org/}{Maven} es una herramienta software para la creación y gestión de proyectos Java. Esta herramienta es especialmente útil para la gestión de bibliotecas y dependencias. Se usa para compilar, generar documentación y ejecución de pruebas.
 
-Paquete de iconos \cite{noauthor_font_nodate} \textit{open source} que también se emplea en Moodle. 
-Usado para mostrar los componetes de los registros que no existen iconos en Moodle.
+\section{Herramientas de documentación}
+\subsection{\LaTeX}
+\href{https://www.latex-project.org/}{\LaTeX} es sistema de elaboración de documentos. Este sistema está basado principalmente en comandos. Es usado frecuentemente para la generación de artículos y documentos científicos.
 
-\section{Sonarqube y Codacy}
+\subsection{MiKTeX}
+\href{https://miktex.org}{MiKTeX} es una distribución de \LaTeX{} para Windows. Esta aplicación se encarga de gestionar los componentes y paquetes, tanto el proceso de instalación como el de actualización.
 
-\href{https://www.sonarqube.org/}{SonarQube} y \href{https://www.codacy.com/}{Codacy} son herramientas de evaluación del código fuente, muestra los códigos duplicado, errores, vulnerabilidades y malas prácticas de programación. 
-Se instaló el plugin de Eclipse de Sonarqube llamado \href{https://www.sonarlint.org/}{SonarLint}.
+\subsection{TeXstudio}
+\href{https://www.texstudio.org/}{TeXstudio} es un editor de documentos \LaTeX{}. Incluye un corrector ortográfico y un resaltado de sintaxis. Esta aplicación necesita de una distribución \LaTeX{} para que funcione, en nuestro caso MiKTeX.
+
+\subsection{BibItNow!}
+\href{https://addons.mozilla.org/es/firefox/addon/bibitnow/}{BibItNow!} es una extensión del navegador para citar paginas web. Incluye la opción de generar el Bibtex, que es el formato utilizado por \LaTeX{} para la bibliografía.
+
+\subsection{PlantUML}
+\href{https://plantuml.com/es/}{PlantUML} es una herramienta de código abierto para crear diagramas UML. Los diagramas son generados a partir de un lenguaje simple e intuitivo. Se ha empleado esto para la realización de diagramas de clases y diagramas de secuencia entre otros, utilizando la herramienta de forma \emph{online}.

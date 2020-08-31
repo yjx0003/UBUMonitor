@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.webservice.webservices;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -9,7 +10,7 @@ import org.json.JSONTokener;
 
 import es.ubu.lsi.ubumonitor.controllers.load.Connection;
 import okhttp3.FormBody;
-import okhttp3.HttpUrl;
+import okhttp3.FormBody.Builder;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -98,50 +99,82 @@ public class WebService {
 	}
 
 	public Response getResponse(WSFunction wsFunction) throws IOException {
-		return getResponse(wsFunction, null);
-	}
 
-	public Response getResponse(WSFunction wsFunction, RequestBody requestBody) throws IOException {
-
-		wsFunction.clearParameters();
+		
 		wsFunction.addToMapParemeters();
-		HttpUrl.Builder httpBuilder = HttpUrl.parse(hostWithWS)
-				.newBuilder();
 
-		httpBuilder.addQueryParameter("wsfunction", wsFunction.getWSFunction()
+		Builder formBody = new FormBody.Builder();
+
+		formBody.add("wsfunction", wsFunction.getWSFunction()
 				.toString());
-		httpBuilder.addQueryParameter("moodlewsrestformat", moodleWSRestFormat);
-		httpBuilder.addQueryParameter("wstoken", token);
-
-		for (Map.Entry<String, String> param : wsFunction.getParameters()
-				.entrySet()) {
-			httpBuilder.addQueryParameter(param.getKey(), param.getValue());
-
+		formBody.add("moodlewsrestformat", moodleWSRestFormat);
+		formBody.add("wstoken", token);
+		
+		for (String key : wsFunction.getParameters()
+				.keySet()) {
+			jsonToQueryParam(formBody, new StringBuilder(key), wsFunction.getParameters()
+					.get(key));
 		}
-		Request.Builder builder = new Request.Builder().url(httpBuilder.build());
 
-		if (requestBody != null) {
-			builder.post(requestBody);
-		}
+		Request.Builder builder = new Request.Builder().url(hostWithWS);
+
+		builder.post(formBody.build());
 
 		return Connection.getResponse(builder.build());
 
 	}
 
+	private void jsonToQueryParam(Builder formBodyBuilder, StringBuilder stringBuilder, Object param) {
+
+		
+		if (param instanceof JSONObject) {
+			JSONObject jsonObject = (JSONObject) param;
+			for (String key : jsonObject.keySet()) {
+				StringBuilder newStringBuilder = new StringBuilder(stringBuilder);
+				newStringBuilder.append("[");
+				newStringBuilder.append(key);
+				newStringBuilder.append("]");
+				jsonToQueryParam(formBodyBuilder, newStringBuilder, jsonObject.get(key));
+			}
+		} else if (param instanceof Map) {
+			Map<?, ?> map = (Map<?, ?>) param;
+			for (Map.Entry<?, ?> entry : map.entrySet()) {
+				StringBuilder newStringBuilder = new StringBuilder(stringBuilder);
+				newStringBuilder.append("[");
+				newStringBuilder.append(entry.getKey());
+				newStringBuilder.append("]");
+				jsonToQueryParam(formBodyBuilder, newStringBuilder, entry.getValue());
+			}
+		} else if (param instanceof Iterable) {
+			Iterable<?> iterable = (Iterable<?>) param;
+			Iterator<?> iterator = iterable.iterator();
+			for (int i = 0; iterator.hasNext(); ++i) {
+				StringBuilder newStringBuilder = new StringBuilder(stringBuilder);
+				newStringBuilder.append("[");
+				newStringBuilder.append(i);
+				newStringBuilder.append("]");
+				jsonToQueryParam(formBodyBuilder, newStringBuilder, iterator.next());
+			}
+
+		} else {
+			formBodyBuilder.add(stringBuilder.toString(), param.toString());
+		}
+	}
+
 	public Response getAjaxResponse(WSFunction... wsFunctions) throws IOException {
-		return WebService.getResponse(hostWithAjax + "?sesskey=" + sesskey, wsFunctions);
+		return WebService.getAjaxResponse(hostWithAjax + "?sesskey=" + sesskey, wsFunctions);
 	}
 
 	public static Response getAjaxResponse(String host, WSFunction... wsFunctions) throws IOException {
 		String hosturl = host + "/lib/ajax/service.php";
-		return getResponse(hosturl, wsFunctions);
+		return ajaxResponse(hosturl, wsFunctions);
 	}
 
 	public static Response getAjaxResponse(String host, String sesskey, WSFunction... wsFunctions) throws IOException {
-		return getResponse(host + "/lib/ajax/service.php?sesskey=" + sesskey, wsFunctions);
+		return ajaxResponse(host + "/lib/ajax/service.php?sesskey=" + sesskey, wsFunctions);
 	}
 
-	private static Response getResponse(String host, WSFunction... wsFunctions) throws IOException {
+	private static Response ajaxResponse(String host, WSFunction... wsFunctions) throws IOException {
 		JSONArray jsonArray = new JSONArray();
 
 		for (int i = 0; i < wsFunctions.length; ++i) {

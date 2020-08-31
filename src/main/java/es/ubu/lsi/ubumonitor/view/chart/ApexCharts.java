@@ -7,12 +7,15 @@ import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import javafx.scene.web.WebView;
 
 public abstract class ApexCharts extends Chart {
 
-	public ApexCharts(MainController mainController, ChartType chartType) {
+	private WebView webView;
+	public ApexCharts(MainController mainController, ChartType chartType, WebView webView) {
 		super(mainController, chartType);
 		useLegend = true;
+		this.webView = webView;
 	}
 
 	@Override
@@ -28,12 +31,13 @@ public abstract class ApexCharts extends Chart {
 	}
 
 	@Override
-	public void export(File file) throws IOException {
+	public void exportImage(File file) throws IOException {
 		UtilMethods.snapshotNode(file, webView);
+		UtilMethods.showExportedFile(file);
 	}
 	
 	public String getXScaleLabel() {
-		MainConfiguration mainConfiguration = controller.getMainConfiguration();
+		
 		JSObject jsObject = new JSObject();
 
 		boolean display = mainConfiguration.getValue(MainConfiguration.GENERAL, "displayXScaleTitle");
@@ -53,7 +57,7 @@ public abstract class ApexCharts extends Chart {
 	}
 
 	public String getYScaleLabel() {
-		MainConfiguration mainConfiguration = controller.getMainConfiguration();
+	
 		JSObject jsObject = new JSObject();
 
 		boolean display = mainConfiguration.getValue(MainConfiguration.GENERAL, "displayYScaleTitle");

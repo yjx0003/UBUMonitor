@@ -2,7 +2,16 @@ package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Map.Entry;
 
@@ -15,27 +24,36 @@ import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigurationController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.controllers.load.Connection;
+import es.ubu.lsi.ubumonitor.controllers.load.LogCreator;
 import es.ubu.lsi.ubumonitor.export.CSVBuilderAbstract;
 import es.ubu.lsi.ubumonitor.export.CSVExport;
 import es.ubu.lsi.ubumonitor.export.dashboard.Excel;
 import es.ubu.lsi.ubumonitor.export.photos.UserPhoto;
 import es.ubu.lsi.ubumonitor.model.Course;
+import es.ubu.lsi.ubumonitor.model.LogStats;
+import es.ubu.lsi.ubumonitor.model.Logs;
+import es.ubu.lsi.ubumonitor.persistence.Serialization;
 import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.FileUtil;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.PopupWindow.AnchorLocation;
+import javafx.stage.Stage;
 import okhttp3.HttpUrl;
 
 public class MenuController {
@@ -258,7 +276,7 @@ public class MenuController {
 					ConfigurationController.loadConfiguration(controller.getMainConfiguration(), file.toPath());
 					changeConfiguration();
 					ConfigHelper.setProperty("configurationFolderPath", file.getParent());
-				}, FileUtil.JSON);
+				}, false, FileUtil.JSON);
 
 	}
 
@@ -350,6 +368,101 @@ public class MenuController {
 				.addPathSegment(AppInfo.VERSION)
 				.build();
 		UtilMethods.openURL(url.toString());
+	}
+
+	public void exportCourse() {
+		try {
+			Course course = controller.getActualCourse();
+			Path source = controller.getHostUserModelversionDir()
+					.resolve(controller.getCourseFile(course));
+			LocalDate now = LocalDate.now();
+			Path destDir = controller.getHostUserModelversionArchivedDir();
+
+			TextInputDialog textInputDialog = new TextInputDialog(
+					"(" + now.format(DateTimeFormatter.ISO_DATE) + ") " + controller.getCoursePathName(course));
+
+			textInputDialog.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
+			textInputDialog.setHeaderText(I18n.get("text.coursename"));
+			textInputDialog.setContentText(I18n.get("text.coursenametextfield"));
+			textInputDialog.getEditor().setMinWidth(500);
+			
+			Stage stageAlert = (Stage) textInputDialog.getDialogPane()
+					.getScene()
+					.getWindow();
+			stageAlert.getIcons()
+					.add(new Image("/img/logo_min.png"));
+			Button okButton = (Button) textInputDialog.getDialogPane()
+					.lookupButton(ButtonType.OK);
+			okButton.addEventFilter(ActionEvent.ACTION, event -> {
+				Path dest = destDir.resolve(Paths.get(textInputDialog.getEditor()
+						.getText()));
+				if (dest.toFile()
+						.isFile()) {
+					event.consume();
+					ButtonType buttonType = UtilMethods.confirmationWindow("text.override");
+					if (buttonType == ButtonType.OK) {
+						textInputDialog.close();
+						exportCourse(source, destDir, dest);
+					}
+				} else {
+					textInputDialog.close();
+					exportCourse(source, destDir, dest);
+
+				}
+			});
+
+			textInputDialog.showAndWait();
+		} catch (Exception e) {
+			UtilMethods.errorWindow("Error when archiving the course", e);
+		}
+	}
+
+	public void exportCourse(Path source, Path destDir, Path dest) {
+		try {
+			Files.createDirectories(destDir);
+			Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING);
+			UtilMethods.infoWindow(I18n.get("info.courseexported"));
+		} catch (IOException e) {
+			UtilMethods.errorWindow("Error when archiving the course", e);
+		}
+	}
+
+	public void importLogs() {
+		UtilMethods.fileAction(null, ConfigHelper.getProperty("importLogsFolderPath", "./"), controller.getStage(),
+				FileUtil.FileChooserType.OPEN, file -> {
+					ConfigHelper.setProperty("importLogsFolderPath", file.toString());
+					createServiceImportLogs(file);
+				}, false, FileUtil.CSV);
+	}
+
+	public void createServiceImportLogs(File file) {
+		Task<Void> task = getImportLogsWorker(file);
+		task.setOnSucceeded(
+				e -> UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), true));
+		task.setOnFailed(e -> UtilMethods.errorWindow("Cannot import the log", e.getSource()
+				.getException()));
+		Thread thread = new Thread(task);
+		thread.setDaemon(true);
+		thread.start();
+	}
+
+	private Task<Void> getImportLogsWorker(File file) {
+
+		return new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				LogCreator.setDateTimeFormatter(ZoneId.systemDefault());
+				Logs logs = new Logs(ZoneId.systemDefault());
+				Course course = controller.getActualCourse();
+				LogCreator.parserResponse(logs, new FileReader(file));
+				course.setLogs(logs);
+				course.setLogStats(new LogStats(logs.getList()));
+				Serialization.encrypt(controller.getPassword(), controller.getHostUserModelversionDir()
+						.resolve(controller.getCourseFile(course))
+						.toString(), controller.getDataBase());
+				return null;
+			}
+		};
 	}
 
 }

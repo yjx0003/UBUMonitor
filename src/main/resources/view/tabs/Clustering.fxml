@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+
+<TabPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.controllers.tabs.ClusteringController">
+  <tabs>
+    <Tab closable="false" text="%clustering.standard">
+        <fx:include fx:id="classic" source="./clustering/Classic.fxml" />
+    </Tab>
+    
+    <Tab closable="false" text="%clustering.hierarchical">
+        <fx:include fx:id="hierarchical" source="./clustering/Hierarchical.fxml" />
+    </Tab>
+  </tabs>
+</TabPane>

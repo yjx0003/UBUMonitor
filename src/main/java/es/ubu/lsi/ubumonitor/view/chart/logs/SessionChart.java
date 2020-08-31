@@ -19,7 +19,6 @@ import org.apache.commons.csv.CSVPrinter;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.LogLine;
 import es.ubu.lsi.ubumonitor.model.Session;
@@ -52,8 +51,7 @@ public class SessionChart extends ChartjsLog {
 			GroupByAbstract<T> groupBy) {
 
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
+
 		int timeInterval = mainConfiguration.getValue(chartType, "timeInterval");
 
 		LocalDate dateStart = datePickerStart.getValue();
@@ -170,8 +168,7 @@ public class SessionChart extends ChartjsLog {
 	private <E, T extends Serializable> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs,
 			GroupByAbstract<T> groupBy) throws IOException {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
+
 		int timeInterval = mainConfiguration.getValue(chartType, "timeInterval");
 
 		LocalDate dateStart = datePickerStart.getValue();
@@ -216,8 +213,7 @@ public class SessionChart extends ChartjsLog {
 			List<E> typeLogs, GroupByAbstract<T> groupBy) throws IOException {
 
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
+
 		int timeInterval = mainConfiguration.getValue(chartType, "timeInterval");
 
 		LocalDate dateStart = datePickerStart.getValue();
@@ -255,7 +251,7 @@ public class SessionChart extends ChartjsLog {
 
 		jsObject.putWithQuote("typeGraph", "bar");
 		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",stacked: true,ticks:{suggestedMax:"
-				+ getSuggestedMax() + ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + ",stacked: true}]}");
+				+ getSuggestedMax(textFieldMax.getText()) + ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + ",stacked: true}]}");
 		jsObject.put("tooltips",
 				"{callbacks:{label:function(a,e){return e.datasets[a.datasetIndex].label+': '+a.yLabel+' (avg: '+Math.round(a.yLabel/e.datasets[a.datasetIndex].n[a.index]*100)/100+')'},afterLabel:function(a,e){return'"
 						+ I18n.get("text.session") + "'+e.datasets[a.datasetIndex].n[a.index]}}}");
@@ -269,9 +265,7 @@ public class SessionChart extends ChartjsLog {
 	}
 
 	@Override
-	public String getYAxisTitle() {
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
+	public String getYAxisTitle() {	
 
 		return MessageFormat.format(I18n.get(getChartType() + ".yAxisTitle"),
 				(int) mainConfiguration.getValue(chartType, "timeInterval"));

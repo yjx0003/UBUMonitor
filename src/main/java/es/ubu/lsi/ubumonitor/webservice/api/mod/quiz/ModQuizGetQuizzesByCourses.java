@@ -1,26 +1,27 @@
 package es.ubu.lsi.ubumonitor.webservice.api.mod.quiz;
 
-import java.util.Set;
+import java.util.Collection;
 
-import es.ubu.lsi.ubumonitor.webservice.webservices.Util;
-import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionAbstract;
+import es.ubu.lsi.ubumonitor.webservice.api.mod.forum.ModForumGetForumsByCourses;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionEnum;
 
-public class ModQuizGetQuizzesByCourses extends WSFunctionAbstract{
+/**
+ * Returns a list of quizzes in a provided list of courses, if no list is
+ * provided all quizzes that the user can view will be returned.
+ * 
+ * @author Yi Peng Ji
+ *
+ */
+public class ModQuizGetQuizzesByCourses extends ModForumGetForumsByCourses {
 
-	private Set<Integer> courseids;
+	public ModQuizGetQuizzesByCourses(Collection<Integer> courseids) {
+		super(WSFunctionEnum.MOD_QUIZ_GET_QUIZZES_BY_COURSES, courseids);
 
-	public ModQuizGetQuizzesByCourses(Set<Integer> courseids) {
-		super(WSFunctionEnum.MOD_QUIZ_GET_QUIZZES_BY_COURSES);
-		this.courseids = courseids;
 	}
-	
-	@Override
-	public void addToMapParemeters() {
-		Util.putIfNotNull(parameters, "courseids", courseids);
-	}
-	
 
-	
-	
+	public ModQuizGetQuizzesByCourses(int courseid) {
+		super(WSFunctionEnum.MOD_QUIZ_GET_QUIZZES_BY_COURSES, courseid);
+
+	}
+
 }

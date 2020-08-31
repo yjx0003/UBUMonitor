@@ -9,7 +9,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
@@ -20,17 +19,18 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import javafx.scene.control.TreeView;
 
 public class Violin extends ChartjsGradeItem {
 
-	public Violin(MainController mainController) {
-		super(mainController, ChartType.VIOLIN);
+	public Violin(MainController mainController, TreeView<GradeItem> treeViewGradeItem) {
+		super(mainController, ChartType.VIOLIN, treeViewGradeItem);
 	}
 
 	@Override
 	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
 		JSObject data = new JSObject();
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		
 		data.put("labels", "[" + UtilMethods.joinWithQuotes(selectedGradeItems) + "]");
 		JSArray datasets = new JSArray();
 
@@ -39,7 +39,7 @@ public class Violin extends ChartjsGradeItem {
 
 		}
 
-		datasets.add(createData(Controller.getInstance().getActualCourse().getEnrolledUsers(), selectedGradeItems,
+		datasets.add(createData(actualCourse.getEnrolledUsers(), selectedGradeItems,
 				I18n.get("text.all"),
 				!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")));
 
@@ -99,7 +99,7 @@ public class Violin extends ChartjsGradeItem {
 
 	@Override
 	public String getOptions(JSObject jsObject) {
-		MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+		
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 	
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalViolin" : "violin");
@@ -107,8 +107,8 @@ public class Violin extends ChartjsGradeItem {
 
 		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
 		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
-
-		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{min:0}}],xAxes:[{" + xLabel + ",ticks:{min:0}}]}");
+		
+		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{min:0,max:10}}],xAxes:[{" + xLabel + ",ticks:{min:0,max:10}}]}");
 		return jsObject.toString();
 	}
 
@@ -117,7 +117,7 @@ public class Violin extends ChartjsGradeItem {
 		List<String> header = new ArrayList<>();
 		header.add("violin");
 		header.add("stats");
-		List<GradeItem> gradeItems = getSelectedGradeItems();
+		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		for (GradeItem gradeItem : gradeItems) {
 			header.add(gradeItem.getItemname());
 		}
@@ -129,7 +129,7 @@ public class Violin extends ChartjsGradeItem {
 				exportCSV(printer, enrolledUser, gradeItems, "selected users");
 
 			}
-			MainConfiguration mainConfiguration = Controller.getInstance().getMainConfiguration();
+			
 			if((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")){
 				exportCSV(printer, controller.getActualCourse().getEnrolledUsers(), gradeItems, "all");
 			}

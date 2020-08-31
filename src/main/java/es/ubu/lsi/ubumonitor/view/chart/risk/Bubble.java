@@ -2,6 +2,7 @@ package es.ubu.lsi.ubumonitor.view.chart.risk;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -15,7 +16,6 @@ import org.apache.commons.csv.CSVPrinter;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
@@ -55,10 +55,8 @@ public class Bubble extends Chartjs {
 
 	@Override
 	public String getOptions(JSObject jsObject) {
-		
-		int limit = Controller.getInstance()
-				.getMainConfiguration()
-				.getValue(this.chartType, "limitDays");
+
+		int limit = mainConfiguration.getValue(this.chartType, "limitDays");
 
 		jsObject.putWithQuote("typeGraph", "bubble");
 		JSObject callbacks = new JSObject();
@@ -96,16 +94,13 @@ public class Bubble extends Chartjs {
 	public void update() {
 		String dataset = createDataset(getSelectedEnrolledUser());
 		String options = getOptions();
-		
+
 		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, options));
 	}
 
 	private String createDataset(List<EnrolledUser> selectedEnrolledUser) {
-		MainConfiguration mainConfiguration = Controller.getInstance()
-				.getMainConfiguration();
-		int limit = Controller.getInstance()
-				.getMainConfiguration()
-				.getValue(this.chartType, "limitDays");
+
+		int limit = mainConfiguration.getValue(this.chartType, "limitDays");
 		Map<Long, Map<Long, List<EnrolledUser>>> lastAccess = createLastAccess(selectedEnrolledUser, limit);
 		JSObject data = new JSObject();
 
@@ -188,9 +183,10 @@ public class Bubble extends Chartjs {
 		Map<Long, Map<Long, List<EnrolledUser>>> lastAccess = new TreeMap<>();
 
 		for (EnrolledUser user : selectedEnrolledUser) {
-			long diffCourse = Math.min(Math.max(0L, ChronoUnit.DAYS.between(user.getLastcourseaccess(), lastLogTime)),
-					limit);
-			long diffServer = Math.min(Math.max(0, ChronoUnit.DAYS.between(user.getLastaccess(), lastLogTime)), limit);
+			Instant lastCourseAccess = user.getLastcourseaccess() == null ? Instant.EPOCH : user.getLastcourseaccess();
+			Instant lastMoodle = user.getLastaccess() == null ? Instant.EPOCH : user.getLastaccess();
+			long diffCourse = Math.min(Math.max(0L, ChronoUnit.DAYS.between(lastCourseAccess, lastLogTime)), limit);
+			long diffServer = Math.min(Math.max(0, ChronoUnit.DAYS.between(lastMoodle, lastLogTime)), limit);
 
 			lastAccess.computeIfAbsent(diffCourse, k -> new TreeMap<>())
 					.computeIfAbsent(diffServer, k -> new ArrayList<>())
@@ -206,10 +202,9 @@ public class Bubble extends Chartjs {
 				.getDataBase()
 				.getUsers()
 				.getById(userid);
-		return getUsers()
-				.indexOf(user);
+		return getUsers().indexOf(user);
 	}
-	
+
 	@Override
 	public String getXAxisTitle() {
 
@@ -217,7 +212,7 @@ public class Bubble extends Chartjs {
 				.getUpdatedCourseData()
 				.format(Controller.DATE_TIME_FORMATTER));
 	}
-	
+
 	@Override
 	public String getYAxisTitle() {
 

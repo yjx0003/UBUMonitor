@@ -1,30 +1,33 @@
 \capitulo{6}{Trabajos relacionados}
+En este apartado se van a exponer herramientas relacionadas con la analítica de aprendizaje.
 
-En cuanto a los trabajos relacionados tenemos dos precedentes comentados anteriormente, UBUGrades y UBULogs hechos como Trabajos de Fin de Grado por alumnos de la universidad. También existe varios plugins de Moodle que realizan trabajos parecidos al proyecto.
+\section{UBUMonitor}
+UBUMonitor \cite{yjx00032020Feb} es el proyecto anterior donde se integra este. Es una aplicación de escritorio para la motorización de alumnos en la plataforma Moodle. Esta herramienta extrae los datos de registros, calificaciones y finalización de actividades, y los muestra en diferentes tipos de gráficas.
+\imagen{memoria/ubumonitor}{UBUMonitor.}
 
+\section{Moodle Miner}
+Moodle Miner \cite{moodleMiner} es una aplicación de análisis mediante minería de datos utilizado los registros de Moodle. Utiliza una biblioteca de minería de datos, disponible en el lenguaje R, para realizar los análisis. Se incluyen técnicas de \emph{clustering}. La herramienta permite ejecuta el algoritmo K-Means con un número determinado de agrupaciones o utilizar el número óptimo de agrupaciones calculado mediante el método del codo.
+\imagen{memoria/moodleMiner}{\emph{Clustering} en Moodle Miner.}
 
-\section{Heatmap}
+\section{Herramientas para Moodle}
+Existen bastantes herramientas para Moodle que generan estadísticas en forma de tabla o gráfica \cite{moodlePlugins}.
 
-Heatmap \cite{noauthor_moodle_nodate-2} superpone un mapa de calor (gradiente de color) en un curso para resaltar los módulos dependiendo del nivel de actividad y así ayudar a los docentes a mejorar sus cursos. Ejemplo en la figura \ref{fig:heatmap}.
+\subsection{Intelliboard}
+\href{https://intelliboard.net/}{Intelliboard} es una herramienta que funciona en cualquier LMS (\emph{learning management system}) basado en Moodle. Ofrece monitorización en tiempo real, puede rastrear el compromiso del usuario y la tasa de éxito del alumno. También puede ser utilizado por los administradores de Moodle para hacer un seguimiento de la actividad y el rendimiento de los profesores.
 
-\imagenflotante{heatmap}{Ejemplo de Heatmap}
+\imagen{memoria/intelliboard}{Monitores en Tiempo-Real de Intelliboard.}
 
-\section{SmartKlass™ Learning Analytics Moodle}
-SmartKlass™ Learning Analytics Moodle \cite{noauthor_moodle_nodate-3} es un panel de análisis dirigido a docentes y estudiantes que muestra la evolución del rendimiento sobre el curso. Ejemplo en la figura \ref{fig:smartklass}.
+\subsection{Zoola}
+\href{https://www.zoola.io/}{Zoola} es una herramienta similar a la anterior, que permite generar informes analíticos. También tiene \emph{dashboards} personalizados.
 
-Aparentemente el proyecto lleva sin actualizarse desde 2016 \cite{noauthor_klassdata/moodle-local_smart_klass:_nodate}.
+\imagen{memoria/zoola}{Dashboard de Zoola.}
 
-\imagenflotante{smartklass}{Ejemplo del panel SmartKlass}
+\subsection{LearnerScript}
+\href{https://learnerscript.com/}{LearnerScript} es un \emph{plugin} para Moodle que ofrece análisis del aprendizaje e informes. Puede ser usado por alumnos, profesores y administradores.
 
-\section{Engagement analytics}
+\imagen{memoria/learningscript}{Dashboard de LearnerScript.}
 
-Engagement analytics \cite{noauthor_moodle_nodate-4} proporciona información sobre el progreso de los estudiantes en relación con una serie de indicadores.
+\subsection{SmartKlass}
+\href{https://moodle.org/plugins/local_smart_klass}{SmartKlass} es una herramienta integrable en Moodle para el análisis de aprendizaje. Utiliza algoritmos de aprendizaje automático para realizar los análisis.
 
-Como su nombre indica, analiza el nivel de compromiso o participación del estudiante en el curso.
-
-\section{Course dedication}
-
-Course dedication \cite{noauthor_moodle_nodate-5} Calcula el tiempo estimado de dedicación de los participantes en el curso.
-
-
-
+\imagen{memoria/smartklass}{Smartklass}

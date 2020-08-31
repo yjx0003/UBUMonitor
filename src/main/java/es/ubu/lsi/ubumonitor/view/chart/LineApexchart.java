@@ -17,6 +17,8 @@ import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.web.WebView;
 /**
  * Bugged, apexchartd has bugs in line
  * @author Yi Peng Ji
@@ -24,8 +26,10 @@ import javafx.scene.control.TreeItem;
  */
 public class LineApexchart extends ApexCharts {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LineApexchart.class);
-	public LineApexchart(MainController mainController) {
-		super(mainController, ChartType.LINE);
+	private TreeView<GradeItem> tvwGradeReport;
+	public LineApexchart(MainController mainController, TreeView<GradeItem> tvwGradeReport, WebView webView) {
+		super(mainController, ChartType.LINE, webView);
+		this.tvwGradeReport = tvwGradeReport;
 		useGeneralButton = true;
 		useGroupButton = true;
 		

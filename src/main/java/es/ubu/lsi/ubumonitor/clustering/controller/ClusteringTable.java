@@ -20,10 +20,10 @@ import es.ubu.lsi.ubumonitor.clustering.data.UserData;
 import es.ubu.lsi.ubumonitor.clustering.util.ExportUtil;
 import es.ubu.lsi.ubumonitor.clustering.util.TextFieldPropertyEditorFactory;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
-import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -32,6 +32,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
+import javafx.collections.WeakListChangeListener;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
@@ -165,7 +166,7 @@ public class ClusteringTable {
 		propertySheetLabel.setPropertyEditorFactory(propertyEditorLabel);
 
 		FXCollections.sort(listViewLabels.getItems(), String.CASE_INSENSITIVE_ORDER);
-		listViewLabels.getItems().addListener(new ListChangeListener<String>() {
+		listViewLabels.getItems().addListener(new WeakListChangeListener<String>(new ListChangeListener<String>() {
 			private boolean flag = true;
 
 			@Override
@@ -178,7 +179,7 @@ public class ClusteringTable {
 					flag = true;
 				}
 			}
-		});
+		}));
 
 		listViewLabels.setCellFactory(TextFieldListCell.forListView());
 		listViewLabels.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);

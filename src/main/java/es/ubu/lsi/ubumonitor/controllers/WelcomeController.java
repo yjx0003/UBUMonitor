@@ -448,6 +448,7 @@ public class WelcomeController implements Initializable {
 				loadData(controller.getPassword());
 			} else {
 				DataBase copyDataBase = new DataBase();
+				copyDataBase.checkSubDatabases();
 				copyDataBase.setUserPhoto(controller.getUser()
 						.getUserPhoto());
 				copyDataBase.setFullName(controller.getUser()
@@ -537,6 +538,7 @@ public class WelcomeController implements Initializable {
 
 			dataBase = (DataBase) Serialization.decrypt(password, cacheFilePath.toString());
 			copyCourse(dataBase, getSelectedCourse());
+			dataBase.checkSubDatabases();
 			controller.setDataBase(dataBase);
 			isBBDDLoaded = true;
 			controller.setDefaultUpdate(ZonedDateTime.ofInstant(Instant.ofEpochSecond(cacheFilePath.toFile()

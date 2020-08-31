@@ -41,17 +41,34 @@ public class DataBase implements Serializable {
 	private Course actualCourse;
 
 	public DataBase() {
-		roles = new SubDataBase<>(Role::new);
-		groups = new SubDataBase<>(Group::new);
-		users = new SubDataBase<>(EnrolledUser::new);
-		modules = new SubDataBase<>(CourseModule::new);
-		courses = new SubDataBase<>(Course::new);
-		gradeItems = new SubDataBase<>(GradeItem::new);
-		courseCategories = new SubDataBase<>(CourseCategory::new);
-		sections = new SubDataBase<>(Section::new);
-		forumDiscussions = new SubDataBase<>(ForumDiscussion::new);
-		discussionPosts = new SubDataBase<>(DiscussionPost::new);
-		courseEvents = new SubDataBase<>(CourseEvent::new);
+		checkSubDatabases();
+
+	}
+
+	public void checkSubDatabases() {
+
+		roles = checkSubDataBase(roles, Role::new);
+		groups = checkSubDataBase(groups, Group::new);
+		users = checkSubDataBase(users, EnrolledUser::new);
+		modules = checkSubDataBase(modules, CourseModule::new);
+		courses = checkSubDataBase(courses, Course::new);
+		gradeItems = checkSubDataBase(gradeItems, GradeItem::new);
+		courseCategories = checkSubDataBase(courseCategories, CourseCategory::new);
+		sections = checkSubDataBase(sections, Section::new);
+		
+		
+		forumDiscussions = checkSubDataBase(forumDiscussions, ForumDiscussion::new);
+		discussionPosts = checkSubDataBase(discussionPosts, DiscussionPost::new);
+		courseEvents = checkSubDataBase(courseEvents, CourseEvent::new);
+
+	}
+
+	public <E extends Serializable> SubDataBase<E> checkSubDataBase(SubDataBase<E> subDataBase,
+			SerializableFunction<Integer, E> creatorFunction) {
+		if (subDataBase == null) {
+			return new SubDataBase<>(creatorFunction);
+		}
+		return subDataBase;
 	}
 
 	/**
@@ -107,12 +124,12 @@ public class DataBase implements Serializable {
 	public SubDataBase<ForumDiscussion> getForumDiscussions() {
 		return forumDiscussions;
 	}
-	
-	public SubDataBase<DiscussionPost> getDiscussionPosts(){
+
+	public SubDataBase<DiscussionPost> getDiscussionPosts() {
 		return discussionPosts;
 	}
-	
-	public SubDataBase<CourseEvent> getCourseEvents(){
+
+	public SubDataBase<CourseEvent> getCourseEvents() {
 		return courseEvents;
 	}
 

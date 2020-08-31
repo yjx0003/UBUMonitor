@@ -108,7 +108,7 @@ public class CalendarEventTimeline extends VisTimeline {
 		for (ModuleType moduleType : modulesTypes) {
 			JSObject group = new JSObject();
 			group.put("id", moduleType.ordinal());
-			group.putWithQuote("content", "<img style='vertical-align:middle' src='../img/" + moduleType + ".png'>	"
+			group.putWithQuote("content", "<img style='vertical-align:middle' src='../img/" + moduleType.getModName() + ".png'>	"
 					+ I18n.get(moduleType));
 			groups.add(group);
 		}
@@ -133,7 +133,7 @@ public class CalendarEventTimeline extends VisTimeline {
 					.orElse(ModuleType.MODULE);
 
 			item.put("group", moduleType.ordinal());
-			String image = "<img style='vertical-align:middle' src='../img/" + moduleType + ".png'>	";
+			String image = "<img style='vertical-align:middle' src='../img/" + moduleType.getModName() + ".png'>	";
 			item.putWithQuote("content", image + open.getName());
 
 			item.putWithQuote("start", open.getTimestart());

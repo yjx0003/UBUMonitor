@@ -82,6 +82,10 @@ public class WebService {
 		this.sesskey = sesskey;
 	}
 
+	public String getSessKey() {
+		return sesskey;
+	}
+	
 	public String getToken() {
 		return token;
 	}
@@ -162,7 +166,7 @@ public class WebService {
 	}
 
 	public Response getAjaxResponse(WSFunction... wsFunctions) throws IOException {
-		return WebService.getAjaxResponse(hostWithAjax + "?sesskey=" + sesskey, wsFunctions);
+		return WebService.ajaxResponse(hostWithAjax + "?sesskey=" + sesskey, wsFunctions);
 	}
 
 	public static Response getAjaxResponse(String host, WSFunction... wsFunctions) throws IOException {
@@ -185,8 +189,9 @@ public class WebService {
 			methods.put("args", wsFunctions[i].getParameters());
 			jsonArray.put(methods);
 		}
-
+		
 		RequestBody body = RequestBody.create(jsonArray.toString(), JSON);
+		
 		return Connection.getResponse(new Request.Builder().url(host)
 				.post(body)
 				.build());

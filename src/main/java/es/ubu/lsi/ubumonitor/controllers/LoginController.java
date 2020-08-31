@@ -398,7 +398,7 @@ public class LoginController implements Initializable {
 							controller.getWebService());
 
 					moodleUser.setCourses(populateCourse.createCourses(moodleUser.getId()));
-
+					moodleUser.setRecentCourses(populateCourse.recentCourses());
 					moodleUser.setPastCourses(populateCourse.coursesByTimelineClassification(Classification.PAST));
 					moodleUser.setInProgressCourses(
 							populateCourse.coursesByTimelineClassification(Classification.IN_PROGRESS));

@@ -113,6 +113,7 @@ public class Constants {
 	public static final String TIMEDURATION = "timeduration";
 	public static final String PROFILEIMAGEURLSMALL = "profileimageurlsmall";
 	public static final String MODULENAME = "modulename";
+	public static final String DATA = "data";
 	
 
 	private Constants() {

@@ -1,8 +1,11 @@
 package es.ubu.lsi.ubumonitor.view.chart.forum;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,7 +39,7 @@ public class ForumNetwork extends VisNetwork {
 	@Override
 	public void exportCSV(String path) throws IOException {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		List<DiscussionPost> discussionPosts = getSelectedDiscussionPosts();
+		List<DiscussionPost> discussionPosts = getSelectedDiscussionPosts(enrolledUsers);
 
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
 				CSVFormat.DEFAULT.withHeader("fromId", "fromName", "toId", "toName", "countPostsReplies"))) {
@@ -175,29 +178,35 @@ public class ForumNetwork extends VisNetwork {
 
 	@Override
 	public void update() {
-		List<EnrolledUser> users = getSelectedEnrolledUser();
-		List<DiscussionPost> discussionPosts = getSelectedDiscussionPosts();
+
+		Set<EnrolledUser> users = new HashSet<>(getSelectedEnrolledUser());
+		List<DiscussionPost> discussionPosts = getSelectedDiscussionPosts(users);
+
+		Map<EnrolledUser, Map<EnrolledUser, Long>> map = discussionPosts.stream()
+				.collect(Collectors.groupingBy(DiscussionPost::getUser, Collectors.groupingBy(dp -> dp.getParent()
+						.getUser(), Collectors.counting())));
+
+		Set<EnrolledUser> usersWithEdges = new HashSet<>();
+		Map<EnrolledUser, Long> fromMap = new HashMap<>();
+		Map<EnrolledUser, Long> toMap = new HashMap<>();
+
 		JSObject data = new JSObject();
 
-		JSArray nodes = new JSArray();
-
 		JSArray edges = new JSArray();
-		for (EnrolledUser from : users) {
-			JSObject node = new JSObject();
-			nodes.add(node);
-			node.put("id", from.getId());
-			node.putWithQuote("title", from.getFullName());
-			node.put("color", rgb(from.getId() * 31));
 
-			node.put("image", "'" + from.getImageBase64() + "'");
+		for (Map.Entry<EnrolledUser, Map<EnrolledUser, Long>> entry : map.entrySet()) {
+			EnrolledUser from = entry.getKey();
+			usersWithEdges.add(from);
+			for (Map.Entry<EnrolledUser, Long> toEntry : entry.getValue()
+					.entrySet()) {
+				EnrolledUser to = toEntry.getKey();
+				Long countPosts = toEntry.getValue();
+				addCountPosts(fromMap, from, countPosts);
+				if (!from.equals(to)) {
+					addCountPosts(toMap, to, countPosts);
+				}
 
-			long totalPosts = 0;
-			for (EnrolledUser to : users) {
-				long countPosts = discussionPosts.stream()
-						.filter(discussionPost -> from.equals(discussionPost.getUser())
-								&& to.equals(discussionPost.getParent()
-										.getUser()))
-						.count();
+				usersWithEdges.add(to);
 
 				if (countPosts > 0) {
 					JSObject edge = new JSObject();
@@ -207,38 +216,73 @@ public class ForumNetwork extends VisNetwork {
 					edge.put("value", countPosts);
 					edges.add(edge);
 				}
-
-				totalPosts += countPosts;
-
-			}
-			node.put("value", totalPosts);
-			if (totalPosts > 0) {
-				if ((boolean) getValue("useInitialNames")) {
-					Matcher m = INITIAL_LETTER_PATTERN.matcher(from.getFullName());
-					StringBuilder builder = new StringBuilder();
-					while (m.find()) {
-						builder.append(m.group());
-					}
-					node.put("label", "'" + builder + " (" + totalPosts + ")'");
-				} else {
-					node.put("label", "'" +totalPosts + "'");
-				}
-
 			}
 
 		}
 
-		data.put("nodes", nodes);
+		boolean showNonConnected = getValue("showNonConnected");
+
+		data.put("nodes", createNodes(showNonConnected ? users : usersWithEdges, fromMap, toMap));
 		data.put("edges", edges);
 		webViewChartsEngine.executeScript("updateVisNetwork(" + data + "," + getOptions() + ")");
 	}
 
-	public List<DiscussionPost> getSelectedDiscussionPosts() {
+	private JSArray createNodes(Collection<EnrolledUser> users, Map<EnrolledUser, Long> fromMap,
+			Map<EnrolledUser, Long> toMap) {
+		JSArray nodes = new JSArray();
+
+		for (EnrolledUser user : users) {
+
+			JSObject node = new JSObject();
+			long fromValue = fromMap.getOrDefault(user, 0L);
+			long toValue = toMap.getOrDefault(user, 0L);
+			nodes.add(node);
+			node.put("id", user.getId());
+			node.putWithQuote("title", user.getFullName());
+			node.put("color", rgb(user.getId() * 31));
+
+			node.put("image", "'" + user.getImageBase64() + "'");
+
+			node.put("value", fromValue + toValue);
+
+			if (fromValue != 0 || toValue != 0) {
+				StringBuilder builder = new StringBuilder();
+				builder.append("'");
+				if ((boolean) getValue("useInitialNames")) {
+					Matcher m = INITIAL_LETTER_PATTERN.matcher(user.getFullName());
+
+					while (m.find()) {
+						builder.append(m.group());
+					}
+					builder.append(" ");
+				}
+
+				builder.append("(" + fromValue + ", " + toValue + ")'");
+
+				node.put("label", builder);
+			}
+		}
+		return nodes;
+	}
+
+	private void addCountPosts(Map<EnrolledUser, Long> map, EnrolledUser user, Long posts) {
+		Long actualPosts = map.get(user);
+		if (actualPosts == null) {
+			map.put(user, posts);
+		} else {
+			map.put(user, actualPosts + posts);
+		}
+	}
+
+	public List<DiscussionPost> getSelectedDiscussionPosts(Collection<EnrolledUser> selectedUsers) {
 		Set<CourseModule> selectedForums = new HashSet<>(listViewForum.getSelectionModel()
 				.getSelectedItems());
 		return actualCourse.getDiscussionPosts()
 				.stream()
-				.filter(discussionPost -> selectedForums.contains(discussionPost.getForum()))
+
+				.filter(discussionPost -> selectedForums.contains(discussionPost.getForum())
+						&& selectedUsers.contains(discussionPost.getUser()) && discussionPost.getParent()
+								.getId() != 0)
 				.collect(Collectors.toList());
 	}
 

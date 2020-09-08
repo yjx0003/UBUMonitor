@@ -127,6 +127,7 @@ public class MainConfiguration {
 		
 		createItem(ChartType.FORUM_BAR, HORIZONTAL_MODE, false);
 		
+		createItem(ChartType.FORUM_NETWORK, "showNonConnected", true);
 		createItem(ChartType.FORUM_NETWORK, "usePhoto", true);
 		createItem(ChartType.FORUM_NETWORK, "useInitialNames", true);
 		createItem(ChartType.FORUM_NETWORK, "physicsAfterDraw", true);

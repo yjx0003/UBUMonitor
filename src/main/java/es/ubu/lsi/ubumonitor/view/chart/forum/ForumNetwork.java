@@ -194,7 +194,7 @@ public class ForumNetwork extends VisNetwork {
 				.filter(d -> d.getParent()
 						.getId() == 0)
 				.collect(Collectors.groupingBy(DiscussionPost::getUser, Collectors.counting()));
-
+		usersWithEdges.addAll(discussionCreations.keySet());
 		JSObject data = new JSObject();
 
 		JSArray edges = new JSArray();

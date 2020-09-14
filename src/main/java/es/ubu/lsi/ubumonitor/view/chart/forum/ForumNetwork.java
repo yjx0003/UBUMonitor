@@ -179,7 +179,7 @@ public class ForumNetwork extends VisNetwork {
 	@Override
 	public void update() {
 
-		Set<EnrolledUser> users = new HashSet<>(getSelectedEnrolledUser());
+		List<EnrolledUser> users = getSelectedEnrolledUser();
 		List<DiscussionPost> discussionPosts = getSelectedDiscussionPosts(users);
 
 		Map<EnrolledUser, Map<EnrolledUser, Long>> map = discussionPosts.stream()
@@ -189,6 +189,11 @@ public class ForumNetwork extends VisNetwork {
 		Set<EnrolledUser> usersWithEdges = new HashSet<>();
 		Map<EnrolledUser, Long> fromMap = new HashMap<>();
 		Map<EnrolledUser, Long> toMap = new HashMap<>();
+		Map<EnrolledUser, Long> discussionCreations = actualCourse.getDiscussionPosts()
+				.stream()
+				.filter(d -> d.getParent()
+						.getId() == 0)
+				.collect(Collectors.groupingBy(DiscussionPost::getUser, Collectors.counting()));
 
 		JSObject data = new JSObject();
 
@@ -201,6 +206,7 @@ public class ForumNetwork extends VisNetwork {
 					.entrySet()) {
 				EnrolledUser to = toEntry.getKey();
 				Long countPosts = toEntry.getValue();
+
 				addCountPosts(fromMap, from, countPosts);
 				if (!from.equals(to)) {
 					addCountPosts(toMap, to, countPosts);
@@ -222,13 +228,15 @@ public class ForumNetwork extends VisNetwork {
 
 		boolean showNonConnected = getValue("showNonConnected");
 
-		data.put("nodes", createNodes(showNonConnected ? users : usersWithEdges, fromMap, toMap));
+		data.put("nodes",
+
+				createNodes(showNonConnected ? users : usersWithEdges, fromMap, toMap, discussionCreations));
 		data.put("edges", edges);
 		webViewChartsEngine.executeScript("updateVisNetwork(" + data + "," + getOptions() + ")");
 	}
 
 	private JSArray createNodes(Collection<EnrolledUser> users, Map<EnrolledUser, Long> fromMap,
-			Map<EnrolledUser, Long> toMap) {
+			Map<EnrolledUser, Long> toMap, Map<EnrolledUser, Long> discussionCreations) {
 		JSArray nodes = new JSArray();
 
 		for (EnrolledUser user : users) {
@@ -236,6 +244,7 @@ public class ForumNetwork extends VisNetwork {
 			JSObject node = new JSObject();
 			long fromValue = fromMap.getOrDefault(user, 0L);
 			long toValue = toMap.getOrDefault(user, 0L);
+			long discussionCreated = discussionCreations.getOrDefault(user, 0L);
 			nodes.add(node);
 			node.put("id", user.getId());
 			node.putWithQuote("title", user.getFullName());
@@ -245,7 +254,7 @@ public class ForumNetwork extends VisNetwork {
 
 			node.put("value", fromValue + toValue);
 
-			if (fromValue != 0 || toValue != 0) {
+			if (fromValue + toValue + discussionCreated != 0) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("'");
 				if ((boolean) getValue("useInitialNames")) {
@@ -257,7 +266,7 @@ public class ForumNetwork extends VisNetwork {
 					builder.append(" ");
 				}
 
-				builder.append("(" + fromValue + ", " + toValue + ")'");
+				builder.append("(" + fromValue + ", " + toValue + ", " + discussionCreated + ")'");
 
 				node.put("label", builder);
 			}
@@ -277,12 +286,14 @@ public class ForumNetwork extends VisNetwork {
 	public List<DiscussionPost> getSelectedDiscussionPosts(Collection<EnrolledUser> selectedUsers) {
 		Set<CourseModule> selectedForums = new HashSet<>(listViewForum.getSelectionModel()
 				.getSelectedItems());
+		Set<EnrolledUser> users = new HashSet<>(selectedUsers);
+
 		return actualCourse.getDiscussionPosts()
 				.stream()
 
 				.filter(discussionPost -> selectedForums.contains(discussionPost.getForum())
-						&& selectedUsers.contains(discussionPost.getUser()) && discussionPost.getParent()
-								.getId() != 0)
+						&& users.contains(discussionPost.getUser()) && users.contains(discussionPost.getParent()
+								.getUser()))
 				.collect(Collectors.toList());
 	}
 

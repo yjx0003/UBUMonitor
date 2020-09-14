@@ -22,11 +22,11 @@ public class Line extends ChartjsGradeItem {
 	}
 
 	@Override
-	public String getOptions(JSObject jsObject) {
+	public JSObject getOptions(JSObject jsObject) {
 		jsObject.putWithQuote("typeGraph", "line");
 		jsObject.put("scales",
 				"{yAxes:[{ticks:{max:10,stepSize:1}," + getYScaleLabel() + "}],xAxes:[{" + getXScaleLabel() + "}]}");
-		return jsObject.toString();
+		return jsObject;
 	}
 
 	@Override

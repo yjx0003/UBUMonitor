@@ -126,7 +126,7 @@ public class Heatmap extends ChartLogs {
 	}
 
 	@Override
-	public String getOptions(JSObject jsObject) {
+	public JSObject getOptions(JSObject jsObject) {
 
 		String zeroValue = colorToRGB(mainConfiguration.getValue(getChartType(), "zeroValue"));
 		String firstInterval = colorToRGB(mainConfiguration.getValue(getChartType(), "firstInterval"));
@@ -153,7 +153,7 @@ public class Heatmap extends ChartLogs {
 					getSuggestedMax(textFieldMax.getText()), jsObject);
 		}
 
-		return jsObject.toString();
+		return jsObject;
 
 	}
 

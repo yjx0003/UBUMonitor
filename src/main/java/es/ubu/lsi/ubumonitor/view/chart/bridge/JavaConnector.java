@@ -13,7 +13,7 @@ public interface JavaConnector {
 
 	public void updateOptionsImages();
 
-	public void inititDefaultValues();
+	public void inititDefaultValues(); 
 
 	public void showErrorWindow(String errorMessage);
 	public void hideLegend();

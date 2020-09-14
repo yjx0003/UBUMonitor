@@ -138,12 +138,12 @@ public abstract class Chart implements ExportableChart {
 				.collect(Collectors.toList());
 	}
 
-	public abstract String getOptions(JSObject jsObject);
+	public abstract JSObject getOptions(JSObject jsObject);
 
-	public String getOptions() {
+	public JSObject getOptions() {
 		JSObject jsObject = getDefaultOptions();
-		getOptions(jsObject);
-		return jsObject.toString();
+		return getOptions(jsObject);
+		
 	}
 
 	public abstract void update();

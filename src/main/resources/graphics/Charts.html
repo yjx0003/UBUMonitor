@@ -17,6 +17,7 @@
    <script type="text/javascript" src="./lib/tabulator.js"></script>
    <script type="text/javascript" src="./lib/visNetwork.js"></script>
    <script type="text/javascript" src="./lib/visTimeline.js"></script>
+   <script type="text/javascript" src="./lib/wordcloud2.js"></script>
    <script type="text/javascript">
       Chart.defaults.global.animation.duration = 0;
       Chart.defaults.global.elements.line.fill = false;
@@ -59,6 +60,7 @@
       var table;
       var visNetwork;
       var visTimeline;
+      
       function createChartDivs() {
          //------------------------------------------Variables globales-------------------------------------------------------------
          
@@ -101,6 +103,7 @@
 
          visNetwork = new vis.Network(document.getElementById('visNetworkDiv'), {}, {});
          visTimeline = new vis.Timeline(document.getElementById('visTimelineDiv'), {}, {});
+      
       }
 
       //------------------------------------------Funciones------------------------------------------------------------------
@@ -250,6 +253,20 @@
 
       }
 
+      function updateWordCloud(options) {
+         hiddenCharts("wordCloud", options);
+         var word_cloud = document.getElementById('wordCloud');
+         word_cloud.height = window.innerHeight -30;
+         word_cloud.width = window.innerWidth - 30;
+
+         options.gridSize = Math.round(16 *  word_cloud.width / 1024);
+         options.weightFactor = function (size) {return Math.pow(size, 2.3) * word_cloud.width / 1024; };
+   
+         WordCloud(word_cloud, options );
+         
+
+      }
+
       function hiddenCharts(value, options) {
 
 
@@ -259,6 +276,7 @@
          displayButton('tabulatorDiv', value == "tabulator");
          displayButton('visNetworkDiv', value == "visNetwork");
          displayButton('visTimelineDiv', value == "visTimeline");
+         displayButton('wordCloud', value == "wordCloud");
 
          manageButtons(options.tab, options.listCharts);
          disableTab(options.tab, options.button);
@@ -302,7 +320,10 @@
          displayChartsButtons("GRADES", type, listCharts);
          displayChartsButtons("LOGS", type, listCharts);
          displayChartsButtons("ACTIVITY_COMPLETION", type, listCharts);
-
+         displayChartsButtons("RISK", type, listCharts);
+         displayChartsButtons("FORUM", type, listCharts);
+         displayChartsButtons("CALENDAR_EVENT", type, listCharts);
+         
       }
 
       function clearVisNetwork() {
@@ -339,15 +360,11 @@
          return myChart.toBase64Image();
       }
 
-      function exportApexcharts() {
-
-         myApexChart.dataURI().then(function (uri) {
-            javaConnector.saveImage(uri);
-         }).catch(function (error) {
-            javaConnector.showErrorWindow("Cannot download image:" + error.message);
-         })
-
+      	
+      function exportCanvas(id){
+         return document.getElementById(id).toDataURL();
       }
+
       function genericExport(id) {
          html2canvas(document.getElementById(id), { logging: false }).then(function (canvas) {
             javaConnector.saveImage(canvas.toDataURL());
@@ -439,6 +456,7 @@
    <div id="tabulatorDiv"></div>
    <div id="visNetworkDiv" class="visDiv"></div>
    <div id="visTimelineDiv" class="visDiv"></div>
+   <canvas id="wordCloud"></canvas>
 </body>
 
 </html>

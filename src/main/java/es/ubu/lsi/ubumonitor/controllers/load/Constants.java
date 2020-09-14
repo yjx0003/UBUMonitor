@@ -57,7 +57,7 @@ public class Constants {
 	public static final String MAILED = "mailed";
 	public static final String MAILNOW = "mailnow";
 	public static final String MAXDEPTH = "maxdepth";
-	public static final String MESSAGE = "message ";
+	public static final String MESSAGE = "message";
 	public static final String MESSAGEFORMAT = "messageformat";
 	public static final String MESSAGETRUST = "messagetrust";
 	public static final String MOD = "mod";

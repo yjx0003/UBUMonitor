@@ -187,7 +187,7 @@ public class ActivitiesStatusTable extends Tabulator {
 	}
 
 	@Override
-	public String getOptions(JSObject jsObject) {
+	public JSObject getOptions(JSObject jsObject) {
 
 		jsObject.put("invalidOptionWarnings", false);
 		jsObject.put("height", "height");
@@ -195,7 +195,7 @@ public class ActivitiesStatusTable extends Tabulator {
 		jsObject.put("virtualDom", true);
 		jsObject.putWithQuote("layout", "fitColumns");
 		jsObject.put("rowClick", "function(e,row){javaConnector.dataPointSelection(row.getPosition());}");
-		return jsObject.toString();
+		return jsObject;
 	}
 
 	@Override

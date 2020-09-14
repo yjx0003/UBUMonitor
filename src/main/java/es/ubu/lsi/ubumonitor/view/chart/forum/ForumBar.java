@@ -64,7 +64,7 @@ public class ForumBar extends Chartjs {
 	}
 
 	@Override
-	public String getOptions(JSObject jsObject) {
+	public JSObject getOptions(JSObject jsObject) {
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBar" : "bar");
 		String xLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
@@ -76,13 +76,13 @@ public class ForumBar extends Chartjs {
 		callbacks.put("title", "function(a,t){return a[0].xLabel+' ('+a[0].yLabel+')'}");
 		callbacks.put("label", "function(e,t){return t.datasets[e.datasetIndex].discussions[e.index]}");
 		jsObject.put("tooltips", "{callbacks:" + callbacks + "}");
-		return jsObject.toString();
+		return jsObject;
 
 	}
 
 	@Override
 	public void update() {
-		String options = getOptions();
+		JSObject options = getOptions();
 		String dataset = createDataset(listViewForum.getSelectionModel()
 				.getSelectedItems());
 		webViewChartsEngine.executeScript("updateChartjs" + "(" + dataset + "," + options + ")");

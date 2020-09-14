@@ -80,7 +80,7 @@ public class CalificationBar extends ChartjsGradeItem {
 	}
 
 	@Override
-	public String getOptions(JSObject jsObject) {
+	public JSObject getOptions(JSObject jsObject) {
 	
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBar" : "bar");
@@ -94,7 +94,7 @@ public class CalificationBar extends ChartjsGradeItem {
 		jsObject.put("onClick", "function(event, array){}");
 		jsObject.put("plugins",
 				"{datalabels:{display:!0,font:{weight:'bold'},formatter:function(t,a){if(0===t)return'';let e=a.chart.data.datasets,l=0;for(i=0;i<e.length;i++)l+=e[i].data[a.dataIndex];return t+'/'+l+' ('+(t/l).toLocaleString(locale,{style:'percent',maximumFractionDigits:2})+')'}}}");
-		return jsObject.toString();
+		return jsObject;
 	}
 
 	@Override

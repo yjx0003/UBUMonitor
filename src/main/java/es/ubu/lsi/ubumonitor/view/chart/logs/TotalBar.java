@@ -38,7 +38,7 @@ public class TotalBar extends ChartjsLog {
 	}
 
 	@Override
-	public String getOptions(JSObject jsObject) {
+	public JSObject getOptions(JSObject jsObject) {
 
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBar" : "bar");
@@ -48,7 +48,7 @@ public class TotalBar extends ChartjsLog {
 				+ (useHorizontal ? ",ticks:{maxTicksLimit:10}" : "") + "}]}");
 		jsObject.put("onClick", null);
 		jsObject.put("tooltips", "{mode:'index'}");
-		return jsObject.toString();
+		return jsObject;
 	}
 
 	@Override

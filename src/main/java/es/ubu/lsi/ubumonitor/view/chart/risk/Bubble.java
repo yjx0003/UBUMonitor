@@ -54,7 +54,7 @@ public class Bubble extends Chartjs {
 	}
 
 	@Override
-	public String getOptions(JSObject jsObject) {
+	public JSObject getOptions(JSObject jsObject) {
 
 		int limit = mainConfiguration.getValue(this.chartType, "limitDays");
 
@@ -87,13 +87,13 @@ public class Bubble extends Chartjs {
 
 		jsObject.put("elements",
 				"{point:{radius:function(a){var t=a.dataset.data[a.dataIndex];return a.chart.width/24*t.v/100+5}}}");
-		return jsObject.toString();
+		return jsObject;
 	}
 
 	@Override
 	public void update() {
 		String dataset = createDataset(getSelectedEnrolledUser());
-		String options = getOptions();
+		JSObject options = getOptions();
 
 		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, options));
 	}

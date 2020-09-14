@@ -11,7 +11,7 @@ public class ViolinLog extends BoxplotLog {
 	}
 
 	@Override
-	public String getOptions(JSObject jsObject) {
+	public JSObject getOptions(JSObject jsObject) {
 
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalViolin" : "violin");
@@ -21,6 +21,6 @@ public class ViolinLog extends BoxplotLog {
 		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{suggestedMax:" + getSuggestedMax(textFieldMax.getText())
 				+ ",stepSize:0}}],xAxes:[{" + xLabel + "}]}");
 
-		return jsObject.toString();
+		return jsObject;
 	}
 }

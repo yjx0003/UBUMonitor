@@ -39,7 +39,9 @@ public class ForumNetwork extends VisNetwork {
 	@Override
 	public void exportCSV(String path) throws IOException {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		List<DiscussionPost> discussionPosts = getSelectedDiscussionPosts(enrolledUsers);
+		Set<CourseModule> selectedForums = new HashSet<>(listViewForum.getSelectionModel()
+				.getSelectedItems());
+		List<DiscussionPost> discussionPosts = getSelectedDiscussionPosts(enrolledUsers, selectedForums);
 
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
 				CSVFormat.DEFAULT.withHeader("fromId", "fromName", "toId", "toName", "countPostsReplies"))) {
@@ -180,7 +182,9 @@ public class ForumNetwork extends VisNetwork {
 	public void update() {
 
 		List<EnrolledUser> users = getSelectedEnrolledUser();
-		List<DiscussionPost> discussionPosts = getSelectedDiscussionPosts(users);
+		Set<CourseModule> selectedForums = new HashSet<>(listViewForum.getSelectionModel()
+				.getSelectedItems());
+		List<DiscussionPost> discussionPosts = getSelectedDiscussionPosts(users, selectedForums);
 
 		Map<EnrolledUser, Map<EnrolledUser, Long>> map = discussionPosts.stream()
 				.collect(Collectors.groupingBy(DiscussionPost::getUser, Collectors.groupingBy(dp -> dp.getParent()
@@ -192,7 +196,7 @@ public class ForumNetwork extends VisNetwork {
 		Map<EnrolledUser, Long> discussionCreations = actualCourse.getDiscussionPosts()
 				.stream()
 				.filter(d -> d.getParent()
-						.getId() == 0)
+						.getId() == 0 && selectedForums.contains(d.getForum()))
 				.collect(Collectors.groupingBy(DiscussionPost::getUser, Collectors.counting()));
 		usersWithEdges.addAll(discussionCreations.keySet());
 		JSObject data = new JSObject();
@@ -283,9 +287,8 @@ public class ForumNetwork extends VisNetwork {
 		}
 	}
 
-	public List<DiscussionPost> getSelectedDiscussionPosts(Collection<EnrolledUser> selectedUsers) {
-		Set<CourseModule> selectedForums = new HashSet<>(listViewForum.getSelectionModel()
-				.getSelectedItems());
+	public List<DiscussionPost> getSelectedDiscussionPosts(Collection<EnrolledUser> selectedUsers, Collection<CourseModule> selectedForums) {
+	
 		Set<EnrolledUser> users = new HashSet<>(selectedUsers);
 
 		return actualCourse.getDiscussionPosts()

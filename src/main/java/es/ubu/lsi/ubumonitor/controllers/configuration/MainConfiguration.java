@@ -165,6 +165,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_NETWORK, "layout.randomSeed", "");
 		createItem(ChartType.FORUM_NETWORK, "layout.clusterThreshold", 150);
 		
+		createItem(ChartType.FORUM_USER_POST_BAR, HORIZONTAL_MODE, false);
 		
 	}
 

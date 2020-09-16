@@ -28,6 +28,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.web.WebView;
 
 public class ForumNetwork extends VisNetwork {
+
 	private static final Pattern INITIAL_LETTER_PATTERN = Pattern.compile("\\b\\w|,\\s");
 	private ListView<CourseModule> listViewForum;
 
@@ -46,9 +47,7 @@ public class ForumNetwork extends VisNetwork {
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
 				CSVFormat.DEFAULT.withHeader("fromId", "fromName", "toId", "toName", "countPostsReplies"))) {
 			for (EnrolledUser from : enrolledUsers) {
-
 				for (EnrolledUser to : enrolledUsers) {
-
 					long countPosts = discussionPosts.stream()
 							.filter(discussionPost -> from.equals(discussionPost.getUser())
 									&& discussionPost.getParent() != null && to.equals(discussionPost.getParent()

@@ -9,6 +9,7 @@ import es.ubu.lsi.ubumonitor.view.chart.Tabs;
 import es.ubu.lsi.ubumonitor.view.chart.forum.ForumBar;
 import es.ubu.lsi.ubumonitor.view.chart.forum.ForumNetwork;
 import es.ubu.lsi.ubumonitor.view.chart.forum.ForumTable;
+import es.ubu.lsi.ubumonitor.view.chart.forum.ForumUserPostBar;
 import es.ubu.lsi.ubumonitor.view.chart.forum.ForumWordCloud;
 import javafx.scene.control.ListView;
 import javafx.scene.web.WebView;
@@ -28,6 +29,7 @@ public class ForumConnector extends JavaConnectorAbstract {
 		
 		addChart(new ForumNetwork(mainController, webView, listViewForum));
 		addChart(new ForumWordCloud(mainController, listViewForum));
+		addChart(new ForumUserPostBar(mainController, listViewForum));
 		currentChart = charts.get(ChartType.getDefault(Tabs.FORUM));
 	}
 

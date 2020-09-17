@@ -73,6 +73,7 @@ public class ForumWordCloud extends WordCloudChart {
 
 	@Override
 	public void update() {
+		
 		List<WordFrequency> wordCount = wordCount();
 
 		File backgroundImage = new File((String) mainConfiguration.getValue(this.chartType, "backGroundImage"));
@@ -109,7 +110,7 @@ public class ForumWordCloud extends WordCloudChart {
 
 		wordCloud.build(wordCount);
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		wordCloud.writeToStream("png", output);
+		wordCloud.writeToStreamAsPNG(output);
 		byte[] outputByte = output.toByteArray();
 		String img = Base64.getEncoder()
 				.encodeToString(outputByte);
@@ -126,7 +127,6 @@ public class ForumWordCloud extends WordCloudChart {
 		List<DiscussionPost> discussionPosts = getSelectedDiscussionPosts(selectedEnrolledUsers);
 
 		List<String> texts = new ArrayList<>();
-
 		for (DiscussionPost discussionPost : discussionPosts) {
 
 			String parsed = Parsers.parse(discussionPost.getMessage(), discussionPost.getMessageformat());
@@ -150,8 +150,7 @@ public class ForumWordCloud extends WordCloudChart {
 				.stream()
 
 				.filter(discussionPost -> selectedForums.contains(discussionPost.getForum())
-						&& selectedUsers.contains(discussionPost.getUser()) && discussionPost.getParent()
-								.getId() != 0)
+						&& selectedUsers.contains(discussionPost.getUser()))
 				.collect(Collectors.toList());
 	}
 

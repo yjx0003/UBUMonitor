@@ -28,7 +28,7 @@ public class ForumConnector extends JavaConnectorAbstract {
 		addChart(new ForumBar(mainController, listViewForum));
 		
 		addChart(new ForumNetwork(mainController, webView, listViewForum));
-		addChart(new ForumWordCloud(mainController, listViewForum));
+		addChart(new ForumWordCloud(mainController, listViewForum, webView));
 		addChart(new ForumUserPostBar(mainController, listViewForum));
 		currentChart = charts.get(ChartType.getDefault(Tabs.FORUM));
 	}

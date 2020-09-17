@@ -639,5 +639,12 @@ public class UtilMethods {
 		return element.toLowerCase()
 				.contains(textField);
 	}
+	
+	public static Color toAwtColor(javafx.scene.paint.Color color) {
+		 return new Color((float) color.getRed(),
+                 (float) color.getGreen(),
+                 (float) color.getBlue(),
+                 (float) color.getOpacity());
+	}
 
 }

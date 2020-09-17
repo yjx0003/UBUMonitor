@@ -11,9 +11,9 @@ import javax.xml.bind.DatatypeConverter;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
-public abstract class WordCloud extends Chart{
+public abstract class WordCloudChart extends Chart{
 
-	public WordCloud(MainController mainController, ChartType chartType) {
+	public WordCloudChart(MainController mainController, ChartType chartType) {
 		super(mainController, chartType);
 	}
 

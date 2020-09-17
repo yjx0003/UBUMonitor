@@ -1,52 +1,65 @@
 package es.ubu.lsi.ubumonitor.view.chart.forum;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.imageio.ImageIO;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+
+import com.kennycason.kumo.CollisionMode;
+import com.kennycason.kumo.WordCloud;
+import com.kennycason.kumo.WordFrequency;
+import com.kennycason.kumo.bg.Background;
+import com.kennycason.kumo.bg.PixelBoundryBackground;
+import com.kennycason.kumo.bg.RectangleBackground;
+import com.kennycason.kumo.font.scale.LinearFontScalar;
+import com.kennycason.kumo.nlp.FrequencyAnalyzer;
+import com.kennycason.kumo.palette.ColorPalette;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.DiscussionPost;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
-import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.Parsers;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
-import es.ubu.lsi.ubumonitor.view.chart.WordCloud;
+import es.ubu.lsi.ubumonitor.view.chart.WordCloudChart;
 import javafx.scene.control.ListView;
+import javafx.scene.web.WebView;
 
-public class ForumWordCloud extends WordCloud {
-	
+public class ForumWordCloud extends WordCloudChart {
+
 	private ListView<CourseModule> listViewForum;
+	private WebView webView;
 
-	public ForumWordCloud(MainController mainController, ListView<CourseModule> listViewForum) {
+	public ForumWordCloud(MainController mainController, ListView<CourseModule> listViewForum, WebView webView) {
 		super(mainController, ChartType.FORUM_WORD_CLOUD);
 		this.listViewForum = listViewForum;
+		this.webView = webView;
 	}
 
 	@Override
 	public void exportCSV(String path) throws IOException {
-		Map<String, Long> wordCount = wordCount();
-		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
-				CSVFormat.DEFAULT.withHeader("word", "freq"))) {
-			for(Map.Entry<String, Long> entry:wordCount.entrySet()) {
-				if(entry.getKey().length() > 3) {
-					
-					printer.printRecords(entry.getKey(), entry.getValue());
-				}
-				
+		List<WordFrequency> wordCount = wordCount();
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader("word", "freq"))) {
+			for (WordFrequency wordFrequency : wordCount) {
+
+				printer.printRecord(wordFrequency.getWord(), wordFrequency.getFrequency());
+
 			}
 		}
 
@@ -54,56 +67,80 @@ public class ForumWordCloud extends WordCloud {
 
 	@Override
 	public JSObject getOptions(JSObject jsObject) {
-		jsObject.put("gridSize", "Math.round(16 * document.getElementById('wordCloud').width / 1024)");
-		jsObject.put("weightFactor",
-				"function (size) {return Math.pow(size, 2.3) * document.getElementById('wordCloud').width / 1024; }");
-		jsObject.put("rotateRatio", 0.5);
-		jsObject.put("rotationSteps", 2);
-		jsObject.put("backgroundColor", "'#ffe0e0'");
-		jsObject.put("minSize", 12);
+
 		return jsObject;
 	}
 
 	@Override
 	public void update() {
-		Map<String, Long> wordCount = wordCount();
-		JSArray jsArray = toJS(wordCount);
-		JSObject options = getOptions();
-		options.put("list", jsArray);
+		List<WordFrequency> wordCount = wordCount();
+
+		File backgroundImage = new File((String) mainConfiguration.getValue(this.chartType, "backGroundImage"));
+
+		Dimension dimension;
+		Background background;
+		if (backgroundImage.isFile()) {
+			try {
+
+				BufferedImage bimg = ImageIO.read(backgroundImage);
+				int width = bimg.getWidth();
+				int height = bimg.getHeight();
+				dimension = new Dimension(width, height - 30);
+				background = new PixelBoundryBackground(backgroundImage);
+			} catch (IOException e) {
+				dimension = new Dimension((int) webView.getWidth(), (int) webView.getHeight() - 30);
+				background = new RectangleBackground(dimension);
+			}
+		} else {
+			dimension = new Dimension((int) webView.getWidth(), (int) webView.getHeight() - 30);
+			background = new RectangleBackground(dimension);
+		}
+
+		WordCloud wordCloud = new WordCloud(dimension, CollisionMode.PIXEL_PERFECT);
+		wordCloud.setColorPalette(new ColorPalette(new Color(0xed1941), new Color(0xf26522), new Color(0x845538),
+				new Color(0x8a5d19), new Color(0x7f7522), new Color(0x5c7a29), new Color(0x1d953f), new Color(0x007d65),
+				new Color(0x65c294)));
+		wordCloud.setBackground(background);
+		wordCloud.setPadding(mainConfiguration.getValue(this.chartType, "padding"));
 		
-		webViewChartsEngine.executeScript("updateWordCloud(" + options+ ")");
+		wordCloud.setFontScalar(new LinearFontScalar(mainConfiguration.getValue(this.chartType, "minFont"), mainConfiguration.getValue(this.chartType, "maxFont")));
+		wordCloud.setBackgroundColor(
+				UtilMethods.toAwtColor(mainConfiguration.getValue(this.chartType, "chartBackgroundColor")));
+
+		wordCloud.build(wordCount);
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		wordCloud.writeToStream("png", output);
+		byte[] outputByte = output.toByteArray();
+		String img = Base64.getEncoder()
+				.encodeToString(outputByte);
+
+		JSObject options = getOptions();
+
+		webViewChartsEngine.executeScript("updateWordCloud('data:image/png;base64," + img + "'," + options + ")");
 	}
 
-	public Map<String, Long> wordCount() {
+
+
+	public List<WordFrequency> wordCount() {
 		List<EnrolledUser> selectedEnrolledUsers = getSelectedEnrolledUser();
 		List<DiscussionPost> discussionPosts = getSelectedDiscussionPosts(selectedEnrolledUsers);
-		
-		List<String> result = new ArrayList<>();
-		try(Analyzer analyzer = new StandardAnalyzer()){
-			for(DiscussionPost discussionPost: discussionPosts) {
-				
-				String parsed = Parsers.parse(discussionPost.getMessage(), discussionPost.getMessageformat());
-				analyze(result, parsed, analyzer);
-			}
+
+		List<String> texts = new ArrayList<>();
+
+		for (DiscussionPost discussionPost : discussionPosts) {
+
+			String parsed = Parsers.parse(discussionPost.getMessage(), discussionPost.getMessageformat());
+			texts.add(parsed);
 		}
-		
-		return result.stream().collect(Collectors.groupingBy(String::toString, Collectors.counting()));
-		
-	}
-	
-	
-	public JSArray toJS(Map<String, Long> wordCount) {
-		JSArray jsArray = new JSArray();
-		for(Map.Entry<String, Long> entry:wordCount.entrySet()) {
-			if(entry.getKey().length() > 3) {
-				JSArray array = new JSArray();
-				array.addWithQuote(entry.getKey());
-				array.add(entry.getValue());
-				jsArray.add(array);
-			}
-			
-		}
-		return jsArray;
+
+		FrequencyAnalyzer frequencyAnalyzer = new FrequencyAnalyzer();
+		frequencyAnalyzer
+				.setWordFrequenciesToReturn(mainConfiguration.getValue(this.chartType, "wordFrequencesToReturn"));
+		frequencyAnalyzer.setMinWordLength(mainConfiguration.getValue(this.chartType, "minWordLength"));
+		frequencyAnalyzer.setMaxWordLength(mainConfiguration.getValue(this.chartType, "maxWordLength"));
+
+		return frequencyAnalyzer.load(texts);
+
 	}
 
 	public List<DiscussionPost> getSelectedDiscussionPosts(Collection<EnrolledUser> selectedUsers) {
@@ -118,17 +155,4 @@ public class ForumWordCloud extends WordCloud {
 				.collect(Collectors.toList());
 	}
 
-	public void analyze(Collection<String> result, String text, Analyzer analyzer) {
-
-		try (TokenStream tokenStream = analyzer.tokenStream(null, text)) {
-			CharTermAttribute attr = tokenStream.addAttribute(CharTermAttribute.class);
-			tokenStream.reset();
-			while (tokenStream.incrementToken()) {
-				result.add(attr.toString());
-			}
-		} catch (IOException e) {
-			//do nothing, never has a IOException cuz is a StringReader
-		}
-
-	}
 }

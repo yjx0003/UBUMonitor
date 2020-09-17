@@ -165,7 +165,23 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_NETWORK, "layout.randomSeed", "");
 		createItem(ChartType.FORUM_NETWORK, "layout.clusterThreshold", 150);
 		
+		createItem(ChartType.FORUM_WORD_CLOUD, "chartBackgroundColor", Color.web("#FFFFFF", 0.0));
+		createItem(ChartType.FORUM_WORD_CLOUD, "wordFrequencesToReturn", 50);
+		createItem(ChartType.FORUM_WORD_CLOUD, "padding", 2);
+		createItem(ChartType.FORUM_WORD_CLOUD, "minWordLength", 3);
+		createItem(ChartType.FORUM_WORD_CLOUD, "maxWordLength", 32);
+		createItem(ChartType.FORUM_WORD_CLOUD, "minFont", 10);
+		createItem(ChartType.FORUM_WORD_CLOUD, "maxFont", 40);
+		createItem(ChartType.FORUM_WORD_CLOUD, "backGroundImage", "");
+		
+
+		
 		createItem(ChartType.FORUM_USER_POST_BAR, HORIZONTAL_MODE, false);
+		
+		
+		
+
+		
 		
 	}
 

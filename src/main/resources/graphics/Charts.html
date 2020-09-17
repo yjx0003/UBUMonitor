@@ -103,7 +103,8 @@
 
          visNetwork = new vis.Network(document.getElementById('visNetworkDiv'), {}, {});
          visTimeline = new vis.Timeline(document.getElementById('visTimelineDiv'), {}, {});
-      
+        
+
       }
 
       //------------------------------------------Funciones------------------------------------------------------------------
@@ -253,16 +254,19 @@
 
       }
 
-      function updateWordCloud(options) {
-         hiddenCharts("wordCloud", options);
-         var word_cloud = document.getElementById('wordCloud');
-         word_cloud.height = window.innerHeight -30;
-         word_cloud.width = window.innerWidth - 30;
+      function updateWordCloud(image, options) {
+         hiddenCharts("canvas-container", options);
+         wordCloud = document.getElementById('wordCloud');
+         imageWordCloud = new Image();
+         imageWordCloud.onload = function(){
+            wordCloud.height = imageWordCloud.height;
+            wordCloud.width = imageWordCloud.width;
 
-         options.gridSize = Math.round(16 *  word_cloud.width / 1024);
-         options.weightFactor = function (size) {return Math.pow(size, 2.3) * word_cloud.width / 1024; };
-   
-         WordCloud(word_cloud, options );
+            wordCloud.getContext("2d").drawImage(imageWordCloud, 0, 0);
+            
+         };
+
+         imageWordCloud.src = image;
          
 
       }
@@ -276,7 +280,7 @@
          displayButton('tabulatorDiv', value == "tabulator");
          displayButton('visNetworkDiv', value == "visNetwork");
          displayButton('visTimelineDiv', value == "visTimeline");
-         displayButton('wordCloud', value == "wordCloud");
+         displayButton('canvas-container', value == "canvas-container");
 
          manageButtons(options.tab, options.listCharts);
          disableTab(options.tab, options.button);
@@ -456,7 +460,7 @@
    <div id="tabulatorDiv"></div>
    <div id="visNetworkDiv" class="visDiv"></div>
    <div id="visTimelineDiv" class="visDiv"></div>
-   <canvas id="wordCloud"></canvas>
+   <div id="canvas-container" class="canvas-container"><canvas id="wordCloud" class="canvas-word-cloud"></canvas></div>
 </body>
 
 </html>

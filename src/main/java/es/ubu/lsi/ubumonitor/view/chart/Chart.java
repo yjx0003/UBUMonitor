@@ -292,5 +292,8 @@ public abstract class Chart implements ExportableChart {
 	public void setActualCourse(Course actualCourse) {
 		this.actualCourse = actualCourse;
 	}
+	public <T> T getConfigValue(String name) {
+		return mainConfiguration.getValue(this.chartType, name);
+	}
 
 }

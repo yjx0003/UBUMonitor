@@ -39,6 +39,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class Login {
+	
 	private static final String HTTP = "http://";
 
 	private static final String HTTPS = "https://";
@@ -105,7 +106,7 @@ public class Login {
 			JSONObject data = new JSONArray(new JSONTokener(response.body()
 					.byteStream())).getJSONObject(0)
 							.optJSONObject("data");
-		
+
 			if (data != null) {
 
 				launchurl = data.getString("launchurl")
@@ -144,7 +145,7 @@ public class Login {
 		if (launchurl != null && typeoflogin != DEFAULT_TYPE_OF_LOGIN) {
 
 			LOGGER.info("Login SSO with Launch ur {}", launchurl);
-			loginWebViewWithLaunchUrl(host, launchurl, Controller.getInstance()
+			loginWebViewWithLaunchUrl(host, username, password, launchurl, Controller.getInstance()
 					.getStage());
 
 		} else {
@@ -213,11 +214,12 @@ public class Login {
 				.join();
 	}
 
-	public void loginWebViewWithLaunchUrl(String host, String launchurl, Window owner) {
+	public void loginWebViewWithLaunchUrl(String host, String username, String password, String launchurl,
+			Window owner) {
 		CompletableFuture.runAsync(() -> {
 
 			Stage popup = UtilMethods.createStage(owner, Modality.WINDOW_MODAL);
-			setWebview(launchurl, popup, launcherLogin(host, popup));
+			setWebview(launchurl, popup, launcherLogin(host, username, password, popup));
 			try (Response sesskeyResponse = Connection.getResponse(host)) {
 				webService.setSesskey(findSesskey(sesskeyResponse.body()
 						.string()));
@@ -260,12 +262,20 @@ public class Login {
 
 	}
 
-	public ChangeListener<Worker.State> launcherLogin(String host, Stage popup) {
+	public ChangeListener<Worker.State> launcherLogin(String host, String username, String password, Stage popup) {
 		return (ov, old, newValue) -> {
 
-			if (newValue != Worker.State.FAILED)
-				return; // failed if try to go url scheme MOODLE_LOCAL_SERVICE
+			if (newValue == Worker.State.SUCCEEDED) {
+				webView.getEngine()
+						.executeScript("for(const o of document.getElementsByTagName('INPUT'))'text'==o.type&&(o.value='"
+								+ UtilMethods.escapeJavaScriptText(username) + "'),'password'==o.type&&(o.value='"
+								+ UtilMethods.escapeJavaScriptText(password) + "');");
+			}
 
+			if(newValue!=Worker.State.FAILED && newValue!=Worker.State.SUCCEEDED) {
+				return;
+			}
+			
 			try (Response response = Connection.getResponse(webView.getEngine()
 					.getLocation())) {
 				String location = response.header("location");
@@ -281,16 +291,13 @@ public class Login {
 					if (matcher.find()) {
 
 						webService.setData(host, matcher.group(1), matcher.group(3));
-					} else {
-						throw new IllegalAccessError("Cannot get the token in the decoded: " + matcher);
+						popup.close();
 					}
 
 				}
 			} catch (Exception e) {
 				LOGGER.error("Error al intentar loguearse", e);
 				throw new IllegalStateException("No se ha podido loguear al servidor");
-			} finally {
-				popup.close();
 			}
 		};
 	}

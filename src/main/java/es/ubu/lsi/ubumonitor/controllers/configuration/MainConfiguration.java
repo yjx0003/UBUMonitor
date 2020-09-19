@@ -135,6 +135,10 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_NETWORK, "edges.arrows.to.scaleFactor", 1.0);
 		createItem(ChartType.FORUM_NETWORK, "edges.scaling.min", 1);
 		createItem(ChartType.FORUM_NETWORK, "edges.scaling.max", 10);
+		createItem(ChartType.FORUM_NETWORK, "nodes.weightSendPost", 1.0);
+		createItem(ChartType.FORUM_NETWORK, "nodes.weightReceivePost", 1.0);
+		createItem(ChartType.FORUM_NETWORK, "nodes.weightSelfPost", 1.0);
+		createItem(ChartType.FORUM_NETWORK, "nodes.weightDiscussionCreation", 1.0);
 		createItem(ChartType.FORUM_NETWORK, "nodes.borderWidth", 1);
 		createItem(ChartType.FORUM_NETWORK, "nodes.scaling.min", 20);
 		createItem(ChartType.FORUM_NETWORK, "nodes.scaling.max", 40);

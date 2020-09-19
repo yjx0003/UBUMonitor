@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -68,7 +69,7 @@ public class ForumNetwork extends VisNetwork {
 	public JSObject getOptions(JSObject jsObject) {
 		JSObject options = new JSObject();
 
-		jsObject.put("physicsAfterDraw", getValue("physicsAfterDraw"));
+		jsObject.put("physicsAfterDraw", getConfigValue("physicsAfterDraw"));
 		options.put("edges", getEdgesOptions());
 		options.put("nodes", getNodesOptions());
 		options.put("physics", getPhysicsOptions());
@@ -81,28 +82,28 @@ public class ForumNetwork extends VisNetwork {
 
 	private JSObject getEdgesOptions() {
 		JSObject edges = new JSObject();
-		edges.put("arrows", "{to:{enabled:true,scaleFactor:" + getValue("edges.arrows.to.scaleFactor") + "}}");
+		edges.put("arrows", "{to:{enabled:true,scaleFactor:" + getConfigValue("edges.arrows.to.scaleFactor") + "}}");
 		edges.put("arrowStrikethrough", false);
-		edges.put("dashes", getValue("edges.dashes"));
+		edges.put("dashes", getConfigValue("edges.dashes"));
 		JSObject scaling = new JSObject();
-		scaling.put("max", getValue("edges.scaling.max"));
-		scaling.put("min", getValue("edges.scaling.min"));
+		scaling.put("max", getConfigValue("edges.scaling.max"));
+		scaling.put("min", getConfigValue("edges.scaling.min"));
 		edges.put("scaling", scaling);
 		return edges;
 	}
 
 	private JSObject getNodesOptions() {
 		JSObject nodes = new JSObject();
-		if ((boolean) getValue("usePhoto")) {
+		if ((boolean) getConfigValue("usePhoto")) {
 			nodes.put("shape", "'circularImage'");
 			nodes.put("brokenImage", "'../img/default_user.png'");
 		} else {
 			nodes.put("shape", "'circle'");
 		}
-		nodes.put("borderWidth", getValue("nodes.borderWidth"));
+		nodes.put("borderWidth", getConfigValue("nodes.borderWidth"));
 		JSObject scaling = new JSObject();
-		scaling.put("max", getValue("nodes.scaling.max"));
-		scaling.put("min", getValue("nodes.scaling.min"));
+		scaling.put("max", getConfigValue("nodes.scaling.max"));
+		scaling.put("min", getConfigValue("nodes.scaling.min"));
 		nodes.put("scaling", scaling);
 		return nodes;
 	}
@@ -110,44 +111,44 @@ public class ForumNetwork extends VisNetwork {
 	private JSObject getPhysicsOptions() {
 		JSObject physics = new JSObject();
 		physics.put("enabled", true);
-		Solver solver = getValue("physics.solver");
+		Solver solver = getConfigValue("physics.solver");
 		physics.putWithQuote("solver", solver.getName());
 		switch (solver) {
 		case BARNES_HUT:
 			JSObject barnesHut = new JSObject();
-			barnesHut.put("theta", getValue("physics.barnesHut.theta"));
-			barnesHut.put("gravitationalConstant", getValue("physics.barnesHut.gravitationalConstant"));
-			barnesHut.put("centralGravity", getValue("physics.barnesHut.centralGravity"));
-			barnesHut.put("springLength", getValue("physics.barnesHut.springLength"));
-			barnesHut.put("springConstant", getValue("physics.barnesHut.springConstant"));
-			barnesHut.put("damping", getValue("physics.barnesHut.damping"));
-			barnesHut.put("avoidOverlap", getValue("physics.barnesHut.avoidOverlap"));
+			barnesHut.put("theta", getConfigValue("physics.barnesHut.theta"));
+			barnesHut.put("gravitationalConstant", getConfigValue("physics.barnesHut.gravitationalConstant"));
+			barnesHut.put("centralGravity", getConfigValue("physics.barnesHut.centralGravity"));
+			barnesHut.put("springLength", getConfigValue("physics.barnesHut.springLength"));
+			barnesHut.put("springConstant", getConfigValue("physics.barnesHut.springConstant"));
+			barnesHut.put("damping", getConfigValue("physics.barnesHut.damping"));
+			barnesHut.put("avoidOverlap", getConfigValue("physics.barnesHut.avoidOverlap"));
 			physics.put("barnesHut", barnesHut);
 			break;
 		case FORCE_ATLAS_2_BASED:
 			JSObject forceAtlas2Based = new JSObject();
-			forceAtlas2Based.put("theta", getValue("physics.forceAtlas2Based.theta"));
-			forceAtlas2Based.put("gravitationalConstant", getValue("physics.forceAtlas2Based.gravitationalConstant"));
-			forceAtlas2Based.put("centralGravity", getValue("physics.forceAtlas2Based.centralGravity"));
-			forceAtlas2Based.put("springLength", getValue("physics.forceAtlas2Based.springLength"));
-			forceAtlas2Based.put("springConstant", getValue("physics.forceAtlas2Based.springConstant"));
-			forceAtlas2Based.put("damping", getValue("physics.forceAtlas2Based.damping"));
-			forceAtlas2Based.put("avoidOverlap", getValue("physics.forceAtlas2Based.avoidOverlap"));
+			forceAtlas2Based.put("theta", getConfigValue("physics.forceAtlas2Based.theta"));
+			forceAtlas2Based.put("gravitationalConstant",
+					getConfigValue("physics.forceAtlas2Based.gravitationalConstant"));
+			forceAtlas2Based.put("centralGravity", getConfigValue("physics.forceAtlas2Based.centralGravity"));
+			forceAtlas2Based.put("springLength", getConfigValue("physics.forceAtlas2Based.springLength"));
+			forceAtlas2Based.put("springConstant", getConfigValue("physics.forceAtlas2Based.springConstant"));
+			forceAtlas2Based.put("damping", getConfigValue("physics.forceAtlas2Based.damping"));
+			forceAtlas2Based.put("avoidOverlap", getConfigValue("physics.forceAtlas2Based.avoidOverlap"));
 			physics.put("forceAtlas2Based", forceAtlas2Based);
 			break;
 		case REPULSION:
 			JSObject repulsion = new JSObject();
-			repulsion.put("nodeDistance", getValue("physics.repulsion.nodeDistance"));
-			repulsion.put("centralGravity", getValue("physics.repulsion.centralGravity"));
-			repulsion.put("springLength", getValue("physics.repulsion.springLength"));
-			repulsion.put("sprinConstant", getValue("physics.repulsion.springConstant"));
-			repulsion.put("damping", getValue("physics.repulsion.damping"));
+			repulsion.put("nodeDistance", getConfigValue("physics.repulsion.nodeDistance"));
+			repulsion.put("centralGravity", getConfigValue("physics.repulsion.centralGravity"));
+			repulsion.put("springLength", getConfigValue("physics.repulsion.springLength"));
+			repulsion.put("sprinConstant", getConfigValue("physics.repulsion.springConstant"));
+			repulsion.put("damping", getConfigValue("physics.repulsion.damping"));
 			physics.put("repulsion", repulsion);
 			break;
 		default:
 			// default barneshut with default parameters
 			break;
-
 		}
 
 		return physics;
@@ -156,25 +157,21 @@ public class ForumNetwork extends VisNetwork {
 
 	private JSObject getInteractionOptions() {
 		JSObject interaction = new JSObject();
-		interaction.put("keyboard", getValue("interaction.keyboard"));
-		interaction.put("multiselect", getValue("interaction.multiselect"));
-		interaction.put("navigationButtons", getValue("interaction.navigationButtons"));
-		interaction.put("tooltipDelay", getValue("interaction.tooltipDelay"));
+		interaction.put("keyboard", getConfigValue("interaction.keyboard"));
+		interaction.put("multiselect", getConfigValue("interaction.multiselect"));
+		interaction.put("navigationButtons", getConfigValue("interaction.navigationButtons"));
+		interaction.put("tooltipDelay", getConfigValue("interaction.tooltipDelay"));
 		return interaction;
 	}
 
 	private JSObject getLayoutOptions() {
 		JSObject layout = new JSObject();
-		String randomSeed = getValue("layout.randomSeed");
+		String randomSeed = getConfigValue("layout.randomSeed");
 
 		layout.put("randomSeed", StringUtils.isBlank(randomSeed) ? "undefined" : randomSeed);
 
-		layout.put("clusterThreshold", getValue("layout.clusterThreshold"));
+		layout.put("clusterThreshold", getConfigValue("layout.clusterThreshold"));
 		return layout;
-	}
-
-	private <T> T getValue(String key) {
-		return mainConfiguration.getValue(this.chartType, key);
 	}
 
 	@Override
@@ -192,6 +189,7 @@ public class ForumNetwork extends VisNetwork {
 		Set<EnrolledUser> usersWithEdges = new HashSet<>();
 		Map<EnrolledUser, Long> fromMap = new HashMap<>();
 		Map<EnrolledUser, Long> toMap = new HashMap<>();
+		Map<EnrolledUser, Long> toSelfMap = new HashMap<>();
 		Map<EnrolledUser, Long> discussionCreations = actualCourse.getDiscussionPosts()
 				.stream()
 				.filter(d -> d.getParent()
@@ -210,8 +208,10 @@ public class ForumNetwork extends VisNetwork {
 				EnrolledUser to = toEntry.getKey();
 				Long countPosts = toEntry.getValue();
 
-				addCountPosts(fromMap, from, countPosts);
-				if (!from.equals(to)) {
+				if (from.equals(to)) {
+					addCountPosts(toSelfMap, to, countPosts);
+				} else {
+					addCountPosts(fromMap, from, countPosts);
 					addCountPosts(toMap, to, countPosts);
 				}
 
@@ -229,17 +229,18 @@ public class ForumNetwork extends VisNetwork {
 
 		}
 
-		boolean showNonConnected = getValue("showNonConnected");
+		boolean showNonConnected = getConfigValue("showNonConnected");
 
 		data.put("nodes",
 
-				createNodes(showNonConnected ? users : usersWithEdges, fromMap, toMap, discussionCreations));
+				createNodes(showNonConnected ? users : usersWithEdges, fromMap, toMap, toSelfMap, discussionCreations));
 		data.put("edges", edges);
 		webViewChartsEngine.executeScript("updateVisNetwork(" + data + "," + getOptions() + ")");
 	}
 
 	private JSArray createNodes(Collection<EnrolledUser> users, Map<EnrolledUser, Long> fromMap,
-			Map<EnrolledUser, Long> toMap, Map<EnrolledUser, Long> discussionCreations) {
+			Map<EnrolledUser, Long> toMap, Map<EnrolledUser, Long> toSelf,
+			Map<EnrolledUser, Long> discussionCreations) {
 		JSArray nodes = new JSArray();
 
 		for (EnrolledUser user : users) {
@@ -248,6 +249,7 @@ public class ForumNetwork extends VisNetwork {
 			long fromValue = fromMap.getOrDefault(user, 0L);
 			long toValue = toMap.getOrDefault(user, 0L);
 			long discussionCreated = discussionCreations.getOrDefault(user, 0L);
+			long toSelfValue = toSelf.getOrDefault(user, 0L);
 			nodes.add(node);
 			node.put("id", user.getId());
 			node.putWithQuote("title", user.getFullName());
@@ -255,26 +257,54 @@ public class ForumNetwork extends VisNetwork {
 
 			node.put("image", "'" + user.getImageBase64() + "'");
 
-			node.put("value", fromValue + toValue);
-
 			if (fromValue + toValue + discussionCreated != 0) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("'");
-				if ((boolean) getValue("useInitialNames")) {
-					Matcher m = INITIAL_LETTER_PATTERN.matcher(user.getFullName());
-
-					while (m.find()) {
-						builder.append(m.group());
-					}
-					builder.append(" ");
+				if ((boolean) getConfigValue("useInitialNames")) {
+					initialLetterNames(user, builder);
 				}
+				
+				long total = 0;
+				double weightSendPost = getConfigValue("nodes.weightSendPost");
+				double weightReceivePost = getConfigValue("nodes.weightReceivePost");
+				double weightSelfPost = getConfigValue("nodes.weightSelfPost");
+				double weightDiscussionCreation = getConfigValue("nodes.weightDiscussionCreation");
 
-				builder.append("(" + fromValue + ", " + toValue + ", " + discussionCreated + ")'");
+				StringJoiner stringJoiner = new StringJoiner(", ", " (", ")");
+				stringJoiner.setEmptyValue("");
+				if (weightSendPost != 0.0) {
+					stringJoiner.add(fromValue + "🢅");
+					total += fromValue * weightSendPost;
+				}
+				if (weightReceivePost != 0) {
+					stringJoiner.add(toValue + "🢇");
+					total += toValue * weightReceivePost;
+				}
+				if (weightSelfPost != 0) {
+					stringJoiner.add(toSelfValue + "⟳");
+					total += toSelfValue * weightSelfPost;
+				}
+				if (weightDiscussionCreation != 0) {
+					stringJoiner.add(discussionCreated + "☝");
+					total += discussionCreated * weightDiscussionCreation;
+				}
+				builder.append(stringJoiner);
 
+				builder.append("'");
+
+				node.put("value", total);
 				node.put("label", builder);
 			}
 		}
 		return nodes;
+	}
+
+	public void initialLetterNames(EnrolledUser user, StringBuilder builder) {
+		Matcher m = INITIAL_LETTER_PATTERN.matcher(user.getFullName());
+
+		while (m.find()) {
+			builder.append(m.group());
+		}
 	}
 
 	private void addCountPosts(Map<EnrolledUser, Long> map, EnrolledUser user, Long posts) {
@@ -286,8 +316,9 @@ public class ForumNetwork extends VisNetwork {
 		}
 	}
 
-	public List<DiscussionPost> getSelectedDiscussionPosts(Collection<EnrolledUser> selectedUsers, Collection<CourseModule> selectedForums) {
-	
+	public List<DiscussionPost> getSelectedDiscussionPosts(Collection<EnrolledUser> selectedUsers,
+			Collection<CourseModule> selectedForums) {
+
 		Set<EnrolledUser> users = new HashSet<>(selectedUsers);
 
 		return actualCourse.getDiscussionPosts()

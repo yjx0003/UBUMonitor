@@ -35,6 +35,7 @@ import es.ubu.lsi.ubumonitor.model.DiscussionPost;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.Parsers;
+import es.ubu.lsi.ubumonitor.util.StopWord;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.WordCloudChart;
@@ -98,12 +99,13 @@ public class ForumWordCloud extends WordCloudChart {
 		}
 
 		WordCloud wordCloud = new WordCloud(dimension, CollisionMode.PIXEL_PERFECT);
+
 		wordCloud.setColorPalette(new ColorPalette(new Color(0xed1941), new Color(0xf26522), new Color(0x845538),
 				new Color(0x8a5d19), new Color(0x7f7522), new Color(0x5c7a29), new Color(0x1d953f), new Color(0x007d65),
 				new Color(0x65c294)));
 		wordCloud.setBackground(background);
 		wordCloud.setPadding(mainConfiguration.getValue(this.chartType, "padding"));
-		
+	
 		wordCloud.setFontScalar(new LinearFontScalar(mainConfiguration.getValue(this.chartType, "minFont"), mainConfiguration.getValue(this.chartType, "maxFont")));
 		wordCloud.setBackgroundColor(
 				UtilMethods.toAwtColor(mainConfiguration.getValue(this.chartType, "chartBackgroundColor")));
@@ -134,6 +136,8 @@ public class ForumWordCloud extends WordCloudChart {
 		}
 
 		FrequencyAnalyzer frequencyAnalyzer = new FrequencyAnalyzer();
+		StopWord stopWords = getConfigValue("stopWords");
+		frequencyAnalyzer.setStopWords(stopWords.getValues());
 		frequencyAnalyzer
 				.setWordFrequenciesToReturn(mainConfiguration.getValue(this.chartType, "wordFrequencesToReturn"));
 		frequencyAnalyzer.setMinWordLength(mainConfiguration.getValue(this.chartType, "minWordLength"));

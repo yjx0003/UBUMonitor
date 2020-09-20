@@ -52,6 +52,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.PopupWindow.AnchorLocation;
 import javafx.stage.Stage;
 import okhttp3.HttpUrl;
@@ -262,7 +263,7 @@ public class MenuController {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Configuration.fxml"),
 				I18n.getResourceBundle());
 
-		UtilMethods.createDialog(loader, controller.getStage());
+		UtilMethods.createDialog(loader, null, Modality.NONE);
 		ConfigurationController configurationController = loader.getController();
 		configurationController.setMainController(mainController);
 		configurationController.setOnClose();

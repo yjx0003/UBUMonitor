@@ -268,7 +268,7 @@ public class UtilMethods {
 
 	}
 
-	public static void createDialog(FXMLLoader loader, Stage ownerStage) {
+	public static void createDialog(FXMLLoader loader, Stage ownerStage, Modality modality) {
 
 		Scene newScene;
 		try {
@@ -279,13 +279,17 @@ public class UtilMethods {
 		}
 		Style.addStyle(ConfigHelper.getProperty("style"), newScene.getStylesheets());
 
-		Stage stage = createStage(ownerStage, Modality.WINDOW_MODAL);
+		Stage stage = createStage(ownerStage, modality);
 		stage.setScene(newScene);
 		stage.setResizable(false);
 
 		stage.show();
 	}
 
+	public static void createDialog(FXMLLoader loader, Stage ownerStage) {
+
+		createDialog(loader, ownerStage, Modality.WINDOW_MODAL);
+	}
 	public static void openURL(String url) {
 		// from
 		// http://www.java2s.com/Code/Java/Development-Class/LaunchBrowserinMacLinuxUnix.htm

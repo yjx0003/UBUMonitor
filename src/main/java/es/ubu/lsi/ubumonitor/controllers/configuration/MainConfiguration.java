@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -24,6 +25,7 @@ import es.ubu.lsi.ubumonitor.model.Role;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.util.StopWord;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.forum.ForumNetwork;
 
@@ -169,6 +171,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_NETWORK, "layout.randomSeed", "");
 		createItem(ChartType.FORUM_NETWORK, "layout.clusterThreshold", 150);
 		
+		createItem(ChartType.FORUM_WORD_CLOUD, "stopWords", StopWord.getStopWordValues(Locale.getDefault()));
 		createItem(ChartType.FORUM_WORD_CLOUD, "chartBackgroundColor", Color.web("#FFFFFF", 0.0));
 		createItem(ChartType.FORUM_WORD_CLOUD, "wordFrequencesToReturn", 50);
 		createItem(ChartType.FORUM_WORD_CLOUD, "padding", 2);

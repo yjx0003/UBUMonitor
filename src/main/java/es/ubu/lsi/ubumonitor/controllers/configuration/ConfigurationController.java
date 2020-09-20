@@ -87,9 +87,7 @@ public class ConfigurationController implements Initializable {
 	}
 
 	public void onClose() {
-		Controller controller = Controller.getInstance();
-		saveConfiguration(controller.getMainConfiguration(), controller.getConfiguration(controller.getActualCourse()));
-		applyConfiguration();
+		apply();
 
 	}
 
@@ -147,4 +145,9 @@ public class ConfigurationController implements Initializable {
 		this.mainController = mainController;
 	}
 
+	public void apply() {
+		Controller controller = Controller.getInstance();
+		saveConfiguration(controller.getMainConfiguration(), controller.getConfiguration(controller.getActualCourse()));
+		applyConfiguration();
+	}
 }

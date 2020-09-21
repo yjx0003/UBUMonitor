@@ -132,6 +132,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_NETWORK, "showNonConnected", true);
 		createItem(ChartType.FORUM_NETWORK, "usePhoto", true);
 		createItem(ChartType.FORUM_NETWORK, "useInitialNames", true);
+		createItem(ChartType.FORUM_NETWORK, "showNumberPosts", true);
 		createItem(ChartType.FORUM_NETWORK, "physicsAfterDraw", true);
 		createItem(ChartType.FORUM_NETWORK, "edges.dashes", false);
 		createItem(ChartType.FORUM_NETWORK, "edges.arrows.to.scaleFactor", 1.0);

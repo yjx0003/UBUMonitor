@@ -105,6 +105,7 @@ public class ForumNetwork extends VisNetwork {
 		scaling.put("max", getConfigValue("nodes.scaling.max"));
 		scaling.put("min", getConfigValue("nodes.scaling.min"));
 		nodes.put("scaling", scaling);
+		nodes.put("font", "{multi:true,bold:{size:18}}");
 		return nodes;
 	}
 
@@ -254,41 +255,38 @@ public class ForumNetwork extends VisNetwork {
 			node.put("id", user.getId());
 			node.putWithQuote("title", user.getFullName());
 			node.put("color", rgb(user.getId() * 31));
-
 			node.put("image", "'" + user.getImageBase64() + "'");
 
-			if (fromValue + toValue + discussionCreated != 0) {
+			if (fromValue + toValue + toSelfValue + discussionCreated != 0) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("'");
 				if ((boolean) getConfigValue("useInitialNames")) {
 					initialLetterNames(user, builder);
 				}
-				
+
+				if ((boolean) getConfigValue("showNumberPosts")) {
+					StringJoiner stringJoiner = new StringJoiner(", ", " (", ")");
+
+					stringJoiner.add(fromValue + "<b>⬈</b>");
+					stringJoiner.add(toValue + "<b>⬋</b>");
+					stringJoiner.add(toSelfValue + "<b>⟳</b>");
+					stringJoiner.add(discussionCreated + "<b>☝</b>");
+					builder.append(stringJoiner);
+				}
+
 				long total = 0;
 				double weightSendPost = getConfigValue("nodes.weightSendPost");
 				double weightReceivePost = getConfigValue("nodes.weightReceivePost");
 				double weightSelfPost = getConfigValue("nodes.weightSelfPost");
 				double weightDiscussionCreation = getConfigValue("nodes.weightDiscussionCreation");
 
-				StringJoiner stringJoiner = new StringJoiner(", ", " (", ")");
-				stringJoiner.setEmptyValue("");
-				if (weightSendPost != 0.0) {
-					stringJoiner.add(fromValue + "🢅");
-					total += fromValue * weightSendPost;
-				}
-				if (weightReceivePost != 0) {
-					stringJoiner.add(toValue + "🢇");
-					total += toValue * weightReceivePost;
-				}
-				if (weightSelfPost != 0) {
-					stringJoiner.add(toSelfValue + "⟳");
-					total += toSelfValue * weightSelfPost;
-				}
-				if (weightDiscussionCreation != 0) {
-					stringJoiner.add(discussionCreated + "☝");
-					total += discussionCreated * weightDiscussionCreation;
-				}
-				builder.append(stringJoiner);
+				total += fromValue * weightSendPost;
+
+				total += toValue * weightReceivePost;
+
+				total += toSelfValue * weightSelfPost;
+
+				total += discussionCreated * weightDiscussionCreation;
 
 				builder.append("'");
 

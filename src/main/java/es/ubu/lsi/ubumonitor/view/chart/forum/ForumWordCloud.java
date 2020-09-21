@@ -139,9 +139,9 @@ public class ForumWordCloud extends WordCloudChart {
 		StopWord stopWords = getConfigValue("stopWords");
 		frequencyAnalyzer.setStopWords(stopWords.getValues());
 		frequencyAnalyzer
-				.setWordFrequenciesToReturn(mainConfiguration.getValue(this.chartType, "wordFrequencesToReturn"));
-		frequencyAnalyzer.setMinWordLength(mainConfiguration.getValue(this.chartType, "minWordLength"));
-		frequencyAnalyzer.setMaxWordLength(mainConfiguration.getValue(this.chartType, "maxWordLength"));
+				.setWordFrequenciesToReturn(getConfigValue("wordFrequencesToReturn"));
+		frequencyAnalyzer.setMinWordLength(getConfigValue("minWordLength"));
+		frequencyAnalyzer.setMaxWordLength(getConfigValue("maxWordLength"));
 
 		return frequencyAnalyzer.load(texts);
 

@@ -1,6 +1,8 @@
 package es.ubu.lsi.ubumonitor.view.chart.forum;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,6 +27,7 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.VisNetwork;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.web.WebView;
 
@@ -32,10 +35,17 @@ public class ForumNetwork extends VisNetwork {
 
 	private static final Pattern INITIAL_LETTER_PATTERN = Pattern.compile("\\b\\w|,\\s");
 	private ListView<CourseModule> listViewForum;
+	private DatePicker datePickerStart;
+	private DatePicker datePickerEnd;
 
-	public ForumNetwork(MainController mainController, WebView webView, ListView<CourseModule> listViewForum) {
+	public ForumNetwork(MainController mainController, WebView webView, ListView<CourseModule> listViewForum,
+			DatePicker datePickerStart, DatePicker datePickerEnd) {
 		super(mainController, ChartType.FORUM_NETWORK, webView);
 		this.listViewForum = listViewForum;
+		this.datePickerStart = datePickerStart;
+		this.datePickerEnd = datePickerEnd;
+		useRangeDate = true;
+
 	}
 
 	@Override
@@ -194,7 +204,7 @@ public class ForumNetwork extends VisNetwork {
 		Map<EnrolledUser, Long> discussionCreations = actualCourse.getDiscussionPosts()
 				.stream()
 				.filter(d -> d.getParent()
-						.getId() == 0 && selectedForums.contains(d.getForum()))
+						.getId() == 0 && selectedForums.contains(d.getForum()) && users.contains(d.getUser()))
 				.collect(Collectors.groupingBy(DiscussionPost::getUser, Collectors.counting()));
 		usersWithEdges.addAll(discussionCreations.keySet());
 		JSObject data = new JSObject();
@@ -220,7 +230,7 @@ public class ForumNetwork extends VisNetwork {
 				usersWithEdges.add(to);
 
 				if (countPosts > 0) {
-					
+
 					edge.put("from", from.getId());
 					edge.put("to", to.getId());
 					edge.put("title", countPosts);
@@ -270,7 +280,7 @@ public class ForumNetwork extends VisNetwork {
 				double weightReceivePost = getConfigValue("nodes.weightReceivePost");
 				double weightSelfPost = getConfigValue("nodes.weightSelfPost");
 				double weightDiscussionCreation = getConfigValue("nodes.weightDiscussionCreation");
-				
+
 				if ((boolean) getConfigValue("showNumberPosts")) {
 					StringJoiner stringJoiner = new StringJoiner(", ", " (", ")");
 					addValueToLabel(fromValue, stringJoiner, "<b>⬈</b>");
@@ -279,7 +289,6 @@ public class ForumNetwork extends VisNetwork {
 					addValueToLabel(discussionCreated, stringJoiner, "<b>☝</b>");
 					builder.append(stringJoiner);
 				}
-
 
 				total += fromValue * weightSendPost;
 
@@ -325,13 +334,19 @@ public class ForumNetwork extends VisNetwork {
 			Collection<CourseModule> selectedForums) {
 
 		Set<EnrolledUser> users = new HashSet<>(selectedUsers);
-
+		Instant start = datePickerStart.getValue()
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
+		Instant end = datePickerEnd.getValue()
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
 		return actualCourse.getDiscussionPosts()
 				.stream()
 
 				.filter(discussionPost -> selectedForums.contains(discussionPost.getForum())
 						&& users.contains(discussionPost.getUser()) && users.contains(discussionPost.getParent()
-								.getUser()))
+								.getUser())
+						&& start.isBefore(discussionPost.getCreated()) && end.isAfter(discussionPost.getCreated()))
 				.collect(Collectors.toList());
 	}
 

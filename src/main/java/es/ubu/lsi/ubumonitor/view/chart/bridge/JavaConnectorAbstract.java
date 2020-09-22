@@ -155,6 +155,7 @@ public abstract class JavaConnectorAbstract implements JavaConnector {
 			currentChart = chart;
 		}
 		currentChart.update();
+		manageOptions();
 	}
 	
 
@@ -165,6 +166,7 @@ public abstract class JavaConnectorAbstract implements JavaConnector {
 			return;
 		}
 		currentChart.update();
+		manageOptions();
 
 	}
 

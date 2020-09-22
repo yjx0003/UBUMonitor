@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
@@ -37,6 +39,7 @@ import es.ubu.lsi.ubumonitor.util.StopWord;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.WordCloudChart;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.web.WebView;
 
@@ -44,11 +47,18 @@ public class ForumWordCloud extends WordCloudChart {
 
 	private ListView<CourseModule> listViewForum;
 	private WebView webView;
+	private DatePicker datePickerStart;
+	private DatePicker datePickerEnd;
 
-	public ForumWordCloud(MainController mainController, ListView<CourseModule> listViewForum, WebView webView) {
+	public ForumWordCloud(MainController mainController, ListView<CourseModule> listViewForum, WebView webView,
+			DatePicker datePickerStart, DatePicker datePickerEnd) {
 		super(mainController, ChartType.FORUM_WORD_CLOUD);
 		this.listViewForum = listViewForum;
 		this.webView = webView;
+		this.datePickerStart = datePickerStart;
+		this.datePickerEnd = datePickerEnd;
+		useRangeDate = true;
+
 	}
 
 	@Override
@@ -71,19 +81,19 @@ public class ForumWordCloud extends WordCloudChart {
 
 	@Override
 	public void update() {
-		
+
 		List<WordFrequency> wordCount = wordCount();
 
-		MaskImage maskImage =  getConfigValue("backGroundImage");
+		MaskImage maskImage = getConfigValue("backGroundImage");
 
 		Dimension dimension;
 		Background background;
 		if (maskImage != MaskImage.RECTANGLE) {
-			try (InputStream in = getClass().getResourceAsStream(maskImage.getPath())){
+			try (InputStream in = getClass().getResourceAsStream(maskImage.getPath())) {
 
 				background = new PixelBoundryBackground(in);
 				dimension = new Dimension(maskImage.getWidth(), maskImage.getHeight() - 30);
-				
+
 			} catch (IOException e) {
 				dimension = new Dimension((int) webView.getWidth(), (int) webView.getHeight() - 30);
 				background = new RectangleBackground(dimension);
@@ -100,10 +110,9 @@ public class ForumWordCloud extends WordCloudChart {
 				new Color(0x65c294)));
 		wordCloud.setBackground(background);
 		wordCloud.setPadding(getConfigValue("padding"));
-	
+
 		wordCloud.setFontScalar(new LinearFontScalar(getConfigValue("minFont"), getConfigValue("maxFont")));
-		wordCloud.setBackgroundColor(
-				UtilMethods.toAwtColor(getConfigValue("chartBackgroundColor")));
+		wordCloud.setBackgroundColor(UtilMethods.toAwtColor(getConfigValue("chartBackgroundColor")));
 
 		wordCloud.build(wordCount);
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -116,8 +125,6 @@ public class ForumWordCloud extends WordCloudChart {
 
 		webViewChartsEngine.executeScript("updateWordCloud('data:image/png;base64," + img + "'," + options + ")");
 	}
-
-
 
 	public List<WordFrequency> wordCount() {
 		List<EnrolledUser> selectedEnrolledUsers = getSelectedEnrolledUser();
@@ -133,8 +140,7 @@ public class ForumWordCloud extends WordCloudChart {
 		FrequencyAnalyzer frequencyAnalyzer = new FrequencyAnalyzer();
 		StopWord stopWords = getConfigValue("stopWords");
 		frequencyAnalyzer.setStopWords(stopWords.getValues());
-		frequencyAnalyzer
-				.setWordFrequenciesToReturn(getConfigValue("wordFrequencesToReturn"));
+		frequencyAnalyzer.setWordFrequenciesToReturn(getConfigValue("wordFrequencesToReturn"));
 		frequencyAnalyzer.setMinWordLength(getConfigValue("minWordLength"));
 		frequencyAnalyzer.setMaxWordLength(getConfigValue("maxWordLength"));
 
@@ -145,11 +151,18 @@ public class ForumWordCloud extends WordCloudChart {
 	public List<DiscussionPost> getSelectedDiscussionPosts(Collection<EnrolledUser> selectedUsers) {
 		Set<CourseModule> selectedForums = new HashSet<>(listViewForum.getSelectionModel()
 				.getSelectedItems());
+		Instant start = datePickerStart.getValue()
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
+		Instant end = datePickerEnd.getValue()
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
 		return actualCourse.getDiscussionPosts()
 				.stream()
 
 				.filter(discussionPost -> selectedForums.contains(discussionPost.getForum())
-						&& selectedUsers.contains(discussionPost.getUser()))
+						&& selectedUsers.contains(discussionPost.getUser())
+						&& start.isBefore(discussionPost.getCreated()) && end.isAfter(discussionPost.getCreated()))
 				.collect(Collectors.toList());
 	}
 

@@ -1,6 +1,8 @@
 package es.ubu.lsi.ubumonitor.view.chart.forum;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,16 +21,23 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Tabulator;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.web.WebView;
 
 public class ForumTable extends Tabulator {
 
 	private ListView<CourseModule> forums;
+	private DatePicker datePickerStart;
+	private DatePicker datePickerEnd;
 
-	public ForumTable(MainController mainController, WebView webView, ListView<CourseModule> forums) {
+	public ForumTable(MainController mainController, WebView webView, ListView<CourseModule> forums,
+			DatePicker datePickerStart, DatePicker datePickerEnd) {
 		super(mainController, ChartType.FORUM_TABLE, webView);
 		this.forums = forums;
+		this.datePickerStart = datePickerStart;
+		this.datePickerEnd = datePickerEnd;
+		useRangeDate = true;
 	}
 
 	@Override
@@ -90,10 +99,17 @@ public class ForumTable extends Tabulator {
 	public List<DiscussionPost> getSelectedDiscussionPosts() {
 		Set<CourseModule> selectedForums = new HashSet<>(forums.getSelectionModel()
 				.getSelectedItems());
+		Instant start = datePickerStart.getValue()
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
+		Instant end = datePickerEnd.getValue()
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
 		return actualCourse.getDiscussionPosts()
 				.stream()
 				.filter(discussionPost -> selectedForums.contains(discussionPost.getDiscussion()
-						.getForum()))
+						.getForum()) && start.isBefore(discussionPost.getCreated())
+						&& end.isAfter(discussionPost.getCreated()))
 				.collect(Collectors.toList());
 	}
 

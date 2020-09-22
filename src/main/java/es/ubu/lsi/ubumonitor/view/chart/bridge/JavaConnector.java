@@ -13,9 +13,10 @@ public interface JavaConnector {
 
 	public void updateOptionsImages();
 
-	public void inititDefaultValues(); 
+	public void inititDefaultValues();
 
 	public void showErrorWindow(String errorMessage);
+
 	public void hideLegend();
 
 	public void dataPointSelection(int selectedIndex);
@@ -29,9 +30,12 @@ public interface JavaConnector {
 	public void setCurrentChart(Chart chart);
 
 	public void addChart(Chart chart);
-	
+
 	public default void updateChartFromJS() {
-		
+
 	}
+
+	public default void manageOptions() {
+	};
 
 }

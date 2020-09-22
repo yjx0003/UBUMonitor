@@ -4,15 +4,10 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ProgressBar?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.web.WebView?>
 
 <BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.controllers.tabs.RiskController">
    <center>
@@ -31,7 +26,7 @@
             <RowConstraints />
          </rowConstraints>
          <children>
-            <GridPane fx:id="gridPaneOptionLogs">
+            <GridPane fx:id="gridPaneOptionLogs" visible="false">
                <columnConstraints>
                   <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" />
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />

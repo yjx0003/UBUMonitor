@@ -11,31 +11,40 @@ import es.ubu.lsi.ubumonitor.view.chart.forum.ForumNetwork;
 import es.ubu.lsi.ubumonitor.view.chart.forum.ForumTable;
 import es.ubu.lsi.ubumonitor.view.chart.forum.ForumUserPostBar;
 import es.ubu.lsi.ubumonitor.view.chart.forum.ForumWordCloud;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebView;
 
 public class ForumConnector extends JavaConnectorAbstract {
-
 	
-	public ForumConnector(WebView webView, MainConfiguration mainConfiguration, MainController mainController, Course actualCourse) {
+	private GridPane dateGridPane;
+	
+	public ForumConnector(WebView webView, MainConfiguration mainConfiguration, MainController mainController, Course actualCourse, GridPane dateGridPane, DatePicker datePickerStart, DatePicker datePickerEnd) {
 		super(webView, mainConfiguration, mainController, actualCourse);
+		this.dateGridPane = dateGridPane;
 		ListView<CourseModule> listViewForum = mainController
 				.getSelectionMainController()
 				.getSelectionForumController()
 				.getListViewForum();
 		addChart(new ForumTable(mainController, webView,
-				listViewForum));
-		addChart(new ForumBar(mainController, listViewForum));
+				listViewForum, datePickerStart, datePickerEnd));
+		addChart(new ForumBar(mainController, listViewForum,datePickerStart, datePickerEnd));
 		
-		addChart(new ForumNetwork(mainController, webView, listViewForum));
-		addChart(new ForumWordCloud(mainController, listViewForum, webView));
-		addChart(new ForumUserPostBar(mainController, listViewForum));
+		addChart(new ForumNetwork(mainController, webView, listViewForum,datePickerStart, datePickerEnd));
+		addChart(new ForumWordCloud(mainController, listViewForum, webView,datePickerStart, datePickerEnd));
+		addChart(new ForumUserPostBar(mainController, listViewForum,datePickerStart, datePickerEnd));
+		
+		
 		currentChart = charts.get(ChartType.getDefault(Tabs.FORUM));
 	}
 
 	
 
-
+	@Override
+	public void manageOptions() {
+		dateGridPane.setVisible(currentChart.isUseRangeDate());
+	}
 
 
 }

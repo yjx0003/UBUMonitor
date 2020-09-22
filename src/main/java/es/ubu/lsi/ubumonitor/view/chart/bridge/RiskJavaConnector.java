@@ -47,8 +47,8 @@ public class RiskJavaConnector extends JavaConnectorAbstract {
 		}
 
 	}
-
-	private void manageOptions() {
+	@Override
+	public void manageOptions() {
 		riskController.getGridPaneOptionLogs()
 				.setVisible(currentChart.isUseGroupBy());
 		riskController.getDateGridPane()
@@ -57,17 +57,5 @@ public class RiskJavaConnector extends JavaConnectorAbstract {
 				.setVisible(currentChart.isUseOptions());
 	}
 
-	@Override
-	public void updateChart() {
-		super.updateChart();
-		manageOptions();
-	}
-
-	@Override
-	public void updateCharts(String typeChart) {
-		super.updateCharts(typeChart);
-		manageOptions();
-
-	}
 
 }

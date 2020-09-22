@@ -123,8 +123,8 @@ public class VisualizationJavaConnector extends JavaConnectorAbstract {
 		currentChart.update();
 
 	}
-
-	private void manageOptions() {
+	@Override
+	public void manageOptions() {
 		visualizationController.getOptionsUbuLogs()
 				.setVisible(currentChart.isUseRangeDate() || currentChart.isUseGroupBy());
 		visualizationController.getDateGridPane()

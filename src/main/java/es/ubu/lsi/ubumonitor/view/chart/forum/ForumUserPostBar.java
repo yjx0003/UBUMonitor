@@ -1,6 +1,8 @@
 package es.ubu.lsi.ubumonitor.view.chart.forum;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -23,15 +25,23 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Chartjs;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 
 public class ForumUserPostBar extends Chartjs {
 
 	private ListView<CourseModule> listViewForums;
+	private DatePicker datePickerStart;
+	private DatePicker datePickerEnd;
 
-	public ForumUserPostBar(MainController mainController, ListView<CourseModule> listViewForums) {
+	public ForumUserPostBar(MainController mainController, ListView<CourseModule> listViewForums,
+			DatePicker datePickerStart, DatePicker datePickerEnd) {
 		super(mainController, ChartType.FORUM_USER_POST_BAR);
 		this.listViewForums = listViewForums;
+		this.datePickerStart = datePickerStart;
+		this.datePickerEnd = datePickerEnd;
+		useRangeDate = true;
+
 	}
 
 	@Override
@@ -183,10 +193,17 @@ public class ForumUserPostBar extends Chartjs {
 
 	public Map<EnrolledUser, Map<CourseModule, List<DiscussionPost>>> getMap(Collection<EnrolledUser> users,
 			Collection<CourseModule> forums) {
+		Instant start = datePickerStart.getValue()
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
+		Instant end = datePickerEnd.getValue()
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
 		return actualCourse.getDiscussionPosts()
 				.stream()
 				.filter(discussionPost -> users.contains(discussionPost.getUser())
-						&& forums.contains(discussionPost.getForum()))
+						&& forums.contains(discussionPost.getForum()) && start.isBefore(discussionPost.getCreated())
+						&& end.isAfter(discussionPost.getCreated()))
 				.collect(Collectors.groupingBy(DiscussionPost::getUser,
 						() -> new TreeMap<>(EnrolledUser.getNameComparator()),
 						Collectors.groupingBy(DiscussionPost::getForum, LinkedHashMap::new, Collectors.toList())));

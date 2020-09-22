@@ -16,6 +16,8 @@ import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
 import es.ubu.lsi.ubumonitor.model.Role;
 import es.ubu.lsi.ubumonitor.model.SubDataBase;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
+import es.ubu.lsi.ubumonitor.util.MaskImage;
+import es.ubu.lsi.ubumonitor.util.StopWord;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import javafx.collections.FXCollections;
 import javafx.scene.paint.Color;
@@ -37,6 +39,8 @@ public class ConfigurationConsumer {
 		CONSUMER_MAP.put(String.class.toString(), ConfigurationConsumer::manageString);
 		CONSUMER_MAP.put(TypeTimes.class.toString(), ConfigurationConsumer::manageTypeTimes);
 		CONSUMER_MAP.put(ChartType.class.toString(), ConfigurationConsumer::manageChartType);
+		CONSUMER_MAP.put(StopWord.class.toString(), ConfigurationConsumer::manageStopWordsLanguage);
+		CONSUMER_MAP.put(MaskImage.class.toString(), ConfigurationConsumer::manageMaskImage);
 	}
 
 	public static void consume(MainConfiguration mainConfiguration, JSONObject jsonObject) {
@@ -49,9 +53,22 @@ public class ConfigurationConsumer {
 	private static void manageDefault(MainConfiguration mainConfiguration, JSONObject jsonObject) {
 		//do nothing
 	}
-	private static void manageTypeTimes(MainConfiguration mainConfiguration, JSONObject jsonObject) {
+	
+	private static <E extends Enum<E>> void manageEnum(MainConfiguration mainConfiguration, JSONObject jsonObject,  Class<E> clazz) {
 		mainConfiguration.overrideItem(jsonObject.getString(CATEGORY), jsonObject.getString(NAME),
-				TypeTimes.valueOf(jsonObject.getString(VALUE)));
+				Enum.valueOf(clazz, jsonObject.getString(VALUE)));
+	}
+	
+	private static void manageStopWordsLanguage(MainConfiguration mainConfiguration, JSONObject jsonObject) {
+		manageEnum(mainConfiguration, jsonObject, StopWord.class);
+	}
+	
+	private static void manageMaskImage(MainConfiguration mainConfiguration, JSONObject jsonObject) {
+		manageEnum(mainConfiguration, jsonObject, MaskImage.class);
+	}
+	
+	private static void manageTypeTimes(MainConfiguration mainConfiguration, JSONObject jsonObject) {
+		manageEnum(mainConfiguration, jsonObject, TypeTimes.class);
 	}
 
 	private static void manageString(MainConfiguration mainConfiguration, JSONObject jsonObject) {

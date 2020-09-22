@@ -2,11 +2,16 @@ package es.ubu.lsi.ubumonitor.view.chart.forum;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
@@ -32,6 +37,35 @@ public class ForumUserPostBar extends Chartjs {
 	@Override
 	public void exportCSV(String path) throws IOException {
 
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader("userId", "userName",
+				"forumId", "forumName", "countDiscussionCreation", "countPostsReplies"))) {
+			Set<EnrolledUser> users = new LinkedHashSet<>(getSelectedEnrolledUser());
+			Set<CourseModule> selectedForums = new LinkedHashSet<>(listViewForums.getSelectionModel()
+					.getSelectedItems());
+			Map<EnrolledUser, Map<CourseModule, List<DiscussionPost>>> map = getMap(users, selectedForums);
+			for (Map.Entry<EnrolledUser, Map<CourseModule, List<DiscussionPost>>> entry : map.entrySet()) {
+				EnrolledUser user = entry.getKey();
+				printer.print(user.getId());
+				printer.print(user.getFullName());
+				for (Map.Entry<CourseModule, List<DiscussionPost>> entryCourseModule : entry.getValue()
+						.entrySet()) {
+					long discussionCreationValue = entryCourseModule.getValue()
+							.stream()
+							.filter(d -> d.getParent()
+									.getId() == 0)
+							.count();
+					long repliesValue = entryCourseModule.getValue()
+							.size() - discussionCreationValue;
+					printer.print(entryCourseModule.getKey()
+							.getCmid());
+					printer.print(entryCourseModule.getKey()
+							.getModuleName());
+					printer.print(discussionCreationValue);
+					printer.print(repliesValue);
+					printer.println();
+				}
+			}
+		}
 	}
 
 	@Override
@@ -48,7 +82,7 @@ public class ForumUserPostBar extends Chartjs {
 		callbacks.put("title", "function(a,t){return a[0].xLabel+' ('+a[0].yLabel+')'}");
 		callbacks.put("label", "function(e,t){return t.datasets[e.datasetIndex].forums[e.index]}");
 		jsObject.put("tooltips", "{callbacks:" + callbacks + "}");
-		
+
 		return jsObject;
 	}
 
@@ -57,7 +91,7 @@ public class ForumUserPostBar extends Chartjs {
 
 		JSObject options = getOptions();
 		String dataset = createDataset();
-	
+
 		webViewChartsEngine.executeScript("updateChartjs" + "(" + dataset + "," + options + ")");
 
 	}
@@ -83,7 +117,6 @@ public class ForumUserPostBar extends Chartjs {
 		JSArray forumsReplies = new JSArray();
 		replies.put("forums", forumsReplies);
 		replies.put("stack", 0);
-		
 
 		JSObject discussionCreation = new JSObject();
 		JSArray dataDiscussionCreation = new JSArray();
@@ -102,7 +135,7 @@ public class ForumUserPostBar extends Chartjs {
 			JSArray discussion = new JSArray();
 			forumDiscussion.add(discussion);
 			forumsReplies.add(forumReplies);
-			
+
 			long totalReplies = 0;
 			long totalDiscussionCreation = 0;
 			for (Map.Entry<CourseModule, List<DiscussionPost>> entryCourseModule : entry.getValue()
@@ -116,21 +149,25 @@ public class ForumUserPostBar extends Chartjs {
 				long repliesValue = entryCourseModule.getValue()
 						.size() - discussionCreationValue;
 
-				forumReplies.addWithQuote(entryCourseModule.getKey().getModuleName() + ": " + repliesValue);
-				
-				
-				discussion.addWithQuote(entryCourseModule.getKey().getModuleName()+": "+discussionCreationValue);
-				
-				
+				if (repliesValue != 0) {
+					forumReplies.addWithQuote(entryCourseModule.getKey()
+							.getModuleName() + ": " + repliesValue);
+				}
+
+				if (discussionCreationValue != 0) {
+					discussion.addWithQuote(entryCourseModule.getKey()
+							.getModuleName() + ": " + discussionCreationValue);
+				}
+
 				totalReplies += repliesValue;
 				totalDiscussionCreation += discussionCreationValue;
 			}
 			dataReplies.add(totalReplies);
 			dataDiscussionCreation.add(totalDiscussionCreation);
 		}
-		
+
 		data.put("datasets", "[" + replies + "," + discussionCreation + "]");
-	
+
 		return data.toString();
 	}
 
@@ -151,7 +188,8 @@ public class ForumUserPostBar extends Chartjs {
 				.filter(discussionPost -> users.contains(discussionPost.getUser())
 						&& forums.contains(discussionPost.getForum()))
 				.collect(Collectors.groupingBy(DiscussionPost::getUser,
-						Collectors.groupingBy(DiscussionPost::getForum, Collectors.toList())));
+						() -> new TreeMap<>(EnrolledUser.getNameComparator()),
+						Collectors.groupingBy(DiscussionPost::getForum, LinkedHashMap::new, Collectors.toList())));
 
 	}
 

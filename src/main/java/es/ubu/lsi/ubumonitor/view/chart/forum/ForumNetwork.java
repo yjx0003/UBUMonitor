@@ -105,7 +105,7 @@ public class ForumNetwork extends VisNetwork {
 		scaling.put("max", getConfigValue("nodes.scaling.max"));
 		scaling.put("min", getConfigValue("nodes.scaling.min"));
 		nodes.put("scaling", scaling);
-		nodes.put("font", "{multi:true,bold:{size:18}}");
+		nodes.put("font", "{multi:true,bold:{size:16}}");
 		return nodes;
 	}
 
@@ -208,9 +208,10 @@ public class ForumNetwork extends VisNetwork {
 					.entrySet()) {
 				EnrolledUser to = toEntry.getKey();
 				Long countPosts = toEntry.getValue();
-
+				JSObject edge = new JSObject();
 				if (from.equals(to)) {
 					addCountPosts(toSelfMap, to, countPosts);
+					edge.put("arrows", "{to:{type:'curve'}}");
 				} else {
 					addCountPosts(fromMap, from, countPosts);
 					addCountPosts(toMap, to, countPosts);
@@ -219,7 +220,7 @@ public class ForumNetwork extends VisNetwork {
 				usersWithEdges.add(to);
 
 				if (countPosts > 0) {
-					JSObject edge = new JSObject();
+					
 					edge.put("from", from.getId());
 					edge.put("to", to.getId());
 					edge.put("title", countPosts);
@@ -264,21 +265,21 @@ public class ForumNetwork extends VisNetwork {
 					initialLetterNames(user, builder);
 				}
 
-				if ((boolean) getConfigValue("showNumberPosts")) {
-					StringJoiner stringJoiner = new StringJoiner(", ", " (", ")");
-
-					stringJoiner.add(fromValue + "<b>⬈</b>");
-					stringJoiner.add(toValue + "<b>⬋</b>");
-					stringJoiner.add(toSelfValue + "<b>⟳</b>");
-					stringJoiner.add(discussionCreated + "<b>☝</b>");
-					builder.append(stringJoiner);
-				}
-
 				long total = 0;
 				double weightSendPost = getConfigValue("nodes.weightSendPost");
 				double weightReceivePost = getConfigValue("nodes.weightReceivePost");
 				double weightSelfPost = getConfigValue("nodes.weightSelfPost");
 				double weightDiscussionCreation = getConfigValue("nodes.weightDiscussionCreation");
+				
+				if ((boolean) getConfigValue("showNumberPosts")) {
+					StringJoiner stringJoiner = new StringJoiner(", ", " (", ")");
+					addValueToLabel(fromValue, stringJoiner, "<b>⬈</b>");
+					addValueToLabel(toValue, stringJoiner, "<b>⬋</b>");
+					addValueToLabel(toSelfValue, stringJoiner, "<b>⟳</b>");
+					addValueToLabel(discussionCreated, stringJoiner, "<b>☝</b>");
+					builder.append(stringJoiner);
+				}
+
 
 				total += fromValue * weightSendPost;
 
@@ -295,6 +296,12 @@ public class ForumNetwork extends VisNetwork {
 			}
 		}
 		return nodes;
+	}
+
+	public void addValueToLabel(long fromValue, StringJoiner stringJoiner, String icon) {
+		if (fromValue != 0) {
+			stringJoiner.add(fromValue + icon);
+		}
 	}
 
 	public void initialLetterNames(EnrolledUser user, StringBuilder builder) {

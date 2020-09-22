@@ -730,3 +730,6 @@ z
 últimas
 último
 últimos
+saludo
+saludos
+hola

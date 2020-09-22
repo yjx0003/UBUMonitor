@@ -2,10 +2,9 @@ package es.ubu.lsi.ubumonitor.view.chart.forum;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
@@ -13,8 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.imageio.ImageIO;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -34,6 +31,7 @@ import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.DiscussionPost;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.JSObject;
+import es.ubu.lsi.ubumonitor.util.MaskImage;
 import es.ubu.lsi.ubumonitor.util.Parsers;
 import es.ubu.lsi.ubumonitor.util.StopWord;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
@@ -63,7 +61,6 @@ public class ForumWordCloud extends WordCloudChart {
 
 			}
 		}
-
 	}
 
 	@Override
@@ -77,18 +74,16 @@ public class ForumWordCloud extends WordCloudChart {
 		
 		List<WordFrequency> wordCount = wordCount();
 
-		File backgroundImage = new File((String) mainConfiguration.getValue(this.chartType, "backGroundImage"));
+		MaskImage maskImage =  getConfigValue("backGroundImage");
 
 		Dimension dimension;
 		Background background;
-		if (backgroundImage.isFile()) {
-			try {
+		if (maskImage != MaskImage.RECTANGLE) {
+			try (InputStream in = getClass().getResourceAsStream(maskImage.getPath())){
 
-				BufferedImage bimg = ImageIO.read(backgroundImage);
-				int width = bimg.getWidth();
-				int height = bimg.getHeight();
-				dimension = new Dimension(width, height - 30);
-				background = new PixelBoundryBackground(backgroundImage);
+				background = new PixelBoundryBackground(in);
+				dimension = new Dimension(maskImage.getWidth(), maskImage.getHeight() - 30);
+				
 			} catch (IOException e) {
 				dimension = new Dimension((int) webView.getWidth(), (int) webView.getHeight() - 30);
 				background = new RectangleBackground(dimension);
@@ -104,11 +99,11 @@ public class ForumWordCloud extends WordCloudChart {
 				new Color(0x8a5d19), new Color(0x7f7522), new Color(0x5c7a29), new Color(0x1d953f), new Color(0x007d65),
 				new Color(0x65c294)));
 		wordCloud.setBackground(background);
-		wordCloud.setPadding(mainConfiguration.getValue(this.chartType, "padding"));
+		wordCloud.setPadding(getConfigValue("padding"));
 	
-		wordCloud.setFontScalar(new LinearFontScalar(mainConfiguration.getValue(this.chartType, "minFont"), mainConfiguration.getValue(this.chartType, "maxFont")));
+		wordCloud.setFontScalar(new LinearFontScalar(getConfigValue("minFont"), getConfigValue("maxFont")));
 		wordCloud.setBackgroundColor(
-				UtilMethods.toAwtColor(mainConfiguration.getValue(this.chartType, "chartBackgroundColor")));
+				UtilMethods.toAwtColor(getConfigValue("chartBackgroundColor")));
 
 		wordCloud.build(wordCount);
 		ByteArrayOutputStream output = new ByteArrayOutputStream();

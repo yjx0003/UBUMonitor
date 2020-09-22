@@ -25,6 +25,7 @@ import es.ubu.lsi.ubumonitor.model.Role;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.util.MaskImage;
 import es.ubu.lsi.ubumonitor.util.StopWord;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.forum.ForumNetwork;
@@ -180,7 +181,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_WORD_CLOUD, "maxWordLength", 32);
 		createItem(ChartType.FORUM_WORD_CLOUD, "minFont", 10);
 		createItem(ChartType.FORUM_WORD_CLOUD, "maxFont", 40);
-		createItem(ChartType.FORUM_WORD_CLOUD, "backGroundImage", "");
+		createItem(ChartType.FORUM_WORD_CLOUD, "backGroundImage", MaskImage.RECTANGLE);
 		
 
 		

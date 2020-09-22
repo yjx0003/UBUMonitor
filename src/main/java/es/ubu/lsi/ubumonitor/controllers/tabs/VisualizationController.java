@@ -63,16 +63,7 @@ public class VisualizationController extends WebViewAction {
 		javaConnector = new VisualizationJavaConnector(webViewController.getWebViewCharts(), mainConfiguration, mainController, this, actualCourse);
 		init(tab, actualCourse, mainConfiguration, stage, javaConnector);
 		
-		//remove Visualizarion Tab if has not Logs, Grades and Activity Completion graph
-		if (mainController.getSelectionController()
-				.getTabPane()
-				.getTabs()
-				.isEmpty()) {
-			mainController.getWebViewTabsController().getTabPane()
-					.getTabs()
-					.remove(mainController.getWebViewTabsController().getVisualizationTab());
-
-		}
+		
 		initLogOptionsFilter();
 	}
 

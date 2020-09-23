@@ -75,7 +75,6 @@ public class MainConfiguration {
 		createItem(GENERAL, "displayXScaleTitle", true);
 		createItem(GENERAL, "fontColorYScaleTitle", Color.BLACK);
 		createItem(GENERAL, "fontColorXScaleTitle", Color.BLACK);
-		
 
 		createItem(ChartType.TOTAL_BAR, HORIZONTAL_MODE, false);
 		createItem(ChartType.STACKED_BAR, "calculateMax", false);
@@ -92,11 +91,11 @@ public class MainConfiguration {
 		createItem(ChartType.BOXPLOT_LOG_TIME, HORIZONTAL_MODE, false);
 		createItem(ChartType.VIOLIN_LOG_TIME, HORIZONTAL_MODE, false);
 		createItem(ChartType.CUM_LINE, "calculateMax", false);
-	
+
 		createItem(ChartType.MEAN_DIFF, "calculateMax", false);
 		createItem(ChartType.MEAN_DIFF, "zeroLineColor", Color.web("#DC143C"));
 		createItem(ChartType.MEAN_DIFF, "zeroLineWidth", 3);
-		
+
 		createItem(ChartType.SESSION, "timeInterval", 60);
 
 		createItem(ChartType.BOXPLOT, HORIZONTAL_MODE, false);
@@ -127,9 +126,9 @@ public class MainConfiguration {
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "secondInterval", Color.web("#fff033"));
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "thirdInterval", Color.web("#f4e3ae"));
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "fourthInterval", Color.web("#f78880"));
-		
+
 		createItem(ChartType.FORUM_BAR, HORIZONTAL_MODE, false);
-		
+
 		createItem(ChartType.FORUM_NETWORK, "showNonConnected", true);
 		createItem(ChartType.FORUM_NETWORK, "usePhoto", true);
 		createItem(ChartType.FORUM_NETWORK, "useInitialNames", true);
@@ -172,7 +171,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_NETWORK, "interaction.tooltipDelay", 300);
 		createItem(ChartType.FORUM_NETWORK, "layout.randomSeed", "");
 		createItem(ChartType.FORUM_NETWORK, "layout.clusterThreshold", 150);
-		
+
 		createItem(ChartType.FORUM_WORD_CLOUD, "stopWords", StopWord.getStopWordValues(Locale.getDefault()));
 		createItem(ChartType.FORUM_WORD_CLOUD, "chartBackgroundColor", Color.web("#FFFFFF", 0.0));
 		createItem(ChartType.FORUM_WORD_CLOUD, "wordFrequencesToReturn", 50);
@@ -182,16 +181,9 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_WORD_CLOUD, "minFont", 10);
 		createItem(ChartType.FORUM_WORD_CLOUD, "maxFont", 40);
 		createItem(ChartType.FORUM_WORD_CLOUD, "backGroundImage", MaskImage.RECTANGLE);
-		
 
-		
 		createItem(ChartType.FORUM_USER_POST_BAR, HORIZONTAL_MODE, false);
-		
-		
-		
 
-		
-		
 	}
 
 	@SuppressWarnings("unchecked")
@@ -269,10 +261,12 @@ public class MainConfiguration {
 	}
 
 	public void overrideItem(String category, String name, Object value, Class<?> clazz) {
-		if (properties.containsKey(convertToKey(category, name))) {
-			CustomPropertyItem property = properties.get(convertToKey(category, name));
-			property.setValue(value);
-			property.setClass(clazz);
+		CustomPropertyItem property = properties.get(convertToKey(category, name));
+		if (property != null && property.getClass()
+				.equals(clazz)) {
+				property.setValue(value);
+				property.setClass(clazz);
+			
 		}
 	}
 

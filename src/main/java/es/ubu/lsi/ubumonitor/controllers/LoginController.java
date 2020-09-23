@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.load.Constants;
+import es.ubu.lsi.ubumonitor.controllers.load.Login;
 import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourse;
 import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourseCategories;
 import es.ubu.lsi.ubumonitor.controllers.load.PopulateMoodleUser;
@@ -376,6 +377,11 @@ public class LoginController implements Initializable {
 					controller.tryLogin(txtHost.getText(), txtUsername.getText(), txtPassword.getText());
 					txtHost.setText(controller.getUrlHost()
 							.toString());
+					Login login = controller.getLogin();
+					controller.setUsername(login.getUsername());
+					controller.setPassword(login.getPassword());
+					txtUsername.setText(login.getUsername());
+					txtPassword.setText(login.getPassword());
 
 				} catch (IOException e) {
 					LOGGER.error("No se ha podido conectar con el host.", e);
@@ -417,8 +423,7 @@ public class LoginController implements Initializable {
 									.getId())
 							.collect(Collectors.toList()));
 					controller.setUser(moodleUser);
-					controller.setUsername(txtUsername.getText());
-					controller.setPassword(txtPassword.getText());
+					
 
 				} catch (Exception e) {
 					LOGGER.error("Error al recuperar los datos del usuario.", e);

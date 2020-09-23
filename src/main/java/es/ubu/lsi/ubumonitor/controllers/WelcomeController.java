@@ -392,7 +392,8 @@ public class WelcomeController implements Initializable {
 	private void checkFile(Course course) {
 		if (course == null)
 			return;
-		cacheFilePath = controller.getHostUserModelversionDir().resolve(controller.getCourseFile(course));
+		cacheFilePath = controller.getHostUserModelversionDir()
+				.resolve(controller.getCourseFile(course));
 		LOGGER.debug("Buscando si existe {}", cacheFilePath);
 
 		File f = cacheFilePath.toFile();
@@ -716,10 +717,10 @@ public class WelcomeController implements Initializable {
 						.map(ForumDiscussion::getId)
 						.collect(Collectors.toList()));
 				actualCourse.addDiscussionPosts(discussionPosts);
-				
+
 				PopulateCourseEvent populateCourseEvent = new PopulateCourseEvent(dataBase, webService);
 				actualCourse.addCourseEvents(populateCourseEvent.populateCourseEvents(actualCourse.getId()));
-				
+
 				actualCourse.setUpdatedCourseData(ZonedDateTime.now());
 
 				if (checkBoxGradeItem.isSelected() && !isCancelled()) {
@@ -731,7 +732,7 @@ public class WelcomeController implements Initializable {
 					List<GradeItem> gradeItems = populateGradeItem.createGradeItems(actualCourse.getId(),
 							controller.getUser()
 									.getId());
-					
+
 					actualCourse.setGradeItems(new HashSet<>(gradeItems));
 					// Establecemos las estadisticas
 					Stats stats = new Stats(actualCourse);
@@ -764,7 +765,8 @@ public class WelcomeController implements Initializable {
 								LOGGER.info("Log descargado");
 								updateMessage(I18n.get("label.parselog"));
 								Logs logs = new Logs(downloadLogController.getServerTimeZone());
-								LogCreator.parserResponse(logs, response.body().charStream());
+								LogCreator.parserResponse(logs, response.body()
+										.charStream());
 								actualCourse.setLogs(logs);
 
 							} else {
@@ -799,8 +801,7 @@ public class WelcomeController implements Initializable {
 							tries++;
 							updateMessage(I18n.get("label.relogin"));
 							controller.getLogin()
-									.reLogin(controller.getUrlHost()
-											.toString(), controller.getUsername(), controller.getPassword());
+									.reLogin();
 
 						}
 					}

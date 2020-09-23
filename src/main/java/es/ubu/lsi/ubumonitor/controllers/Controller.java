@@ -355,9 +355,10 @@ public class Controller {
 
 	public void tryLogin(String host, String username, String password) throws IOException {
 
-		login = new Login();
+		login = new Login(host, username, password);
 		String validHost = login.checkUrlServer(host);
-		login.tryLogin(validHost, username, password);
+		login.setHost(validHost);
+		login.tryLogin();
 		this.host = new URL(validHost);
 	}
 

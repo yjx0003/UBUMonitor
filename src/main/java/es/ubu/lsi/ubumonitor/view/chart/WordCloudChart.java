@@ -24,12 +24,6 @@ public abstract class WordCloudChart extends Chart{
 	}
 
 	@Override
-	public void hideLegend() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void exportImage(File file) throws IOException {
 		String str = (String) webViewChartsEngine.executeScript("exportCanvas('wordCloud')");
 		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));

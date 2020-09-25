@@ -150,8 +150,6 @@ public abstract class Chart implements ExportableChart {
 
 	public abstract void clear();
 
-	public abstract void hideLegend();
-
 	public abstract void exportImage(File file) throws IOException;
 
 	public JSObject getDefaultOptions() {

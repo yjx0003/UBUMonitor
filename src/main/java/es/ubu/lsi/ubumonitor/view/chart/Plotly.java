@@ -7,19 +7,19 @@ import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.scene.web.WebView;
 
-public abstract class Tabulator extends Chart {
+public abstract class Plotly extends Chart {
 
 	private WebView webView;
 
-	public Tabulator(MainController mainController, ChartType chartType, WebView webView) {
+
+	public Plotly(MainController mainController, ChartType chartType, WebView webView) {
 		super(mainController, chartType);
-		this.webView = webView;
+		this.webView  = webView;
 	}
 
 	@Override
 	public void clear() {
-		webViewChartsEngine.executeScript("clearTabulator()");
-
+		webViewChartsEngine.executeScript("Plotly.purge('plotlyDiv')");
 	}
 
 

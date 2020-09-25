@@ -17,8 +17,6 @@ public interface JavaConnector {
 
 	public void showErrorWindow(String errorMessage);
 
-	public void hideLegend();
-
 	public void dataPointSelection(int selectedIndex);
 
 	public Chart getCurrentChart();

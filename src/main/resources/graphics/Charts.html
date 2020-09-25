@@ -18,6 +18,7 @@
    <script type="text/javascript" src="./lib/visNetwork.js"></script>
    <script type="text/javascript" src="./lib/visTimeline.js"></script>
    <script type="text/javascript" src="./lib/wordcloud2.js"></script>
+   <script type="text/javascript" src="./lib/plotly.js"></script>
    <script type="text/javascript">
       Chart.defaults.global.animation.duration = 0;
       Chart.defaults.global.elements.line.fill = false;
@@ -271,8 +272,14 @@
 
       }
 
-      function hiddenCharts(value, options) {
+      function updatePlotly(data, layout){
+         hiddenCharts("plotly", layout);
+      
+         layout.showLegend = layout.useLegend && layout.legendActive;
+         Plotly.newPlot('plotlyDiv', data, layout, {displaylogo: false, responsive: true, modeBarButtonsToRemove:["toImage"]});
+      }
 
+      function hiddenCharts(value, options) {
 
 
          displayButton('apexchartsDiv', value == "apexcharts");
@@ -281,6 +288,8 @@
          displayButton('visNetworkDiv', value == "visNetwork");
          displayButton('visTimelineDiv', value == "visTimeline");
          displayButton('canvas-container', value == "canvas-container");
+         displayButton('plotlyDiv', value == "plotly");
+         displayButton('plotlyEmptyDiv', value == "plotly");
 
          manageButtons(options.tab, options.listCharts);
          disableTab(options.tab, options.button);
@@ -335,7 +344,7 @@
       }
 
       function clearVisTimeline() {
-         visNetwork.setData([]);
+         visTimeline.setData([]);
       }
 
       //Funcion que muestra u oculta la leyenda del gráfico
@@ -453,6 +462,8 @@
          <button class="btn" id="btnGroupMean" onclick="showGroupMean()"></button>
       </div>
    </div>
+   <div id="plotlyEmptyDiv" style="visibility: hidden;">for some reason, plotly fill all window</div>
+   <div id="plotlyDiv" style="height: 93vh"></div>
    <div id="chart-container" class="chart-container">
       <canvas id="myChart"></canvas>
    </div>

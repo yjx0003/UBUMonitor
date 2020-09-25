@@ -20,13 +20,7 @@ public abstract class VisNetwork extends Chart {
 		webViewChartsEngine.executeScript("clearVisNetwork()");
 
 	}
-
-	@Override
-	public void hideLegend() {
-		// do nothing
-
-	}
-
+	
 	@Override
 	public void exportImage(File file) throws IOException {
 		UtilMethods.snapshotNode(file, webView);

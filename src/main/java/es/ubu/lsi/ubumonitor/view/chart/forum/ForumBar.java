@@ -70,9 +70,9 @@ public class ForumBar extends Chartjs {
 				.toInstant();
 		return actualCourse.getDiscussionPosts()
 				.stream()
-				.filter(discussionPost -> forums.contains(discussionPost.getDiscussion()
-						.getForum()) && users.contains(discussionPost.getUser())
-						&& start.isBefore(discussionPost.getCreated()) && end.isAfter(discussionPost.getCreated()))
+				.filter(discussionPost -> forums.contains(discussionPost.getForum())
+						&& users.contains(discussionPost.getUser()) && start.isBefore(discussionPost.getCreated())
+						&& end.isAfter(discussionPost.getCreated()))
 				.collect(Collectors.groupingBy(DiscussionPost::getForum,
 						Collectors.groupingBy(DiscussionPost::getDiscussion,
 								() -> new TreeMap<>(Comparator.comparing(ForumDiscussion::getId)),

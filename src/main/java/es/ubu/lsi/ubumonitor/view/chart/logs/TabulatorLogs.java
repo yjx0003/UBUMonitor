@@ -29,12 +29,6 @@ public abstract class TabulatorLogs extends ChartLogs {
 	}
 
 	@Override
-	public void hideLegend() {
-		// do nothing
-
-	}
-
-	@Override
 	public void exportImage(File file) throws IOException {
 		UtilMethods.snapshotNode(file, webView);
 		UtilMethods.showExportedFile(file);

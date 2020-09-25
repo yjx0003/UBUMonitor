@@ -51,24 +51,32 @@ public class ConfigurationConsumer {
 	}
 
 	private static void manageDefault(MainConfiguration mainConfiguration, JSONObject jsonObject) {
-		//do nothing
+		// do nothing
 	}
-	
-	private static <E extends Enum<E>> void manageEnum(MainConfiguration mainConfiguration, JSONObject jsonObject,  Class<E> clazz) {
-		mainConfiguration.overrideItem(jsonObject.getString(CATEGORY), jsonObject.getString(NAME),
-				Enum.valueOf(clazz, jsonObject.getString(VALUE)));
+
+	private static <E extends Enum<E>> void manageEnum(MainConfiguration mainConfiguration, JSONObject jsonObject,
+			Class<E> clazz, E defaultValue) {
+		E value;
+		try {
+			value = Enum.valueOf(clazz, jsonObject.getString(VALUE));
+
+		} catch (IllegalArgumentException e) {
+			value = defaultValue;
+		}
+		mainConfiguration.overrideItem(jsonObject.getString(CATEGORY), jsonObject.getString(NAME), value);
+
 	}
-	
+
 	private static void manageStopWordsLanguage(MainConfiguration mainConfiguration, JSONObject jsonObject) {
-		manageEnum(mainConfiguration, jsonObject, StopWord.class);
+		manageEnum(mainConfiguration, jsonObject, StopWord.class, StopWord.ENGLISH);
 	}
-	
+
 	private static void manageMaskImage(MainConfiguration mainConfiguration, JSONObject jsonObject) {
-		manageEnum(mainConfiguration, jsonObject, MaskImage.class);
+		manageEnum(mainConfiguration, jsonObject, MaskImage.class, MaskImage.RECTANGLE);
 	}
-	
+
 	private static void manageTypeTimes(MainConfiguration mainConfiguration, JSONObject jsonObject) {
-		manageEnum(mainConfiguration, jsonObject, TypeTimes.class);
+		manageEnum(mainConfiguration, jsonObject, TypeTimes.class, TypeTimes.YEAR_WEEK);
 	}
 
 	private static void manageString(MainConfiguration mainConfiguration, JSONObject jsonObject) {
@@ -113,7 +121,9 @@ public class ConfigurationConsumer {
 
 	private static void manageGroup(MainConfiguration mainConfiguration, JSONObject jsonObject) {
 
-		SubDataBase<Group> groupsDB = Controller.getInstance().getDataBase().getGroups();
+		SubDataBase<Group> groupsDB = Controller.getInstance()
+				.getDataBase()
+				.getGroups();
 		JSONArray groupsArray = jsonObject.getJSONArray(VALUE);
 		List<Group> groups = new ArrayList<>();
 		for (int i = 0; i < groupsArray.length(); i++) {
@@ -125,7 +135,9 @@ public class ConfigurationConsumer {
 	}
 
 	private static void manageRole(MainConfiguration mainConfiguration, JSONObject jsonObject) {
-		SubDataBase<Role> rolesDB = Controller.getInstance().getDataBase().getRoles();
+		SubDataBase<Role> rolesDB = Controller.getInstance()
+				.getDataBase()
+				.getRoles();
 		JSONArray rolesArray = jsonObject.getJSONArray(VALUE);
 		List<Role> roles = new ArrayList<>();
 		for (int i = 0; i < rolesArray.length(); i++) {
@@ -134,12 +146,12 @@ public class ConfigurationConsumer {
 		mainConfiguration.overrideItem(jsonObject.getString(CATEGORY), jsonObject.getString(NAME),
 				FXCollections.observableList(roles), Role.class);
 	}
-	
+
 	private static void manageChartType(MainConfiguration mainConfiguration, JSONObject jsonObject) {
 		JSONArray jsonArray = jsonObject.getJSONArray(VALUE);
 		List<ChartType> hiddenCharts = new ArrayList<>();
 		List<ChartType> listCharts = new ArrayList<>(ChartType.getNonDefaultValues());
-		
+
 		for (int i = 0; i < jsonArray.length(); i++) {
 			hiddenCharts.add(ChartType.getById(jsonArray.getInt(i)));
 		}
@@ -147,9 +159,7 @@ public class ConfigurationConsumer {
 		mainConfiguration.overrideItem(jsonObject.getString(CATEGORY), jsonObject.getString(NAME),
 				FXCollections.observableList(listCharts), ChartType.class);
 	}
-	
-	
-	
+
 	private ConfigurationConsumer() {
 		throw new UnsupportedOperationException();
 	}

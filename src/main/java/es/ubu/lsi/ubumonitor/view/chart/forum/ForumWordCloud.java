@@ -94,7 +94,7 @@ public class ForumWordCloud extends WordCloudChart {
 				background = new PixelBoundryBackground(in);
 				dimension = new Dimension(maskImage.getWidth(), maskImage.getHeight() - 30);
 
-			} catch (IOException e) {
+			} catch (Exception e) {
 				dimension = new Dimension((int) webView.getWidth(), (int) webView.getHeight() - 30);
 				background = new RectangleBackground(dimension);
 			}
@@ -105,9 +105,8 @@ public class ForumWordCloud extends WordCloudChart {
 
 		WordCloud wordCloud = new WordCloud(dimension, CollisionMode.PIXEL_PERFECT);
 
-		wordCloud.setColorPalette(new ColorPalette(new Color(0xed1941), new Color(0xf26522), new Color(0x845538),
-				new Color(0x8a5d19), new Color(0x7f7522), new Color(0x5c7a29), new Color(0x1d953f), new Color(0x007d65),
-				new Color(0x65c294)));
+		wordCloud.setColorPalette(new ColorPalette(new Color(249,65,68), new Color(243,114,44), new Color(248,150,30),
+				new Color(249, 199, 79), new Color(144,190,109), new Color(67,170,139), new Color(87,117,144)));
 		wordCloud.setBackground(background);
 		wordCloud.setPadding(getConfigValue("padding"));
 

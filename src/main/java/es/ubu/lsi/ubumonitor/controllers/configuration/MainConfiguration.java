@@ -29,7 +29,6 @@ import es.ubu.lsi.ubumonitor.util.MaskImage;
 import es.ubu.lsi.ubumonitor.util.StopWord;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.forum.ForumNetwork;
-
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -262,12 +261,15 @@ public class MainConfiguration {
 
 	public void overrideItem(String category, String name, Object value, Class<?> clazz) {
 		CustomPropertyItem property = properties.get(convertToKey(category, name));
-		if (property != null && property.getClass()
-				.equals(clazz)) {
-				property.setValue(value);
-				property.setClass(clazz);
-			
+
+		if (property != null && (property.getValue() instanceof ObservableList || property.getValue()
+				.getClass()
+				.equals(clazz))) {
+			property.setValue(value);
+			property.setClass(clazz);
+
 		}
+
 	}
 
 	public void createItem(ChartType category, String name, Object value) {

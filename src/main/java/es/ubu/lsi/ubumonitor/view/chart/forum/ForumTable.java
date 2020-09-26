@@ -124,7 +124,7 @@ public class ForumTable extends Tabulator {
 		for (EnrolledUser enrolledUser : enrolledUsers) {
 			jsObject = new JSObject();
 			jsObject.putWithQuote("title", enrolledUser.getFullName());
-			jsObject.put("field", "'ID" + enrolledUser.getId() + "'");
+			jsObject.put("field", ("'ID" + enrolledUser.getId() + "'").replace("-", "_"));
 			jsObject.put("hozAlign", "'center'");
 			jsObject.put("sorter", "'number'");
 			jsObject.put("sorterParams", "{alignEmptyValues:'bottom'}");
@@ -147,7 +147,7 @@ public class ForumTable extends Tabulator {
 								&& discussionPost.getParent() != null && to.equals(discussionPost.getParent()
 										.getUser()))
 						.count();
-				jsObject.put("ID" + to.getId(), countPosts == 0 ? null : countPosts);
+				jsObject.put(("'ID" + to.getId() + "'").replace("-", "_"), countPosts == 0 ? null : countPosts);
 
 			}
 		}

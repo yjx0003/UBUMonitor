@@ -79,13 +79,16 @@ public class ForumTreeMap extends Plotly {
 		JSObject data = new JSObject();
 		data.put("type", "'treemap'");
 		data.put("branchvalues", "'total'");
-		data.put("texttemplate",
-				"'<b>%{label}</b><br>%{value}<br>%{percentParent} "
-						+ UtilMethods.escapeJavaScriptText(I18n.get("parent")) + "<br>%{percentRoot} "
-						+ UtilMethods.escapeJavaScriptText(I18n.get("root")) + "'");
 		
-		data.put("hovertemplate",
-				"'<b>%{label}</b><br>%{value}<br>%{percentParent:%} %{parent}<br>%{percentRoot:%} %{root}<extra></extra>'");
+		if(map.size()>0) {
+			data.put("texttemplate",
+					"'<b>%{label}</b><br>%{value}<br>%{percentParent} "
+							+ UtilMethods.escapeJavaScriptText(I18n.get("parent")) + "<br>%{percentRoot} "
+							+ UtilMethods.escapeJavaScriptText(I18n.get("root")) + "'");
+			data.put("hovertemplate",
+					"'<b>%{label}</b><br>%{value}<br>%{percentParent:%} %{parent}<br>%{percentRoot:%} %{root}<extra></extra>'");
+		}
+		
 		
 		JSArray labels = createJSArray("labels", data);
 

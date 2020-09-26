@@ -123,7 +123,7 @@ public class ForumUserPostBar extends Chartjs {
 		JSArray dataReplies = new JSArray();
 		replies.put("data", dataReplies);
 		replies.putWithQuote("label", I18n.get("text.replies"));
-		replies.put("backgroundColor", rgba(I18n.get("text.replies"), OPACITY));
+		replies.put("backgroundColor", colorToRGB(getConfigValue("text.replies")));
 		JSArray forumsReplies = new JSArray();
 		replies.put("forums", forumsReplies);
 		replies.put("stack", 0);
@@ -132,7 +132,7 @@ public class ForumUserPostBar extends Chartjs {
 		JSArray dataDiscussionCreation = new JSArray();
 		discussionCreation.put("data", dataDiscussionCreation);
 		discussionCreation.putWithQuote("label", I18n.get("text.discussioncreation"));
-		discussionCreation.put("backgroundColor", rgba(I18n.get("text.discussioncreation"), OPACITY));
+		discussionCreation.put("backgroundColor", colorToRGB(getConfigValue("text.discussioncreation")));
 		JSArray forumDiscussion = new JSArray();
 		discussionCreation.put("forums", forumDiscussion);
 		discussionCreation.put("stack", 0);

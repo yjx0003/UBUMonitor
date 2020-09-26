@@ -114,7 +114,7 @@ public class ForumBar extends Chartjs {
 		JSObject dataset = new JSObject();
 		data.put("labels", labels);
 		dataset.putWithQuote("label", I18n.get("tab.forum"));
-		dataset.put("backgroundColor", rgba(I18n.get("tab.forum"), OPACITY));
+		dataset.put("backgroundColor", colorToRGB(getConfigValue("tab.forum")));
 		JSArray dataArray = new JSArray();
 		JSArray discussions = new JSArray();
 		dataset.put("data", dataArray);

@@ -10,6 +10,7 @@ import es.ubu.lsi.ubumonitor.view.chart.forum.ForumBar;
 import es.ubu.lsi.ubumonitor.view.chart.forum.ForumNetwork;
 import es.ubu.lsi.ubumonitor.view.chart.forum.ForumTable;
 import es.ubu.lsi.ubumonitor.view.chart.forum.ForumTreeMap;
+import es.ubu.lsi.ubumonitor.view.chart.forum.ForumTreeMapUser;
 import es.ubu.lsi.ubumonitor.view.chart.forum.ForumUserPostBar;
 import es.ubu.lsi.ubumonitor.view.chart.forum.ForumWordCloud;
 import javafx.scene.control.DatePicker;
@@ -36,6 +37,7 @@ public class ForumConnector extends JavaConnectorAbstract {
 		addChart(new ForumWordCloud(mainController, listViewForum, webView,datePickerStart, datePickerEnd));
 		addChart(new ForumUserPostBar(mainController, listViewForum,datePickerStart, datePickerEnd));
 		addChart(new ForumTreeMap(mainController, webView, listViewForum,datePickerStart, datePickerEnd));
+		addChart(new ForumTreeMapUser(mainController, webView, listViewForum,datePickerStart, datePickerEnd));
 		
 		currentChart = charts.get(ChartType.getDefault(Tabs.FORUM));
 	}

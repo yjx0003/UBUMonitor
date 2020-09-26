@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
@@ -33,7 +32,6 @@ import javafx.scene.web.WebView;
 
 public class ForumNetwork extends VisNetwork {
 
-	private static final Pattern INITIAL_LETTER_PATTERN = Pattern.compile("\\b\\w|,\\s");
 	private ListView<CourseModule> listViewForum;
 	private DatePicker datePickerStart;
 	private DatePicker datePickerEnd;

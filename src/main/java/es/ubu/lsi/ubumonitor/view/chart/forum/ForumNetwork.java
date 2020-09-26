@@ -10,13 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
@@ -33,7 +32,6 @@ import javafx.scene.web.WebView;
 
 public class ForumNetwork extends VisNetwork {
 
-	private static final Pattern INITIAL_LETTER_PATTERN = Pattern.compile("\\b\\w|,\\s");
 	private ListView<CourseModule> listViewForum;
 	private DatePicker datePickerStart;
 	private DatePicker datePickerEnd;
@@ -201,11 +199,7 @@ public class ForumNetwork extends VisNetwork {
 		Map<EnrolledUser, Long> fromMap = new HashMap<>();
 		Map<EnrolledUser, Long> toMap = new HashMap<>();
 		Map<EnrolledUser, Long> toSelfMap = new HashMap<>();
-		Map<EnrolledUser, Long> discussionCreations = actualCourse.getDiscussionPosts()
-				.stream()
-				.filter(d -> d.getParent()
-						.getId() == 0 && selectedForums.contains(d.getForum()) && users.contains(d.getUser()))
-				.collect(Collectors.groupingBy(DiscussionPost::getUser, Collectors.counting()));
+		Map<EnrolledUser, Long> discussionCreations = getDiscussionCreations(users, selectedForums);
 		usersWithEdges.addAll(discussionCreations.keySet());
 		JSObject data = new JSObject();
 
@@ -272,16 +266,13 @@ public class ForumNetwork extends VisNetwork {
 				StringBuilder builder = new StringBuilder();
 				builder.append("'");
 				if ((boolean) getConfigValue("useInitialNames")) {
-					initialLetterNames(user, builder);
+					builder.append( WordUtils.initials(user.getFullName()));
 				}
 
 				long total = 0;
-				double weightSendPost = getConfigValue("nodes.weightSendPost");
-				double weightReceivePost = getConfigValue("nodes.weightReceivePost");
-				double weightSelfPost = getConfigValue("nodes.weightSelfPost");
-				double weightDiscussionCreation = getConfigValue("nodes.weightDiscussionCreation");
+		
 
-				if ((boolean) getConfigValue("showNumberPosts")) {
+				if (Boolean.TRUE.equals(getConfigValue("showNumberPosts"))) {
 					StringJoiner stringJoiner = new StringJoiner(", ", " (", ")");
 					addValueToLabel(fromValue, stringJoiner, "<b>⬈</b>");
 					addValueToLabel(toValue, stringJoiner, "<b>⬋</b>");
@@ -290,13 +281,7 @@ public class ForumNetwork extends VisNetwork {
 					builder.append(stringJoiner);
 				}
 
-				total += fromValue * weightSendPost;
-
-				total += toValue * weightReceivePost;
-
-				total += toSelfValue * weightSelfPost;
-
-				total += discussionCreated * weightDiscussionCreation;
+				total += fromValue +toValue+toSelfValue+discussionCreated;
 
 				builder.append("'");
 
@@ -310,14 +295,6 @@ public class ForumNetwork extends VisNetwork {
 	public void addValueToLabel(long fromValue, StringJoiner stringJoiner, String icon) {
 		if (fromValue != 0) {
 			stringJoiner.add(fromValue + icon);
-		}
-	}
-
-	public void initialLetterNames(EnrolledUser user, StringBuilder builder) {
-		Matcher m = INITIAL_LETTER_PATTERN.matcher(user.getFullName());
-
-		while (m.find()) {
-			builder.append(m.group());
 		}
 	}
 
@@ -338,6 +315,7 @@ public class ForumNetwork extends VisNetwork {
 				.atStartOfDay(ZoneId.systemDefault())
 				.toInstant();
 		Instant end = datePickerEnd.getValue()
+				.plusDays(1)
 				.atStartOfDay(ZoneId.systemDefault())
 				.toInstant();
 		return actualCourse.getDiscussionPosts()
@@ -348,6 +326,23 @@ public class ForumNetwork extends VisNetwork {
 								.getUser())
 						&& start.isBefore(discussionPost.getCreated()) && end.isAfter(discussionPost.getCreated()))
 				.collect(Collectors.toList());
+	}
+
+	public Map<EnrolledUser, Long> getDiscussionCreations(Collection<EnrolledUser> users,
+			Collection<CourseModule> selectedForums) {
+		Instant start = datePickerStart.getValue()
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
+		Instant end = datePickerEnd.getValue()
+				.plusDays(1)
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
+		return actualCourse.getDiscussionPosts()
+				.stream()
+				.filter(d -> d.getParent()
+						.getId() == 0 && selectedForums.contains(d.getForum()) && users.contains(d.getUser())
+						&& start.isBefore(d.getCreated()) && end.isAfter(d.getCreated()))
+				.collect(Collectors.groupingBy(DiscussionPost::getUser, Collectors.counting()));
 	}
 
 	public enum Solver {

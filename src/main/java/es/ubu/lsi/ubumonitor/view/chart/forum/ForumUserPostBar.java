@@ -196,7 +196,7 @@ public class ForumUserPostBar extends Chartjs {
 		Instant start = datePickerStart.getValue()
 				.atStartOfDay(ZoneId.systemDefault())
 				.toInstant();
-		Instant end = datePickerEnd.getValue()
+		Instant end = datePickerEnd.getValue().plusDays(1)
 				.atStartOfDay(ZoneId.systemDefault())
 				.toInstant();
 		return actualCourse.getDiscussionPosts()

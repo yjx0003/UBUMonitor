@@ -16,8 +16,10 @@ import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.DiscussionPost;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 import javafx.scene.control.DatePicker;
@@ -77,8 +79,17 @@ public class ForumTreeMap extends Plotly {
 		JSObject data = new JSObject();
 		data.put("type", "'treemap'");
 		data.put("branchvalues", "'total'");
-		data.put("textinfo", "'label+value+percent parent+percent root'");
-		data.put("hoverinfo", "'label+value+percent parent+percent root'");
+		
+		if(map.size()>0) {
+			data.put("texttemplate",
+					"'<b>%{label}</b><br>%{value}<br>%{percentParent} "
+							+ UtilMethods.escapeJavaScriptText(I18n.get("parent")) + "<br>%{percentRoot} "
+							+ UtilMethods.escapeJavaScriptText(I18n.get("root")) + "'");
+			data.put("hovertemplate",
+					"'<b>%{label}</b><br>%{value}<br>%{percentParent:%} %{parent}<br>%{percentRoot:%} %{root}<extra></extra>'");
+		}
+		
+		
 		JSArray labels = createJSArray("labels", data);
 
 		JSArray values = createJSArray("values", data);
@@ -110,7 +121,7 @@ public class ForumTreeMap extends Plotly {
 		}
 		labels.addWithQuote(actualCourse.getFullName());
 		values.add(courseTotal);
-		parents.add(null);
+		parents.add("''");
 		ids.add(0);
 
 		webViewChartsEngine.executeScript("updatePlotly([" + data + "]," + getOptions() + ")");
@@ -128,7 +139,8 @@ public class ForumTreeMap extends Plotly {
 		Instant start = datePickerStart.getValue()
 				.atStartOfDay(ZoneId.systemDefault())
 				.toInstant();
-		Instant end = datePickerEnd.getValue().plusDays(1)
+		Instant end = datePickerEnd.getValue()
+				.plusDays(1)
 				.atStartOfDay(ZoneId.systemDefault())
 				.toInstant();
 

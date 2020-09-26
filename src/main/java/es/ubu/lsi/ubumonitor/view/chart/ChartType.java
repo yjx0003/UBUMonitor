@@ -44,12 +44,13 @@ public enum ChartType {
 	FORUM_NETWORK(Tabs.FORUM, 27),
 	
 	FORUM_TREE_MAP(Tabs.FORUM, 31),
+	FORUM_TREE_MAP_USER(Tabs.FORUM, 32),
 	FORUM_WORD_CLOUD(Tabs.FORUM, 29),
 	FORUM_TABLE(Tabs.FORUM, 25),
 	
 	CALENDAR_EVENT_TIMELINE(Tabs.CALENDAR_EVENT, 28);
 	
-	//next id 32
+	//next id 33
 
 	private Tabs tab;
 	private int id;

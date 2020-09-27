@@ -703,7 +703,7 @@ public class WelcomeController implements Initializable {
 			if ((int) controller.getMainConfiguration()
 					.getValue(MainConfiguration.GENERAL, "alertDaysElapsed") <= daysElapsed) {
 				notificationPane.show();
-				PauseTransition pauseTransition = new PauseTransition(Duration.seconds(daysElapsed * 3 + 5.0));
+				PauseTransition pauseTransition = new PauseTransition(Duration.seconds(daysElapsed * 1.5 + 5));
 				pauseTransition.setOnFinished(event -> notificationPane.hide());
 				pauseTransition.play();
 			}

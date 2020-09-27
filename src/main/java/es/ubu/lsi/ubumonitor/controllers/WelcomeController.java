@@ -693,7 +693,7 @@ public class WelcomeController implements Initializable {
 			notificationPane.setText(MessageFormat.format(I18n.get("text.lastcourseupdate"), daysElapsed, hoursElapsed,
 					Controller.DATE_TIME_FORMATTER.format(lastUpdate)));
 			notificationPane.setShowFromTop(false);
-			notificationPane.setGraphic(new ImageView(new Image(image, 75, 75, false, false)));
+			notificationPane.setGraphic(new ImageView(new Image(image)));
 			stage.close();
 			stage.setScene(new Scene(notificationPane));
 			stage.setMaximized(true);

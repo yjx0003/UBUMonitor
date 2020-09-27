@@ -377,11 +377,14 @@ public class WelcomeOfflineController implements Initializable {
 
 		File file = getSelectedCourse();
 		ConfigHelper.setProperty("listViewIndexOfflineMode", file.toString());
-		UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), false);
-		Stage stage = controller.getStage();
-		stage.setResizable(true);
-		stage.setMaximized(true);
-		stage.show();
+
+		LocalDateTime lastModified = LocalDateTime.ofInstant(Instant.ofEpochMilli(getSelectedCourse().lastModified()),
+				ZoneId.systemDefault());
+
+		WelcomeController.changeToMainScene(controller.getStage(), getClass().getResource("/view/Main.fxml"),
+				getClass().getResource("/img/alert.png")
+						.toExternalForm(),
+				lastModified);
 
 	}
 

@@ -50,6 +50,7 @@ public class MainConfiguration {
 	public void setDefaultValues() {
 		properties.clear();
 		categories.clear();
+		createItem(GENERAL, "alertDaysElapsed", 3);
 		createItem(GENERAL, "charset", Charsets.UTF_8);
 		createItem(GENERAL, "chartBackgroundColor", Color.web("#FFFFFF", 0.0));
 		createItem(GENERAL, "cutGrade", 5.0);

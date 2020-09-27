@@ -12,8 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
-import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigurationController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.Stats;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
@@ -84,10 +82,6 @@ public class MainController implements Initializable {
 					.setOnCloseRequest(event -> onClose());
 
 			stats = controller.getStats();
-
-			controller.setMainConfiguration(new MainConfiguration());
-			ConfigurationController.loadConfiguration(controller.getMainConfiguration(),
-					controller.getConfiguration(controller.getActualCourse()));
 
 			menuController.init(this);
 			selectionUserController.init(this, controller.getActualCourse(), controller.getMainConfiguration());

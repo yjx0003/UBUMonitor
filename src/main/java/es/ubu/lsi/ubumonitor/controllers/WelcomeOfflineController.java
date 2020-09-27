@@ -382,7 +382,7 @@ public class WelcomeOfflineController implements Initializable {
 				ZoneId.systemDefault());
 
 		WelcomeController.changeToMainScene(controller.getStage(), getClass().getResource("/view/Main.fxml"),
-				getClass().getResource("/img/alert.png")
+				getClass().getResource("/img/alert.gif")
 						.toExternalForm(),
 				lastModified);
 

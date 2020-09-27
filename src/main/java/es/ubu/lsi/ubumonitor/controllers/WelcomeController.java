@@ -672,7 +672,7 @@ public class WelcomeController implements Initializable {
 				.lastModified()), ZoneId.systemDefault());
 
 		changeToMainScene(controller.getStage(), getClass().getResource("/view/Main.fxml"),
-				getClass().getResource("/img/alert.png")
+				getClass().getResource("/img/alert.gif")
 						.toExternalForm(),
 				lastModified);
 
@@ -693,13 +693,13 @@ public class WelcomeController implements Initializable {
 			notificationPane.setText(MessageFormat.format(I18n.get("text.lastcourseupdate"), daysElapsed, hoursElapsed,
 					Controller.DATE_TIME_FORMATTER.format(lastUpdate)));
 			notificationPane.setShowFromTop(false);
-			notificationPane.setGraphic(new ImageView(image));
+			notificationPane.setGraphic(new ImageView(new Image(image, 75, 75, false, false)));
 			stage.close();
 			stage.setScene(new Scene(notificationPane));
 			stage.setMaximized(true);
 			stage.setResizable(true);
 			stage.show();
-			
+
 			if ((int) controller.getMainConfiguration()
 					.getValue(MainConfiguration.GENERAL, "alertDaysElapsed") <= daysElapsed) {
 				notificationPane.show();
@@ -707,7 +707,7 @@ public class WelcomeController implements Initializable {
 				pauseTransition.setOnFinished(event -> notificationPane.hide());
 				pauseTransition.play();
 			}
-			
+
 		} catch (IOException e) {
 			UtilMethods.errorWindow("error loading fxml: ", e);
 			throw new IllegalArgumentException("Invalid fxml", e);

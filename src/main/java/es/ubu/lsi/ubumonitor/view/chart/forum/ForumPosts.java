@@ -64,20 +64,20 @@ public class ForumPosts extends VisNetwork {
 						.collect(Collectors.toSet()));
 
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
-				CSVFormat.DEFAULT.withHeader("forumId", "forumName", "discussionId", "discussionName", "userId",
-						"userName", "parentId","parentName", "discussionPostId", "discussionPostName", "timeCreated", "message"))) {
+				CSVFormat.DEFAULT.withHeader("forumId", "forumName", "discussionId", "discussionName", "parentId", "parentName", "discussionPostId", "discussionPostName", "userId",
+						"userName",  "timeCreated", "message"))) {
 			for (DiscussionPost d : filteredDiscussionPosts) {
 				printer.printRecord(
 						d.getForum().getCmid(),
 						d.getForum().getModuleName(),
 						d.getDiscussion().getId(),
 						d.getDiscussion().getName(),
-						d.getUser().getId(),
-						d.getUser().getFullName(),
 						d.getParent().getId(),
 						d.getParent().getSubject(),
 						d.getId(),
 						d.getSubject(),
+						d.getUser().getId(),
+						d.getUser().getFullName(),
 						Controller.DATE_TIME_FORMATTER.format(LocalDateTime.ofInstant(d.getCreated(), ZoneId.systemDefault())),
 						d.getMessage());
 			}

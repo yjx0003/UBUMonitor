@@ -14,9 +14,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 
+import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.DiscussionPost;
@@ -49,7 +52,36 @@ public class ForumPosts extends VisNetwork {
 
 	@Override
 	public void exportCSV(String path) throws IOException {
-		// TODO Auto-generated method stub
+		List<EnrolledUser> users = getSelectedEnrolledUser();
+		List<CourseModule> forums = new ArrayList<>(listViewForum.getSelectionModel()
+				.getSelectedItems());
+
+		Set<DiscussionPost> discussionsPosts = getDiscussionsPosts(users, forums);
+		List<DiscussionPost> filteredDiscussionPosts = filterDiscussionPosts(actualCourse.getDiscussionPosts(),
+				discussionsPosts.stream()
+						.map(DiscussionPost::getDiscussion)
+						.distinct()
+						.collect(Collectors.toSet()));
+
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
+				CSVFormat.DEFAULT.withHeader("forumId", "forumName", "discussionId", "discussionName", "userId",
+						"userName", "parentId","parentName", "discussionPostId", "discussionPostName", "timeCreated", "message"))) {
+			for (DiscussionPost d : filteredDiscussionPosts) {
+				printer.printRecord(
+						d.getForum().getCmid(),
+						d.getForum().getModuleName(),
+						d.getDiscussion().getId(),
+						d.getDiscussion().getName(),
+						d.getUser().getId(),
+						d.getUser().getFullName(),
+						d.getParent().getId(),
+						d.getParent().getSubject(),
+						d.getId(),
+						d.getSubject(),
+						Controller.DATE_TIME_FORMATTER.format(LocalDateTime.ofInstant(d.getCreated(), ZoneId.systemDefault())),
+						d.getMessage());
+			}
+		}
 
 	}
 
@@ -61,6 +93,7 @@ public class ForumPosts extends VisNetwork {
 		options.put("nodes", getNodesOptions());
 		options.put("physics", getPhysicsOptions());
 		options.put("layout", getLayoutOptions());
+		options.put("interaction", getInteractionOptions());
 		jsObject.put("options", options);
 
 		return jsObject;
@@ -125,7 +158,7 @@ public class ForumPosts extends VisNetwork {
 			node.putWithQuote("label", forum.getModuleName());
 			if (StringUtils.isNotBlank(forum.getDescription())) {
 				node.putWithQuote("title", forum.getDescription());
-			}else {
+			} else {
 				node.putWithQuote("title", forum.getModuleName());
 			}
 			nodes.add(node);

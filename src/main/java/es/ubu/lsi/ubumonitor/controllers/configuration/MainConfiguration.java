@@ -28,7 +28,7 @@ import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.MaskImage;
 import es.ubu.lsi.ubumonitor.util.StopWord;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
-import es.ubu.lsi.ubumonitor.view.chart.forum.ForumNetwork;
+import es.ubu.lsi.ubumonitor.view.chart.VisNetwork;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -145,7 +145,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_NETWORK, "nodes.borderWidth", 1);
 		createItem(ChartType.FORUM_NETWORK, "nodes.scaling.min", 20);
 		createItem(ChartType.FORUM_NETWORK, "nodes.scaling.max", 40);
-		createItem(ChartType.FORUM_NETWORK, "physics.solver", ForumNetwork.Solver.FORCE_ATLAS_2_BASED);
+		createItem(ChartType.FORUM_NETWORK, "physics.solver", VisNetwork.Solver.FORCE_ATLAS_2_BASED);
 		createItem(ChartType.FORUM_NETWORK, "physics.barnesHut.theta", 0.5);
 		createItem(ChartType.FORUM_NETWORK, "physics.barnesHut.gravitationalConstant", -2000);
 		createItem(ChartType.FORUM_NETWORK, "physics.barnesHut.centralGravity", 0.3);
@@ -171,7 +171,13 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_NETWORK, "interaction.tooltipDelay", 300);
 		createItem(ChartType.FORUM_NETWORK, "layout.randomSeed", "");
 		createItem(ChartType.FORUM_NETWORK, "layout.clusterThreshold", 150);
-
+		
+		createItem(ChartType.FORUM_POSTS, "usePhoto", true);
+		createItem(ChartType.FORUM_POSTS, "colorContains", Color.web("#00FF00"));
+		createItem(ChartType.FORUM_POSTS, "colorNotContains", Color.web("#FF0000"));
+		createItem(ChartType.FORUM_POSTS, "nodes.borderWidth", 1);
+		createItem(ChartType.FORUM_POSTS, "edges.width", 1);
+		
 		createItem(ChartType.FORUM_WORD_CLOUD, "stopWords", StopWord.getStopWordValues(Locale.getDefault()));
 		createItem(ChartType.FORUM_WORD_CLOUD, "chartBackgroundColor", Color.web("#FFFFFF", 0.0));
 		createItem(ChartType.FORUM_WORD_CLOUD, "wordFrequencesToReturn", 50);

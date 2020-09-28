@@ -47,7 +47,12 @@ public abstract class VisNetwork extends Chart {
 	}
 
 	public JSObject getInteractionOptions() {
-		return new JSObject();
+		JSObject interaction =  new JSObject();
+		interaction.put("keyboard", getConfigValue("interaction.keyboard"));
+		interaction.put("multiselect", getConfigValue("interaction.multiselect"));
+		interaction.put("navigationButtons", getConfigValue("interaction.navigationButtons"));
+		interaction.put("tooltipDelay", getConfigValue("interaction.tooltipDelay"));
+		return interaction;
 	}
 	
 	public enum Solver {

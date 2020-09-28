@@ -166,15 +166,6 @@ public class ForumNetwork extends VisNetwork {
 
 	}
 	
-	@Override
-	public JSObject getInteractionOptions() {
-		JSObject interaction = super.getInteractionOptions();
-		interaction.put("keyboard", getConfigValue("interaction.keyboard"));
-		interaction.put("multiselect", getConfigValue("interaction.multiselect"));
-		interaction.put("navigationButtons", getConfigValue("interaction.navigationButtons"));
-		interaction.put("tooltipDelay", getConfigValue("interaction.tooltipDelay"));
-		return interaction;
-	}
 
 	@Override
 	public JSObject getLayoutOptions() {

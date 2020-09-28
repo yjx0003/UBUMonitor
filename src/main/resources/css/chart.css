@@ -74,9 +74,14 @@ html,body
 }
 
 .visDiv{
-	 outline: 0.0;
+	outline: 0.0;
 	height:95.0vh;
 	width:100.0%;
+	
+}
+.vis-tooltip{
+	white-space: normal !important;
+	max-width:90% !important;
 }
 
 .apexchart-container

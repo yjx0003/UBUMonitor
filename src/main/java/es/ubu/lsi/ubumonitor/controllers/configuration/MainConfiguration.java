@@ -175,8 +175,8 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_POSTS, "usePhoto", true);
 		createItem(ChartType.FORUM_POSTS, "colorContains", Color.web("#00FF00"));
 		createItem(ChartType.FORUM_POSTS, "colorNotContains", Color.web("#FF0000"));
-		createItem(ChartType.FORUM_POSTS, "nodes.borderWidth", 1);
-		createItem(ChartType.FORUM_POSTS, "edges.width", 1);
+		createItem(ChartType.FORUM_POSTS, "nodes.borderWidth", 3);
+		createItem(ChartType.FORUM_POSTS, "edges.width", 3);
 		
 		createItem(ChartType.FORUM_WORD_CLOUD, "stopWords", StopWord.getStopWordValues(Locale.getDefault()));
 		createItem(ChartType.FORUM_WORD_CLOUD, "chartBackgroundColor", Color.web("#FFFFFF", 0.0));

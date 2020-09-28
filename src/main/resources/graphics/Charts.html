@@ -61,10 +61,11 @@
       var table;
       var visNetwork;
       var visTimeline;
-      
+      var userPhotos;
+
       function createChartDivs() {
          //------------------------------------------Variables globales-------------------------------------------------------------
-         
+
          //
          colorHash = new ColorHash();
          ctx = document.getElementById('myChart');
@@ -104,7 +105,7 @@
 
          visNetwork = new vis.Network(document.getElementById('visNetworkDiv'), {}, {});
          visTimeline = new vis.Timeline(document.getElementById('visTimelineDiv'), {}, {});
-        
+
 
       }
 
@@ -194,9 +195,6 @@
          imageButton("btnGroupMean", options.groupActive);
 
 
-
-
-
          if (!options.legend) {
             options.legend = {};
          }
@@ -236,12 +234,15 @@
 
       function updateVisNetwork(data, options) {
          hiddenCharts("visNetwork", options);
-         
-		 visNetwork.on("stabilizationIterationsDone", function () {
-    		visNetwork.setOptions( { physics:{enabled: options.physicsAfterDraw }} );
-		 });
-         visNetwork.setOptions(options.options);
-   		 visNetwork.setData(data);
+         if (visNetwork !== null) {
+            visNetwork.destroy();
+            visNetwork = null;
+         }
+         visNetwork = new vis.Network(document.getElementById('visNetworkDiv'), data, options.options);
+         visNetwork.on("stabilizationIterationsDone", function () {
+            visNetwork.setOptions({ physics: { enabled: options.physicsAfterDraw == undefined || options.physicsAfterDraw } });
+         });
+   
       }
 
 
@@ -251,7 +252,7 @@
 
          visTimeline.setOptions(options.options);
          visTimeline.setData(data);
-         
+
 
       }
 
@@ -259,24 +260,24 @@
          hiddenCharts("canvas-container", options);
          wordCloud = document.getElementById('wordCloud');
          imageWordCloud = new Image();
-         imageWordCloud.onload = function(){
+         imageWordCloud.onload = function () {
             wordCloud.height = imageWordCloud.height;
             wordCloud.width = imageWordCloud.width;
 
             wordCloud.getContext("2d").drawImage(imageWordCloud, 0, 0);
-            
+
          };
 
          imageWordCloud.src = image;
-         
+
 
       }
 
-      function updatePlotly(data, layout){
+      function updatePlotly(data, layout) {
          hiddenCharts("plotly", layout);
-      
+
          layout.showLegend = layout.useLegend && layout.legendActive;
-         Plotly.newPlot('plotlyDiv', data, layout, {displaylogo: false, responsive: true, modeBarButtonsToRemove:["toImage"]});
+         Plotly.newPlot('plotlyDiv', data, layout, { displaylogo: false, responsive: true, modeBarButtonsToRemove: ["toImage"] });
       }
 
       function hiddenCharts(value, options) {
@@ -336,7 +337,7 @@
          displayChartsButtons("RISK", type, listCharts);
          displayChartsButtons("FORUM", type, listCharts);
          displayChartsButtons("CALENDAR_EVENT", type, listCharts);
-         
+
       }
 
       function clearVisNetwork() {
@@ -373,8 +374,8 @@
          return myChart.toBase64Image();
       }
 
-      	
-      function exportCanvas(id){
+
+      function exportCanvas(id) {
          return document.getElementById(id).toDataURL();
       }
 

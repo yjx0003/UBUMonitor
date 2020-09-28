@@ -21,7 +21,6 @@ import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.DiscussionPost;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
-import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
@@ -87,9 +86,10 @@ public class ForumNetwork extends VisNetwork {
 
 		return jsObject;
 	}
-
-	private JSObject getEdgesOptions() {
-		JSObject edges = new JSObject();
+	
+	@Override
+	public JSObject getEdgesOptions() {
+		JSObject edges = super.getEdgesOptions();
 		edges.put("arrows", "{to:{enabled:true,scaleFactor:" + getConfigValue("edges.arrows.to.scaleFactor") + "}}");
 		edges.put("arrowStrikethrough", false);
 		edges.put("dashes", getConfigValue("edges.dashes"));
@@ -99,9 +99,10 @@ public class ForumNetwork extends VisNetwork {
 		edges.put("scaling", scaling);
 		return edges;
 	}
-
-	private JSObject getNodesOptions() {
-		JSObject nodes = new JSObject();
+	
+	@Override
+	public JSObject getNodesOptions() {
+		JSObject nodes = super.getNodesOptions();
 		if ((boolean) getConfigValue("usePhoto")) {
 			nodes.put("shape", "'circularImage'");
 			nodes.put("brokenImage", "'../img/default_user.png'");
@@ -117,8 +118,9 @@ public class ForumNetwork extends VisNetwork {
 		return nodes;
 	}
 
-	private JSObject getPhysicsOptions() {
-		JSObject physics = new JSObject();
+	@Override
+	public JSObject getPhysicsOptions() {
+		JSObject physics = super.getPhysicsOptions();
 		physics.put("enabled", true);
 		Solver solver = getConfigValue("physics.solver");
 		physics.putWithQuote("solver", solver.getName());
@@ -163,9 +165,10 @@ public class ForumNetwork extends VisNetwork {
 		return physics;
 
 	}
-
-	private JSObject getInteractionOptions() {
-		JSObject interaction = new JSObject();
+	
+	@Override
+	public JSObject getInteractionOptions() {
+		JSObject interaction = super.getInteractionOptions();
 		interaction.put("keyboard", getConfigValue("interaction.keyboard"));
 		interaction.put("multiselect", getConfigValue("interaction.multiselect"));
 		interaction.put("navigationButtons", getConfigValue("interaction.navigationButtons"));
@@ -173,8 +176,9 @@ public class ForumNetwork extends VisNetwork {
 		return interaction;
 	}
 
-	private JSObject getLayoutOptions() {
-		JSObject layout = new JSObject();
+	@Override
+	public JSObject getLayoutOptions() {
+		JSObject layout = super.getLayoutOptions();
 		String randomSeed = getConfigValue("layout.randomSeed");
 
 		layout.put("randomSeed", StringUtils.isBlank(randomSeed) ? "undefined" : randomSeed);
@@ -345,22 +349,5 @@ public class ForumNetwork extends VisNetwork {
 				.collect(Collectors.groupingBy(DiscussionPost::getUser, Collectors.counting()));
 	}
 
-	public enum Solver {
-		BARNES_HUT("barnesHut"), FORCE_ATLAS_2_BASED("forceAtlas2Based"), REPULSION("repulsion");
-
-		private String name;
-
-		private Solver(String name) {
-			this.name = name;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		@Override
-		public String toString() {
-			return I18n.get(name());
-		}
-	}
+	
 }

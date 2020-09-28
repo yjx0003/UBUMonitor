@@ -2,8 +2,8 @@ package es.ubu.lsi.ubumonitor.view.chart.forum;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
@@ -24,6 +24,7 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.ForumDiscussion;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
+import es.ubu.lsi.ubumonitor.util.Parsers;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.VisNetwork;
 import javafx.scene.control.DatePicker;
@@ -124,6 +125,8 @@ public class ForumPosts extends VisNetwork {
 			node.putWithQuote("label", forum.getModuleName());
 			if (StringUtils.isNotBlank(forum.getDescription())) {
 				node.putWithQuote("title", forum.getDescription());
+			}else {
+				node.putWithQuote("title", forum.getModuleName());
 			}
 			nodes.add(node);
 		}
@@ -149,10 +152,10 @@ public class ForumPosts extends VisNetwork {
 		stringBuilder.append(discussionPost.getUser()
 				.getFullName());
 		stringBuilder.append("</b> - ");
-		stringBuilder.append(ZonedDateTime.ofInstant(discussionPost.getCreated(), ZoneId.systemDefault())
+		stringBuilder.append(LocalDateTime.ofInstant(discussionPost.getCreated(), ZoneId.systemDefault())
 				.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.SHORT)));
-		stringBuilder.append("<br><br>");
-		stringBuilder.append(discussionPost.getMessage());
+		stringBuilder.append("<br><hr><br>");
+		stringBuilder.append(Parsers.parseToHtml(discussionPost.getMessage(), discussionPost.getMessageformat()));
 		return stringBuilder.toString();
 	}
 

@@ -132,7 +132,7 @@ public class ForumWordCloud extends WordCloudChart {
 		List<String> texts = new ArrayList<>();
 		for (DiscussionPost discussionPost : discussionPosts) {
 
-			String parsed = Parsers.parse(discussionPost.getMessage(), discussionPost.getMessageformat());
+			String parsed = Parsers.parseToString(discussionPost.getMessage(), discussionPost.getMessageformat());
 			texts.add(parsed);
 		}
 

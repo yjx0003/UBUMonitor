@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.scene.web.WebView;
 
@@ -27,5 +29,44 @@ public abstract class VisNetwork extends Chart {
 		UtilMethods.showExportedFile(file);
 
 	}
+	
+	public JSObject getNodesOptions() {
+		return new JSObject();
+	}
+	
+	public JSObject getEdgesOptions() {
+		return new JSObject();
+	}
+	
+	public JSObject getLayoutOptions() {
+		return new JSObject();
+	}
+	
+	public JSObject getPhysicsOptions() {
+		return new JSObject();
+	}
 
+	public JSObject getInteractionOptions() {
+		return new JSObject();
+	}
+	
+	public enum Solver {
+		BARNES_HUT("barnesHut"), FORCE_ATLAS_2_BASED("forceAtlas2Based"), REPULSION("repulsion");
+
+		private String name;
+
+		private Solver(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		@Override
+		public String toString() {
+			return I18n.get(name());
+		}
+	}
+	
 }

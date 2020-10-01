@@ -5,6 +5,8 @@ import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,6 +34,7 @@ import javafx.scene.web.WebView;
 
 public class CalendarEventTimeline extends VisTimeline {
 	private ListView<CourseModule> listViewCourseModule;
+	private DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.SHORT);
 
 	public CalendarEventTimeline(MainController mainController, WebView webView,
 			ListView<CourseModule> listViewCourseModule) {
@@ -44,7 +47,7 @@ public class CalendarEventTimeline extends VisTimeline {
 		List<CourseEvent> courseEvents = getSelectedCalendarEvents();
 
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader("id", "name",
-				"description", "courseModuleId", "courseModuleName", "start", "end"))) {
+				"description", "courseModuleId", "courseModuleName", "userId", "userName", "start", "end"))) {
 			for (CourseEvent courseEvent : courseEvents) {
 				printer.print(courseEvent.getId());
 				printer.print(courseEvent.getName());
@@ -57,6 +60,8 @@ public class CalendarEventTimeline extends VisTimeline {
 					printer.print(cm.getCmid());
 					printer.print(cm.getModuleName());
 				}
+				printer.print(courseEvent.getUser().getId());
+				printer.print(courseEvent.getUser().getFullName());
 				printer.print(Controller.DATE_TIME_FORMATTER
 						.format(LocalDateTime.ofInstant(courseEvent.getTimestart(), ZoneId.systemDefault())));
 				printer.print(Controller.DATE_TIME_FORMATTER.format(LocalDateTime.ofInstant(courseEvent.getTimestart()
@@ -108,8 +113,8 @@ public class CalendarEventTimeline extends VisTimeline {
 		for (ModuleType moduleType : modulesTypes) {
 			JSObject group = new JSObject();
 			group.put("id", moduleType.ordinal());
-			group.putWithQuote("content", "<img style='vertical-align:middle' src='../img/" + moduleType.getModName() + ".png'>	"
-					+ I18n.get(moduleType));
+			group.putWithQuote("content", "<img style='vertical-align:middle' src='../img/" + moduleType.getModName()
+					+ ".png'>	" + I18n.get(moduleType));
 			groups.add(group);
 		}
 		return groups;
@@ -133,45 +138,76 @@ public class CalendarEventTimeline extends VisTimeline {
 					.orElse(ModuleType.MODULE);
 
 			item.put("group", moduleType.ordinal());
+			
 			String image = "<img style='vertical-align:middle' src='../img/" + moduleType.getModName() + ".png'>	";
-			item.putWithQuote("content", image + open.getName());
-
-			item.putWithQuote("start", open.getTimestart());
-
-			if (close != null) {
-
-				String title = MessageFormat.format(I18n.get("text.daydifference"), open.getTimestart()
-						.until(close.getTimestart(), ChronoUnit.DAYS),
-						open.getTimestart()
-								.until(close.getTimestart(), ChronoUnit.HOURS) % 24,
-						image, open.getDescription());
-				item.putWithQuote("title", title);
-				item.putWithQuote("end", close.getTimestart());
-				item.put("type", "'range'");
-			} else if (open.getTimeduration() != 0) {
-				Instant end = open.getTimestart()
-						.plusSeconds(open.getTimeduration());
-				String title = MessageFormat.format(I18n.get("text.daydifference"), open.getTimestart()
-						.until(end, ChronoUnit.DAYS),
-						open.getTimestart()
-								.until(end, ChronoUnit.HOURS) % 24,
-						image, open.getDescription());
-				item.putWithQuote("end", end);
-				item.putWithQuote("title", title);
-				item.put("type", "'range'");
-			} else {
-				item.putWithQuote("title",
-						"<p>" + image
-								+ Controller.DATE_TIME_FORMATTER
-										.format(LocalDateTime.ofInstant(open.getTimestart(), ZoneId.systemDefault()))
-								+ "<p>" + open.getDescription());
-				item.put("type", "'point'");
-			}
+			fillItem(image, item,  open, close);
+			
 
 			items.add(item);
 		}
 
 		return items;
+	}
+
+	private void fillItem(String image, JSObject item, CourseEvent open, CourseEvent close) {
+		
+		
+		item.putWithQuote("content", image + open.getName());
+
+		item.putWithQuote("start", open.getTimestart());
+		StringBuilder builder = new StringBuilder();
+		builder.append("<p style='line-height: 2;'>");
+		builder.append(image);
+		builder.append(open.getName());
+		builder.append("<br><b>");
+		builder.append(open.getUser()
+				.getFullName());
+		builder.append("</b><br>");
+		
+		
+		
+		if (close != null) {
+			builder.append(LocalDateTime.ofInstant(open.getTimestart(), ZoneId.systemDefault())
+					.format(DATE_TIME_FORMATTER));
+			builder.append(" - ");
+			builder.append(LocalDateTime.ofInstant(close.getTimestart(), ZoneId.systemDefault())
+					.format(DATE_TIME_FORMATTER));
+			builder.append("<br>");
+			String timeElapsed = MessageFormat.format(I18n.get("text.daydifference"), open.getTimestart()
+					.until(close.getTimestart(), ChronoUnit.DAYS),
+					open.getTimestart()
+							.until(close.getTimestart(), ChronoUnit.HOURS) % 24);
+			builder.append(timeElapsed);
+			item.putWithQuote("end", close.getTimestart());
+			item.put("type", "'range'");
+		} else if (open.getTimeduration() != 0) {
+			Instant end = open.getTimestart()
+					.plusSeconds(open.getTimeduration());
+
+			builder.append(LocalDateTime.ofInstant(open.getTimestart(), ZoneId.systemDefault())
+					.format(DATE_TIME_FORMATTER));
+			builder.append(" - ");
+			builder.append(LocalDateTime.ofInstant(end, ZoneId.systemDefault())
+					.format(DATE_TIME_FORMATTER));
+			builder.append("<br>");
+			String timeElapsed = MessageFormat.format(I18n.get("text.daydifference"), open.getTimestart()
+					.until(end, ChronoUnit.DAYS),
+					open.getTimestart()
+							.until(end, ChronoUnit.HOURS) % 24);
+			builder.append(timeElapsed);
+			item.putWithQuote("end", end);
+			item.put("type", "'range'");
+		} else {
+			builder.append(LocalDateTime.ofInstant(open.getTimestart(), ZoneId.systemDefault())
+					.format(DATE_TIME_FORMATTER));
+			builder.append("<br>");
+			item.put("type", "'point'");
+		}
+		builder.append("</p>");
+		builder.append("<hr>");
+		builder.append(open.getDescription());
+
+		item.putWithQuote("title", builder);
 	}
 
 	private Map<CourseEvent, CourseEvent> createOpenCloseCourseEvent(List<CourseEvent> calendarEvents) {

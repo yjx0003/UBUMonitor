@@ -139,7 +139,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_NETWORK, "showNumberPosts", true);
 		createItem(ChartType.FORUM_NETWORK, "physicsAfterDraw", true);
 		createItem(ChartType.FORUM_NETWORK, "edges.dashes", false);
-		createItem(ChartType.FORUM_NETWORK, "edges.arrows.to.scaleFactor", 1.0);
+		createItem(ChartType.FORUM_NETWORK, "edges.arrows.to.scaleFactor", 0.75);
 		createItem(ChartType.FORUM_NETWORK, "edges.scaling.min", 1);
 		createItem(ChartType.FORUM_NETWORK, "edges.scaling.max", 10);
 		createItem(ChartType.FORUM_NETWORK, "nodes.borderWidth", 1);

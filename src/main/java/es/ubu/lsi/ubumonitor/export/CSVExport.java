@@ -3,8 +3,10 @@ package es.ubu.lsi.ubumonitor.export;
 import java.nio.charset.Charset;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
+import es.ubu.lsi.ubumonitor.export.builder.CSVCalendarEvent;
 import es.ubu.lsi.ubumonitor.export.builder.CSVCourse;
 import es.ubu.lsi.ubumonitor.export.builder.CSVCourseModule;
+import es.ubu.lsi.ubumonitor.export.builder.CSVDiscussionPost;
 import es.ubu.lsi.ubumonitor.export.builder.CSVEnrolledUser;
 import es.ubu.lsi.ubumonitor.export.builder.CSVGrade;
 import es.ubu.lsi.ubumonitor.export.builder.CSVGroup;
@@ -44,6 +46,8 @@ public class CSVExport {
 		generateFile(new CSVRole("roles", dataBase), charset);
 		generateFile(new CSVSection("sections", dataBase), charset);
 		generateFile(new CSVCourse("courses", dataBase), charset);
+		generateFile(new CSVDiscussionPost("discussions_posts", dataBase), charset);
+		generateFile(new CSVCalendarEvent("course_events", dataBase), charset);
 	}
 
 	/**

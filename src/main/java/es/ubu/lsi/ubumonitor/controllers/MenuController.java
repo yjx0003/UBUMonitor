@@ -259,13 +259,13 @@ public class MenuController {
 	}
 
 	public void changeConfiguration() {
-
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Configuration.fxml"),
 				I18n.getResourceBundle());
 
 		UtilMethods.createDialog(loader, controller.getStage(), Modality.APPLICATION_MODAL);
 		ConfigurationController configurationController = loader.getController();
-		configurationController.setMainController(mainController);
+		configurationController.init(mainController, controller.getMainConfiguration());
+	
 		configurationController.setOnClose();
 
 	}

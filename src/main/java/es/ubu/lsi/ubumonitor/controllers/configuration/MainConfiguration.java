@@ -28,6 +28,7 @@ import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.MaskImage;
 import es.ubu.lsi.ubumonitor.util.StopWord;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import es.ubu.lsi.ubumonitor.view.chart.Tabs;
 import es.ubu.lsi.ubumonitor.view.chart.VisNetwork;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -129,10 +130,10 @@ public class MainConfiguration {
 
 		createItem(ChartType.FORUM_BAR, HORIZONTAL_MODE, false);
 		createItem(ChartType.FORUM_BAR, "tab.forum", Color.web("#efc9af", 0.3));
-		
+
 		createItem(ChartType.FORUM_USER_POST_BAR, "text.discussioncreation", Color.web("#efc9af", 0.3));
 		createItem(ChartType.FORUM_USER_POST_BAR, "text.replies", Color.web("#104c91", 0.3));
-		
+
 		createItem(ChartType.FORUM_NETWORK, "showNonConnected", true);
 		createItem(ChartType.FORUM_NETWORK, "usePhoto", true);
 		createItem(ChartType.FORUM_NETWORK, "useInitialNames", true);
@@ -171,7 +172,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_NETWORK, "interaction.tooltipDelay", 300);
 		createItem(ChartType.FORUM_NETWORK, "layout.randomSeed", "");
 		createItem(ChartType.FORUM_NETWORK, "layout.clusterThreshold", 150);
-		
+
 		createItem(ChartType.FORUM_POSTS, "usePhoto", true);
 		createItem(ChartType.FORUM_POSTS, "colorContains", Color.web("#00FF00"));
 		createItem(ChartType.FORUM_POSTS, "colorNotContains", Color.web("#FF0000"));
@@ -181,7 +182,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_POSTS, "interaction.multiselect", true);
 		createItem(ChartType.FORUM_POSTS, "interaction.navigationButtons", true);
 		createItem(ChartType.FORUM_POSTS, "interaction.tooltipDelay", 300);
-		
+
 		createItem(ChartType.FORUM_WORD_CLOUD, "stopWords", StopWord.getStopWordValues(Locale.getDefault()));
 		createItem(ChartType.FORUM_WORD_CLOUD, "chartBackgroundColor", Color.web("#FFFFFF", 0.0));
 		createItem(ChartType.FORUM_WORD_CLOUD, "wordFrequencesToReturn", 50);
@@ -256,13 +257,13 @@ public class MainConfiguration {
 		}
 	}
 
-	public void createItem(String category, String name, Object value, Class<?> clazz) {
+	public void createItem(String category, String name, Object value, Class<?> clazz, Tabs tab) {
 		String key = convertToKey(category, name);
 		if (!categories.contains(category)) {
 			categories.add(category);
 		}
 
-		properties.put(key, new CustomPropertyItem(categories.size(), category, name, value, clazz));
+		properties.put(key, new CustomPropertyItem(categories.size(), category, name, value, clazz, tab));
 
 	}
 
@@ -284,11 +285,22 @@ public class MainConfiguration {
 	}
 
 	public void createItem(ChartType category, String name, Object value) {
-		createItem(category.name(), name, value);
+
+		createItem(category.name(), name, value, value.getClass(), category.getTab());
 	}
 
 	public void createItem(String category, String name, Object value) {
-		createItem(category, name, value, value.getClass());
+		createItem(category, name, value, value.getClass(), null);
+
+	}
+
+	public void createItem(String category, String name, Object value, Class<?> clazz) {
+		createItem(category, name, value, clazz, null);
+
+	}
+
+	public void createItem(String category, String name, Object value, Tabs tab) {
+		createItem(category, name, value, value.getClass(), tab);
 
 	}
 
@@ -326,24 +338,30 @@ public class MainConfiguration {
 		return getValue(category.name(), name, defaultValue);
 	}
 
-	public Collection<CustomPropertyItem> getProperties() {
-		return properties.values();
+	public Collection<CustomPropertyItem> getProperties(Tabs tab) {
+
+		return properties.values()
+				.stream()
+				.filter(p -> p.tab == tab)
+				.collect(Collectors.toList());
 	}
 
-	private class CustomPropertyItem implements PropertySheet.Item {
+	public class CustomPropertyItem implements PropertySheet.Item {
 
+		private Tabs tab;
 		private int order;
 		private String name;
 		private Object value;
 		private Class<?> clazz;
 		private String category;
 
-		public CustomPropertyItem(int order, String category, String name, Object value, Class<?> clazz) {
+		public CustomPropertyItem(int order, String category, String name, Object value, Class<?> clazz, Tabs tab) {
 			this.order = order;
 			this.category = category;
 			this.name = name;
 			this.value = value;
 			this.clazz = clazz;
+			this.tab = tab;
 		}
 
 		public void setClass(Class<?> clazz) {
@@ -383,9 +401,18 @@ public class MainConfiguration {
 
 		}
 
+		public int getOrder() {
+			return order;
+		}
+
 		@Override
 		public Optional<ObservableValue<? extends Object>> getObservableValue() {
 			return Optional.empty();
+		}
+
+		public Tabs getTab() {
+
+			return tab;
 		}
 
 	}

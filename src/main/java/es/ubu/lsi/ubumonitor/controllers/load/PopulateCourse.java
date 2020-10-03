@@ -103,13 +103,15 @@ public class PopulateCourse {
 	}
 
 	public List<Course> searchCourse(String value) {
-
+	
 		try {
 			CoreCourseSearchCourses coreCourseSearchCourses = new CoreCourseSearchCourses();
 			coreCourseSearchCourses.setBySearch(value);
 			JSONObject jsonObject = UtilMethods.getJSONObjectResponse(webService, coreCourseSearchCourses);
+			
 			return searchCourse(jsonObject);
 		} catch (Exception e) {
+			LOGGER.error("Error in searching course", e);
 			return EMPTY_LIST_COURSE;
 		}
 	}
@@ -132,6 +134,7 @@ public class PopulateCourse {
 					.getById(jsObject.getInt(Constants.CATEGORYID));
 			category.setName(jsObject.getString(Constants.CATEGORYNAME));
 			course.setCourseCategory(category);
+			courses.add(course);
 		}
 		return courses;
 

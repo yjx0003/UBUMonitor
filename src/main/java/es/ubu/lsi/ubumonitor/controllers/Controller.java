@@ -50,7 +50,7 @@ public class Controller {
 	private String username;
 	private String password;
 	private boolean offlineMode;
-
+	private DataBase defaultDatabase;
 	private MainConfiguration mainConfiguration;
 
 	/**
@@ -89,6 +89,7 @@ public class Controller {
 		
 		ConfigHelper.initialize(AppInfo.PROPERTIES_PATH);
 		setDataBase(new DataBase());
+		setDefautlDataBase(getDataBase());
 		// Si no existe el recurso de idioma especificado cargamos el Español
 		Languages lang = Languages.getLanguageByTag(ConfigHelper.getProperty("language", Locale.getDefault()
 				.toLanguageTag()));
@@ -364,6 +365,20 @@ public class Controller {
 
 	public Path getHostUserModelversionArchivedDir() {
 		return hostUserModelversionArchivedDir;
+	}
+
+	/**
+	 * @return the defaultDatabase
+	 */
+	public DataBase getDefautlDataBase() {
+		return defaultDatabase;
+	}
+
+	/**
+	 * @param defaultDatabase the defaultDatabase to set
+	 */
+	public void setDefautlDataBase(DataBase defaultDatabase) {
+		this.defaultDatabase = defaultDatabase;
 	}
 
 }

@@ -282,10 +282,13 @@ public class WelcomeController implements Initializable {
 
 				Course course = controller.getUser()
 						.getCourseById(ConfigHelper.getProperty("actualCourse", -1));
+				if (listView.getItems()
+						.contains(course)) {
+					listView.getSelectionModel()
+							.select(course);
+					listView.scrollTo(course);
+				}
 
-				listView.getSelectionModel()
-						.select(course);
-				listView.scrollTo(course);
 				if (autoUpdate) {
 					chkUpdateData.setSelected(true);
 					btnEntrar.fire();
@@ -651,7 +654,7 @@ public class WelcomeController implements Initializable {
 					.getScene()
 					.setCursor(Cursor.DEFAULT);
 			controller.setDataBase(controller.getDefautlDataBase());
-			
+
 		});
 
 		btnEntrar.visibleProperty()

@@ -46,6 +46,7 @@ public class PopulateCourse {
 			JSONArray jsonArray = UtilMethods.getJSONArrayResponse(webService, new CoreEnrolGetUsersCourses(userid));
 			return userCourses(jsonArray);
 		} catch (Exception e) {
+			LOGGER.error("Error in CoreEnrolGetUsersCourses: ", e);
 			return EMPTY_LIST_COURSE;
 		}
 
@@ -80,8 +81,8 @@ public class PopulateCourse {
 		Course course = dataBase.getCourses()
 				.getById(jsonObject.getInt(Constants.ID));
 
-		course.setShortName(jsonObject.getString(Constants.SHORTNAME));
-		course.setFullName(jsonObject.getString(Constants.FULLNAME));
+		course.setShortName(jsonObject.optString(Constants.SHORTNAME));
+		course.setFullName(jsonObject.optString(Constants.FULLNAME));
 
 		course.setHasActivityCompletion(jsonObject.optBoolean(Constants.ENABLECOMPLETION));
 		int categoryId = jsonObject.optInt(Constants.CATEGORY);
@@ -103,12 +104,12 @@ public class PopulateCourse {
 	}
 
 	public List<Course> searchCourse(String value) {
-	
+
 		try {
 			CoreCourseSearchCourses coreCourseSearchCourses = new CoreCourseSearchCourses();
 			coreCourseSearchCourses.setBySearch(value);
 			JSONObject jsonObject = UtilMethods.getJSONObjectResponse(webService, coreCourseSearchCourses);
-			
+
 			return searchCourse(jsonObject);
 		} catch (Exception e) {
 			LOGGER.error("Error in searching course", e);
@@ -209,6 +210,8 @@ public class PopulateCourse {
 				JSONObject jsonObject = jsonArray.getJSONObject(i);
 
 				Course course = dataBaseCourse.getById(jsonObject.getInt(Constants.ID));
+				course.setStartDate(Instant.ofEpochSecond(jsonObject.optLong(Constants.STARTDATE)));
+				course.setEndDate(Instant.ofEpochSecond(jsonObject.optLong(Constants.ENDDATE)));
 				if (jsonObject.has(Constants.ENABLECOMPLETION)) {
 					course.setHasActivityCompletion(jsonObject.optInt(Constants.ENABLECOMPLETION) == 1);
 				}

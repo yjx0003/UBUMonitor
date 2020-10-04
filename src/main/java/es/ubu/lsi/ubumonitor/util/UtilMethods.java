@@ -268,14 +268,14 @@ public class UtilMethods {
 
 	}
 
-	public static void createDialog(FXMLLoader loader, Stage ownerStage, Modality modality) {
+	public static Stage createDialog(FXMLLoader loader, Stage ownerStage, Modality modality) {
 
 		Scene newScene;
 		try {
 			newScene = new Scene(loader.load());
 		} catch (IOException ex) {
 			errorWindow("FXML file corrupted", ex);
-			return;
+			return null;
 		}
 		Style.addStyle(ConfigHelper.getProperty("style"), newScene.getStylesheets());
 
@@ -284,6 +284,7 @@ public class UtilMethods {
 		stage.setResizable(false);
 
 		stage.show();
+		return stage;
 	}
 
 	public static void createDialog(FXMLLoader loader, Stage ownerStage) {

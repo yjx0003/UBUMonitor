@@ -65,7 +65,7 @@
                <items>
                   <MenuItem onAction="#courseStats" text="%menu.coursestats" />
                   <MenuItem onAction="#userGuide" text="%menu.usermanual" />
-                  <MenuItem onAction="#moreInfo" text="%menu.githubpage" />
+                  <MenuItem onAction="#gitHubPage" text="%menu.githubpage" />
                   <MenuItem onAction="#moreInfo" text="%menu.moreinfo" />
                   <MenuItem fx:id="MIAboutUBUGrades" onAction="#aboutApp" text="%menu.about" />
                </items>

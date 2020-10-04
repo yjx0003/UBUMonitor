@@ -26,6 +26,7 @@ import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourse;
 import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourseCategories;
 import es.ubu.lsi.ubumonitor.controllers.load.PopulateMoodleUser;
 import es.ubu.lsi.ubumonitor.model.Course;
+import es.ubu.lsi.ubumonitor.model.DataBase;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.Languages;
@@ -134,7 +135,9 @@ public class LoginController implements Initializable {
 		Tooltip.install(insecureProtocol, new Tooltip(I18n.get("tooltip.insecureprotocol")));
 		initLanguagesList();
 		initLauncherConfiguration();
-
+		DataBase dataBase = new DataBase();
+		controller.setDataBase(dataBase);
+		controller.setDefautlDataBase(dataBase);
 	}
 
 	/**

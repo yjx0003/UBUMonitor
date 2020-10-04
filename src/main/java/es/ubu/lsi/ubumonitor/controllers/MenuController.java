@@ -262,10 +262,12 @@ public class MenuController {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Configuration.fxml"),
 				I18n.getResourceBundle());
 
-		UtilMethods.createDialog(loader, controller.getStage(), Modality.APPLICATION_MODAL);
+		Stage stage = UtilMethods.createDialog(loader, controller.getStage(), Modality.APPLICATION_MODAL);
+		stage.setTitle(I18n.get("text.courseconfiguration"));
+		stage.getIcons().setAll(new Image("/img/gear.png"));
 		ConfigurationController configurationController = loader.getController();
 		configurationController.init(mainController, controller.getMainConfiguration());
-	
+		
 		configurationController.setOnClose();
 
 	}
@@ -306,6 +308,10 @@ public class MenuController {
 	}
 
 	public void moreInfo() {
+		UtilMethods.openURL(AppInfo.LANDING_PAGE);
+	}
+	
+	public void gitHubPage() {
 		UtilMethods.openURL(AppInfo.GITHUB);
 	}
 

@@ -88,8 +88,7 @@ public class Controller {
 	public void initialize() throws IOException {
 		
 		ConfigHelper.initialize(AppInfo.PROPERTIES_PATH);
-		setDataBase(new DataBase());
-		setDefautlDataBase(getDataBase());
+		
 		// Si no existe el recurso de idioma especificado cargamos el Español
 		Languages lang = Languages.getLanguageByTag(ConfigHelper.getProperty("language", Locale.getDefault()
 				.toLanguageTag()));

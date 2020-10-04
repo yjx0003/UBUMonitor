@@ -20,7 +20,9 @@ public class AppInfo {
 
 	public static final String GITHUB = "https://github.com/yjx0003/UBUMonitor";
 	
-	public static final String USER_GUIDE = "ubumonitordocs.readthedocs.io";
+	public static final String LANDING_PAGE = "https://ubumonitor.github.io/";
+	
+	public static final String USER_GUIDE = "ubumonitordocs.readthedocs.io"; // dont put http(s) protocol
 
 	public static final String RESOURCE_BUNDLE_FILE_NAME = "messages/Messages";
 

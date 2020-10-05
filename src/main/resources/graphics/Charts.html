@@ -17,6 +17,8 @@
    <script type="text/javascript" src="./lib/tabulator.js"></script>
    <script type="text/javascript" src="./lib/visNetwork.js"></script>
    <script type="text/javascript" src="./lib/visTimeline.js"></script>
+   <script type="text/javascript" src="./lib/wordcloud2.js"></script>
+   <script type="text/javascript" src="./lib/plotly.js"></script>
    <script type="text/javascript">
       Chart.defaults.global.animation.duration = 0;
       Chart.defaults.global.elements.line.fill = false;
@@ -59,9 +61,11 @@
       var table;
       var visNetwork;
       var visTimeline;
+      var userPhotos;
+
       function createChartDivs() {
          //------------------------------------------Variables globales-------------------------------------------------------------
-         
+
          //
          colorHash = new ColorHash();
          ctx = document.getElementById('myChart');
@@ -101,6 +105,8 @@
 
          visNetwork = new vis.Network(document.getElementById('visNetworkDiv'), {}, {});
          visTimeline = new vis.Timeline(document.getElementById('visTimelineDiv'), {}, {});
+
+
       }
 
       //------------------------------------------Funciones------------------------------------------------------------------
@@ -189,9 +195,6 @@
          imageButton("btnGroupMean", options.groupActive);
 
 
-
-
-
          if (!options.legend) {
             options.legend = {};
          }
@@ -231,12 +234,15 @@
 
       function updateVisNetwork(data, options) {
          hiddenCharts("visNetwork", options);
-         
-		 visNetwork.on("stabilizationIterationsDone", function () {
-    		visNetwork.setOptions( { physics:{enabled: options.physicsAfterDraw }} );
-		 });
-         visNetwork.setOptions(options.options);
-   		 visNetwork.setData(data);
+         if (visNetwork !== null) {
+            visNetwork.destroy();
+            visNetwork = null;
+         }
+         visNetwork = new vis.Network(document.getElementById('visNetworkDiv'), data, options.options);
+         visNetwork.on("stabilizationIterationsDone", function () {
+            visNetwork.setOptions({ physics: { enabled: options.physicsAfterDraw == undefined || options.physicsAfterDraw } });
+         });
+   
       }
 
 
@@ -246,12 +252,35 @@
 
          visTimeline.setOptions(options.options);
          visTimeline.setData(data);
-         
+
 
       }
 
-      function hiddenCharts(value, options) {
+      function updateWordCloud(image, options) {
+         hiddenCharts("canvas-container", options);
+         wordCloud = document.getElementById('wordCloud');
+         imageWordCloud = new Image();
+         imageWordCloud.onload = function () {
+            wordCloud.height = imageWordCloud.height;
+            wordCloud.width = imageWordCloud.width;
 
+            wordCloud.getContext("2d").drawImage(imageWordCloud, 0, 0);
+
+         };
+
+         imageWordCloud.src = image;
+
+
+      }
+
+      function updatePlotly(data, layout) {
+         hiddenCharts("plotly", layout);
+
+         layout.showLegend = layout.useLegend && layout.legendActive;
+         Plotly.newPlot('plotlyDiv', data, layout, { displaylogo: false, responsive: true, modeBarButtonsToRemove: ["toImage"] });
+      }
+
+      function hiddenCharts(value, options) {
 
 
          displayButton('apexchartsDiv', value == "apexcharts");
@@ -259,6 +288,9 @@
          displayButton('tabulatorDiv', value == "tabulator");
          displayButton('visNetworkDiv', value == "visNetwork");
          displayButton('visTimelineDiv', value == "visTimeline");
+         displayButton('canvas-container', value == "canvas-container");
+         displayButton('plotlyDiv', value == "plotly");
+         displayButton('plotlyEmptyDiv', value == "plotly");
 
          manageButtons(options.tab, options.listCharts);
          disableTab(options.tab, options.button);
@@ -302,6 +334,9 @@
          displayChartsButtons("GRADES", type, listCharts);
          displayChartsButtons("LOGS", type, listCharts);
          displayChartsButtons("ACTIVITY_COMPLETION", type, listCharts);
+         displayChartsButtons("RISK", type, listCharts);
+         displayChartsButtons("FORUM", type, listCharts);
+         displayChartsButtons("CALENDAR_EVENT", type, listCharts);
 
       }
 
@@ -310,7 +345,7 @@
       }
 
       function clearVisTimeline() {
-         visNetwork.setData([]);
+         visTimeline.setData([]);
       }
 
       //Funcion que muestra u oculta la leyenda del gráfico
@@ -339,15 +374,11 @@
          return myChart.toBase64Image();
       }
 
-      function exportApexcharts() {
 
-         myApexChart.dataURI().then(function (uri) {
-            javaConnector.saveImage(uri);
-         }).catch(function (error) {
-            javaConnector.showErrorWindow("Cannot download image:" + error.message);
-         })
-
+      function exportCanvas(id) {
+         return document.getElementById(id).toDataURL();
       }
+
       function genericExport(id) {
          html2canvas(document.getElementById(id), { logging: false }).then(function (canvas) {
             javaConnector.saveImage(canvas.toDataURL());
@@ -432,6 +463,8 @@
          <button class="btn" id="btnGroupMean" onclick="showGroupMean()"></button>
       </div>
    </div>
+   <div id="plotlyEmptyDiv" style="visibility: hidden;">for some reason, plotly fill all window</div>
+   <div id="plotlyDiv" style="height: 93vh"></div>
    <div id="chart-container" class="chart-container">
       <canvas id="myChart"></canvas>
    </div>
@@ -439,6 +472,7 @@
    <div id="tabulatorDiv"></div>
    <div id="visNetworkDiv" class="visDiv"></div>
    <div id="visTimelineDiv" class="visDiv"></div>
+   <div id="canvas-container" class="canvas-container"><canvas id="wordCloud" class="canvas-word-cloud"></canvas></div>
 </body>
 
 </html>

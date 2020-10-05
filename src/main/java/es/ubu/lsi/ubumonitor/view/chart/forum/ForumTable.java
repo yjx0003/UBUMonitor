@@ -1,6 +1,8 @@
 package es.ubu.lsi.ubumonitor.view.chart.forum;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,16 +21,23 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Tabulator;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.web.WebView;
 
 public class ForumTable extends Tabulator {
 
 	private ListView<CourseModule> forums;
+	private DatePicker datePickerStart;
+	private DatePicker datePickerEnd;
 
-	public ForumTable(MainController mainController, WebView webView, ListView<CourseModule> forums) {
+	public ForumTable(MainController mainController, WebView webView, ListView<CourseModule> forums,
+			DatePicker datePickerStart, DatePicker datePickerEnd) {
 		super(mainController, ChartType.FORUM_TABLE, webView);
 		this.forums = forums;
+		this.datePickerStart = datePickerStart;
+		this.datePickerEnd = datePickerEnd;
+		useRangeDate = true;
 	}
 
 	@Override
@@ -62,14 +71,14 @@ public class ForumTable extends Tabulator {
 	}
 
 	@Override
-	public String getOptions(JSObject jsObject) {
+	public JSObject getOptions(JSObject jsObject) {
 		jsObject.put("invalidOptionWarnings", false);
 		jsObject.put("height", "height");
 		jsObject.put("tooltipsHeader", true);
 		jsObject.put("virtualDom", true);
 		jsObject.putWithQuote("layout", "fitColumns");
 		jsObject.put("rowClick", "function(e,row){javaConnector.dataPointSelection(row.getPosition());}");
-		return jsObject.toString();
+		return jsObject;
 	}
 
 	@Override
@@ -83,17 +92,24 @@ public class ForumTable extends Tabulator {
 		JSObject dataset = new JSObject();
 		dataset.put("tabledata", tabledata);
 		dataset.put("columns", columns);
-		String options = getOptions();
+		JSObject options = getOptions();
 		webViewChartsEngine.executeScript("updateTabulator(" + dataset + "," + options + ")");
 	}
 
 	public List<DiscussionPost> getSelectedDiscussionPosts() {
 		Set<CourseModule> selectedForums = new HashSet<>(forums.getSelectionModel()
 				.getSelectedItems());
+		Instant start = datePickerStart.getValue()
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
+		Instant end = datePickerEnd.getValue().plusDays(1)
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
 		return actualCourse.getDiscussionPosts()
 				.stream()
 				.filter(discussionPost -> selectedForums.contains(discussionPost.getDiscussion()
-						.getForum()))
+						.getForum()) && start.isBefore(discussionPost.getCreated())
+						&& end.isAfter(discussionPost.getCreated()))
 				.collect(Collectors.toList());
 	}
 
@@ -108,7 +124,7 @@ public class ForumTable extends Tabulator {
 		for (EnrolledUser enrolledUser : enrolledUsers) {
 			jsObject = new JSObject();
 			jsObject.putWithQuote("title", enrolledUser.getFullName());
-			jsObject.put("field", "'ID" + enrolledUser.getId() + "'");
+			jsObject.put("field", ("'ID" + enrolledUser.getId() + "'").replace("-", "_"));
 			jsObject.put("hozAlign", "'center'");
 			jsObject.put("sorter", "'number'");
 			jsObject.put("sorterParams", "{alignEmptyValues:'bottom'}");
@@ -131,7 +147,7 @@ public class ForumTable extends Tabulator {
 								&& discussionPost.getParent() != null && to.equals(discussionPost.getParent()
 										.getUser()))
 						.count();
-				jsObject.put("ID" + to.getId(), countPosts == 0 ? null : countPosts);
+				jsObject.put(("'ID" + to.getId() + "'").replace("-", "_"), countPosts == 0 ? null : countPosts);
 
 			}
 		}

@@ -11,7 +11,7 @@ public class ViolinLogTime extends BoxplotLogTime{
 	}
 	
 	@Override
-	public String getOptions(JSObject jsObject) {
+	public JSObject getOptions(JSObject jsObject) {
 		
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalViolin" : "violin");
@@ -21,7 +21,7 @@ public class ViolinLogTime extends BoxplotLogTime{
 		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{suggestedMax:" + getSuggestedMax(textFieldMax.getText())
 				+ ",stepSize:0}}],xAxes:[{" + xLabel + "}]}");
 
-		return jsObject.toString();
+		return jsObject;
 	}
 
 }

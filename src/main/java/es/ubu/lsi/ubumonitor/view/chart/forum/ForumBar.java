@@ -1,6 +1,8 @@
 package es.ubu.lsi.ubumonitor.view.chart.forum;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -21,15 +23,23 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Chartjs;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 
 public class ForumBar extends Chartjs {
 
 	private ListView<CourseModule> listViewForum;
+	private DatePicker datePickerStart;
+	private DatePicker datePickerEnd;
 
-	public ForumBar(MainController mainController, ListView<CourseModule> listViewForum) {
+	public ForumBar(MainController mainController, ListView<CourseModule> listViewForum, DatePicker datePickerStart,
+			DatePicker datePickerEnd) {
 		super(mainController, ChartType.FORUM_BAR);
 		this.listViewForum = listViewForum;
+		this.datePickerStart = datePickerStart;
+		this.datePickerEnd = datePickerEnd;
+		useRangeDate = true;
+
 	}
 
 	@Override
@@ -52,10 +62,17 @@ public class ForumBar extends Chartjs {
 	}
 
 	public Map<CourseModule, Map<ForumDiscussion, Long>> getMap(List<EnrolledUser> users, List<CourseModule> forums) {
+		Instant start = datePickerStart.getValue()
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
+		Instant end = datePickerEnd.getValue().plusDays(1)
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
 		return actualCourse.getDiscussionPosts()
 				.stream()
-				.filter(discussionPost -> forums.contains(discussionPost.getDiscussion()
-						.getForum()) && users.contains(discussionPost.getUser()))
+				.filter(discussionPost -> forums.contains(discussionPost.getForum())
+						&& users.contains(discussionPost.getUser()) && start.isBefore(discussionPost.getCreated())
+						&& end.isAfter(discussionPost.getCreated()))
 				.collect(Collectors.groupingBy(DiscussionPost::getForum,
 						Collectors.groupingBy(DiscussionPost::getDiscussion,
 								() -> new TreeMap<>(Comparator.comparing(ForumDiscussion::getId)),
@@ -64,7 +81,7 @@ public class ForumBar extends Chartjs {
 	}
 
 	@Override
-	public String getOptions(JSObject jsObject) {
+	public JSObject getOptions(JSObject jsObject) {
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBar" : "bar");
 		String xLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
@@ -76,13 +93,13 @@ public class ForumBar extends Chartjs {
 		callbacks.put("title", "function(a,t){return a[0].xLabel+' ('+a[0].yLabel+')'}");
 		callbacks.put("label", "function(e,t){return t.datasets[e.datasetIndex].discussions[e.index]}");
 		jsObject.put("tooltips", "{callbacks:" + callbacks + "}");
-		return jsObject.toString();
+		return jsObject;
 
 	}
 
 	@Override
 	public void update() {
-		String options = getOptions();
+		JSObject options = getOptions();
 		String dataset = createDataset(listViewForum.getSelectionModel()
 				.getSelectedItems());
 		webViewChartsEngine.executeScript("updateChartjs" + "(" + dataset + "," + options + ")");
@@ -97,7 +114,7 @@ public class ForumBar extends Chartjs {
 		JSObject dataset = new JSObject();
 		data.put("labels", labels);
 		dataset.putWithQuote("label", I18n.get("tab.forum"));
-		dataset.put("backgroundColor", rgba(I18n.get("tab.forum"), OPACITY));
+		dataset.put("backgroundColor", colorToRGB(getConfigValue("tab.forum")));
 		JSArray dataArray = new JSArray();
 		JSArray discussions = new JSArray();
 		dataset.put("data", dataArray);

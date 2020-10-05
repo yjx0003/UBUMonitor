@@ -138,7 +138,7 @@ public class WelcomeOfflineController implements Initializable {
 								.clearSelection();
 
 					});
-			
+
 			// select tab and file from properties
 			Platform.runLater(() -> {
 				tabPane.getSelectionModel()
@@ -149,9 +149,13 @@ public class WelcomeOfflineController implements Initializable {
 				String pathLastCache = ConfigHelper.getProperty("listViewIndexOfflineMode", null);
 				if (pathLastCache != null) {
 					File file = new File(pathLastCache);
-					listView.getSelectionModel()
-							.select(file);
-					listView.scrollTo(file);
+					if (listView.getItems()
+							.contains(file)) {
+						listView.getSelectionModel()
+								.select(file);
+						listView.scrollTo(file);
+					}
+
 				}
 			});
 
@@ -179,10 +183,10 @@ public class WelcomeOfflineController implements Initializable {
 	}
 
 	private void initListView(File[] files, ListView<File> listView, Comparator<File> comparator) {
-		if(files == null || files.length == 0) {
+		if (files == null || files.length == 0) {
 			return;
 		}
-		
+
 		ObservableList<File> observableList = FXCollections.observableArrayList(files);
 
 		observableList.sort(comparator);
@@ -373,11 +377,14 @@ public class WelcomeOfflineController implements Initializable {
 
 		File file = getSelectedCourse();
 		ConfigHelper.setProperty("listViewIndexOfflineMode", file.toString());
-		UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), false);
-		Stage stage = controller.getStage();
-		stage.setResizable(true);
-		stage.setMaximized(true);
-		stage.show();
+
+		LocalDateTime lastModified = LocalDateTime.ofInstant(Instant.ofEpochMilli(getSelectedCourse().lastModified()),
+				ZoneId.systemDefault());
+
+		WelcomeController.changeToMainScene(controller.getStage(), getClass().getResource("/view/Main.fxml"),
+				getClass().getResource("/img/alert.gif")
+						.toExternalForm(),
+				lastModified);
 
 	}
 

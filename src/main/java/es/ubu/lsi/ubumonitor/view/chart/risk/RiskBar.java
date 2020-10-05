@@ -65,7 +65,7 @@ public class RiskBar extends Chartjs {
 	}
 
 	@Override
-	public String getOptions(JSObject jsObject) {
+	public JSObject getOptions(JSObject jsObject) {
 
 		jsObject.putWithQuote("typeGraph", "bar");
 		JSObject callbacks = new JSObject();
@@ -84,13 +84,13 @@ public class RiskBar extends Chartjs {
 
 		jsObject.put("onClick",
 				"function(t,e){let n=myChart.getElementsAtEventForMode(t,'nearest',{intersect:!0});if(n.length>0){let t=n[0],e=t._chart.config.data.datasets[t._datasetIndex].usersId[t._index];javaConnector.dataPointSelection(e[counter%e.length]),counter++}}");
-		return jsObject.toString();
+		return jsObject;
 	}
 
 	@Override
 	public void update() {
 		String dataset = createDataset(getSelectedEnrolledUser());
-		String options = getOptions();
+		JSObject options = getOptions();
 		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, options));
 
 	}

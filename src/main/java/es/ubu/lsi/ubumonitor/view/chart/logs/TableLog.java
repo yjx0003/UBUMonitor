@@ -141,7 +141,7 @@ public class TableLog extends TabulatorLogs {
 	}
 
 	@Override
-	public String getOptions(JSObject jsObject) {
+	public JSObject getOptions(JSObject jsObject) {
 
 		jsObject.put("invalidOptionWarnings", false);
 		jsObject.put("tooltipsHeader", true);
@@ -151,7 +151,7 @@ public class TableLog extends TabulatorLogs {
 		jsObject.putWithQuote("layout", "fitDataStretch");
 		jsObject.putWithQuote("layoutColumnsOnNewData", true);
 		jsObject.put("rowClick", "function(e,row){javaConnector.dataPointSelection(row._row.data." + ID + ");}");
-		return jsObject.toString();
+		return jsObject;
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package es.ubu.lsi.ubumonitor.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.image.ImageView;
 import javafx.scene.web.WebView;
 
 public class WebViewController {
@@ -12,19 +13,22 @@ public class WebViewController {
 	@FXML
 	private WebView webViewCharts;
 	
+	@FXML
+	private ImageView imageView;
+	
 	
 	public ProgressBar getProgressBar() {
 		return progressBar;
 	}
-	public void setProgressBar(ProgressBar progressBar) {
-		this.progressBar = progressBar;
-	}
+
 	public WebView getWebViewCharts() {
 		return webViewCharts;
 	}
-	public void setWebViewCharts(WebView webViewCharts) {
-		this.webViewCharts = webViewCharts;
+	
+	public ImageView getImageView() {
+		return imageView;
 	}
+	
 	
 	
 	

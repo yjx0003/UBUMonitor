@@ -115,7 +115,7 @@ public class RiskEvolution extends RiskBarTemporal {
 	}
 
 	@Override
-	public String getOptions(JSObject jsObject) {
+	public JSObject getOptions(JSObject jsObject) {
 		jsObject.putWithQuote("typeGraph", "line");
 
 		JSObject scales = new JSObject();
@@ -129,7 +129,7 @@ public class RiskEvolution extends RiskBarTemporal {
 		scales.put("xAxes", "[{" + getXScaleLabel() + "}]");
 		jsObject.put("scales", scales);
 
-		return jsObject.toString();
+		return jsObject;
 
 	}
 

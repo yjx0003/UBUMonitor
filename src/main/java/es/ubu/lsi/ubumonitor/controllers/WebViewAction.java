@@ -119,6 +119,7 @@ public abstract class WebViewAction implements MainAction {
 					JSObject window = (JSObject) webEngine.executeScript("window");
 					window.setMember("javaConnector", javaConnector);
 					webViewCharts.toFront();
+					webViewController.getImageView().setVisible(false);
 					javaConnector.inititDefaultValues();
 
 					javaConnector.updateChart();

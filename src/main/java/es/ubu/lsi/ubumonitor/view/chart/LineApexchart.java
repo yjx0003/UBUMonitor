@@ -110,7 +110,7 @@ public class LineApexchart extends ApexCharts {
 	}
 
 	@Override
-	public String getOptions(JSObject jsObject) {
+	public JSObject getOptions(JSObject jsObject) {
 		// TODO Auto-generated method stub
 		return null;
 	}

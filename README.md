@@ -40,10 +40,22 @@ External **JavaScript** libraries are included in  [resources/graphics/lib/](res
   * Versión: **2.13.3**
   * [Github](https://github.com/apache/log4j)
   * [Maven Repository](https://mvnrepository.com/artifact/log4j/log4j)
+* [Apache Lucene](https://lucene.apache.org/)
+  * Versión: **8.6.2**
+  * [Github](https://github.com/apache/lucene-solr)
+  * [Maven Repository](https://mvnrepository.com/artifact/org.apache.lucene/lucene-core)
 * [Apache POI](https://poi.apache.org/)
   * Versión: **4.1.1**
   * [Github](https://github.com/apache/poi)
   * [Maven Repository](https://mvnrepository.com/artifact/org.apache.poi/poi)  
+* [CommonMark](https://commonmark.org/)
+  * Versión: **0.15.1**
+  * [Github](https://github.com/atlassian/commonmark-java)
+  * [Maven Repository](https://mvnrepository.com/artifact/com.atlassian.commonmark/commonmark)    
+* **ControlsFX**
+  * Versión: **8.40.17**
+  * [Github](https://github.com/controlsfx/controlsfx)
+  * [Maven Repository](https://mvnrepository.com/artifact/org.controlsfx/controlsfx) 
 * **JSON In Java**
   * Versión: **20190722**
   * [Github](https://github.com/stleary/JSON-java)
@@ -52,6 +64,10 @@ External **JavaScript** libraries are included in  [resources/graphics/lib/](res
   * Versión: **1.12.1**
   * [Github](https://github.com/jhy/jsoup)
   * [Maven Repository](https://mvnrepository.com/artifact/org.jsoup/jsoup/1.11.3)
+* **Kumo**
+  * Versión: **1.27**
+  * [Github](https://github.com/kennycason/kumo)
+  * [Maven Repository](https://mvnrepository.com/artifact/com.kennycason/kumo-core)  
 * [OkHttp](https://square.github.io/okhttp/)
   * Versión: **4.4.1**
   * [Github](https://github.com/square/okhttp/)
@@ -68,11 +84,18 @@ External **JavaScript** libraries are included in  [resources/graphics/lib/](res
   * Versión: **1.7.26**
   * [Github](https://github.com/qos-ch/slf4j/tree/master/slf4j-log4j12)
   * [Maven Repository](https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12)
+* **Smile**
+  * Versión: **2.4.0**
+  * [Github](https://github.com/haifengl/smile)
+  * [Maven Repository](https://mvnrepository.com/artifact/com.github.haifengl/smile-core)  
+* **T-SNE-Java**
+  * Versión: **2.5.0**
+  * [Github](https://github.com/lejon/T-SNE-Java)
+  * [Maven Repository](https://mvnrepository.com/artifact/com.github.lejon.T-SNE-Java/tsne)
 * [ThreeTen Extra](https://www.threeten.org/threeten-extra/)
   * Versión: **1.5.0**
   * [Github](https://github.com/ThreeTen/threeten-extra)
-  * [Maven Repository](https://mvnrepository.com/artifact/org.threeten/threeten-extra)
-  
+  * [Maven Repository](https://mvnrepository.com/artifact/org.threeten/threeten-extra)  
 ### JavaScript dependencies:
 * [ApexCharts](https://apexcharts.com/)
   * Versión: **3.19.2**

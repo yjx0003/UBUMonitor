@@ -2,6 +2,7 @@ package es.ubu.lsi.ubumonitor.view.chart;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,41 +33,48 @@ public enum ChartType {
 
 	ACTIVITIES_TABLE(Tabs.ACTIVITY_COMPLETION, 17),
 
-	RISK_BAR(Tabs.RISK, 20), BUBBLE(Tabs.RISK, 21),
+	RISK_BAR(Tabs.RISK, 20), 
+	BUBBLE(Tabs.RISK, 21),
 	BUBBLE_LOGARITHMIC(Tabs.RISK, 22),
 	RISK_BAR_TEMPORAL(Tabs.RISK, 18),
 	RISK_EVOLUTION(Tabs.RISK, 19),
 
-	FORUM_BAR(Tabs.FORUM, 24),
-	FORUM_NETWORK(Tabs.FORUM, 25),
-	FORUM_TABLE(Tabs.FORUM, 23),
+	FORUM_BAR(Tabs.FORUM, 26),
+	FORUM_USER_POST_BAR(Tabs.FORUM, 30),
+	FORUM_NETWORK(Tabs.FORUM, 27),
+	FORUM_POSTS(Tabs.FORUM, 33),
+	FORUM_TREE_MAP(Tabs.FORUM, 31),
+	FORUM_TREE_MAP_USER(Tabs.FORUM, 32),
+	FORUM_WORD_CLOUD(Tabs.FORUM, 29),
+	FORUM_TABLE(Tabs.FORUM, 25),
 	
-	CALENDAR_EVENT_TIMELINE(Tabs.CALENDAR_EVENT, 26);
+	CALENDAR_EVENT_TIMELINE(Tabs.CALENDAR_EVENT, 28), ;
+	
+	//next id 34
 
 	private Tabs tab;
 	private int id;
 
 	private static Map<Integer, ChartType> map = new HashMap<>();
 
-	private static final Set<ChartType> NON_DEFAULT_VALUES = new HashSet<>();
+	private static final Set<ChartType> NON_DEFAULT_VALUES = new LinkedHashSet<>();
 	private static final Set<ChartType> DEFAULT_VALUES = new HashSet<>();
 	static {
 		Set<Tabs> tabs = Stream.of(Tabs.values())
 				.collect(Collectors.toSet());
 
 		for (ChartType chartType : ChartType.values()) {
-
+			NON_DEFAULT_VALUES.add(chartType);
 			for (Tabs tab : Tabs.values()) {
 				if (tabs.contains(chartType.getTab())) {
 					DEFAULT_VALUES.add(chartType);
 					tabs.remove(tab);
-				} else {
-					NON_DEFAULT_VALUES.add(chartType);
 				}
 
 			}
 		}
-
+		NON_DEFAULT_VALUES.removeAll(DEFAULT_VALUES);
+		
 		for (ChartType chartType : ChartType.values()) {
 			map.put(chartType.id, chartType);
 		}

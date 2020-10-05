@@ -26,12 +26,6 @@ public abstract class Chartjs extends Chart {
 	}
 
 	@Override
-	public void hideLegend() {
-		webViewChartsEngine.executeScript("hideLegendChartjs()");
-
-	}
-
-	@Override
 	public void exportImage(File file) throws IOException {
 		String str = (String) webViewChartsEngine.executeScript("exportChartjs()");
 		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));

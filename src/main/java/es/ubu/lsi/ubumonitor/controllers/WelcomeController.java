@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -23,12 +24,15 @@ import java.util.stream.Collectors;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
+import org.controlsfx.control.NotificationPane;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
+import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigurationController;
+import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.controllers.load.Connection;
 import es.ubu.lsi.ubumonitor.controllers.load.DownloadLogController;
 import es.ubu.lsi.ubumonitor.controllers.load.LogCreator;
@@ -58,6 +62,7 @@ import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseSearchCourses;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -72,6 +77,8 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -91,6 +98,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.Pair;
 import okhttp3.Response;
 
@@ -274,10 +282,13 @@ public class WelcomeController implements Initializable {
 
 				Course course = controller.getUser()
 						.getCourseById(ConfigHelper.getProperty("actualCourse", -1));
+				if (listView.getItems()
+						.contains(course)) {
+					listView.getSelectionModel()
+							.select(course);
+					listView.scrollTo(course);
+				}
 
-				listView.getSelectionModel()
-						.select(course);
-				listView.scrollTo(course);
 				if (autoUpdate) {
 					chkUpdateData.setSelected(true);
 					btnEntrar.fire();
@@ -392,7 +403,8 @@ public class WelcomeController implements Initializable {
 	private void checkFile(Course course) {
 		if (course == null)
 			return;
-		cacheFilePath = controller.getHostUserModelversionDir().resolve(controller.getCourseFile(course));
+		cacheFilePath = controller.getHostUserModelversionDir()
+				.resolve(controller.getCourseFile(course));
 		LOGGER.debug("Buscando si existe {}", cacheFilePath);
 
 		File f = cacheFilePath.toFile();
@@ -631,7 +643,7 @@ public class WelcomeController implements Initializable {
 			controller.getStage()
 					.getScene()
 					.setCursor(Cursor.DEFAULT);
-
+			controller.setDataBase(controller.getDefautlDataBase());
 			UtilMethods.errorWindow(I18n.get("error.downloadingdata") + " " + service.getException()
 					.getMessage(), service.getException());
 			LOGGER.error("Error al actualizar los datos del curso: {}", service.getException());
@@ -641,7 +653,8 @@ public class WelcomeController implements Initializable {
 			controller.getStage()
 					.getScene()
 					.setCursor(Cursor.DEFAULT);
-			controller.setDataBase(null);
+			controller.setDataBase(controller.getDefautlDataBase());
+
 		});
 
 		btnEntrar.visibleProperty()
@@ -658,14 +671,51 @@ public class WelcomeController implements Initializable {
 		if (!isBBDDLoaded) {
 			return;
 		}
-		UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), false);
-		controller.getStage()
-				.setMaximized(true);
-		controller.getStage()
-				.setResizable(true);
-		controller.getStage()
-				.show();
 
+		LocalDateTime lastModified = LocalDateTime.ofInstant(Instant.ofEpochMilli(cacheFilePath.toFile()
+				.lastModified()), ZoneId.systemDefault());
+
+		changeToMainScene(controller.getStage(), getClass().getResource("/view/Main.fxml"),
+				getClass().getResource("/img/alert.gif")
+						.toExternalForm(),
+				lastModified);
+
+	}
+
+	public static void changeToMainScene(Stage stage, URL fxmlLoader, String image, LocalDateTime lastUpdate) {
+		Controller controller = Controller.getInstance();
+		controller.setMainConfiguration(new MainConfiguration());
+		ConfigurationController.loadConfiguration(controller.getMainConfiguration(),
+				controller.getConfiguration(controller.getActualCourse()));
+
+		FXMLLoader loader = new FXMLLoader(fxmlLoader, I18n.getResourceBundle());
+		try {
+			long daysElapsed = lastUpdate.until(LocalDateTime.now(), ChronoUnit.DAYS);
+			long hoursElapsed = lastUpdate.until(LocalDateTime.now(), ChronoUnit.HOURS) % 24;
+			Parent root = loader.load();
+			NotificationPane notificationPane = new NotificationPane(root);
+			notificationPane.setText(MessageFormat.format(I18n.get("text.lastcourseupdate"), daysElapsed, hoursElapsed,
+					Controller.DATE_TIME_FORMATTER.format(lastUpdate)));
+			notificationPane.setShowFromTop(false);
+			notificationPane.setGraphic(new ImageView(new Image(image)));
+			stage.close();
+			stage.setScene(new Scene(notificationPane));
+			stage.setMaximized(true);
+			stage.setResizable(true);
+			stage.show();
+
+			if ((int) controller.getMainConfiguration()
+					.getValue(MainConfiguration.GENERAL, "alertDaysElapsed") <= daysElapsed) {
+				notificationPane.show();
+				PauseTransition pauseTransition = new PauseTransition(Duration.seconds(daysElapsed * 1.5 + 5));
+				pauseTransition.setOnFinished(event -> notificationPane.hide());
+				pauseTransition.play();
+			}
+
+		} catch (IOException e) {
+			UtilMethods.errorWindow("error loading fxml: ", e);
+			throw new IllegalArgumentException("Invalid fxml", e);
+		}
 	}
 
 	/**
@@ -716,10 +766,10 @@ public class WelcomeController implements Initializable {
 						.map(ForumDiscussion::getId)
 						.collect(Collectors.toList()));
 				actualCourse.addDiscussionPosts(discussionPosts);
-				
+
 				PopulateCourseEvent populateCourseEvent = new PopulateCourseEvent(dataBase, webService);
 				actualCourse.addCourseEvents(populateCourseEvent.populateCourseEvents(actualCourse.getId()));
-				
+
 				actualCourse.setUpdatedCourseData(ZonedDateTime.now());
 
 				if (checkBoxGradeItem.isSelected() && !isCancelled()) {
@@ -731,7 +781,7 @@ public class WelcomeController implements Initializable {
 					List<GradeItem> gradeItems = populateGradeItem.createGradeItems(actualCourse.getId(),
 							controller.getUser()
 									.getId());
-					
+
 					actualCourse.setGradeItems(new HashSet<>(gradeItems));
 					// Establecemos las estadisticas
 					Stats stats = new Stats(actualCourse);
@@ -764,7 +814,8 @@ public class WelcomeController implements Initializable {
 								LOGGER.info("Log descargado");
 								updateMessage(I18n.get("label.parselog"));
 								Logs logs = new Logs(downloadLogController.getServerTimeZone());
-								LogCreator.parserResponse(logs, response.body().charStream());
+								LogCreator.parserResponse(logs, response.body()
+										.charStream());
 								actualCourse.setLogs(logs);
 
 							} else {
@@ -799,8 +850,7 @@ public class WelcomeController implements Initializable {
 							tries++;
 							updateMessage(I18n.get("label.relogin"));
 							controller.getLogin()
-									.reLogin(controller.getUrlHost()
-											.toString(), controller.getUsername(), controller.getPassword());
+									.reLogin();
 
 						}
 					}

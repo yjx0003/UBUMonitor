@@ -138,19 +138,17 @@ public abstract class Chart implements ExportableChart {
 				.collect(Collectors.toList());
 	}
 
-	public abstract String getOptions(JSObject jsObject);
+	public abstract JSObject getOptions(JSObject jsObject);
 
-	public String getOptions() {
+	public JSObject getOptions() {
 		JSObject jsObject = getDefaultOptions();
-		getOptions(jsObject);
-		return jsObject.toString();
+		return getOptions(jsObject);
+		
 	}
 
 	public abstract void update();
 
 	public abstract void clear();
-
-	public abstract void hideLegend();
 
 	public abstract void exportImage(File file) throws IOException;
 
@@ -291,6 +289,9 @@ public abstract class Chart implements ExportableChart {
 
 	public void setActualCourse(Course actualCourse) {
 		this.actualCourse = actualCourse;
+	}
+	public <T> T getConfigValue(String name) {
+		return mainConfiguration.getValue(this.chartType, name);
 	}
 
 }

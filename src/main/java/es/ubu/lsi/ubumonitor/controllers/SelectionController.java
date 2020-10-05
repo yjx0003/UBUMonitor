@@ -58,7 +58,6 @@ public class SelectionController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SelectionController.class);
 
 	private static final Image NONE_ICON = new Image("/img/manual.png");
-	
 
 	@FXML
 	private TreeView<GradeItem> tvwGradeReport;
@@ -168,7 +167,21 @@ public class SelectionController {
 		initTabActivityCompletion(actualCourse);
 
 		initiGradeItems(actualCourse);
-	
+
+		// remove Visualizarion Tab if has not Logs, Grades and Activity Completion
+		// graph
+		if (tabPane.getTabs()
+				.isEmpty()) {
+			mainController.getWebViewTabsController()
+					.getTabPane()
+					.getTabs()
+					.removeAll(mainController.getWebViewTabsController()
+							.getVisualizationTab(),
+							mainController.getWebViewTabsController()
+									.getClusteringTab());
+
+		}
+
 	}
 
 	private void initiGradeItems(Course actualCourse) {
@@ -789,8 +802,6 @@ public class SelectionController {
 						.getCheckedItems()
 						.contains(cm.getSection()));
 	}
-
-	
 
 	/**
 	 * Metodo que se activa cuando se modifica la pestaña de logs o calificaciones

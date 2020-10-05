@@ -22,11 +22,6 @@ public abstract class Tabulator extends Chart {
 
 	}
 
-	@Override
-	public void hideLegend() {
-		// do nothing
-
-	}
 
 	@Override
 	public void exportImage(File file) throws IOException {

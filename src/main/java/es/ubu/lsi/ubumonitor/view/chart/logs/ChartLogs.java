@@ -21,6 +21,7 @@ import es.ubu.lsi.ubumonitor.model.datasets.DataSetComponentEvent;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSetSection;
 import es.ubu.lsi.ubumonitor.model.datasets.DatasSetCourseModule;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
+import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.Chart;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import javafx.scene.control.ChoiceBox;
@@ -100,10 +101,10 @@ public abstract class ChartLogs extends Chart {
 					.getSelectedItems(), DatasSetCourseModule.getInstance());
 		}
 
-		String options = getOptions();
+		JSObject options = getOptions();
 		LOGGER.info("Dataset {} en JS: {}", chartType, dataset);
 		LOGGER.info("Opciones {} en JS: {}", chartType, options);
-		webViewChartsEngine.executeScript(getJSFunction(dataset, options));
+		webViewChartsEngine.executeScript(getJSFunction(dataset, options.toString()));
 
 	}
 

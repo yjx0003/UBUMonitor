@@ -105,9 +105,9 @@ public abstract class ChartjsGradeItem extends Chartjs {
 	@Override
 	public void update() {
 		String dataset = createDataset(getSelectedEnrolledUser(), getSelectedGradeItems(treeViewGradeItem));
-		String options = getOptions();
+		JSObject options = getOptions();
 		LOGGER.debug(dataset);
-		LOGGER.debug(options);
+		LOGGER.debug("{}", options);
 		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, options));
 
 	}

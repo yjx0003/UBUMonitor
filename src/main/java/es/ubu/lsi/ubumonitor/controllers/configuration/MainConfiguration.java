@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -24,9 +25,11 @@ import es.ubu.lsi.ubumonitor.model.Role;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.util.MaskImage;
+import es.ubu.lsi.ubumonitor.util.StopWord;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
-import es.ubu.lsi.ubumonitor.view.chart.forum.ForumNetwork;
-
+import es.ubu.lsi.ubumonitor.view.chart.Tabs;
+import es.ubu.lsi.ubumonitor.view.chart.VisNetwork;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -48,6 +51,7 @@ public class MainConfiguration {
 	public void setDefaultValues() {
 		properties.clear();
 		categories.clear();
+		createItem(GENERAL, "alertDaysElapsed", 3);
 		createItem(GENERAL, "charset", Charsets.UTF_8);
 		createItem(GENERAL, "chartBackgroundColor", Color.web("#FFFFFF", 0.0));
 		createItem(GENERAL, "cutGrade", 5.0);
@@ -72,7 +76,6 @@ public class MainConfiguration {
 		createItem(GENERAL, "displayXScaleTitle", true);
 		createItem(GENERAL, "fontColorYScaleTitle", Color.BLACK);
 		createItem(GENERAL, "fontColorXScaleTitle", Color.BLACK);
-		
 
 		createItem(ChartType.TOTAL_BAR, HORIZONTAL_MODE, false);
 		createItem(ChartType.STACKED_BAR, "calculateMax", false);
@@ -89,11 +92,11 @@ public class MainConfiguration {
 		createItem(ChartType.BOXPLOT_LOG_TIME, HORIZONTAL_MODE, false);
 		createItem(ChartType.VIOLIN_LOG_TIME, HORIZONTAL_MODE, false);
 		createItem(ChartType.CUM_LINE, "calculateMax", false);
-	
+
 		createItem(ChartType.MEAN_DIFF, "calculateMax", false);
 		createItem(ChartType.MEAN_DIFF, "zeroLineColor", Color.web("#DC143C"));
 		createItem(ChartType.MEAN_DIFF, "zeroLineWidth", 3);
-		
+
 		createItem(ChartType.SESSION, "timeInterval", 60);
 
 		createItem(ChartType.BOXPLOT, HORIZONTAL_MODE, false);
@@ -124,20 +127,27 @@ public class MainConfiguration {
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "secondInterval", Color.web("#fff033"));
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "thirdInterval", Color.web("#f4e3ae"));
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "fourthInterval", Color.web("#f78880"));
-		
+
 		createItem(ChartType.FORUM_BAR, HORIZONTAL_MODE, false);
+		createItem(ChartType.FORUM_BAR, "tab.forum", Color.web("#efc9af", 0.3));
+
+		createItem(ChartType.FORUM_USER_POST_BAR, "text.discussioncreation", Color.web("#efc9af", 0.3));
+		createItem(ChartType.FORUM_USER_POST_BAR, "text.replies", Color.web("#104c91", 0.3));
+		createItem(ChartType.FORUM_USER_POST_BAR, HORIZONTAL_MODE, false);
 		
+		createItem(ChartType.FORUM_NETWORK, "showNonConnected", true);
 		createItem(ChartType.FORUM_NETWORK, "usePhoto", true);
 		createItem(ChartType.FORUM_NETWORK, "useInitialNames", true);
+		createItem(ChartType.FORUM_NETWORK, "showNumberPosts", true);
 		createItem(ChartType.FORUM_NETWORK, "physicsAfterDraw", true);
 		createItem(ChartType.FORUM_NETWORK, "edges.dashes", false);
-		createItem(ChartType.FORUM_NETWORK, "edges.arrows.to.scaleFactor", 1.0);
+		createItem(ChartType.FORUM_NETWORK, "edges.arrows.to.scaleFactor", 0.75);
 		createItem(ChartType.FORUM_NETWORK, "edges.scaling.min", 1);
 		createItem(ChartType.FORUM_NETWORK, "edges.scaling.max", 10);
 		createItem(ChartType.FORUM_NETWORK, "nodes.borderWidth", 1);
 		createItem(ChartType.FORUM_NETWORK, "nodes.scaling.min", 20);
 		createItem(ChartType.FORUM_NETWORK, "nodes.scaling.max", 40);
-		createItem(ChartType.FORUM_NETWORK, "physics.solver", ForumNetwork.Solver.FORCE_ATLAS_2_BASED);
+		createItem(ChartType.FORUM_NETWORK, "physics.solver", VisNetwork.Solver.FORCE_ATLAS_2_BASED);
 		createItem(ChartType.FORUM_NETWORK, "physics.barnesHut.theta", 0.5);
 		createItem(ChartType.FORUM_NETWORK, "physics.barnesHut.gravitationalConstant", -2000);
 		createItem(ChartType.FORUM_NETWORK, "physics.barnesHut.centralGravity", 0.3);
@@ -163,8 +173,29 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_NETWORK, "interaction.tooltipDelay", 300);
 		createItem(ChartType.FORUM_NETWORK, "layout.randomSeed", "");
 		createItem(ChartType.FORUM_NETWORK, "layout.clusterThreshold", 150);
-		
-		
+
+		createItem(ChartType.FORUM_POSTS, "usePhoto", true);
+		createItem(ChartType.FORUM_POSTS, "colorContains", Color.web("#00FF00"));
+		createItem(ChartType.FORUM_POSTS, "colorNotContains", Color.web("#FF0000"));
+		createItem(ChartType.FORUM_POSTS, "nodes.borderWidth", 3);
+		createItem(ChartType.FORUM_POSTS, "edges.width", 3);
+		createItem(ChartType.FORUM_POSTS, "interaction.keyboard", true);
+		createItem(ChartType.FORUM_POSTS, "interaction.multiselect", true);
+		createItem(ChartType.FORUM_POSTS, "interaction.navigationButtons", true);
+		createItem(ChartType.FORUM_POSTS, "interaction.tooltipDelay", 300);
+
+		createItem(ChartType.FORUM_WORD_CLOUD, "stopWords", StopWord.getStopWordValues(Locale.getDefault()));
+		createItem(ChartType.FORUM_WORD_CLOUD, "chartBackgroundColor", Color.web("#FFFFFF", 0.0));
+		createItem(ChartType.FORUM_WORD_CLOUD, "wordFrequencesToReturn", 50);
+		createItem(ChartType.FORUM_WORD_CLOUD, "padding", 2);
+		createItem(ChartType.FORUM_WORD_CLOUD, "minWordLength", 3);
+		createItem(ChartType.FORUM_WORD_CLOUD, "maxWordLength", 32);
+		createItem(ChartType.FORUM_WORD_CLOUD, "minFont", 10);
+		createItem(ChartType.FORUM_WORD_CLOUD, "maxFont", 40);
+		createItem(ChartType.FORUM_WORD_CLOUD, "backGroundImage", MaskImage.RECTANGLE);
+
+
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -227,13 +258,13 @@ public class MainConfiguration {
 		}
 	}
 
-	public void createItem(String category, String name, Object value, Class<?> clazz) {
+	public void createItem(String category, String name, Object value, Class<?> clazz, Tabs tab) {
 		String key = convertToKey(category, name);
 		if (!categories.contains(category)) {
 			categories.add(category);
 		}
 
-		properties.put(key, new CustomPropertyItem(categories.size(), category, name, value, clazz));
+		properties.put(key, new CustomPropertyItem(categories.size(), category, name, value, clazz, tab));
 
 	}
 
@@ -242,19 +273,35 @@ public class MainConfiguration {
 	}
 
 	public void overrideItem(String category, String name, Object value, Class<?> clazz) {
-		if (properties.containsKey(convertToKey(category, name))) {
-			CustomPropertyItem property = properties.get(convertToKey(category, name));
+		CustomPropertyItem property = properties.get(convertToKey(category, name));
+
+		if (property != null && (property.getValue() instanceof ObservableList || property.getValue()
+				.getClass()
+				.equals(clazz))) {
 			property.setValue(value);
 			property.setClass(clazz);
+
 		}
+
 	}
 
 	public void createItem(ChartType category, String name, Object value) {
-		createItem(category.name(), name, value);
+
+		createItem(category.name(), name, value, value.getClass(), category.getTab());
 	}
 
 	public void createItem(String category, String name, Object value) {
-		createItem(category, name, value, value.getClass());
+		createItem(category, name, value, value.getClass(), null);
+
+	}
+
+	public void createItem(String category, String name, Object value, Class<?> clazz) {
+		createItem(category, name, value, clazz, null);
+
+	}
+
+	public void createItem(String category, String name, Object value, Tabs tab) {
+		createItem(category, name, value, value.getClass(), tab);
 
 	}
 
@@ -292,24 +339,30 @@ public class MainConfiguration {
 		return getValue(category.name(), name, defaultValue);
 	}
 
-	public Collection<CustomPropertyItem> getProperties() {
-		return properties.values();
+	public Collection<CustomPropertyItem> getProperties(Tabs tab) {
+
+		return properties.values()
+				.stream()
+				.filter(p -> p.tab == tab)
+				.collect(Collectors.toList());
 	}
 
-	private class CustomPropertyItem implements PropertySheet.Item {
+	public class CustomPropertyItem implements PropertySheet.Item {
 
+		private Tabs tab;
 		private int order;
 		private String name;
 		private Object value;
 		private Class<?> clazz;
 		private String category;
 
-		public CustomPropertyItem(int order, String category, String name, Object value, Class<?> clazz) {
+		public CustomPropertyItem(int order, String category, String name, Object value, Class<?> clazz, Tabs tab) {
 			this.order = order;
 			this.category = category;
 			this.name = name;
 			this.value = value;
 			this.clazz = clazz;
+			this.tab = tab;
 		}
 
 		public void setClass(Class<?> clazz) {
@@ -349,9 +402,18 @@ public class MainConfiguration {
 
 		}
 
+		public int getOrder() {
+			return order;
+		}
+
 		@Override
 		public Optional<ObservableValue<? extends Object>> getObservableValue() {
 			return Optional.empty();
+		}
+
+		public Tabs getTab() {
+
+			return tab;
 		}
 
 	}

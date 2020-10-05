@@ -244,7 +244,7 @@ public class BoxplotLog extends ChartjsLog {
 	}
 
 	@Override
-	public String getOptions(JSObject jsObject) {
+	public JSObject getOptions(JSObject jsObject) {
 
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBoxplot" : "boxplot");
@@ -258,7 +258,7 @@ public class BoxplotLog extends ChartjsLog {
 		callbacks.put("boxplotLabel", "boxplotLabel");
 		jsObject.put("tooltips", "{callbacks:" + callbacks + "}");
 
-		return jsObject.toString();
+		return jsObject;
 	}
 
 	@Override

@@ -532,6 +532,9 @@ public class Course implements Serializable {
 
 	public LocalDate getStart() {
 		LOGGER.debug("Fecha de inicio del curso por el servidor: {}", startDate);
+		if(startDate == null) {
+			return getEnd().minusYears(1);
+		}
 		if (startDate.getEpochSecond() == 0) {
 			return getEnd();
 		}
@@ -542,7 +545,7 @@ public class Course implements Serializable {
 
 	public LocalDate getEnd() {
 		LOGGER.debug("Fecha de fin del curso por el servidor: {}", endDate);
-		if (endDate.getEpochSecond() == 0) {
+		if (endDate == null || endDate.getEpochSecond() == 0) {
 			return LocalDate.now();
 		}
 

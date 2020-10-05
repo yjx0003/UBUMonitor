@@ -32,17 +32,9 @@ public abstract class ChartjsLog extends ChartLogs {
 		return labels;
 	}
 
-
-
 	@Override
 	public void clear() {
 		webViewChartsEngine.executeScript("clearChartjs()");
-
-	}
-
-	@Override
-	public void hideLegend() {
-		webViewChartsEngine.executeScript("hideLegendChartjs()");
 
 	}
 

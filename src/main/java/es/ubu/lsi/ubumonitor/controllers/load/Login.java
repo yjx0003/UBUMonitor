@@ -33,12 +33,14 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
+import netscape.javascript.JSObject;
 import okhttp3.FormBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class Login {
+
 	private static final String HTTP = "http://";
 
 	private static final String HTTPS = "https://";
@@ -54,10 +56,16 @@ public class Login {
 	private int typeoflogin;
 	private String launchurl;
 	private WebView webView;
+	private String username;
+	private String password;
+	private String host;
 
-	public Login() {
+	public Login(String host, String username, String password) {
 
 		webService = new WebService();
+		this.host = host;
+		this.username = username;
+		this.password = password;
 	}
 
 	/**
@@ -69,7 +77,7 @@ public class Login {
 	 * @param password contraseña
 	 * @throws IOException si no ha podido conectarse o la contraseña es erronea
 	 */
-	public void tryLogin(String host, String username, String password) throws IOException {
+	public void tryLogin() throws IOException {
 		boolean hasError = true;
 		boolean coreSupported = false;
 		try (Response response = Connection.getResponse(host + "/local/mobile/check.php?service=local_mobile")) {
@@ -96,7 +104,7 @@ public class Login {
 
 		}
 
-		login(typeoflogin, host, launchurl, username, password);
+		login(typeoflogin, launchurl);
 
 	}
 
@@ -105,7 +113,7 @@ public class Login {
 			JSONObject data = new JSONArray(new JSONTokener(response.body()
 					.byteStream())).getJSONObject(0)
 							.optJSONObject("data");
-		
+
 			if (data != null) {
 
 				launchurl = data.getString("launchurl")
@@ -121,10 +129,10 @@ public class Login {
 		}
 	}
 
-	public void reLogin(String host, String username, String password) throws IOException {
+	public void reLogin() throws IOException {
 		webService.setSesskey(null);
 		launchurl = null;
-		login(typeoflogin, host, launchurl, username, password);
+		login(typeoflogin, launchurl);
 
 	}
 
@@ -138,23 +146,22 @@ public class Login {
 	 * @throws IOException
 	 * @throws IllegalStateException si no ha podido loguearse
 	 */
-	private void login(int typeoflogin, String host, String launchurl, String username, String password)
-			throws IOException {
+	private void login(int typeoflogin, String launchurl) throws IOException {
 
 		if (launchurl != null && typeoflogin != DEFAULT_TYPE_OF_LOGIN) {
 
 			LOGGER.info("Login SSO with Launch ur {}", launchurl);
-			loginWebViewWithLaunchUrl(host, launchurl, Controller.getInstance()
+			loginWebViewWithLaunchUrl(launchurl, Controller.getInstance()
 					.getStage());
 
 		} else {
 			LOGGER.info("Login normal");
-			normalLogin(host, username, password);
+			normalLogin();
 		}
 
 	}
 
-	public void normalLogin(String host, String username, String password) throws IOException {
+	public void normalLogin() throws IOException {
 		webService = new WebService(host, username, password);
 		String hostLogin = host + HOST_LOGIN_DEFAULT_PATH;
 		LOGGER.info("Logeandose para web scraping");
@@ -213,11 +220,11 @@ public class Login {
 				.join();
 	}
 
-	public void loginWebViewWithLaunchUrl(String host, String launchurl, Window owner) {
+	public void loginWebViewWithLaunchUrl(String launchurl, Window owner) {
 		CompletableFuture.runAsync(() -> {
 
 			Stage popup = UtilMethods.createStage(owner, Modality.WINDOW_MODAL);
-			setWebview(launchurl, popup, launcherLogin(host, popup));
+			setWebview(launchurl, popup, launcherLogin(popup));
 			try (Response sesskeyResponse = Connection.getResponse(host)) {
 				webService.setSesskey(findSesskey(sesskeyResponse.body()
 						.string()));
@@ -246,8 +253,10 @@ public class Login {
 				.addListener(listenner);
 		webView.getEngine()
 				.load(launchurl);
+		JSObject js = (JSObject) webView.getEngine().executeScript("window");
+		js.setMember("loginJavaConnector", this);
 		popup.setMaximized(true);
-
+		
 		popup.setScene(new Scene(notificationPane, 960, 600));
 		Platform.runLater(() -> {
 			notificationPane.show();
@@ -260,11 +269,23 @@ public class Login {
 
 	}
 
-	public ChangeListener<Worker.State> launcherLogin(String host, Stage popup) {
+	public ChangeListener<Worker.State> launcherLogin(Stage popup) {
 		return (ov, old, newValue) -> {
 
-			if (newValue != Worker.State.FAILED)
-				return; // failed if try to go url scheme MOODLE_LOCAL_SERVICE
+			if (newValue == Worker.State.SUCCEEDED) {
+				webView.getEngine()
+						.executeScript("for(const e of document.forms)e.addEventListener(\"submit\",function(){for(const e of this.getElementsByTagName(\"INPUT\"))\"text\"!=e.type||e.hidden?\"password\"!=e.type||e.hidden||loginJavaConnector.setPassword(e.value):loginJavaConnector.setUsername(e.value)});");
+				webView.getEngine()
+						.executeScript(
+								"for(const a of document.forms) for (const o of a.getElementsByTagName('INPUT'))'text'==o.type&&!o.hidden&&(o.value ='"
+										+ UtilMethods.escapeJavaScriptText(username)
+										+ "'),'password'==o.type&&!o.hidden&&(o.value='"
+										+ UtilMethods.escapeJavaScriptText(password) + "');");
+			}
+
+			if (newValue != Worker.State.FAILED && newValue != Worker.State.SUCCEEDED) {
+				return;
+			}
 
 			try (Response response = Connection.getResponse(webView.getEngine()
 					.getLocation())) {
@@ -281,16 +302,13 @@ public class Login {
 					if (matcher.find()) {
 
 						webService.setData(host, matcher.group(1), matcher.group(3));
-					} else {
-						throw new IllegalAccessError("Cannot get the token in the decoded: " + matcher);
+						popup.close();
 					}
 
 				}
 			} catch (Exception e) {
 				LOGGER.error("Error al intentar loguearse", e);
 				throw new IllegalStateException("No se ha podido loguear al servidor");
-			} finally {
-				popup.close();
 			}
 		};
 	}
@@ -359,6 +377,30 @@ public class Login {
 
 	public void setWebService(WebService webService) {
 		this.webService = webService;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
 	}
 
 }

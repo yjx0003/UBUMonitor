@@ -27,14 +27,14 @@ public abstract class JavaConnectorAbstract implements JavaConnector {
 	protected WebView webView;
 	protected Course actualCourse;
 
-	public JavaConnectorAbstract(WebView webView, MainConfiguration mainConfiguration, MainController mainController,Course actualCourse) {
+	public JavaConnectorAbstract(WebView webView, MainConfiguration mainConfiguration, MainController mainController,
+			Course actualCourse) {
 		this.webView = webView;
 		this.webEngine = webView.getEngine();
 		this.mainConfiguration = mainConfiguration;
 		this.mainController = mainController;
 		this.actualCourse = actualCourse;
 		charts = new EnumMap<>(ChartType.class);
-
 	}
 
 	@Override
@@ -69,8 +69,6 @@ public abstract class JavaConnectorAbstract implements JavaConnector {
 
 	}
 
-	
-
 	@Override
 	public void inititDefaultValues() {
 		JSArray jsArray = new JSArray();
@@ -103,12 +101,6 @@ public abstract class JavaConnectorAbstract implements JavaConnector {
 	}
 
 	@Override
-	public void hideLegend() {
-
-		currentChart.hideLegend();
-	}
-
-	@Override
 	public void dataPointSelection(int selectedIndex) {
 
 		int index = currentChart.onClick(selectedIndex);
@@ -138,7 +130,7 @@ public abstract class JavaConnectorAbstract implements JavaConnector {
 	public void setCurrentChart(Chart chart) {
 		currentChart = chart;
 	}
-	
+
 	@Override
 	public void addChart(Chart chart) {
 		chart.setWebViewChartsEngine(webEngine);
@@ -146,7 +138,7 @@ public abstract class JavaConnectorAbstract implements JavaConnector {
 		chart.setActualCourse(actualCourse);
 		charts.put(chart.getChartType(), chart);
 	}
-	
+
 	@Override
 	public void updateCharts(String typeChart) {
 		Chart chart = charts.get(ChartType.valueOf(typeChart));
@@ -155,8 +147,8 @@ public abstract class JavaConnectorAbstract implements JavaConnector {
 			currentChart = chart;
 		}
 		currentChart.update();
+		manageOptions();
 	}
-	
 
 	@Override
 	public void updateChart() {
@@ -165,6 +157,7 @@ public abstract class JavaConnectorAbstract implements JavaConnector {
 			return;
 		}
 		currentChart.update();
+		manageOptions();
 
 	}
 

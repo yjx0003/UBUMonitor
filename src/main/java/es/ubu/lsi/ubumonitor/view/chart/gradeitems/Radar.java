@@ -33,10 +33,10 @@ public class Radar extends ChartjsGradeItem {
 	}
 
 	@Override
-	public String getOptions(JSObject jsObject) {
+	public JSObject getOptions(JSObject jsObject) {
 		jsObject.putWithQuote("typeGraph", "radar");
 		jsObject.put("scale", "{ticks:{max:10,stepSize:1}}");
-		return jsObject.toString();
+		return jsObject;
 	}
 
 	@Override

@@ -52,6 +52,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.PopupWindow.AnchorLocation;
 import javafx.stage.Stage;
 import okhttp3.HttpUrl;
@@ -258,13 +259,15 @@ public class MenuController {
 	}
 
 	public void changeConfiguration() {
-
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Configuration.fxml"),
 				I18n.getResourceBundle());
 
-		UtilMethods.createDialog(loader, controller.getStage());
+		Stage stage = UtilMethods.createDialog(loader, controller.getStage(), Modality.APPLICATION_MODAL);
+		stage.setTitle(I18n.get("text.courseconfiguration"));
+		stage.getIcons().setAll(new Image("/img/gear.png"));
 		ConfigurationController configurationController = loader.getController();
-		configurationController.setMainController(mainController);
+		configurationController.init(mainController, controller.getMainConfiguration());
+		
 		configurationController.setOnClose();
 
 	}
@@ -305,6 +308,10 @@ public class MenuController {
 	}
 
 	public void moreInfo() {
+		UtilMethods.openURL(AppInfo.LANDING_PAGE);
+	}
+	
+	public void gitHubPage() {
 		UtilMethods.openURL(AppInfo.GITHUB);
 	}
 

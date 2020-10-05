@@ -98,7 +98,7 @@ public class Violin extends ChartjsGradeItem {
 	}
 
 	@Override
-	public String getOptions(JSObject jsObject) {
+	public JSObject getOptions(JSObject jsObject) {
 		
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 	
@@ -109,7 +109,7 @@ public class Violin extends ChartjsGradeItem {
 		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
 		
 		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{min:0,max:10}}],xAxes:[{" + xLabel + ",ticks:{min:0,max:10}}]}");
-		return jsObject.toString();
+		return jsObject;
 	}
 
 	@Override

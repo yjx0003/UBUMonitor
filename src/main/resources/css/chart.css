@@ -74,9 +74,14 @@ html,body
 }
 
 .visDiv{
-	 outline: 0;
-	height:95vh;
-	width:100%;
+	outline: 0.0;
+	height:95.0vh;
+	width:100.0%;
+	
+}
+.vis-tooltip{
+	white-space: normal !important;
+	max-width:90% !important;
 }
 
 .apexchart-container
@@ -87,8 +92,8 @@ html,body
 {
 	height:88.0%;
 	width: 95.0%;
-	margin-top:4%;
-	margin-left:2%;
+	margin-top:4.0%;
+	margin-left:2.0%;
 	display: none;
 }
 	
@@ -161,4 +166,20 @@ button[disabled] {
 
 .tabulator .tabulator-header .tabulator-col {
     text-align:center;
+}
+
+.canvas-container{
+	width: 100%;
+	height: 95vh;
+	display: block;
+  
+}
+
+.canvas-word-cloud{
+	position: relative;
+  	max-width: 100%;
+  	max-height: 100%;
+  	left: 50%;
+  	top: 50%;
+  	transform: translate(-50%, -50%);
 }

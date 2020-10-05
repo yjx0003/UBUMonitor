@@ -17,7 +17,6 @@ Tool for displaying grades and course records (logs) on different types of chart
 This application is aimed at teachers who use Moodle services.
 
 This version is the continuation of [Félix Nogal Santamaría](https://github.com/huco95) [UBUGrades](https://github.com/huco95/UBUGrades) application.
-<p align="center"><img src="/latex/img/ejemplo_barras_apiladas.png" />
 
 ## User's manual:
 <!--* https://ubumonitor.gitbook.io/ubumonitor/-->
@@ -113,13 +112,25 @@ External **JavaScript** libraries are included in  [resources/graphics/lib/](res
   * Versión: **1.0.3**
   * [Github](https://github.com/zenozeng/color-hash)
   * [jsDelivr Repository](https://www.jsdelivr.com/package/npm/color-hash)
+* [html2canvas](https://html2canvas.hertzen.com/)
+  * Versión: **1.0.0-rc.5**
+  * [Github](https://github.com/niklasvh/html2canvas/)
+* [Plotly](https://plotly.com/javascript/)
+  * Versión: **1.55.2**
+  * [Github](https://github.com/plotly/plotly.js)
+  * [CDNJS](https://cdnjs.com/libraries/plotly.js)
 * [Tabulator](http://tabulator.info/)
   * Versión: **4.6.3**
   * [Github](https://github.com/olifolkerd/tabulator)
   * [CDNJS](https://cdnjs.com/libraries/tabulator)
-* [html2canvas](https://html2canvas.hertzen.com/)
-  * Versión: **1.0.0-rc.5**
-  * [Github](https://github.com/niklasvh/html2canvas/)
+* [Vis Network](https://visjs.github.io/vis-network/docs/network/)
+  * Versión: **8.2.0**
+  * [Github](https://github.com/visjs/vis-network)
+  * [UNPKG](https://unpkg.com/browse/vis-network@8.2.0/standalone/umd/)
+* [Vis Timeline](https://visjs.github.io/vis-timeline/docs/timeline/)
+  * Versión: **7.3.7**
+  * [Github](https://github.com/visjs/vis-network)
+  * [UNPKG](https://unpkg.com/browse/vis-timeline@7.3.7/standalone/umd/)
   
 ### Icon packs:
 * [Font Awesome](https://fontawesome.com/)

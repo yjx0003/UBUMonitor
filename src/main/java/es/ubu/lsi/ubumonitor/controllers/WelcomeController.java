@@ -282,10 +282,13 @@ public class WelcomeController implements Initializable {
 
 				Course course = controller.getUser()
 						.getCourseById(ConfigHelper.getProperty("actualCourse", -1));
+				if (listView.getItems()
+						.contains(course)) {
+					listView.getSelectionModel()
+							.select(course);
+					listView.scrollTo(course);
+				}
 
-				listView.getSelectionModel()
-						.select(course);
-				listView.scrollTo(course);
 				if (autoUpdate) {
 					chkUpdateData.setSelected(true);
 					btnEntrar.fire();
@@ -640,7 +643,7 @@ public class WelcomeController implements Initializable {
 			controller.getStage()
 					.getScene()
 					.setCursor(Cursor.DEFAULT);
-
+			controller.setDataBase(controller.getDefautlDataBase());
 			UtilMethods.errorWindow(I18n.get("error.downloadingdata") + " " + service.getException()
 					.getMessage(), service.getException());
 			LOGGER.error("Error al actualizar los datos del curso: {}", service.getException());
@@ -650,7 +653,8 @@ public class WelcomeController implements Initializable {
 			controller.getStage()
 					.getScene()
 					.setCursor(Cursor.DEFAULT);
-			controller.setDataBase(null);
+			controller.setDataBase(controller.getDefautlDataBase());
+
 		});
 
 		btnEntrar.visibleProperty()

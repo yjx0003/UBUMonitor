@@ -64,9 +64,13 @@ public class ConfigurationController {
 			tab = new Tab(I18n.get("tabs." + chartTab));
 			tab.setClosable(false);
 			propertySheet = createPropertySheet(chartTab);
-			tab.setContent(propertySheet);
-			tabPane.getTabs()
-					.add(tab);
+			if (!propertySheet.getItems()
+					.isEmpty()) {
+				tab.setContent(propertySheet);
+				tabPane.getTabs()
+						.add(tab);
+			}
+
 		}
 	}
 

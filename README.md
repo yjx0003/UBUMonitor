@@ -17,7 +17,6 @@ Tool for displaying grades and course records (logs) on different types of chart
 This application is aimed at teachers who use Moodle services.
 
 This version is the continuation of [Félix Nogal Santamaría](https://github.com/huco95) [UBUGrades](https://github.com/huco95/UBUGrades) application.
-<p align="center"><img src="/latex/img/ejemplo_barras_apiladas.png" />
 
 ## User's manual:
 <!--* https://ubumonitor.gitbook.io/ubumonitor/-->
@@ -40,10 +39,22 @@ External **JavaScript** libraries are included in  [resources/graphics/lib/](res
   * Versión: **2.13.3**
   * [Github](https://github.com/apache/log4j)
   * [Maven Repository](https://mvnrepository.com/artifact/log4j/log4j)
+* [Apache Lucene](https://lucene.apache.org/)
+  * Versión: **8.6.2**
+  * [Github](https://github.com/apache/lucene-solr)
+  * [Maven Repository](https://mvnrepository.com/artifact/org.apache.lucene/lucene-core)
 * [Apache POI](https://poi.apache.org/)
   * Versión: **4.1.1**
   * [Github](https://github.com/apache/poi)
   * [Maven Repository](https://mvnrepository.com/artifact/org.apache.poi/poi)  
+* [CommonMark](https://commonmark.org/)
+  * Versión: **0.15.1**
+  * [Github](https://github.com/atlassian/commonmark-java)
+  * [Maven Repository](https://mvnrepository.com/artifact/com.atlassian.commonmark/commonmark)    
+* **ControlsFX**
+  * Versión: **8.40.17**
+  * [Github](https://github.com/controlsfx/controlsfx)
+  * [Maven Repository](https://mvnrepository.com/artifact/org.controlsfx/controlsfx) 
 * **JSON In Java**
   * Versión: **20190722**
   * [Github](https://github.com/stleary/JSON-java)
@@ -52,6 +63,10 @@ External **JavaScript** libraries are included in  [resources/graphics/lib/](res
   * Versión: **1.12.1**
   * [Github](https://github.com/jhy/jsoup)
   * [Maven Repository](https://mvnrepository.com/artifact/org.jsoup/jsoup/1.11.3)
+* **Kumo**
+  * Versión: **1.27**
+  * [Github](https://github.com/kennycason/kumo)
+  * [Maven Repository](https://mvnrepository.com/artifact/com.kennycason/kumo-core)  
 * [OkHttp](https://square.github.io/okhttp/)
   * Versión: **4.4.1**
   * [Github](https://github.com/square/okhttp/)
@@ -68,11 +83,18 @@ External **JavaScript** libraries are included in  [resources/graphics/lib/](res
   * Versión: **1.7.26**
   * [Github](https://github.com/qos-ch/slf4j/tree/master/slf4j-log4j12)
   * [Maven Repository](https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12)
+* **Smile**
+  * Versión: **2.4.0**
+  * [Github](https://github.com/haifengl/smile)
+  * [Maven Repository](https://mvnrepository.com/artifact/com.github.haifengl/smile-core)  
+* **T-SNE-Java**
+  * Versión: **2.5.0**
+  * [Github](https://github.com/lejon/T-SNE-Java)
+  * [Maven Repository](https://mvnrepository.com/artifact/com.github.lejon.T-SNE-Java/tsne)
 * [ThreeTen Extra](https://www.threeten.org/threeten-extra/)
   * Versión: **1.5.0**
   * [Github](https://github.com/ThreeTen/threeten-extra)
-  * [Maven Repository](https://mvnrepository.com/artifact/org.threeten/threeten-extra)
-  
+  * [Maven Repository](https://mvnrepository.com/artifact/org.threeten/threeten-extra)  
 ### JavaScript dependencies:
 * [ApexCharts](https://apexcharts.com/)
   * Versión: **3.19.2**
@@ -90,13 +112,25 @@ External **JavaScript** libraries are included in  [resources/graphics/lib/](res
   * Versión: **1.0.3**
   * [Github](https://github.com/zenozeng/color-hash)
   * [jsDelivr Repository](https://www.jsdelivr.com/package/npm/color-hash)
+* [html2canvas](https://html2canvas.hertzen.com/)
+  * Versión: **1.0.0-rc.5**
+  * [Github](https://github.com/niklasvh/html2canvas/)
+* [Plotly](https://plotly.com/javascript/)
+  * Versión: **1.55.2**
+  * [Github](https://github.com/plotly/plotly.js)
+  * [CDNJS](https://cdnjs.com/libraries/plotly.js)
 * [Tabulator](http://tabulator.info/)
   * Versión: **4.6.3**
   * [Github](https://github.com/olifolkerd/tabulator)
   * [CDNJS](https://cdnjs.com/libraries/tabulator)
-* [html2canvas](https://html2canvas.hertzen.com/)
-  * Versión: **1.0.0-rc.5**
-  * [Github](https://github.com/niklasvh/html2canvas/)
+* [Vis Network](https://visjs.github.io/vis-network/docs/network/)
+  * Versión: **8.2.0**
+  * [Github](https://github.com/visjs/vis-network)
+  * [UNPKG](https://unpkg.com/browse/vis-network@8.2.0/standalone/umd/)
+* [Vis Timeline](https://visjs.github.io/vis-timeline/docs/timeline/)
+  * Versión: **7.3.7**
+  * [Github](https://github.com/visjs/vis-network)
+  * [UNPKG](https://unpkg.com/browse/vis-timeline@7.3.7/standalone/umd/)
   
 ### Icon packs:
 * [Font Awesome](https://fontawesome.com/)

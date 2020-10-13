@@ -1,9 +1,14 @@
 package es.ubu.lsi.ubumonitor.controllers.load;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.model.CourseCategory;
 import es.ubu.lsi.ubumonitor.model.DataBase;
@@ -14,7 +19,7 @@ import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionEnum;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
 
 public class PopulateCourseCategories {
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(PopulateCourseCategories.class);
 	private DataBase dataBase;
 	private WebService webService;
 
@@ -23,16 +28,17 @@ public class PopulateCourseCategories {
 		this.webService = webService;
 	}
 
-	public void populateCourseCategories(Collection<Integer> categoryids) {
+	public List<CourseCategory> populateCourseCategories(Collection<Integer> categoryids) {
 
 		try {
 			CoreCourseGetCategories coreCourseGetCategories = new CoreCourseGetCategories();
 			coreCourseGetCategories.appendIds(categoryids);
 			coreCourseGetCategories.setAddsubcategories(false);
 			JSONArray jsonArray = UtilMethods.getJSONArrayResponse(webService, coreCourseGetCategories);
-			populateCourseCategories(jsonArray);
+			return populateCourseCategories(jsonArray);
 		} catch (Exception e) {
-			// do nothing
+			LOGGER.warn("Problem to get course categories", e);
+			return Collections.emptyList();
 		}
 	}
 
@@ -43,7 +49,8 @@ public class PopulateCourseCategories {
 	 * @param dataBase
 	 * @param jsonArray
 	 */
-	public void populateCourseCategories(JSONArray jsonArray) {
+	public List<CourseCategory> populateCourseCategories(JSONArray jsonArray) {
+		List<CourseCategory> courseCategories = new ArrayList<>();
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject jsonObject = jsonArray.getJSONObject(i);
 
@@ -56,8 +63,9 @@ public class PopulateCourseCategories {
 			courseCategory.setCoursecount(jsonObject.getInt(Constants.COURSECOUNT));
 			courseCategory.setDepth(jsonObject.getInt(Constants.DEPTH));
 			courseCategory.setPath(jsonObject.getString(Constants.PATH));
-
+			courseCategories.add(courseCategory);
 		}
+		return courseCategories;
 	}
 
 }

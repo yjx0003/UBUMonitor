@@ -35,6 +35,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
 
+/**
+ * Charts configuration for every course
+ * 
+ * @author Yi Peng Ji
+ *
+ */
 public class MainConfiguration {
 
 	public static final String HORIZONTAL_MODE = "horizontalMode";
@@ -48,6 +54,9 @@ public class MainConfiguration {
 
 	}
 
+	/**
+	 * Default values
+	 */
 	public void setDefaultValues() {
 		properties.clear();
 		categories.clear();
@@ -134,7 +143,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_USER_POST_BAR, "text.discussioncreation", Color.web("#efc9af", 0.3));
 		createItem(ChartType.FORUM_USER_POST_BAR, "text.replies", Color.web("#104c91", 0.3));
 		createItem(ChartType.FORUM_USER_POST_BAR, HORIZONTAL_MODE, false);
-		
+
 		createItem(ChartType.FORUM_NETWORK, "showNonConnected", true);
 		createItem(ChartType.FORUM_NETWORK, "usePhoto", true);
 		createItem(ChartType.FORUM_NETWORK, "useInitialNames", true);
@@ -194,10 +203,13 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_WORD_CLOUD, "maxFont", 40);
 		createItem(ChartType.FORUM_WORD_CLOUD, "backGroundImage", MaskImage.RECTANGLE);
 
-
-
 	}
 
+	/**
+	 * Convert properties to JSON
+	 * 
+	 * @return String with JSON format of the properties
+	 */
 	@SuppressWarnings("unchecked")
 	public String toJson() {
 		JSONArray jsonArray = new JSONArray();
@@ -249,6 +261,11 @@ public class MainConfiguration {
 		return jsonArray.toString();
 	}
 
+	/**
+	 * Convert JSON to propertSheet items
+	 * 
+	 * @param properties JSON with properties
+	 */
 	public void fromJson(String properties) {
 		JSONArray jsonArray = new JSONArray(properties);
 		for (int i = 0; i < jsonArray.length(); i++) {
@@ -258,20 +275,43 @@ public class MainConfiguration {
 		}
 	}
 
+	/**
+	 * Create property item
+	 * 
+	 * @param category category name
+	 * @param name     name
+	 * @param value    object property object
+	 * @param clazz    class of the item
+	 * @param tab      tab associated to item
+	 */
 	public void createItem(String category, String name, Object value, Class<?> clazz, Tabs tab) {
 		String key = convertToKey(category, name);
-		if (!categories.contains(category)) {
-			categories.add(category);
-		}
+
+		categories.add(category);
 
 		properties.put(key, new CustomPropertyItem(categories.size(), category, name, value, clazz, tab));
 
 	}
 
+	/**
+	 * Override the item property
+	 * 
+	 * @param category category of the item
+	 * @param name     name of the item
+	 * @param value    value of the item and use the class of the value
+	 */
 	public void overrideItem(String category, String name, Object value) {
 		overrideItem(category, name, value, value.getClass());
 	}
 
+	/**
+	 * Override the item
+	 * 
+	 * @param category category of the item
+	 * @param name     name of the item
+	 * @param value    value of the item
+	 * @param clazz    specific class
+	 */
 	public void overrideItem(String category, String name, Object value, Class<?> clazz) {
 		CustomPropertyItem property = properties.get(convertToKey(category, name));
 
@@ -285,31 +325,63 @@ public class MainConfiguration {
 
 	}
 
-	public void createItem(ChartType category, String name, Object value) {
+	/**
+	 * Create item with chart
+	 * 
+	 * @param chartType chartype of the item
+	 * @param name      name of the item
+	 * @param value     value of the item
+	 */
+	public void createItem(ChartType chartType, String name, Object value) {
 
-		createItem(category.name(), name, value, value.getClass(), category.getTab());
+		createItem(chartType.name(), name, value, value.getClass(), chartType.getTab());
 	}
 
+	/**
+	 * Create item
+	 * 
+	 * @param category category name
+	 * @param name     name of the property
+	 * @param value    value of the property
+	 */
 	public void createItem(String category, String name, Object value) {
 		createItem(category, name, value, value.getClass(), null);
 
 	}
 
+	/**
+	 * Create item
+	 * 
+	 * @param category category
+	 * @param name     name
+	 * @param value    value
+	 * @param clazz    class
+	 */
 	public void createItem(String category, String name, Object value, Class<?> clazz) {
 		createItem(category, name, value, clazz, null);
 
 	}
 
-	public void createItem(String category, String name, Object value, Tabs tab) {
-		createItem(category, name, value, value.getClass(), tab);
-
-	}
-
-	public <T> void setValue(String category, String name, T value) {
+	/**
+	 * Set value of the item
+	 * 
+	 * @param category category
+	 * @param name     name
+	 * @param value    object
+	 */
+	public void setValue(String category, String name, Object value) {
 		properties.get(convertToKey(category, name))
 				.setValue(value);
 	}
 
+	/**
+	 * Get the value
+	 * 
+	 * @param <T>      type of the object
+	 * @param category category
+	 * @param name     name
+	 * @return the generic object
+	 */
 	@SuppressWarnings("unchecked")
 	public <T> T getValue(String category, String name) {
 		return (T) properties.get(convertToKey(category, name))
@@ -321,24 +393,51 @@ public class MainConfiguration {
 		return category + "." + name;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T getValue(ChartType category, String name) {
-		return (T) properties.get(category.name() + "." + name)
-				.getValue();
+	/**
+	 * Get the value
+	 * 
+	 * @param <T>       type of configuration
+	 * @param chartType chart type
+	 * @param name      name
+	 * @return object of the configuration
+	 */
+	public <T> T getValue(ChartType chartType, String name) {
+		return getValue(chartType.name(), name);
 
 	}
 
+	/**
+	 * Get value, if not exists return defaultValue
+	 * @param <T> type of object to return
+	 * @param category category
+	 * @param name name
+	 * @param defaultValue defaultValue if not exist 
+	 * @return
+	 */
 	public <T> T getValue(String category, String name, T defaultValue) {
-		if (properties.containsKey(convertToKey(category, name))) {
-			return getValue(category, name);
-		}
-		return defaultValue;
+		T value = getValue(category, name);
+		if (value == null)
+			return defaultValue;
+		return value;
 	}
-
+	
+	/**
+	 * Get value
+	 * @param <T> type of value
+	 * @param category
+	 * @param name
+	 * @param defaultValue
+	 * @return
+	 */
 	public <T> T getValue(ChartType category, String name, T defaultValue) {
 		return getValue(category.name(), name, defaultValue);
 	}
 
+	/**
+	 * Get all the propertyes of the specified Tab
+	 * @param tab tab
+	 * @return collection of the property items in the specified Tab
+	 */
 	public Collection<CustomPropertyItem> getProperties(Tabs tab) {
 
 		return properties.values()
@@ -347,6 +446,11 @@ public class MainConfiguration {
 				.collect(Collectors.toList());
 	}
 
+	/**
+	 * Cutom property item
+	 * @author Yi Peng Ji
+	 *
+	 */
 	public class CustomPropertyItem implements PropertySheet.Item {
 
 		private Tabs tab;

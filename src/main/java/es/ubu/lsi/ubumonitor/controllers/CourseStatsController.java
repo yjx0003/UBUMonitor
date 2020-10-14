@@ -7,67 +7,92 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.model.Course;
+import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.util.JSArray;
+import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 
 public class CourseStatsController implements Initializable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CourseStatsController.class);
 
 	@FXML
-	private Label labelCourse;
-	@FXML
-	private TextField textFieldEnrolledUsers;
-	@FXML
-	private TextField textFieldLogs;
-	@FXML
-	private TextField textFieldComponents;
-	@FXML
-	private TextField textFieldComponentsEvents;
-	@FXML
-	private TextField textFieldSections;
-	@FXML
-	private TextField textFieldCourseModules;
-	@FXML
-	private TextField textFieldGradebook;
-	@FXML
-	private TextField textFieldGradebookCM;
-	@FXML
-	private TextField textFieldActivityCompletion;
+	private WebView webView;
+
+	private JSArray data;
+
+	private JSArray keys;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+
 		Course actualCourse = Controller.getInstance()
 				.getActualCourse();
-		labelCourse.setText(actualCourse.getFullName());
-		setText(textFieldEnrolledUsers, actualCourse.getEnrolledUsersCount());
-		setText(textFieldLogs, actualCourse.getLogs()
+		JSArray headers = new JSArray();
+		data = new JSArray();
+		keys = new JSArray();
+		headers.addWithQuote(actualCourse.getFullName());
+		headers.addWithQuote(I18n.get("text.stats"));
+
+		setValues(actualCourse);
+
+		JSArray jsArray = new JSArray();
+		jsArray.add(keys);
+		jsArray.add(data);
+		WebEngine webEngine = webView.getEngine();
+		webEngine.load(getClass().getResource("/graphics/PlotlyTable.html")
+				.toString());
+		webEngine.getLoadWorker()
+				.stateProperty()
+				.addListener((ov, oldState, newState) -> {
+					if (Worker.State.SUCCEEDED != newState)
+						return;
+					if (webEngine.getDocument() == null) {
+						webEngine.reload();
+						return;
+					}
+
+					webView.getEngine()
+							.executeScript("update(" + headers + "," + jsArray + ")");
+				});
+	}
+
+	public void setValues(Course actualCourse) {
+		setValue("label.enrolledusers", actualCourse.getEnrolledUsersCount());
+		setValue("label.logentries", actualCourse.getLogs()
 				.getList()
 				.size());
-		setText(textFieldComponents, actualCourse.getUniqueComponents()
+		setValue("label.componenttypes", actualCourse.getUniqueComponents()
 				.size());
-		setText(textFieldComponentsEvents, actualCourse.getUniqueComponentsEvents()
+		setValue("label.typecomponentevents", actualCourse.getUniqueComponentsEvents()
 				.size());
-		setText(textFieldSections, actualCourse.getSections()
+		setValue("label.sections", actualCourse.getSections()
 				.size());
-		setText(textFieldCourseModules, actualCourse.getModules()
+		setValue("label.coursemodules", actualCourse.getModules()
 				.size());
-		setText(textFieldGradebook, actualCourse.getGradeItems()
+		setValue("label.gradebook", actualCourse.getGradeItems()
 				.size());
-		setText(textFieldGradebookCM, actualCourse.getGradeItems()
+		setValue("label.gradebookcm", actualCourse.getGradeItems()
 				.stream()
 				.filter(cm -> cm.getModule() != null)
 				.count());
-		setText(textFieldActivityCompletion, actualCourse.getModules()
+		setValue("label.activities", actualCourse.getModules()
 				.stream()
 				.filter(cm -> !(cm.getActivitiesCompletion()
 						.isEmpty()))
 				.count());
+		setValue("label.posts", actualCourse.getDiscussionPosts()
+				.size());
+		setValue("label.calendarevents", actualCourse.getCourseEvents()
+				.size());
+		
 	}
 
-	private void setText(TextField textfield, Object value) {
-		textfield.setText(value.toString());
+	private void setValue(String key, Object value) {
+		keys.addWithQuote(I18n.get(key));
+		data.add(value);
 	}
 
 	/**

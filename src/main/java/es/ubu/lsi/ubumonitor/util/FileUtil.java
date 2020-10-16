@@ -2,6 +2,9 @@ package es.ubu.lsi.ubumonitor.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.function.BiFunction;
 
 import javafx.stage.FileChooser;
@@ -9,12 +12,13 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Window;
 
 public class FileUtil {
-	public static final ExtensionFilter EXCEL = new ExtensionFilter("Excel 2013-2016(*.xlsx)", "*.xlsx");
+	
+	public static final ExtensionFilter EXCEL = new ExtensionFilter("Excel 2013-2016 (*.xlsx)", "*.xlsx");
 	public static final ExtensionFilter WORD = new ExtensionFilter("Word (*.docx)", "*.docx");
 	public static final ExtensionFilter PNG = new ExtensionFilter("Portable Network Graphics (*.png)", "*.png");
 	public static final ExtensionFilter CSV = new ExtensionFilter("Comma-separated values (*.csv)", "*.csv");
 	public static final ExtensionFilter JSON = new ExtensionFilter("JavaScript Object Notation (*.json)", "*.json");
-
+	public static final ExtensionFilter ALL = new ExtensionFilter("All type of files (*)", "*");
 	
 
 	public enum FileChooserType {
@@ -39,5 +43,13 @@ public class FileUtil {
 
 	private FileUtil() {
 		throw new UnsupportedOperationException();
+	}
+	
+	public static void exportFile(Path source, Path destDir, Path dest) throws IOException {
+	
+			Files.createDirectories(destDir);
+			Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING);
+			
+	
 	}
 }

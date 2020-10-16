@@ -92,9 +92,12 @@ public class SelectionUserController {
 	public void init(MainController mainController, Course course, MainConfiguration mainConfiguration) {
 		this.mainController = mainController;
 
-		
-		tabPane.visibleProperty().bind(mainController.getWebViewTabsController().getCalendarEventTab().selectedProperty().not());
-		
+		tabPane.visibleProperty()
+				.bind(mainController.getWebViewTabsController()
+						.getCalendarEventTab()
+						.selectedProperty()
+						.not());
+
 		tabNotEnrolled.disableProperty()
 				.bind(mainController.getWebViewTabsController()
 						.getClusteringTab()
@@ -135,11 +138,13 @@ public class SelectionUserController {
 
 		initEnrolledUsersListView(course);
 		autoCompletionBinding = UtilMethods.createAutoCompletionBinding(tfdParticipants, filteredEnrolledList);
-		checkComboBoxGroup.getItems()
-				.setAll(course.getGroups()
-						.stream()
-						.sorted(Comparator.comparing(Group::getGroupName, Comparator.nullsLast(Collator.getInstance())))
-						.collect(Collectors.toList()));
+		Group dummyGroup = new Group(-1);
+		dummyGroup.setGroupName(I18n.get("text.selectall"));
+		UtilMethods.fillCheckComboBox(dummyGroup, course.getGroups()
+				.stream()
+				.sorted(Comparator.comparing(Group::getGroupName, Comparator.nullsLast(Collator.getInstance())))
+				.collect(Collectors.toList()), checkComboBoxGroup);
+		checkComboBoxGroup.getCheckModel().check(dummyGroup);
 		ObservableList<Group> groups = mainConfiguration.getValue(MainConfiguration.GENERAL, "initialGroups");
 		if (groups != null) {
 			groups.forEach(checkComboBoxGroup.getCheckModel()::check);
@@ -252,7 +257,6 @@ public class SelectionUserController {
 	}
 
 	private void initNotEnrolledUsers(Course course) {
-		
 
 		ObservableList<EnrolledUser> user = FXCollections.observableArrayList(course.getNotEnrolledUser());
 		user.sort(Comparator.comparing(EnrolledUser::getFullName, Comparator.nullsLast(Collator.getInstance())));
@@ -273,7 +277,8 @@ public class SelectionUserController {
 					setGraphic(null);
 				} else {
 					Instant lastAccess = user.getLastaccess();
-					Instant lastLogInstant = Controller.getInstance().getUpdatedCourseData()
+					Instant lastLogInstant = Controller.getInstance()
+							.getUpdatedCourseData()
 							.toInstant();
 
 					setText(user + "\n" + I18n.get("text.moodle")
@@ -330,7 +335,8 @@ public class SelectionUserController {
 
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/UserInfo.fxml"), I18n.getResourceBundle());
 
-		UtilMethods.createDialog(loader, Controller.getInstance().getStage());
+		UtilMethods.createDialog(loader, Controller.getInstance()
+				.getStage());
 
 		UserInfoController userInfoController = loader.getController();
 		userInfoController.init(mainController, enrolledUser);
@@ -349,7 +355,8 @@ public class SelectionUserController {
 				.getCheckedItems();
 		String textField = tfdParticipants.getText()
 				.toLowerCase();
-		Instant lastLogInstant = Controller.getInstance().getUpdatedCourseData()
+		Instant lastLogInstant = Controller.getInstance()
+				.getUpdatedCourseData()
 				.toInstant();
 		filteredEnrolledList.setPredicate(e -> (checkUserHasRole(rol, e)) && (checkUserHasGroup(group, e))
 				&& (textField.isEmpty() || e.getFullName()

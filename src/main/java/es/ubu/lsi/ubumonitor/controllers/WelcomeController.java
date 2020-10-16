@@ -7,9 +7,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Comparator;
@@ -58,6 +60,7 @@ import es.ubu.lsi.ubumonitor.model.Section;
 import es.ubu.lsi.ubumonitor.model.Stats;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.persistence.Serialization;
+import es.ubu.lsi.ubumonitor.util.FileUtil;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseSearchCourses;
@@ -841,7 +844,7 @@ public class WelcomeController implements Initializable {
 							populateEnrolledUsersCourse.searchUser(ids);
 							actualCourse.setNotEnrolledUser(notEnrolled);
 							actualCourse.setUpdatedLog(ZonedDateTime.now());
-
+							populateEnrolledUsersCourse.downloadUserimages(actualCourse.getEnrolledUsers());
 							tries = limitRelogin + 1;
 						} catch (Exception e) {
 							if (tries >= limitRelogin) {
@@ -855,6 +858,8 @@ public class WelcomeController implements Initializable {
 						}
 					}
 				}
+				
+				
 				if (!isCancelled()) {
 					updateMessage(I18n.get("label.savelocal"));
 					saveData();
@@ -911,6 +916,29 @@ public class WelcomeController implements Initializable {
 
 		} catch (Exception e) {
 			UtilMethods.errorWindow("Error when searching", e);
+		}
+
+	}
+
+	public void exportCourse() {
+		Course course = getSelectedCourse();
+		if (course == null) {
+			lblNoSelect.setVisible(true);
+			return;
+		}
+		Path destDir = controller.getHostUserModelversionDir();
+
+		Path dest = destDir.resolve(controller.getCoursePathName(course));
+
+		if (dest.toFile()
+				.isFile()) {
+			UtilMethods.fileAction("(" + LocalDate.now().format(DateTimeFormatter.ISO_DATE) + ") " + controller.getCoursePathName(course), ConfigHelper.getProperty("coursePath", "./"),
+					controller.getStage(), FileUtil.FileChooserType.SAVE, f -> {
+						FileUtil.exportFile(dest, destDir, f.toPath());
+						ConfigHelper.setProperty("coursePath", destDir);
+					}, FileUtil.ALL);
+		} else {
+			UtilMethods.warningWindow(I18n.get("text.coursecachenotexists"));
 		}
 
 	}

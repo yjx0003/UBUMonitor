@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
+import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 import org.json.JSONArray;
@@ -648,6 +649,32 @@ public class UtilMethods {
 	public static Color toAwtColor(javafx.scene.paint.Color color) {
 		return new Color((float) color.getRed(), (float) color.getGreen(), (float) color.getBlue(),
 				(float) color.getOpacity());
+	}
+	
+	public static <T> void fillCheckComboBox(T dummy, Collection<T> values, CheckComboBox<T> checkComboBox) {
+		if (values == null || values.isEmpty()) {
+			return;
+		}
+
+		checkComboBox.getItems()
+				.add(dummy);
+		checkComboBox.getItems()
+				.addAll(values);
+		checkComboBox.getCheckModel()
+				.checkAll();
+
+		checkComboBox.getItemBooleanProperty(0)
+				.addListener((observable, oldValue, newValue) -> {
+					if (newValue.booleanValue()) {
+						checkComboBox.getCheckModel()
+								.checkAll();
+					} else {
+						checkComboBox.getCheckModel()
+								.clearChecks();
+					}
+
+				});
+
 	}
 
 }

@@ -1,6 +1,5 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
-import java.util.Collection;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -12,6 +11,7 @@ import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.ModuleType;
 import es.ubu.lsi.ubumonitor.model.Section;
 import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.transformation.FilteredList;
@@ -66,7 +66,7 @@ public class SelectionForumController {
 
 		Section dummySection = new Section(-1);
 		dummySection.setName(I18n.get("text.selectall"));
-		fillCheckComboBox(dummySection, actualCourse
+		UtilMethods.fillCheckComboBox(dummySection, actualCourse
 				.getSections(), checkComboBoxForumSection);
 
 		listViewForum.getSelectionModel()
@@ -85,31 +85,7 @@ public class SelectionForumController {
 		onChange();
 	}
 
-	private <T> void fillCheckComboBox(T dummy, Collection<T> values, CheckComboBox<T> checkComboBox) {
-		if (values == null || values.isEmpty()) {
-			return;
-		}
 
-		checkComboBox.getItems()
-				.add(dummy);
-		checkComboBox.getItems()
-				.addAll(values);
-		checkComboBox.getCheckModel()
-				.checkAll();
-
-		checkComboBox.getItemBooleanProperty(0)
-				.addListener((observable, oldValue, newValue) -> {
-					if (newValue.booleanValue()) {
-						checkComboBox.getCheckModel()
-								.checkAll();
-					} else {
-						checkComboBox.getCheckModel()
-								.clearChecks();
-					}
-
-				});
-
-	}
 
 	private void onChange() {
 		filteredForum.setPredicate(getForumPredicate());

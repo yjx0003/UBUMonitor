@@ -844,7 +844,7 @@ public class WelcomeController implements Initializable {
 							populateEnrolledUsersCourse.searchUser(ids);
 							actualCourse.setNotEnrolledUser(notEnrolled);
 							actualCourse.setUpdatedLog(ZonedDateTime.now());
-
+							populateEnrolledUsersCourse.downloadUserimages(actualCourse.getEnrolledUsers());
 							tries = limitRelogin + 1;
 						} catch (Exception e) {
 							if (tries >= limitRelogin) {
@@ -858,6 +858,8 @@ public class WelcomeController implements Initializable {
 						}
 					}
 				}
+				
+				
 				if (!isCancelled()) {
 					updateMessage(I18n.get("label.savelocal"));
 					saveData();
@@ -924,7 +926,7 @@ public class WelcomeController implements Initializable {
 			lblNoSelect.setVisible(true);
 			return;
 		}
-		Path destDir = controller.getHostUserModelversionArchivedDir();
+		Path destDir = controller.getHostUserModelversionDir();
 
 		Path dest = destDir.resolve(controller.getCoursePathName(course));
 

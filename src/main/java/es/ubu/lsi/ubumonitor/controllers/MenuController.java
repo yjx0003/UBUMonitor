@@ -5,10 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -409,12 +407,23 @@ public class MenuController {
 					ButtonType buttonType = UtilMethods.confirmationWindow("text.override");
 					if (buttonType == ButtonType.OK) {
 						textInputDialog.close();
-						exportCourse(source, destDir, dest);
+						try {
+							FileUtil.exportFile(source, destDir, dest);
+							UtilMethods.infoWindow(I18n.get("info.courseexported"));
+						} catch (IOException e) {
+							throw new IllegalStateException(e);
+						}
+					
 					}
 				} else {
 					textInputDialog.close();
-					exportCourse(source, destDir, dest);
-
+					try {
+						FileUtil.exportFile(source, destDir, dest);
+						UtilMethods.infoWindow(I18n.get("info.courseexported"));
+					} catch (IOException e) {
+						throw new IllegalStateException(e);
+					}
+					
 				}
 			});
 
@@ -424,15 +433,7 @@ public class MenuController {
 		}
 	}
 
-	public void exportCourse(Path source, Path destDir, Path dest) {
-		try {
-			Files.createDirectories(destDir);
-			Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING);
-			UtilMethods.infoWindow(I18n.get("info.courseexported"));
-		} catch (IOException e) {
-			UtilMethods.errorWindow("Error when archiving the course", e);
-		}
-	}
+	
 
 	public void importLogs() {
 		UtilMethods.fileAction(null, ConfigHelper.getProperty("importLogsFolderPath", "./"), controller.getStage(),

@@ -4,11 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.Collator;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -25,6 +28,7 @@ import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.model.DataBase;
 import es.ubu.lsi.ubumonitor.persistence.Serialization;
+import es.ubu.lsi.ubumonitor.util.FileUtil;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.application.Platform;
@@ -411,5 +415,36 @@ public class WelcomeOfflineController implements Initializable {
 
 		UtilMethods.createDialog(loader, controller.getStage());
 
+	}
+	
+	public void exportCourse() {
+		File file = getSelectedCourse();
+		if(file==null) {
+			lblNoSelect.setVisible(true);
+			return;
+		}
+		UtilMethods.fileAction("(" + LocalDate.now().format(DateTimeFormatter.ISO_DATE) + ") " + file,
+				ConfigHelper.getProperty("coursePath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
+				f -> {
+					FileUtil.exportFile(file.toPath(), f.getParentFile().toPath(), f.toPath());
+					ConfigHelper.setProperty("coursePath", file.getParent());
+				}, FileUtil.ALL);
+		
+	}
+	
+	public void importCourse() {
+		
+		UtilMethods.fileAction(null,
+				ConfigHelper.getProperty("coursePath", "./"), controller.getStage(), FileUtil.FileChooserType.OPEN,
+				f -> {
+					FileUtil.exportFile( f.toPath() ,controller.getHostUserModelversionArchivedDir(), Paths.get(f.getName()));
+					ConfigHelper.setProperty("coursePath", f.getParent());
+					tabPane.getSelectionModel().select(1);
+					if(!listViewPreviousCourses.getItems().contains(f)) {
+						listViewPreviousCourses.getItems().add(f);
+						listViewPreviousCourses.getSelectionModel().select(f);
+					}
+					
+				},false, FileUtil.ALL);
 	}
 }

@@ -3,7 +3,6 @@ package es.ubu.lsi.ubumonitor.util;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -291,6 +290,7 @@ public class UtilMethods {
 
 		createDialog(loader, ownerStage, Modality.WINDOW_MODAL);
 	}
+
 	public static void openURL(String url) {
 		// from
 		// http://www.java2s.com/Code/Java/Development-Class/LaunchBrowserinMacLinuxUnix.htm
@@ -357,27 +357,27 @@ public class UtilMethods {
 			FileUtil.FileChooserType fileChooserType, FileUtil.ThrowingConsumer<File, IOException> consumer,
 			boolean confirmationWindow, FileChooser.ExtensionFilter... extensionFilters) {
 		FileChooser fileChooser = createFileChooser(initialFileName, initialDirectory, extensionFilters);
-		File file = fileChooserType.getFile(fileChooser, owner);
-		if (file == null) {
-			return;
-		}
-		String extension = fileChooser.getSelectedExtensionFilter()
-				.getExtensions()
-				.get(0)
-				.substring(1);
-		if (!file.getName()
-				.toLowerCase()
-				.endsWith(extension)) {
-			file = new File(file.getAbsolutePath() + extension);
-		}
 		try {
+			File file = fileChooserType.getFile(fileChooser, owner);
+			if (file == null) {
+				return;
+			}
+			String extension = fileChooser.getSelectedExtensionFilter()
+					.getExtensions()
+					.get(0)
+					.substring(1);
+			if (!file.getName()
+					.toLowerCase()
+					.endsWith(extension)) {
+				file = new File(file.getAbsolutePath() + extension);
+			}
+
 			consumer.accept(file);
 			if (confirmationWindow) {
 				showExportedFile(file);
 			}
-		} catch (FileNotFoundException e) {
-			errorWindow(e.getMessage());
 		} catch (Exception e) {
+
 			errorWindow(e.getMessage(), e);
 		}
 
@@ -506,7 +506,7 @@ public class UtilMethods {
 		WritableImage image = node.snapshot(new SnapshotParameters(), null);
 
 		ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-		
+
 	}
 
 	public static void openFileFolder(File file) {
@@ -644,12 +644,10 @@ public class UtilMethods {
 		return element.toLowerCase()
 				.contains(textField);
 	}
-	
+
 	public static Color toAwtColor(javafx.scene.paint.Color color) {
-		 return new Color((float) color.getRed(),
-                 (float) color.getGreen(),
-                 (float) color.getBlue(),
-                 (float) color.getOpacity());
+		return new Color((float) color.getRed(), (float) color.getGreen(), (float) color.getBlue(),
+				(float) color.getOpacity());
 	}
 
 }

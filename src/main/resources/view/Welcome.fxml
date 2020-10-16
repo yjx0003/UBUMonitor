@@ -12,6 +12,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -200,6 +201,7 @@
         <columnConstraints>
           <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="60.0" />
           <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="167.0" minWidth="104.0" prefWidth="167.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="NEVER" />
             <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="100.0" />
         </columnConstraints>
         <rowConstraints>
@@ -207,12 +209,26 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Label contentDisplay="BOTTOM" text="%label.loggedin" />
-            <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" text="%label.host" GridPane.rowIndex="1" />
+            <Label contentDisplay="BOTTOM" text="%label.loggedin" wrapText="true" />
+            <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" text="%label.host" wrapText="true" GridPane.rowIndex="1" />
             <Label fx:id="labelLoggedIn" wrapText="true" GridPane.columnIndex="1" />
             <Label fx:id="labelHost" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Button fx:id="buttonLogout" mnemonicParsing="false" onAction="#logOut" styleClass="accept_button" text="%button.logout" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
-            <Label fx:id="conexionLabel" text="Label" GridPane.columnIndex="2" GridPane.halignment="RIGHT" />
+            <Button fx:id="buttonLogout" mnemonicParsing="false" onAction="#logOut" styleClass="accept_button" text="%button.logout" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+            <Label fx:id="conexionLabel" text="Label" GridPane.columnIndex="3" GridPane.halignment="RIGHT" />
+            <Label onMouseClicked="#exportCourse" GridPane.columnIndex="2" GridPane.rowIndex="1">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../img/file-export-solid.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="%tooltip.exportcourse" />
+               </tooltip>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor></Label>
          </children>
          <cursor>
             <Cursor fx:constant="DEFAULT" />

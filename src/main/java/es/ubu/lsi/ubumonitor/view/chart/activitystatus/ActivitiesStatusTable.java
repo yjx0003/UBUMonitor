@@ -87,6 +87,7 @@ public class ActivitiesStatusTable extends Tabulator {
 		jsObject.putWithQuote("title", I18n.get("chartlabel.progress"));
 		jsObject.putWithQuote("field", "progress");
 		jsObject.putWithQuote("formatter", "progress");
+		jsObject.put("width", 80);
 		jsObject.putWithQuote("frozen", true);
 		jsObject.put("formatterParams", getProgressParam(courseModules.size()));
 		array.add(jsObject.toString());

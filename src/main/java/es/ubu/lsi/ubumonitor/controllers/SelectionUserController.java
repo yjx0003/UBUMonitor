@@ -144,8 +144,9 @@ public class SelectionUserController {
 				.stream()
 				.sorted(Comparator.comparing(Group::getGroupName, Comparator.nullsLast(Collator.getInstance())))
 				.collect(Collectors.toList()), checkComboBoxGroup);
-		checkComboBoxGroup.getCheckModel().check(dummyGroup);
+		checkComboBoxGroup.getCheckModel().clearChecks();
 		ObservableList<Group> groups = mainConfiguration.getValue(MainConfiguration.GENERAL, "initialGroups");
+		
 		if (groups != null) {
 			groups.forEach(checkComboBoxGroup.getCheckModel()::check);
 		}

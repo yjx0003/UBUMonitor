@@ -12,11 +12,13 @@ import java.net.URL;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
@@ -59,10 +61,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.util.Pair;
 import okhttp3.Response;
 
 public class UtilMethods {
-	private static final Random RANDOM = new Random();
 
 	private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
@@ -478,24 +480,6 @@ public class UtilMethods {
 		return stage;
 	}
 
-	/**
-	 * https://www.baeldung.com/java-random-string
-	 * 
-	 * @return
-	 */
-	public static String ranmdomAlphanumeric() {
-		int leftLimit = 97; // letter 'a'
-		int rightLimit = 122; // letter 'z'
-		int targetStringLength = 10;
-
-		return RANDOM.ints(leftLimit, rightLimit + 1)
-				.filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-				.limit(targetStringLength)
-				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-				.toString();
-
-	}
-
 	public static <E> AutoCompletionBinding<E> createAutoCompletionBinding(TextField textField,
 			Collection<E> possibleSuggestions) {
 		AutoCompletionBinding<E> autoCompletionBinding = TextFields.bindAutoCompletion(textField, possibleSuggestions);
@@ -677,4 +661,28 @@ public class UtilMethods {
 
 	}
 
+
+	public static <T, V extends Comparable<V>> Map<T, Integer> ranking(Map<T, V> map) {
+		return ranking(map, Comparator.reverseOrder());
+	}
+	
+	public static <T, V> Map<T, Integer> ranking(Map<T, V> map, Comparator<V> comparator) {
+		
+		if(map.isEmpty()) {
+			return Collections.emptyMap();
+		}
+		
+		List<Pair<T, V>> scores = new ArrayList<>(map.size());
+		map.forEach((k, v) -> scores.add(new Pair<>(k, v)));
+		scores.sort(Comparator.comparing(Pair::getValue, comparator));
+
+		Map<T, Integer> ranking = new HashMap<>();
+		ranking.put(scores.get(0).getKey(), 1);
+		int actualRank = 1;
+		for (int i = 1; i < scores.size(); i++) {
+			actualRank = scores.get(i).getValue().equals(scores.get(i - 1).getValue()) ? actualRank : i + 1;
+			ranking.put(scores.get(i).getKey(), actualRank);
+		}
+		return ranking;
+	}
 }

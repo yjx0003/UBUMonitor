@@ -152,6 +152,34 @@ public class VisualizationController extends WebViewAction {
 		return contextMenu;
 
 	}
+	
+	public void bindDatePicker(WebViewAction webViewAction, DatePicker otherStart, DatePicker otherEnd) {
+		otherStart.setValue(datePickerStart.getValue());
+		otherEnd.setValue(datePickerEnd.getValue());
+
+		otherStart.setOnAction(event -> webViewAction.updateChart());
+		otherEnd.setOnAction(event -> webViewAction.updateChart());
+
+		otherStart.setDayCellFactory(picker -> new DateCell() {
+			@Override
+			public void updateItem(LocalDate date, boolean empty) {
+				super.updateItem(date, empty);
+				setDisable(empty || date.isAfter(datePickerEnd.getValue()));
+			}
+		});
+		otherEnd.setDayCellFactory(picker -> new DateCell() {
+			@Override
+			public void updateItem(LocalDate date, boolean empty) {
+				super.updateItem(date, empty);
+				setDisable(empty || date.isBefore(datePickerStart.getValue()) || date.isAfter(LocalDate.now()));
+			}
+		});
+		otherStart.valueProperty()
+				.bindBidirectional(datePickerStart.valueProperty());
+		otherEnd.valueProperty()
+				.bindBidirectional(datePickerEnd.valueProperty());
+
+	}
 
 	/**
 	 * Actualiza la escala maxima del eje y de los graficos de logs.

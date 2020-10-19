@@ -674,7 +674,7 @@ public class UtilMethods {
 		
 		List<Pair<T, V>> scores = new ArrayList<>(map.size());
 		map.forEach((k, v) -> scores.add(new Pair<>(k, v)));
-		scores.sort(Comparator.comparing(Pair::getValue, comparator));
+		scores.sort(Comparator.comparing(Pair::getValue, comparator.reversed()));
 
 		Map<T, Integer> ranking = new HashMap<>();
 		ranking.put(scores.get(0).getKey(), 1);

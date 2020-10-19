@@ -1,7 +1,6 @@
 package es.ubu.lsi.ubumonitor.view.chart.multi;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;

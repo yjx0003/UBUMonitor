@@ -48,9 +48,10 @@ public enum ChartType {
 	FORUM_WORD_CLOUD(Tabs.FORUM, 29),
 	FORUM_TABLE(Tabs.FORUM, 25),
 	
-	CALENDAR_EVENT_TIMELINE(Tabs.CALENDAR_EVENT, 28), ;
+	CALENDAR_EVENT_TIMELINE(Tabs.CALENDAR_EVENT, 28), 
+	RANKING_TABLE(Tabs.MULTI, 34);
 	
-	//next id 34
+	//next id 35
 
 	private Tabs tab;
 	private int id;

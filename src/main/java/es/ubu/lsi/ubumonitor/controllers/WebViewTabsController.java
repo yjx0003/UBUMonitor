@@ -2,9 +2,10 @@ package es.ubu.lsi.ubumonitor.controllers;
 
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
-import es.ubu.lsi.ubumonitor.controllers.tabs.ForumController;
 import es.ubu.lsi.ubumonitor.controllers.tabs.CalendarEventController;
 import es.ubu.lsi.ubumonitor.controllers.tabs.ClusteringController;
+import es.ubu.lsi.ubumonitor.controllers.tabs.ForumController;
+import es.ubu.lsi.ubumonitor.controllers.tabs.MultiController;
 import es.ubu.lsi.ubumonitor.controllers.tabs.RiskController;
 import es.ubu.lsi.ubumonitor.controllers.tabs.VisualizationController;
 import es.ubu.lsi.ubumonitor.model.Course;
@@ -44,6 +45,12 @@ public class WebViewTabsController {
 	
 	@FXML
 	private CalendarEventController calendarEventController;
+	
+	@FXML
+	private Tab multiTab;
+	
+	@FXML
+	private MultiController multiController;
 
 	private MainController mainController;
 	
@@ -82,6 +89,7 @@ public class WebViewTabsController {
 		add(riskController, mainController, riskTab, actualCourse, mainConfiguration, stage);
 		add(forumController, mainController, forumTab, actualCourse, mainConfiguration, stage);
 		add(calendarEventController, mainController, calendarEventTab, actualCourse, mainConfiguration, stage);
+		add(multiController, mainController, multiTab, actualCourse, mainConfiguration, stage);
 		
 	}
 
@@ -148,5 +156,12 @@ public class WebViewTabsController {
 	public CalendarEventController getCalendarEventController() {
 		return calendarEventController;
 	}
+	
+	public Tab getMultiTab() {
+		return multiTab;
+	}
 
+	public MultiController getMultiController() {
+		return multiController;
+	}
 }

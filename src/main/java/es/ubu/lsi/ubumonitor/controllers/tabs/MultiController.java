@@ -4,17 +4,17 @@ import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.WebViewAction;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.Course;
-import es.ubu.lsi.ubumonitor.view.chart.bridge.ForumConnector;
 import es.ubu.lsi.ubumonitor.view.chart.bridge.JavaConnector;
+import es.ubu.lsi.ubumonitor.view.chart.bridge.MultiConnector;
 import javafx.fxml.FXML;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-public class ForumController extends WebViewAction {
+public class MultiController extends WebViewAction {
 
-	private ForumConnector javaConnector;
+	private MultiConnector javaConnector;
 	@FXML
 	private GridPane dateGridPane;
 	@FXML
@@ -25,7 +25,8 @@ public class ForumController extends WebViewAction {
 	@Override
 	public void init(MainController mainController, Tab tab, Course actualCourse, MainConfiguration mainConfiguration,
 			Stage stage) {
-		javaConnector = new ForumConnector(webViewController.getWebViewCharts(), mainConfiguration, mainController,
+		
+		javaConnector = new MultiConnector(webViewController.getWebViewCharts(), mainConfiguration, mainController,
 				actualCourse, dateGridPane, datePickerStart, datePickerEnd);
 		init(tab, actualCourse, mainConfiguration, stage, javaConnector);
 		mainController.getWebViewTabsController()
@@ -35,9 +36,7 @@ public class ForumController extends WebViewAction {
 
 	@Override
 	public void onWebViewTabChange() {
-
-		javaConnector.updateOptionsImages();
-		javaConnector.updateChart();
+		updateChart();
 
 	}
 
@@ -50,6 +49,7 @@ public class ForumController extends WebViewAction {
 	@Override
 	public void updatePredicadeEnrolledList() {
 		updateChart();
+
 	}
 
 	@Override
@@ -57,9 +57,64 @@ public class ForumController extends WebViewAction {
 		updateChart();
 
 	}
+	
+	@Override
+	public void updateTreeViewGradeItem() {
+		updateChart();
+	}
+	
+	@Override
+	public void updateListViewActivity() {
+		updateChart();
+
+	}
+	
+	@Override
+	public void onSetTabLogs() {
+		updateChart();
+		
+
+	}
+
+	
 
 	@Override
-	public void updateListViewForum() {
+	public void onSetTabGrades() {
+		updateChart();
+
+	}
+
+	@Override
+	public void onSetTabActivityCompletion() {
+		updateChart();
+	}
+
+	@Override
+	public void onSetSubTabLogs() {
+		updateChart();
+
+	}
+
+	@Override
+	public void updateListViewComponents() {
+		updateChart();
+
+	}
+
+	@Override
+	public void updateListViewEvents() {
+		updateChart();
+
+	}
+
+	@Override
+	public void updateListViewSection() {
+		updateChart();
+
+	}
+
+	@Override
+	public void updateListViewCourseModule() {
 		updateChart();
 	}
 

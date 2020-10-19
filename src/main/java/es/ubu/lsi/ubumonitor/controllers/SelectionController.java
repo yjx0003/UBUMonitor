@@ -150,11 +150,12 @@ public class SelectionController {
 	public void init(MainController mainController, Course actualCourse) {
 		this.mainController = mainController;
 
-		// bind the content to visualization or risk tab
+		// bind the content to visualization, multi or clustering tab
 		tabPane.visibleProperty()
 				.bind(mainController.getWebViewTabsController()
 						.getVisualizationTab()
 						.selectedProperty()
+						.or(mainController.getWebViewTabsController().getMultiTab().selectedProperty())
 						.or(mainController.getWebViewTabsController()
 								.getClusteringTab()
 								.selectedProperty()));

@@ -134,7 +134,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_USER_POST_BAR, "text.discussioncreation", Color.web("#efc9af", 0.3));
 		createItem(ChartType.FORUM_USER_POST_BAR, "text.replies", Color.web("#104c91", 0.3));
 		createItem(ChartType.FORUM_USER_POST_BAR, HORIZONTAL_MODE, false);
-		
+
 		createItem(ChartType.FORUM_NETWORK, "showNonConnected", true);
 		createItem(ChartType.FORUM_NETWORK, "usePhoto", true);
 		createItem(ChartType.FORUM_NETWORK, "useInitialNames", true);
@@ -194,7 +194,10 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_WORD_CLOUD, "maxFont", 40);
 		createItem(ChartType.FORUM_WORD_CLOUD, "backGroundImage", MaskImage.RECTANGLE);
 
-
+		createItem(ChartType.RANKING_TABLE, "firstInterval", Color.web("#b5ff33"));
+		createItem(ChartType.RANKING_TABLE, "secondInterval", Color.web("#fff033"));
+		createItem(ChartType.RANKING_TABLE, "thirdInterval", Color.web("#f4e3ae"));
+		createItem(ChartType.RANKING_TABLE, "fourthInterval", Color.web("#f78880"));
 
 	}
 

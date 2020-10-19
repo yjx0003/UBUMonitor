@@ -150,8 +150,8 @@ public class GradeReportTable extends Tabulator {
 
 		jsObject.put("color",
 				"function(e){return e<" + mainConfiguration.getValue(MainConfiguration.GENERAL, "cutGrade") + "?"
-						+ colorToRGB(mainConfiguration.getValue(getChartType(), "failGradeColor")) + ":"
-						+ colorToRGB(mainConfiguration.getValue(getChartType(), "passGradeColor")) + "}");
+						+ colorToRGB(getConfigValue("failGradeColor")) + ":"
+						+ colorToRGB(getConfigValue("passGradeColor")) + "}");
 		return jsObject.toString();
 	}
 

@@ -102,14 +102,14 @@ public class ActivitiesStatusTable extends Tabulator {
 		jsObject.put("legend", String
 				.format("function(value){return value+'/'+%s +' ('+Math.round(value/%s*100||0)+'%%)';}", max, max));
 
-		jsObject.putWithQuote("legendAlign", "center");
+		jsObject.putWithQuote("hozAlign", "center");
 		JSArray jsArray = new JSArray();
 
-		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "firstInterval")));
-		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "secondInterval")));
-		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "thirdInterval")));
-		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "fourthInterval")));
-		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "moreMax")));
+		jsArray.add(colorToRGB(getConfigValue("firstInterval")));
+		jsArray.add(colorToRGB(getConfigValue("secondInterval")));
+		jsArray.add(colorToRGB(getConfigValue("thirdInterval")));
+		jsArray.add(colorToRGB(getConfigValue("fourthInterval")));
+		jsArray.add(colorToRGB(getConfigValue("moreMax")));
 		jsObject.put("color",
 				String.format(Locale.ROOT, "function(e){return %s[e/%f|0]}", jsArray.toString(), max / 4.0));
 		return jsObject.toString();

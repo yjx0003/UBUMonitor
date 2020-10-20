@@ -7,7 +7,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,8 +72,7 @@ public class RankingTable extends TabulatorLogs {
 		Map<EnrolledUser, Integer> rankingLog = UtilMethods.ranking(pointsLog);
 
 		Map<EnrolledUser, DescriptiveStatistics> pointsGrades = getGradeItemRanking(users, gradeItems);
-		Map<EnrolledUser, Integer> rankingGrades = UtilMethods.ranking(pointsGrades,
-				Comparator.comparing(DescriptiveStatistics::getMean));
+		Map<EnrolledUser, Integer> rankingGrades = UtilMethods.ranking(pointsGrades, DescriptiveStatistics::getMean);
 
 		Map<EnrolledUser, Integer> pointsActivities = getActivityCompletionRanking(users, activities, start.getValue()
 				.atStartOfDay(ZoneId.systemDefault())
@@ -103,7 +101,7 @@ public class RankingTable extends TabulatorLogs {
 			jsObject.put(ACTIVITY_COMPLETION, rankingActivities.get(user));
 
 			jsObject.put(rankingLogField, pointsLog.get(user));
-			jsObject.put(rankingGradeField,Math.floor(pointsGrades.get(user)
+			jsObject.put(rankingGradeField, Math.floor(pointsGrades.get(user)
 					.getMean() * 100) / 100);
 			jsObject.put(rankingActivityField, pointsActivities.get(user));
 
@@ -237,8 +235,7 @@ public class RankingTable extends TabulatorLogs {
 		Map<EnrolledUser, Integer> rankingLog = UtilMethods.ranking(pointsLog);
 
 		Map<EnrolledUser, DescriptiveStatistics> pointsGrades = getGradeItemRanking(users, gradeItems);
-		Map<EnrolledUser, Integer> rankingGrades = UtilMethods.ranking(pointsGrades,
-				Comparator.comparing(DescriptiveStatistics::getMean));
+		Map<EnrolledUser, Integer> rankingGrades = UtilMethods.ranking(pointsGrades, DescriptiveStatistics::getMean);
 
 		Map<EnrolledUser, Integer> pointsActivities = getActivityCompletionRanking(users, activities, start.getValue()
 				.atStartOfDay(ZoneId.systemDefault())

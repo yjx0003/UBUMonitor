@@ -1,13 +1,14 @@
 package es.ubu.lsi.ubumonitor;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
@@ -19,7 +20,7 @@ import org.commonmark.renderer.text.TextContentRenderer;
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Test;
 
-import javafx.util.Pair;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
 public class UnitTest {
 
@@ -47,33 +48,20 @@ public class UnitTest {
 
 	@Test
 	public void rankingTest() {
-		Map<String, Integer> myMap = new HashMap<String, Integer>() {
-			{
-				put("a", 3);
-				put("c", 4);
-				put("d", 4);
-				put("e", 1);
-				put("f", 1);
-			}
-		};
-		System.out.println(ranking(myMap));
+		Map<Integer, DescriptiveStatistics> map = new HashMap<>();
+		DescriptiveStatistics d1 = new DescriptiveStatistics();
+		d1.addValue(100.0);
+		DescriptiveStatistics d2 = new DescriptiveStatistics();
+		d2.addValue(100.0);
+		map.put(1, d1);
+		map.put(2, d2);
+		assertEquals(d1.getMean(), d2.getMean());
+		Map<Integer, Integer> ranking = UtilMethods.ranking(map, DescriptiveStatistics::getMean);
+		assertEquals(ranking.get(1), ranking.get(2));
 
 	}
 
-	public static <T, V extends Comparable<V>> Map<T, Integer> ranking(Map<T, V> map) {
-		List<Pair<T, V>> scores = new ArrayList<>(map.size());
-		map.forEach((k, v) -> scores.add(new Pair<>(k, v)));
-		scores.sort(Comparator.comparing(Pair::getValue));
 
-		Map<T, Integer> ranking = new LinkedHashMap<>();
-		ranking.put(scores.get(0).getKey(), 1);
-		int actualRank = 1;
-		for (int i = 1; i < scores.size(); i++) {
-			actualRank = scores.get(i).getValue().equals(scores.get(i - 1).getValue()) ? actualRank : i + 1;
-			ranking.put(scores.get(i).getKey(), actualRank);
-		}
-		return ranking;
-	}
 
 	@Test
 	public void LuceneEnglishTest() throws IOException {

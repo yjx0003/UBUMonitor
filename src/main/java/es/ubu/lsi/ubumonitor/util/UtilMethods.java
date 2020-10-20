@@ -19,6 +19,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
@@ -663,10 +664,10 @@ public class UtilMethods {
 
 
 	public static <T, V extends Comparable<V>> Map<T, Integer> ranking(Map<T, V> map) {
-		return ranking(map, Comparator.reverseOrder());
+		return ranking(map, Function.identity());
 	}
 	
-	public static <T, V> Map<T, Integer> ranking(Map<T, V> map, Comparator<V> comparator) {
+	public static <T, V, E extends Comparable<E>> Map<T, Integer> ranking(Map<T, V> map, Function<V, E> function) {
 		
 		if(map.isEmpty()) {
 			return Collections.emptyMap();
@@ -674,13 +675,13 @@ public class UtilMethods {
 		
 		List<Pair<T, V>> scores = new ArrayList<>(map.size());
 		map.forEach((k, v) -> scores.add(new Pair<>(k, v)));
-		scores.sort(Comparator.comparing(Pair::getValue, comparator.reversed()));
+		scores.sort(Comparator.comparing(Pair::getValue, Comparator.comparing(function).reversed()));
 
 		Map<T, Integer> ranking = new HashMap<>();
 		ranking.put(scores.get(0).getKey(), 1);
 		int actualRank = 1;
 		for (int i = 1; i < scores.size(); i++) {
-			actualRank = scores.get(i).getValue().equals(scores.get(i - 1).getValue()) ? actualRank : i + 1;
+			actualRank = function.apply(scores.get(i).getValue()).equals(function.apply(scores.get(i - 1).getValue())) ? actualRank : i + 1;
 			ranking.put(scores.get(i).getKey(), actualRank);
 		}
 		return ranking;

@@ -36,7 +36,7 @@ public class MultiController extends WebViewAction {
 
 	@Override
 	public void onWebViewTabChange() {
-		updateChart();
+		javaConnector.updateChart();
 
 	}
 

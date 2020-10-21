@@ -52,6 +52,7 @@ public class RankingTable extends TabulatorLogs {
 
 	public RankingTable(MainController mainController, WebView webView, TreeView<GradeItem> treeViewGradeItem,
 			ListView<CourseModule> listViewActivityCompletion, DatePicker start, DatePicker end) {
+
 		super(mainController, ChartType.RANKING_TABLE, webView);
 		this.treeViewGradeItem = treeViewGradeItem;
 		this.listViewActivityCompletion = listViewActivityCompletion;
@@ -86,8 +87,8 @@ public class RankingTable extends TabulatorLogs {
 		JSArray jsArray = new JSArray();
 		data.put("tabledata", jsArray);
 
-		data.put("columns", createColumns(rankingLog.values(), rankingGrades.values(), rankingActivities.values(),
-				typeLogs.isEmpty(), gradeItems.isEmpty(), activities.isEmpty()));
+		data.put("columns", createColumns(users.size(), rankingLog.values(), rankingGrades.values(),
+				rankingActivities.values(), typeLogs.isEmpty(), gradeItems.isEmpty(), activities.isEmpty()));
 
 		String rankingLogField = RANKING + LOG;
 		String rankingGradeField = RANKING + GRADE_ITEM;
@@ -111,12 +112,12 @@ public class RankingTable extends TabulatorLogs {
 		return data.toString();
 	}
 
-	private JSArray createColumns(Collection<Integer> pointLogs, Collection<Integer> pointGradeItem,
+	private JSArray createColumns(int selectedUsers, Collection<Integer> pointLogs, Collection<Integer> pointGradeItem,
 			Collection<Integer> pointActivities, boolean logs, boolean gradeItems, boolean activities) {
 
 		JSArray jsArray = new JSArray();
 		JSObject jsObject = new JSObject();
-		jsObject.putWithQuote("title", I18n.get("text.selectedUsers"));
+		jsObject.putWithQuote("title", I18n.get("text.selectedUsers") + " (" + selectedUsers + ")");
 		jsObject.putWithQuote("field", USER);
 		jsObject.put("tooltip", true);
 		jsObject.put("sorter", "'string'");

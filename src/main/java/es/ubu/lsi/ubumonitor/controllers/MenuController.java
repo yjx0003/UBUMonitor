@@ -10,9 +10,13 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,14 +31,22 @@ import es.ubu.lsi.ubumonitor.export.CSVBuilderAbstract;
 import es.ubu.lsi.ubumonitor.export.CSVExport;
 import es.ubu.lsi.ubumonitor.export.dashboard.Excel;
 import es.ubu.lsi.ubumonitor.export.photos.UserPhoto;
+import es.ubu.lsi.ubumonitor.export.report.RankingReport;
 import es.ubu.lsi.ubumonitor.model.Course;
+import es.ubu.lsi.ubumonitor.model.CourseModule;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.LogStats;
 import es.ubu.lsi.ubumonitor.model.Logs;
+import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
+import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.persistence.Serialization;
 import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.FileUtil;
 import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.util.LogAction;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.view.chart.multi.RankingTable;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -42,6 +54,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
@@ -262,10 +275,11 @@ public class MenuController {
 
 		Stage stage = UtilMethods.createDialog(loader, controller.getStage(), Modality.APPLICATION_MODAL);
 		stage.setTitle(I18n.get("text.courseconfiguration"));
-		stage.getIcons().setAll(new Image("/img/gear.png"));
+		stage.getIcons()
+				.setAll(new Image("/img/gear.png"));
 		ConfigurationController configurationController = loader.getController();
 		configurationController.init(mainController, controller.getMainConfiguration());
-		
+
 		configurationController.setOnClose();
 
 	}
@@ -308,7 +322,7 @@ public class MenuController {
 	public void moreInfo() {
 		UtilMethods.openURL(AppInfo.LANDING_PAGE);
 	}
-	
+
 	public void gitHubPage() {
 		UtilMethods.openURL(AppInfo.GITHUB);
 	}
@@ -389,8 +403,9 @@ public class MenuController {
 			textInputDialog.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 			textInputDialog.setHeaderText(I18n.get("text.coursename"));
 			textInputDialog.setContentText(I18n.get("text.coursenametextfield"));
-			textInputDialog.getEditor().setMinWidth(500);
-			
+			textInputDialog.getEditor()
+					.setMinWidth(500);
+
 			Stage stageAlert = (Stage) textInputDialog.getDialogPane()
 					.getScene()
 					.getWindow();
@@ -413,7 +428,7 @@ public class MenuController {
 						} catch (IOException e) {
 							throw new IllegalStateException(e);
 						}
-					
+
 					}
 				} else {
 					textInputDialog.close();
@@ -423,7 +438,7 @@ public class MenuController {
 					} catch (IOException e) {
 						throw new IllegalStateException(e);
 					}
-					
+
 				}
 			});
 
@@ -432,8 +447,6 @@ public class MenuController {
 			UtilMethods.errorWindow("Error when archiving the course", e);
 		}
 	}
-
-	
 
 	public void importLogs() {
 		UtilMethods.fileAction(null, ConfigHelper.getProperty("importLogsFolderPath", "./"), controller.getStage(),
@@ -471,6 +484,62 @@ public class MenuController {
 				return null;
 			}
 		};
+	}
+
+	public void exportRankingReport() throws IOException {
+		
+		
+		
+		
+		RankingReport rankingReport = new RankingReport();
+		SelectionController selectionController = mainController.getSelectionController();
+		DatePicker start = mainController.getWebViewTabsController()
+				.getMultiController()
+				.getDatePickerStart();
+		DatePicker end = mainController.getWebViewTabsController()
+				.getMultiController()
+				.getDatePickerEnd();
+		List<EnrolledUser> users = mainController.getSelectionUserController()
+				.getSelectedUsers();
+		List<GradeItem> gradeItems = selectionController.getSelectedGradeItems();
+		List<CourseModule> activities = new ArrayList<>(selectionController.getListViewActivity()
+				.getSelectionModel()
+				.getSelectedItems());
+		Course course = controller.getActualCourse();
+		Map<EnrolledUser, Integer> rankingLogs = UtilMethods
+				.ranking(selectionController.typeLogsAction(new LogAction<Map<EnrolledUser, Integer>>() {
+
+					@Override
+					public <E> Map<EnrolledUser, Integer> action(List<E> logType, DataSet<E> dataSet) {
+
+						return RankingTable.getLogsRanking(users, logType, dataSet, controller.getActualCourse()
+								.getLogStats()
+								.getByType(TypeTimes.DAY), start.getValue(), end.getValue());
+					}
+				}));
+		Map<EnrolledUser, Integer> rankingGrades = UtilMethods
+				.ranking(RankingTable.getGradeItemRanking(users, gradeItems), DescriptiveStatistics::getMean);
+		Map<EnrolledUser, Integer> rankingActivities = UtilMethods.ranking(RankingTable.getActivityCompletionRanking(
+				users, activities, start.getValue()
+						.atStartOfDay(ZoneId.systemDefault())
+						.toInstant(),
+				end.getValue()
+						.plusDays(1)
+						.atStartOfDay(ZoneId.systemDefault())
+						.toInstant()));
+		UtilMethods.fileAction(UtilMethods.removeReservedChar(course.getFullName() + "-" + course.getId()),
+				ConfigHelper.getProperty("csvFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
+				file -> {
+					rankingReport.createReport(file, controller.getDataBase(), users, rankingLogs, rankingGrades,
+							rankingActivities, selectionController.getSelectedLogTypeTransLated(), gradeItems, activities, start.getValue(), end.getValue(),
+							mainController.getSelectionController()
+									.getTabPaneUbuLogs()
+									.getSelectionModel()
+									.getSelectedItem()
+									.getText());
+					ConfigHelper.setProperty("csvFolderPath", file.getParent());
+				}, FileUtil.WORD);
+		
 	}
 
 }

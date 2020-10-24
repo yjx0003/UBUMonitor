@@ -82,7 +82,7 @@ public class ForumTreeMapUser extends Plotly {
 		if (map.size() > 0) {
 			data.put("texttemplate",
 					"'<b>%{label}</b><br>%{value}<br>%{percentParent} "
-							+ UtilMethods.escapeJavaScriptText(I18n.get("parent")) + "<br>%{percentRoot} "
+							+ UtilMethods.escapeJavaScriptText(I18n.get("user")) + "<br>%{percentRoot} "
 							+ UtilMethods.escapeJavaScriptText(I18n.get("root")) + "'");
 			
 			data.put("hovertemplate",

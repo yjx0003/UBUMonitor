@@ -19,6 +19,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,8 +36,10 @@ import org.jsoup.nodes.Document;
 
 import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.Style;
+import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.load.Connection;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionAbstract;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
 import javafx.embed.swing.SwingFXUtils;
@@ -52,6 +55,8 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.GridPane;
@@ -111,9 +116,17 @@ public class UtilMethods {
 	 * @return
 	 */
 	public static <E> String join(List<E> datasets) {
-		return datasets.stream()
+
+		return join(datasets, ",");
+	}
+
+	public static <E> String join(Collection<E> collection, String joinCharacter) {
+		if (collection == null || collection.isEmpty() || joinCharacter == null) {
+			return "";
+		}
+		return collection.stream()
 				.map(E::toString)
-				.collect(Collectors.joining(","));
+				.collect(Collectors.joining(joinCharacter));
 	}
 
 	/**
@@ -635,7 +648,7 @@ public class UtilMethods {
 		return new Color((float) color.getRed(), (float) color.getGreen(), (float) color.getBlue(),
 				(float) color.getOpacity());
 	}
-	
+
 	public static <T> void fillCheckComboBox(T dummy, Collection<T> values, CheckComboBox<T> checkComboBox) {
 		if (values == null || values.isEmpty()) {
 			return;
@@ -662,28 +675,78 @@ public class UtilMethods {
 
 	}
 
-
 	public static <T, V extends Comparable<V>> Map<T, Integer> ranking(Map<T, V> map) {
 		return ranking(map, Function.identity());
 	}
-	
+
 	public static <T, V, E extends Comparable<E>> Map<T, Integer> ranking(Map<T, V> map, Function<V, E> function) {
-		
-		if(map.isEmpty()) {
+
+		if (map.isEmpty()) {
 			return Collections.emptyMap();
 		}
-		
+
 		List<Pair<T, V>> scores = new ArrayList<>(map.size());
 		map.forEach((k, v) -> scores.add(new Pair<>(k, v)));
-		scores.sort(Comparator.comparing(Pair::getValue, Comparator.comparing(function).reversed()));
+		scores.sort(Comparator.comparing(Pair::getValue, Comparator.comparing(function)
+				.reversed()));
 
 		Map<T, Integer> ranking = new HashMap<>();
-		ranking.put(scores.get(0).getKey(), 1);
+		ranking.put(scores.get(0)
+				.getKey(), 1);
 		int actualRank = 1;
 		for (int i = 1; i < scores.size(); i++) {
-			actualRank = function.apply(scores.get(i).getValue()).equals(function.apply(scores.get(i - 1).getValue())) ? actualRank : i + 1;
-			ranking.put(scores.get(i).getKey(), actualRank);
+			actualRank = function.apply(scores.get(i)
+					.getValue())
+					.equals(function.apply(scores.get(i - 1)
+							.getValue())) ? actualRank : i + 1;
+			ranking.put(scores.get(i)
+					.getKey(), actualRank);
 		}
 		return ranking;
 	}
+
+	public static <T, V extends Comparable<V>> Map<T, Double> rankingStatistics(Map<T, V> map) {
+		return rankingStatistics(map, Function.identity());
+	}
+	
+	public static <T, V, E extends Comparable<E>> Map<T, Double> rankingStatistics(Map<T, V> map, Function<V, E> function) {
+		Map<T, Double> ranking = new HashMap<>();
+		for (Map.Entry<T,V> entry : map.entrySet()) {
+			V actualValue = entry.getValue();
+			int lessThaActualValue = 0;
+			int equal = 1;
+			for (V value : map.values()) {
+				int compare = function.apply(actualValue).compareTo(function.apply(value));
+				if (compare > 0) {
+					++lessThaActualValue;
+				} else if (compare == 0) {
+					++equal;
+				}
+			}
+			ranking.put(entry.getKey(), lessThaActualValue+equal/2.0);
+			
+		}
+
+		return ranking;
+	}
+	
+
+	public static List<GradeItem> getSelectedGradeItems(TreeView<GradeItem> treeView) {
+		return treeView.getSelectionModel()
+				.getSelectedItems()
+				.stream()
+				.filter(Objects::nonNull)
+				.map(TreeItem::getValue)
+				.collect(Collectors.toList());
+	}
+
+	public static String getDifferenceTime(Instant start, Instant end) {
+		if (start != null && end != null && start.getEpochSecond() != 0) {
+			return Controller.DATE_TIME_FORMATTER.format(start.atZone(ZoneId.systemDefault())) + " ("
+					+ UtilMethods.formatDates(start, end) + ")";
+		}
+
+		return I18n.get("text.never");
+	}
+
 }

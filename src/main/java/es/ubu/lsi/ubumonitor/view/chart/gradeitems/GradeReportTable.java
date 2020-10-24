@@ -118,9 +118,14 @@ public class GradeReportTable extends Tabulator {
 	private String addStats(List<GradeItem> gradeItems, String name, Map<GradeItem, DescriptiveStatistics> stats) {
 		JSObject jsObject = new JSObject();
 
+		if(stats==null) {
+			return null;
+		}
+		
 		jsObject.putWithQuote("name", name);
 		jsObject.putWithQuote("type", I18n.get("text.stats"));
 		for (GradeItem gradeItem : gradeItems) {
+		
 			jsObject.put("ID" + gradeItem.getId(), adjustTo10(stats.get(gradeItem)
 					.getMean()));
 		}
@@ -141,7 +146,7 @@ public class GradeReportTable extends Tabulator {
 	}
 
 	private String getProgressParam() {
-		
+
 		JSObject jsObject = new JSObject();
 		jsObject.put("min", 0.0);
 		jsObject.put("max", 10);

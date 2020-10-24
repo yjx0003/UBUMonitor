@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.controlsfx.control.CheckComboBox;
 
@@ -26,7 +24,6 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.collections.ObservableList;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
@@ -130,12 +127,7 @@ public abstract class Chart implements ExportableChart {
 	}
 
 	public List<GradeItem> getSelectedGradeItems(TreeView<GradeItem> tvwGradeReport) {
-		return tvwGradeReport.getSelectionModel()
-				.getSelectedItems()
-				.stream()
-				.filter(Objects::nonNull)
-				.map(TreeItem::getValue)
-				.collect(Collectors.toList());
+		return UtilMethods.getSelectedGradeItems(tvwGradeReport);
 	}
 
 	public abstract JSObject getOptions(JSObject jsObject);

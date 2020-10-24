@@ -16,12 +16,9 @@ import es.ubu.lsi.ubumonitor.model.ComponentEvent;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.Section;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
-import es.ubu.lsi.ubumonitor.model.datasets.DataSetComponent;
-import es.ubu.lsi.ubumonitor.model.datasets.DataSetComponentEvent;
-import es.ubu.lsi.ubumonitor.model.datasets.DataSetSection;
-import es.ubu.lsi.ubumonitor.model.datasets.DatasSetCourseModule;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.util.JSObject;
+import es.ubu.lsi.ubumonitor.util.LogAction;
 import es.ubu.lsi.ubumonitor.view.chart.Chart;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import javafx.scene.control.ChoiceBox;
@@ -32,7 +29,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 
 public abstract class ChartLogs extends Chart {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChartLogs.class);
 	protected DatePicker datePickerStart;
 	protected DatePicker datePickerEnd;
@@ -47,13 +44,15 @@ public abstract class ChartLogs extends Chart {
 	protected ListView<ComponentEvent> listViewEvent;
 	protected ListView<Section> listViewSection;
 	protected ListView<CourseModule> listViewCourseModule;
+	protected SelectionController selectionController;
 
 	private String max;
 
 	public ChartLogs(MainController mainController, ChartType chartType) {
 		super(mainController, chartType);
 		SelectionController selectionController = mainController.getSelectionController();
-		VisualizationController visualizationController = mainController.getWebViewTabsController().getVisualizationController();
+		VisualizationController visualizationController = mainController.getWebViewTabsController()
+				.getVisualizationController();
 		this.datePickerStart = visualizationController.getDatePickerStart();
 		this.datePickerEnd = visualizationController.getDatePickerEnd();
 		this.choiceBoxDate = visualizationController.getChoiceBoxDate();
@@ -67,6 +66,7 @@ public abstract class ChartLogs extends Chart {
 		this.listViewEvent = selectionController.getListViewEvents();
 		this.listViewSection = selectionController.getListViewSection();
 		this.listViewCourseModule = selectionController.getListViewCourseModule();
+		this.selectionController = selectionController;
 	}
 
 	@Override
@@ -81,25 +81,13 @@ public abstract class ChartLogs extends Chart {
 
 	@Override
 	public void update() {
-		String dataset = null;
+		String dataset = selectionController.typeLogsAction(new LogAction<String>() {
 
-		if (tabComponent.isSelected()) {
-
-			dataset = createData(listViewComponent.getSelectionModel()
-					.getSelectedItems(), DataSetComponent.getInstance());
-		} else if (tabEvent.isSelected()) {
-
-			dataset = createData(listViewEvent.getSelectionModel()
-					.getSelectedItems(), DataSetComponentEvent.getInstance());
-		} else if (tabSection.isSelected()) {
-
-			dataset = createData(listViewSection.getSelectionModel()
-					.getSelectedItems(), DataSetSection.getInstance());
-		} else if (tabCourseModule.isSelected()) {
-
-			dataset = createData(listViewCourseModule.getSelectionModel()
-					.getSelectedItems(), DatasSetCourseModule.getInstance());
-		}
+			@Override
+			public <E> String action(List<E> logType, DataSet<E> dataSet) {
+				return createData(logType, dataSet);
+			}
+		});
 
 		JSObject options = getOptions();
 		LOGGER.info("Dataset {} en JS: {}", chartType, dataset);
@@ -112,19 +100,19 @@ public abstract class ChartLogs extends Chart {
 	public void exportCSV(String path) throws IOException {
 		String[] header = getCSVHeader();
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(header))) {
-			if (tabComponent.isSelected()) {
-				exportCSV(printer, DataSetComponent.getInstance(), listViewComponent.getSelectionModel()
-						.getSelectedItems());
-			} else if (tabEvent.isSelected()) {
-				exportCSV(printer, DataSetComponentEvent.getInstance(), listViewEvent.getSelectionModel()
-						.getSelectedItems());
-			} else if (tabSection.isSelected()) {
-				exportCSV(printer, DataSetSection.getInstance(), listViewSection.getSelectionModel()
-						.getSelectedItems());
-			} else if (tabCourseModule.isSelected()) {
-				exportCSV(printer, DatasSetCourseModule.getInstance(), listViewCourseModule.getSelectionModel()
-						.getSelectedItems());
-			}
+			selectionController.typeLogsAction(new LogAction<Void>() {
+
+				@Override
+				public <E> Void action(List<E> logType, DataSet<E> dataSet) {
+					try {
+						exportCSV(printer, dataSet, logType);
+						return null;
+					} catch (IOException e) {
+						throw new IllegalStateException(e);
+					}
+
+				}
+			});
 		}
 
 	}
@@ -137,19 +125,19 @@ public abstract class ChartLogs extends Chart {
 	public void exportCSVDesglosed(String path) throws IOException {
 		String[] header = getCSVDesglosedHeader();
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(header))) {
-			if (tabComponent.isSelected()) {
-				exportCSVDesglosed(printer, DataSetComponent.getInstance(), listViewComponent.getSelectionModel()
-						.getSelectedItems());
-			} else if (tabEvent.isSelected()) {
-				exportCSVDesglosed(printer, DataSetComponentEvent.getInstance(), listViewEvent.getSelectionModel()
-						.getSelectedItems());
-			} else if (tabSection.isSelected()) {
-				exportCSVDesglosed(printer, DataSetSection.getInstance(), listViewSection.getSelectionModel()
-						.getSelectedItems());
-			} else if (tabCourseModule.isSelected()) {
-				exportCSVDesglosed(printer, DatasSetCourseModule.getInstance(), listViewCourseModule.getSelectionModel()
-						.getSelectedItems());
-			}
+			selectionController.typeLogsAction(new LogAction<Void>() {
+
+				@Override
+				public <E> Void action(List<E> logType, DataSet<E> dataSet) {
+					try {
+						exportCSVDesglosed(printer, dataSet, logType);
+						return null;
+					} catch (IOException e) {
+						throw new IllegalStateException(e);
+					}
+
+				}
+			});
 		}
 
 	}

@@ -72,7 +72,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -726,7 +725,7 @@ public class WelcomeController implements Initializable {
 	 * 
 	 * @param actionEvent El ActionEvent.
 	 */
-	public void logOut(ActionEvent actionEvent) {
+	public void logOut() {
 		LOGGER.info("Cerrando sesión de usuario");
 		Connection.clearCookies();
 		UtilMethods.changeScene(getClass().getResource("/view/Login.fxml"), controller.getStage());
@@ -747,7 +746,11 @@ public class WelcomeController implements Initializable {
 				LOGGER.info("Cargando datos del curso: {}", actualCourse.getFullName());
 				// Establecemos los usuarios matriculados
 
-				actualCourse.clearCourseData();
+				dataBase.getCourses()
+						.getMap()
+						.values()
+						.forEach(Course::clearCourseData);
+				
 				updateMessage(I18n.get("label.loadingcoursedata"));
 				PopulateEnrolledUsersCourse populateEnrolledUsersCourse = new PopulateEnrolledUsersCourse(dataBase,
 						webService);
@@ -858,8 +861,7 @@ public class WelcomeController implements Initializable {
 						}
 					}
 				}
-				
-				
+
 				if (!isCancelled()) {
 					updateMessage(I18n.get("label.savelocal"));
 					saveData();
@@ -932,8 +934,10 @@ public class WelcomeController implements Initializable {
 
 		if (dest.toFile()
 				.isFile()) {
-			UtilMethods.fileAction("(" + LocalDate.now().format(DateTimeFormatter.ISO_DATE) + ") " + controller.getCoursePathName(course), ConfigHelper.getProperty("coursePath", "./"),
-					controller.getStage(), FileUtil.FileChooserType.SAVE, f -> {
+			UtilMethods.fileAction("(" + LocalDate.now()
+					.format(DateTimeFormatter.ISO_DATE) + ") " + controller.getCoursePathName(course),
+					ConfigHelper.getProperty("coursePath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
+					f -> {
 						FileUtil.exportFile(dest, destDir, f.toPath());
 						ConfigHelper.setProperty("coursePath", destDir);
 					}, FileUtil.ALL);

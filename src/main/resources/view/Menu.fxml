@@ -34,6 +34,7 @@
                      </items>
                   </Menu>
                   <MenuItem fx:id="exportDashboard" onAction="#exportDashboard" text="%menu.exportdashboard" />
+                  <MenuItem fx:id="exportRankingReport" onAction="#exportRankingReport" text="%menu.exportrankingreport" />
                   <MenuItem fx:id="exportCourse" onAction="#exportCourse" text="%menu.exportcourse" />
                   <MenuItem fx:id="MILogOut" onAction="#logOut" text="%menu.logout" />
                   <MenuItem fx:id="MIExit" onAction="#closeApplication" text="%menu.exit">

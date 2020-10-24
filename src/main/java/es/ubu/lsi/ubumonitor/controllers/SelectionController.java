@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
 import java.text.Collator;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -24,7 +25,13 @@ import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.ModuleType;
 import es.ubu.lsi.ubumonitor.model.Section;
+import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
+import es.ubu.lsi.ubumonitor.model.datasets.DataSetComponent;
+import es.ubu.lsi.ubumonitor.model.datasets.DataSetComponentEvent;
+import es.ubu.lsi.ubumonitor.model.datasets.DataSetSection;
+import es.ubu.lsi.ubumonitor.model.datasets.DatasSetCourseModule;
 import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.util.LogAction;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
@@ -155,7 +162,9 @@ public class SelectionController {
 				.bind(mainController.getWebViewTabsController()
 						.getVisualizationTab()
 						.selectedProperty()
-						.or(mainController.getWebViewTabsController().getMultiTab().selectedProperty())
+						.or(mainController.getWebViewTabsController()
+								.getMultiTab()
+								.selectedProperty())
 						.or(mainController.getWebViewTabsController()
 								.getClusteringTab()
 								.selectedProperty()));
@@ -936,6 +945,44 @@ public class SelectionController {
 		} catch (Exception e) {
 			LOGGER.error("Error al filtrar los elementos del calificador: {}", e);
 		}
+	}
+
+	public <T> T typeLogsAction(LogAction<T> logAction) {
+		if (tabUbuLogsComponent.isSelected()) {
+
+			return logAction.action(listViewComponents.getSelectionModel()
+					.getSelectedItems(), DataSetComponent.getInstance());
+		} else if (tabUbuLogsEvent.isSelected()) {
+
+			return logAction.action(listViewEvents.getSelectionModel().getSelectedItems(), DataSetComponentEvent.getInstance());
+		} else if (tabUbuLogsSection.isSelected()) {
+
+			return logAction.action(listViewSection.getSelectionModel()
+					.getSelectedItems(), DataSetSection.getInstance());
+		} else if (tabUbuLogsCourseModule.isSelected()) {
+
+			return logAction.action(listViewCourseModule.getSelectionModel()
+					.getSelectedItems(), DatasSetCourseModule.getInstance());
+		}
+		throw new IllegalStateException("Need other tab");
+	}
+	
+	public List<String> getSelectedLogTypeTransLated(){
+		return typeLogsAction(new LogAction<List<String>>() {
+
+			@Override
+			public <E> List<String> action(List<E> logType, DataSet<E> dataSet) {
+				List<String> list = new ArrayList<>();
+				for(E e: logType) {
+					list.add(dataSet.translate(e));
+				}
+				return list;
+			}
+		});
+	}
+	
+	public List<GradeItem> getSelectedGradeItems() {
+		return UtilMethods.getSelectedGradeItems(tvwGradeReport);
 	}
 
 	public TreeView<GradeItem> getTvwGradeReport() {

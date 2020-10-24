@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.lucene.analysis.Analyzer;
@@ -61,7 +62,21 @@ public class UnitTest {
 
 	}
 
+	@Test
+	public void rankingTestStats() {
+		Map<Integer, Integer> map = new HashMap<>();
+		map.put(1, 1);
+		map.put(2, 2);
+		map.put(3, 2);
+		map.put(4, 2);
+		map.put(6, 2);
+		map.put(5, 3);
+		
+		Map<Integer, Double> ranking = UtilMethods.rankingStatistics(map);
+		System.out.println(ranking);
+		
 
+	}
 
 	@Test
 	public void LuceneEnglishTest() throws IOException {
@@ -82,5 +97,22 @@ public class UnitTest {
 		}
 
 		return result;
+	}
+	
+	@Test
+	public void rankColor() {
+		int max =27;
+		int rankDivision = (int) Math.ceil(max/(double)4);
+		for(int i = 1;i<=max;++i) {
+			System.out.println((i)/rankDivision-1);
+		}
+	}
+	
+	@Test
+	public void rankColor1() {
+		List<String> datasets = new ArrayList<String>();
+		System.out.println(datasets.stream()
+				.map(String::toString)
+				.collect(Collectors.joining(",")));
 	}
 }

@@ -5,7 +5,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -109,9 +108,7 @@ public class ActivitiesStatusTable extends Tabulator {
 		jsArray.add(colorToRGB(getConfigValue("secondInterval")));
 		jsArray.add(colorToRGB(getConfigValue("thirdInterval")));
 		jsArray.add(colorToRGB(getConfigValue("fourthInterval")));
-		jsArray.add(colorToRGB(getConfigValue("moreMax")));
-		jsObject.put("color",
-				String.format(Locale.ROOT, "function(e){return %s[e/%f|0]}", jsArray.toString(), max / 4.0));
+		jsObject.put("color", jsArray);
 		return jsObject.toString();
 	}
 
@@ -209,8 +206,7 @@ public class ActivitiesStatusTable extends Tabulator {
 				.atStartOfDay(ZoneId.systemDefault())
 				.toInstant();
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		List<CourseModule> courseModules = listViewActivity
-				.getSelectionModel()
+		List<CourseModule> courseModules = listViewActivity.getSelectionModel()
 				.getSelectedItems();
 		List<String> header = new ArrayList<>();
 		header.add("userid");

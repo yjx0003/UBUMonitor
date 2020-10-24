@@ -2,7 +2,6 @@ package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.ByteArrayInputStream;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
@@ -11,7 +10,6 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.Group;
 import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
 import es.ubu.lsi.ubumonitor.model.Role;
-import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -29,6 +27,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 
 public class UserInfoController {
+	
 	private MainController mainController;
 	private EnrolledUser actualEnrolledUser;
 
@@ -109,13 +108,13 @@ public class UserInfoController {
 		Instant reference = Controller.getInstance()
 				.getUpdatedCourseData()
 				.toInstant();
-		labelFirstAccess.setText(getDifferenceTime(enrolledUser.getFirstaccess(), reference));
-		labelLastAccess.setText(getDifferenceTime(enrolledUser.getLastaccess(), reference));
+		labelFirstAccess.setText(UtilMethods.getDifferenceTime(enrolledUser.getFirstaccess(), reference));
+		labelLastAccess.setText(UtilMethods.getDifferenceTime(enrolledUser.getLastaccess(), reference));
 		Circle circleLastAccees = new Circle(10);
 		circleLastAccees.setFill(LastActivityFactory.DEFAULT.getColorActivity(enrolledUser.getLastaccess(), reference));
 		labelLastAccess.setGraphic(circleLastAccees);
 
-		labelLastCourseAccess.setText(getDifferenceTime(enrolledUser.getLastcourseaccess(), reference));
+		labelLastCourseAccess.setText(UtilMethods.getDifferenceTime(enrolledUser.getLastcourseaccess(), reference));
 		Circle circle = new Circle(10);
 		circle.setFill(LastActivityFactory.DEFAULT.getColorActivity(enrolledUser.getLastcourseaccess(), reference));
 		labelLastCourseAccess.setGraphic(circle);
@@ -162,12 +161,5 @@ public class UserInfoController {
 
 	}
 
-	private String getDifferenceTime(Instant start, Instant end) {
-		if (start != null && end != null && start.getEpochSecond() != 0) {
-			return Controller.DATE_TIME_FORMATTER.format(start.atZone(ZoneId.systemDefault())) + " ("
-					+ UtilMethods.formatDates(start, end) + ")";
-		}
-
-		return I18n.get("text.never");
-	}
+	
 }

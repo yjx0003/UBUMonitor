@@ -12,6 +12,7 @@ public abstract class TabulatorLogs extends ChartLogs {
 	private WebView webView;
 	public TabulatorLogs(MainController mainController, ChartType chartType, WebView webView) {
 		super(mainController, chartType);
+		this.webView = webView;
 		
 	}
 

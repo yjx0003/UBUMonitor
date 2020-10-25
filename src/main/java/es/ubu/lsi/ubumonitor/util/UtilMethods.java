@@ -717,7 +717,7 @@ public class UtilMethods {
 			int equal = 1;
 			for (V value : map.values()) {
 				int compare = function.apply(actualValue).compareTo(function.apply(value));
-				if (compare > 0) {
+				if (compare < 0) {
 					++lessThaActualValue;
 				} else if (compare == 0) {
 					++equal;

@@ -89,24 +89,31 @@ public class RankingTable extends TabulatorLogs {
 			Map<EnrolledUser, Double> rankingLog = UtilMethods.rankingStatistics(pointsLog);
 			Map<EnrolledUser, Double> rankingGrades = UtilMethods.rankingStatistics(pointsGrades, DescriptiveStatistics::getMean);
 			Map<EnrolledUser, Double> rankingActivities = UtilMethods.rankingStatistics(pointsActivities);
-			data.put("columns", createColumns(users.size(), rankingLog.values(), rankingGrades.values(),
-					rankingActivities.values(), typeLogs.isEmpty(), gradeItems.isEmpty(), activities.isEmpty()));
+			data.put("columns", createColumns(users.size(), users.size(), users.size(),
+					users.size(), typeLogs.isEmpty(), gradeItems.isEmpty(), activities.isEmpty()));
 			append(users, pointsLog, pointsGrades, pointsActivities, rankingLog, rankingGrades, rankingActivities, jsArray);
 		}else {
 			Map<EnrolledUser, Integer> rankingLog = UtilMethods.ranking(pointsLog);
 			Map<EnrolledUser, Integer> rankingGrades = UtilMethods.ranking(pointsGrades, DescriptiveStatistics::getMean);
 			Map<EnrolledUser, Integer> rankingActivities = UtilMethods.ranking(pointsActivities);
 			
-			data.put("columns", createColumns(users.size(), rankingLog.values(), rankingGrades.values(),
-					rankingActivities.values(), typeLogs.isEmpty(), gradeItems.isEmpty(), activities.isEmpty()));
+			data.put("columns", createColumns(users.size(), getMax(rankingLog.values()), getMax(rankingGrades.values()),
+					getMax(rankingActivities.values()), typeLogs.isEmpty(), gradeItems.isEmpty(), activities.isEmpty()));
 			append(users, pointsLog, pointsGrades, pointsActivities, rankingLog, rankingGrades, rankingActivities, jsArray);
 		}
 		
 		
-
+		
 	
 
 		return data.toString();
+	}
+	
+	private  <T extends Number & Comparable<T>> Number getMax(Collection<T> values) {
+		if(values == null || values.isEmpty()) {
+			return 0;
+		}
+		return Collections.max(values);
 	}
 
 	public <T extends Comparable<T>> void append(List<EnrolledUser> users, Map<EnrolledUser, Integer> pointsLog,
@@ -133,8 +140,7 @@ public class RankingTable extends TabulatorLogs {
 		}
 	}
 
-	private <T extends Comparable<T>> JSArray createColumns(int selectedUsers, Collection<T> pointLogs, Collection<T> pointGradeItem,
-			Collection<T> pointActivities, boolean logs, boolean gradeItems, boolean activities) {
+	private JSArray createColumns(int selectedUsers, Number rankMaxLog, Number maxRankGrade, Number maxRankActivity, boolean logs, boolean gradeItems, boolean activities) {
 
 		JSArray jsArray = new JSArray();
 		JSObject jsObject = new JSObject();
@@ -151,20 +157,20 @@ public class RankingTable extends TabulatorLogs {
 						.getSelectionModel()
 						.getSelectedItem()
 						.getText(),
-				LOG, pointLogs, logs));
+				LOG, rankMaxLog, logs));
 		jsArray.add(createProgressColumn(selectionController.getTabUbuGrades()
-				.getText(), GRADE_ITEM, pointGradeItem, gradeItems));
+				.getText(), GRADE_ITEM, maxRankGrade, gradeItems));
 		jsArray.add(createProgressColumn(selectionController.getTabActivity()
-				.getText(), ACTIVITY_COMPLETION, pointActivities, activities));
+				.getText(), ACTIVITY_COMPLETION, maxRankActivity, activities));
 		return jsArray;
 
 	}
 
-	private <T extends Comparable<T>> JSObject createProgressColumn(String title, String field, Collection<T> ranks, boolean isEmpty) {
+	private JSObject createProgressColumn(String title, String field, Number max, boolean isEmpty) {
 		JSObject jsObject = new JSObject();
 		jsObject.putWithQuote("title", title);
 		jsObject.putWithQuote("field", field);
-		T max = ranks.isEmpty() ? null : Collections.max(ranks);
+		
 		if (!isEmpty) {
 
 			jsObject.put("formatter", "'progress'");
@@ -172,7 +178,7 @@ public class RankingTable extends TabulatorLogs {
 			jsObject.put("tooltip", "function(cell){return cell.getRow().getData().ranking" + field + "}");
 			jsObject.put("formatterParams", formatterParams);
 			formatterParams.put("min", 0);
-			formatterParams.put("max", max == null ? 0: max);
+			formatterParams.put("max", max);
 			formatterParams.put("legend", "function(v) {return v + '/' + " + max + "}");
 
 			JSArray color = new JSArray();

@@ -9,7 +9,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -70,9 +69,7 @@ public class RankingReport {
 		Course course = dataBase.getActualCourse();
 
 		try (FileOutputStream out = new FileOutputStream(file); XWPFDocument document = new XWPFDocument()) {
-			int maxRankLog = users.isEmpty() ? 0 : Collections.max(rankingLogs.values());
-			int maxRankGrade = users.isEmpty() ? 0 : Collections.max(rankingGradeItems.values());
-			int maxRankActivities = users.isEmpty() ? 0 : Collections.max(rankingActivities.values());
+			
 			XWPFParagraph paragraph;
 			XWPFRun run;
 			Map<EnrolledUser, Collection<Role>> userRoles = userRoles(users, course.getRoles());
@@ -108,9 +105,9 @@ public class RankingReport {
 				setRankTitle(getParagraphCell(table, 1, 1), I18n.get("tab.grades"));
 				setRankTitle(getParagraphCell(table, 1, 2), I18n.get("tab.activityCompletion"));
 
-				setRank(getParagraphCell(table, 2, 0), rankingLogs.get(user), maxRankLog);
-				setRank(getParagraphCell(table, 2, 1), rankingGradeItems.get(user), maxRankGrade);
-				setRank(getParagraphCell(table, 2, 2), rankingActivities.get(user), maxRankActivities);
+				setRank(getParagraphCell(table, 2, 0), rankingLogs.get(user), users.size());
+				setRank(getParagraphCell(table, 2, 1), rankingGradeItems.get(user), users.size());
+				setRank(getParagraphCell(table, 2, 2), rankingActivities.get(user), users.size());
 
 				Instant reference = Controller.getInstance()
 						.getUpdatedCourseData()

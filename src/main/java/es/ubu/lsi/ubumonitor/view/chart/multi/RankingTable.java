@@ -97,8 +97,7 @@ public class RankingTable extends TabulatorLogs {
 			Map<EnrolledUser, Integer> rankingGrades = UtilMethods.ranking(pointsGrades, DescriptiveStatistics::getMean);
 			Map<EnrolledUser, Integer> rankingActivities = UtilMethods.ranking(pointsActivities);
 			
-			data.put("columns", createColumns(users.size(), getMax(rankingLog.values()), getMax(rankingGrades.values()),
-					getMax(rankingActivities.values()), typeLogs.isEmpty(), gradeItems.isEmpty(), activities.isEmpty()));
+			data.put("columns", createColumns(users.size(), users.size(), users.size(), users.size(), typeLogs.isEmpty(), gradeItems.isEmpty(), activities.isEmpty()));
 			append(users, pointsLog, pointsGrades, pointsActivities, rankingLog, rankingGrades, rankingActivities, jsArray);
 		}
 		
@@ -109,12 +108,7 @@ public class RankingTable extends TabulatorLogs {
 		return data.toString();
 	}
 	
-	private  <T extends Number & Comparable<T>> Number getMax(Collection<T> values) {
-		if(values == null || values.isEmpty()) {
-			return 0;
-		}
-		return Collections.max(values);
-	}
+
 
 	public <T extends Comparable<T>> void append(List<EnrolledUser> users, Map<EnrolledUser, Integer> pointsLog,
 			Map<EnrolledUser, DescriptiveStatistics> pointsGrades, Map<EnrolledUser, Integer> pointsActivities,

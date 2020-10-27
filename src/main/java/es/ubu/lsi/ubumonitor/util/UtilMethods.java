@@ -748,5 +748,12 @@ public class UtilMethods {
 
 		return I18n.get("text.never");
 	}
+	
+	public static <T extends Number & Comparable<T>> Number getMax(Collection<T> values) {
+		if(values == null || values.isEmpty()) {
+			return 0;
+		}
+		return Collections.max(values);
+	}
 
 }

@@ -49,9 +49,11 @@ public enum ChartType {
 	FORUM_TABLE(Tabs.FORUM, 25),
 	
 	CALENDAR_EVENT_TIMELINE(Tabs.CALENDAR_EVENT, 28), 
-	RANKING_TABLE(Tabs.MULTI, 34);
 	
-	//next id 35
+	RANKING_TABLE(Tabs.MULTI, 34), 
+	BUBBLE_COMPARISON(Tabs.MULTI, 35);
+	
+	//next id 36
 
 	private Tabs tab;
 	private int id;

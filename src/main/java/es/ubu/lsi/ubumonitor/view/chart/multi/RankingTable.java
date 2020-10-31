@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +57,7 @@ public class RankingTable extends TabulatorLogs {
 		this.listViewActivityCompletion = listViewActivityCompletion;
 		this.start = start;
 		this.end = end;
+		useRangeDate = true;
 	}
 
 	@Override
@@ -68,51 +68,49 @@ public class RankingTable extends TabulatorLogs {
 		List<CourseModule> activities = new ArrayList<>(listViewActivityCompletion.getSelectionModel()
 				.getSelectedItems());
 
-		Map<EnrolledUser, Integer> pointsLog = getLogsRanking(users, typeLogs, dataSet, actualCourse.getLogStats()
+		Map<EnrolledUser, Integer> pointsLog = getLogsPoints(users, typeLogs, dataSet, actualCourse.getLogStats()
 				.getByType(TypeTimes.DAY), start.getValue(), end.getValue());
-		
 
-		Map<EnrolledUser, DescriptiveStatistics> pointsGrades = getGradeItemRanking(users, gradeItems);
-		
+		Map<EnrolledUser, DescriptiveStatistics> pointsGrades = getGradeItemPoints(users, gradeItems);
 
-		Map<EnrolledUser, Integer> pointsActivities = getActivityCompletionRanking(users, activities, start.getValue()
+		Map<EnrolledUser, Integer> pointsActivities = getActivityCompletionPoints(users, activities, start.getValue()
 				.atStartOfDay(ZoneId.systemDefault())
 				.toInstant(),
-				end.getValue().plusDays(1)
+				end.getValue()
+						.plusDays(1)
 						.atStartOfDay(ZoneId.systemDefault())
 						.toInstant());
-		
+
 		JSObject data = new JSObject();
 		JSArray jsArray = new JSArray();
 		data.put("tabledata", jsArray);
-		if((boolean)getConfigValue("statisticsRanking")) {
+		if ((boolean) getConfigValue("statisticsRanking")) {
 			Map<EnrolledUser, Double> rankingLog = UtilMethods.rankingStatistics(pointsLog);
-			Map<EnrolledUser, Double> rankingGrades = UtilMethods.rankingStatistics(pointsGrades, DescriptiveStatistics::getMean);
+			Map<EnrolledUser, Double> rankingGrades = UtilMethods.rankingStatistics(pointsGrades,
+					DescriptiveStatistics::getMean);
 			Map<EnrolledUser, Double> rankingActivities = UtilMethods.rankingStatistics(pointsActivities);
-			data.put("columns", createColumns(users.size(), users.size(), users.size(),
-					users.size(), typeLogs.isEmpty(), gradeItems.isEmpty(), activities.isEmpty()));
-			append(users, pointsLog, pointsGrades, pointsActivities, rankingLog, rankingGrades, rankingActivities, jsArray);
-		}else {
+			data.put("columns", createColumns(users.size(), users.size(), users.size(), users.size(),
+					typeLogs.isEmpty(), gradeItems.isEmpty(), activities.isEmpty()));
+			append(users, pointsLog, pointsGrades, pointsActivities, rankingLog, rankingGrades, rankingActivities,
+					jsArray);
+		} else {
 			Map<EnrolledUser, Integer> rankingLog = UtilMethods.ranking(pointsLog);
-			Map<EnrolledUser, Integer> rankingGrades = UtilMethods.ranking(pointsGrades, DescriptiveStatistics::getMean);
+			Map<EnrolledUser, Integer> rankingGrades = UtilMethods.ranking(pointsGrades,
+					DescriptiveStatistics::getMean);
 			Map<EnrolledUser, Integer> rankingActivities = UtilMethods.ranking(pointsActivities);
-			
-			data.put("columns", createColumns(users.size(), users.size(), users.size(), users.size(), typeLogs.isEmpty(), gradeItems.isEmpty(), activities.isEmpty()));
-			append(users, pointsLog, pointsGrades, pointsActivities, rankingLog, rankingGrades, rankingActivities, jsArray);
+
+			data.put("columns", createColumns(users.size(), users.size(), users.size(), users.size(),
+					typeLogs.isEmpty(), gradeItems.isEmpty(), activities.isEmpty()));
+			append(users, pointsLog, pointsGrades, pointsActivities, rankingLog, rankingGrades, rankingActivities,
+					jsArray);
 		}
-		
-		
-		
-	
 
 		return data.toString();
 	}
-	
-
 
 	public <T extends Comparable<T>> void append(List<EnrolledUser> users, Map<EnrolledUser, Integer> pointsLog,
 			Map<EnrolledUser, DescriptiveStatistics> pointsGrades, Map<EnrolledUser, Integer> pointsActivities,
-			Map<EnrolledUser, T> rankingLog, Map<EnrolledUser, T> rankingGrades,Map<EnrolledUser, T> rankingActivities,
+			Map<EnrolledUser, T> rankingLog, Map<EnrolledUser, T> rankingGrades, Map<EnrolledUser, T> rankingActivities,
 			JSArray jsArray) {
 		String rankingLogField = RANKING + LOG;
 		String rankingGradeField = RANKING + GRADE_ITEM;
@@ -134,7 +132,8 @@ public class RankingTable extends TabulatorLogs {
 		}
 	}
 
-	private JSArray createColumns(int selectedUsers, Number rankMaxLog, Number maxRankGrade, Number maxRankActivity, boolean logs, boolean gradeItems, boolean activities) {
+	private JSArray createColumns(int selectedUsers, Number rankMaxLog, Number maxRankGrade, Number maxRankActivity,
+			boolean logs, boolean gradeItems, boolean activities) {
 
 		JSArray jsArray = new JSArray();
 		JSObject jsObject = new JSObject();
@@ -164,7 +163,7 @@ public class RankingTable extends TabulatorLogs {
 		JSObject jsObject = new JSObject();
 		jsObject.putWithQuote("title", title);
 		jsObject.putWithQuote("field", field);
-		
+
 		if (!isEmpty) {
 
 			jsObject.put("formatter", "'progress'");
@@ -192,25 +191,12 @@ public class RankingTable extends TabulatorLogs {
 		return jsObject;
 	}
 
-	
-	public static <E> Map<EnrolledUser, Integer> getLogsRanking(List<EnrolledUser> users, List<E> typeLogs,
+	public static <E> Map<EnrolledUser, Integer> getLogsPoints(List<EnrolledUser> users, List<E> typeLogs,
 			DataSet<E> dataSet, GroupByAbstract<?> groupBy, LocalDate start, LocalDate end) {
-		Map<EnrolledUser, Map<E, List<Integer>>> counts = dataSet.getUserCounts(groupBy, users, typeLogs, start, end);
-		Map<EnrolledUser, Integer> map = new HashMap<>();
-		for (EnrolledUser user : users) {
-			int userCount = counts.getOrDefault(user, Collections.emptyMap())
-					.entrySet()
-					.stream()
-					.flatMap(e -> e.getValue()
-							.stream())
-					.mapToInt(Integer::intValue)
-					.sum();
-			map.put(user, userCount);
-		}
-		return map;
+		return dataSet.getUserTotalLogs(groupBy, users, typeLogs, start, end);
 	}
 
-	public static Map<EnrolledUser, DescriptiveStatistics> getGradeItemRanking(Collection<EnrolledUser> users,
+	public static Map<EnrolledUser, DescriptiveStatistics> getGradeItemPoints(Collection<EnrolledUser> users,
 			Collection<GradeItem> gradeItems) {
 		Map<EnrolledUser, DescriptiveStatistics> map = new HashMap<>();
 		for (EnrolledUser user : users) {
@@ -224,7 +210,7 @@ public class RankingTable extends TabulatorLogs {
 		return map;
 	}
 
-	public static Map<EnrolledUser, Integer> getActivityCompletionRanking(Collection<EnrolledUser> users,
+	public static Map<EnrolledUser, Integer> getActivityCompletionPoints(Collection<EnrolledUser> users,
 			Collection<CourseModule> activities, Instant start, Instant end) {
 		Map<EnrolledUser, Integer> map = new HashMap<>();
 		for (EnrolledUser user : users) {
@@ -253,36 +239,40 @@ public class RankingTable extends TabulatorLogs {
 		List<CourseModule> activities = new ArrayList<>(listViewActivityCompletion.getSelectionModel()
 				.getSelectedItems());
 
-		Map<EnrolledUser, Integer> pointsLog = getLogsRanking(users, typeLogs, dataSet, actualCourse.getLogStats()
+		Map<EnrolledUser, Integer> pointsLog = getLogsPoints(users, typeLogs, dataSet, actualCourse.getLogStats()
 				.getByType(TypeTimes.DAY), start.getValue(), end.getValue());
-	
 
-		Map<EnrolledUser, DescriptiveStatistics> pointsGrades = getGradeItemRanking(users, gradeItems);
-	
-		Map<EnrolledUser, Integer> pointsActivities = getActivityCompletionRanking(users, activities, start.getValue()
+		Map<EnrolledUser, DescriptiveStatistics> pointsGrades = getGradeItemPoints(users, gradeItems);
+
+		Map<EnrolledUser, Integer> pointsActivities = getActivityCompletionPoints(users, activities, start.getValue()
 				.atStartOfDay(ZoneId.systemDefault())
 				.toInstant(),
-				end.getValue().plusDays(1)
+				end.getValue()
+						.plusDays(1)
 						.atStartOfDay(ZoneId.systemDefault())
 						.toInstant());
-		if((boolean) getConfigValue("statisticsRanking")) {
+		if ((boolean) getConfigValue("statisticsRanking")) {
 			Map<EnrolledUser, Double> rankingLog = UtilMethods.rankingStatistics(pointsLog);
-			Map<EnrolledUser, Double> rankingGrades = UtilMethods.rankingStatistics(pointsGrades, DescriptiveStatistics::getMean);
+			Map<EnrolledUser, Double> rankingGrades = UtilMethods.rankingStatistics(pointsGrades,
+					DescriptiveStatistics::getMean);
 			Map<EnrolledUser, Double> rankingActivities = UtilMethods.rankingStatistics(pointsActivities);
-			print(printer, users, pointsLog, pointsGrades, pointsActivities, rankingLog, rankingGrades, rankingActivities);
-		}else {
+			print(printer, users, pointsLog, pointsGrades, pointsActivities, rankingLog, rankingGrades,
+					rankingActivities);
+		} else {
 			Map<EnrolledUser, Integer> rankingLog = UtilMethods.ranking(pointsLog);
-			Map<EnrolledUser, Integer> rankingGrades = UtilMethods.ranking(pointsGrades, DescriptiveStatistics::getMean);
+			Map<EnrolledUser, Integer> rankingGrades = UtilMethods.ranking(pointsGrades,
+					DescriptiveStatistics::getMean);
 			Map<EnrolledUser, Integer> rankingActivities = UtilMethods.ranking(pointsActivities);
-			print(printer, users, pointsLog, pointsGrades, pointsActivities, rankingLog, rankingGrades, rankingActivities);
+			print(printer, users, pointsLog, pointsGrades, pointsActivities, rankingLog, rankingGrades,
+					rankingActivities);
 		}
-		
+
 	}
 
-	public <T extends Comparable<T>> void print(CSVPrinter printer, List<EnrolledUser> users, Map<EnrolledUser, Integer> pointsLog,
-			Map<EnrolledUser, DescriptiveStatistics> pointsGrades, Map<EnrolledUser, Integer> pointsActivities,
-			Map<EnrolledUser, T> rankingLog, Map<EnrolledUser, T> rankingGrades,
-			Map<EnrolledUser, T> rankingActivities) throws IOException {
+	public <T extends Comparable<T>> void print(CSVPrinter printer, List<EnrolledUser> users,
+			Map<EnrolledUser, Integer> pointsLog, Map<EnrolledUser, DescriptiveStatistics> pointsGrades,
+			Map<EnrolledUser, Integer> pointsActivities, Map<EnrolledUser, T> rankingLog,
+			Map<EnrolledUser, T> rankingGrades, Map<EnrolledUser, T> rankingActivities) throws IOException {
 		for (EnrolledUser user : users) {
 			printer.print(user.getId());
 			printer.print(user.getFullName());

@@ -190,11 +190,6 @@
       function updateChartjs(dataset, options) {
          hiddenCharts("chartjs", options);
 
-         imageButton("btnLegend", options.legendActive);
-         imageButton("btnMean", options.generalActive);
-         imageButton("btnGroupMean", options.groupActive);
-
-
          if (!options.legend) {
             options.legend = {};
          }
@@ -242,7 +237,7 @@
          visNetwork.on("stabilizationIterationsDone", function () {
             visNetwork.setOptions({ physics: { enabled: options.physicsAfterDraw == undefined || options.physicsAfterDraw } });
          });
-   
+
       }
 
 
@@ -273,11 +268,13 @@
 
       }
 
-      function updatePlotly(data, layout) {
-         hiddenCharts("plotly", layout);
+      function updatePlotly(plot, options) {
+         hiddenCharts("plotly", options);
 
-         layout.showLegend = layout.useLegend && layout.legendActive;
-         Plotly.newPlot('plotlyDiv', data, layout, { displaylogo: false, responsive: true, modeBarButtonsToRemove: ["toImage"] });
+         plot.layout.showlegend = options.useLegend && options.legendActive;
+       
+         plot.config = { displaylogo: false, responsive: true, modeBarButtonsToRemove: ["toImage"] };
+         Plotly.newPlot('plotlyDiv', plot);
       }
 
       function hiddenCharts(value, options) {
@@ -352,21 +349,21 @@
       function hideLegend() {
          imageButton("btnLegend", javaConnector.toggleLegend());
 
-         javaConnector.updateChartFromJS();
+         javaConnector.updateChart();
       }
 
       function showGeneralMean() {
 
          imageButton("btnMean", javaConnector.toggleGeneral());
 
-         javaConnector.updateChartFromJS();
+         javaConnector.updateChart();
       }
 
       function showGroupMean() {
 
          imageButton("btnGroupMean", javaConnector.toggleGroup());
 
-         javaConnector.updateChartFromJS();
+         javaConnector.updateChart();
       }
 
 

@@ -189,7 +189,7 @@ public class VisualizationController extends WebViewAction {
 	private void updateMaxScale() {
 		if (webEngine.getLoadWorker()
 				.getState() == Worker.State.SUCCEEDED && textFieldMax.isFocused())
-			javaConnector.updateChart(false);
+			javaConnector.updateCharts(false);
 
 	}
 
@@ -219,7 +219,7 @@ public class VisualizationController extends WebViewAction {
 
 	@Override
 	public void updateListViewEnrolledUser() {
-		javaConnector.updateChart(false);
+		javaConnector.updateCharts(false);
 	}
 
 	@Override

@@ -74,4 +74,19 @@ public class GroupByHour extends GroupByAbstract<Integer> {
 	public Map<Integer, List<LocalDateTime>> getRangeLocalDateTime(LocalDate start, LocalDate end) {
 		return Collections.emptyMap();
 	}
+
+	@Override
+	public LocalDate getStartLocalDate(LocalDate start) {
+		return LocalDate.MIN;
+	}
+
+	@Override
+	public LocalDate getEndLocalDate(LocalDate end) {
+		return LocalDate.MAX;
+	}
+
+	@Override
+	public LocalDate getEndLocalDate(Integer end) {
+		return LocalDate.MAX;
+	}
 }

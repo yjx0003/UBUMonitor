@@ -512,14 +512,14 @@ public class MenuController {
 					@Override
 					public <E> Map<EnrolledUser, Integer> action(List<E> logType, DataSet<E> dataSet) {
 
-						return RankingTable.getLogsRanking(users, logType, dataSet, controller.getActualCourse()
+						return RankingTable.getLogsPoints(users, logType, dataSet, controller.getActualCourse()
 								.getLogStats()
 								.getByType(TypeTimes.DAY), start.getValue(), end.getValue());
 					}
 				}));
 		Map<EnrolledUser, Integer> rankingGrades = UtilMethods
-				.ranking(RankingTable.getGradeItemRanking(users, gradeItems), DescriptiveStatistics::getMean);
-		Map<EnrolledUser, Integer> rankingActivities = UtilMethods.ranking(RankingTable.getActivityCompletionRanking(
+				.ranking(RankingTable.getGradeItemPoints(users, gradeItems), DescriptiveStatistics::getMean);
+		Map<EnrolledUser, Integer> rankingActivities = UtilMethods.ranking(RankingTable.getActivityCompletionPoints(
 				users, activities, start.getValue()
 						.atStartOfDay(ZoneId.systemDefault())
 						.toInstant(),

@@ -78,4 +78,23 @@ public class GroupByAll extends GroupByAbstract<Boolean> {
 		return Collections.emptyMap();
 	}
 
+	@Override
+	public LocalDate getStartLocalDate(LocalDate start) {
+		return LocalDate.MIN;
+	}
+
+	@Override
+	public LocalDate getEndLocalDate(LocalDate end) {
+		return LocalDate.MAX;
+	}
+
+	@Override
+	public LocalDate getEndLocalDate(Boolean end) {
+		return LocalDate.MAX;
+	}
+	
+	
+	
+	
+
 }

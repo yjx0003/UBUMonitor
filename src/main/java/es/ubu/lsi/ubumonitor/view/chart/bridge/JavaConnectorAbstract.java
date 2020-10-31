@@ -160,5 +160,6 @@ public abstract class JavaConnectorAbstract implements JavaConnector {
 		manageOptions();
 
 	}
+	
 
 }

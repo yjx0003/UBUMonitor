@@ -94,7 +94,7 @@ public class RiskController extends WebViewAction {
 	@Override
 	public void onWebViewTabChange() {
 
-		javaConnector.updateOptionsImages();
+		
 		javaConnector.updateChart();
 
 	}

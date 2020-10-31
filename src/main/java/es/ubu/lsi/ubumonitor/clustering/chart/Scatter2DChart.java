@@ -106,7 +106,7 @@ public class Scatter2DChart extends ClusteringChart {
 			datasets.add(centers);
 		}
 		root.put("datasets", datasets);
-		LOGGER.debug("Data: {}", root);
+		LOGGER.debug("2D series: {}", root);
 
 		getWebEngine().executeScript("updateChart(" + root + ")");
 	}

@@ -102,4 +102,19 @@ public class GroupByYearMonth extends GroupByAbstract<YearMonth> {
 		}
 		return map;
 	}
+
+	@Override
+	public LocalDate getStartLocalDate(LocalDate start) {
+		return YearMonth.from(start).atDay(1);
+	}
+
+	@Override
+	public LocalDate getEndLocalDate(LocalDate end) {
+		return getEndLocalDate(YearMonth.from(end));
+	}
+
+	@Override
+	public LocalDate getEndLocalDate(YearMonth end) {
+		return end.atEndOfMonth();
+	}
 }

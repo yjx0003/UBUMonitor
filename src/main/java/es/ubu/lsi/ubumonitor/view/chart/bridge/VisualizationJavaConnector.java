@@ -136,7 +136,7 @@ public class VisualizationJavaConnector extends JavaConnectorAbstract {
 				.setVisible(currentChart.isUseGroupBy());
 	}
 
-	public void updateChart(boolean calculateMax) {
+	public void updateCharts(boolean calculateMax) {
 		super.updateChart();
 		if (calculateMax) {
 			setMax();
@@ -146,7 +146,7 @@ public class VisualizationJavaConnector extends JavaConnectorAbstract {
 
 	@Override
 	public void updateChart() {
-		updateChart(true);
+		updateCharts(true);
 
 	}
 
@@ -224,9 +224,5 @@ public class VisualizationJavaConnector extends JavaConnectorAbstract {
 		return currentChartActivityCompletion;
 	}
 
-	@Override
-	public void updateChartFromJS() {
-		manageOptions();
-		currentChart.update();
-	}
+	
 }

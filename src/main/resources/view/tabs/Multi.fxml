@@ -26,7 +26,7 @@
             <RowConstraints />
          </rowConstraints>
          <children>
-            <GridPane fx:id="gridPaneOptionLogs" visible="false">
+            <GridPane fx:id="gridPaneOptionLogs">
                <columnConstraints>
                   <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" />
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />

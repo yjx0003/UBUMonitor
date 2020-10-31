@@ -291,4 +291,23 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 		}
 		return map;
 	}
+
+	public Map<EnrolledUser, Integer> getUserTotalLogs(List<EnrolledUser> enrolledUsers, List<E> elements,
+			LocalDate start, LocalDate end) {
+		Map<EnrolledUser, Integer> map = new HashMap<>();
+		List<T> times = groupByAbstract.getRange(start, end);
+		for (EnrolledUser enrolledUser : enrolledUsers) {
+			int userTotal = 0;
+			Map<E, Map<T, List<LogLine>>> userMap = counts.getOrDefault(enrolledUser, Collections.emptyMap());
+			for (E element : elements) {
+				Map<T, List<LogLine>> elementMap = userMap.getOrDefault(element, Collections.emptyMap());
+				for (T time : times) {
+					userTotal += elementMap.getOrDefault(time, EMPTY_LIST)
+							.size();
+				}
+			}
+			map.put(enrolledUser, userTotal);
+		}
+		return map;
+	}
 }

@@ -91,4 +91,14 @@ public class GroupByDay extends GroupByAbstract<LocalDate> {
 		return map;
 	}
 
+	@Override
+	public LocalDate getStartLocalDate(LocalDate start) {
+		return start;
+	}
+
+	@Override
+	public LocalDate getEndLocalDate(LocalDate end) {
+		return end;
+	}
+
 }

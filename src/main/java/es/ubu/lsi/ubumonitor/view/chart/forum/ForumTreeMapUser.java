@@ -69,8 +69,34 @@ public class ForumTreeMapUser extends Plotly {
 		return jsObject;
 	}
 
+	private JSArray createJSArray(String key, JSObject data) {
+		JSArray jsArray = new JSArray();
+		data.put(key, jsArray);
+		return jsArray;
+	}
+
+	public Map<EnrolledUser, Map<CourseModule, Long>> getMap(Collection<EnrolledUser> users,
+			Collection<CourseModule> forums) {
+		Instant start = datePickerStart.getValue()
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
+		Instant end = datePickerEnd.getValue()
+				.plusDays(1)
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
+
+		return actualCourse.getDiscussionPosts()
+				.stream()
+				.filter(discussionPost -> forums.contains(discussionPost.getForum())
+						&& users.contains(discussionPost.getUser()) && start.isBefore(discussionPost.getCreated())
+						&& end.isAfter(discussionPost.getCreated()))
+				.collect(Collectors.groupingBy(DiscussionPost::getUser,
+						(Collectors.groupingBy(DiscussionPost::getForum, Collectors.counting()))));
+
+	}
+
 	@Override
-	public void update() {
+	public void createData(JSArray dataArray) {
 		List<EnrolledUser> users = getSelectedEnrolledUser();
 		List<CourseModule> forums = new ArrayList<>(forumListView.getSelectionModel()
 				.getSelectedItems());
@@ -121,35 +147,7 @@ public class ForumTreeMapUser extends Plotly {
 		labels.addWithQuote(actualCourse.getFullName());
 		values.add(courseTotal);
 		parents.add("''");
-		ids.add(0);
-
-		webViewChartsEngine.executeScript("updatePlotly([" + data + "]," + getOptions() + ")");
-
-	}
-
-	private JSArray createJSArray(String key, JSObject data) {
-		JSArray jsArray = new JSArray();
-		data.put(key, jsArray);
-		return jsArray;
-	}
-
-	public Map<EnrolledUser, Map<CourseModule, Long>> getMap(Collection<EnrolledUser> users,
-			Collection<CourseModule> forums) {
-		Instant start = datePickerStart.getValue()
-				.atStartOfDay(ZoneId.systemDefault())
-				.toInstant();
-		Instant end = datePickerEnd.getValue()
-				.plusDays(1)
-				.atStartOfDay(ZoneId.systemDefault())
-				.toInstant();
-
-		return actualCourse.getDiscussionPosts()
-				.stream()
-				.filter(discussionPost -> forums.contains(discussionPost.getForum())
-						&& users.contains(discussionPost.getUser()) && start.isBefore(discussionPost.getCreated())
-						&& end.isAfter(discussionPost.getCreated()))
-				.collect(Collectors.groupingBy(DiscussionPost::getUser,
-						(Collectors.groupingBy(DiscussionPost::getForum, Collectors.counting()))));
-
+		ids.add(0);		
+		dataArray.add(data);
 	}
 }

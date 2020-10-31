@@ -123,5 +123,26 @@ public abstract class GroupByAbstract<T extends Serializable> implements Seriali
 	public abstract boolean useDatePicker();
 
 	public abstract Map<T, List<LocalDateTime>> getRangeLocalDateTime(LocalDate start, LocalDate end);
+	
+	/**
+	 * Get the start day of the type time
+	 * @param start start localDate reference
+	 * @return start day
+	 */
+	public abstract LocalDate getStartLocalDate(LocalDate start);
+	
+	/**
+	 * Get the end day of the type time
+	 * @param end start localDate reference
+	 * @return end day
+	 */
+	public abstract LocalDate getEndLocalDate(LocalDate end);
+	
+	/**
+	 * Get the end day of the type time
+	 * @param end start localDate reference
+	 * @return end day
+	 */
+	public abstract LocalDate getEndLocalDate(T end);
 
 }

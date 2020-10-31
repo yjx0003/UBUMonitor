@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -57,9 +58,11 @@ import es.ubu.lsi.ubumonitor.util.WordUtil;
 
 public class RankingReport {
 
+
 	private static final int PHOTO_SIZE = 50;
 
-	private static final List<String> COLOR_RANKS = Arrays.asList("b5ff33", "fff033", "f4e3ae", "f78880");
+	private static final List<String> COLOR_RANKS = Arrays.asList("color1.png", "color2.png", "color3.png",
+			"color4.png");
 
 	public <E> void createReport(File file, DataBase dataBase, List<EnrolledUser> users,
 			Map<EnrolledUser, Integer> rankingLogs, Map<EnrolledUser, Integer> rankingGradeItems,
@@ -69,7 +72,7 @@ public class RankingReport {
 		Course course = dataBase.getActualCourse();
 
 		try (FileOutputStream out = new FileOutputStream(file); XWPFDocument document = new XWPFDocument()) {
-			
+
 			XWPFParagraph paragraph;
 			XWPFRun run;
 			Map<EnrolledUser, Collection<Role>> userRoles = userRoles(users, course.getRoles());
@@ -122,11 +125,11 @@ public class RankingReport {
 				setInfo(table, "label.ncourses", userCourses.size());
 
 				paragraph = document.createParagraph();
-				
-				if (i % 2 == 1) { //odd
+
+				if (i % 2 == 1) { // odd
 					paragraph.createRun()
 							.addBreak(BreakType.PAGE);
-				} else { //even
+				} else { // even
 					paragraph.setBorderBottom(Borders.DOT_DASH);
 				}
 
@@ -136,21 +139,23 @@ public class RankingReport {
 						.createRun()
 						.addBreak(BreakType.PAGE);
 			}
-			
+
 			paragraph = document.createParagraph();
 			run = paragraph.createRun();
 			run.setBold(true);
 			run.setFontSize(14);
 			run.setText(I18n.get("label.startdate"));
-			paragraph.createRun().setText(start.format(Controller.DATE_FORMATTER));
-			
-			paragraph= document.createParagraph();
+			paragraph.createRun()
+					.setText(start.format(Controller.DATE_FORMATTER));
+
+			paragraph = document.createParagraph();
 			run = paragraph.createRun();
 			run.setBold(true);
 			run.setFontSize(14);
 			run.setText(I18n.get("label.enddate"));
-			paragraph.createRun().setText(end.format(Controller.DATE_FORMATTER));
-			
+			paragraph.createRun()
+					.setText(end.format(Controller.DATE_FORMATTER));
+
 			createCollectionInfo(document, 0, I18n.get("tab.logs") + " - " + tabLog, logs);
 			createCollectionInfo(document, 1, I18n.get("tab.grades"), gradeItems);
 			createCollectionInfo(document, 2, I18n.get("tab.activityCompletion"), activities);
@@ -304,18 +309,20 @@ public class RankingReport {
 		paragraph.setAlignment(ParagraphAlignment.CENTER);
 	}
 
-	private void setRank(XWPFParagraph paragraph, int rank, int maxRank) {
+	private void setRank(XWPFParagraph paragraph, int rank, int maxRank) throws IOException, InvalidFormatException {
 
 		XWPFRun run = paragraph.createRun();
-		run.setText(rank + "/" + maxRank);
-		run.setBold(true);
 
-		if (maxRank == 0) {
+		String color = maxRank == 0 ? COLOR_RANKS.get(COLOR_RANKS.size() - 1)
+				: COLOR_RANKS.get((int) Math.ceil(rank * COLOR_RANKS.size() / (double) maxRank) - 1);
 
-			run.setColor(COLOR_RANKS.get(COLOR_RANKS.size() - 1));
-		} else {
-			run.setColor(COLOR_RANKS.get((int) Math.ceil(rank * COLOR_RANKS.size() / (double) maxRank) - 1));
+		try (InputStream in = RankingReport.class.getResourceAsStream("/img/" + color)) {
+			run.addPicture(in, Document.PICTURE_TYPE_PNG, color, Units.pixelToEMU(14), Units.pixelToEMU(14));
 		}
+
+		run.setText(rank + "/" + maxRank);
+		run.setFontSize(14);
+		run.setBold(true);
 
 	}
 

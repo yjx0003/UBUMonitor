@@ -65,13 +65,38 @@ public class ForumTreeMap extends Plotly {
 		}
 	}
 
-	@Override
-	public JSObject getOptions(JSObject jsObject) {
-		return jsObject;
+	
+
+	
+
+	private JSArray createJSArray(String key, JSObject data) {
+		JSArray jsArray = new JSArray();
+		data.put(key, jsArray);
+		return jsArray;
+	}
+
+	public Map<CourseModule, Map<EnrolledUser, Long>> getMap(Collection<EnrolledUser> users,
+			Collection<CourseModule> forums) {
+		Instant start = datePickerStart.getValue()
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
+		Instant end = datePickerEnd.getValue()
+				.plusDays(1)
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
+
+		return actualCourse.getDiscussionPosts()
+				.stream()
+				.filter(discussionPost -> forums.contains(discussionPost.getForum())
+						&& users.contains(discussionPost.getUser()) && start.isBefore(discussionPost.getCreated())
+						&& end.isAfter(discussionPost.getCreated()))
+				.collect(Collectors.groupingBy(DiscussionPost::getForum,
+						(Collectors.groupingBy(DiscussionPost::getUser, Collectors.counting()))));
+
 	}
 
 	@Override
-	public void update() {
+	public void createData(JSArray dataArray) {
 		List<EnrolledUser> users = getSelectedEnrolledUser();
 		List<CourseModule> forums = new ArrayList<>(forumListView.getSelectionModel()
 				.getSelectedItems());
@@ -79,17 +104,16 @@ public class ForumTreeMap extends Plotly {
 		JSObject data = new JSObject();
 		data.put("type", "'treemap'");
 		data.put("branchvalues", "'total'");
-		
-		if(map.size()>0) {
+
+		if (map.size() > 0) {
 			data.put("texttemplate",
 					"'<b>%{label}</b><br>%{value}<br>%{percentParent} "
-							+ UtilMethods.escapeJavaScriptText(I18n.get("parent")) + "<br>%{percentRoot} "
-							+ UtilMethods.escapeJavaScriptText(I18n.get("forum")) + "'");
+							+ UtilMethods.escapeJavaScriptText(I18n.get("user")) + "<br>%{percentRoot} "
+							+ UtilMethods.escapeJavaScriptText(I18n.get("root")) + "'");
 			data.put("hovertemplate",
 					"'<b>%{label}</b><br>%{value}<br>%{percentParent:%} %{parent}<br>%{percentRoot:%} %{root}<extra></extra>'");
 		}
-		
-		
+
 		JSArray labels = createJSArray("labels", data);
 
 		JSArray values = createJSArray("values", data);
@@ -123,35 +147,8 @@ public class ForumTreeMap extends Plotly {
 		values.add(courseTotal);
 		parents.add("''");
 		ids.add(0);
-
-		webViewChartsEngine.executeScript("updatePlotly([" + data + "]," + getOptions() + ")");
-
-	}
-
-	private JSArray createJSArray(String key, JSObject data) {
-		JSArray jsArray = new JSArray();
-		data.put(key, jsArray);
-		return jsArray;
-	}
-
-	public Map<CourseModule, Map<EnrolledUser, Long>> getMap(Collection<EnrolledUser> users,
-			Collection<CourseModule> forums) {
-		Instant start = datePickerStart.getValue()
-				.atStartOfDay(ZoneId.systemDefault())
-				.toInstant();
-		Instant end = datePickerEnd.getValue()
-				.plusDays(1)
-				.atStartOfDay(ZoneId.systemDefault())
-				.toInstant();
-
-		return actualCourse.getDiscussionPosts()
-				.stream()
-				.filter(discussionPost -> forums.contains(discussionPost.getForum())
-						&& users.contains(discussionPost.getUser()) && start.isBefore(discussionPost.getCreated())
-						&& end.isAfter(discussionPost.getCreated()))
-				.collect(Collectors.groupingBy(DiscussionPost::getForum,
-						(Collectors.groupingBy(DiscussionPost::getUser, Collectors.counting()))));
-
+		dataArray.add(data);
+		
 	}
 
 }

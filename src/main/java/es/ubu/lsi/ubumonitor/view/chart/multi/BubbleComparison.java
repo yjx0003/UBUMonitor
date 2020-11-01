@@ -157,7 +157,7 @@ public class BubbleComparison extends PlotlyLog {
 		yaxis.put("range", "[0," + activityCompletionMax + "]");
 		layout.put("yaxis", yaxis);
 
-		layout.put("hovermode", "'closest'");
+		//layout.put("hovermode", "'closest'");
 
 		JSObject updateMenus = new JSObject();
 		updateMenus.put("x", 0);

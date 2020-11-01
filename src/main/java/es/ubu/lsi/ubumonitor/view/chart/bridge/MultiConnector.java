@@ -7,6 +7,7 @@ import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Tabs;
 import es.ubu.lsi.ubumonitor.view.chart.multi.BubbleComparison;
+import es.ubu.lsi.ubumonitor.view.chart.multi.PointsTable;
 import es.ubu.lsi.ubumonitor.view.chart.multi.RankingTable;
 import javafx.scene.web.WebView;
 
@@ -19,6 +20,11 @@ public class MultiConnector extends JavaConnectorAbstract {
 		super(webViewCharts, mainConfiguration, mainController, actualCourse);
 		this.multiController = multiController;
 		addChart(new RankingTable(mainController, webView, mainController.getSelectionController()
+				.getTvwGradeReport(),
+				mainController.getSelectionController()
+						.getListViewActivity(),
+				multiController.getDatePickerStart(), multiController.getDatePickerEnd()));
+		addChart(new PointsTable(mainController, webView, mainController.getSelectionController()
 				.getTvwGradeReport(),
 				mainController.getSelectionController()
 						.getListViewActivity(),

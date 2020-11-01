@@ -17,10 +17,10 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.SelectionController;
 import es.ubu.lsi.ubumonitor.model.ActivityCompletion;
-import es.ubu.lsi.ubumonitor.model.ActivityCompletion.State;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.model.ActivityCompletion.State;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
@@ -35,7 +35,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TreeView;
 import javafx.scene.web.WebView;
 
-public class RankingTable extends TabulatorLogs {
+public class PointsTable extends TabulatorLogs{
 
 	private static final String POINTS = "points";
 	private static final String RANKING = "ranking";
@@ -46,17 +46,15 @@ public class RankingTable extends TabulatorLogs {
 
 	private TreeView<GradeItem> treeViewGradeItem;
 	private ListView<CourseModule> listViewActivityCompletion;
-	private DatePicker start;
-	private DatePicker end;
 
-	public RankingTable(MainController mainController, WebView webView, TreeView<GradeItem> treeViewGradeItem,
+	public PointsTable(MainController mainController, WebView webView, TreeView<GradeItem> treeViewGradeItem,
 			ListView<CourseModule> listViewActivityCompletion, DatePicker start, DatePicker end) {
 
-		super(mainController, ChartType.RANKING_TABLE, webView);
+		super(mainController, ChartType.POINTS_TABLE, webView);
 		this.treeViewGradeItem = treeViewGradeItem;
 		this.listViewActivityCompletion = listViewActivityCompletion;
-		this.start = start;
-		this.end = end;
+		this.datePickerStart = start;
+		this.datePickerEnd = end;
 		useRangeDate = true;
 	}
 
@@ -69,14 +67,15 @@ public class RankingTable extends TabulatorLogs {
 				.getSelectedItems());
 
 		Map<EnrolledUser, Integer> pointsLog = getLogsPoints(users, typeLogs, dataSet, actualCourse.getLogStats()
-				.getByType(TypeTimes.DAY), start.getValue(), end.getValue());
+				.getByType(TypeTimes.DAY), datePickerStart.getValue(), datePickerEnd.getValue());
 
 		Map<EnrolledUser, DescriptiveStatistics> pointsGrades = getGradeItemPoints(users, gradeItems);
 
-		Map<EnrolledUser, Integer> pointsActivities = getActivityCompletionPoints(users, activities, start.getValue()
-				.atStartOfDay(ZoneId.systemDefault())
-				.toInstant(),
-				end.getValue()
+		Map<EnrolledUser, Integer> pointsActivities = getActivityCompletionPoints(users, activities,
+				datePickerStart.getValue()
+						.atStartOfDay(ZoneId.systemDefault())
+						.toInstant(),
+				datePickerEnd.getValue()
 						.plusDays(1)
 						.atStartOfDay(ZoneId.systemDefault())
 						.toInstant());
@@ -89,8 +88,10 @@ public class RankingTable extends TabulatorLogs {
 			Map<EnrolledUser, Double> rankingGrades = UtilMethods.rankingStatistics(pointsGrades,
 					DescriptiveStatistics::getMean);
 			Map<EnrolledUser, Double> rankingActivities = UtilMethods.rankingStatistics(pointsActivities);
-			data.put("columns", createColumns(users.size(), users.size(), users.size(), users.size(), typeLogs,
-					gradeItems, activities));
+			data.put("columns",
+					createColumns(users.size(), UtilMethods.getMax(pointsLog.values()), 10,
+							activities.size(), typeLogs, gradeItems,
+							activities));
 			append(users, pointsLog, pointsGrades, pointsActivities, rankingLog, rankingGrades, rankingActivities,
 					jsArray);
 		} else {
@@ -99,7 +100,8 @@ public class RankingTable extends TabulatorLogs {
 					DescriptiveStatistics::getMean);
 			Map<EnrolledUser, Integer> rankingActivities = UtilMethods.ranking(pointsActivities);
 
-			data.put("columns", createColumns(users.size(), users.size(), users.size(), users.size(), typeLogs,
+			data.put("columns", createColumns(users.size(),UtilMethods.getMax(pointsLog.values()), 10,
+					activities.size(), typeLogs,
 					gradeItems, activities));
 			append(users, pointsLog, pointsGrades, pointsActivities, rankingLog, rankingGrades, rankingActivities,
 					jsArray);
@@ -119,20 +121,20 @@ public class RankingTable extends TabulatorLogs {
 		for (EnrolledUser user : users) {
 			JSObject jsObject = new JSObject();
 			jsObject.putWithQuote(USER, user.getFullName());
-			jsObject.put(LOG, rankingLog.get(user));
-			jsObject.put(GRADE_ITEM, rankingGrades.get(user));
-			jsObject.put(ACTIVITY_COMPLETION, rankingActivities.get(user));
-
-			jsObject.put(rankingLogField, pointsLog.get(user));
-			jsObject.put(rankingGradeField, Math.floor(pointsGrades.get(user)
+			jsObject.put(LOG, pointsLog.get(user));
+			jsObject.put(GRADE_ITEM, Math.floor(pointsGrades.get(user)
 					.getMean() * 100) / 100);
-			jsObject.put(rankingActivityField, pointsActivities.get(user));
+			jsObject.put(ACTIVITY_COMPLETION, pointsActivities.get(user));
+
+			jsObject.put(rankingLogField, rankingLog.get(user));
+			jsObject.put(rankingGradeField, rankingGrades.get(user));
+			jsObject.put(rankingActivityField, rankingActivities.get(user));
 
 			jsArray.add(jsObject);
 		}
 	}
 
-	private <E> JSArray createColumns(int selectedUsers, Number rankMaxLog, Number maxRankGrade, Number maxRankActivity,
+	private <E> JSArray createColumns(int selectedUsers, Number maxLog, Number maxGrade, Number maxActivity,
 			List<E> logs, List<GradeItem> gradeItems, List<CourseModule> activities) {
 
 		JSArray jsArray = new JSArray();
@@ -150,11 +152,11 @@ public class RankingTable extends TabulatorLogs {
 						.getSelectionModel()
 						.getSelectedItem()
 						.getText(),
-				LOG, rankMaxLog, logs));
+				LOG, maxLog, logs));
 		jsArray.add(createProgressColumn(selectionController.getTabUbuGrades()
-				.getText(),  GRADE_ITEM, maxRankGrade, gradeItems));
+				.getText(), GRADE_ITEM, maxGrade, gradeItems));
 		jsArray.add(createProgressColumn(selectionController.getTabActivity()
-				.getText(), ACTIVITY_COMPLETION, maxRankActivity, activities));
+				.getText(), ACTIVITY_COMPLETION, maxActivity, activities));
 		return jsArray;
 
 	}
@@ -240,14 +242,15 @@ public class RankingTable extends TabulatorLogs {
 				.getSelectedItems());
 
 		Map<EnrolledUser, Integer> pointsLog = getLogsPoints(users, typeLogs, dataSet, actualCourse.getLogStats()
-				.getByType(TypeTimes.DAY), start.getValue(), end.getValue());
+				.getByType(TypeTimes.DAY), datePickerStart.getValue(), datePickerEnd.getValue());
 
 		Map<EnrolledUser, DescriptiveStatistics> pointsGrades = getGradeItemPoints(users, gradeItems);
 
-		Map<EnrolledUser, Integer> pointsActivities = getActivityCompletionPoints(users, activities, start.getValue()
-				.atStartOfDay(ZoneId.systemDefault())
-				.toInstant(),
-				end.getValue()
+		Map<EnrolledUser, Integer> pointsActivities = getActivityCompletionPoints(users, activities,
+				datePickerStart.getValue()
+						.atStartOfDay(ZoneId.systemDefault())
+						.toInstant(),
+				datePickerEnd.getValue()
 						.plusDays(1)
 						.atStartOfDay(ZoneId.systemDefault())
 						.toInstant());
@@ -317,5 +320,4 @@ public class RankingTable extends TabulatorLogs {
 		jsObject.put("rowClick", "function(e,row){javaConnector.dataPointSelection(row.getPosition());}");
 		return jsObject;
 	}
-
 }

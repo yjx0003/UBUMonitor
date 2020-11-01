@@ -116,7 +116,6 @@ public class MainConfiguration {
 		createItem(ChartType.ACTIVITIES_TABLE, "thirdInterval", Color.web("#fff033"));
 		createItem(ChartType.ACTIVITIES_TABLE, "fourthInterval", Color.web("#b5ff33"));
 
-
 		createItem(ChartType.BUBBLE, "limitDays", 14);
 		createItem(ChartType.BUBBLE, "firstInterval", Color.web("#b5ff33"));
 		createItem(ChartType.BUBBLE, "secondInterval", Color.web("#fff033"));
@@ -199,6 +198,12 @@ public class MainConfiguration {
 		createItem(ChartType.RANKING_TABLE, "secondInterval", Color.web("#fff033"));
 		createItem(ChartType.RANKING_TABLE, "thirdInterval", Color.web("#f4e3ae"));
 		createItem(ChartType.RANKING_TABLE, "fourthInterval", Color.web("#f78880"));
+
+		createItem(ChartType.POINTS_TABLE, "statisticsRanking", false);
+		createItem(ChartType.POINTS_TABLE, "firstInterval", Color.web("#f78880"));
+		createItem(ChartType.POINTS_TABLE, "secondInterval", Color.web("#f4e3ae"));
+		createItem(ChartType.POINTS_TABLE, "thirdInterval", Color.web("#fff033"));
+		createItem(ChartType.POINTS_TABLE, "fourthInterval", Color.web("#b5ff33"));
 
 	}
 

@@ -10,8 +10,7 @@ import java.util.stream.Stream;
 
 public enum ChartType {
 
-	TOTAL_BAR(Tabs.LOGS, 0), 
-	STACKED_BAR(Tabs.LOGS, 1), 
+	TOTAL_BAR(Tabs.LOGS, 0),
 	HEAT_MAP(Tabs.LOGS, 2), 
 	BOXPLOT_LOG(Tabs.LOGS, 23),
 	VIOLIN_LOG(Tabs.LOGS, 24),
@@ -21,9 +20,10 @@ public enum ChartType {
 	MEAN_DIFF(Tabs.LOGS, 6),
 	SCATTER(Tabs.LOGS, 7),
 	SCATTER_USER(Tabs.LOGS, 8),
-	TABLE_LOG(Tabs.LOGS, 9),
+	STACKED_BAR(Tabs.LOGS, 1), 
 	SESSION(Tabs.LOGS, 10),
-
+	TABLE_LOG(Tabs.LOGS, 9),
+	
 	LINE(Tabs.GRADES, 11),
 	RADAR(Tabs.GRADES, 12),
 	BOXPLOT(Tabs.GRADES, 13),
@@ -51,9 +51,11 @@ public enum ChartType {
 	CALENDAR_EVENT_TIMELINE(Tabs.CALENDAR_EVENT, 28), 
 	
 	RANKING_TABLE(Tabs.MULTI, 34), 
+	POINTS_TABLE(Tabs.MULTI, 36),
 	BUBBLE_COMPARISON(Tabs.MULTI, 35);
 	
-	//next id 36
+	
+	//next id 37
 
 	private Tabs tab;
 	private int id;

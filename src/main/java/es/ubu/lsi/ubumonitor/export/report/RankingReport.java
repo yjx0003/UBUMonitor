@@ -124,7 +124,7 @@ public class RankingReport {
 						COLOR_RANKS.get(LastActivityFactory.DEFAULT.getIndex(user.getLastaccess(), reference)));
 				setInfo(table, "label.firstaccess", UtilMethods.getDifferenceTime(user.getFirstaccess(), reference));
 				setInfo(table, "label.roles", UtilMethods.join(userRoles.get(user), ", "));
-				setInfo(table, "label.groups", userGroups.get(user)
+				setInfo(table, "label.ngroups", userGroups.get(user)
 						.size());
 				setInfo(table, "label.ncourses", userCourses.size());
 

@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Map;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
+import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
@@ -34,10 +36,11 @@ import javafx.scene.web.WebView;
 
 public class BubbleComparison extends PlotlyLog {
 
+	private static final List<String> SYMBOLS = Arrays.asList("circle", "square", "diamond", "cross", "x", "pentagon",
+			"star", "hexagram");
 	private TreeView<GradeItem> treeViewGradeItem;
 	private ListView<CourseModule> listViewActivityCompletion;
 	private ChoiceBox<GroupByAbstract<?>> groupBy;
-	
 
 	public BubbleComparison(MainController mainController, WebView webView, TreeView<GradeItem> treeViewGradeItem,
 			ListView<CourseModule> listViewActivityCompletion, ChoiceBox<GroupByAbstract<?>> groupBy, DatePicker start,
@@ -57,14 +60,21 @@ public class BubbleComparison extends PlotlyLog {
 		JSObject frame = (JSObject) frames.get(0);
 		Map<EnrolledUser, DescriptiveStatistics> userGradeItemPoints = RankingTable.getGradeItemPoints(users,
 				gradeItems);
-		double sizeref = 2*userGradeItemPoints.values().stream().mapToDouble((DescriptiveStatistics::getMean)).max().orElse(10) / 10000;
+		double sizeref = 2 * userGradeItemPoints.values()
+				.stream()
+				.mapToDouble((DescriptiveStatistics::getMean))
+				.max()
+				.orElse(10) / 10000;
+
 		for (int i = 0; i < users.size(); ++i) {
-			
+
 			EnrolledUser user = users.get(i);
-			
+
 			double grade = Double.isNaN(userGradeItemPoints.get(user)
-			.getMean()) ? 20.0: userGradeItemPoints.get(user).getMean() * 5 +20;
-			
+					.getMean()) ? 20.0
+							: userGradeItemPoints.get(user)
+									.getMean() * 5 + 20;
+
 			JSObject dataObject = new JSObject();
 			dataObject.put("mode", "'markers'");
 			dataObject.putWithQuote("name", user.getFullName());
@@ -74,9 +84,18 @@ public class BubbleComparison extends PlotlyLog {
 			dataObject.put("y", frameData.get("y"));
 			dataObject.put("grade", userGradeItemPoints.get(user)
 					.getMean());
-			dataObject.put("marker", "{opacity:0.8,sizemode:'area',sizeref:"+sizeref+",size:" + grade  + "}");
+			dataObject.put("id", user.getId());
+			JSObject marker = new JSObject();
+			marker.put("opacity", 0.8);
+			marker.put("sizemode", "'area'");
+			marker.put("sizeref", sizeref);
+			marker.put("size", grade);
+			marker.put("line", "{width:1.5,color:'black'}");
+			marker.putWithQuote("symbol", SYMBOLS.get(user.getId() % SYMBOLS.size()));
+			dataObject.put("marker", marker);
 			dataObject.putWithQuote("hovertemplate", I18n.get("hovertemplateBubble"));
 			data.add(dataObject);
+
 		}
 	}
 
@@ -92,8 +111,8 @@ public class BubbleComparison extends PlotlyLog {
 		List<CourseModule> activities = new ArrayList<>(listViewActivityCompletion.getSelectionModel()
 				.getSelectedItems());
 
-		Number maxLog = createFrames(frames, users, typeLogs, dataSet, activities, groupBy.getValue(), datePickerStart.getValue(),
-				datePickerEnd.getValue());
+		Number maxLog = createFrames(frames, users, typeLogs, dataSet, activities, groupBy.getValue(),
+				datePickerStart.getValue(), datePickerEnd.getValue());
 
 		createData(data, frames, users, gradeItems);
 		createLayout(layout, maxLog, activities.size(), groupBy.getValue()
@@ -124,7 +143,8 @@ public class BubbleComparison extends PlotlyLog {
 			LocalDate endLocalDate = group.getEndLocalDate(time);
 			pointsLog = RankingTable.getLogsPoints(users, typeLogs, dataSet, group, start, endLocalDate);
 			Map<EnrolledUser, Integer> pointsActivities = RankingTable.getActivityCompletionPoints(users, activities,
-					instantStart, endLocalDate.plusDays(1).atStartOfDay(ZoneId.systemDefault())
+					instantStart, endLocalDate.plusDays(1)
+							.atStartOfDay(ZoneId.systemDefault())
 							.toInstant());
 			JSObject frame = new JSObject();
 			frames.add(frame);
@@ -156,8 +176,7 @@ public class BubbleComparison extends PlotlyLog {
 		yaxis.putWithQuote("title", getYAxisTitle());
 		yaxis.put("range", "[0," + activityCompletionMax + "]");
 		layout.put("yaxis", yaxis);
-
-		//layout.put("hovermode", "'closest'");
+		layout.put("hovermode", "'closest'");
 
 		JSObject updateMenus = new JSObject();
 		updateMenus.put("x", 0);
@@ -172,28 +191,29 @@ public class BubbleComparison extends PlotlyLog {
 		JSObject playButton = new JSObject();
 		playButton.put("method", "'animate'");
 		playButton.put("args",
-				"[null,{mode:'immediate',fromcurrent:!0,transition:{duration:1000},frame:{duration:1000,redraw:!1}}]");
+				"[null,{mode:'immediate',fromcurrent:!0,transition:{duration:" + getConfigValue("transitionDuration")
+						+ "},frame:{duration:" + getConfigValue("frameDuration") + ",redraw:!1}}]");
 		playButton.put("label", "'▶'");
 
 		JSObject stopButton = new JSObject();
 		stopButton.put("method", "'animate'");
-		stopButton.put("args", "[null,{mode:'immediate',transition:{duration:0},frame:{duration:0,redraw:!1}}]");
+		stopButton.put("args", "[[null],{mode:'immediate',transition:{duration:0},frame:{duration:0,redraw:!1}}]");
 		stopButton.put("label", "'⏸'");
 
 		updateMenus.put("buttons", "[" + playButton + "," + stopButton + "]");
-		layout.put("updatemenus", "["+updateMenus+"]");
+		layout.put("updatemenus", "[" + updateMenus + "]");
 		JSArray sliderSteps = new JSArray();
 		for (String timeType : timeTypes) {
 			String scapedTime = UtilMethods.escapeJavaScriptText(timeType);
 			JSObject step = new JSObject();
 			step.put("method", "'animate'");
 			step.put("label", "'" + scapedTime + "'");
-			step.put("args",
-					"[['" + scapedTime + "'],{transition:{duration:1000},frame:{duration:1000,redraw:!1}}]");
+			step.put("args", "[['" + scapedTime + "'],{transition:{duration:" + getConfigValue("transitionDuration")
+					+ "},frame:{duration:" + getConfigValue("frameDuration") + ",redraw:!1}}]");
 			sliderSteps.add(step);
 
 		}
-		
+
 		layout.put("sliders", "[{pad:{l:100,t:55},currentvalue:{visible:true,prefix:'" + prefix
 				+ ":',xanchor:'right',font:{size:20,color:'#666'}},steps:" + sliderSteps + "}]");
 
@@ -201,14 +221,54 @@ public class BubbleComparison extends PlotlyLog {
 
 	@Override
 	protected <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
-		// TODO Auto-generated method stub
+
+		exportCSV(printer, dataSet, typeLogs, groupBy.getValue());
+
+	}
+
+	private <T extends Serializable, E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs,
+			GroupByAbstract<T> group) throws IOException {
+		List<EnrolledUser> users = getSelectedEnrolledUser();
+		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
+		List<CourseModule> activities = new ArrayList<>(listViewActivityCompletion.getSelectionModel()
+				.getSelectedItems());
+		LocalDate start = datePickerStart.getValue();
+		LocalDate end = datePickerEnd.getValue();
+		Instant instantStart = group.getStartLocalDate(start)
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
+		Map<EnrolledUser, DescriptiveStatistics> pointsGrades = RankingTable.getGradeItemPoints(users, gradeItems);
+		List<T> range = group.getRange(start, end);
+		List<String> rangeString = group.getRangeString(range);
+
+		for (int i = 0; i < range.size(); ++i) {
+
+			LocalDate endLocalDate = group.getEndLocalDate(range.get(i));
+			Map<EnrolledUser, Integer> pointsLog = RankingTable.getLogsPoints(users, typeLogs, dataSet, group, start,
+					endLocalDate);
+			Map<EnrolledUser, Integer> pointsActivities = RankingTable.getActivityCompletionPoints(users, activities,
+					instantStart, endLocalDate.plusDays(1)
+							.atStartOfDay(ZoneId.systemDefault())
+							.toInstant());
+
+			for (EnrolledUser user : users) {
+				printer.print(user.getId());
+				printer.print(user.getFullName());
+				printer.print(rangeString.get(i));
+				printer.print(pointsLog.get(user));
+				printer.print(pointsGrades.get(user).getMean());
+				printer.print(pointsActivities.get(user));
+				printer.println();
+			
+
+			}
+		}
 
 	}
 
 	@Override
 	protected String[] getCSVHeader() {
-		// TODO Auto-generated method stub
-		return null;
+		return new String[] { "userid", "username", "time", "pointsLog", "pointsGrades", "pointsActivityCompletion" };
 	}
 
 	@Override
@@ -220,6 +280,23 @@ public class BubbleComparison extends PlotlyLog {
 	@Override
 	protected String[] getCSVDesglosedHeader() {
 		return new String[0];
+	}
+
+	@Override
+	public JSObject getOptions(JSObject jsObject) {
+		jsObject.put("onClick",
+				"function(n){points=n.points,javaConnector.dataPointSelection(points[counter++%points.length].data.id)}");
+		return jsObject;
+	}
+
+	@Override
+	public int onClick(int userid) {
+		EnrolledUser user = Controller.getInstance()
+				.getDataBase()
+				.getUsers()
+				.getById(userid);
+		return getUsers().indexOf(user);
+
 	}
 
 }

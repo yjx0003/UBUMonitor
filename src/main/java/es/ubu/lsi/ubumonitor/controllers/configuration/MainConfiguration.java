@@ -204,6 +204,9 @@ public class MainConfiguration {
 		createItem(ChartType.POINTS_TABLE, "secondInterval", Color.web("#f4e3ae"));
 		createItem(ChartType.POINTS_TABLE, "thirdInterval", Color.web("#fff033"));
 		createItem(ChartType.POINTS_TABLE, "fourthInterval", Color.web("#b5ff33"));
+		
+		createItem(ChartType.BUBBLE_COMPARISON, "transitionDuration", 1000);
+		createItem(ChartType.BUBBLE_COMPARISON, "frameDuration", 1000);
 
 	}
 

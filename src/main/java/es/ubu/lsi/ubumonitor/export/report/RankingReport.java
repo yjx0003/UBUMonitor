@@ -51,6 +51,7 @@ import es.ubu.lsi.ubumonitor.model.DataBase;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
+import es.ubu.lsi.ubumonitor.model.LastActivityFactory;
 import es.ubu.lsi.ubumonitor.model.Role;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
@@ -58,6 +59,7 @@ import es.ubu.lsi.ubumonitor.util.WordUtil;
 
 public class RankingReport {
 
+	private static final int ICON_SIZE = 14;
 
 	private static final int PHOTO_SIZE = 50;
 
@@ -116,8 +118,10 @@ public class RankingReport {
 						.getUpdatedCourseData()
 						.toInstant();
 				setInfo(table, "label.lastcourseaccess",
-						UtilMethods.getDifferenceTime(user.getLastaccess(), reference));
-				setInfo(table, "label.lastaccess", UtilMethods.getDifferenceTime(user.getLastaccess(), reference));
+						UtilMethods.getDifferenceTime(user.getLastcourseaccess(), reference),
+						COLOR_RANKS.get(LastActivityFactory.DEFAULT.getIndex(user.getLastcourseaccess(), reference)));
+				setInfo(table, "label.lastaccess", UtilMethods.getDifferenceTime(user.getLastaccess(), reference),
+						COLOR_RANKS.get(LastActivityFactory.DEFAULT.getIndex(user.getLastaccess(), reference)));
 				setInfo(table, "label.firstaccess", UtilMethods.getDifferenceTime(user.getFirstaccess(), reference));
 				setInfo(table, "label.roles", UtilMethods.join(userRoles.get(user), ", "));
 				setInfo(table, "label.groups", userGroups.get(user)
@@ -203,7 +207,12 @@ public class RankingReport {
 		}
 	}
 
-	private void setInfo(XWPFTable table, String key, Object value) {
+	private void setInfo(XWPFTable table, String key, Object value) throws InvalidFormatException, IOException {
+		setInfo(table, key, value, null);
+	}
+
+	private void setInfo(XWPFTable table, String key, Object value, String icon)
+			throws InvalidFormatException, IOException {
 		XWPFTableRow row = table.createRow();
 		XWPFTableCell cell = row.getCell(0);
 
@@ -217,8 +226,14 @@ public class RankingReport {
 		paragraph = cell.getParagraphArray(0);
 		setToCenter(cell, paragraph);
 		run = paragraph.createRun();
-		run.setText(value.toString());
 
+		if (icon != null) {
+			try (InputStream in = RankingReport.class.getResourceAsStream("/img/" + icon)) {
+				run.addPicture(in, Document.PICTURE_TYPE_PNG, icon, Units.pixelToEMU(11), Units.pixelToEMU(11));
+			}
+
+		}
+		run.setText(value.toString());
 	}
 
 	public Map<EnrolledUser, Collection<Role>> userRoles(Collection<EnrolledUser> users, Collection<Role> roles) {
@@ -309,19 +324,24 @@ public class RankingReport {
 		paragraph.setAlignment(ParagraphAlignment.CENTER);
 	}
 
-	private void setRank(XWPFParagraph paragraph, int rank, int maxRank) throws IOException, InvalidFormatException {
+	private void setRank(XWPFParagraph paragraph, Integer rank, int maxRank)
+			throws IOException, InvalidFormatException {
 
 		XWPFRun run = paragraph.createRun();
+		if (rank == null) {
+			run.setText("N/A");
+		} else {
+			String color = maxRank == 0 ? COLOR_RANKS.get(COLOR_RANKS.size() - 1)
+					: COLOR_RANKS.get((int) Math.ceil(rank * COLOR_RANKS.size() / (double) maxRank) - 1);
 
-		String color = maxRank == 0 ? COLOR_RANKS.get(COLOR_RANKS.size() - 1)
-				: COLOR_RANKS.get((int) Math.ceil(rank * COLOR_RANKS.size() / (double) maxRank) - 1);
-
-		try (InputStream in = RankingReport.class.getResourceAsStream("/img/" + color)) {
-			run.addPicture(in, Document.PICTURE_TYPE_PNG, color, Units.pixelToEMU(14), Units.pixelToEMU(14));
+			try (InputStream in = RankingReport.class.getResourceAsStream("/img/" + color)) {
+				run.addPicture(in, Document.PICTURE_TYPE_PNG, color, Units.pixelToEMU(ICON_SIZE),
+						Units.pixelToEMU(ICON_SIZE));
+			}
+			run.setText(rank + "/" + maxRank);
 		}
 
-		run.setText(rank + "/" + maxRank);
-		run.setFontSize(14);
+		run.setFontSize(ICON_SIZE);
 		run.setBold(true);
 
 	}

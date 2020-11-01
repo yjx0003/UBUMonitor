@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -512,14 +513,14 @@ public class MenuController {
 					@Override
 					public <E> Map<EnrolledUser, Integer> action(List<E> logType, DataSet<E> dataSet) {
 
-						return RankingTable.getLogsPoints(users, logType, dataSet, controller.getActualCourse()
+						return logType.isEmpty() ? Collections.emptyMap(): RankingTable.getLogsPoints(users, logType, dataSet, controller.getActualCourse()
 								.getLogStats()
 								.getByType(TypeTimes.DAY), start.getValue(), end.getValue());
 					}
 				}));
-		Map<EnrolledUser, Integer> rankingGrades = UtilMethods
+		Map<EnrolledUser, Integer> rankingGrades = gradeItems.isEmpty() ? Collections.emptyMap(): UtilMethods
 				.ranking(RankingTable.getGradeItemPoints(users, gradeItems), DescriptiveStatistics::getMean);
-		Map<EnrolledUser, Integer> rankingActivities = UtilMethods.ranking(RankingTable.getActivityCompletionPoints(
+		Map<EnrolledUser, Integer> rankingActivities = activities.isEmpty() ? Collections.emptyMap() : UtilMethods.ranking(RankingTable.getActivityCompletionPoints(
 				users, activities, start.getValue()
 						.atStartOfDay(ZoneId.systemDefault())
 						.toInstant(),

@@ -41,6 +41,7 @@ public class ForumUserPostBar extends Chartjs {
 		this.datePickerStart = datePickerStart;
 		this.datePickerEnd = datePickerEnd;
 		useRangeDate = true;
+		useLegend = true;
 
 	}
 

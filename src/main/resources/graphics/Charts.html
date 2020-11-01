@@ -275,6 +275,11 @@
        
          plot.config = { displaylogo: false, responsive: true, modeBarButtonsToRemove: ["toImage"] };
          Plotly.newPlot('plotlyDiv', plot);
+
+         if(options.onClick){
+            document.getElementById('plotlyDiv').on('plotly_click', options.onClick);
+            
+         }
       }
 
       function hiddenCharts(value, options) {

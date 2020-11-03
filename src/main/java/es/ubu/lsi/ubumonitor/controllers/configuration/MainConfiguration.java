@@ -184,6 +184,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_POSTS, "interaction.tooltipDelay", 300);
 
 		createItem(ChartType.FORUM_WORD_CLOUD, "stopWords", StopWord.getStopWordValues(Locale.getDefault()));
+	
 		createItem(ChartType.FORUM_WORD_CLOUD, "chartBackgroundColor", Color.web("#FFFFFF", 0.0));
 		createItem(ChartType.FORUM_WORD_CLOUD, "wordFrequencesToReturn", 50);
 		createItem(ChartType.FORUM_WORD_CLOUD, "padding", 2);
@@ -191,6 +192,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_WORD_CLOUD, "maxWordLength", 32);
 		createItem(ChartType.FORUM_WORD_CLOUD, "minFont", 10);
 		createItem(ChartType.FORUM_WORD_CLOUD, "maxFont", 40);
+		createItem(ChartType.FORUM_WORD_CLOUD, "angles" , "-90, 0, 90");
 		createItem(ChartType.FORUM_WORD_CLOUD, "backGroundImage", MaskImage.RECTANGLE);
 
 		createItem(ChartType.RANKING_TABLE, "statisticsRanking", false);
@@ -205,6 +207,7 @@ public class MainConfiguration {
 		createItem(ChartType.POINTS_TABLE, "thirdInterval", Color.web("#fff033"));
 		createItem(ChartType.POINTS_TABLE, "fourthInterval", Color.web("#b5ff33"));
 		
+		createItem(ChartType.BUBBLE_COMPARISON, "useCircles", false);
 		createItem(ChartType.BUBBLE_COMPARISON, "transitionDuration", 1000);
 		createItem(ChartType.BUBBLE_COMPARISON, "frameDuration", 1000);
 

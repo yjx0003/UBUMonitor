@@ -65,7 +65,7 @@ public class BubbleComparison extends PlotlyLog {
 				.mapToDouble((DescriptiveStatistics::getMean))
 				.max()
 				.orElse(10) / 10000;
-
+		boolean useOtherFigures = !(boolean) getConfigValue("useCircles");
 		for (int i = 0; i < users.size(); ++i) {
 
 			EnrolledUser user = users.get(i);
@@ -91,7 +91,9 @@ public class BubbleComparison extends PlotlyLog {
 			marker.put("sizeref", sizeref);
 			marker.put("size", grade);
 			marker.put("line", "{width:1.5,color:'black'}");
-			marker.putWithQuote("symbol", SYMBOLS.get(user.getId() % SYMBOLS.size()));
+			if (useOtherFigures) {
+				marker.putWithQuote("symbol", SYMBOLS.get(user.getId() % SYMBOLS.size()));
+			}
 			dataObject.put("marker", marker);
 			dataObject.putWithQuote("hovertemplate", I18n.get("hovertemplateBubble"));
 			data.add(dataObject);
@@ -256,10 +258,10 @@ public class BubbleComparison extends PlotlyLog {
 				printer.print(user.getFullName());
 				printer.print(rangeString.get(i));
 				printer.print(pointsLog.get(user));
-				printer.print(pointsGrades.get(user).getMean());
+				printer.print(pointsGrades.get(user)
+						.getMean());
 				printer.print(pointsActivities.get(user));
 				printer.println();
-			
 
 			}
 		}

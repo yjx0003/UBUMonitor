@@ -8,6 +8,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -252,6 +253,7 @@ public class CalendarEventTimeline extends VisTimeline {
 		return actualCourse.getCourseEvents()
 				.stream()
 				.filter(calendarEvent -> selectedCourseModules.contains(calendarEvent.getCourseModule()))
+				.sorted(Comparator.comparing(CourseEvent::getTimestart, Comparator.nullsLast(Comparator.naturalOrder())))
 				.collect(Collectors.toList());
 
 	}

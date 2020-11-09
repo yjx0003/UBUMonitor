@@ -200,7 +200,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_WORD_CLOUD, "maxWordLength", 32);
 		createItem(ChartType.FORUM_WORD_CLOUD, "minFont", 10);
 		createItem(ChartType.FORUM_WORD_CLOUD, "maxFont", 40);
-		createItem(ChartType.FORUM_WORD_CLOUD, "angles" , "-90, 0, 90");
+		createItem(ChartType.FORUM_WORD_CLOUD, "angles", "-90, 0, 90");
 		createItem(ChartType.FORUM_WORD_CLOUD, "backGroundImage", MaskImage.RECTANGLE);
 
 		createItem(ChartType.RANKING_TABLE, "statisticsRanking", false);
@@ -214,7 +214,7 @@ public class MainConfiguration {
 		createItem(ChartType.POINTS_TABLE, "secondInterval", Color.web("#f4e3ae"));
 		createItem(ChartType.POINTS_TABLE, "thirdInterval", Color.web("#fff033"));
 		createItem(ChartType.POINTS_TABLE, "fourthInterval", Color.web("#b5ff33"));
-		
+
 		createItem(ChartType.BUBBLE_COMPARISON, "useCircles", false);
 		createItem(ChartType.BUBBLE_COMPARISON, "transitionDuration", 1000);
 		createItem(ChartType.BUBBLE_COMPARISON, "frameDuration", 1000);
@@ -401,9 +401,11 @@ public class MainConfiguration {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T getValue(String category, String name) {
-		return (T) properties.get(convertToKey(category, name))
-				.getValue();
-
+		CustomPropertyItem customPropertyItem = properties.get(convertToKey(category, name));
+		if (customPropertyItem == null) {
+			return null;
+		}
+		return (T) customPropertyItem.getValue();
 	}
 
 	private String convertToKey(String category, String name) {
@@ -419,28 +421,34 @@ public class MainConfiguration {
 	 * @return object of the configuration
 	 */
 	public <T> T getValue(ChartType chartType, String name) {
-		return getValue(chartType.name(), name);
+		T value = getValue(chartType.name(), name);
+		if (value == null) {
+			throw new NullPointerException("Not exists: " + chartType + name);
+		}
+		return value;
 
 	}
 
 	/**
 	 * Get value, if not exists return defaultValue
-	 * @param <T> type of object to return
-	 * @param category category
-	 * @param name name
-	 * @param defaultValue defaultValue if not exist 
+	 * 
+	 * @param <T>          type of object to return
+	 * @param category     category
+	 * @param name         name
+	 * @param defaultValue defaultValue if not exist
 	 * @return
 	 */
 	public <T> T getValue(String category, String name, T defaultValue) {
-		T value = getValue(category, name);
-		if (value == null)
-			return defaultValue;
-		return value;
+		if (properties.containsKey(convertToKey(category, name))) {
+			return getValue(category, name);
+		}
+		return defaultValue;
 	}
-	
+
 	/**
 	 * Get value
-	 * @param <T> type of value
+	 * 
+	 * @param <T>          type of value
 	 * @param category
 	 * @param name
 	 * @param defaultValue
@@ -452,6 +460,7 @@ public class MainConfiguration {
 
 	/**
 	 * Get all the propertyes of the specified Tab
+	 * 
 	 * @param tab tab
 	 * @return collection of the property items in the specified Tab
 	 */
@@ -465,6 +474,7 @@ public class MainConfiguration {
 
 	/**
 	 * Cutom property item
+	 * 
 	 * @author Yi Peng Ji
 	 *
 	 */

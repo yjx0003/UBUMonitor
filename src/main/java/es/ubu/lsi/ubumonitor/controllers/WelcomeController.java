@@ -27,7 +27,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
 import org.controlsfx.control.NotificationPane;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +62,6 @@ import es.ubu.lsi.ubumonitor.persistence.Serialization;
 import es.ubu.lsi.ubumonitor.util.FileUtil;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
-import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseSearchCourses;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -895,12 +893,9 @@ public class WelcomeController implements Initializable {
 
 		try {
 			PopulateCourse populateCourse = new PopulateCourse(controller.getDataBase(), controller.getWebService());
-			CoreCourseSearchCourses coreCourseSearchCourses = new CoreCourseSearchCourses();
-			coreCourseSearchCourses.setBySearch(text);
-			JSONObject jsonObject = UtilMethods.getJSONObjectResponse(controller.getWebService(),
-					coreCourseSearchCourses);
-			List<Course> courses = populateCourse.searchCourse(jsonObject);
-
+			
+			Pair<Integer, List<Course>> pair = populateCourse.searchCourse(text);
+			List<Course> courses = pair.getValue();
 			if (courses.isEmpty()) {
 				UtilMethods.warningWindow(I18n.get("warning.nofound"));
 
@@ -913,7 +908,7 @@ public class WelcomeController implements Initializable {
 						.thenComparing(Course.getCourseComparator()));
 				listViewSearch.getItems()
 						.setAll(courses);
-				totalLabel.setText(Integer.toString(jsonObject.getInt("total")));
+				totalLabel.setText(Integer.toString(pair.getKey()));
 			}
 
 		} catch (Exception e) {

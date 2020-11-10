@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers.tabs;
 
+import es.ubu.lsi.ubumonitor.controllers.DateController;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.WebViewAction;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
@@ -25,17 +26,12 @@ public class RiskController extends WebViewAction {
 	private GridPane optionsUbuLogs;
 	@FXML
 	private ChoiceBox<GroupByAbstract<?>> choiceBoxDate;
-
-	@FXML
-	private GridPane dateGridPane;
+	
 	@FXML
 	private GridPane gridPaneOptionLogs;
 
 	@FXML
-	private DatePicker datePickerStart;
-
-	@FXML
-	private DatePicker datePickerEnd;
+	private DateController dateController;
 
 	private RiskJavaConnector javaConnector;
 
@@ -49,7 +45,7 @@ public class RiskController extends WebViewAction {
 		VisualizationController visualizationController = mainController.getWebViewTabsController()
 				.getVisualizationController();
 		initOptions(visualizationController.getChoiceBoxDate());
-		visualizationController.bindDatePicker(this, datePickerStart, datePickerEnd);
+		visualizationController.bindDatePicker(this, getDatePickerStart(), getDatePickerEnd());
 	}
 
 	private void initOptions(ChoiceBox<GroupByAbstract<?>> choiceBoxBind) {
@@ -125,7 +121,7 @@ public class RiskController extends WebViewAction {
 	}
 
 	public GridPane getDateGridPane() {
-		return dateGridPane;
+		return dateController.getDateGridPane();
 	}
 
 	public GridPane getGridPaneOptionLogs() {
@@ -133,11 +129,11 @@ public class RiskController extends WebViewAction {
 	}
 
 	public DatePicker getDatePickerStart() {
-		return datePickerStart;
+		return dateController.getDatePickerStart();
 	}
 
 	public DatePicker getDatePickerEnd() {
-		return datePickerEnd;
+		return dateController.getDatePickerEnd();
 	}
 
 }

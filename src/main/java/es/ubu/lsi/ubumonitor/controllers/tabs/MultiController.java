@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers.tabs;
 
+import es.ubu.lsi.ubumonitor.controllers.DateController;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.WebViewAction;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
@@ -32,11 +33,8 @@ public class MultiController extends WebViewAction {
 	
 	
 	@FXML
-	private GridPane dateGridPane;
-	@FXML
-	private DatePicker datePickerStart;
-	@FXML
-	private DatePicker datePickerEnd;
+	private DateController dateController;
+
 
 	@Override
 	public void init(MainController mainController, Tab tab, Course actualCourse, MainConfiguration mainConfiguration,
@@ -47,7 +45,7 @@ public class MultiController extends WebViewAction {
 		init(tab, actualCourse, mainConfiguration, stage, javaConnector);
 		mainController.getWebViewTabsController()
 				.getVisualizationController()
-				.bindDatePicker(this, datePickerStart, datePickerEnd);
+				.bindDatePicker(this, getDatePickerStart(), getDatePickerEnd());
 		initOptions(mainController.getWebViewTabsController().getVisualizationController().getChoiceBoxDate());
 	}
 
@@ -173,15 +171,15 @@ public class MultiController extends WebViewAction {
 	}
 
 	public GridPane getDateGridPane() {
-		return dateGridPane;
+		return dateController.getDateGridPane();
 	}
 
 	public DatePicker getDatePickerStart() {
-		return datePickerStart;
+		return dateController.getDatePickerStart();
 	}
 
 	public DatePicker getDatePickerEnd() {
-		return datePickerEnd;
+		return dateController.getDatePickerEnd();
 	}
 
 	public GridPane getGridPaneOptionLogs() {

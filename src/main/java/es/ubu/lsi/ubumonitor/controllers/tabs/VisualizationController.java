@@ -2,6 +2,7 @@ package es.ubu.lsi.ubumonitor.controllers.tabs;
 
 import java.time.LocalDate;
 
+import es.ubu.lsi.ubumonitor.controllers.DateController;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.SelectionController;
 import es.ubu.lsi.ubumonitor.controllers.WebViewAction;
@@ -39,16 +40,12 @@ public class VisualizationController extends WebViewAction {
 	private ChoiceBox<GroupByAbstract<?>> choiceBoxDate;
 
 	@FXML
-	private GridPane dateGridPane;
-	@FXML
 	private GridPane gridPaneOptionLogs;
 
+	
 	@FXML
-	private DatePicker datePickerStart;
-
-	@FXML
-	private DatePicker datePickerEnd;
-
+	private DateController dateController;
+	
 	private VisualizationJavaConnector javaConnector;
 
 	private SelectionController selectionController;
@@ -106,6 +103,9 @@ public class VisualizationController extends WebViewAction {
 			}
 		});
 
+		DatePicker datePickerStart = getDatePickerStart();
+		DatePicker datePickerEnd = getDatePickerEnd();
+		
 		datePickerStart.setValue(actualCourse.getStart());
 		datePickerEnd.setValue(actualCourse.getEnd());
 
@@ -154,6 +154,9 @@ public class VisualizationController extends WebViewAction {
 	}
 	
 	public void bindDatePicker(WebViewAction webViewAction, DatePicker otherStart, DatePicker otherEnd) {
+		DatePicker datePickerStart = getDatePickerStart();
+		DatePicker datePickerEnd = getDatePickerEnd();
+		
 		otherStart.setValue(datePickerStart.getValue());
 		otherEnd.setValue(datePickerEnd.getValue());
 
@@ -318,15 +321,15 @@ public class VisualizationController extends WebViewAction {
 	}
 
 	public GridPane getDateGridPane() {
-		return dateGridPane;
+		return dateController.getDateGridPane();
 	}
 
 	public DatePicker getDatePickerStart() {
-		return datePickerStart;
+		return dateController.getDatePickerStart();
 	}
 
 	public DatePicker getDatePickerEnd() {
-		return datePickerEnd;
+		return dateController.getDatePickerEnd();
 	}
 
 	

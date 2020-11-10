@@ -30,6 +30,7 @@ import es.ubu.lsi.ubumonitor.model.DataBase;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.Languages;
+import es.ubu.lsi.ubumonitor.util.Parsers;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetEnrolledCoursesByTimelineClassification.Classification;
 import es.ubu.lsi.ubumonitor.webservice.api.core.webservice.CoreWebserviceGetSiteInfo;
@@ -281,7 +282,7 @@ public class LoginController implements Initializable {
 
 			} catch (MalformedURLException | RuntimeException e) {
 				LOGGER.error("Error en el login offline", e);
-				lblStatus.setText(e.getMessage());
+				lblStatus.setText(Parsers.parseHtmlToString(e.getMessage()));
 			}
 
 		} else {

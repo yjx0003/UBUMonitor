@@ -21,13 +21,18 @@ import es.ubu.lsi.ubumonitor.util.StopWord;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import javafx.collections.FXCollections;
 import javafx.scene.paint.Color;
-
+/**
+ * Utility class for parsing course configuration {@link JSONObject} to object.
+ * @author Yi Peng Ji
+ *
+ */
 public class ConfigurationConsumer {
 
 	private static final String NAME = "name";
 	private static final String CATEGORY = "category";
 	private static final String VALUE = "value";
 	private static final Map<String, BiConsumer<MainConfiguration, JSONObject>> CONSUMER_MAP = new HashMap<>();
+	
 	static {
 		CONSUMER_MAP.put(Role.class.toString(), ConfigurationConsumer::manageRole);
 		CONSUMER_MAP.put(Group.class.toString(), ConfigurationConsumer::manageGroup);
@@ -43,6 +48,11 @@ public class ConfigurationConsumer {
 		CONSUMER_MAP.put(MaskImage.class.toString(), ConfigurationConsumer::manageMaskImage);
 	}
 
+	/**
+	 * Treats JSONObject configuration and changes in main configuration. If not has a helper, do nothing.
+	 * @param mainConfiguration mainConfiguration
+	 * @param jsonObject jsonObject with the configuration
+	 */
 	public static void consume(MainConfiguration mainConfiguration, JSONObject jsonObject) {
 
 		CONSUMER_MAP.getOrDefault(jsonObject.getString("class"), ConfigurationConsumer::manageDefault)

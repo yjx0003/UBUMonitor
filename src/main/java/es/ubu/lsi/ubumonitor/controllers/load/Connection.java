@@ -29,26 +29,46 @@ public class Connection {
 	}
 
 	/**
+	 * Return the client instance
 	 * @return the client instance
 	 */
 	public static OkHttpClient getClient() {
 		return CLIENT;
 	}
 
+	/**
+	 * Get response of the request url
+	 * @param url the url
+	 * @return Response
+	 * @throws IOException exception if I/O Exception 
+	 */
 	public static Response getResponse(String url) throws IOException {
 		return getResponse(new Request.Builder().url(url)
 				.build());
 	}
 
+	/**
+	 * Get response response
+	 * @param request request
+	 * @return response
+	 * @throws IOException I/O exception
+	 */
 	public static Response getResponse(Request request) throws IOException {
 		return CLIENT.newCall(request)
 				.execute();
 	}
 
+	/**
+	 * Return cookemanager that stores the cookies
+	 * @return
+	 */
 	public static CookieManager getCookieManager() {
 		return COOKIE_MANAGER;
 	}
 	
+	/**
+	 * Clear cookies
+	 */
 	public static void clearCookies() {
 		COOKIE_MANAGER.getCookieStore().removeAll();
 	}

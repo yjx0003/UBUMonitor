@@ -28,6 +28,7 @@ import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseSearchCourses;
 import es.ubu.lsi.ubumonitor.webservice.api.core.enrol.CoreEnrolGetUsersCourses;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionEnum;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
+import javafx.util.Pair;
 import okhttp3.Response;
 
 public class PopulateCourse {
@@ -103,7 +104,7 @@ public class PopulateCourse {
 
 	}
 
-	public List<Course> searchCourse(String value) {
+	public Pair<Integer, List<Course>> searchCourse(String value) {
 
 		try {
 			CoreCourseSearchCourses coreCourseSearchCourses = new CoreCourseSearchCourses();
@@ -113,11 +114,11 @@ public class PopulateCourse {
 			return searchCourse(jsonObject);
 		} catch (Exception e) {
 			LOGGER.error("Error in searching course", e);
-			return EMPTY_LIST_COURSE;
+			return new Pair<>(0,EMPTY_LIST_COURSE);
 		}
 	}
 
-	public List<Course> searchCourse(JSONObject jsonObject) {
+	public Pair<Integer, List<Course>> searchCourse(JSONObject jsonObject) {
 
 		JSONArray coursesArray = jsonObject.getJSONArray(Constants.COURSES);
 
@@ -137,7 +138,7 @@ public class PopulateCourse {
 			course.setCourseCategory(category);
 			courses.add(course);
 		}
-		return courses;
+		return new Pair<>(jsonObject.optInt(Constants.TOTAL),courses);
 
 	}
 

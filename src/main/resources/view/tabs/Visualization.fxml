@@ -2,18 +2,12 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.web.WebView?>
 
 <BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.controllers.tabs.VisualizationController">
    <center>
@@ -32,6 +26,7 @@
             <RowConstraints />
          </rowConstraints>
          <children>
+            <fx:include fx:id="date" source="../Date.fxml" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowSpan="2147483647" />
             <GridPane fx:id="gridPaneOptionLogs">
                <columnConstraints>
                   <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" />
@@ -49,25 +44,6 @@
                      <GridPane.margin>
                         <Insets bottom="10.0" />
                      </GridPane.margin></TextField>
-               </children>
-            </GridPane>
-            <GridPane fx:id="dateGridPane" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowSpan="3">
-               <columnConstraints>
-                  <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" />
-                  <ColumnConstraints hgrow="SOMETIMES" />
-               </columnConstraints>
-               <rowConstraints>
-                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-               </rowConstraints>
-               <children>
-                  <Label text="%label.startdate" GridPane.halignment="RIGHT" />
-                  <DatePicker fx:id="datePickerStart" editable="false" GridPane.columnIndex="1">
-                     <GridPane.margin>
-                        <Insets bottom="10.0" />
-                     </GridPane.margin></DatePicker>
-                  <Label text="%label.enddate" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
-                  <DatePicker fx:id="datePickerEnd" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>
             </GridPane>
          </children>

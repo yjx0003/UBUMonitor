@@ -35,7 +35,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TreeView;
 import javafx.scene.web.WebView;
 
-public class PointsTable extends TabulatorLogs{
+public class PointsTable extends TabulatorLogs {
 
 	private static final String POINTS = "points";
 	private static final String RANKING = "ranking";
@@ -88,10 +88,8 @@ public class PointsTable extends TabulatorLogs{
 			Map<EnrolledUser, Double> rankingGrades = UtilMethods.rankingStatistics(pointsGrades,
 					DescriptiveStatistics::getMean);
 			Map<EnrolledUser, Double> rankingActivities = UtilMethods.rankingStatistics(pointsActivities);
-			data.put("columns",
-					createColumns(users.size(), UtilMethods.getMax(pointsLog.values()), 10,
-							activities.size(), typeLogs, gradeItems,
-							activities));
+			data.put("columns", createColumns(users.size(), UtilMethods.getMax(pointsLog.values()), 10,
+					activities.size(), typeLogs, gradeItems, activities));
 			append(users, pointsLog, pointsGrades, pointsActivities, rankingLog, rankingGrades, rankingActivities,
 					jsArray);
 		} else {
@@ -100,9 +98,8 @@ public class PointsTable extends TabulatorLogs{
 					DescriptiveStatistics::getMean);
 			Map<EnrolledUser, Integer> rankingActivities = UtilMethods.ranking(pointsActivities);
 
-			data.put("columns", createColumns(users.size(),UtilMethods.getMax(pointsLog.values()), 10,
-					activities.size(), typeLogs,
-					gradeItems, activities));
+			data.put("columns", createColumns(users.size(), UtilMethods.getMax(pointsLog.values()), 10,
+					activities.size(), typeLogs, gradeItems, activities));
 			append(users, pointsLog, pointsGrades, pointsActivities, rankingLog, rankingGrades, rankingActivities,
 					jsArray);
 		}
@@ -170,7 +167,8 @@ public class PointsTable extends TabulatorLogs{
 
 			jsObject.put("formatter", "'progress'");
 			JSObject formatterParams = new JSObject();
-			jsObject.put("tooltip", "function(cell){return cell.getRow().getData().ranking" + field + "}");
+			jsObject.put("tooltip", "function(cell){return cell.getRow().getData().ranking" + field
+					+ "+'/'+cell.getTable().getRows().length}");
 			jsObject.put("formatterParams", formatterParams);
 			formatterParams.put("min", 0);
 			formatterParams.put("max", max);

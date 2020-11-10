@@ -171,14 +171,14 @@ public class BubbleComparison extends PlotlyLog {
 
 		JSObject xaxis = new JSObject();
 		xaxis.putWithQuote("title", getXAxisTitle());
-		xaxis.put("range", "[0," + maxLog + "]");
+		xaxis.put("range", "[" + maxLog.intValue() / -10 + "," + maxLog + "]");
 		layout.put("xaxis", xaxis);
 
 		JSObject yaxis = new JSObject();
 		yaxis.putWithQuote("title", getYAxisTitle());
-		yaxis.put("range", "[0," + activityCompletionMax + "]");
+		yaxis.put("range", "[" + activityCompletionMax.intValue() / -5 + "," + activityCompletionMax + "]");
 		layout.put("yaxis", yaxis);
-		layout.put("hovermode", "'closest'");
+		// layout.put("hovermode", "'closest'");
 
 		JSObject updateMenus = new JSObject();
 		updateMenus.put("x", 0);
@@ -210,8 +210,10 @@ public class BubbleComparison extends PlotlyLog {
 			JSObject step = new JSObject();
 			step.put("method", "'animate'");
 			step.put("label", "'" + scapedTime + "'");
-			step.put("args", "[['" + scapedTime + "'],{transition:{duration:" + getConfigValue("transitionDuration")
-					+ "},frame:{duration:" + getConfigValue("frameDuration") + ",redraw:!1}}]");
+			step.put("args",
+					"[['" + scapedTime + "'],{mode:'immediate',transition:{duration:"
+							+ getConfigValue("transitionDuration") + "},frame:{duration:"
+							+ getConfigValue("frameDuration") + ",redraw:!1}}]");
 			sliderSteps.add(step);
 
 		}

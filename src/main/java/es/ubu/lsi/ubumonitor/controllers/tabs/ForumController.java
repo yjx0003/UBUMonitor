@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers.tabs;
 
+import es.ubu.lsi.ubumonitor.controllers.DateController;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.WebViewAction;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
@@ -15,22 +16,19 @@ import javafx.stage.Stage;
 public class ForumController extends WebViewAction {
 
 	private ForumConnector javaConnector;
+	
 	@FXML
-	private GridPane dateGridPane;
-	@FXML
-	private DatePicker datePickerStart;
-	@FXML
-	private DatePicker datePickerEnd;
+	private DateController dateController;
 
 	@Override
 	public void init(MainController mainController, Tab tab, Course actualCourse, MainConfiguration mainConfiguration,
 			Stage stage) {
 		javaConnector = new ForumConnector(webViewController.getWebViewCharts(), mainConfiguration, mainController,
-				actualCourse, dateGridPane, datePickerStart, datePickerEnd);
+				actualCourse, getDateGridPane(), getDatePickerStart(), getDatePickerEnd());
 		init(tab, actualCourse, mainConfiguration, stage, javaConnector);
 		mainController.getWebViewTabsController()
 				.getVisualizationController()
-				.bindDatePicker(this, datePickerStart, datePickerEnd);
+				.bindDatePicker(this, getDatePickerStart(), getDatePickerEnd());
 	}
 
 	@Override
@@ -69,15 +67,15 @@ public class ForumController extends WebViewAction {
 	}
 
 	public GridPane getDateGridPane() {
-		return dateGridPane;
+		return dateController.getDateGridPane();
 	}
 
 	public DatePicker getDatePickerStart() {
-		return datePickerStart;
+		return dateController.getDatePickerStart();
 	}
 
 	public DatePicker getDatePickerEnd() {
-		return datePickerEnd;
+		return dateController.getDatePickerEnd();
 	}
 
 }

@@ -89,7 +89,7 @@ public class PopulateGradeItem {
 		JSONObject jsonGradeItems;
 		try {
 			jsonGradeItems = UtilMethods.getJSONObjectResponse(webService, new GradereportUserGetGradeItems(courseid));
-
+			LOGGER.info("GradereportUserGetGradeItems works");
 		} catch (Exception e) {
 
 			jsonGradeItems = gradeItemsTable;

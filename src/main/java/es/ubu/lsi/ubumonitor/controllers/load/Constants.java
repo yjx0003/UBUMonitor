@@ -114,6 +114,7 @@ public class Constants {
 	public static final String PROFILEIMAGEURLSMALL = "profileimageurlsmall";
 	public static final String MODULENAME = "modulename";
 	public static final String DATA = "data";
+	public static final String TOTAL = "total";
 	
 
 	private Constants() {

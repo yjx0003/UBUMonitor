@@ -120,15 +120,15 @@ public class MainConfiguration {
 		createItem(ChartType.VIOLIN, HORIZONTAL_MODE, false);
 		createItem(ChartType.VIOLIN, "boxVisible", true);
 		
-		createItem(ChartType.GRADE_REPORT_TABLE, "color0", Color.web("#DC143C"));
-		createItem(ChartType.GRADE_REPORT_TABLE, "color1", Color.web("#DC143C"));
-		createItem(ChartType.GRADE_REPORT_TABLE, "color2", Color.web("#DC143C"));
-		createItem(ChartType.GRADE_REPORT_TABLE, "color3", Color.web("#DC143C"));
-		createItem(ChartType.GRADE_REPORT_TABLE, "color4", Color.web("#DC143C"));
-		createItem(ChartType.GRADE_REPORT_TABLE, "color5", Color.web("#2DC214"));
-		createItem(ChartType.GRADE_REPORT_TABLE, "color6", Color.web("#2DC214"));
-		createItem(ChartType.GRADE_REPORT_TABLE, "color7", Color.web("#2DC214"));
-		createItem(ChartType.GRADE_REPORT_TABLE, "color8", Color.web("#2DC214"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color0", Color.web("#ff3333"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color1", Color.web("#ff3333"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color2", Color.web("#ff3333"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color3", Color.web("#ff7d33"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color4", Color.web("#ff7d33"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color5", Color.web("#b2ff33"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color6", Color.web("#b2ff33"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color7", Color.web("#4cff33"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color8", Color.web("#4cff33"));
 		createItem(ChartType.GRADE_REPORT_TABLE, "color9", Color.web("#2DC214"));
 		createItem(ChartType.GRADE_REPORT_TABLE, "color10", Color.web("#2DC214"));
 		

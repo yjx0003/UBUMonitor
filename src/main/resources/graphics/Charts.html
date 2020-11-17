@@ -268,11 +268,11 @@
 
       function updatePlotly(plot, options) {
          hiddenCharts("plotly", options);
-
+        
          plot.layout.showlegend = options.useLegend && options.legendActive;
        
          plot.config = { displaylogo: false, responsive: true, modeBarButtonsToRemove: ["toImage"] };
-         Plotly.newPlot('plotlyDiv', plot);
+         Plotly.react('plotlyDiv', plot);
 
          if(options.onClick){
             document.getElementById('plotlyDiv').on('plotly_click', options.onClick);
@@ -371,6 +371,7 @@
 
 
       function exportChartjs() {
+         myChart.update();
          return myChart.toBase64Image();
       }
 
@@ -385,7 +386,7 @@
             button.id = value.id;
             button.innerText = value.text;
             button.className = "btn";
-            button.setAttribute("onClick", "javascript: javaConnector.updateCharts(this.id);");
+            button.setAttribute("onClick", "javaConnector.updateChartFromJS(this.id);");
             type = document.getElementById(value.type)
 
             if (!type) {

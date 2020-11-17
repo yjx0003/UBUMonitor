@@ -13,7 +13,7 @@ public class CalendarEventConnector extends JavaConnectorAbstract {
 	public CalendarEventConnector(WebView webView, MainConfiguration mainConfiguration, MainController mainController,
 			Course actualCourse) {
 		super(webView, mainConfiguration, mainController, actualCourse);
-		addChart(new CalendarEventTimeline(mainController, webView, mainController.getSelectionMainController()
+		addChart(new CalendarEventTimeline(mainController, mainController.getSelectionMainController()
 				.getSelectionCourseModuleController()
 				.getListView()));
 		currentChart = charts.get(ChartType.getDefault(Tabs.CALENDAR_EVENT));

@@ -23,7 +23,6 @@ import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Tabulator;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
-import javafx.scene.web.WebView;
 
 public class ForumTable extends Tabulator {
 
@@ -31,9 +30,9 @@ public class ForumTable extends Tabulator {
 	private DatePicker datePickerStart;
 	private DatePicker datePickerEnd;
 
-	public ForumTable(MainController mainController, WebView webView, ListView<CourseModule> forums,
+	public ForumTable(MainController mainController, ListView<CourseModule> forums,
 			DatePicker datePickerStart, DatePicker datePickerEnd) {
-		super(mainController, ChartType.FORUM_TABLE, webView);
+		super(mainController, ChartType.FORUM_TABLE);
 		this.forums = forums;
 		this.datePickerStart = datePickerStart;
 		this.datePickerEnd = datePickerEnd;

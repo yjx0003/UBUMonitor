@@ -33,7 +33,6 @@ import es.ubu.lsi.ubumonitor.view.chart.logs.TabulatorLogs;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TreeView;
-import javafx.scene.web.WebView;
 
 public class RankingTable extends TabulatorLogs {
 
@@ -49,10 +48,10 @@ public class RankingTable extends TabulatorLogs {
 	private DatePicker start;
 	private DatePicker end;
 
-	public RankingTable(MainController mainController, WebView webView, TreeView<GradeItem> treeViewGradeItem,
+	public RankingTable(MainController mainController, TreeView<GradeItem> treeViewGradeItem,
 			ListView<CourseModule> listViewActivityCompletion, DatePicker start, DatePicker end) {
 
-		super(mainController, ChartType.RANKING_TABLE, webView);
+		super(mainController, ChartType.RANKING_TABLE);
 		this.treeViewGradeItem = treeViewGradeItem;
 		this.listViewActivityCompletion = listViewActivityCompletion;
 		this.start = start;

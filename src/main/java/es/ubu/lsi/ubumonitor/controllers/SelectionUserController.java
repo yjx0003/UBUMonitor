@@ -304,6 +304,11 @@ public class SelectionUserController {
 					menu.getItems()
 							.addAll(seeUser);
 					setContextMenu(menu);
+					setOnMouseClicked(e -> {
+						if (e.getButton() == MouseButton.PRIMARY && e.getClickCount() == 2) {
+							userInfo(user);
+						}
+					});
 				}
 			}
 

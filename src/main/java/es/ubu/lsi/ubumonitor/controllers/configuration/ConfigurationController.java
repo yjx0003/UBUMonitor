@@ -87,6 +87,7 @@ public class ConfigurationController {
 			}
 
 		}
+		tabPane.getSelectionModel().select(ConfigHelper.getProperty("propertySheetConfigurationIndex", 0));
 	}
 
 	/**
@@ -159,7 +160,7 @@ public class ConfigurationController {
 	 */
 	public void onClose() {
 		apply();
-
+		ConfigHelper.setProperty("propertySheetConfigurationIndex", tabPane.getSelectionModel().getSelectedIndex());
 	}
 
 	/**

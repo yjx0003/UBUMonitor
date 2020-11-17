@@ -24,7 +24,6 @@ import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Tabulator;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
-import javafx.scene.web.WebView;
 
 public class ActivitiesStatusTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActivitiesStatusTable.class);
@@ -34,8 +33,8 @@ public class ActivitiesStatusTable extends Tabulator {
 	private ListView<CourseModule> listViewActivity;
 
 	public ActivitiesStatusTable(MainController mainController, DatePicker datePickerStart, DatePicker datePickerEnd,
-			ListView<CourseModule> listViewActivity, WebView webView) {
-		super(mainController, ChartType.ACTIVITIES_TABLE, webView);
+			ListView<CourseModule> listViewActivity) {
+		super(mainController, ChartType.ACTIVITIES_TABLE);
 		this.datePickerStart = datePickerStart;
 		this.datePickerEnd = datePickerEnd;
 		this.listViewActivity = listViewActivity;
@@ -67,7 +66,7 @@ public class ActivitiesStatusTable extends Tabulator {
 
 		for (CourseModule courseModule : courseModules) {
 			jsObject = new JSObject();
-			jsObject.putWithQuote("align", "center");
+			jsObject.putWithQuote("hozAlign", "center");
 			jsObject.put("tooltip", true);
 
 			jsObject.putWithQuote("formatter", "tickCross");

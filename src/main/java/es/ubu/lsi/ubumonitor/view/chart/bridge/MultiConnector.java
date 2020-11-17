@@ -19,17 +19,17 @@ public class MultiConnector extends JavaConnectorAbstract {
 			Course actualCourse, MultiController multiController) {
 		super(webViewCharts, mainConfiguration, mainController, actualCourse);
 		this.multiController = multiController;
-		addChart(new RankingTable(mainController, webView, mainController.getSelectionController()
+		addChart(new RankingTable(mainController, mainController.getSelectionController()
 				.getTvwGradeReport(),
 				mainController.getSelectionController()
 						.getListViewActivity(),
 				multiController.getDatePickerStart(), multiController.getDatePickerEnd()));
-		addChart(new PointsTable(mainController, webView, mainController.getSelectionController()
+		addChart(new PointsTable(mainController, mainController.getSelectionController()
 				.getTvwGradeReport(),
 				mainController.getSelectionController()
 						.getListViewActivity(),
 				multiController.getDatePickerStart(), multiController.getDatePickerEnd()));
-		addChart(new BubbleComparison(mainController, webView, mainController.getSelectionController()
+		addChart(new BubbleComparison(mainController,mainController.getSelectionController()
 				.getTvwGradeReport(),
 				mainController.getSelectionController()
 						.getListViewActivity(),

@@ -1,6 +1,5 @@
 package es.ubu.lsi.ubumonitor.view.chart.logs;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -22,20 +21,19 @@ import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
-import javafx.scene.web.WebView;
 
 public class Heatmap extends ChartLogs {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Heatmap.class);
-	private WebView webView;
+
 	private DescriptiveStatistics descriptiveStatistics;
 
-	public Heatmap(MainController mainController, WebView webView) {
+	public Heatmap(MainController mainController) {
 		super(mainController, ChartType.HEAT_MAP);
 		descriptiveStatistics = new DescriptiveStatistics();
 		useGroupBy = true;
 		useLegend = true;
-		this.webView = webView;
+		
 	}
 
 	@Override
@@ -43,13 +41,6 @@ public class Heatmap extends ChartLogs {
 		// TODO Auto-generated method stub
 
 	}
-
-	@Override
-	public void exportImage(File file) throws IOException {
-		UtilMethods.snapshotNode(file, webView);
-		UtilMethods.showExportedFile(file);
-	}
-
 	public String getXScaleLabel() {
 	
 		JSObject jsObject = new JSObject();

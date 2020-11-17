@@ -24,16 +24,15 @@ import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
-import javafx.scene.web.WebView;
 
 public class ForumTreeMapUser extends Plotly {
 	private ListView<CourseModule> forumListView;
 	private DatePicker datePickerStart;
 	private DatePicker datePickerEnd;
 
-	public ForumTreeMapUser(MainController mainController, WebView webView, ListView<CourseModule> forumListView,
+	public ForumTreeMapUser(MainController mainController, ListView<CourseModule> forumListView,
 			DatePicker datePickerStart, DatePicker datePickerEnd) {
-		super(mainController, ChartType.FORUM_TREE_MAP_USER, webView);
+		super(mainController, ChartType.FORUM_TREE_MAP_USER);
 		this.forumListView = forumListView;
 		this.datePickerStart = datePickerStart;
 		this.datePickerEnd = datePickerEnd;

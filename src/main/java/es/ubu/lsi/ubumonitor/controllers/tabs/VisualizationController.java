@@ -2,6 +2,7 @@ package es.ubu.lsi.ubumonitor.controllers.tabs;
 
 import java.time.LocalDate;
 
+import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.DateController;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.SelectionController;
@@ -106,8 +107,8 @@ public class VisualizationController extends WebViewAction {
 		DatePicker datePickerStart = getDatePickerStart();
 		DatePicker datePickerEnd = getDatePickerEnd();
 		
-		datePickerStart.setValue(actualCourse.getStart());
-		datePickerEnd.setValue(actualCourse.getEnd());
+		datePickerStart.setValue(actualCourse.getStart(Controller.getInstance().getUpdatedCourseData().toLocalDate()));
+		datePickerEnd.setValue(actualCourse.getEnd(Controller.getInstance().getUpdatedCourseData().toLocalDate()));
 
 		datePickerStart.setOnAction(event -> applyFilterLogs());
 		datePickerEnd.setOnAction(event -> applyFilterLogs());

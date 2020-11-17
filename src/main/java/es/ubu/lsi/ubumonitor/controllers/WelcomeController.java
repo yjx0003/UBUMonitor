@@ -846,6 +846,7 @@ public class WelcomeController implements Initializable {
 							actualCourse.setNotEnrolledUser(notEnrolled);
 							actualCourse.setUpdatedLog(ZonedDateTime.now());
 							populateEnrolledUsersCourse.downloadUserimages(actualCourse.getEnrolledUsers());
+							populateEnrolledUsersCourse.downloadUserimages(actualCourse.getNotEnrolledUser());
 							tries = limitRelogin + 1;
 						} catch (Exception e) {
 							if (tries >= limitRelogin) {

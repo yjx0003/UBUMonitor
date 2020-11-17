@@ -24,7 +24,6 @@ import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
-import javafx.scene.web.WebView;
 
 public class ForumTreeMap extends Plotly {
 
@@ -32,9 +31,9 @@ public class ForumTreeMap extends Plotly {
 	private DatePicker datePickerStart;
 	private DatePicker datePickerEnd;
 
-	public ForumTreeMap(MainController mainController, WebView webView, ListView<CourseModule> forumListView,
+	public ForumTreeMap(MainController mainController, ListView<CourseModule> forumListView,
 			DatePicker datePickerStart, DatePicker datePickerEnd) {
-		super(mainController, ChartType.FORUM_TREE_MAP, webView);
+		super(mainController, ChartType.FORUM_TREE_MAP);
 		this.forumListView = forumListView;
 		this.datePickerStart = datePickerStart;
 		this.datePickerEnd = datePickerEnd;

@@ -20,35 +20,31 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebView;
 
 public class ForumConnector extends JavaConnectorAbstract {
-	
+
 	private GridPane dateGridPane;
-	
-	public ForumConnector(WebView webView, MainConfiguration mainConfiguration, MainController mainController, Course actualCourse, GridPane dateGridPane, DatePicker datePickerStart, DatePicker datePickerEnd) {
+
+	public ForumConnector(WebView webView, MainConfiguration mainConfiguration, MainController mainController,
+			Course actualCourse, GridPane dateGridPane, DatePicker datePickerStart, DatePicker datePickerEnd) {
 		super(webView, mainConfiguration, mainController, actualCourse);
 		this.dateGridPane = dateGridPane;
-		ListView<CourseModule> listViewForum = mainController
-				.getSelectionMainController()
+		ListView<CourseModule> listViewForum = mainController.getSelectionMainController()
 				.getSelectionForumController()
 				.getListViewForum();
-		addChart(new ForumTable(mainController, webView,
-				listViewForum, datePickerStart, datePickerEnd));
-		addChart(new ForumBar(mainController, listViewForum,datePickerStart, datePickerEnd));
-		
-		addChart(new ForumNetwork(mainController, webView, listViewForum,datePickerStart, datePickerEnd));
-		addChart(new ForumWordCloud(mainController, listViewForum, webView,datePickerStart, datePickerEnd));
-		addChart(new ForumUserPostBar(mainController, listViewForum,datePickerStart, datePickerEnd));
-		addChart(new ForumTreeMap(mainController, webView, listViewForum,datePickerStart, datePickerEnd));
-		addChart(new ForumTreeMapUser(mainController, webView, listViewForum,datePickerStart, datePickerEnd));
-		addChart(new ForumPosts(mainController, webView, listViewForum,datePickerStart, datePickerEnd));
+		addChart(new ForumTable(mainController, listViewForum, datePickerStart, datePickerEnd));
+		addChart(new ForumBar(mainController, listViewForum, datePickerStart, datePickerEnd));
+
+		addChart(new ForumNetwork(mainController, listViewForum, datePickerStart, datePickerEnd));
+		addChart(new ForumWordCloud(mainController, listViewForum, webView, datePickerStart, datePickerEnd));
+		addChart(new ForumUserPostBar(mainController, listViewForum, datePickerStart, datePickerEnd));
+		addChart(new ForumTreeMap(mainController, listViewForum, datePickerStart, datePickerEnd));
+		addChart(new ForumTreeMapUser(mainController, listViewForum, datePickerStart, datePickerEnd));
+		addChart(new ForumPosts(mainController, listViewForum, datePickerStart, datePickerEnd));
 		currentChart = charts.get(ChartType.getDefault(Tabs.FORUM));
 	}
-
-	
 
 	@Override
 	public void manageOptions() {
 		dateGridPane.setVisible(currentChart.isUseRangeDate());
 	}
-
 
 }

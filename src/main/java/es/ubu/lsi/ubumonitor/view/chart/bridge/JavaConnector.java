@@ -23,7 +23,7 @@ public interface JavaConnector {
 
 	public void clear();
 
-	public void updateCharts(String typeChart);
+	public void updateChartFromJS(String typeChart);
 
 	public void setCurrentChart(Chart chart);
 

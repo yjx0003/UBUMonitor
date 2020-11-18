@@ -110,16 +110,16 @@ public class Violin extends Plotly {
 	public void createLayout(JSObject layout) {
 		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 
-		JSArray tickvals = new JSArray();
 		JSArray ticktext = new JSArray();
-		for (int i = 0; i < gradeItems.size(); ++i) {
-			tickvals.add(i);
-			ticktext.addWithQuote(gradeItems.get(i)
-					.getItemname());
+		for (GradeItem gradeItem : gradeItems) {
+			ticktext.addWithQuote(gradeItem.getItemname());
 		}
-		horizontalMode(layout, tickvals, ticktext);
+
+		horizontalMode(layout, ticktext, getConfigValue("horizontalMode"), getXAxisTitle(), getYAxisTitle(),
+				"[-0.5,10.5]");
+		
 		layout.put("violinmode", "'group'");
-		// layout.put("hovermode", "'closest'");
+		layout.put("hovermode", "'closest'");
 
 	}
 

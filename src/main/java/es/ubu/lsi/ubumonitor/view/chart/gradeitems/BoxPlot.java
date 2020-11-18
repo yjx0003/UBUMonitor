@@ -61,7 +61,7 @@ public class BoxPlot extends Plotly {
 			boolean useHorizontal, boolean visible, boolean standardDeviation, boolean notched) {
 		JSObject trace = new JSObject();
 		JSArray grades = new JSArray();
-		JSArray gradeItemIds = new JSArray();
+		JSArray gradeItemIndex = new JSArray();
 		JSArray userNames = new JSArray();
 		JSArray userids = new JSArray();
 
@@ -73,7 +73,7 @@ public class BoxPlot extends Plotly {
 				double grade = gradeItem.getEnrolledUserPercentage(user);
 				if (!Double.isNaN(grade)) {
 					grades.add(gradeItem.getEnrolledUserPercentage(user) / 10);
-					gradeItemIds.add(i);
+					gradeItemIndex.add(i);
 					userids.add(user.getId());
 					userNames.addWithQuote(user.getFullName());
 				}
@@ -82,11 +82,11 @@ public class BoxPlot extends Plotly {
 		}
 
 		if (useHorizontal) {
-			trace.put("y", gradeItemIds);
+			trace.put("y", gradeItemIndex);
 			trace.put("x", grades);
 			trace.put("orientation", "'h'");
 		} else {
-			trace.put("x", gradeItemIds);
+			trace.put("x", gradeItemIndex);
 			trace.put("y", grades);
 		}
 
@@ -116,15 +116,13 @@ public class BoxPlot extends Plotly {
 	public void createLayout(JSObject layout) {
 		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 
-		JSArray tickvals = new JSArray();
 		JSArray ticktext = new JSArray();
-		for (int i = 0; i < gradeItems.size(); ++i) {
-			tickvals.add(i);
-			ticktext.addWithQuote(gradeItems.get(i)
-					.getItemname());
+		for (GradeItem gradeItem : gradeItems) {
+			ticktext.addWithQuote(gradeItem.getItemname());
 		}
 
-		horizontalMode(layout, tickvals, ticktext);
+		horizontalMode(layout, ticktext, getConfigValue("horizontalMode"), getXAxisTitle(), getYAxisTitle(),
+				"[-0.5,10.5]");
 		layout.put("boxmode", "'group'");
 		layout.put("hovermode", "'closest'");
 

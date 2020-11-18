@@ -271,7 +271,7 @@
         
          plot.layout.showlegend = options.useLegend && options.legendActive;
        
-         plot.config = { displaylogo: false, responsive: true, modeBarButtonsToRemove: ["toImage"] };
+         plot.config = options.config;
          Plotly.react('plotlyDiv', plot);
 
          if(options.onClick){

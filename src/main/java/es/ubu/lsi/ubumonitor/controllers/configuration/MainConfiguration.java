@@ -100,13 +100,15 @@ public class MainConfiguration {
 		createItem(ChartType.HEAT_MAP, "moreMax", Color.web("#67b92e"));
 		
 		createItem(ChartType.BOXPLOT_LOG, HORIZONTAL_MODE, true);
-		
+		createItem(ChartType.BOXPLOT_LOG, "standardDeviation", false);
+		createItem(ChartType.BOXPLOT_LOG, "notched", false);
 		createItem(ChartType.VIOLIN_LOG, HORIZONTAL_MODE, true);
-		
+		createItem(ChartType.VIOLIN_LOG, "boxVisible", true);
 		createItem(ChartType.BOXPLOT_LOG_TIME, HORIZONTAL_MODE, false);
-		
+		createItem(ChartType.BOXPLOT_LOG_TIME, "standardDeviation", false);
+		createItem(ChartType.BOXPLOT_LOG_TIME, "notched", false);
 		createItem(ChartType.VIOLIN_LOG_TIME, HORIZONTAL_MODE, false);
-		
+		createItem(ChartType.VIOLIN_LOG_TIME, "boxVisible", true);
 		createItem(ChartType.CUM_LINE, "calculateMax", false);
 		createItem(ChartType.MEAN_DIFF, "calculateMax", false);
 		createItem(ChartType.MEAN_DIFF, "zeroLineColor", Color.web("#DC143C"));
@@ -122,15 +124,15 @@ public class MainConfiguration {
 		
 		createItem(ChartType.GRADE_REPORT_TABLE, "color0", Color.web("#ff3333"));
 		createItem(ChartType.GRADE_REPORT_TABLE, "color1", Color.web("#ff3333"));
-		createItem(ChartType.GRADE_REPORT_TABLE, "color2", Color.web("#ff3333"));
-		createItem(ChartType.GRADE_REPORT_TABLE, "color3", Color.web("#ff7d33"));
-		createItem(ChartType.GRADE_REPORT_TABLE, "color4", Color.web("#ff7d33"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color2", Color.web("#ff8080"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color3", Color.web("#ff8080"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color4", Color.web("#ff8080"));
 		createItem(ChartType.GRADE_REPORT_TABLE, "color5", Color.web("#b2ff33"));
 		createItem(ChartType.GRADE_REPORT_TABLE, "color6", Color.web("#b2ff33"));
 		createItem(ChartType.GRADE_REPORT_TABLE, "color7", Color.web("#4cff33"));
 		createItem(ChartType.GRADE_REPORT_TABLE, "color8", Color.web("#4cff33"));
-		createItem(ChartType.GRADE_REPORT_TABLE, "color9", Color.web("#2DC214"));
-		createItem(ChartType.GRADE_REPORT_TABLE, "color10", Color.web("#2DC214"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color9", Color.web("#10c14e"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color10", Color.web("#10c14e"));
 		
 		
 

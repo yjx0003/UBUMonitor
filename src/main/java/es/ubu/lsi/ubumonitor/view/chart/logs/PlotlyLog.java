@@ -1,6 +1,8 @@
 package es.ubu.lsi.ubumonitor.view.chart.logs;
 
+import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
+import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Plotly;
@@ -20,6 +22,7 @@ public abstract class PlotlyLog extends ChartLogs {
 
 	@Override
 	public JSObject getOptions(JSObject jsObject) {
+		Plotly.fillOptions(jsObject, Plotly.createConfig());
 		return jsObject;
 	}
 
@@ -28,5 +31,15 @@ public abstract class PlotlyLog extends ChartLogs {
 		Plotly.clear(webViewChartsEngine);
 
 	}
+	
+	@Override
+	public int onClick(int userid) {
+		EnrolledUser user = Controller.getInstance()
+				.getDataBase()
+				.getUsers()
+				.getById(userid);
+		return getUsers().indexOf(user);
+	}
+
 
 }

@@ -22,7 +22,6 @@ import es.ubu.lsi.ubumonitor.model.Group;
 import es.ubu.lsi.ubumonitor.model.Role;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
-import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
@@ -47,8 +46,7 @@ public class ViolinLogTime extends PlotlyLog {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
-				.getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<String> range = groupBy.getRangeString(dateStart, dateEnd);
 		JSObject plot = new JSObject();
 		plot.put("data",

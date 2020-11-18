@@ -17,99 +17,110 @@ import es.ubu.lsi.ubumonitor.model.Group;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
-import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 import javafx.scene.control.TreeView;
 
-public class Violin extends ChartjsGradeItem {
+public class Violin extends Plotly {
+
+	private TreeView<GradeItem> treeViewGradeItem;
 
 	public Violin(MainController mainController, TreeView<GradeItem> treeViewGradeItem) {
-		super(mainController, ChartType.VIOLIN, treeViewGradeItem);
+		super(mainController, ChartType.VIOLIN);
+		this.treeViewGradeItem = treeViewGradeItem;
+		useLegend = true;
+		useGroupButton = true;
+		useGeneralButton = true;
 	}
 
 	@Override
-	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
-		JSObject data = new JSObject();
-		
-		data.put("labels", "[" + UtilMethods.joinWithQuotes(selectedGradeItems) + "]");
-		JSArray datasets = new JSArray();
+	public void createData(JSArray data) {
+		List<EnrolledUser> users = getSelectedEnrolledUser();
+		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
+		boolean useHorizontal = getConfigValue("horizontalMode");
+		boolean boxVisible = getConfigValue("boxVisible");
 
-		if (!selectedUser.isEmpty()) {
-			datasets.add(createData(selectedUser, selectedGradeItems, I18n.get("text.selectedUsers"), false));
-
-		}
-
-		datasets.add(createData(actualCourse.getEnrolledUsers(), selectedGradeItems,
-				I18n.get("text.all"),
-				!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")));
-
-		for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
+		data.add(createTrace(users, gradeItems, I18n.get("text.selectedUsers"), useHorizontal, true, boxVisible));
+		data.add(createTrace(actualCourse.getEnrolledUsers(), gradeItems, I18n.get("text.all"), useHorizontal,
+				getGeneralConfigValue("generalActive"), boxVisible));
+		for (Group group : slcGroup.getCheckModel()
+				.getCheckedItems()) {
+			boolean groupActive = getGeneralConfigValue("groupActive");
 			if (group != null) {
-				datasets.add(createData(group.getEnrolledUsers(), selectedGradeItems, group.getGroupName(),
-						!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")));
+				data.add(createTrace(group.getEnrolledUsers(), gradeItems, group.getGroupName(), useHorizontal,
+						groupActive, boxVisible));
 			}
-
 		}
 
-		data.put("datasets", datasets);
-
-		return data.toString();
 	}
 
-	private JSObject createData(Collection<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems, String text,
-			boolean hidden) {
-		JSObject dataset = new JSObject();
-		dataset.putWithQuote("label", text);
-		dataset.put("borderColor", hex(text));
-		dataset.put("backgroundColor", rgba(text, OPACITY));
+	public JSObject createTrace(Collection<EnrolledUser> users, List<GradeItem> gradeItems, String name,
+			boolean useHorizontal, boolean visible, boolean boxVisible) {
+		JSObject trace = new JSObject();
+		JSArray grades = new JSArray();
+		JSArray gradeItemIds = new JSArray();
+		JSArray userNames = new JSArray();
+		JSArray userids = new JSArray();
 
-		dataset.put("padding", 10);
-		dataset.put("itemRadius", 2);
-		dataset.putWithQuote("itemStyle", "circle");
-		dataset.put("itemBackgroundColor", hex(text));
-		dataset.put("outlierColor", hex(text));
-		dataset.put("borderWidth", 1);
-		dataset.put("outlierRadius", 5);
-		dataset.put("hidden", hidden);
-		JSArray data = new JSArray();
+		for (int i = 0; i < gradeItems.size(); ++i) {
+			GradeItem gradeItem = gradeItems.get(i);
 
-		for (GradeItem gradeItem : selectedGradeItems) {
-			JSArray dataArray = new JSArray();
-			boolean hasNonNaN = false;
-			for (EnrolledUser user : selectedUser) {
+			for (EnrolledUser user : users) {
+
 				double grade = gradeItem.getEnrolledUserPercentage(user);
 				if (!Double.isNaN(grade)) {
-					dataArray.add(adjustTo10(grade));
-					hasNonNaN = true;
+					grades.add(gradeItem.getEnrolledUserPercentage(user) / 10);
+					gradeItemIds.add(i);
+					userids.add(user.getId());
+					userNames.addWithQuote(user.getFullName());
 				}
+
 			}
-			if (!hasNonNaN) {
-				dataArray.add(-100000);
-			}
-			data.add(dataArray);
 		}
-		dataset.put("data", data);
-		return dataset;
+
+		if (useHorizontal) {
+			trace.put("y", gradeItemIds);
+			trace.put("x", grades);
+			trace.put("orientation", "'h'");
+		} else {
+			trace.put("x", gradeItemIds);
+			trace.put("y", grades);
+		}
+
+		trace.put("type", "'violin'");
+		trace.putWithQuote("name", name);
+		trace.put("userids", userids);
+		trace.put("text", userNames);
+		trace.put("hovertemplate", "'<b>%{" + (useHorizontal ? "x" : "y") + "}<br>%{text}: </b>%{"
+				+ (useHorizontal ? "x" : "y") + ":.2f}<extra></extra>'");
+		JSObject line = new JSObject();
+		line.put("color", rgb(name));
+		trace.put("line", line);
+		if (!visible) {
+			trace.put("visible", "'legendonly'");
+		}
+
+		trace.put("box", "{visible:" + boxVisible + "}");
+		trace.put("meanline", "{visible:true}");
+
+		return trace;
 	}
 
 	@Override
-	public int onClick(int index) {
-		return -1; // do nothing at the moment
-	}
+	public void createLayout(JSObject layout) {
+		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 
-	@Override
-	public JSObject getOptions(JSObject jsObject) {
-		
-		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
-	
-		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalViolin" : "violin");
-		jsObject.put("tooltipDecimals", 2);
+		JSArray ticktext = new JSArray();
+		for (GradeItem gradeItem : gradeItems) {
+			ticktext.addWithQuote(gradeItem.getItemname());
+		}
 
-		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
-		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
+		horizontalMode(layout, ticktext, getConfigValue("horizontalMode"), getXAxisTitle(), getYAxisTitle(),
+				"[-0.5,10.5]");
 		
-		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{min:0,max:10}}],xAxes:[{" + xLabel + ",ticks:{min:0,max:10}}]}");
-		return jsObject;
+		layout.put("violinmode", "'group'");
+		layout.put("hovermode", "'closest'");
+
 	}
 
 	@Override
@@ -129,13 +140,15 @@ public class Violin extends ChartjsGradeItem {
 				exportCSV(printer, enrolledUser, gradeItems, "selected users");
 
 			}
-			
-			if((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")){
-				exportCSV(printer, controller.getActualCourse().getEnrolledUsers(), gradeItems, "all");
+
+			if ((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")) {
+				exportCSV(printer, controller.getActualCourse()
+						.getEnrolledUsers(), gradeItems, "all");
 			}
-			
-			if((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")){
-				for (Group group : slcGroup.getCheckModel().getCheckedItems()) {
+
+			if ((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")) {
+				for (Group group : slcGroup.getCheckModel()
+						.getCheckedItems()) {
 					exportCSV(printer, group.getEnrolledUsers(), gradeItems, group.getGroupName());
 				}
 			}

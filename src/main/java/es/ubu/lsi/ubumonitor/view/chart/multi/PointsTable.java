@@ -17,10 +17,10 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.SelectionController;
 import es.ubu.lsi.ubumonitor.model.ActivityCompletion;
+import es.ubu.lsi.ubumonitor.model.ActivityCompletion.State;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
-import es.ubu.lsi.ubumonitor.model.ActivityCompletion.State;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
@@ -33,7 +33,6 @@ import es.ubu.lsi.ubumonitor.view.chart.logs.TabulatorLogs;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TreeView;
-import javafx.scene.web.WebView;
 
 public class PointsTable extends TabulatorLogs {
 
@@ -47,10 +46,10 @@ public class PointsTable extends TabulatorLogs {
 	private TreeView<GradeItem> treeViewGradeItem;
 	private ListView<CourseModule> listViewActivityCompletion;
 
-	public PointsTable(MainController mainController, WebView webView, TreeView<GradeItem> treeViewGradeItem,
+	public PointsTable(MainController mainController, TreeView<GradeItem> treeViewGradeItem,
 			ListView<CourseModule> listViewActivityCompletion, DatePicker start, DatePicker end) {
 
-		super(mainController, ChartType.POINTS_TABLE, webView);
+		super(mainController, ChartType.POINTS_TABLE);
 		this.treeViewGradeItem = treeViewGradeItem;
 		this.listViewActivityCompletion = listViewActivityCompletion;
 		this.datePickerStart = start;

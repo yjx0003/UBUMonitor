@@ -24,9 +24,9 @@ import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
-import es.ubu.lsi.ubumonitor.view.chart.gradeitems.BoxPlot;
+import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 
-public class BoxplotLog extends ChartjsLog {
+public class BoxplotLog extends PlotlyLog {
 
 	public BoxplotLog(MainController mainController) {
 		this(mainController, ChartType.BOXPLOT_LOG);
@@ -51,21 +51,41 @@ public class BoxplotLog extends ChartjsLog {
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
 				.getByType(TypeTimes.DAY);
-
-		return createData(typeLogs, dataSet, groupActive, selectedUsers, dateStart, dateEnd, groupBy);
+		JSObject plot = new JSObject();
+		plot.put("data", createData(typeLogs, dataSet, groupActive, selectedUsers, dateStart, dateEnd, groupBy));
+		plot.put("layout", createLayout(typeLogs, dataSet));
+		return plot.toString();
 	}
 
-	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet, boolean groupActive,
-			List<EnrolledUser> selectedUsers, LocalDate dateStart, LocalDate dateEnd, GroupByAbstract<?> groupBy) {
-		JSObject data = new JSObject();
-		data.put("labels", createLabels(typeLogs, dataSet));
+	private <E> JSObject createLayout(List<E> typeLogs, DataSet<E> dataSet) {
+		JSObject layout = new JSObject();
 
-		JSArray datasets = new JSArray();
+		JSArray ticktext = new JSArray();
+
+		for (E typeLog : typeLogs) {
+			ticktext.addWithQuote(dataSet.translate(typeLog));
+		}
+
+		Plotly.horizontalMode(layout, ticktext, getConfigValue("horizontalMode"), getXAxisTitle(), getYAxisTitle(),
+				null);
+		layout.put("boxmode", "'group'");
+		layout.put("hovermode", "'closest'");
+		return layout;
+
+	}
+
+	public <E> JSArray createData(List<E> typeLogs, DataSet<E> dataSet, boolean groupActive,
+			List<EnrolledUser> selectedUsers, LocalDate dateStart, LocalDate dateEnd, GroupByAbstract<?> groupBy) {
+		boolean horizontalMode = getConfigValue("horizontalMode");
+		boolean standardDeviation = getConfigValue("standardDeviation");
+		boolean notched = getConfigValue("notched");
+		JSArray data = new JSArray();
 
 		if (!selectedUsers.isEmpty()) {
 			Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, selectedUsers,
 					typeLogs, dateStart, dateEnd);
-			datasets.add(createDataset(selectedUsers, userCounts, typeLogs, I18n.get("text.selectedUsers"), false));
+			data.add(createTrace(selectedUsers, userCounts, typeLogs, I18n.get("text.selectedUsers"), true,
+					horizontalMode, notched, standardDeviation));
 		}
 
 		Set<EnrolledUser> userWithRole = getUsersInRoles(selectionUserController.getCheckComboBoxRole()
@@ -78,47 +98,67 @@ public class BoxplotLog extends ChartjsLog {
 				Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, users, typeLogs,
 						dateStart, dateEnd);
 
-				datasets.add(createDataset(users, userCounts, typeLogs, group.getGroupName(), !groupActive));
+				data.add(createTrace(users, userCounts, typeLogs, group.getGroupName(), groupActive, horizontalMode,
+						notched, standardDeviation));
 			}
 
 		}
 
-		data.put("datasets", datasets);
-		return data.toString();
+		return data;
 	}
 
-	public <E> JSArray createLabels(List<E> typeLogs, DataSet<E> dataSet) {
-		JSArray labels = new JSArray();
-		for (E typeLog : typeLogs) {
-			labels.addWithQuote(dataSet.translate(typeLog));
-		}
-		return labels;
-	}
+	private <E> JSObject createTrace(List<EnrolledUser> users, Map<EnrolledUser, Map<E, List<Integer>>> userCounts,
+			List<E> typeLogs, String name, boolean visible, boolean horizontalMode, boolean notched,
+			boolean standardDeviation) {
 
-	private <E> JSObject createDataset(List<EnrolledUser> users, Map<EnrolledUser, Map<E, List<Integer>>> userCounts,
-			List<E> typeLogs, String text, boolean hidden) {
+		JSObject trace = new JSObject();
+		JSArray logValues = new JSArray();
+		JSArray logValuesIndex = new JSArray();
+		JSArray userNames = new JSArray();
+		JSArray userids = new JSArray();
 
 		Map<EnrolledUser, Map<E, Integer>> logCounts = transform(userCounts, typeLogs);
-		JSObject dataset = BoxPlot.getDefaulDatasetProperties(text, hidden);
-		dataset.put("outlierRadius", 5);
-		JSArray usersArray = new JSArray();
-		users.forEach(u -> usersArray.addWithQuote(u.getFullName()));
-		dataset.put("users", usersArray);
 
-		JSArray data = new JSArray();
+		for (EnrolledUser user : users) {
+			Map<E, Integer> map = logCounts.get(user);
+			for (int i = 0; i < typeLogs.size(); ++i) {
 
-		for (E typeLog : typeLogs) {
-			JSArray dataArray = new JSArray();
-			for (EnrolledUser user : users) {
-				dataArray.add(logCounts.get(user)
-						.get(typeLog));
+				logValues.add(map.get(typeLogs.get(i)));
+				logValuesIndex.add(i);
+				userNames.addWithQuote(user.getFullName());
+				userids.add(user.getId());
 			}
-			data.add(dataArray);
-
 		}
-		dataset.put("data", data);
 
-		return dataset;
+		if (horizontalMode) {
+			trace.put("y", logValuesIndex);
+			trace.put("x", logValues);
+			trace.put("orientation", "'h'");
+		} else {
+			trace.put("x", logValuesIndex);
+			trace.put("y", logValues);
+		}
+
+		trace.put("type", "'box'");
+		trace.put("boxpoints", "'all'");
+		trace.put("pointpos", 0);
+		trace.put("jitter", 1);
+		trace.putWithQuote("name", name);
+		trace.put("userids", userids);
+		trace.put("text", userNames);
+		trace.put("hovertemplate", "'<b>%{" + (horizontalMode ? "x" : "y") + "}<br>%{text}: </b>%{"
+				+ (horizontalMode ? "x" : "y") + "}<extra></extra>'");
+		JSObject marker = new JSObject();
+		marker.put("color", rgb(name));
+		trace.put("marker", marker);
+		if (!visible) {
+			trace.put("visible", "'legendonly'");
+		}
+
+		trace.put("notched", notched);
+		trace.put("boxmean", standardDeviation ? "'sd'" : "true");
+
+		return trace;
 
 	}
 
@@ -244,33 +284,10 @@ public class BoxplotLog extends ChartjsLog {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
-
-		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
-		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBoxplot" : "boxplot");
-		jsObject.put("tooltipDecimals", 0);
-		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
-		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
-		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{suggestedMax:" + getSuggestedMax(textFieldMax.getText())
-				+ ",stepSize:0}}],xAxes:[{" + xLabel + "}]}");
-		JSObject callbacks = new JSObject();
-		callbacks.put("afterTitle", "function(t,e){return e.datasets[t[0].datasetIndex].label}");
-		callbacks.put("boxplotLabel", "boxplotLabel");
-		jsObject.put("tooltips", "{callbacks:" + callbacks + "}");
-
-		return jsObject;
-	}
-
-	@Override
-	public int onClick(int index) {
-		return -1; // do nothing at the moment
-	}
-
-	@Override
 	public String getXAxisTitle() {
-		return tabPaneSelection.getSelectionModel()
+		return "<b>" + tabPaneSelection.getSelectionModel()
 				.getSelectedItem()
-				.getText();
+				.getText() + "</b>";
 
 	}
 }

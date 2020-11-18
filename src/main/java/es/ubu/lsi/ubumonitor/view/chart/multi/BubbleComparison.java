@@ -15,7 +15,6 @@ import java.util.Map;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
@@ -32,7 +31,6 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TreeView;
-import javafx.scene.web.WebView;
 
 public class BubbleComparison extends PlotlyLog {
 
@@ -42,10 +40,10 @@ public class BubbleComparison extends PlotlyLog {
 	private ListView<CourseModule> listViewActivityCompletion;
 	private ChoiceBox<GroupByAbstract<?>> groupBy;
 
-	public BubbleComparison(MainController mainController, WebView webView, TreeView<GradeItem> treeViewGradeItem,
+	public BubbleComparison(MainController mainController, TreeView<GradeItem> treeViewGradeItem,
 			ListView<CourseModule> listViewActivityCompletion, ChoiceBox<GroupByAbstract<?>> groupBy, DatePicker start,
 			DatePicker end) {
-		super(mainController, ChartType.BUBBLE_COMPARISON, webView);
+		super(mainController, ChartType.BUBBLE_COMPARISON);
 		this.treeViewGradeItem = treeViewGradeItem;
 		this.listViewActivityCompletion = listViewActivityCompletion;
 		this.groupBy = groupBy;
@@ -84,7 +82,7 @@ public class BubbleComparison extends PlotlyLog {
 			dataObject.put("y", frameData.get("y"));
 			dataObject.put("grade", userGradeItemPoints.get(user)
 					.getMean());
-			dataObject.put("id", user.getId());
+			dataObject.put("userids", "[" + user.getId() + "]");
 			JSObject marker = new JSObject();
 			marker.put("opacity", 0.8);
 			marker.put("sizemode", "'area'");
@@ -178,7 +176,7 @@ public class BubbleComparison extends PlotlyLog {
 		yaxis.putWithQuote("title", getYAxisTitle());
 		yaxis.put("range", "[" + activityCompletionMax.intValue() / -5 + "," + activityCompletionMax + "]");
 		layout.put("yaxis", yaxis);
-		// layout.put("hovermode", "'closest'");
+		layout.put("hovermode", "'closest'");
 
 		JSObject updateMenus = new JSObject();
 		updateMenus.put("x", 0);
@@ -284,23 +282,6 @@ public class BubbleComparison extends PlotlyLog {
 	@Override
 	protected String[] getCSVDesglosedHeader() {
 		return new String[0];
-	}
-
-	@Override
-	public JSObject getOptions(JSObject jsObject) {
-		jsObject.put("onClick",
-				"function(n){points=n.points,javaConnector.dataPointSelection(points[counter++%points.length].data.id)}");
-		return jsObject;
-	}
-
-	@Override
-	public int onClick(int userid) {
-		EnrolledUser user = Controller.getInstance()
-				.getDataBase()
-				.getUsers()
-				.getById(userid);
-		return getUsers().indexOf(user);
-
 	}
 
 }

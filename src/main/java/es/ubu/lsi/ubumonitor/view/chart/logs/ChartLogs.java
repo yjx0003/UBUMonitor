@@ -50,7 +50,7 @@ public abstract class ChartLogs extends Chart {
 
 	public ChartLogs(MainController mainController, ChartType chartType) {
 		super(mainController, chartType);
-		SelectionController selectionController = mainController.getSelectionController();
+		this.selectionController = mainController.getSelectionController();
 		VisualizationController visualizationController = mainController.getWebViewTabsController()
 				.getVisualizationController();
 		this.datePickerStart = visualizationController.getDatePickerStart();
@@ -66,7 +66,7 @@ public abstract class ChartLogs extends Chart {
 		this.listViewEvent = selectionController.getListViewEvents();
 		this.listViewSection = selectionController.getListViewSection();
 		this.listViewCourseModule = selectionController.getListViewCourseModule();
-		this.selectionController = selectionController;
+		
 	}
 
 	@Override

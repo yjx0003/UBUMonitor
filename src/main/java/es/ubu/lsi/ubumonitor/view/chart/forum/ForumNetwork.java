@@ -27,7 +27,6 @@ import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.VisNetwork;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
-import javafx.scene.web.WebView;
 
 public class ForumNetwork extends VisNetwork {
 
@@ -35,9 +34,9 @@ public class ForumNetwork extends VisNetwork {
 	private DatePicker datePickerStart;
 	private DatePicker datePickerEnd;
 
-	public ForumNetwork(MainController mainController, WebView webView, ListView<CourseModule> listViewForum,
+	public ForumNetwork(MainController mainController, ListView<CourseModule> listViewForum,
 			DatePicker datePickerStart, DatePicker datePickerEnd) {
-		super(mainController, ChartType.FORUM_NETWORK, webView);
+		super(mainController, ChartType.FORUM_NETWORK);
 		this.listViewForum = listViewForum;
 		this.datePickerStart = datePickerStart;
 		this.datePickerEnd = datePickerEnd;

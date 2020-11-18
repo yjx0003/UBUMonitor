@@ -37,8 +37,9 @@ public class DateController {
 	}
 	
 	public void resetDates() {
-		datePickerStart.setValue(Controller.getInstance().getActualCourse().getStart());
-		datePickerEnd.setValue(Controller.getInstance().getActualCourse().getEnd());
+		Controller controller = Controller.getInstance();
+		datePickerStart.setValue(controller.getActualCourse().getStart(controller.getUpdatedCourseData().toLocalDate()));
+		datePickerEnd.setValue(controller.getActualCourse().getEnd(controller.getUpdatedCourseData().toLocalDate()));
 	}
 	
 	

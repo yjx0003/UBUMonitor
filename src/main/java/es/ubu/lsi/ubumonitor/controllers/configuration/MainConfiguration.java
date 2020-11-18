@@ -87,7 +87,9 @@ public class MainConfiguration {
 		createItem(GENERAL, "fontColorXScaleTitle", Color.BLACK);
 
 		createItem(ChartType.TOTAL_BAR, HORIZONTAL_MODE, false);
+		
 		createItem(ChartType.STACKED_BAR, "calculateMax", false);
+		
 		createItem(ChartType.HEAT_MAP, "calculateMax", true);
 		createItem(ChartType.HEAT_MAP, "useQuartile", false);
 		createItem(ChartType.HEAT_MAP, "zeroValue", Color.web("#f78880"));
@@ -96,24 +98,43 @@ public class MainConfiguration {
 		createItem(ChartType.HEAT_MAP, "thirdInterval", Color.web("#b5ff33"));
 		createItem(ChartType.HEAT_MAP, "fourthInterval", Color.web("#38e330"));
 		createItem(ChartType.HEAT_MAP, "moreMax", Color.web("#67b92e"));
+		
 		createItem(ChartType.BOXPLOT_LOG, HORIZONTAL_MODE, true);
+		createItem(ChartType.BOXPLOT_LOG, "standardDeviation", false);
+		createItem(ChartType.BOXPLOT_LOG, "notched", false);
 		createItem(ChartType.VIOLIN_LOG, HORIZONTAL_MODE, true);
+		createItem(ChartType.VIOLIN_LOG, "boxVisible", true);
 		createItem(ChartType.BOXPLOT_LOG_TIME, HORIZONTAL_MODE, false);
+		createItem(ChartType.BOXPLOT_LOG_TIME, "standardDeviation", false);
+		createItem(ChartType.BOXPLOT_LOG_TIME, "notched", false);
 		createItem(ChartType.VIOLIN_LOG_TIME, HORIZONTAL_MODE, false);
+		createItem(ChartType.VIOLIN_LOG_TIME, "boxVisible", true);
 		createItem(ChartType.CUM_LINE, "calculateMax", false);
-
 		createItem(ChartType.MEAN_DIFF, "calculateMax", false);
 		createItem(ChartType.MEAN_DIFF, "zeroLineColor", Color.web("#DC143C"));
 		createItem(ChartType.MEAN_DIFF, "zeroLineWidth", 3);
-
 		createItem(ChartType.SESSION, "timeInterval", 60);
 
 		createItem(ChartType.BOXPLOT, HORIZONTAL_MODE, false);
-
+		createItem(ChartType.BOXPLOT, "standardDeviation", false);
+		createItem(ChartType.BOXPLOT, "notched", false);
+		
 		createItem(ChartType.VIOLIN, HORIZONTAL_MODE, false);
-
-		createItem(ChartType.GRADE_REPORT_TABLE, "failGradeColor", Color.web("#DC143C"));
-		createItem(ChartType.GRADE_REPORT_TABLE, "passGradeColor", Color.web("#2DC214"));
+		createItem(ChartType.VIOLIN, "boxVisible", true);
+		
+		createItem(ChartType.GRADE_REPORT_TABLE, "color0", Color.web("#ff3333"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color1", Color.web("#ff3333"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color2", Color.web("#ff8080"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color3", Color.web("#ff8080"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color4", Color.web("#ff8080"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color5", Color.web("#b2ff33"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color6", Color.web("#b2ff33"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color7", Color.web("#4cff33"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color8", Color.web("#4cff33"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color9", Color.web("#10c14e"));
+		createItem(ChartType.GRADE_REPORT_TABLE, "color10", Color.web("#10c14e"));
+		
+		
 
 		createItem(ChartType.CALIFICATION_BAR, HORIZONTAL_MODE, false);
 		createItem(ChartType.CALIFICATION_BAR, "emptyGradeColor", Color.web("#D3D3D3", 0.3));

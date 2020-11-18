@@ -27,6 +27,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TreeView;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 
 public abstract class Chart implements ExportableChart {
 
@@ -50,6 +51,7 @@ public abstract class Chart implements ExportableChart {
 	protected SelectionUserController selectionUserController;
 	protected Course actualCourse;
 	protected static final double OPACITY = 0.2;
+	protected WebView webView;
 
 	public Chart(MainController mainController, ChartType chartType) {
 
@@ -135,14 +137,17 @@ public abstract class Chart implements ExportableChart {
 	public JSObject getOptions() {
 		JSObject jsObject = getDefaultOptions();
 		return getOptions(jsObject);
-		
+
 	}
 
 	public abstract void update();
 
 	public abstract void clear();
 
-	public abstract void exportImage(File file) throws IOException;
+	public void exportImage(File file) throws IOException {
+		UtilMethods.snapshotNode(file, webView);
+		UtilMethods.showExportedFile(file);
+	}
 
 	public JSObject getDefaultOptions() {
 
@@ -282,8 +287,27 @@ public abstract class Chart implements ExportableChart {
 	public void setActualCourse(Course actualCourse) {
 		this.actualCourse = actualCourse;
 	}
+
 	public <T> T getConfigValue(String name) {
 		return mainConfiguration.getValue(this.chartType, name);
+	}
+	
+	public <T> T getGeneralConfigValue(String name) {
+		return mainConfiguration.getValue(MainConfiguration.GENERAL, name);
+	}
+
+	/**
+	 * @return the webView
+	 */
+	public WebView getWebView() {
+		return webView;
+	}
+
+	/**
+	 * @param webView the webView to set
+	 */
+	public void setWebView(WebView webView) {
+		this.webView = webView;
 	}
 
 }

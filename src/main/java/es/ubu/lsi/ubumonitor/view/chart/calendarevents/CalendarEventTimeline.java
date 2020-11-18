@@ -30,16 +30,14 @@ import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.VisTimeline;
 import javafx.scene.control.ListView;
-import javafx.scene.web.WebView;
 
 public class CalendarEventTimeline extends VisTimeline {
 	private ListView<CourseModule> listViewCourseModule;
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL,
 			FormatStyle.SHORT);
 
-	public CalendarEventTimeline(MainController mainController, WebView webView,
-			ListView<CourseModule> listViewCourseModule) {
-		super(mainController, ChartType.CALENDAR_EVENT_TIMELINE, webView);
+	public CalendarEventTimeline(MainController mainController, ListView<CourseModule> listViewCourseModule) {
+		super(mainController, ChartType.CALENDAR_EVENT_TIMELINE);
 		this.listViewCourseModule = listViewCourseModule;
 	}
 
@@ -97,7 +95,7 @@ public class CalendarEventTimeline extends VisTimeline {
 	@Override
 	public void update() {
 		List<CourseEvent> calendarEvents = getSelectedCalendarEvents();
-		
+
 		JSObject data = new JSObject();
 		data.put("items", createItems(calendarEvents));
 		data.put("groups", createGroups(calendarEvents));

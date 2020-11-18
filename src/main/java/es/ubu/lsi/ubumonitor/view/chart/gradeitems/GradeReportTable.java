@@ -23,14 +23,13 @@ import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Tabulator;
 import javafx.scene.control.TreeView;
-import javafx.scene.web.WebView;
 
 public class GradeReportTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GradeReportTable.class);
 	private TreeView<GradeItem> treeViewGradeItem;
 
-	public GradeReportTable(MainController mainController, TreeView<GradeItem> treeViewGradeItem, WebView webView) {
-		super(mainController, ChartType.GRADE_REPORT_TABLE, webView);
+	public GradeReportTable(MainController mainController, TreeView<GradeItem> treeViewGradeItem) {
+		super(mainController, ChartType.GRADE_REPORT_TABLE);
 		this.treeViewGradeItem = treeViewGradeItem;
 		useGeneralButton = true;
 		useGroupButton = true;
@@ -118,14 +117,14 @@ public class GradeReportTable extends Tabulator {
 	private String addStats(List<GradeItem> gradeItems, String name, Map<GradeItem, DescriptiveStatistics> stats) {
 		JSObject jsObject = new JSObject();
 
-		if(stats==null) {
+		if (stats == null) {
 			return null;
 		}
-		
+
 		jsObject.putWithQuote("name", name);
 		jsObject.putWithQuote("type", I18n.get("text.stats"));
 		for (GradeItem gradeItem : gradeItems) {
-		
+
 			jsObject.put("ID" + gradeItem.getId(), adjustTo10(stats.get(gradeItem)
 					.getMean()));
 		}
@@ -153,10 +152,13 @@ public class GradeReportTable extends Tabulator {
 		jsObject.put("legend", "function(n){return 0==n?'0':n>0?n:void 0}");
 		jsObject.putWithQuote("legendAlign", "center");
 
+		JSArray colors = new JSArray();
+		for (int i = 0; i <= 10; ++i) {
+			colors.add(colorToRGB(getConfigValue("color" + i)));
+		}
+
 		jsObject.put("color",
-				"function(e){return e<" + mainConfiguration.getValue(MainConfiguration.GENERAL, "cutGrade") + "?"
-						+ colorToRGB(getConfigValue("failGradeColor")) + ":"
-						+ colorToRGB(getConfigValue("passGradeColor")) + "}");
+				"function(e){var colorsProgress=" + colors + ";return e>0? colorsProgress[Math.floor(e)]:''}");
 		return jsObject.toString();
 	}
 

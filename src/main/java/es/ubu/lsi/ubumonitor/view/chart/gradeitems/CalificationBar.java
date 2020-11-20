@@ -74,14 +74,14 @@ public class CalificationBar extends Plotly {
 		JSArray text = new JSArray();
 		for (int i = 0; i < data.size(); i++) {
 			index.add(i);
-			text.add("toPercentage(" + data.get(i) + "," + nUsers + ")");
+			text.add("'<b>'+toPercentage(" + data.get(i) + "," + nUsers + ")+'</b>'");
 		}
 
 		createAxisValuesHorizontal(horizontalMode, trace, index, data);
 
 		trace.put("type", "'bar'");
 		trace.putWithQuote("name", name);
-		trace.put("text", text);
+		trace.put("text",  text);
 		trace.put("textposition", "'auto'");
 		trace.put("hoverTemplate", "'none'");
 		JSObject marker = new JSObject();

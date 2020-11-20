@@ -46,7 +46,6 @@ public class BoxplotLogTime extends PlotlyLog {
 	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet) {
 		boolean groupActive = controller.getMainConfiguration()
 				.getValue(MainConfiguration.GENERAL, "groupActive");
-
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
@@ -77,16 +76,14 @@ public class BoxplotLogTime extends PlotlyLog {
 		Set<EnrolledUser> userWithRole = getUsersInRoles(selectionUserController.getCheckComboBoxRole()
 				.getCheckModel()
 				.getCheckedItems());
-		for (Group group : slcGroup.getCheckModel()
-				.getCheckedItems()) {
-			if (group != null) {
-				List<EnrolledUser> users = getUserWithRole(group.getEnrolledUsers(), userWithRole);
-				Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, users, typeLogs,
-						dateStart, dateEnd);
+		for (Group group : getSelectedGroups()) {
 
-				data.add(createTrace(users, userCounts, size, group.getGroupName(), groupActive, horizontalMode,
-						notched, standardDeviation));
-			}
+			List<EnrolledUser> users = getUserWithRole(group.getEnrolledUsers(), userWithRole);
+			Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, users, typeLogs,
+					dateStart, dateEnd);
+
+			data.add(createTrace(users, userCounts, size, group.getGroupName(), groupActive, horizontalMode, notched,
+					standardDeviation));
 
 		}
 
@@ -116,14 +113,7 @@ public class BoxplotLogTime extends PlotlyLog {
 			}
 		}
 
-		if (horizontalMode) {
-			trace.put("y", logValuesIndex);
-			trace.put("x", logValues);
-			trace.put("orientation", "'h'");
-		} else {
-			trace.put("x", logValuesIndex);
-			trace.put("y", logValues);
-		}
+		Plotly.createAxisValuesHorizontal(horizontalMode, trace, logValuesIndex, logValues);
 
 		trace.put("type", "'box'");
 		trace.put("boxpoints", "'all'");
@@ -132,8 +122,7 @@ public class BoxplotLogTime extends PlotlyLog {
 		trace.putWithQuote("name", name);
 		trace.put("userids", userids);
 		trace.put("text", userNames);
-		trace.put("hovertemplate", "'<b>%{" + (horizontalMode ? "x" : "y") + "}<br>%{text}: </b>%{"
-				+ (horizontalMode ? "x" : "y") + "}<extra></extra>'");
+		trace.put("hovertemplate", Plotly.getHorizontalModeHoverTemplate(horizontalMode));
 		JSObject marker = new JSObject();
 		marker.put("color", rgb(name));
 		trace.put("marker", marker);

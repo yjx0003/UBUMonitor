@@ -1,6 +1,8 @@
 package es.ubu.lsi.ubumonitor.view.chart;
 
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
@@ -12,6 +14,7 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import javafx.scene.web.WebEngine;
+import netscape.javascript.JSException;
 
 public abstract class Plotly extends Chart {
 
@@ -45,8 +48,11 @@ public abstract class Plotly extends Chart {
 		plot.put("layout", layout);
 		plot.put("frames", frames);
 		LOGGER.debug("Plotly:{}", plot);
-
-		webViewChartsEngine.executeScript("updatePlotly(" + plot + "," + getOptions() + ")");
+		try {
+			webViewChartsEngine.executeScript("updatePlotly(" + plot + "," + getOptions() + ")");
+		}catch (JSException e) {
+			LOGGER.info("Probably updating too fast plotly: {}", e.getMessage());
+		}
 
 	}
 
@@ -68,15 +74,14 @@ public abstract class Plotly extends Chart {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
-		
-		 fillOptions(jsObject, createConfig());
-		 return jsObject;
+	public void fillOptions(JSObject jsObject) {
+
+		fillOptions(jsObject, createConfig());
 	}
-	
+
 	public static void fillOptions(JSObject jsObject, JSObject config) {
 		jsObject.put("onClick",
-				"function(n){if(n!==undefined&&n.points!==undefined){let t=n.points[counter++%n.points.length];if(t!==undefined&&t.data!==undefined&&t.data.userids!==undefined){javaConnector.dataPointSelection(t.data.userids[t.pointIndex]||-100);}}}");
+				"function(n){if(n!==undefined&&n.points!==undefined){let t=n.points[counter++%n.points.length];if(t!==undefined&&t.data!==undefined&&t.data.userids){javaConnector.dataPointSelection(t.data.userids[t.pointIndex]||t.data.userids||-100);}}}");
 
 		jsObject.put("config", config);
 
@@ -105,40 +110,72 @@ public abstract class Plotly extends Chart {
 			String yAxisTitle, String range) {
 		JSObject xaxis = new JSObject();
 		JSObject yaxis = new JSObject();
-		xaxis.put("zeroline", false);
-		yaxis.put("zeroline", false);
-		xaxis.put("automargin", true);
-		yaxis.put("automargin", true);
-		int[] tickvals = IntStream.range(0, ticktext.size())
-				.toArray();
+
+		List<Integer> tickvals = IntStream.range(0, ticktext.size())
+				.boxed()
+				.collect(Collectors.toList());
 
 		if (horizontalMode) {
-			xaxis.putWithQuote("title", yAxisTitle);
+
 			if (range == null) {
 				xaxis.put("rangemode", "'tozero'");
 			} else {
 				xaxis.put("range", range);
 			}
+			String temp = xAxisTitle;
+			xAxisTitle = yAxisTitle;
+			yAxisTitle = temp;
 
-			yaxis.putWithQuote("title", xAxisTitle);
-			yaxis.put("tickvals", Arrays.toString(tickvals));
-			yaxis.put("ticktext", ticktext);
-
+			createCategoryAxis(yaxis, tickvals, ticktext);
 
 		} else {
-			xaxis.putWithQuote("title", xAxisTitle);
-			yaxis.putWithQuote("title", yAxisTitle);
+
 			if (range == null) {
 				yaxis.put("rangemode", "'tozero'");
 			} else {
 				yaxis.put("range", range);
 			}
-			xaxis.put("tickvals", Arrays.toString(tickvals));
-			xaxis.put("ticktext", ticktext);
+
+			createCategoryAxis(xaxis, tickvals, ticktext);
 		}
+
+		defaultAxisValues(xaxis, xAxisTitle);
+		defaultAxisValues(yaxis, yAxisTitle);
 
 		layout.put("xaxis", xaxis);
 		layout.put("yaxis", yaxis);
-		
+
+	}
+
+	public static void defaultAxisValues(JSObject axis, String title) {
+		axis.put("zeroline", false);
+		axis.put("automargin", true);
+		if (title != null)
+			axis.putWithQuote("title", title);
+
+	}
+
+	public static void createCategoryAxis(JSObject axis, Collection<?> tickvals, Collection<Object> ticktext) {
+		axis.put("type", "'category'");
+		axis.put("tickvals", tickvals);
+		axis.put("ticktext", ticktext);
+	}
+	
+	
+	public static void createAxisValuesHorizontal(boolean horizontalMode, JSObject trace, Collection<?> x,
+			 Collection<?> y) {
+		if (horizontalMode) {
+			trace.put("y", x);
+			trace.put("x", y);
+			trace.put("orientation", "'h'");
+		} else {
+			trace.put("x", x);
+			trace.put("y", y);
+		}
+	}
+
+	public static String getHorizontalModeHoverTemplate(boolean useHorizontal) {
+		return "'<b>%{" + (useHorizontal ? "y" : "x") + "}<br>%{text}: </b>%{"
+				+ (useHorizontal ? "x" : "y") + ":.2f}<extra></extra>'";
 	}
 }

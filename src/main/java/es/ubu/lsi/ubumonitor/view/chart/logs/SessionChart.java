@@ -247,7 +247,7 @@ public class SessionChart extends ChartjsLog {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 
 		jsObject.putWithQuote("typeGraph", "bar");
 		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",stacked: true,ticks:{suggestedMax:"
@@ -255,7 +255,6 @@ public class SessionChart extends ChartjsLog {
 		jsObject.put("tooltips",
 				"{callbacks:{label:function(a,e){return e.datasets[a.datasetIndex].label+': '+a.yLabel+' (avg: '+Math.round(a.yLabel/e.datasets[a.datasetIndex].n[a.index]*100)/100+')'},afterLabel:function(a,e){return'"
 						+ I18n.get("text.session") + "'+e.datasets[a.datasetIndex].n[a.index]}}}");
-		return jsObject;
 	}
 
 	@Override

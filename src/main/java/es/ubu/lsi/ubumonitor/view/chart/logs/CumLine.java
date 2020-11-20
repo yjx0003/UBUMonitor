@@ -142,7 +142,7 @@ public class CumLine extends ChartjsLog {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 
 		jsObject.putWithQuote("typeGraph", "line");
 
@@ -150,7 +150,7 @@ public class CumLine extends ChartjsLog {
 				+ getSuggestedMax(textFieldMax.getText()) + ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
 		jsObject.put("tooltips",
 				"{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+' : '+Math.round(100*a.yLabel)/100}}}");
-		return jsObject;
+		
 	}
 
 	@Override

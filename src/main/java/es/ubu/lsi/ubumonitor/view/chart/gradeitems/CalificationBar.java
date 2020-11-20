@@ -14,37 +14,37 @@ import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
-import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 import javafx.scene.control.TreeView;
 import javafx.scene.paint.Color;
 
-public class CalificationBar extends ChartjsGradeItem {
+public class CalificationBar extends Plotly {
 
-	
+	private TreeView<GradeItem> treeViewGradeItem;
+
 	public CalificationBar(MainController mainController, TreeView<GradeItem> treeViewGradeItem) {
-		super(mainController, ChartType.CALIFICATION_BAR, treeViewGradeItem);
-		useGeneralButton = false;
-		useGroupButton = false;
+		super(mainController, ChartType.CALIFICATION_BAR);
+		this.treeViewGradeItem = treeViewGradeItem;
 	}
 
 	@Override
-	public String createDataset(List<EnrolledUser> selectedUser, List<GradeItem> selectedGradeItems) {
-
-		JSObject data = new JSObject();
-		data.put("labels", "[" + UtilMethods.joinWithQuotes(selectedGradeItems) + "]");
+	public void createData(JSArray data) {
+		List<EnrolledUser> users = getSelectedEnrolledUser();
+		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
+		boolean horizontalMode = getConfigValue("horizontalMode");
+		double cutGrade = mainConfiguration.getValue(MainConfiguration.GENERAL, "cutGrade");
 
 		List<Integer> countNaN = new ArrayList<>();
 		List<Integer> countLessCut = new ArrayList<>();
 		List<Integer> countGreaterCut = new ArrayList<>();
-		double cutGrade = mainConfiguration.getValue(MainConfiguration.GENERAL,
-				"cutGrade");
-		for (GradeItem gradeItem : selectedGradeItems) {
+
+		for (GradeItem gradeItem : gradeItems) {
 			int nan = 0;
 			int less = 0;
 			int greater = 0;
-			for (EnrolledUser user : selectedUser) {
-				double grade = adjustTo10(gradeItem.getEnrolledUserPercentage(user));
+			for (EnrolledUser user : users) {
+				double grade = gradeItem.getEnrolledUserPercentage(user) / 10;
 				if (Double.isNaN(grade)) {
 					++nan;
 				} else if (grade < cutGrade) {
@@ -58,43 +58,51 @@ public class CalificationBar extends ChartjsGradeItem {
 			countGreaterCut.add(greater);
 		}
 
-		JSArray datasets = new JSArray();
-		datasets.add(createData(I18n.get("text.empty"), countNaN,
-				mainConfiguration.getValue(getChartType(), "emptyGradeColor")));
-		datasets.add(createData(I18n.get("text.fail"), countLessCut,
-				mainConfiguration.getValue(getChartType(), "failGradeColor")));
-		datasets.add(createData(I18n.get("text.pass"), countGreaterCut,
-				mainConfiguration.getValue(getChartType(), "passGradeColor")));
-		data.put("datasets", datasets);
-		return data.toString();
+		data.add(createTrace(I18n.get("text.empty"), countNaN, getConfigValue("emptyGradeColor"), users.size(),
+				horizontalMode));
+		data.add(createTrace(I18n.get("text.fail"), countLessCut, getConfigValue("failGradeColor"), users.size(),
+				horizontalMode));
+		data.add(createTrace(I18n.get("text.pass"), countGreaterCut, getConfigValue("passGradeColor"), users.size(),
+				horizontalMode));
+
 	}
 
-	private String createData(String label, List<Integer> data, Color color) {
-		JSObject dataset = new JSObject();
-		dataset.putWithQuote("label", label);
-		dataset.put("data", "[" + UtilMethods.join(data) + "]");
-		dataset.put("backgroundColor", colorToRGB(color));
-		// addKeyValueWithQuote(dataset, "borderColor", hexColor);
-		// addKeyValue(dataset, "borderWidth", 2);
-		return dataset.toString();
+	public JSObject createTrace(String name, List<Integer> data, Color color, int nUsers, boolean horizontalMode) {
+		JSObject trace = new JSObject();
+
+		JSArray index = new JSArray();
+		JSArray text = new JSArray();
+		for (int i = 0; i < data.size(); i++) {
+			index.add(i);
+			text.add("toPercentage(" + data.get(i) + "," + nUsers + ")");
+		}
+
+		createAxisValuesHorizontal(horizontalMode, trace, index, data);
+
+		trace.put("type", "'bar'");
+		trace.putWithQuote("name", name);
+		trace.put("text", text);
+		trace.put("textposition", "'auto'");
+		trace.put("hoverTemplate", "'none'");
+		JSObject marker = new JSObject();
+		marker.put("color", colorToRGB(color));
+		trace.put("marker", marker);
+		return trace;
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
-	
-		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
-		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBar" : "bar");
-		
-		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
-		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
-		
-		jsObject.put("scales", "{xAxes:[{" + xLabel + ",stacked: true}],yAxes:[{" + yLabel
-				+ ",stacked:true}]}");
-		jsObject.put("tooltips", "{mode:'label'}");
-		jsObject.put("onClick", "function(event, array){}");
-		jsObject.put("plugins",
-				"{datalabels:{display:!0,font:{weight:'bold'},formatter:function(t,a){if(0===t)return'';let e=a.chart.data.datasets,l=0;for(i=0;i<e.length;i++)l+=e[i].data[a.dataIndex];return t+'/'+l+' ('+(t/l).toLocaleString(locale,{style:'percent',maximumFractionDigits:2})+')'}}}");
-		return jsObject;
+	public void createLayout(JSObject layout) {
+		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
+
+		JSArray ticktext = new JSArray();
+		for (GradeItem gradeItem : gradeItems) {
+			ticktext.addWithQuote(gradeItem.getItemname());
+		}
+
+		horizontalMode(layout, ticktext, getConfigValue("horizontalMode"), getXAxisTitle(), getYAxisTitle(), null);
+		layout.put("barmode", "'stack'");
+		layout.put("hovermode", "'x unified'");
+
 	}
 
 	@Override
@@ -105,10 +113,10 @@ public class CalificationBar extends ChartjsGradeItem {
 		for (GradeItem gradeItem : gradeItems) {
 			header.add(gradeItem.getItemname());
 		}
-	
-		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
-			double cutGrade = mainConfiguration.getValue(MainConfiguration.GENERAL,
-					"cutGrade");
+
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
+				CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
+			double cutGrade = mainConfiguration.getValue(MainConfiguration.GENERAL, "cutGrade");
 			List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 			List<Integer> countNaN = new ArrayList<>(gradeItems.size());
 			List<Integer> countLessCut = new ArrayList<>(gradeItems.size());

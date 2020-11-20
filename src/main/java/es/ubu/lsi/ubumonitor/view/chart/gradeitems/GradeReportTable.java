@@ -101,13 +101,13 @@ public class GradeReportTable extends Tabulator {
 			array.add(addStats(gradeItems, I18n.get("chartlabel.generalMean"), stats.getGeneralStats()));
 		}
 		if (useGroupButton && (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")) {
-			for (Group group : slcGroup.getItems()) {
-				if (group != null) {
+			for (Group group : getSelectedGroups()) {
+				
 					array.add(addStats(gradeItems,
 							UtilMethods.escapeJavaScriptText(I18n.get("chart.mean")) + " " + group.getGroupName(),
 							stats.getGroupStats(group)));
 
-				}
+				
 			}
 		}
 
@@ -132,7 +132,7 @@ public class GradeReportTable extends Tabulator {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 
 		jsObject.put("invalidOptionWarnings", false);
 		jsObject.put("height", "height");
@@ -141,7 +141,7 @@ public class GradeReportTable extends Tabulator {
 		jsObject.put("virtualDom", true);
 		jsObject.putWithQuote("layout", "fitColumns");
 		jsObject.put("rowClick", "function(e,row){javaConnector.dataPointSelection(row.getPosition());}");
-		return jsObject;
+		
 	}
 
 	private String getProgressParam() {

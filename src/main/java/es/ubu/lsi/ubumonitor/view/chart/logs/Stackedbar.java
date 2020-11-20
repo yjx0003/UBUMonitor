@@ -62,7 +62,7 @@ public class Stackedbar extends ChartjsLog {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 
 		long suggestedMax = getSuggestedMax(textFieldMax.getText());
 
@@ -77,7 +77,6 @@ public class Stackedbar extends ChartjsLog {
 				"function(t,a){let e=myChart.getElementAtEvent(t)[0];e&&javaConnector.dataPointSelection(myChart.data.datasets[e._datasetIndex].stack)}");
 
 		jsObject.put("elements", "{line:{fill:!1}}");
-		return jsObject;
 	}
 
 	@Override

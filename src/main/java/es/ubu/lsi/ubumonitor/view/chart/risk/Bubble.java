@@ -54,7 +54,7 @@ public class Bubble extends Chartjs {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 
 		int limit = mainConfiguration.getValue(this.chartType, "limitDays");
 
@@ -87,7 +87,7 @@ public class Bubble extends Chartjs {
 
 		jsObject.put("elements",
 				"{point:{radius:function(a){var t=a.dataset.data[a.dataIndex];return a.chart.width/24*t.v/100+5}}}");
-		return jsObject;
+	
 	}
 
 	@Override

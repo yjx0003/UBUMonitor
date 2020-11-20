@@ -21,9 +21,9 @@ public abstract class PlotlyLog extends ChartLogs {
 
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 		Plotly.fillOptions(jsObject, Plotly.createConfig());
-		return jsObject;
+		
 	}
 
 	@Override

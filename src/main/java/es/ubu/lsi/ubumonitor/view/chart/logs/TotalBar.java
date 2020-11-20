@@ -38,7 +38,7 @@ public class TotalBar extends ChartjsLog {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBar" : "bar");
@@ -48,7 +48,7 @@ public class TotalBar extends ChartjsLog {
 				+ (useHorizontal ? ",ticks:{maxTicksLimit:10}" : "") + "}]}");
 		jsObject.put("onClick", null);
 		jsObject.put("tooltips", "{mode:'index'}");
-		return jsObject;
+
 	}
 
 	@Override
@@ -78,15 +78,12 @@ public class TotalBar extends ChartjsLog {
 		Set<EnrolledUser> usersInRoles = getUsersInRoles(selectionUserController.getCheckComboBoxRole()
 				.getCheckModel()
 				.getCheckedItems());
-		for (Group group : slcGroup.getCheckModel()
-				.getCheckedItems()) {
-			if (group != null) {
+		for (Group group : getSelectedGroups()) {
 
-				map = dataSet.getUserCounts(groupBy, getUserWithRole(group.getEnrolledUsers(), usersInRoles), typeLogs,
-						dateStart, dateEnd);
-				datasets.add(createDataset(group.getGroupName(), typeLogs, map,
-						!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")));
-			}
+			map = dataSet.getUserCounts(groupBy, getUserWithRole(group.getEnrolledUsers(), usersInRoles), typeLogs,
+					dateStart, dateEnd);
+			datasets.add(createDataset(group.getGroupName(), typeLogs, map,
+					!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")));
 
 		}
 
@@ -191,8 +188,7 @@ public class TotalBar extends ChartjsLog {
 					.getCheckModel()
 					.getCheckedItems());
 			groupStats = new ArrayList<>();
-			for (Group group : slcGroup.getCheckModel()
-					.getCheckedItems()) {
+			for (Group group : getSelectedGroups()) {
 				map = dataSet.getUserCounts(groupBy, getUserWithRole(group.getEnrolledUsers(), usersInRoles), typeLogs,
 						dateStart, dateEnd);
 				groupStats.add(getTypeLogsStats(typeLogs, map));
@@ -244,8 +240,7 @@ public class TotalBar extends ChartjsLog {
 		}
 		if (groupActive) {
 
-			for (Group group : slcGroup.getCheckModel()
-					.getCheckedItems()) {
+			for (Group group : getSelectedGroups()) {
 				list.add(group.getGroupName());
 			}
 		}
@@ -287,8 +282,7 @@ public class TotalBar extends ChartjsLog {
 					Set<EnrolledUser> usersInRoles = getUsersInRoles(selectionUserController.getCheckComboBoxRole()
 							.getCheckModel()
 							.getCheckedItems());
-					for (Group group : slcGroup.getCheckModel()
-							.getCheckedItems()) {
+					for (Group group : getSelectedGroups()) {
 						printer.print(group.contains(enrolledUser) && usersInRoles.contains(enrolledUser) ? 1 : 0);
 					}
 				}
@@ -316,8 +310,7 @@ public class TotalBar extends ChartjsLog {
 		list.add("logs");
 		list.add(I18n.get("text.selectedUsers"));
 		if (groupActive) {
-			for (Group group : slcGroup.getCheckModel()
-					.getCheckedItems()) {
+			for (Group group : getSelectedGroups()) {
 				list.add(group.getGroupName());
 			}
 		}

@@ -82,7 +82,7 @@ public class ForumBar extends Chartjs {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
 		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBar" : "bar");
 		String xLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
@@ -94,7 +94,6 @@ public class ForumBar extends Chartjs {
 		callbacks.put("title", "function(a,t){return a[0].xLabel+' ('+a[0].yLabel+')'}");
 		callbacks.put("label", "function(e,t){return t.datasets[e.datasetIndex].discussions[e.index]}");
 		jsObject.put("tooltips", "{callbacks:" + callbacks + "}");
-		return jsObject;
 
 	}
 

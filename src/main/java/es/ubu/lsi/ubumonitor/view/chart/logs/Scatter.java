@@ -33,7 +33,7 @@ public class Scatter extends ChartjsLog {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		jsObject.put("typeGraph", "'scatter'");
@@ -46,7 +46,6 @@ public class Scatter extends ChartjsLog {
 
 		jsObject.put("tooltips",
 				"{callbacks:{label:function(l,a){return a.datasets[l.datasetIndex].label+': '+ l.xLabel}}}");
-		return jsObject;
 	}
 
 	@Override

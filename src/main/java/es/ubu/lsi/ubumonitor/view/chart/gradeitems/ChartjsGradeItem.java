@@ -74,10 +74,8 @@ public abstract class ChartjsGradeItem extends Chartjs {
 		}
 		dataset.put("data", dataArray);
 		datasets.add(dataset);
-		for (Group group : slcGroup.getCheckModel()
-				.getCheckedItems()) {
-			if (group == null)
-				continue;
+		for (Group group : getSelectedGroups()) {
+			
 			dataset = new JSObject();
 			dataset.putWithQuote("label", I18n.get("chart.mean") + " " + group.getGroupName());
 

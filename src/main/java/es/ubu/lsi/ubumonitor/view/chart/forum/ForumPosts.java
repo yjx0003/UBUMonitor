@@ -85,7 +85,7 @@ public class ForumPosts extends VisNetwork {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 		JSObject options = new JSObject();
 
 		options.put("edges", getEdgesOptions());
@@ -95,7 +95,6 @@ public class ForumPosts extends VisNetwork {
 		options.put("interaction", getInteractionOptions());
 		jsObject.put("options", options);
 
-		return jsObject;
 
 	}
 

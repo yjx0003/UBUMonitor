@@ -58,7 +58,7 @@ public class BubbleLogarithmic extends Chartjs {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 		jsObject.putWithQuote("typeGraph", "bubble");
 		JSObject callbacks = new JSObject();
 
@@ -92,7 +92,7 @@ public class BubbleLogarithmic extends Chartjs {
 
 		jsObject.put("elements",
 				"{point:{radius:function(a){var t=a.dataset.data[a.dataIndex];return a.chart.width/24*t.v/100+5}}}");
-		return jsObject;
+		
 	}
 
 	@Override

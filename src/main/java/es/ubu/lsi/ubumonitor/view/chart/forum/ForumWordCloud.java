@@ -76,9 +76,8 @@ public class ForumWordCloud extends WordCloudChart {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
-
-		return jsObject;
+	public void fillOptions(JSObject jsObject) {
+		//do nothing
 	}
 
 	@Override

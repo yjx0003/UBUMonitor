@@ -27,6 +27,7 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Plotly;
+import es.ubu.lsi.ubumonitor.view.chart.gradeitems.BoxPlot;
 
 public class ViolinLogTime extends PlotlyLog {
 
@@ -72,16 +73,14 @@ public class ViolinLogTime extends PlotlyLog {
 		Set<EnrolledUser> userWithRole = getUsersInRoles(selectionUserController.getCheckComboBoxRole()
 				.getCheckModel()
 				.getCheckedItems());
-		for (Group group : slcGroup.getCheckModel()
-				.getCheckedItems()) {
-			if (group != null) {
-				List<EnrolledUser> users = getUserWithRole(group.getEnrolledUsers(), userWithRole);
-				Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, users, typeLogs,
-						dateStart, dateEnd);
+		for (Group group : getSelectedGroups()) {
 
-				data.add(createTrace(users, userCounts, size, group.getGroupName(), groupActive, horizontalMode,
-						boxVisible));
-			}
+			List<EnrolledUser> users = getUserWithRole(group.getEnrolledUsers(), userWithRole);
+			Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, users, typeLogs,
+					dateStart, dateEnd);
+
+			data.add(createTrace(users, userCounts, size, group.getGroupName(), groupActive, horizontalMode,
+					boxVisible));
 
 		}
 
@@ -110,21 +109,13 @@ public class ViolinLogTime extends PlotlyLog {
 			}
 		}
 
-		if (horizontalMode) {
-			trace.put("y", logValuesIndex);
-			trace.put("x", logValues);
-			trace.put("orientation", "'h'");
-		} else {
-			trace.put("x", logValuesIndex);
-			trace.put("y", logValues);
-		}
+		Plotly.createAxisValuesHorizontal(horizontalMode, trace, logValuesIndex, logValues);
 
 		trace.put("type", "'violin'");
 		trace.putWithQuote("name", name);
 		trace.put("userids", userids);
 		trace.put("text", userNames);
-		trace.put("hovertemplate", "'<b>%{" + (horizontalMode ? "x" : "y") + "}<br>%{text}: </b>%{"
-				+ (horizontalMode ? "x" : "y") + "}<extra></extra>'");
+		trace.put("hovertemplate", BoxPlot.getHorizontalModeHoverTemplate(horizontalMode));
 		JSObject line = new JSObject();
 		line.put("color", rgb(name));
 		trace.put("line", line);

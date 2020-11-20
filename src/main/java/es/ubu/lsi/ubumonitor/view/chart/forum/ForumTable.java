@@ -70,14 +70,13 @@ public class ForumTable extends Tabulator {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 		jsObject.put("invalidOptionWarnings", false);
 		jsObject.put("height", "height");
 		jsObject.put("tooltipsHeader", true);
 		jsObject.put("virtualDom", true);
 		jsObject.putWithQuote("layout", "fitColumns");
 		jsObject.put("rowClick", "function(e,row){javaConnector.dataPointSelection(row.getPosition());}");
-		return jsObject;
 	}
 
 	@Override

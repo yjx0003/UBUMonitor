@@ -17,6 +17,7 @@
    <script type="text/javascript" src="./lib/visNetwork.js"></script>
    <script type="text/javascript" src="./lib/visTimeline.js"></script>
    <script type="text/javascript" src="./lib/plotly.js"></script>
+   <script type="text/javascript" src="./locales/plotly-es.js"></script>
    <script type="text/javascript">
       Chart.defaults.global.animation.duration = 0;
       Chart.defaults.global.elements.line.fill = false;
@@ -268,15 +269,17 @@
 
       function updatePlotly(plot, options) {
          hiddenCharts("plotly", options);
-        
+
          plot.layout.showlegend = options.useLegend && options.legendActive;
-       
-         plot.config = options.config;
+         if (options.config) {
+            plot.config = options.config;
+         }
+
          Plotly.react('plotlyDiv', plot);
 
-         if(options.onClick){
+         if (options.onClick) {
             document.getElementById('plotlyDiv').on('plotly_click', options.onClick);
-            
+
          }
       }
 
@@ -417,6 +420,7 @@
       function setLocale(newLocale) {
          locale = newLocale;
          moment.locale(newLocale);
+         Plotly.setPlotConfig({ locale: newLocale });
       }
       function colorRGB(color) {
          let colors = colorHash.rgb(color);
@@ -432,17 +436,9 @@
       function colorHEX(color) {
          return colorHash.hex(color);
       }
-      function formatBoxplot(text, value) {
-         return text + ": " + value.toLocaleString(locale, { maximumFractionDigits: 2 });
-      }
 
-      function boxplotLabel(t, a, o, e) {
-         if (-1 == e) return [formatBoxplot("n", a.datasets[t.datasetIndex].data[t.index].length), formatBoxplot("min ", o.min), formatBoxplot("whiskerMin", o.whiskerMin), formatBoxplot("q1", o.q1), formatBoxplot("median", o.median), formatBoxplot("q3", o.q3), formatBoxplot("whiskerMax", o.whiskerMax), formatBoxplot("max", o.max)];
-         var r, s = a.datasets[t.datasetIndex].users[0] instanceof Array ? a.datasets[t.datasetIndex].users[t.index] : a.datasets[t.datasetIndex].users,
-            n = a.datasets[t.datasetIndex].data[t.index],
-            x = [];
-         for (r = 0; r < n.length; r++) n[r] == o.outliers[e] && x.push(s[r] + " (" + n[r].toLocaleString(locale, { maximumFractionDigits: 2 }) + ")");
-         return x
+      function toPercentage(value, max) {
+         return value + '/' + max + ' (' + (value / max).toLocaleString(locale, { style: 'percent', maximumFractionDigits: 2 }) +")";
       }
    </script>
 </head>

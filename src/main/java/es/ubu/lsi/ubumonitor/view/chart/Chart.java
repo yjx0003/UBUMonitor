@@ -5,8 +5,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.controlsfx.control.CheckComboBox;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
@@ -31,8 +33,11 @@ import javafx.scene.web.WebView;
 
 public abstract class Chart implements ExportableChart {
 
+	
+	protected static final DescriptiveStatistics EMPTY_DESCRIPTIVE_STATISTICS = new DescriptiveStatistics();
+	
 	protected WebEngine webViewChartsEngine;
-	protected CheckComboBox<Group> slcGroup;
+	private CheckComboBox<Group> checkComboBoxGroup;
 	protected Stats stats;
 	protected ChartType chartType;
 	protected boolean useLegend;
@@ -56,7 +61,7 @@ public abstract class Chart implements ExportableChart {
 	public Chart(MainController mainController, ChartType chartType) {
 
 		this.selectionUserController = mainController.getSelectionUserController();
-		this.slcGroup = selectionUserController.getCheckComboBoxGroup();
+		this.checkComboBoxGroup = selectionUserController.getCheckComboBoxGroup();
 		this.stats = mainController.getStats();
 		this.mainController = mainController;
 		this.chartType = chartType;
@@ -128,15 +133,23 @@ public abstract class Chart implements ExportableChart {
 				(int) (color.getBlue() * 255), opacity);
 	}
 
-	public List<GradeItem> getSelectedGradeItems(TreeView<GradeItem> tvwGradeReport) {
-		return UtilMethods.getSelectedGradeItems(tvwGradeReport);
+	public List<GradeItem> getSelectedGradeItems(TreeView<GradeItem> treeViewGradeItem) {
+		return UtilMethods.getSelectedGradeItems(treeViewGradeItem);
 	}
 
-	public abstract JSObject getOptions(JSObject jsObject);
+	public List<Group> getSelectedGroups() {
+		List<Group> groups = new ArrayList<>(checkComboBoxGroup.getCheckModel()
+				.getCheckedItems());
+		groups.removeIf(g -> g == null || g.getGroupId() < 0);
+		return groups;
+	}
+
+	public abstract void fillOptions(JSObject jsObject);
 
 	public JSObject getOptions() {
 		JSObject jsObject = getDefaultOptions();
-		return getOptions(jsObject);
+		fillOptions(jsObject);
+		return jsObject;
 
 	}
 
@@ -241,7 +254,7 @@ public abstract class Chart implements ExportableChart {
 	}
 
 	public CheckComboBox<Group> getSlcGroup() {
-		return slcGroup;
+		return checkComboBoxGroup;
 	}
 
 	public Stats getStats() {
@@ -291,7 +304,7 @@ public abstract class Chart implements ExportableChart {
 	public <T> T getConfigValue(String name) {
 		return mainConfiguration.getValue(this.chartType, name);
 	}
-	
+
 	public <T> T getGeneralConfigValue(String name) {
 		return mainConfiguration.getValue(MainConfiguration.GENERAL, name);
 	}

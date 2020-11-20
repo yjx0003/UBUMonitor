@@ -72,7 +72,7 @@ public class ForumNetwork extends VisNetwork {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 		JSObject options = new JSObject();
 
 		jsObject.put("physicsAfterDraw", getConfigValue("physicsAfterDraw"));
@@ -83,7 +83,6 @@ public class ForumNetwork extends VisNetwork {
 		options.put("layout", getLayoutOptions());
 		jsObject.put("options", options);
 
-		return jsObject;
 	}
 	
 	@Override

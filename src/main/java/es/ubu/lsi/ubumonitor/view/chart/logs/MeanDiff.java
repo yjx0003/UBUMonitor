@@ -126,7 +126,7 @@ public class MeanDiff extends ChartjsLog {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 	
 		jsObject.putWithQuote("typeGraph", "line");
 		jsObject.put("scales",
@@ -139,7 +139,7 @@ public class MeanDiff extends ChartjsLog {
 						+ ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
 		jsObject.put("tooltips",
 				"{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+\" : \"+Math.round(100*a.yLabel)/100}}}");
-		return jsObject;
+		
 	}
 
 	@Override

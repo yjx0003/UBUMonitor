@@ -62,7 +62,7 @@ public class MainConfiguration {
 		categories.clear();
 		createItem(GENERAL, "alertDaysElapsed", 3);
 		createItem(GENERAL, "charset", Charsets.UTF_8);
-		createItem(GENERAL, "chartBackgroundColor", Color.web("#FFFFFF", 0.0));
+		createItem(GENERAL, "chartBackgroundColor", Color.TRANSPARENT);
 		createItem(GENERAL, "cutGrade", 5.0);
 		createItem(GENERAL, "limitLevelGradeItem", 1);
 		createItem(GENERAL, "borderLength", 10);
@@ -88,10 +88,8 @@ public class MainConfiguration {
 
 		createItem(ChartType.TOTAL_BAR, HORIZONTAL_MODE, false);
 		
-		createItem(ChartType.STACKED_BAR, "calculateMax", false);
 		
-		createItem(ChartType.HEAT_MAP, "calculateMax", true);
-		createItem(ChartType.HEAT_MAP, "useQuartile", false);
+	
 		createItem(ChartType.HEAT_MAP, "zeroValue", Color.web("#f78880"));
 		createItem(ChartType.HEAT_MAP, "firstInterval", Color.web("#f4e3ae"));
 		createItem(ChartType.HEAT_MAP, "secondInterval", Color.web("#fff033"));
@@ -112,7 +110,8 @@ public class MainConfiguration {
 		createItem(ChartType.CUM_LINE, "calculateMax", false);
 		createItem(ChartType.MEAN_DIFF, "calculateMax", false);
 		createItem(ChartType.MEAN_DIFF, "zeroLineColor", Color.web("#DC143C"));
-		createItem(ChartType.MEAN_DIFF, "zeroLineWidth", 3);
+		createItem(ChartType.MEAN_DIFF, "zeroLineWidth", 5);
+		createItem(ChartType.STACKED_BAR, "calculateMax", false);
 		createItem(ChartType.SESSION, "timeInterval", 60);
 
 		createItem(ChartType.BOXPLOT, HORIZONTAL_MODE, false);
@@ -147,11 +146,13 @@ public class MainConfiguration {
 		createItem(ChartType.ACTIVITIES_TABLE, "fourthInterval", Color.web("#b5ff33"));
 
 		createItem(ChartType.BUBBLE, "limitDays", 14);
+		createItem(ChartType.BUBBLE, "diagonalColor", Color.TRANSPARENT);
 		createItem(ChartType.BUBBLE, "firstInterval", Color.web("#b5ff33"));
 		createItem(ChartType.BUBBLE, "secondInterval", Color.web("#fff033"));
 		createItem(ChartType.BUBBLE, "thirdInterval", Color.web("#f4e3ae"));
 		createItem(ChartType.BUBBLE, "fourthInterval", Color.web("#f78880"));
 
+		createItem(ChartType.BUBBLE_LOGARITHMIC, "diagonalColor", Color.TRANSPARENT);
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "firstInterval", Color.web("#b5ff33"));
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "secondInterval", Color.web("#fff033"));
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "thirdInterval", Color.web("#f4e3ae"));
@@ -214,7 +215,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_POSTS, "interaction.tooltipDelay", 300);
 
 		createItem(ChartType.FORUM_WORD_CLOUD, "stopWords", StopWord.getStopWordValues(Locale.getDefault()));
-		createItem(ChartType.FORUM_WORD_CLOUD, "chartBackgroundColor", Color.web("#FFFFFF", 0.0));
+		createItem(ChartType.FORUM_WORD_CLOUD, "chartBackgroundColor", Color.TRANSPARENT);
 		createItem(ChartType.FORUM_WORD_CLOUD, "wordFrequencesToReturn", 50);
 		createItem(ChartType.FORUM_WORD_CLOUD, "padding", 2);
 		createItem(ChartType.FORUM_WORD_CLOUD, "minWordLength", 3);

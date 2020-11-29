@@ -11,7 +11,9 @@ import javax.xml.bind.DatatypeConverter;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 
-public abstract class WordCloudChart extends Chart{
+public abstract class WordCloudChart extends Chart {
+
+	protected String base64Image;
 
 	public WordCloudChart(MainController mainController, ChartType chartType) {
 		super(mainController, chartType);
@@ -20,19 +22,19 @@ public abstract class WordCloudChart extends Chart{
 	@Override
 	public void clear() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void exportImage(File file) throws IOException {
-		String str = (String) webViewChartsEngine.executeScript("exportCanvas('wordCloud')");
-		byte[] imgdata = DatatypeConverter.parseBase64Binary(str.substring(str.indexOf(',') + 1));
+
+		byte[] imgdata = DatatypeConverter.parseBase64Binary(base64Image);
 		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imgdata));
 
 		ImageIO.write(bufferedImage, "png", file);
-		
+
 		UtilMethods.showExportedFile(file);
-		
+
 	}
 
 }

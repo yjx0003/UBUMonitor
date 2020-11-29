@@ -74,7 +74,7 @@ public class CalendarEventTimeline extends VisTimeline {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 		JSObject options = new JSObject();
 		Instant startDate = actualCourse.getStartDate();
 		if (!Instant.EPOCH.equals(startDate)) {
@@ -89,7 +89,7 @@ public class CalendarEventTimeline extends VisTimeline {
 		options.put("tooltip", "{overflowMethod:'cap'}");
 		options.put("order", "function(a,b){return b.epoch-a.epoch}");
 		jsObject.put("options", options);
-		return jsObject;
+		
 	}
 
 	@Override

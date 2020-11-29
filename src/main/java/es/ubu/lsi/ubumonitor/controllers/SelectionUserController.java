@@ -404,7 +404,7 @@ public class SelectionUserController {
 
 	}
 
-	public List<EnrolledUser> getUsers() {
+	public List<EnrolledUser> getFilteredUsers() {
 		List<EnrolledUser> user = new ArrayList<>(tabListView.get(tabPane.getSelectionModel()
 				.getSelectedItem())
 				.getItems());

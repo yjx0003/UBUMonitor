@@ -77,4 +77,10 @@ public class DataSetComponentEvent implements DataSet<ComponentEvent> {
 		return groupBy.getComponentsEvents().getUserTotalLogs(enrolledUsers, elements, start, end);
 	}
 
+	@Override
+	public Map<EnrolledUser, Map<ComponentEvent, Integer>> getUserLogsGroupedByLogElement(GroupByAbstract<?> groupBy,
+			List<EnrolledUser> enrolledUsers, List<ComponentEvent> elements, LocalDate start, LocalDate end) {
+		return groupBy.getComponentsEvents().getUserLogsGroupedByLogElement(enrolledUsers, elements, start, end);
+	}
+
 }

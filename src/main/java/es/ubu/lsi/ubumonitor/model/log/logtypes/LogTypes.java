@@ -142,6 +142,7 @@ public class LogTypes {
 		TYPES.put(get(GUIA_DOCENTE, UNIT_MODIFIED), Ignore.getInstance()); 
 
 		TYPES.put(get(H5P, COURSE_MODULE_VIEWED), UserCmid.getInstance()); 
+		TYPES.put(get(H5P, XAPI_STATEMENT_RECEIVED), UserCmid.getInstance()); 
 		TYPES.put(get(H5P_PACKAGE, H5P_CONTENT_VIEWED), User.getInstance()); 
 		
 		TYPES.put(get(HOTPOT_MODULE, COURSE_MODULE_INSTANCE_LIST_VIEWED), UserCourse.getInstance());
@@ -238,6 +239,9 @@ public class LogTypes {
 		TYPES.put(get(SYSTEM, CALENDAR_EVENT_DELETED), UserCalendar.getInstance());
 		TYPES.put(get(SYSTEM, CALENDAR_EVENT_UPDATED), UserCalendar.getInstance());
 		TYPES.put(get(SYSTEM, CALENDAR_SUBSCRIPTION_UPDATED), UserCalendar.getInstance());
+		TYPES.put(get(SYSTEM, CONTENT_CREATED), UserContentbank.getInstance());
+		TYPES.put(get(SYSTEM, CONTENT_UPDATED), UserContentbank.getInstance());
+		TYPES.put(get(SYSTEM, CONTENT_VIEWED), UserContentbank.getInstance());
 		TYPES.put(get(SYSTEM, COURSE_ACTIVITY_COMPLETION_UPDATED), UserCmidAffected.getInstance());
 		TYPES.put(get(SYSTEM, COURSE_BACKUP_CREATED), UserCourse.getInstance());
 		TYPES.put(get(SYSTEM, COURSE_COMPLETED), UserCourse.getInstance());
@@ -262,6 +266,8 @@ public class LogTypes {
 		TYPES.put(get(SYSTEM, ENROLMENT_INSTANCE_UPDATED), User.getInstance());
 		TYPES.put(get(SYSTEM, EVIDENCE_CREATED), UserEvidence.getInstance());
 		TYPES.put(get(SYSTEM, GRADE_DELETED), UserGradeAffectedGradeitem.getInstance());
+		TYPES.put(get(SYSTEM, GRADE_ITEM_CREATED), UserGradeitemCourse.getInstance());
+		TYPES.put(get(SYSTEM, GRADE_ITEM_UPDATED), UserGradeitemCourse.getInstance());
 		TYPES.put(get(SYSTEM, GROUP_ASSIGNED_TO_GROUPING), UserGroupGrouping.getInstance());
 		TYPES.put(get(SYSTEM, GROUP_CREATED), UserGroup.getInstance());
 		TYPES.put(get(SYSTEM, GROUP_DELETED), UserGroup.getInstance());

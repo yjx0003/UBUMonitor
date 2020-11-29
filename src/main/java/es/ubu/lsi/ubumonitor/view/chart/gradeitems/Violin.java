@@ -10,7 +10,6 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
@@ -43,19 +42,18 @@ public class Violin extends Plotly {
 		data.add(createTrace(users, gradeItems, I18n.get("text.selectedUsers"), useHorizontal, true, boxVisible));
 		data.add(createTrace(actualCourse.getEnrolledUsers(), gradeItems, I18n.get("text.all"), useHorizontal,
 				getGeneralConfigValue("generalActive"), boxVisible));
-		for (Group group : slcGroup.getCheckModel()
-				.getCheckedItems()) {
+		for (Group group : getSelectedGroups()) {
 			boolean groupActive = getGeneralConfigValue("groupActive");
-			if (group != null) {
-				data.add(createTrace(group.getEnrolledUsers(), gradeItems, group.getGroupName(), useHorizontal,
-						groupActive, boxVisible));
-			}
+
+			data.add(createTrace(group.getEnrolledUsers(), gradeItems, group.getGroupName(), useHorizontal, groupActive,
+					boxVisible));
+
 		}
 
 	}
 
 	public JSObject createTrace(Collection<EnrolledUser> users, List<GradeItem> gradeItems, String name,
-			boolean useHorizontal, boolean visible, boolean boxVisible) {
+			boolean horizontalMode, boolean visible, boolean boxVisible) {
 		JSObject trace = new JSObject();
 		JSArray grades = new JSArray();
 		JSArray gradeItemIds = new JSArray();
@@ -68,31 +66,23 @@ public class Violin extends Plotly {
 			for (EnrolledUser user : users) {
 
 				double grade = gradeItem.getEnrolledUserPercentage(user);
-				if (!Double.isNaN(grade)) {
-					grades.add(gradeItem.getEnrolledUserPercentage(user) / 10);
-					gradeItemIds.add(i);
-					userids.add(user.getId());
-					userNames.addWithQuote(user.getFullName());
-				}
+
+				grades.add(grade / 10);
+				gradeItemIds.add(i);
+				userids.add(user.getId());
+				userNames.addWithQuote(user.getFullName());
 
 			}
 		}
 
-		if (useHorizontal) {
-			trace.put("y", gradeItemIds);
-			trace.put("x", grades);
-			trace.put("orientation", "'h'");
-		} else {
-			trace.put("x", gradeItemIds);
-			trace.put("y", grades);
-		}
-
+		createAxisValuesHorizontal(horizontalMode, trace, gradeItemIds, grades);
+		trace.put("jitter", 1);
 		trace.put("type", "'violin'");
 		trace.putWithQuote("name", name);
 		trace.put("userids", userids);
 		trace.put("text", userNames);
-		trace.put("hovertemplate", "'<b>%{" + (useHorizontal ? "x" : "y") + "}<br>%{text}: </b>%{"
-				+ (useHorizontal ? "x" : "y") + ":.2f}<extra></extra>'");
+		trace.put("hovertemplate",  "'<b>%{" + (horizontalMode ? "y" : "x") + "}<br>%{text}: </b>%{"
+				+ (horizontalMode ? "x" : "y") + ":.2f}<extra></extra>'");
 		JSObject line = new JSObject();
 		line.put("color", rgb(name));
 		trace.put("line", line);
@@ -117,7 +107,7 @@ public class Violin extends Plotly {
 
 		horizontalMode(layout, ticktext, getConfigValue("horizontalMode"), getXAxisTitle(), getYAxisTitle(),
 				"[-0.5,10.5]");
-		
+
 		layout.put("violinmode", "'group'");
 		layout.put("hovermode", "'closest'");
 
@@ -141,14 +131,13 @@ public class Violin extends Plotly {
 
 			}
 
-			if ((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")) {
+			if (getGeneralButtonlActive()) {
 				exportCSV(printer, controller.getActualCourse()
 						.getEnrolledUsers(), gradeItems, "all");
 			}
 
-			if ((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")) {
-				for (Group group : slcGroup.getCheckModel()
-						.getCheckedItems()) {
+			if (getGroupButtonActive()) {
+				for (Group group : getSelectedGroups()) {
 					exportCSV(printer, group.getEnrolledUsers(), gradeItems, group.getGroupName());
 				}
 			}

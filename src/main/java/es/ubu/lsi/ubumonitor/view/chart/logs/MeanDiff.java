@@ -6,82 +6,118 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.csv.CSVPrinter;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 
-public class MeanDiff extends ChartjsLog {
+public class MeanDiff extends PlotlyLog {
+
+	private int max;
 
 	public MeanDiff(MainController mainController) {
 		super(mainController, ChartType.MEAN_DIFF);
 		useLegend = true;
 		useNegativeValues = true;
 		useGroupBy = true;
+		max = 0;
 	}
 
 	@Override
-	public <T> String createData(List<T> typeLogs, DataSet<T> dataSet) {
-		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
+	public <E> JSArray createData(List<E> typeLogs, DataSet<E> dataSet, List<EnrolledUser> selectedUsers,
+			LocalDate dateStart, LocalDate dateEnd, GroupByAbstract<?> groupBy) {
+
+		JSArray data = new JSArray();
 		List<EnrolledUser> enrolledUsers = getUsers();
 
-		LocalDate dateStart = datePickerStart.getValue();
-		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
-		Map<EnrolledUser, Map<T, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
+		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
 				dateStart, dateEnd);
 
-		Map<T, List<Double>> means = dataSet.getMeans(groupBy, enrolledUsers, typeLogs, dateStart, dateEnd);
-
-		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
-
-		JSObject data = new JSObject();
-
-		data.put("labels", createLabels(rangeDates));
-
-		JSArray datasets = new JSArray();
+		Map<E, List<Double>> means = dataSet.getMeans(groupBy, enrolledUsers, typeLogs, dateStart, dateEnd);
 		List<Double> listMeans = createMeanList(typeLogs, means, rangeDates);
-		createEnrolledUsersDatasets(selectedUsers, typeLogs, userCounts, listMeans, rangeDates, datasets);
+		createUsersTraces(data, selectedUsers, typeLogs, userCounts, listMeans, rangeDates);
 
-		data.put("datasets", datasets);
-
-		return data.toString();
+		return data;
 	}
 
-	private <T> void createEnrolledUsersDatasets(List<EnrolledUser> selectedUsers, List<T> typeLogs,
-			Map<EnrolledUser, Map<T, List<Integer>>> userCounts, List<Double> listMeans, List<String> rangeDates,
-			JSArray datasets) {
-		for (EnrolledUser selectedUser : selectedUsers) {
-			JSObject dataset = new JSObject();
-			dataset.putWithQuote("label", selectedUser.getFullName());
-			dataset.put("borderColor", hex(selectedUser.getId()));
-			dataset.put("backgroundColor", rgba(selectedUser.getId(), OPACITY));
+	@Override
+	public <E> JSObject createLayout(List<E> typeLogs, DataSet<E> dataSet, LocalDate dateStart, LocalDate dateEnd,
+			GroupByAbstract<?> groupBy) {
+		JSObject layout = new JSObject();
 
-			Map<T, List<Integer>> types = userCounts.get(selectedUser);
-			JSArray results = new JSArray();
+		JSArray ticktext = new JSArray();
+
+		List<String> rangeDate = groupBy.getRangeString(dateStart, dateEnd);
+		for (String date : rangeDate) {
+			ticktext.addWithQuote(date);
+		}
+
+		List<Integer> tickvals = IntStream.range(0, ticktext.size())
+				.boxed()
+				.collect(Collectors.toList());
+
+		JSObject xaxis = new JSObject();
+		Plotly.defaultAxisValues(xaxis, getXAxisTitle(), "");
+		Plotly.createCategoryAxis(xaxis, tickvals, ticktext);
+
+		JSObject yaxis = new JSObject();
+		Plotly.defaultAxisValues(yaxis, getYAxisTitle(), "");
+		long maxText = getSuggestedMax(textFieldMax.getText());
+		System.out.println(max);
+		yaxis.put("range", maxText == 0 ? "[" + (-max * 1.1) + "," + (max * 1.1) + "]"
+				: "[" + (-maxText * 1.1) + "," + (maxText * 1.1) + "]");
+
+		yaxis.put("zeroline", true);
+		yaxis.put("zerolinecolor", colorToRGB(getConfigValue("zeroLineColor")));
+		yaxis.put("zerolinewidth", getConfigValue("zeroLineWidth"));
+		layout.put("xaxis", xaxis);
+		layout.put("yaxis", yaxis);
+
+		layout.put("hovermode", "'closest'");
+		return layout;
+	}
+
+	private <E> void createUsersTraces(JSArray data, List<EnrolledUser> selectedUsers, List<E> typeLogs,
+			Map<EnrolledUser, Map<E, List<Integer>>> userCounts, List<Double> listMeans, List<String> rangeDates) {
+		List<Integer> maxValues = new ArrayList<>();
+		for (EnrolledUser selectedUser : selectedUsers) {
+			JSArray x = new JSArray();
+			JSArray y = new JSArray();
+
+			Map<E, List<Integer>> types = userCounts.get(selectedUser);
+
 			long cum = 0;
 			for (int j = 0; j < rangeDates.size(); j++) {
 				long result = 0;
-				for (T typeLog : typeLogs) {
+				for (E typeLog : typeLogs) {
 					List<Integer> times = types.get(typeLog);
 					result += times.get(j);
 				}
 				cum += result;
-
-				results.add(Double.toString(cum - listMeans.get(j)));
+				x.add(j);
+				double value = cum - listMeans.get(j);
+				maxValues.add((int) Math.abs(value));
+				y.add(value);
 			}
-			dataset.put("data", results);
-			datasets.add(dataset);
+
+			JSObject trace = createTrace(selectedUser.getFullName(), x, y, true, "solid");
+			trace.put("userids", selectedUser.getId());
+			data.add(trace);
 
 		}
+		max = (int) UtilMethods.getMax(maxValues);
 
 	}
 
@@ -101,51 +137,51 @@ public class MeanDiff extends ChartjsLog {
 
 	}
 
-	@Override
-	public String calculateMax() {
-		long maxYAxis = 1L;
-		List<EnrolledUser> users = getUsers();
-		if (tabComponent.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getComponents().getMeanDifferenceMax(users,
-					listViewComponent.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
-					datePickerEnd.getValue());
-		} else if (tabEvent.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getComponentsEvents().getMeanDifferenceMax(users,
-					listViewEvent.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
-					datePickerEnd.getValue());
-		} else if (tabSection.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getSections().getMeanDifferenceMax(users,
-					listViewSection.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
-					datePickerEnd.getValue());
-		} else if (tabCourseModule.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue().getCourseModules().getMeanDifferenceMax(users,
-					listViewCourseModule.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
-					datePickerEnd.getValue());
+	private JSObject createTrace(String name, JSArray x, JSArray y, boolean visible, String dash) {
+		JSObject trace = new JSObject();
+		JSObject line = new JSObject();
+		JSObject marker = new JSObject();
+		trace.putWithQuote("name", name);
+		trace.put("type", "'scatter'");
+		trace.put("x", x);
+		trace.put("y", y);
+		trace.put("line", line);
+		trace.put("marker", marker);
+		trace.put("hovertemplate", "'<b>%{x}<br>%{data.name}: </b>%{y:.2f}<extra></extra>'");
+		if (!visible) {
+			trace.put("visible", "'legendonly'");
 		}
-		return Long.toString(maxYAxis);
+
+		line.putWithQuote("dash", dash);
+
+		marker.put("color", rgb(name));
+		marker.put("size", 6);
+
+		return trace;
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
-	
-		jsObject.putWithQuote("typeGraph", "line");
-		jsObject.put("scales",
-				"{yAxes:[{" + getYScaleLabel() + ",gridLines:{zeroLineColor:"
-						+ colorToRGB(mainConfiguration.getValue(getChartType(), "zeroLineColor")) + ",zeroLineWidth:"
-						+ mainConfiguration.getValue(getChartType(), "zeroLineWidth") + ",zeroLineBorderDash:["
-						+ mainConfiguration.getValue(MainConfiguration.GENERAL, "borderLength") + ","
-						+ mainConfiguration.getValue(MainConfiguration.GENERAL, "borderSpace")
-						+ "]},ticks:{suggestedMax:" + getSuggestedMax(textFieldMax.getText()) + ",suggestedMin:" + -getSuggestedMax(textFieldMax.getText())
-						+ ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
-		jsObject.put("tooltips",
-				"{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+\" : \"+Math.round(100*a.yLabel)/100}}}");
-		return jsObject;
+	public String calculateMax() {
+
+//		long maxYAxis = selectionController.typeLogsAction(new LogAction<Long>() {
+//
+//			@Override
+//			public <E extends Serializable, T extends Serializable> Long action(List<E> logType, DataSet<E> dataSet,
+//					Function<GroupByAbstract<?>, FirstGroupBy<E, T>> function) {
+//
+//				return function.apply(choiceBoxDate.getValue())
+//						.getMeanDifferenceMax(getUsers(), logType, datePickerStart.getValue(),
+//								datePickerEnd.getValue());
+//			}
+//		});
+
+		return Integer.toString(max);
 	}
 
 	@Override
 	public String getXAxisTitle() {
-		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"),
-				I18n.get(choiceBoxDate.getValue().getTypeTime()));
+		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"), I18n.get(choiceBoxDate.getValue()
+				.getTypeTime()));
 	}
 
 	@Override
@@ -155,8 +191,7 @@ public class MeanDiff extends ChartjsLog {
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<E, List<Double>> means = dataSet.getMeans(groupBy, getUsers(), selecteds, dateStart,
-				dateEnd);
+		Map<E, List<Double>> means = dataSet.getMeans(groupBy, getUsers(), selecteds, dateStart, dateEnd);
 
 		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
@@ -181,7 +216,7 @@ public class MeanDiff extends ChartjsLog {
 			printer.printRecord(results);
 
 		}
-		
+
 	}
 
 	@Override
@@ -204,8 +239,7 @@ public class MeanDiff extends ChartjsLog {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
-		Map<E, List<Double>> means = dataSet.getMeans(groupBy, getUsers(), selecteds, dateStart,
-				dateEnd);
+		Map<E, List<Double>> means = dataSet.getMeans(groupBy, getUsers(), selecteds, dateStart, dateEnd);
 		boolean hasId = hasId();
 		for (EnrolledUser selectedUser : enrolledUsers) {
 			Map<E, List<Integer>> types = userCounts.get(selectedUser);
@@ -215,7 +249,7 @@ public class MeanDiff extends ChartjsLog {
 				List<Double> meanTimes = means.get(type);
 				printer.print(selectedUser.getId());
 				printer.print(selectedUser.getFullName());
-				if(hasId) {
+				if (hasId) {
 					printer.print(type.hashCode());
 				}
 				printer.print(type);
@@ -230,7 +264,7 @@ public class MeanDiff extends ChartjsLog {
 
 			}
 
-		}		
+		}
 	}
 
 	@Override
@@ -241,12 +275,15 @@ public class MeanDiff extends ChartjsLog {
 		List<String> list = new ArrayList<>();
 		list.add("userid");
 		list.add("fullname");
-		String selectedTab = tabPaneSelection.getSelectionModel().getSelectedItem().getText();
-		if(hasId()) {
+		String selectedTab = tabPaneSelection.getSelectionModel()
+				.getSelectedItem()
+				.getText();
+		if (hasId()) {
 			list.add(selectedTab + "_id");
 		}
 		list.add(selectedTab);
 		list.addAll(groupBy.getRangeString(dateStart, dateEnd));
 		return list.toArray(new String[0]);
 	}
+
 }

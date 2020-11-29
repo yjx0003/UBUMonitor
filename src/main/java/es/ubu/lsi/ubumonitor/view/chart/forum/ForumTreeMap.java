@@ -41,28 +41,7 @@ public class ForumTreeMap extends Plotly {
 
 	}
 
-	@Override
-	public void exportCSV(String path) throws IOException {
-		List<EnrolledUser> users = getSelectedEnrolledUser();
-		List<CourseModule> forums = new ArrayList<>(forumListView.getSelectionModel()
-				.getSelectedItems());
-		Map<CourseModule, Map<EnrolledUser, Long>> map = getMap(users, forums);
-		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
-				CSVFormat.DEFAULT.withHeader("forumId", "forumName", "userId", "userName", "posts"))) {
-			for (Map.Entry<CourseModule, Map<EnrolledUser, Long>> entry : map.entrySet()) {
-				CourseModule forum = entry.getKey();
 
-				for (Map.Entry<EnrolledUser, Long> entryUser : entry.getValue()
-						.entrySet()) {
-					EnrolledUser user = entryUser.getKey();
-					printer.printRecord(forum.getCmid(), forum.getModuleName(), user.getId(), user.getFullName(),
-							entryUser.getValue());
-
-				}
-
-			}
-		}
-	}
 
 	
 
@@ -148,6 +127,35 @@ public class ForumTreeMap extends Plotly {
 		ids.add(0);
 		dataArray.add(data);
 		
+	}
+
+	@Override
+	public void createLayout(JSObject layout) {
+		// do nothing
+		
+	}
+	
+	@Override
+	public void exportCSV(String path) throws IOException {
+		List<EnrolledUser> users = getSelectedEnrolledUser();
+		List<CourseModule> forums = new ArrayList<>(forumListView.getSelectionModel()
+				.getSelectedItems());
+		Map<CourseModule, Map<EnrolledUser, Long>> map = getMap(users, forums);
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
+				CSVFormat.DEFAULT.withHeader("forumId", "forumName", "userId", "userName", "posts"))) {
+			for (Map.Entry<CourseModule, Map<EnrolledUser, Long>> entry : map.entrySet()) {
+				CourseModule forum = entry.getKey();
+
+				for (Map.Entry<EnrolledUser, Long> entryUser : entry.getValue()
+						.entrySet()) {
+					EnrolledUser user = entryUser.getKey();
+					printer.printRecord(forum.getCmid(), forum.getModuleName(), user.getId(), user.getFullName(),
+							entryUser.getValue());
+
+				}
+
+			}
+		}
 	}
 
 }

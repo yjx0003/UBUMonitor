@@ -284,4 +284,18 @@ public class BubbleComparison extends PlotlyLog {
 		return new String[0];
 	}
 
+	@Override
+	public <E> JSArray createData(List<E> typeLogs, DataSet<E> dataSet, List<EnrolledUser> selectedUsers,
+			LocalDate dateStart, LocalDate dateEnd, GroupByAbstract<?> groupBy) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <E> JSObject createLayout(List<E> typeLogs, DataSet<E> dataSet, LocalDate dateStart, LocalDate dateEnd,
+			GroupByAbstract<?> groupBy) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

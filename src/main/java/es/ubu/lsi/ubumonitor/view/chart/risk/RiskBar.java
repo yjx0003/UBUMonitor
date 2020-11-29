@@ -24,24 +24,134 @@ import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
-import es.ubu.lsi.ubumonitor.view.chart.Chartjs;
-import es.ubu.lsi.ubumonitor.view.chart.Tabs;
+import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 
-public class RiskBar extends Chartjs {
+public class RiskBar extends Plotly {
 
 	public RiskBar(MainController mainController) {
-		super(mainController, ChartType.RISK_BAR);
-		useGeneralButton = false;
-		useLegend = true;
-		useGroupButton = false;
+		this(mainController, ChartType.RISK_BAR);
 
 	}
 
-	public RiskBar(MainController mainController, ChartType chartType, Tabs tab) {
+	public RiskBar(MainController mainController, ChartType chartType) {
 		super(mainController, chartType);
 		useGeneralButton = false;
 		useLegend = true;
 		useGroupButton = false;
+	}
+	
+	@Override
+	public String getOnClickFunction() {
+		return Plotly.MULTIPLE_USER_ON_CLICK_FUNCTION;
+	}
+
+	@Override
+	public void createData(JSArray data) {
+		List<EnrolledUser> selectedEnrolledUser = getSelectedEnrolledUser();
+		ZonedDateTime lastUpdate = Controller.getInstance()
+				.getUpdatedCourseData();
+		Map<LastActivity, List<EnrolledUser>> lastCourseAccess = new TreeMap<>(
+				Comparator.comparing(LastActivity::getIndex));
+		Map<LastActivity, List<EnrolledUser>> lastAccess = new TreeMap<>(Comparator.comparing(LastActivity::getIndex));
+		for (EnrolledUser user : selectedEnrolledUser) {
+			lastCourseAccess
+					.computeIfAbsent(LastActivityFactory.DEFAULT.getActivity(user.getLastcourseaccess(), lastUpdate),
+							k -> new ArrayList<>())
+					.add(user);
+			lastAccess
+					.computeIfAbsent(LastActivityFactory.DEFAULT.getActivity(user.getLastaccess(), lastUpdate),
+							k -> new ArrayList<>())
+					.add(user);
+		}
+
+		List<LastActivity> lastActivities = LastActivityFactory.DEFAULT.getAllLastActivity();
+
+		data.add(createTrace(I18n.get("label.lastcourseaccess"), selectedEnrolledUser.size(), lastCourseAccess,
+				lastActivities, 0.2));
+		data.add(createTrace(I18n.get("label.lastaccess"), selectedEnrolledUser.size(), lastAccess, lastActivities,
+				0.5));
+
+	}
+
+	public JSObject createTrace(String name, int nUsers, Map<LastActivity, List<EnrolledUser>> lastAccess,
+			List<LastActivity> lastActivities, double opacity) {
+		JSObject trace = new JSObject();
+
+		JSArray color = new JSArray();
+
+		JSArray y = new JSArray();
+		JSArray x = new JSArray();
+		x.addAllWithQuote(lastActivities);
+		JSArray usersArray = new JSArray();
+		JSArray usersIdArray = new JSArray();
+		JSArray text = new JSArray();
+		for (LastActivity lastActivity : lastActivities) {
+			color.add(colorToRGB(lastActivity.getColor(), opacity));
+
+			StringBuilder users = new StringBuilder();
+			JSArray usersId = new JSArray();
+			List<EnrolledUser> listUsers = lastAccess.computeIfAbsent(lastActivity, k -> Collections.emptyList());
+			y.add(listUsers.size());
+			listUsers.forEach(e -> {
+				usersId.add(e.getId());
+				users.append(e.getFullName());
+				users.append("<br>");
+			});
+			usersArray.addWithQuote(users);
+			usersIdArray.add(usersId);
+			text.add("'<b>'+toPercentage(" + listUsers.size() + "," + nUsers + ")+'</b>'");
+
+		}
+
+		trace.put("type", "'bar'");
+		trace.putWithQuote("name", name);
+		trace.put("x", x);
+		trace.put("y", y);
+		JSObject marker = new JSObject();
+		marker.put("color", color);
+		trace.put("marker", marker);
+		trace.put("userids", usersIdArray);
+		trace.put("customdata", usersArray);
+		trace.put("text", text);
+		trace.put("textposition", "'auto'");
+		trace.put("hovertemplate", "'<b>%{x}<br>%{data.name}:</b> %{y}<br><br>%{customdata}<extra></extra>'");
+
+		return trace;
+	}
+
+	@Override
+	public void createLayout(JSObject layout) {
+
+		boolean horizontalMode = getConfigValue("horizontalMode", false);
+		JSObject axis = new JSObject();
+		axis.put("showgrid", true);
+		axis.put("tickmode", "'array'");
+		axis.put("type", "'category'");
+		axis.put("tickson", "'boundaries'");
+
+		JSObject xaxis = horizontalMode ? new JSObject() : axis;
+
+		JSObject yaxis = horizontalMode ? axis : new JSObject();
+
+		if (horizontalMode) {
+			Plotly.defaultAxisValues(xaxis, getYAxisTitle(), "");
+			Plotly.defaultAxisValues(yaxis, getXAxisTitle(), null);
+			yaxis.putAll(axis);
+
+			layout.put("xaxis", yaxis);
+			layout.put("yaxis", xaxis);
+		} else {
+			Plotly.defaultAxisValues(xaxis, getXAxisTitle(), null);
+			Plotly.defaultAxisValues(yaxis, getYAxisTitle(), "");
+			xaxis.putAll(axis);
+
+			layout.put("xaxis", xaxis);
+			layout.put("yaxis", yaxis);
+		}
+
+		layout.put("barmode", "'group'");
+		layout.put("hovermode", "'closest'");
+
 	}
 
 	@Override
@@ -65,114 +175,11 @@ public class RiskBar extends Chartjs {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
-
-		jsObject.putWithQuote("typeGraph", "bar");
-		JSObject callbacks = new JSObject();
-		callbacks.put("title", "function(a,t){return t.datasets[a[0].datasetIndex].label}");
-		callbacks.put("label", "function(e,t){return t.datasets[e.datasetIndex].users[e.index]}");
-		jsObject.put("tooltips", "{callbacks:" + callbacks + "}");
-
-		JSObject scales = new JSObject();
-
-		scales.put("yAxes", "[{" + getYScaleLabel() + "}]");
-		scales.put("xAxes", "[{" + getXScaleLabel() + "}]");
-		jsObject.put("scales", scales);
-
-		jsObject.put("plugins",
-				"{datalabels:{display:!0,font:{weight:'bold'},formatter:function(t,a){if(0===t)return'';let e=a.chart.data.datasets[a.datasetIndex].data,r=0;for(i=0;i<e.length;i++)r+=e[i];return t+'/'+r+' ('+(t/r).toLocaleString(locale,{style:'percent',maximumFractionDigits:2})+')'}}}");
-
-		jsObject.put("onClick",
-				"function(t,e){let n=myChart.getElementsAtEventForMode(t,'nearest',{intersect:!0});if(n.length>0){let t=n[0],e=t._chart.config.data.datasets[t._datasetIndex].usersId[t._index];javaConnector.dataPointSelection(e[counter%e.length]),counter++}}");
-		return jsObject;
-	}
-
-	@Override
-	public void update() {
-		String dataset = createDataset(getSelectedEnrolledUser());
-		JSObject options = getOptions();
-		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, options));
-
-	}
-
-	protected String createDataset(List<EnrolledUser> selectedEnrolledUser) {
-
-		ZonedDateTime lastUpdate = Controller.getInstance()
-				.getUpdatedCourseData();
-		Map<LastActivity, List<EnrolledUser>> lastCourseAccess = new TreeMap<>(
-				Comparator.comparing(LastActivity::getIndex));
-		Map<LastActivity, List<EnrolledUser>> lastAccess = new TreeMap<>(Comparator.comparing(LastActivity::getIndex));
-		for (EnrolledUser user : selectedEnrolledUser) {
-			lastCourseAccess
-					.computeIfAbsent(LastActivityFactory.DEFAULT.getActivity(user.getLastcourseaccess(), lastUpdate),
-							k -> new ArrayList<>())
-					.add(user);
-			lastAccess
-					.computeIfAbsent(LastActivityFactory.DEFAULT.getActivity(user.getLastaccess(), lastUpdate),
-							k -> new ArrayList<>())
-					.add(user);
-		}
-
-		List<LastActivity> lastActivities = LastActivityFactory.DEFAULT.getAllLastActivity();
-
-		JSObject data = new JSObject();
-		JSArray labels = new JSArray();
-		labels.addAllWithQuote(lastActivities);
-		data.put("labels", labels);
-		JSArray datasets = new JSArray();
-		datasets.add(createDataset(I18n.get("label.lastcourseaccess"), lastCourseAccess, lastActivities, 0.2));
-		datasets.add(createDataset(I18n.get("label.lastaccess"), lastAccess, lastActivities, 0.5));
-		data.put("datasets", datasets);
-		return data.toString();
-	}
-
-	public JSObject createDataset(String label, Map<LastActivity, List<EnrolledUser>> lastAccess,
-			List<LastActivity> lastActivities, double opacity) {
-		JSObject dataset = new JSObject();
-		dataset.putWithQuote("label", label);
-		JSArray backgroundColor = new JSArray();
-		JSArray borderColor = new JSArray();
-		JSArray datasetData = new JSArray();
-		JSArray usersArray = new JSArray();
-		JSArray usersIdArray = new JSArray();
-		for (LastActivity lastActivity : lastActivities) {
-			backgroundColor.add(colorToRGB(lastActivity.getColor(), opacity));
-			borderColor.add(colorToRGB(lastActivity.getColor()));
-			JSArray users = new JSArray();
-			JSArray usersId = new JSArray();
-			List<EnrolledUser> listUsers = lastAccess.computeIfAbsent(lastActivity, k -> Collections.emptyList());
-			datasetData.add(listUsers.size());
-			listUsers.forEach(e -> {
-				usersId.add(e.getId());
-				users.addWithQuote(e.getFullName());
-			});
-			usersArray.add(users);
-			usersIdArray.add(usersId);
-
-		}
-
-		dataset.put("backgroundColor", backgroundColor);
-		dataset.put("borderColor", borderColor);
-		dataset.put("data", datasetData);
-		dataset.put("users", usersArray);
-		dataset.put("usersId", usersIdArray);
-		return dataset;
-	}
-
-	@Override
-	public int onClick(int userid) {
-		EnrolledUser user = Controller.getInstance()
-				.getDataBase()
-				.getUsers()
-				.getById(userid);
-		return getUsers().indexOf(user);
-	}
-
-	@Override
 	public String getXAxisTitle() {
 
 		return MessageFormat.format(super.getXAxisTitle(), Controller.getInstance()
 				.getUpdatedCourseData()
 				.format(Controller.DATE_TIME_FORMATTER));
 	}
+
 }

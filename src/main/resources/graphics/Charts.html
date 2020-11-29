@@ -17,6 +17,8 @@
    <script type="text/javascript" src="./lib/visNetwork.js"></script>
    <script type="text/javascript" src="./lib/visTimeline.js"></script>
    <script type="text/javascript" src="./lib/plotly.js"></script>
+   <script type="text/javascript" src="./locales/plotly-es.js"></script>
+   <script type="text/javascript" src="./lib/wheelzoom.js"></script>
    <script type="text/javascript">
       Chart.defaults.global.animation.duration = 0;
       Chart.defaults.global.elements.line.fill = false;
@@ -103,7 +105,8 @@
 
          visNetwork = new vis.Network(document.getElementById('visNetworkDiv'), {}, {});
          visTimeline = new vis.Timeline(document.getElementById('visTimelineDiv'), {}, {});
-
+         wheelzoom(document.getElementById('wordCloud'));
+         document.getElementById('wordCloud').ondblclick = function () { document.getElementById('wordCloud').dispatchEvent(new CustomEvent('wheelzoom.reset')) };
 
       }
 
@@ -250,34 +253,34 @@
       }
 
       function updateWordCloud(image, options) {
-         hiddenCharts("canvas-container", options);
+         hiddenCharts("wordCloud", options);
          wordCloud = document.getElementById('wordCloud');
-         imageWordCloud = new Image();
-         imageWordCloud.onload = function () {
-            wordCloud.height = imageWordCloud.height;
-            wordCloud.width = imageWordCloud.width;
 
-            wordCloud.getContext("2d").drawImage(imageWordCloud, 0, 0);
 
-         };
+         wordCloud.src = image;
 
-         imageWordCloud.src = image;
 
 
       }
 
       function updatePlotly(plot, options) {
          hiddenCharts("plotly", options);
-        
+
          plot.layout.showlegend = options.useLegend && options.legendActive;
-       
-         plot.config = options.config;
+         if (options.config) {
+            plot.config = options.config;
+         }
+
          Plotly.react('plotlyDiv', plot);
 
-         if(options.onClick){
+
+         if (options.onClick) {
+            document.getElementById('plotlyDiv').removeAllListeners('plotly_click');
             document.getElementById('plotlyDiv').on('plotly_click', options.onClick);
-            
          }
+
+
+
       }
 
       function hiddenCharts(value, options) {
@@ -288,7 +291,7 @@
          displayButton('tabulatorDiv', value == "tabulator");
          displayButton('visNetworkDiv', value == "visNetwork");
          displayButton('visTimelineDiv', value == "visTimeline");
-         displayButton('canvas-container', value == "canvas-container");
+         displayButton('wordCloud', value == "wordCloud");
          displayButton('plotlyDiv', value == "plotly");
          displayButton('plotlyEmptyDiv', value == "plotly");
 
@@ -417,6 +420,7 @@
       function setLocale(newLocale) {
          locale = newLocale;
          moment.locale(newLocale);
+         Plotly.setPlotConfig({ locale: newLocale });
       }
       function colorRGB(color) {
          let colors = colorHash.rgb(color);
@@ -432,17 +436,9 @@
       function colorHEX(color) {
          return colorHash.hex(color);
       }
-      function formatBoxplot(text, value) {
-         return text + ": " + value.toLocaleString(locale, { maximumFractionDigits: 2 });
-      }
 
-      function boxplotLabel(t, a, o, e) {
-         if (-1 == e) return [formatBoxplot("n", a.datasets[t.datasetIndex].data[t.index].length), formatBoxplot("min ", o.min), formatBoxplot("whiskerMin", o.whiskerMin), formatBoxplot("q1", o.q1), formatBoxplot("median", o.median), formatBoxplot("q3", o.q3), formatBoxplot("whiskerMax", o.whiskerMax), formatBoxplot("max", o.max)];
-         var r, s = a.datasets[t.datasetIndex].users[0] instanceof Array ? a.datasets[t.datasetIndex].users[t.index] : a.datasets[t.datasetIndex].users,
-            n = a.datasets[t.datasetIndex].data[t.index],
-            x = [];
-         for (r = 0; r < n.length; r++) n[r] == o.outliers[e] && x.push(s[r] + " (" + n[r].toLocaleString(locale, { maximumFractionDigits: 2 }) + ")");
-         return x
+      function toPercentage(value, max) {
+         return value + '/' + max + ' (' + (value / max).toLocaleString(locale, { style: 'percent', maximumFractionDigits: 2 }) + ")";
       }
    </script>
 </head>
@@ -464,7 +460,7 @@
    <div id="tabulatorDiv"></div>
    <div id="visNetworkDiv" class="visDiv"></div>
    <div id="visTimelineDiv" class="visDiv"></div>
-   <div id="canvas-container" class="canvas-container"><canvas id="wordCloud" class="canvas-word-cloud"></canvas></div>
+   <img class="center" id="wordCloud">
 </body>
 
 </html>

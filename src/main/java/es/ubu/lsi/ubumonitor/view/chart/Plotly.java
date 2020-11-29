@@ -1,6 +1,8 @@
 package es.ubu.lsi.ubumonitor.view.chart;
 
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
@@ -12,10 +14,13 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import javafx.scene.web.WebEngine;
+import netscape.javascript.JSException;
 
 public abstract class Plotly extends Chart {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Plotly.class);
+	public static final String DEFAULT_ON_CLICK_FUNCTION = "function(n){if(n!==undefined&&n.points!==undefined){let t=n.points[counter++%n.points.length];if(t!==undefined&&t.data!==undefined&&t.data.userids){javaConnector.dataPointSelection(t.data.userids[t.pointIndex]||t.data.userids||-100);}}}";
+	public static final String MULTIPLE_USER_ON_CLICK_FUNCTION = "function(n){if(n!==undefined&&n.points!==undefined){let c=counter++;let t=n.points[c%n.points.length];if(t!==undefined&&t.data!==undefined&&t.data.userids){javaConnector.dataPointSelection(t.data.userids[t.pointIndex][c%t.data.userids[t.pointIndex].length]);}}}";
 
 	public Plotly(MainController mainController, ChartType chartType) {
 		super(mainController, chartType);
@@ -45,15 +50,22 @@ public abstract class Plotly extends Chart {
 		plot.put("layout", layout);
 		plot.put("frames", frames);
 		LOGGER.debug("Plotly:{}", plot);
+		try {
+			webViewChartsEngine.executeScript("updatePlotly(" + plot + "," + getOptions() + ")");
+		} catch (JSException e) {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Probably updating too fast plotly: {}", e);
+			} else {
+				LOGGER.warn("Probably updating too fast plotly: {}", e.getMessage());
+			}
 
-		webViewChartsEngine.executeScript("updatePlotly(" + plot + "," + getOptions() + ")");
+		}
 
 	}
 
 	public abstract void createData(JSArray data);
 
-	public void createLayout(JSObject layout) {
-	}
+	public abstract void createLayout(JSObject layout);
 
 	public void createFrames(JSArray frames) {
 	}
@@ -68,18 +80,20 @@ public abstract class Plotly extends Chart {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
-		
-		 fillOptions(jsObject, createConfig());
-		 return jsObject;
+	public void fillOptions(JSObject jsObject) {
+
+		fillOptions(jsObject, createConfig(), getOnClickFunction());
 	}
-	
-	public static void fillOptions(JSObject jsObject, JSObject config) {
-		jsObject.put("onClick",
-				"function(n){if(n!==undefined&&n.points!==undefined){let t=n.points[counter++%n.points.length];if(t!==undefined&&t.data!==undefined&&t.data.userids!==undefined){javaConnector.dataPointSelection(t.data.userids[t.pointIndex]||-100);}}}");
+
+	public static void fillOptions(JSObject jsObject, JSObject config, String onClickFunction) {
+		jsObject.put("onClick", onClickFunction);
 
 		jsObject.put("config", config);
 
+	}
+
+	public String getOnClickFunction() {
+		return DEFAULT_ON_CLICK_FUNCTION;
 	}
 
 	public static JSObject createConfig() {
@@ -103,42 +117,86 @@ public abstract class Plotly extends Chart {
 
 	public static void horizontalMode(JSObject layout, JSArray ticktext, boolean horizontalMode, String xAxisTitle,
 			String yAxisTitle, String range) {
-		JSObject xaxis = new JSObject();
-		JSObject yaxis = new JSObject();
-		xaxis.put("zeroline", false);
-		yaxis.put("zeroline", false);
-		xaxis.put("automargin", true);
-		yaxis.put("automargin", true);
-		int[] tickvals = IntStream.range(0, ticktext.size())
-				.toArray();
+		horizontalMode(layout, new JSObject(), new JSObject(), ticktext, horizontalMode, xAxisTitle, yAxisTitle, range);
+	}
+
+	public static void horizontalMode(JSObject layout, JSObject xaxis, JSObject yaxis, JSArray ticktext,
+			boolean horizontalMode, String xAxisTitle, String yAxisTitle, String range) {
 
 		if (horizontalMode) {
-			xaxis.putWithQuote("title", yAxisTitle);
-			if (range == null) {
-				xaxis.put("rangemode", "'tozero'");
-			} else {
-				xaxis.put("range", range);
+
+			String temp = xAxisTitle;
+			xAxisTitle = yAxisTitle;
+			yAxisTitle = temp;
+
+			if (ticktext != null) {
+				List<Integer> tickvals = IntStream.range(0, ticktext.size())
+						.boxed()
+						.collect(Collectors.toList());
+				createCategoryAxis(yaxis, tickvals, ticktext);
 			}
 
-			yaxis.putWithQuote("title", xAxisTitle);
-			yaxis.put("tickvals", Arrays.toString(tickvals));
-			yaxis.put("ticktext", ticktext);
-
-
+			defaultAxisValues(xaxis, xAxisTitle, range);
+			defaultAxisValues(yaxis, yAxisTitle, "");
 		} else {
-			xaxis.putWithQuote("title", xAxisTitle);
-			yaxis.putWithQuote("title", yAxisTitle);
-			if (range == null) {
-				yaxis.put("rangemode", "'tozero'");
-			} else {
-				yaxis.put("range", range);
+
+			if (ticktext != null) {
+				List<Integer> tickvals = IntStream.range(0, ticktext.size())
+						.boxed()
+						.collect(Collectors.toList());
+				createCategoryAxis(xaxis, tickvals, ticktext);
 			}
-			xaxis.put("tickvals", Arrays.toString(tickvals));
-			xaxis.put("ticktext", ticktext);
+
+			defaultAxisValues(xaxis, xAxisTitle, "");
+			defaultAxisValues(yaxis, yAxisTitle, range);
 		}
 
 		layout.put("xaxis", xaxis);
 		layout.put("yaxis", yaxis);
-		
+
 	}
+
+	public static void defaultAxisValues(JSObject axis, String title, String range) {
+		axis.put("zeroline", false);
+		axis.put("automargin", true);
+		if (title != null)
+			axis.putWithQuote("title", title);
+		if (range != null) {
+
+			if (range.isEmpty()) {
+				axis.put("rangemode", "'tozero'");
+			} else {
+				axis.put("range", range);
+			}
+		}
+
+	}
+
+	public static void createCategoryAxis(JSObject axis, Collection<?> tickvals, Collection<Object> ticktext) {
+		axis.put("type", "'category'");
+		axis.put("tickvals", tickvals);
+		axis.put("tickmode", "'array'");
+		// axis.put("nticks", 20);
+		axis.put("ticktext", ticktext);
+	}
+
+	public static void createCategoryAxis(JSObject axis, Collection<Object> ticktext) {
+
+		createCategoryAxis(axis, IntStream.range(0, ticktext.size())
+				.boxed()
+				.collect(Collectors.toList()), ticktext);
+	}
+
+	public static void createAxisValuesHorizontal(boolean horizontalMode, JSObject trace, Collection<?> x,
+			Collection<?> y) {
+		if (horizontalMode) {
+			trace.put("y", x);
+			trace.put("x", y);
+			trace.put("orientation", "'h'");
+		} else {
+			trace.put("x", x);
+			trace.put("y", y);
+		}
+	}
+
 }

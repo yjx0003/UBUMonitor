@@ -63,4 +63,10 @@ public class DataSetSection implements DataSet<Section> {
 		return groupBy.getSections().getUserTotalLogs(enrolledUsers, elements, start, end);
 	}
 
+	@Override
+	public Map<EnrolledUser, Map<Section, Integer>> getUserLogsGroupedByLogElement(GroupByAbstract<?> groupBy,
+			List<EnrolledUser> enrolledUsers, List<Section> elements, LocalDate start, LocalDate end) {
+		return groupBy.getSections().getUserLogsGroupedByLogElement(enrolledUsers, elements, start, end);
+	}
+
 }

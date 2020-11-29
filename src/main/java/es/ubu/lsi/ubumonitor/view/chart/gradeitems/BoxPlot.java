@@ -10,7 +10,6 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
@@ -46,13 +45,13 @@ public class BoxPlot extends Plotly {
 				notched));
 		data.add(createTrace(actualCourse.getEnrolledUsers(), gradeItems, I18n.get("text.all"), useHorizontal,
 				getGeneralConfigValue("generalActive"), standardDeviation, notched));
-		for (Group group : slcGroup.getCheckModel()
-				.getCheckedItems()) {
+
+		for (Group group : getSelectedGroups()) {
 			boolean groupActive = getGeneralConfigValue("groupActive");
-			if (group != null) {
-				data.add(createTrace(group.getEnrolledUsers(), gradeItems, group.getGroupName(), useHorizontal,
-						groupActive, standardDeviation, notched));
-			}
+
+			data.add(createTrace(group.getEnrolledUsers(), gradeItems, group.getGroupName(), useHorizontal, groupActive,
+					standardDeviation, notched));
+
 		}
 
 	}
@@ -71,24 +70,16 @@ public class BoxPlot extends Plotly {
 			for (EnrolledUser user : users) {
 
 				double grade = gradeItem.getEnrolledUserPercentage(user);
-				if (!Double.isNaN(grade)) {
-					grades.add(gradeItem.getEnrolledUserPercentage(user) / 10);
-					gradeItemIndex.add(i);
-					userids.add(user.getId());
-					userNames.addWithQuote(user.getFullName());
-				}
+
+				grades.add(grade / 10);
+				gradeItemIndex.add(i);
+				userids.add(user.getId());
+				userNames.addWithQuote(user.getFullName());
 
 			}
 		}
 
-		if (useHorizontal) {
-			trace.put("y", gradeItemIndex);
-			trace.put("x", grades);
-			trace.put("orientation", "'h'");
-		} else {
-			trace.put("x", gradeItemIndex);
-			trace.put("y", grades);
-		}
+		createAxisValuesHorizontal(useHorizontal, trace, gradeItemIndex, grades);
 
 		trace.put("type", "'box'");
 		trace.put("boxpoints", "'all'");
@@ -97,7 +88,7 @@ public class BoxPlot extends Plotly {
 		trace.putWithQuote("name", name);
 		trace.put("userids", userids);
 		trace.put("text", userNames);
-		trace.put("hovertemplate", "'<b>%{" + (useHorizontal ? "x" : "y") + "}<br>%{text}: </b>%{"
+		trace.put("hovertemplate",  "'<b>%{" + (useHorizontal ? "y" : "x") + "}<br>%{text}: </b>%{"
 				+ (useHorizontal ? "x" : "y") + ":.2f}<extra></extra>'");
 		JSObject marker = new JSObject();
 		marker.put("color", rgb(name));
@@ -111,6 +102,7 @@ public class BoxPlot extends Plotly {
 
 		return trace;
 	}
+
 
 	@Override
 	public void createLayout(JSObject layout) {
@@ -145,14 +137,13 @@ public class BoxPlot extends Plotly {
 				exportCSV(printer, enrolledUser, gradeItems, "selected users");
 
 			}
-			if ((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")) {
+			if (getGeneralButtonlActive()) {
 				exportCSV(printer, controller.getActualCourse()
 						.getEnrolledUsers(), gradeItems, "all");
 			}
 
-			if ((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")) {
-				for (Group group : slcGroup.getCheckModel()
-						.getCheckedItems()) {
+			if (getGroupButtonActive()) {
+				for (Group group : getSelectedGroups()) {
 					exportCSV(printer, group.getEnrolledUsers(), gradeItems, group.getGroupName());
 				}
 			}

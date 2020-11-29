@@ -1,11 +1,13 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
+import java.io.Serializable;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,6 +32,8 @@ import es.ubu.lsi.ubumonitor.model.datasets.DataSetComponent;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSetComponentEvent;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSetSection;
 import es.ubu.lsi.ubumonitor.model.datasets.DatasSetCourseModule;
+import es.ubu.lsi.ubumonitor.model.log.FirstGroupBy;
+import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.LogAction;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
@@ -951,36 +955,39 @@ public class SelectionController {
 		if (tabUbuLogsComponent.isSelected()) {
 
 			return logAction.action(listViewComponents.getSelectionModel()
-					.getSelectedItems(), DataSetComponent.getInstance());
+					.getSelectedItems(), DataSetComponent.getInstance(), GroupByAbstract::getComponents);
 		} else if (tabUbuLogsEvent.isSelected()) {
 
-			return logAction.action(listViewEvents.getSelectionModel().getSelectedItems(), DataSetComponentEvent.getInstance());
+			return logAction.action(listViewEvents.getSelectionModel()
+					.getSelectedItems(), DataSetComponentEvent.getInstance(), GroupByAbstract::getComponentsEvents);
 		} else if (tabUbuLogsSection.isSelected()) {
 
 			return logAction.action(listViewSection.getSelectionModel()
-					.getSelectedItems(), DataSetSection.getInstance());
+					.getSelectedItems(), DataSetSection.getInstance(), GroupByAbstract::getSections);
 		} else if (tabUbuLogsCourseModule.isSelected()) {
 
 			return logAction.action(listViewCourseModule.getSelectionModel()
-					.getSelectedItems(), DatasSetCourseModule.getInstance());
+					.getSelectedItems(), DatasSetCourseModule.getInstance(), GroupByAbstract::getCourseModules);
 		}
 		throw new IllegalStateException("Need other tab");
 	}
-	
-	public List<String> getSelectedLogTypeTransLated(){
+
+	public List<String> getSelectedLogTypeTransLated() {
 		return typeLogsAction(new LogAction<List<String>>() {
 
 			@Override
-			public <E> List<String> action(List<E> logType, DataSet<E> dataSet) {
+			public <E extends Serializable, T extends Serializable> List<String> action(List<E> logType,
+					DataSet<E> dataSet, Function<GroupByAbstract<?>, FirstGroupBy<E, T>> function) {
 				List<String> list = new ArrayList<>();
-				for(E e: logType) {
+				for (E e : logType) {
 					list.add(dataSet.translate(e));
 				}
 				return list;
 			}
 		});
+
 	}
-	
+
 	public List<GradeItem> getSelectedGradeItems() {
 		return UtilMethods.getSelectedGradeItems(tvwGradeReport);
 	}

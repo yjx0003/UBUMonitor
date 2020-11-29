@@ -75,4 +75,10 @@ public class DataSetComponent implements DataSet<Component> {
 		return groupBy.getComponents().getUserTotalLogs(enrolledUsers, elements, start, end);
 	}
 
+	@Override
+	public Map<EnrolledUser, Map<Component, Integer>> getUserLogsGroupedByLogElement(GroupByAbstract<?> groupBy,
+			List<EnrolledUser> enrolledUsers, List<Component> elements, LocalDate start, LocalDate end) {
+		return groupBy.getComponents().getUserLogsGroupedByLogElement(enrolledUsers, elements, start, end);
+	}
+
 }

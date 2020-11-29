@@ -2,21 +2,16 @@ package es.ubu.lsi.ubumonitor.view.chart.logs;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.Group;
-import es.ubu.lsi.ubumonitor.model.Role;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
@@ -41,23 +36,44 @@ public class BoxplotLog extends PlotlyLog {
 	}
 
 	@Override
-	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet) {
-
-		boolean groupActive = controller.getMainConfiguration()
-				.getValue(MainConfiguration.GENERAL, "groupActive");
-
-		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-		LocalDate dateStart = datePickerStart.getValue();
-		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
+	public GroupByAbstract<?> getGroupBy() {
+		return actualCourse.getLogStats()
 				.getByType(TypeTimes.DAY);
-		JSObject plot = new JSObject();
-		plot.put("data", createData(typeLogs, dataSet, groupActive, selectedUsers, dateStart, dateEnd, groupBy));
-		plot.put("layout", createLayout(typeLogs, dataSet));
-		return plot.toString();
 	}
 
-	private <E> JSObject createLayout(List<E> typeLogs, DataSet<E> dataSet) {
+	@Override
+	public <E> JSArray createData(List<E> typeLogs, DataSet<E> dataSet, List<EnrolledUser> selectedUsers,
+			LocalDate dateStart, LocalDate dateEnd, GroupByAbstract<?> groupBy) {
+		boolean groupActive = getGroupButtonActive();
+		boolean horizontalMode = getConfigValue("horizontalMode");
+		boolean standardDeviation = getConfigValue("standardDeviation");
+		boolean notched = getConfigValue("notched");
+		JSArray data = new JSArray();
+
+		if (!selectedUsers.isEmpty()) {
+			Map<EnrolledUser, Map<E, Integer>> userCounts = dataSet.getUserLogsGroupedByLogElement(groupBy,
+					selectedUsers, typeLogs, dateStart, dateEnd);
+			data.add(createTrace(selectedUsers, userCounts, typeLogs, I18n.get("text.selectedUsers"), true,
+					horizontalMode, notched, standardDeviation));
+		}
+
+		for (Group group : getSelectedGroups()) {
+
+			List<EnrolledUser> users = getUserWithRole(group.getEnrolledUsers(), getSelectedRoles());
+			Map<EnrolledUser, Map<E, Integer>> userCounts = dataSet.getUserLogsGroupedByLogElement(groupBy, users,
+					typeLogs, dateStart, dateEnd);
+
+			data.add(createTrace(users, userCounts, typeLogs, group.getGroupName(), groupActive, horizontalMode,
+					notched, standardDeviation));
+
+		}
+
+		return data;
+	}
+
+	@Override
+	public <E> JSObject createLayout(List<E> typeLogs, DataSet<E> dataSet, LocalDate dateStart, LocalDate dateEnd,
+			GroupByAbstract<?> groupBy) {
 		JSObject layout = new JSObject();
 
 		JSArray ticktext = new JSArray();
@@ -74,40 +90,7 @@ public class BoxplotLog extends PlotlyLog {
 
 	}
 
-	public <E> JSArray createData(List<E> typeLogs, DataSet<E> dataSet, boolean groupActive,
-			List<EnrolledUser> selectedUsers, LocalDate dateStart, LocalDate dateEnd, GroupByAbstract<?> groupBy) {
-		boolean horizontalMode = getConfigValue("horizontalMode");
-		boolean standardDeviation = getConfigValue("standardDeviation");
-		boolean notched = getConfigValue("notched");
-		JSArray data = new JSArray();
-
-		if (!selectedUsers.isEmpty()) {
-			Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, selectedUsers,
-					typeLogs, dateStart, dateEnd);
-			data.add(createTrace(selectedUsers, userCounts, typeLogs, I18n.get("text.selectedUsers"), true,
-					horizontalMode, notched, standardDeviation));
-		}
-
-		Set<EnrolledUser> userWithRole = getUsersInRoles(selectionUserController.getCheckComboBoxRole()
-				.getCheckModel()
-				.getCheckedItems());
-		for (Group group : slcGroup.getCheckModel()
-				.getCheckedItems()) {
-			if (group != null) {
-				List<EnrolledUser> users = getUserWithRole(group.getEnrolledUsers(), userWithRole);
-				Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, users, typeLogs,
-						dateStart, dateEnd);
-
-				data.add(createTrace(users, userCounts, typeLogs, group.getGroupName(), groupActive, horizontalMode,
-						notched, standardDeviation));
-			}
-
-		}
-
-		return data;
-	}
-
-	private <E> JSObject createTrace(List<EnrolledUser> users, Map<EnrolledUser, Map<E, List<Integer>>> userCounts,
+	private <E> JSObject createTrace(List<EnrolledUser> users, Map<EnrolledUser, Map<E, Integer>> userCounts,
 			List<E> typeLogs, String name, boolean visible, boolean horizontalMode, boolean notched,
 			boolean standardDeviation) {
 
@@ -117,10 +100,8 @@ public class BoxplotLog extends PlotlyLog {
 		JSArray userNames = new JSArray();
 		JSArray userids = new JSArray();
 
-		Map<EnrolledUser, Map<E, Integer>> logCounts = transform(userCounts, typeLogs);
-
 		for (EnrolledUser user : users) {
-			Map<E, Integer> map = logCounts.get(user);
+			Map<E, Integer> map = userCounts.get(user);
 			for (int i = 0; i < typeLogs.size(); ++i) {
 
 				logValues.add(map.get(typeLogs.get(i)));
@@ -130,14 +111,7 @@ public class BoxplotLog extends PlotlyLog {
 			}
 		}
 
-		if (horizontalMode) {
-			trace.put("y", logValuesIndex);
-			trace.put("x", logValues);
-			trace.put("orientation", "'h'");
-		} else {
-			trace.put("x", logValuesIndex);
-			trace.put("y", logValues);
-		}
+		Plotly.createAxisValuesHorizontal(horizontalMode, trace, logValuesIndex, logValues);
 
 		trace.put("type", "'box'");
 		trace.put("boxpoints", "'all'");
@@ -146,7 +120,7 @@ public class BoxplotLog extends PlotlyLog {
 		trace.putWithQuote("name", name);
 		trace.put("userids", userids);
 		trace.put("text", userNames);
-		trace.put("hovertemplate", "'<b>%{" + (horizontalMode ? "x" : "y") + "}<br>%{text}: </b>%{"
+		trace.put("hovertemplate", "'<b>%{" + (horizontalMode ? "y" : "x") + "}<br>%{text}: </b>%{"
 				+ (horizontalMode ? "x" : "y") + "}<extra></extra>'");
 		JSObject marker = new JSObject();
 		marker.put("color", rgb(name));
@@ -160,43 +134,6 @@ public class BoxplotLog extends PlotlyLog {
 
 		return trace;
 
-	}
-
-	private Set<EnrolledUser> getUsersInRoles(Collection<Role> roles) {
-		return roles.stream()
-				.map(Role::getEnrolledUsers)
-				.flatMap(Set::stream)
-				.distinct()
-				.collect(Collectors.toSet());
-
-	}
-
-	private List<EnrolledUser> getUserWithRole(Collection<EnrolledUser> groupUsers,
-			Collection<EnrolledUser> usersInRoles) {
-
-		return groupUsers.stream()
-				.filter(usersInRoles::contains)
-				.collect(Collectors.toList());
-
-	}
-
-	private <E> Map<EnrolledUser, Map<E, Integer>> transform(Map<EnrolledUser, Map<E, List<Integer>>> userCounts,
-			List<E> typeLogs) {
-		Map<EnrolledUser, Map<E, Integer>> map = new HashMap<>();
-		for (Map.Entry<EnrolledUser, Map<E, List<Integer>>> entry : userCounts.entrySet()) {
-			for (E typeLog : typeLogs) {
-				Map<E, Integer> logsMap = map.computeIfAbsent(entry.getKey(), k -> new HashMap<>());
-				List<Integer> everyDayLogs = entry.getValue()
-						.get(typeLog);
-				int sum = everyDayLogs.stream()
-						.mapToInt(Integer::intValue)
-						.sum();
-				logsMap.put(typeLog, sum);
-
-				map.put(entry.getKey(), logsMap);
-			}
-		}
-		return map;
 	}
 
 	private <E> Map<E, DescriptiveStatistics> getDescriptiveStatistics(Map<EnrolledUser, Map<E, Integer>> logCounts,
@@ -223,11 +160,10 @@ public class BoxplotLog extends PlotlyLog {
 		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
 				.getByType(TypeTimes.DAY);
 
-		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, selectedUsers, typeLogs,
-				dateStart, dateEnd);
+		Map<EnrolledUser, Map<E, Integer>> userCounts = dataSet.getUserLogsGroupedByLogElement(groupBy, selectedUsers,
+				typeLogs, dateStart, dateEnd);
 
-		Map<EnrolledUser, Map<E, Integer>> logCounts = transform(userCounts, typeLogs);
-		Map<E, DescriptiveStatistics> descriptiveStatistics = getDescriptiveStatistics(logCounts, selectedUsers,
+		Map<E, DescriptiveStatistics> descriptiveStatistics = getDescriptiveStatistics(userCounts, selectedUsers,
 				typeLogs);
 		for (E typeLog : typeLogs) {
 			DescriptiveStatistics stats = descriptiveStatistics.get(typeLog);
@@ -258,10 +194,10 @@ public class BoxplotLog extends PlotlyLog {
 		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
 				.getByType(TypeTimes.DAY);
 
-		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, selectedUsers, typeLogs,
-				dateStart, dateEnd);
-		Map<EnrolledUser, Map<E, Integer>> logCounts = transform(userCounts, typeLogs);
-		for (Map.Entry<EnrolledUser, Map<E, Integer>> entry : logCounts.entrySet()) {
+		Map<EnrolledUser, Map<E, Integer>> userCounts = dataSet.getUserLogsGroupedByLogElement(groupBy, selectedUsers,
+				typeLogs, dateStart, dateEnd);
+
+		for (Map.Entry<EnrolledUser, Map<E, Integer>> entry : userCounts.entrySet()) {
 
 			for (Map.Entry<E, Integer> entry2 : entry.getValue()
 					.entrySet()) {
@@ -290,4 +226,5 @@ public class BoxplotLog extends PlotlyLog {
 				.getText() + "</b>";
 
 	}
+
 }

@@ -63,11 +63,6 @@ public class ForumTreeMapUser extends Plotly {
 		}
 	}
 
-	@Override
-	public JSObject getOptions(JSObject jsObject) {
-		return jsObject;
-	}
-
 	private JSArray createJSArray(String key, JSObject data) {
 		JSArray jsArray = new JSArray();
 		data.put(key, jsArray);
@@ -148,5 +143,11 @@ public class ForumTreeMapUser extends Plotly {
 		parents.add("''");
 		ids.add(0);		
 		dataArray.add(data);
+	}
+
+	@Override
+	public void createLayout(JSObject layout) {
+		// do nothing
+		
 	}
 }

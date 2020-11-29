@@ -48,7 +48,6 @@ import javafx.scene.web.WebView;
 public class ForumWordCloud extends WordCloudChart {
 
 	private ListView<CourseModule> listViewForum;
-	private WebView webView;
 	private DatePicker datePickerStart;
 	private DatePicker datePickerEnd;
 
@@ -76,9 +75,8 @@ public class ForumWordCloud extends WordCloudChart {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
-
-		return jsObject;
+	public void fillOptions(JSObject jsObject) {
+		//do nothing
 	}
 
 	@Override
@@ -124,7 +122,7 @@ public class ForumWordCloud extends WordCloudChart {
 				.encodeToString(outputByte);
 
 		JSObject options = getOptions();
-
+		base64Image = img;
 		webViewChartsEngine.executeScript("updateWordCloud('data:image/png;base64," + img + "'," + options + ")");
 	}
 

@@ -310,4 +310,27 @@ public class FirstGroupBy<E extends Serializable, T extends Serializable> implem
 		}
 		return map;
 	}
+
+	public Map<EnrolledUser, Map<E, Integer>> getUserLogsGroupedByLogElement(List<EnrolledUser> users, List<E> elements,
+			LocalDate start, LocalDate end) {
+		List<T> groupByRange = groupByAbstract.getRange(start, end);
+
+		Map<EnrolledUser, Map<E, Integer>> result = new HashMap<>();
+
+		for (EnrolledUser user : users) {
+			Map<E, Integer> elementsCount = result.computeIfAbsent(user, k -> new HashMap<>());
+			Map<E, Map<T, List<LogLine>>> userCounts = counts.computeIfAbsent(user, k -> new HashMap<>());
+
+			for (E element : elements) {
+				
+				Map<T, List<LogLine>> countsMap = userCounts.computeIfAbsent(element, k -> new HashMap<>());
+				int count = 0;
+				for (T groupBy : groupByRange) {
+					count+=countsMap.computeIfAbsent(groupBy, k->EMPTY_LIST).size();
+				}
+				elementsCount.put(element, count);
+			}
+		}
+		return result;
+	}
 }

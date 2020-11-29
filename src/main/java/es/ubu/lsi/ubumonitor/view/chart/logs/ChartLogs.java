@@ -1,7 +1,9 @@
 package es.ubu.lsi.ubumonitor.view.chart.logs;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -16,6 +18,7 @@ import es.ubu.lsi.ubumonitor.model.ComponentEvent;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.Section;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
+import es.ubu.lsi.ubumonitor.model.log.FirstGroupBy;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.LogAction;
@@ -66,7 +69,7 @@ public abstract class ChartLogs extends Chart {
 		this.listViewEvent = selectionController.getListViewEvents();
 		this.listViewSection = selectionController.getListViewSection();
 		this.listViewCourseModule = selectionController.getListViewCourseModule();
-		
+
 	}
 
 	@Override
@@ -84,7 +87,8 @@ public abstract class ChartLogs extends Chart {
 		String dataset = selectionController.typeLogsAction(new LogAction<String>() {
 
 			@Override
-			public <E> String action(List<E> logType, DataSet<E> dataSet) {
+			public <E extends Serializable, T extends Serializable> String action(List<E> logType, DataSet<E> dataSet,
+					Function<GroupByAbstract<?>, FirstGroupBy<E, T>> function) {
 				return createData(logType, dataSet);
 			}
 		});
@@ -103,14 +107,14 @@ public abstract class ChartLogs extends Chart {
 			selectionController.typeLogsAction(new LogAction<Void>() {
 
 				@Override
-				public <E> Void action(List<E> logType, DataSet<E> dataSet) {
+				public <E extends Serializable, T extends Serializable> Void action(List<E> logType, DataSet<E> dataSet,
+						Function<GroupByAbstract<?>, FirstGroupBy<E, T>> function) {
 					try {
 						exportCSV(printer, dataSet, logType);
 						return null;
 					} catch (IOException e) {
 						throw new IllegalStateException(e);
 					}
-
 				}
 			});
 		}
@@ -128,14 +132,14 @@ public abstract class ChartLogs extends Chart {
 			selectionController.typeLogsAction(new LogAction<Void>() {
 
 				@Override
-				public <E> Void action(List<E> logType, DataSet<E> dataSet) {
+				public <E extends Serializable, T extends Serializable> Void action(List<E> logType, DataSet<E> dataSet,
+						Function<GroupByAbstract<?>, FirstGroupBy<E, T>> function) {
 					try {
 						exportCSVDesglosed(printer, dataSet, logType);
 						return null;
 					} catch (IOException e) {
 						throw new IllegalStateException(e);
 					}
-
 				}
 			});
 		}
@@ -144,7 +148,7 @@ public abstract class ChartLogs extends Chart {
 
 	@Override
 	public boolean isCalculateMaxActivated() {
-		return mainConfiguration.getValue(getChartType(), "calculateMax", false);
+		return getConfigValue("calculateMax", false);
 	}
 
 	@Override

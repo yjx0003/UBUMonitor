@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
@@ -96,11 +95,11 @@ public class GradeReportTable extends Tabulator {
 			}
 			array.add(jsObject.toString());
 		}
-		if (useGeneralButton && (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")) {
+		if (useGeneralButton && getGeneralButtonlActive()) {
 
 			array.add(addStats(gradeItems, I18n.get("chartlabel.generalMean"), stats.getGeneralStats()));
 		}
-		if (useGroupButton && (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")) {
+		if (useGroupButton && getGroupButtonActive()) {
 			for (Group group : getSelectedGroups()) {
 				
 					array.add(addStats(gradeItems,

@@ -144,4 +144,10 @@ public class ForumTreeMapUser extends Plotly {
 		ids.add(0);		
 		dataArray.add(data);
 	}
+
+	@Override
+	public void createLayout(JSObject layout) {
+		// do nothing
+		
+	}
 }

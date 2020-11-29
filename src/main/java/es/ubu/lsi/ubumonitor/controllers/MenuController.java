@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
@@ -40,6 +42,8 @@ import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.LogStats;
 import es.ubu.lsi.ubumonitor.model.Logs;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
+import es.ubu.lsi.ubumonitor.model.log.FirstGroupBy;
+import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.persistence.Serialization;
 import es.ubu.lsi.ubumonitor.util.Charsets;
@@ -488,10 +492,7 @@ public class MenuController {
 	}
 
 	public void exportRankingReport() throws IOException {
-		
-		
-		
-		
+
 		RankingReport rankingReport = new RankingReport();
 		SelectionController selectionController = mainController.getSelectionController();
 		DatePicker start = mainController.getWebViewTabsController()
@@ -511,36 +512,39 @@ public class MenuController {
 				.ranking(selectionController.typeLogsAction(new LogAction<Map<EnrolledUser, Integer>>() {
 
 					@Override
-					public <E> Map<EnrolledUser, Integer> action(List<E> logType, DataSet<E> dataSet) {
-
-						return logType.isEmpty() ? Collections.emptyMap(): RankingTable.getLogsPoints(users, logType, dataSet, controller.getActualCourse()
-								.getLogStats()
-								.getByType(TypeTimes.DAY), start.getValue(), end.getValue());
+					public <E extends Serializable, T extends Serializable> Map<EnrolledUser, Integer> action(
+							List<E> logType, DataSet<E> dataSet,
+							Function<GroupByAbstract<?>, FirstGroupBy<E, T>> function) {
+						return logType.isEmpty() ? Collections.emptyMap()
+								: RankingTable.getLogsPoints(users, logType, dataSet, controller.getActualCourse()
+										.getLogStats()
+										.getByType(TypeTimes.DAY), start.getValue(), end.getValue());
 					}
 				}));
-		Map<EnrolledUser, Integer> rankingGrades = gradeItems.isEmpty() ? Collections.emptyMap(): UtilMethods
-				.ranking(RankingTable.getGradeItemPoints(users, gradeItems), DescriptiveStatistics::getMean);
-		Map<EnrolledUser, Integer> rankingActivities = activities.isEmpty() ? Collections.emptyMap() : UtilMethods.ranking(RankingTable.getActivityCompletionPoints(
-				users, activities, start.getValue()
+		Map<EnrolledUser, Integer> rankingGrades = gradeItems.isEmpty() ? Collections.emptyMap()
+				: UtilMethods.ranking(RankingTable.getGradeItemPoints(users, gradeItems),
+						DescriptiveStatistics::getMean);
+		Map<EnrolledUser, Integer> rankingActivities = activities.isEmpty() ? Collections.emptyMap()
+				: UtilMethods.ranking(RankingTable.getActivityCompletionPoints(users, activities, start.getValue()
 						.atStartOfDay(ZoneId.systemDefault())
 						.toInstant(),
-				end.getValue()
-						.plusDays(1)
-						.atStartOfDay(ZoneId.systemDefault())
-						.toInstant()));
+						end.getValue()
+								.plusDays(1)
+								.atStartOfDay(ZoneId.systemDefault())
+								.toInstant()));
 		UtilMethods.fileAction(UtilMethods.removeReservedChar(course.getFullName() + "-" + course.getId()),
 				ConfigHelper.getProperty("csvFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
 				file -> {
 					rankingReport.createReport(file, controller.getDataBase(), users, rankingLogs, rankingGrades,
-							rankingActivities, selectionController.getSelectedLogTypeTransLated(), gradeItems, activities, start.getValue(), end.getValue(),
-							mainController.getSelectionController()
+							rankingActivities, selectionController.getSelectedLogTypeTransLated(), gradeItems,
+							activities, start.getValue(), end.getValue(), mainController.getSelectionController()
 									.getTabPaneUbuLogs()
 									.getSelectionModel()
 									.getSelectedItem()
 									.getText());
 					ConfigHelper.setProperty("csvFolderPath", file.getParent());
 				}, FileUtil.WORD);
-		
+
 	}
 
 }

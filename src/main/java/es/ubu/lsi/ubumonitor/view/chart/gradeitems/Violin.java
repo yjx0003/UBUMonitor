@@ -10,7 +10,6 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
@@ -82,7 +81,8 @@ public class Violin extends Plotly {
 		trace.putWithQuote("name", name);
 		trace.put("userids", userids);
 		trace.put("text", userNames);
-		trace.put("hovertemplate", getHorizontalModeHoverTemplate(horizontalMode));
+		trace.put("hovertemplate",  "'<b>%{" + (horizontalMode ? "y" : "x") + "}<br>%{text}: </b>%{"
+				+ (horizontalMode ? "x" : "y") + ":.2f}<extra></extra>'");
 		JSObject line = new JSObject();
 		line.put("color", rgb(name));
 		trace.put("line", line);
@@ -131,12 +131,12 @@ public class Violin extends Plotly {
 
 			}
 
-			if ((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")) {
+			if (getGeneralButtonlActive()) {
 				exportCSV(printer, controller.getActualCourse()
 						.getEnrolledUsers(), gradeItems, "all");
 			}
 
-			if ((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")) {
+			if (getGroupButtonActive()) {
 				for (Group group : getSelectedGroups()) {
 					exportCSV(printer, group.getEnrolledUsers(), gradeItems, group.getGroupName());
 				}

@@ -29,8 +29,9 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 
-public class SessionChart extends ChartjsLog {
+public class SessionChart extends PlotlyLog {
 
 	private static final List<LogLine> EMPTY_LOG_LINES = Collections.emptyList();
 
@@ -41,37 +42,86 @@ public class SessionChart extends ChartjsLog {
 	}
 
 	@Override
-	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet) {
+	public <E> JSArray createData(List<E> typeLogs, DataSet<E> dataSet, List<EnrolledUser> selectedUsers,
+			LocalDate dateStart, LocalDate dateEnd, GroupByAbstract<?> groupBy) {
 
-		return createSessionDataSet(typeLogs, dataSet, choiceBoxDate.getValue());
-
+		return createSessionData(typeLogs, dataSet, selectedUsers, dateStart, dateEnd, groupBy,
+				getConfigValue("timeInterval"));
 	}
 
-	private <E, T extends Serializable> String createSessionDataSet(List<E> typeLogs, DataSet<E> dataSet,
-			GroupByAbstract<T> groupBy) {
+	@Override
+	public <E> JSObject createLayout(List<E> typeLogs, DataSet<E> dataSet, LocalDate dateStart, LocalDate dateEnd,
+			GroupByAbstract<?> groupBy) {
+		JSObject layout = new JSObject();
+		JSObject xaxis = new JSObject();
+		xaxis.put("type", "'category'");
+		Plotly.defaultAxisValues(xaxis, getXAxisTitle(), null);
+		JSObject yaxis = new JSObject();
+		Plotly.defaultAxisValues(yaxis, getYAxisTitle(), null);
+		
+		layout.put("xaxis", xaxis);
+		layout.put("yaxis", yaxis);
+		layout.put("barmode", "'stack'");
+		layout.put("hovermode", "'closest'");
+		return layout;
+	}
 
-		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-
-		int timeInterval = mainConfiguration.getValue(chartType, "timeInterval");
-
-		LocalDate dateStart = datePickerStart.getValue();
-		LocalDate dateEnd = datePickerEnd.getValue();
+	private <E, T extends Serializable> JSArray createSessionData(List<E> typeLogs, DataSet<E> dataSet,
+			List<EnrolledUser> selectedUsers, LocalDate dateStart, LocalDate dateEnd, GroupByAbstract<T> groupBy,
+			int timeInterval) {
+		JSArray data = new JSArray();
 
 		List<T> rangeDates = groupBy.getRange(dateStart, dateEnd);
 
 		Map<EnrolledUser, Map<T, List<Session>>> sessionMap = createSession(typeLogs, dataSet, selectedUsers, dateStart,
 				dateEnd, groupBy, timeInterval);
 
-		List<String> rangeDatesString = groupBy.getRangeString(dateStart, dateEnd);
+		List<String> rangeDatesString = groupBy.getRangeString(rangeDates);
 
-		JSObject data = new JSObject();
+		Map<EnrolledUser, Color> colors = UtilMethods.getRandomColors(selectedUsers);
+		for (EnrolledUser enrolledUser : selectedUsers) {
+			JSArray x = new JSArray();
+			JSArray y = new JSArray();
+			JSArray userids = new JSArray();
+			JSArray nsession = new JSArray();
+			JSArray avgSession = new JSArray();
+			for (int i = 0; i < rangeDates.size(); i++) {
+				List<Session> session = sessionMap.get(enrolledUser)
+						.get(rangeDates.get(i));
+				long value = session.stream()
+						.map(Session::getDiffMinutes)
+						.collect(Collectors.summingLong(Long::longValue));
+				y.add(value);
+				x.addWithQuote(rangeDatesString.get(i));
+				userids.add(enrolledUser.getId());
+				avgSession.add(value/(double)session.size());
+				nsession.add(session.size());
+			}
+			JSObject trace = createTrace(enrolledUser.getFullName(), x, y, colors.get(enrolledUser));
+			trace.put("userids", userids);
+			trace.put("text", nsession);
+			trace.put("customdata", avgSession);
+			data.add(trace);
 
-		data.put("labels", createLabels(rangeDatesString));
+		}
 
-		JSArray datasets = createDatasets(sessionMap, selectedUsers, rangeDates);
+		return data;
 
-		data.put("datasets", datasets);
-		return data.toString();
+	}
+
+	private JSObject createTrace(String name, JSArray x, JSArray y, Color color) {
+		JSObject trace = new JSObject();
+
+		trace.put("type", "'bar'");
+		trace.putWithQuote("name", name);
+		trace.put("x", x);
+		trace.put("y", y);
+		trace.put("hovertemplate", "'<b>%{x}<br>%{data.name}: </b>%{y} (avg: %{customdata:.2f})<br><b>"+I18n.get("text.session")+"</b>%{text}<extra></extra>'");
+		JSObject marker = new JSObject();
+		marker.put("color", awtColorToRGB(color, OPACITY));
+		trace.put("marker", marker);
+
+		return trace;
 
 	}
 
@@ -123,41 +173,6 @@ public class SessionChart extends ChartjsLog {
 		return userSessions;
 	}
 
-	private <T> JSArray createDatasets(Map<EnrolledUser, Map<T, List<Session>>> sessionsMap,
-			List<EnrolledUser> selectedUsers, List<T> rangeDates) {
-
-		JSArray datasets = new JSArray();
-		Map<EnrolledUser, Color> colors = UtilMethods.getRandomColors(selectedUsers);
-		for (EnrolledUser enrolledUser : selectedUsers) {
-			JSArray data = new JSArray();
-			JSArray n = new JSArray();
-			JSObject dataset = new JSObject();
-			Color c = colors.get(enrolledUser);
-			int r = c.getRed();
-			int g = c.getGreen();
-			int b = c.getBlue();
-			
-			
-			dataset.putWithQuote("label", enrolledUser.getFullName());
-			dataset.put("borderColor", String.format("'#%02x%02x%02x'", r, g, b));
-			dataset.put("backgroundColor", String.format("'rgba(%d,%d,%d,0.4)'", r,g,b));
-			for (T element : rangeDates) {
-				List<Session> session = sessionsMap.get(enrolledUser)
-						.get(element);
-
-				data.add(session.stream()
-						.map(Session::getDiffMinutes)
-						.collect(Collectors.summingLong(Long::longValue)));
-				n.add(session.size());
-			}
-			dataset.put("data", data);
-			dataset.put("n", n);
-			datasets.add(dataset);
-		}
-
-		return datasets;
-	}
-
 	@Override
 	protected <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
 
@@ -169,7 +184,7 @@ public class SessionChart extends ChartjsLog {
 			GroupByAbstract<T> groupBy) throws IOException {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 
-		int timeInterval = mainConfiguration.getValue(chartType, "timeInterval");
+		int timeInterval = getConfigValue("timeInterval");
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
@@ -214,7 +229,7 @@ public class SessionChart extends ChartjsLog {
 
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 
-		int timeInterval = mainConfiguration.getValue(chartType, "timeInterval");
+		int timeInterval = getConfigValue("timeInterval");
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
@@ -224,7 +239,7 @@ public class SessionChart extends ChartjsLog {
 		for (EnrolledUser enrolledUser : selectedUsers) {
 
 			for (T time : groupBy.getRange(dateStart, dateEnd)) {
-				
+
 				for (Session session : sessionMap.get(enrolledUser)
 						.get(time)) {
 					printer.print(enrolledUser.getId());
@@ -235,7 +250,6 @@ public class SessionChart extends ChartjsLog {
 				}
 
 			}
-			
 
 		}
 
@@ -243,18 +257,7 @@ public class SessionChart extends ChartjsLog {
 
 	@Override
 	protected String[] getCSVDesglosedHeader() {
-		return new String[] {"userid", "fullname", "start", "end"};
-	}
-
-	@Override
-	public void fillOptions(JSObject jsObject) {
-
-		jsObject.putWithQuote("typeGraph", "bar");
-		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",stacked: true,ticks:{suggestedMax:"
-				+ getSuggestedMax(textFieldMax.getText()) + ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + ",stacked: true}]}");
-		jsObject.put("tooltips",
-				"{callbacks:{label:function(a,e){return e.datasets[a.datasetIndex].label+': '+a.yLabel+' (avg: '+Math.round(a.yLabel/e.datasets[a.datasetIndex].n[a.index]*100)/100+')'},afterLabel:function(a,e){return'"
-						+ I18n.get("text.session") + "'+e.datasets[a.datasetIndex].n[a.index]}}}");
+		return new String[] { "userid", "fullname", "start", "end" };
 	}
 
 	@Override
@@ -264,10 +267,9 @@ public class SessionChart extends ChartjsLog {
 	}
 
 	@Override
-	public String getYAxisTitle() {	
+	public String getYAxisTitle() {
 
-		return MessageFormat.format(I18n.get(getChartType() + ".yAxisTitle"),
-				(int) mainConfiguration.getValue(chartType, "timeInterval"));
+		return MessageFormat.format(I18n.get(getChartType() + ".yAxisTitle"), (int) getConfigValue("timeInterval"));
 	}
 
 }

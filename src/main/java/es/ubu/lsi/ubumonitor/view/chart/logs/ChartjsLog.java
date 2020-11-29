@@ -10,7 +10,6 @@ import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
@@ -53,10 +52,10 @@ public abstract class ChartjsLog extends ChartLogs {
 	public String getXScaleLabel() {
 		
 		JSObject jsObject = new JSObject();
-		jsObject.put("display", mainConfiguration.getValue(MainConfiguration.GENERAL, "displayXScaleTitle"));
+		jsObject.put("display", getGeneralConfigValue("displayXScaleTitle"));
 		jsObject.putWithQuote("labelString", getXAxisTitle());
 		jsObject.put("fontColor",
-				colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorXScaleTitle")));
+				colorToRGB(getGeneralConfigValue("fontColorXScaleTitle")));
 		jsObject.putWithQuote("fontStyle", "bold");
 
 		return "scaleLabel:" + jsObject;
@@ -67,11 +66,11 @@ public abstract class ChartjsLog extends ChartLogs {
 	public String getYScaleLabel() {
 		
 		JSObject jsObject = new JSObject();
-		jsObject.put("display", mainConfiguration.getValue(MainConfiguration.GENERAL, "displayYScaleTitle"));
+		jsObject.put("display", getGeneralConfigValue("displayYScaleTitle"));
 		jsObject.putWithQuote("labelString", getYAxisTitle());
 		jsObject.putWithQuote("fontSize", 14);
 		jsObject.put("fontColor",
-				colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorYScaleTitle")));
+				colorToRGB(getGeneralConfigValue("fontColorYScaleTitle")));
 		jsObject.putWithQuote("fontStyle", "bold");
 
 		return "scaleLabel:" + jsObject;

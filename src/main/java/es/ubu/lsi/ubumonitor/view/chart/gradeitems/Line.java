@@ -10,7 +10,6 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
@@ -42,13 +41,13 @@ public class Line extends Plotly {
 
 		createUserTraces(data, users, gradeItems);
 
-		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
+		boolean generalActive = getGeneralButtonlActive();
 		createMeanTrace(data, stats.getGeneralStats(), gradeItems, generalActive);
 
-		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
+		boolean groupActive = getGroupButtonActive();
 		createGroupTraces(data, getSelectedGroups(), gradeItems, stats, groupActive);
 	}
-	
+
 	private void createUserTraces(JSArray data, List<EnrolledUser> users, List<GradeItem> gradeItems) {
 
 		for (EnrolledUser user : users) {
@@ -94,8 +93,6 @@ public class Line extends Plotly {
 		}
 	}
 
-
-
 	private JSObject createTrace(String name, JSArray x, JSArray y, boolean visible, String dash) {
 		JSObject trace = new JSObject();
 		JSObject line = new JSObject();
@@ -107,23 +104,22 @@ public class Line extends Plotly {
 		trace.put("line", line);
 		trace.put("marker", marker);
 		trace.put("hovertemplate", "'<b>%{data.name}: </b>%{y:.2f}<extra></extra>'");
-		if(!visible) {
+		if (!visible) {
 			trace.put("visible", "'legendonly'");
 		}
-		
-		
+
 		line.putWithQuote("dash", dash);
-		
+
 		marker.put("color", rgb(name));
 		marker.put("size", 6);
-		
+
 		return trace;
 	}
 
 	@Override
 	public void createLayout(JSObject layout) {
 		JSObject xaxis = new JSObject();
-		defaultAxisValues(xaxis, getXAxisTitle());
+		defaultAxisValues(xaxis, getXAxisTitle(), "");
 
 		JSArray tickvals = new JSArray();
 		JSArray ticktext = new JSArray();
@@ -135,9 +131,8 @@ public class Line extends Plotly {
 		}
 
 		JSObject yaxis = new JSObject();
-		defaultAxisValues(yaxis, getYAxisTitle());
-		yaxis.put("range", "[-0.5,10.5]");
-
+		defaultAxisValues(yaxis, getYAxisTitle(), "[-0.5,10.5]");
+	
 		createCategoryAxis(xaxis, tickvals, ticktext);
 		layout.put("xaxis", xaxis);
 		layout.put("yaxis", yaxis);
@@ -168,6 +163,5 @@ public class Line extends Plotly {
 		}
 
 	}
-
 
 }

@@ -6,7 +6,10 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.controlsfx.control.CheckComboBox;
@@ -19,6 +22,7 @@ import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
+import es.ubu.lsi.ubumonitor.model.Role;
 import es.ubu.lsi.ubumonitor.model.Stats;
 import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.I18n;
@@ -33,9 +37,8 @@ import javafx.scene.web.WebView;
 
 public abstract class Chart implements ExportableChart {
 
-	
 	protected static final DescriptiveStatistics EMPTY_DESCRIPTIVE_STATISTICS = new DescriptiveStatistics();
-	
+
 	protected WebEngine webViewChartsEngine;
 	private CheckComboBox<Group> checkComboBoxGroup;
 	protected Stats stats;
@@ -52,7 +55,7 @@ public abstract class Chart implements ExportableChart {
 	protected boolean useOptions;
 	protected Controller controller = Controller.getInstance();
 	protected MainController mainController;
-	protected MainConfiguration mainConfiguration;
+	private MainConfiguration mainConfiguration;
 	protected SelectionUserController selectionUserController;
 	protected Course actualCourse;
 	protected static final double OPACITY = 0.2;
@@ -93,7 +96,7 @@ public abstract class Chart implements ExportableChart {
 	}
 
 	public List<EnrolledUser> getUsers() {
-		return selectionUserController.getUsers();
+		return selectionUserController.getFilteredUsers();
 	}
 
 	public double adjustTo10(double value) {
@@ -126,7 +129,16 @@ public abstract class Chart implements ExportableChart {
 
 		return colorToRGB(color, color.getOpacity());
 	}
+	
+	public String awtColorToRGB(java.awt.Color color) {
+		return awtColorToRGB(color, color.getAlpha()/255.0);
+	}
 
+	public String awtColorToRGB(java.awt.Color color, double opacity) {
+		return String.format("'rgba(%s,%s,%s,%s)'", color.getRed(), color.getGreen(),  color.getBlue(), opacity);
+	}
+
+	
 	public String colorToRGB(Color color, double opacity) {
 
 		return String.format("'rgba(%s,%s,%s,%s)'", (int) (color.getRed() * 255), (int) (color.getGreen() * 255),
@@ -142,6 +154,41 @@ public abstract class Chart implements ExportableChart {
 				.getCheckedItems());
 		groups.removeIf(g -> g == null || g.getGroupId() < 0);
 		return groups;
+	}
+
+	public List<Role> getSelectedRoles() {
+		List<Role> roles = new ArrayList<>(selectionUserController.getCheckComboBoxRole()
+				.getCheckModel()
+				.getCheckedItems());
+		roles.removeIf(r -> r == null || r.getRoleId() < 0);
+		return roles;
+	}
+	
+	/**
+	 * Filter user with one or more specified roles
+	 * @param user users to filter
+	 * @param roles roler to filter
+	 * @return filtered users
+	 */
+	public List<EnrolledUser> getUserWithRole(Collection<EnrolledUser> user, Collection<Role> roles) {
+		Set<EnrolledUser> usersInRoles =getUserWithRole(roles);
+		return user.stream()
+				.filter(usersInRoles::contains)
+				.collect(Collectors.toList());
+
+	}
+
+	/**
+	 * Return all users with the collection role
+	 * @param roles
+	 * @return users with one or more roles
+	 */
+	public Set<EnrolledUser> getUserWithRole(Collection<Role> roles) {
+		return  roles.stream()
+				.map(Role::getEnrolledUsers)
+				.flatMap(Set::stream)
+				.distinct()
+				.collect(Collectors.toSet());
 	}
 
 	public abstract void fillOptions(JSObject jsObject);
@@ -305,8 +352,20 @@ public abstract class Chart implements ExportableChart {
 		return mainConfiguration.getValue(this.chartType, name);
 	}
 
+	public <T> T getConfigValue(String name, T defaultValue) {
+		return mainConfiguration.getValue(this.chartType, name, defaultValue);
+	}
+
 	public <T> T getGeneralConfigValue(String name) {
 		return mainConfiguration.getValue(MainConfiguration.GENERAL, name);
+	}
+
+	public boolean getGeneralButtonlActive() {
+		return getGeneralConfigValue("generalActive");
+	}
+
+	public boolean getGroupButtonActive() {
+		return getGeneralConfigValue("groupActive");
 	}
 
 	/**

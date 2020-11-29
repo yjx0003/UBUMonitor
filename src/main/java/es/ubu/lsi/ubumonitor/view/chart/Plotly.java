@@ -19,6 +19,8 @@ import netscape.javascript.JSException;
 public abstract class Plotly extends Chart {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Plotly.class);
+	public static final String DEFAULT_ON_CLICK_FUNCTION = "function(n){if(n!==undefined&&n.points!==undefined){let t=n.points[counter++%n.points.length];if(t!==undefined&&t.data!==undefined&&t.data.userids){javaConnector.dataPointSelection(t.data.userids[t.pointIndex]||t.data.userids||-100);}}}";
+	public static final String MULTIPLE_USER_ON_CLICK_FUNCTION = "function(n){if(n!==undefined&&n.points!==undefined){let c=counter++;let t=n.points[c%n.points.length];if(t!==undefined&&t.data!==undefined&&t.data.userids){javaConnector.dataPointSelection(t.data.userids[t.pointIndex][c%t.data.userids[t.pointIndex].length]);}}}";
 
 	public Plotly(MainController mainController, ChartType chartType) {
 		super(mainController, chartType);
@@ -50,16 +52,20 @@ public abstract class Plotly extends Chart {
 		LOGGER.debug("Plotly:{}", plot);
 		try {
 			webViewChartsEngine.executeScript("updatePlotly(" + plot + "," + getOptions() + ")");
-		}catch (JSException e) {
-			LOGGER.info("Probably updating too fast plotly: {}", e.getMessage());
+		} catch (JSException e) {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Probably updating too fast plotly: {}", e);
+			} else {
+				LOGGER.warn("Probably updating too fast plotly: {}", e.getMessage());
+			}
+
 		}
 
 	}
 
 	public abstract void createData(JSArray data);
 
-	public void createLayout(JSObject layout) {
-	}
+	public abstract void createLayout(JSObject layout);
 
 	public void createFrames(JSArray frames) {
 	}
@@ -76,15 +82,18 @@ public abstract class Plotly extends Chart {
 	@Override
 	public void fillOptions(JSObject jsObject) {
 
-		fillOptions(jsObject, createConfig());
+		fillOptions(jsObject, createConfig(), getOnClickFunction());
 	}
 
-	public static void fillOptions(JSObject jsObject, JSObject config) {
-		jsObject.put("onClick",
-				"function(n){if(n!==undefined&&n.points!==undefined){let t=n.points[counter++%n.points.length];if(t!==undefined&&t.data!==undefined&&t.data.userids){javaConnector.dataPointSelection(t.data.userids[t.pointIndex]||t.data.userids||-100);}}}");
+	public static void fillOptions(JSObject jsObject, JSObject config, String onClickFunction) {
+		jsObject.put("onClick", onClickFunction);
 
 		jsObject.put("config", config);
 
+	}
+
+	public String getOnClickFunction() {
+		return DEFAULT_ON_CLICK_FUNCTION;
 	}
 
 	public static JSObject createConfig() {
@@ -108,62 +117,78 @@ public abstract class Plotly extends Chart {
 
 	public static void horizontalMode(JSObject layout, JSArray ticktext, boolean horizontalMode, String xAxisTitle,
 			String yAxisTitle, String range) {
-		JSObject xaxis = new JSObject();
-		JSObject yaxis = new JSObject();
+		horizontalMode(layout, new JSObject(), new JSObject(), ticktext, horizontalMode, xAxisTitle, yAxisTitle, range);
+	}
 
-		List<Integer> tickvals = IntStream.range(0, ticktext.size())
-				.boxed()
-				.collect(Collectors.toList());
+	public static void horizontalMode(JSObject layout, JSObject xaxis, JSObject yaxis, JSArray ticktext,
+			boolean horizontalMode, String xAxisTitle, String yAxisTitle, String range) {
 
 		if (horizontalMode) {
 
-			if (range == null) {
-				xaxis.put("rangemode", "'tozero'");
-			} else {
-				xaxis.put("range", range);
-			}
 			String temp = xAxisTitle;
 			xAxisTitle = yAxisTitle;
 			yAxisTitle = temp;
 
-			createCategoryAxis(yaxis, tickvals, ticktext);
-
-		} else {
-
-			if (range == null) {
-				yaxis.put("rangemode", "'tozero'");
-			} else {
-				yaxis.put("range", range);
+			if (ticktext != null) {
+				List<Integer> tickvals = IntStream.range(0, ticktext.size())
+						.boxed()
+						.collect(Collectors.toList());
+				createCategoryAxis(yaxis, tickvals, ticktext);
 			}
 
-			createCategoryAxis(xaxis, tickvals, ticktext);
-		}
+			defaultAxisValues(xaxis, xAxisTitle, range);
+			defaultAxisValues(yaxis, yAxisTitle, "");
+		} else {
 
-		defaultAxisValues(xaxis, xAxisTitle);
-		defaultAxisValues(yaxis, yAxisTitle);
+			if (ticktext != null) {
+				List<Integer> tickvals = IntStream.range(0, ticktext.size())
+						.boxed()
+						.collect(Collectors.toList());
+				createCategoryAxis(xaxis, tickvals, ticktext);
+			}
+
+			defaultAxisValues(xaxis, xAxisTitle, "");
+			defaultAxisValues(yaxis, yAxisTitle, range);
+		}
 
 		layout.put("xaxis", xaxis);
 		layout.put("yaxis", yaxis);
 
 	}
 
-	public static void defaultAxisValues(JSObject axis, String title) {
+	public static void defaultAxisValues(JSObject axis, String title, String range) {
 		axis.put("zeroline", false);
 		axis.put("automargin", true);
 		if (title != null)
 			axis.putWithQuote("title", title);
+		if (range != null) {
+
+			if (range.isEmpty()) {
+				axis.put("rangemode", "'tozero'");
+			} else {
+				axis.put("range", range);
+			}
+		}
 
 	}
 
 	public static void createCategoryAxis(JSObject axis, Collection<?> tickvals, Collection<Object> ticktext) {
 		axis.put("type", "'category'");
 		axis.put("tickvals", tickvals);
+		axis.put("tickmode", "'array'");
+		// axis.put("nticks", 20);
 		axis.put("ticktext", ticktext);
 	}
-	
-	
+
+	public static void createCategoryAxis(JSObject axis, Collection<Object> ticktext) {
+
+		createCategoryAxis(axis, IntStream.range(0, ticktext.size())
+				.boxed()
+				.collect(Collectors.toList()), ticktext);
+	}
+
 	public static void createAxisValuesHorizontal(boolean horizontalMode, JSObject trace, Collection<?> x,
-			 Collection<?> y) {
+			Collection<?> y) {
 		if (horizontalMode) {
 			trace.put("y", x);
 			trace.put("x", y);
@@ -174,8 +199,4 @@ public abstract class Plotly extends Chart {
 		}
 	}
 
-	public static String getHorizontalModeHoverTemplate(boolean useHorizontal) {
-		return "'<b>%{" + (useHorizontal ? "y" : "x") + "}<br>%{text}: </b>%{"
-				+ (useHorizontal ? "x" : "y") + ":.2f}<extra></extra>'";
-	}
 }

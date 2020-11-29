@@ -8,7 +8,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.util.I18n;
@@ -26,6 +25,7 @@ public class CalificationBar extends Plotly {
 	public CalificationBar(MainController mainController, TreeView<GradeItem> treeViewGradeItem) {
 		super(mainController, ChartType.CALIFICATION_BAR);
 		this.treeViewGradeItem = treeViewGradeItem;
+		useLegend = true;
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class CalificationBar extends Plotly {
 		List<EnrolledUser> users = getSelectedEnrolledUser();
 		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		boolean horizontalMode = getConfigValue("horizontalMode");
-		double cutGrade = mainConfiguration.getValue(MainConfiguration.GENERAL, "cutGrade");
+		double cutGrade = getGeneralConfigValue("cutGrade");
 
 		List<Integer> countNaN = new ArrayList<>();
 		List<Integer> countLessCut = new ArrayList<>();
@@ -83,7 +83,7 @@ public class CalificationBar extends Plotly {
 		trace.putWithQuote("name", name);
 		trace.put("text",  text);
 		trace.put("textposition", "'auto'");
-		trace.put("hoverTemplate", "'none'");
+		trace.put("hovertemplate", "'<b>%{data.name}: </b>%{text}<extra></extra>'");
 		JSObject marker = new JSObject();
 		marker.put("color", colorToRGB(color));
 		trace.put("marker", marker);
@@ -116,7 +116,7 @@ public class CalificationBar extends Plotly {
 
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
 				CSVFormat.DEFAULT.withHeader(header.toArray(new String[0])))) {
-			double cutGrade = mainConfiguration.getValue(MainConfiguration.GENERAL, "cutGrade");
+			double cutGrade = getGeneralConfigValue("cutGrade");
 			List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 			List<Integer> countNaN = new ArrayList<>(gradeItems.size());
 			List<Integer> countLessCut = new ArrayList<>(gradeItems.size());

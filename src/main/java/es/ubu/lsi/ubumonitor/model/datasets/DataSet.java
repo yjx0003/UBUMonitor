@@ -39,4 +39,7 @@ public interface DataSet<E> {
 	
 	Map<EnrolledUser, Integer> getUserTotalLogs(GroupByAbstract<?> groupBy, List<EnrolledUser> enrolledUsers,
 			List<E> elements, LocalDate start, LocalDate end);
+	
+	Map<EnrolledUser,Map<E, Integer>> getUserLogsGroupedByLogElement(GroupByAbstract<?> groupBy, List<EnrolledUser> enrolledUsers,
+			List<E> elements, LocalDate start, LocalDate end);
 }

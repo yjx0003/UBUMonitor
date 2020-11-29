@@ -10,7 +10,6 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
@@ -42,10 +41,10 @@ public class Radar extends Plotly {
 
 		createUserTraces(data, users, gradeItems);
 
-		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
+		boolean generalActive = getGeneralButtonlActive();
 		createMeanTrace(data, stats.getGeneralStats(), gradeItems, generalActive);
 
-		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
+		boolean groupActive = getGroupButtonActive();
 		createGroupTraces(data, getSelectedGroups(), gradeItems, stats, groupActive);
 	}
 

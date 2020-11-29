@@ -1,25 +1,29 @@
 package es.ubu.lsi.ubumonitor.view.chart.logs;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.apache.commons.csv.CSVPrinter;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
+import es.ubu.lsi.ubumonitor.model.log.FirstGroupBy;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
+import es.ubu.lsi.ubumonitor.util.LogAction;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 
-public class CumLine extends ChartjsLog {
+public class CumLine extends PlotlyLog {
 
 	public CumLine(MainController mainController) {
 		super(mainController, ChartType.CUM_LINE);
@@ -29,47 +33,109 @@ public class CumLine extends ChartjsLog {
 	}
 
 	@Override
-	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet) {
-
-		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
+	public <E> JSArray createData(List<E> typeLogs, DataSet<E> dataSet, List<EnrolledUser> selectedUsers,
+			LocalDate dateStart, LocalDate dateEnd, GroupByAbstract<?> groupBy) {
+		JSArray data = new JSArray();
 		List<EnrolledUser> enrolledUsers = getUsers();
 
-		LocalDate dateStart = datePickerStart.getValue();
-		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
+		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
 		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
 				dateStart, dateEnd);
 
 		Map<E, List<Double>> means = dataSet.getMeans(groupBy, enrolledUsers, typeLogs, dateStart, dateEnd);
 
-		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
+		createUsersTraces(data, selectedUsers, typeLogs, userCounts, rangeDates);
+		createMeanTrace(data, typeLogs, means, rangeDates, I18n.get("chartlabel.generalMean"));
 
-		JSObject data = new JSObject();
-
-		data.put("labels", createLabels(rangeDates));
-
-		JSArray datasets = new JSArray();
-
-		createEnrolledUsersDatasets(selectedUsers, typeLogs, userCounts, rangeDates, datasets);
-
-		createMean(typeLogs, means, rangeDates, datasets);
-
-		data.put("datasets", datasets);
-
-		return data.toString();
+		return data;
 	}
 
-	private <E> void createMean(List<E> typeLogs, Map<E, List<Double>> means, List<String> rangeDates,
-			JSArray datasets) {
-		JSObject dataset = new JSObject();
-		String generalMeanTranslate = I18n.get("chartlabel.generalMean");
-		dataset.putWithQuote("label", generalMeanTranslate);
-		dataset.put("borderColor", hex(generalMeanTranslate));
-		dataset.put("backgroundColor", rgba(generalMeanTranslate, OPACITY));
-		dataset.put("borderDash", "[" + mainConfiguration.getValue(MainConfiguration.GENERAL, "borderLength") + ","
-				+ mainConfiguration.getValue(MainConfiguration.GENERAL, "borderSpace") + "]");
-		dataset.put("hidden", !(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive"));
-		JSArray results = new JSArray();
+	@Override
+	public <E> JSObject createLayout(List<E> typeLogs, DataSet<E> dataSet, LocalDate dateStart, LocalDate dateEnd,
+			GroupByAbstract<?> groupBy) {
+		JSObject layout = new JSObject();
+
+		JSArray ticktext = new JSArray();
+
+		List<String> rangeDate = groupBy.getRangeString(dateStart, dateEnd);
+		for (String date : rangeDate) {
+			ticktext.addWithQuote(date);
+		}
+
+
+		JSObject xaxis = new JSObject();
+		Plotly.defaultAxisValues(xaxis, getXAxisTitle(), null);
+		xaxis.put("nticks", 20);
+		
+		
+		JSObject yaxis = new JSObject();
+		Plotly.defaultAxisValues(yaxis, getYAxisTitle(), "");
+		long max = getSuggestedMax(textFieldMax.getText());
+		yaxis.put("range", max == 0 ? null : "[0," + (max * 1.1) + "]");
+
+		layout.put("xaxis", xaxis);
+		layout.put("yaxis", yaxis);
+		layout.put("hovermode", "'closest'");
+		return layout;
+
+	}
+
+	private JSObject createTrace(String name, JSArray x, JSArray y, boolean visible, String dash) {
+		JSObject trace = new JSObject();
+		JSObject line = new JSObject();
+		JSObject marker = new JSObject();
+		trace.putWithQuote("name", name);
+		trace.put("type", "'scatter'");
+		trace.put("x", x);
+		trace.put("y", y);
+		trace.put("line", line);
+		trace.put("marker", marker);
+		trace.put("hovertemplate", "'<b>%{x}<br>%{data.name}: </b>%{y}<extra></extra>'");
+		if (!visible) {
+			trace.put("visible", "'legendonly'");
+		}
+
+		line.putWithQuote("dash", dash);
+
+		marker.put("color", rgb(name));
+		marker.put("size", 6);
+
+		return trace;
+	}
+
+	private <E> void createUsersTraces(JSArray data, List<EnrolledUser> selectedUsers, List<E> typeLogs,
+			Map<EnrolledUser, Map<E, List<Integer>>> userCounts, List<String> rangeDates) {
+
+		for (EnrolledUser selectedUser : selectedUsers) {
+			JSArray x = new JSArray();
+			JSArray y = new JSArray();
+
+			Map<E, List<Integer>> types = userCounts.get(selectedUser);
+
+			int result = 0;
+			for (int j = 0; j < rangeDates.size(); j++) {
+
+				for (E typeLog : typeLogs) {
+					List<Integer> times = types.get(typeLog);
+					result += times.get(j);
+				}
+
+				y.add(result);
+				x.addWithQuote(rangeDates.get(j));
+			}
+			JSObject trace = createTrace(selectedUser.getFullName(), x, y, true, "solid");
+			trace.put("userids", selectedUser.getId());
+			data.add(trace);
+
+		}
+
+	}
+
+	private <E> void createMeanTrace(JSArray data, List<E> typeLogs, Map<E, List<Double>> means,
+			List<String> rangeDates, String name) {
+
+		JSArray x = new JSArray();
+		JSArray y = new JSArray();
 		double cumResult = 0;
 		for (int j = 0; j < rangeDates.size(); j++) {
 			double result = 0;
@@ -78,79 +144,28 @@ public class CumLine extends ChartjsLog {
 				result += times.get(j);
 			}
 			cumResult += result;
-			results.add(cumResult);
+			x.addWithQuote(rangeDates.get(j));
+			y.add(Math.round(cumResult * 100) / 100.0);
 		}
-		dataset.put("data", results);
-		datasets.add(dataset);
-
-	}
-
-	private <E> void createEnrolledUsersDatasets(List<EnrolledUser> selectedUsers, List<E> typeLogs,
-			Map<EnrolledUser, Map<E, List<Integer>>> userCounts, List<String> rangeDates, JSArray datasets) {
-
-		for (EnrolledUser selectedUser : selectedUsers) {
-			JSObject dataset = new JSObject();
-			dataset.putWithQuote("label", selectedUser.getFullName());
-			dataset.put("borderColor", hex(selectedUser.getId()));
-			dataset.put("backgroundColor", rgba(selectedUser.getId(), OPACITY));
-
-			Map<E, List<Integer>> types = userCounts.get(selectedUser);
-			JSArray results = new JSArray();
-			long result = 0;
-			for (int j = 0; j < rangeDates.size(); j++) {
-
-				for (E typeLog : typeLogs) {
-					List<Integer> times = types.get(typeLog);
-					result += times.get(j);
-				}
-
-				results.add(Long.toString(result));
-			}
-			dataset.put("data", results);
-			datasets.add(dataset);
-
-		}
+		data.add(createTrace(name, x, y, getGeneralButtonlActive(), "dash"));
 
 	}
 
 	@Override
 	public String calculateMax() {
-		long maxYAxis = 1L;
-		List<EnrolledUser> users = getUsers();
-		if (tabComponent.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue()
-					.getComponents()
-					.getCumulativeMax(users, listViewComponent.getSelectionModel()
-							.getSelectedItems(), datePickerStart.getValue(), datePickerEnd.getValue());
-		} else if (tabEvent.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue()
-					.getComponentsEvents()
-					.getCumulativeMax(users, listViewEvent.getSelectionModel()
-							.getSelectedItems(), datePickerStart.getValue(), datePickerEnd.getValue());
-		} else if (tabSection.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue()
-					.getSections()
-					.getCumulativeMax(users, listViewSection.getSelectionModel()
-							.getSelectedItems(), datePickerStart.getValue(), datePickerEnd.getValue());
-		} else if (tabCourseModule.isSelected()) {
-			maxYAxis = choiceBoxDate.getValue()
-					.getCourseModules()
-					.getCumulativeMax(users, listViewCourseModule.getSelectionModel()
-							.getSelectedItems(), datePickerStart.getValue(), datePickerEnd.getValue());
-		}
+
+		long maxYAxis = selectionController.typeLogsAction(new LogAction<Long>() {
+
+			@Override
+			public <E extends Serializable, T extends Serializable> Long action(List<E> logType, DataSet<E> dataSet,
+					Function<GroupByAbstract<?>, FirstGroupBy<E, T>> function) {
+
+				return function.apply(choiceBoxDate.getValue())
+						.getCumulativeMax(getUsers(), logType, datePickerStart.getValue(), datePickerEnd.getValue());
+			}
+		});
+
 		return Long.toString(maxYAxis);
-	}
-
-	@Override
-	public void fillOptions(JSObject jsObject) {
-
-		jsObject.putWithQuote("typeGraph", "line");
-
-		jsObject.put("scales", "{yAxes:[{" + getYScaleLabel() + ",ticks:{suggestedMax:"
-				+ getSuggestedMax(textFieldMax.getText()) + ",stepSize:0}}],xAxes:[{" + getXScaleLabel() + "}]}");
-		jsObject.put("tooltips",
-				"{callbacks:{label:function(a,t){return t.datasets[a.datasetIndex].label+' : '+Math.round(100*a.yLabel)/100}}}");
-		
 	}
 
 	@Override

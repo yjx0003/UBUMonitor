@@ -62,4 +62,10 @@ public class DatasSetCourseModule implements DataSet<CourseModule> {
 			List<CourseModule> elements, LocalDate start, LocalDate end) {
 		return groupBy.getCourseModules().getUserTotalLogs(enrolledUsers, elements, start, end);
 	}
+
+	@Override
+	public Map<EnrolledUser, Map<CourseModule, Integer>> getUserLogsGroupedByLogElement(GroupByAbstract<?> groupBy,
+			List<EnrolledUser> enrolledUsers, List<CourseModule> elements, LocalDate start, LocalDate end) {
+		return groupBy.getCourseModules().getUserLogsGroupedByLogElement(enrolledUsers, elements, start, end);
+	}
 }

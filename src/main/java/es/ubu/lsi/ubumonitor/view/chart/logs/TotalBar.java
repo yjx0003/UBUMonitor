@@ -3,31 +3,27 @@ package es.ubu.lsi.ubumonitor.view.chart.logs;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.Group;
-import es.ubu.lsi.ubumonitor.model.Role;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
-import es.ubu.lsi.ubumonitor.view.chart.Chart;
+import es.ubu.lsi.ubumonitor.util.ManageDuplicate;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 
-public class TotalBar extends ChartjsLog {
+public class TotalBar extends PlotlyLog {
 
 	public TotalBar(MainController mainController) {
 		super(mainController, ChartType.TOTAL_BAR);
@@ -37,129 +33,129 @@ public class TotalBar extends ChartjsLog {
 		useGroupButton = true;
 	}
 
-	@Override
-	public void fillOptions(JSObject jsObject) {
-
-		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
-		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBar" : "bar");
-		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
-		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
-		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{stepSize:0}}],xAxes:[{" + xLabel
-				+ (useHorizontal ? ",ticks:{maxTicksLimit:10}" : "") + "}]}");
-		jsObject.put("onClick", null);
-		jsObject.put("tooltips", "{mode:'index'}");
-
-	}
 
 	@Override
-	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet) {
-
-		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-
-		LocalDate dateStart = datePickerStart.getValue();
-		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
+	public GroupByAbstract<?> getGroupBy() {
+		return actualCourse.getLogStats()
 				.getByType(TypeTimes.DAY);
-		Map<EnrolledUser, Map<E, List<Integer>>> map;
+	}
 
-		JSObject data = new JSObject();
-		data.put("labels", createLabels(typeLogs, dataSet));
+	@Override
+	public <E> JSArray createData(List<E> typeLogs, DataSet<E> dataSet, List<EnrolledUser> selectedUsers,
+			LocalDate dateStart, LocalDate dateEnd, GroupByAbstract<?> groupBy) {
 
-		JSArray datasets = new JSArray();
+		boolean horizontalMode = getConfigValue("horizontalMode");
+		Map<E, Integer> logCounts;
+		JSArray data = new JSArray();
 		if (!selectedUsers.isEmpty()) {
-			map = dataSet.getUserCounts(groupBy, selectedUsers, typeLogs, dateStart, dateEnd);
-			datasets.add(createDataset(I18n.get("text.selectedUsers"), typeLogs, map, false));
+			logCounts = getTypeLogsSum(typeLogs,
+					dataSet.getUserLogsGroupedByLogElement(groupBy, selectedUsers, typeLogs, dateStart, dateEnd));
+			data.add(createTrace(I18n.get("text.selectedUsers"), typeLogs, dataSet, logCounts, horizontalMode, true));
 		}
 
-		map = dataSet.getUserCounts(groupBy, getUsers(), typeLogs, dateStart, dateEnd);
-		datasets.add(createDataset(I18n.get("text.filteredusers"), typeLogs, map,
-				!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")));
+		// filtered users
+		logCounts = getTypeLogsSum(typeLogs,
+				dataSet.getUserLogsGroupedByLogElement(groupBy, getUsers(), typeLogs, dateStart, dateEnd));
+		data.add(createTrace(I18n.get("text.filteredusers"), typeLogs, dataSet, logCounts, horizontalMode,
+				getGeneralButtonlActive()));
 
-		Set<EnrolledUser> usersInRoles = getUsersInRoles(selectionUserController.getCheckComboBoxRole()
-				.getCheckModel()
-				.getCheckedItems());
+		// group users with the selected roles
+
 		for (Group group : getSelectedGroups()) {
-
-			map = dataSet.getUserCounts(groupBy, getUserWithRole(group.getEnrolledUsers(), usersInRoles), typeLogs,
-					dateStart, dateEnd);
-			datasets.add(createDataset(group.getGroupName(), typeLogs, map,
-					!(boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")));
-
+			logCounts = getTypeLogsSum(typeLogs,
+					dataSet.getUserLogsGroupedByLogElement(groupBy,
+							getUserWithRole(group.getEnrolledUsers(), getSelectedRoles()),
+							typeLogs, dateStart, dateEnd));
+			data.add(createTrace(group.getGroupName(), typeLogs, dataSet, logCounts, horizontalMode,
+					getGroupButtonActive()));
 		}
-
-		data.put("datasets", datasets);
-		return data.toString();
+		return data;
 	}
 
-	public Set<EnrolledUser> getUsersInRoles(Collection<Role> roles) {
-		return roles.stream()
-				.map(Role::getEnrolledUsers)
-				.flatMap(Set::stream)
-				.distinct()
-				.collect(Collectors.toSet());
-
-	}
-
-	public List<EnrolledUser> getUserWithRole(Collection<EnrolledUser> user, Set<EnrolledUser> usersInRoles) {
-
-		return user.stream()
-				.filter(usersInRoles::contains)
-				.collect(Collectors.toList());
-
-	}
-
-	public <E> JSArray createLabels(List<E> typeLogs, DataSet<E> dataSet) {
-		JSArray labels = new JSArray();
+	private <E> JSObject createTrace(String name, List<E> typeLogs, DataSet<E> dataSet, Map<E, Integer> logCounts,
+			boolean horizontalMode, boolean visible) {
+		JSObject trace = new JSObject();
+		JSArray x = new JSArray();
+		JSArray y = new JSArray();
+		ManageDuplicate manageDuplicate = new ManageDuplicate();
 		for (E typeLog : typeLogs) {
-			labels.addWithQuote(dataSet.translate(typeLog));
+			x.addWithQuote(manageDuplicate.getValue(dataSet.translate(typeLog)));
+			y.add(logCounts.get(typeLog));
 		}
-		return labels;
+
+		Plotly.createAxisValuesHorizontal(horizontalMode, trace, x, y);
+
+		trace.put("type", "'bar'");
+		trace.putWithQuote("name", name);
+		JSObject marker = new JSObject();
+		marker.put("color", rgba(name, 1.0));
+		trace.put("marker", marker);
+		trace.put("hovertemplate", "'<b>%{data.name}: </b>%{" + (horizontalMode ? "x" : "y") + "}<extra></extra>'");
+		if (!visible) {
+			trace.put("visible", "'legendonly'");
+		}
+
+		return trace;
 	}
 
-	public <E> JSObject createDataset(String label, List<E> typeLogs, Map<EnrolledUser, Map<E, List<Integer>>> map,
-			boolean hidden) {
-		List<DescriptiveStatistics> result = getTypeLogsStats(typeLogs, map);
+	@Override
+	public <E> JSObject createLayout(List<E> typeLogs, DataSet<E> dataSet, LocalDate dateStart, LocalDate dateEnd,
+			GroupByAbstract<?> groupBy) {
 
-		JSObject dataset = new JSObject();
-		dataset.putWithQuote("label", label);
-		dataset.put("backgroundColor", rgba(label, Chart.OPACITY));
-		dataset.put("borderColor", hex(label));
-		dataset.put("borderWidth", 1);
-		dataset.put("hidden", hidden);
-		JSArray dataArray = new JSArray();
+		boolean horizontalMode = getConfigValue("horizontalMode");
+		JSObject layout = new JSObject();
 
-		for (int i = 0; i < typeLogs.size(); i++) {
-			dataArray.add(result.get(i)
-					.getSum());
+		JSObject axis = new JSObject();
+		axis.put("showgrid", true);
+		axis.put("tickmode", "'array'");
+		axis.put("type", "'category'");
+		axis.put("tickson", "'boundaries'");
+	
+		JSObject xaxis = horizontalMode ? new JSObject() : axis;
+
+		JSObject yaxis = horizontalMode ? axis : new JSObject();
+
+		if (horizontalMode) {
+			Plotly.defaultAxisValues(xaxis, getYAxisTitle(), "");
+			Plotly.defaultAxisValues(yaxis, getXAxisTitle(), null);
+			yaxis.putAll(axis);
+		
+			layout.put("xaxis", yaxis);
+			layout.put("yaxis", xaxis);
+		} else {
+			Plotly.defaultAxisValues(xaxis, getXAxisTitle(), null);
+			Plotly.defaultAxisValues(yaxis, getYAxisTitle(), "");
+			xaxis.putAll(axis);
+			
+			layout.put("xaxis", xaxis);
+			layout.put("yaxis", yaxis);
 		}
-		dataset.put("data", dataArray);
+		
 
-		return dataset;
+		layout.put("barmode", "'group'");
+		layout.put("hovermode", "'x unified'");
+		return layout;
 	}
 
-	public <E> List<DescriptiveStatistics> getTypeLogsStats(List<E> typeLogs,
-			Map<EnrolledUser, Map<E, List<Integer>>> map) {
-		List<DescriptiveStatistics> result = Stream.generate(DescriptiveStatistics::new)
-				.limit(typeLogs.size())
-				.collect(Collectors.toList());
-		for (Map<E, List<Integer>> values : map.values()) {
-			for (int i = 0; i < typeLogs.size(); i++) {
-				List<Integer> counts = values.get(typeLogs.get(i));
-				DescriptiveStatistics descriptiveStatistics = result.get(i);
-				int sum = counts.stream()
-						.mapToInt(Integer::intValue)
-						.sum(); // sum all logs between days
-				descriptiveStatistics.addValue(sum);
+	private <E> Map<E, Integer> getTypeLogsSum(List<E> typeLogs, Map<EnrolledUser, Map<E, Integer>> map) {
+		Map<E, Integer> typeLogsCount = new HashMap<>();
+		for (E typeLog : typeLogs) {
+			int count = 0;
+			for (Map<E, Integer> values : map.values()) {
+				count += values.getOrDefault(typeLog, 0);
 			}
+			typeLogsCount.put(typeLog, count);
 		}
-		return result;
+		return typeLogsCount;
 	}
+
+	
 
 	@Override
 	public String getXAxisTitle() {
-		return tabPaneSelection.getSelectionModel()
+		return "<b>" + tabPaneSelection.getSelectionModel()
 				.getSelectedItem()
-				.getText();
+				.getText() + "</b>";
 
 	}
 
@@ -167,51 +163,46 @@ public class TotalBar extends ChartjsLog {
 	protected <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 
-		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
-		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
+		boolean generalActive = getGeneralButtonlActive();
+		boolean groupActive = getGroupButtonActive();
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
 				.getByType(TypeTimes.DAY);
-		Map<EnrolledUser, Map<E, List<Integer>>> map = dataSet.getUserCounts(groupBy, selectedUsers, typeLogs,
-				dateStart, dateEnd);
+		Map<EnrolledUser, Map<E, Integer>> map = dataSet.getUserLogsGroupedByLogElement(groupBy, selectedUsers,
+				typeLogs, dateStart, dateEnd);
 
-		List<DescriptiveStatistics> selectedUsersStats = getTypeLogsStats(typeLogs, map);
-		List<DescriptiveStatistics> filteredUsersStats = null;
+		Map<E, Integer> selectedUsersSum = getTypeLogsSum(typeLogs, map);
+		Map<E, Integer> filteredUsersSum = null;
 		if (generalActive) {
-			map = dataSet.getUserCounts(groupBy, getUsers(), typeLogs, dateStart, dateEnd);
-			filteredUsersStats = getTypeLogsStats(typeLogs, map);
+			map = dataSet.getUserLogsGroupedByLogElement(groupBy, getUsers(), typeLogs, dateStart, dateEnd);
+			filteredUsersSum = getTypeLogsSum(typeLogs, map);
 		}
-		List<List<DescriptiveStatistics>> groupStats = null;
+		List<Map<E, Integer>> groupStats = null;
 		if (groupActive) {
-			Set<EnrolledUser> usersInRoles = getUsersInRoles(selectionUserController.getCheckComboBoxRole()
-					.getCheckModel()
-					.getCheckedItems());
+
 			groupStats = new ArrayList<>();
 			for (Group group : getSelectedGroups()) {
-				map = dataSet.getUserCounts(groupBy, getUserWithRole(group.getEnrolledUsers(), usersInRoles), typeLogs,
-						dateStart, dateEnd);
-				groupStats.add(getTypeLogsStats(typeLogs, map));
+				map = dataSet.getUserLogsGroupedByLogElement(groupBy,
+						getUserWithRole(group.getEnrolledUsers(), getSelectedRoles()), typeLogs, dateStart, dateEnd);
+				groupStats.add(getTypeLogsSum(typeLogs, map));
 			}
 		}
 
 		boolean hasId = hasId();
-		for (int i = 0; i < typeLogs.size(); i++) {
-			E typeLog = typeLogs.get(i);
+		for (E typeLog : typeLogs) {
+
 			if (hasId) {
 				printer.print(typeLog.hashCode());
 			}
 			printer.print(typeLog);
-			printer.print((int) selectedUsersStats.get(i)
-					.getSum());
+			printer.print(selectedUsersSum.get(typeLog));
 			if (generalActive) {
-				printer.print((int) filteredUsersStats.get(i)
-						.getSum());
+				printer.print(filteredUsersSum.get(typeLog));
 			}
 			if (groupActive) {
-				for (List<DescriptiveStatistics> groupStat : groupStats) {
-					printer.print((int) groupStat.get(i)
-							.getSum());
+				for (Map<E, Integer> groupStat : groupStats) {
+					printer.print(groupStat.get(typeLog));
 				}
 			}
 
@@ -226,8 +217,8 @@ public class TotalBar extends ChartjsLog {
 				.getSelectedItem()
 				.getText();
 
-		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
-		boolean generalActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive");
+		boolean groupActive = getGroupButtonActive();
+		boolean generalActive = getGeneralButtonlActive();
 
 		List<String> list = new ArrayList<>();
 		if (hasId()) {
@@ -253,35 +244,31 @@ public class TotalBar extends ChartjsLog {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		List<EnrolledUser> filteredUsers = getUsers();
 
-		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
+		boolean groupActive = getGroupButtonActive();
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
 		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
 				.getByType(TypeTimes.DAY);
-		Map<EnrolledUser, Map<E, List<Integer>>> map = dataSet.getUserCounts(groupBy, filteredUsers, typeLogs,
-				dateStart, dateEnd);
+		Map<EnrolledUser, Map<E, Integer>> map = dataSet.getUserLogsGroupedByLogElement(groupBy, filteredUsers,
+				typeLogs, dateStart, dateEnd);
 		boolean hasId = hasId();
 		for (EnrolledUser enrolledUser : filteredUsers) {
 			for (E typeLog : typeLogs) {
-				List<Integer> list = map.get(enrolledUser)
+				int sum = map.get(enrolledUser)
 						.get(typeLog);
-				int sum = list.stream()
-						.mapToInt(Integer::intValue)
-						.sum();
+
 				printer.print(enrolledUser.getId());
 				printer.print(enrolledUser.getFullName());
 				if (hasId) {
 					printer.print(typeLog.hashCode());
 				}
 				printer.print(typeLog);
-				printer.print((int) sum);
+				printer.print(sum);
 				printer.print(selectedUsers.contains(enrolledUser) ? 1 : 0);
 
 				if (groupActive) {
-					Set<EnrolledUser> usersInRoles = getUsersInRoles(selectionUserController.getCheckComboBoxRole()
-							.getCheckModel()
-							.getCheckedItems());
+					Set<EnrolledUser> usersInRoles = getUserWithRole(getSelectedRoles());
 					for (Group group : getSelectedGroups()) {
 						printer.print(group.contains(enrolledUser) && usersInRoles.contains(enrolledUser) ? 1 : 0);
 					}
@@ -297,7 +284,7 @@ public class TotalBar extends ChartjsLog {
 				.getSelectedItem()
 				.getText();
 
-		boolean groupActive = mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive");
+		boolean groupActive = getGroupButtonActive();
 
 		List<String> list = new ArrayList<>();
 		list.add("userid");

@@ -3,12 +3,10 @@ package es.ubu.lsi.ubumonitor.view.chart.logs;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.csv.CSVPrinter;
-
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
@@ -16,87 +14,107 @@ import es.ubu.lsi.ubumonitor.model.LogLine;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
-import es.ubu.lsi.ubumonitor.util.DateTimeWrapper;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
+import es.ubu.lsi.ubumonitor.util.ManageDuplicate;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 
-public class Scatter extends ChartjsLog {
-
-	private DateTimeWrapper dateTimeWrapper;
+public class Scatter extends PlotlyLog {
 
 	public Scatter(MainController mainController) {
 		super(mainController, ChartType.SCATTER);
 		useLegend = true;
 		useRangeDate = true;
-		dateTimeWrapper = new DateTimeWrapper();
 	}
 
 	@Override
-	public void fillOptions(JSObject jsObject) {
-		LocalDate dateStart = datePickerStart.getValue();
-		LocalDate dateEnd = datePickerEnd.getValue();
-		jsObject.put("typeGraph", "'scatter'");
-		jsObject.put("onClick",
-				"function(t,a){let e=myChart.getElementAtEvent(t)[0];e&&javaConnector.dataPointSelection(myChart.data.datasets[e._datasetIndex].data[e._index].y)}");
-		jsObject.put("scales",
-				"{yAxes:[{type:'category'}],xAxes:[{type:'time',ticks:{min:'" + dateTimeWrapper.formatDate(dateStart)
-						+ "',max:'" + dateTimeWrapper.formatDate(dateEnd.plusDays(1)) + "',maxTicksLimit:10},time:{minUnit:'day',parser:'"
-						+ dateTimeWrapper.getPattern() + "'}}]}");
-
-		jsObject.put("tooltips",
-				"{callbacks:{label:function(l,a){return a.datasets[l.datasetIndex].label+': '+ l.xLabel}}}");
+	public GroupByAbstract<?> getGroupBy() {
+		return actualCourse.getLogStats()
+				.getByType(TypeTimes.DAY);
 	}
 
 	@Override
-	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet) {
-		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-
-		LocalDate dateStart = datePickerStart.getValue();
-		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = actualCourse.getLogStats().getByType(TypeTimes.DAY);
+	public <E> JSArray createData(List<E> typeLogs, DataSet<E> dataSet, List<EnrolledUser> selectedUsers,
+			LocalDate dateStart, LocalDate dateEnd, GroupByAbstract<?> groupBy) {
+		JSArray data = new JSArray();
 		Map<EnrolledUser, Map<E, List<LogLine>>> map = dataSet.getUserLogs(groupBy, selectedUsers, typeLogs, dateStart,
 				dateEnd);
-		Map<E, JSArray> dataMap = new HashMap<>();
-		JSObject data = new JSObject();
-		JSArray jsArray = new JSArray();
-		JSArray datasets = new JSArray();
-		jsArray.addAllWithQuote(selectedUsers);
-		data.put("labels", jsArray);
 
-		for (int i = 0; i < selectedUsers.size(); i++) {
-			Map<E, List<LogLine>> mapLogTypes = map.get(selectedUsers.get(i));
-			for (E logTye : typeLogs) {
-				jsArray = dataMap.computeIfAbsent(logTye, k -> new JSArray());
-				List<LogLine> logLines = mapLogTypes.get(logTye);
+		for (E typeLog : typeLogs) {
+			JSArray x = new JSArray();
+			JSArray y = new JSArray();
+			JSArray userids = new JSArray();
+			ManageDuplicate manageDuplicate = new ManageDuplicate();
+			for (EnrolledUser user : selectedUsers) {
+				String userFullName = manageDuplicate.getValue(user.getFullName());
+				List<LogLine> logLines = map.get(user)
+						.get(typeLog);
 				for (LogLine logLine : logLines) {
-					JSObject point = new JSObject();
-					point.putWithQuote("x",
-							dateTimeWrapper.format(logLine.getTime()));
-					point.put("y", i);
-					jsArray.add(point);
+					y.addWithQuote(userFullName);
+					x.addWithQuote(logLine.getTime()
+							.toLocalDateTime());
+					userids.add(user.getId());
 				}
-
 			}
+			
+			JSObject trace = createTrace(dataSet.translate(typeLog), x, y);
+			trace.put("userids", userids);
+			data.add(trace);
 		}
 
-		for (E logType : typeLogs) {
-			JSObject dataset = new JSObject();
-			dataset.putWithQuote("label", dataSet.translate(logType));
-			dataset.put("backgroundColor", hex(logType));
-			dataset.put("data", dataMap.get(logType));
-			datasets.add(dataset);
-		}
+		return data;
+	}
 
-		data.put("datasets", datasets);
-		return data.toString();
+
+	@Override
+	public <E> JSObject createLayout(List<E> typeLogs, DataSet<E> dataSet, LocalDate dateStart, LocalDate dateEnd,
+			GroupByAbstract<?> groupBy) {
+		JSObject layout = new JSObject();
+
+		JSObject xaxis = new JSObject();
+		JSArray range = new JSArray();
+		range.addWithQuote(dateStart);
+		range.addWithQuote(dateEnd);
+		Plotly.defaultAxisValues(xaxis, null, null);
+		xaxis.put("type", "'date'");
+		xaxis.put("range", range);
+
+		JSObject yaxis = new JSObject();
+		Plotly.defaultAxisValues(yaxis, null, null);
+		yaxis.put("autorange", "'reversed'");
+		yaxis.put("type", "'category'");
+
+		layout.put("xaxis", xaxis);
+		layout.put("yaxis", yaxis);
+
+		layout.put("hovermode", "'closest'");
+		return layout;
+	}
+
+	private JSObject createTrace(String name, JSArray x, JSArray y) {
+		JSObject trace = new JSObject();
+
+		JSObject marker = new JSObject();
+		trace.putWithQuote("name", name);
+		trace.put("type", "'scatter'");
+		trace.put("mode", "'markers'");
+		trace.put("x", x);
+		trace.put("y", y);
+		trace.put("marker", marker);
+		trace.put("hovertemplate", "'<b>%{data.name}<br>%{y}: </b>%{x}<extra></extra>'");
+
+		marker.put("color", rgb(name));
+
+		return trace;
 	}
 
 	@Override
 	protected <E> void exportCSV(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = actualCourse.getLogStats().getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
+				.getByType(TypeTimes.DAY);
 		List<?> rangeDates = groupBy.getRange(dateStart, dateEnd);
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
@@ -124,7 +142,8 @@ public class Scatter extends ChartjsLog {
 	protected String[] getCSVHeader() {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = actualCourse.getLogStats().getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
+				.getByType(TypeTimes.DAY);
 		List<String> range = groupBy.getRangeString(dateStart, dateEnd);
 		range.add(0, "userid");
 		range.add(1, "fullname");
@@ -136,7 +155,8 @@ public class Scatter extends ChartjsLog {
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = actualCourse.getLogStats().getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
+				.getByType(TypeTimes.DAY);
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
 				dateStart, dateEnd);
@@ -147,7 +167,7 @@ public class Scatter extends ChartjsLog {
 				List<Integer> times = types.get(type);
 				printer.print(selectedUser.getId());
 				printer.print(selectedUser.getFullName());
-				if(hasId()) {
+				if (hasId()) {
 					printer.print(type.hashCode());
 				}
 				printer.print(type);
@@ -162,12 +182,15 @@ public class Scatter extends ChartjsLog {
 	protected String[] getCSVDesglosedHeader() {
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = actualCourse.getLogStats().getByType(TypeTimes.DAY);
+		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
+				.getByType(TypeTimes.DAY);
 		List<String> list = new ArrayList<>();
 		list.add("userid");
 		list.add("fullname");
-		String selectedTab = tabPaneSelection.getSelectionModel().getSelectedItem().getText();
-		if(hasId()) {
+		String selectedTab = tabPaneSelection.getSelectionModel()
+				.getSelectedItem()
+				.getText();
+		if (hasId()) {
 			list.add(selectedTab + "_id");
 		}
 		list.add(selectedTab);

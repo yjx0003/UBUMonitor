@@ -10,7 +10,6 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
@@ -89,7 +88,8 @@ public class BoxPlot extends Plotly {
 		trace.putWithQuote("name", name);
 		trace.put("userids", userids);
 		trace.put("text", userNames);
-		trace.put("hovertemplate", getHorizontalModeHoverTemplate(useHorizontal));
+		trace.put("hovertemplate",  "'<b>%{" + (useHorizontal ? "y" : "x") + "}<br>%{text}: </b>%{"
+				+ (useHorizontal ? "x" : "y") + ":.2f}<extra></extra>'");
 		JSObject marker = new JSObject();
 		marker.put("color", rgb(name));
 		trace.put("marker", marker);
@@ -137,12 +137,12 @@ public class BoxPlot extends Plotly {
 				exportCSV(printer, enrolledUser, gradeItems, "selected users");
 
 			}
-			if ((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")) {
+			if (getGeneralButtonlActive()) {
 				exportCSV(printer, controller.getActualCourse()
 						.getEnrolledUsers(), gradeItems, "all");
 			}
 
-			if ((boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")) {
+			if (getGroupButtonActive()) {
 				for (Group group : getSelectedGroups()) {
 					exportCSV(printer, group.getEnrolledUsers(), gradeItems, group.getGroupName());
 				}

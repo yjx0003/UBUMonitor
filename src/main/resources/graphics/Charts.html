@@ -10,7 +10,6 @@
    <script type="text/javascript" src="./lib/moment-with-locale.js"></script>
    <script type="text/javascript" src="./lib/Chart.js"></script>
    <script type="text/javascript" src="./lib/color-hash.js"></script>
-   <script type="text/javascript" src="./lib/apexcharts.js"></script>
    <script type="text/javascript" src="./lib/chartjs-chart-box-and-violin-plot.js"></script>
    <script type="text/javascript" src="./lib/chartjs-plugin-datalabels.js"></script>
    <script type="text/javascript" src="./lib/tabulator.js"></script>
@@ -57,7 +56,6 @@
       var colorHash;
       var ctx;
       var myChart;
-      var myApexChart;
       var table;
       var visNetwork;
       var visTimeline;
@@ -82,9 +80,6 @@
                typeGraph: "line"
             }
          });
-
-         myApexChart = new ApexCharts(document.getElementById('apexchartsDiv'), { tab: "log_tabs", button: "btnHeatmap", typeGraph: "heatmap", tooltip: { x: { show: !0 } }, plotOptions: { heatmap: { enableShades: !1, colorScale: { ranges: [{ from: -1, to: 0, color: "#f78880", name: "0" }, { from: 1, to: 1, color: "#f4e3ae" }, { from: 1, to: 1, color: "#fff033" }, { from: 1, to: 1, color: "#b5ff33" }, { from: 1, to: 1, color: "#38e330" }, { from: 2, to: Number.POSITIVE_INFINITY, color: "#67b92e", name: "+2" }] } } }, legend: { position: "top" }, chart: { type: "heatmap", events: { dataPointSelection: function (o, e, t) { javaConnector.dataPointSelection(t.w.config.series.length - 1 - t.seriesIndex) } }, height: height, toolbar: { show: !1 }, animations: { enabled: !1 } }, dataLabels: { formatter: function (o, e) { return 0 == o ? "" : o }, style: { colors: ["#000000"] } }, colors: ["#00A100"], series: [], xaxis: { categories: [] } });
-         myApexChart.render();
 
          table = new Tabulator("#tabulatorDiv", {
 
@@ -171,22 +166,6 @@
       }
 
 
-      function updateApexCharts(series, categories, options) {
-         hiddenCharts("apexcharts", options);
-
-         options.series = series;
-         options.xaxis.categories = categories;
-         options.legend.show = options.useLegend && options.legendActive;
-         if (myApexChart.w.config.chart.type == options.typeGraph) {
-
-            myApexChart.updateOptions(options);
-         } else {
-
-            myApexChart.destroy();
-            myApexChart = new ApexCharts(document.getElementById('apexchartsDiv'), options);
-            myApexChart.render();
-         }
-      }
 
       function updateChartjs(dataset, options) {
          hiddenCharts("chartjs", options);
@@ -285,8 +264,6 @@
 
       function hiddenCharts(value, options) {
 
-
-         displayButton('apexchartsDiv', value == "apexcharts");
          displayButton('chart-container', value == "chartjs");
          displayButton('tabulatorDiv', value == "tabulator");
          displayButton('visNetworkDiv', value == "visNetwork");
@@ -456,7 +433,6 @@
    <div id="chart-container" class="chart-container">
       <canvas id="myChart"></canvas>
    </div>
-   <div id="apexchartsDiv" class="apexchart-container"></div>
    <div id="tabulatorDiv"></div>
    <div id="visNetworkDiv" class="visDiv"></div>
    <div id="visTimelineDiv" class="visDiv"></div>

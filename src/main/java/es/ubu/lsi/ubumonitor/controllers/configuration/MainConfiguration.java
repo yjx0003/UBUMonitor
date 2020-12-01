@@ -146,13 +146,13 @@ public class MainConfiguration {
 		createItem(ChartType.ACTIVITIES_TABLE, "fourthInterval", Color.web("#b5ff33"));
 
 		createItem(ChartType.BUBBLE, "limitDays", 14);
-		createItem(ChartType.BUBBLE, "diagonalColor", Color.TRANSPARENT);
+		createItem(ChartType.BUBBLE, "diagonalColor", Color.web("#f2f2f2"));
 		createItem(ChartType.BUBBLE, "firstInterval", Color.web("#b5ff33"));
 		createItem(ChartType.BUBBLE, "secondInterval", Color.web("#fff033"));
 		createItem(ChartType.BUBBLE, "thirdInterval", Color.web("#f4e3ae"));
 		createItem(ChartType.BUBBLE, "fourthInterval", Color.web("#f78880"));
 
-		createItem(ChartType.BUBBLE_LOGARITHMIC, "diagonalColor", Color.TRANSPARENT);
+		createItem(ChartType.BUBBLE_LOGARITHMIC, "diagonalColor", Color.web("#f2f2f2"));
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "firstInterval", Color.web("#b5ff33"));
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "secondInterval", Color.web("#fff033"));
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "thirdInterval", Color.web("#f4e3ae"));

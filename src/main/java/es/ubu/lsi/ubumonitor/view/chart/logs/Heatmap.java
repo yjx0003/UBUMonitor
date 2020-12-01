@@ -34,6 +34,11 @@ public class Heatmap extends PlotlyLog {
 		useLegend = true;
 
 	}
+	
+	@Override
+	public String getOnClickFunction() {
+		return "function(n){if(n!==undefined&&n.points!==undefined){let t=n.points[counter++%n.points.length];if(t!==undefined&&t.data!==undefined&&t.data.userids){javaConnector.dataPointSelection(t.data.userids[t.pointIndex[0]]||t.data.userids||-100);}}}";
+	}
 
 	@Override
 	public <E> JSArray createData(List<E> typeLogs, DataSet<E> dataSet, List<EnrolledUser> selectedUsers,
@@ -137,6 +142,13 @@ public class Heatmap extends PlotlyLog {
 		annotations = null;
 		return layout;
 
+	}
+
+	@Override
+	public void fillOptions(JSObject jsObject) {
+		JSObject config = Plotly.createConfig();
+		config.put("scrollZoom", false);
+		Plotly.fillOptions(jsObject, config, getOnClickFunction());
 	}
 
 	@Override

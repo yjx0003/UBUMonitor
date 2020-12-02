@@ -75,7 +75,6 @@ public class MeanDiff extends PlotlyLog {
 		JSObject yaxis = new JSObject();
 		Plotly.defaultAxisValues(yaxis, getYAxisTitle(), "");
 		long maxText = getSuggestedMax(textFieldMax.getText());
-		System.out.println(max);
 		yaxis.put("range", maxText == 0 ? "[" + (-max * 1.1) + "," + (max * 1.1) + "]"
 				: "[" + (-maxText * 1.1) + "," + (maxText * 1.1) + "]");
 

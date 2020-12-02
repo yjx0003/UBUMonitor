@@ -56,8 +56,8 @@ public class Parsers {
 		Document doc = Jsoup.parse(text);
 		Elements elements = doc.select("img[src]");
 		elements.attr("src", alternativeImg);
-		elements.attr("height", "128");
-		elements.attr("width", "128");
+		elements.attr("height", "64");
+		elements.attr("width", "64");
 		return doc.toString();
 	}
 

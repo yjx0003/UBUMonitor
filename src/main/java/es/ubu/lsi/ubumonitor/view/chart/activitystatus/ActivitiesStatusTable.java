@@ -53,6 +53,15 @@ public class ActivitiesStatusTable extends Tabulator {
 		jsObject.put("field", "'name'");
 		jsObject.put("frozen", true);
 		array.add(jsObject);
+		
+		jsObject = new JSObject();
+		jsObject.putWithQuote("title", I18n.get("chartlabel.progress"));
+		jsObject.putWithQuote("field", "progress");
+		jsObject.putWithQuote("formatter", "progress");
+		jsObject.put("width", 100);
+		jsObject.putWithQuote("frozen", true);
+		jsObject.put("formatterParams", getProgressParam(courseModules.size()));
+		array.add(jsObject.toString());
 
 		JSObject formatterParams = new JSObject();
 		formatterParams.put("allowEmpty", true);
@@ -81,14 +90,7 @@ public class ActivitiesStatusTable extends Tabulator {
 			array.add(jsObject.toString());
 		}
 
-		jsObject = new JSObject();
-		jsObject.putWithQuote("title", I18n.get("chartlabel.progress"));
-		jsObject.putWithQuote("field", "progress");
-		jsObject.putWithQuote("formatter", "progress");
-		jsObject.put("width", 80);
-		jsObject.putWithQuote("frozen", true);
-		jsObject.put("formatterParams", getProgressParam(courseModules.size()));
-		array.add(jsObject.toString());
+		
 		return array.toString();
 	}
 

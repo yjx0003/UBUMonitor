@@ -101,18 +101,24 @@ public class PopulateEnrolledUsersCourse {
 		enrolledUser.setCity(user.optString(Constants.CITY));
 		enrolledUser.setCountry(user.optString(Constants.COUNTRY));
 		enrolledUser.setProfileimageurl(user.optString(Constants.PROFILEIMAGEURL));
+		enrolledUser.setProfileimageurlsmall(user.optString(Constants.PROFILEIMAGEURLSMALL));
 		enrolledUser.setEmail(user.optString(Constants.EMAIL));
 		
-		String imageUrl = user.optString(Constants.PROFILEIMAGEURL, null);
-		enrolledUser.setProfileimageurlsmall(imageUrl);
-
-		if (imageUrl != null) {
-			byte[] imageBytes = UtilMethods.downloadImage(imageUrl);
-			enrolledUser.setImageBytes(imageBytes);
-			enrolledUser.setImageBase64("data:image/png;base64,"+Base64.getEncoder().encodeToString(imageBytes));
-			
-		}
+		
 		return enrolledUser;
+	}
+	
+	public void downloadUserimages(Collection<EnrolledUser> enrolledUsers) {
+		for(EnrolledUser enrolledUser: enrolledUsers) {
+			String imageUrl = enrolledUser.getProfileimageurl();
+
+			if (imageUrl != null) {
+				byte[] imageBytes = UtilMethods.downloadImage(imageUrl);
+				enrolledUser.setImageBytes(imageBytes);
+				enrolledUser.setImageBase64("data:image/png;base64,"+Base64.getEncoder().encodeToString(imageBytes));
+				
+			}
+		}
 	}
 
 	private List<Group> createGroups(JSONArray jsonArray) {

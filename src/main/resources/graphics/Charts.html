@@ -10,15 +10,14 @@
    <script type="text/javascript" src="./lib/moment-with-locale.js"></script>
    <script type="text/javascript" src="./lib/Chart.js"></script>
    <script type="text/javascript" src="./lib/color-hash.js"></script>
-   <script type="text/javascript" src="./lib/html2canvas.js"></script>
-   <script type="text/javascript" src="./lib/apexcharts.js"></script>
    <script type="text/javascript" src="./lib/chartjs-chart-box-and-violin-plot.js"></script>
    <script type="text/javascript" src="./lib/chartjs-plugin-datalabels.js"></script>
    <script type="text/javascript" src="./lib/tabulator.js"></script>
    <script type="text/javascript" src="./lib/visNetwork.js"></script>
    <script type="text/javascript" src="./lib/visTimeline.js"></script>
-   <script type="text/javascript" src="./lib/wordcloud2.js"></script>
    <script type="text/javascript" src="./lib/plotly.js"></script>
+   <script type="text/javascript" src="./locales/plotly-es.js"></script>
+   <script type="text/javascript" src="./lib/wheelzoom.js"></script>
    <script type="text/javascript">
       Chart.defaults.global.animation.duration = 0;
       Chart.defaults.global.elements.line.fill = false;
@@ -57,7 +56,6 @@
       var colorHash;
       var ctx;
       var myChart;
-      var myApexChart;
       var table;
       var visNetwork;
       var visTimeline;
@@ -83,9 +81,6 @@
             }
          });
 
-         myApexChart = new ApexCharts(document.getElementById('apexchartsDiv'), { tab: "log_tabs", button: "btnHeatmap", typeGraph: "heatmap", tooltip: { x: { show: !0 } }, plotOptions: { heatmap: { enableShades: !1, colorScale: { ranges: [{ from: -1, to: 0, color: "#f78880", name: "0" }, { from: 1, to: 1, color: "#f4e3ae" }, { from: 1, to: 1, color: "#fff033" }, { from: 1, to: 1, color: "#b5ff33" }, { from: 1, to: 1, color: "#38e330" }, { from: 2, to: Number.POSITIVE_INFINITY, color: "#67b92e", name: "+2" }] } } }, legend: { position: "top" }, chart: { type: "heatmap", events: { dataPointSelection: function (o, e, t) { javaConnector.dataPointSelection(t.w.config.series.length - 1 - t.seriesIndex) } }, height: height, toolbar: { show: !1 }, animations: { enabled: !1 } }, dataLabels: { formatter: function (o, e) { return 0 == o ? "" : o }, style: { colors: ["#000000"] } }, colors: ["#00A100"], series: [], xaxis: { categories: [] } });
-         myApexChart.render();
-
          table = new Tabulator("#tabulatorDiv", {
 
             tab: "activity_tabs",
@@ -105,7 +100,8 @@
 
          visNetwork = new vis.Network(document.getElementById('visNetworkDiv'), {}, {});
          visTimeline = new vis.Timeline(document.getElementById('visTimelineDiv'), {}, {});
-
+         wheelzoom(document.getElementById('wordCloud'));
+         document.getElementById('wordCloud').ondblclick = function () { document.getElementById('wordCloud').dispatchEvent(new CustomEvent('wheelzoom.reset')) };
 
       }
 
@@ -170,30 +166,9 @@
       }
 
 
-      function updateApexCharts(series, categories, options) {
-         hiddenCharts("apexcharts", options);
-
-         options.series = series;
-         options.xaxis.categories = categories;
-         options.legend.show = options.useLegend && options.legendActive;
-         if (myApexChart.w.config.chart.type == options.typeGraph) {
-
-            myApexChart.updateOptions(options);
-         } else {
-
-            myApexChart.destroy();
-            myApexChart = new ApexCharts(document.getElementById('apexchartsDiv'), options);
-            myApexChart.render();
-         }
-      }
 
       function updateChartjs(dataset, options) {
          hiddenCharts("chartjs", options);
-
-         imageButton("btnLegend", options.legendActive);
-         imageButton("btnMean", options.generalActive);
-         imageButton("btnGroupMean", options.groupActive);
-
 
          if (!options.legend) {
             options.legend = {};
@@ -242,7 +217,7 @@
          visNetwork.on("stabilizationIterationsDone", function () {
             visNetwork.setOptions({ physics: { enabled: options.physicsAfterDraw == undefined || options.physicsAfterDraw } });
          });
-   
+
       }
 
 
@@ -257,38 +232,43 @@
       }
 
       function updateWordCloud(image, options) {
-         hiddenCharts("canvas-container", options);
+         hiddenCharts("wordCloud", options);
          wordCloud = document.getElementById('wordCloud');
-         imageWordCloud = new Image();
-         imageWordCloud.onload = function () {
-            wordCloud.height = imageWordCloud.height;
-            wordCloud.width = imageWordCloud.width;
 
-            wordCloud.getContext("2d").drawImage(imageWordCloud, 0, 0);
 
-         };
+         wordCloud.src = image;
 
-         imageWordCloud.src = image;
 
 
       }
 
-      function updatePlotly(data, layout) {
-         hiddenCharts("plotly", layout);
+      function updatePlotly(plot, options) {
+         hiddenCharts("plotly", options);
 
-         layout.showLegend = layout.useLegend && layout.legendActive;
-         Plotly.newPlot('plotlyDiv', data, layout, { displaylogo: false, responsive: true, modeBarButtonsToRemove: ["toImage"] });
+         plot.layout.showlegend = options.useLegend && options.legendActive;
+         if (options.config) {
+            plot.config = options.config;
+         }
+
+         Plotly.react('plotlyDiv', plot);
+
+
+         if (options.onClick) {
+            document.getElementById('plotlyDiv').removeAllListeners('plotly_click');
+            document.getElementById('plotlyDiv').on('plotly_click', options.onClick);
+         }
+
+
+
       }
 
       function hiddenCharts(value, options) {
 
-
-         displayButton('apexchartsDiv', value == "apexcharts");
          displayButton('chart-container', value == "chartjs");
          displayButton('tabulatorDiv', value == "tabulator");
          displayButton('visNetworkDiv', value == "visNetwork");
          displayButton('visTimelineDiv', value == "visTimeline");
-         displayButton('canvas-container', value == "canvas-container");
+         displayButton('wordCloud', value == "wordCloud");
          displayButton('plotlyDiv', value == "plotly");
          displayButton('plotlyEmptyDiv', value == "plotly");
 
@@ -352,25 +332,26 @@
       function hideLegend() {
          imageButton("btnLegend", javaConnector.toggleLegend());
 
-         javaConnector.updateChartFromJS();
+         javaConnector.updateChart();
       }
 
       function showGeneralMean() {
 
          imageButton("btnMean", javaConnector.toggleGeneral());
 
-         javaConnector.updateChartFromJS();
+         javaConnector.updateChart();
       }
 
       function showGroupMean() {
 
          imageButton("btnGroupMean", javaConnector.toggleGroup());
 
-         javaConnector.updateChartFromJS();
+         javaConnector.updateChart();
       }
 
 
       function exportChartjs() {
+         myChart.update();
          return myChart.toBase64Image();
       }
 
@@ -379,22 +360,13 @@
          return document.getElementById(id).toDataURL();
       }
 
-      function genericExport(id) {
-         html2canvas(document.getElementById(id), { logging: false }).then(function (canvas) {
-            javaConnector.saveImage(canvas.toDataURL());
-         }).catch(function (error) {
-            javaConnector.showErrorWindow("Cannot download image:" + error.message);
-         })
-
-      }
-
       function generateButtons(buttons) {
          for (const value of buttons) {
             let button = document.createElement("BUTTON");
             button.id = value.id;
             button.innerText = value.text;
             button.className = "btn";
-            button.setAttribute("onClick", "javascript: javaConnector.updateCharts(this.id);");
+            button.setAttribute("onClick", "javaConnector.updateChartFromJS(this.id);");
             type = document.getElementById(value.type)
 
             if (!type) {
@@ -425,6 +397,7 @@
       function setLocale(newLocale) {
          locale = newLocale;
          moment.locale(newLocale);
+         Plotly.setPlotConfig({ locale: newLocale });
       }
       function colorRGB(color) {
          let colors = colorHash.rgb(color);
@@ -440,17 +413,9 @@
       function colorHEX(color) {
          return colorHash.hex(color);
       }
-      function formatBoxplot(text, value) {
-         return text + ": " + value.toLocaleString(locale, { maximumFractionDigits: 2 });
-      }
 
-      function boxplotLabel(t, a, o, e) {
-         if (-1 == e) return [formatBoxplot("n", a.datasets[t.datasetIndex].data[t.index].length), formatBoxplot("min ", o.min), formatBoxplot("whiskerMin", o.whiskerMin), formatBoxplot("q1", o.q1), formatBoxplot("median", o.median), formatBoxplot("q3", o.q3), formatBoxplot("whiskerMax", o.whiskerMax), formatBoxplot("max", o.max)];
-         var r, s = a.datasets[t.datasetIndex].users[0] instanceof Array ? a.datasets[t.datasetIndex].users[t.index] : a.datasets[t.datasetIndex].users,
-            n = a.datasets[t.datasetIndex].data[t.index],
-            x = [];
-         for (r = 0; r < n.length; r++) n[r] == o.outliers[e] && x.push(s[r] + " (" + n[r].toLocaleString(locale, { maximumFractionDigits: 2 }) + ")");
-         return x
+      function toPercentage(value, max) {
+         return value + '/' + max + ' (' + (value / max).toLocaleString(locale, { style: 'percent', maximumFractionDigits: 2 }) + ")";
       }
    </script>
 </head>
@@ -468,11 +433,10 @@
    <div id="chart-container" class="chart-container">
       <canvas id="myChart"></canvas>
    </div>
-   <div id="apexchartsDiv" class="apexchart-container"></div>
    <div id="tabulatorDiv"></div>
    <div id="visNetworkDiv" class="visDiv"></div>
    <div id="visTimelineDiv" class="visDiv"></div>
-   <div id="canvas-container" class="canvas-container"><canvas id="wordCloud" class="canvas-word-cloud"></canvas></div>
+   <img class="center" id="wordCloud">
 </body>
 
 </html>

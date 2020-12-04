@@ -66,7 +66,7 @@ public class VisualizationJavaConnector extends JavaConnectorAbstract {
 		DatePicker datePickerEnd = visualizationController.getDatePickerEnd();
 		SelectionController selectionController = mainController.getSelectionController();
 		TreeView<GradeItem> treeViewGradeItem = selectionController.getTvwGradeReport();
-		addChart(new Heatmap(mainController, webView));
+		addChart(new Heatmap(mainController));
 		addChart(new Stackedbar(mainController));
 		addChart(new Line(mainController, treeViewGradeItem));
 		addChart(new Radar(mainController, treeViewGradeItem));
@@ -75,23 +75,23 @@ public class VisualizationJavaConnector extends JavaConnectorAbstract {
 		addChart(new BoxPlot(mainController, selectionController.getTvwGradeReport()));
 		addChart(new TotalBar(mainController));
 		addChart(new Violin(mainController, treeViewGradeItem));
-		addChart(new GradeReportTable(mainController, treeViewGradeItem, webView));
+		addChart(new GradeReportTable(mainController, treeViewGradeItem));
 		addChart(new CumLine(mainController));
 		addChart(new MeanDiff(mainController));
 		addChart(new ActivitiesStatusTable(mainController, datePickerStart, datePickerEnd,
-				selectionController.getListViewActivity(), webView));
+				selectionController.getListViewActivity()));
 		addChart(new CalificationBar(mainController, treeViewGradeItem));
 		addChart(new SessionChart(mainController));
 		addChart(new BoxplotLogTime(mainController));
 		addChart(new ViolinLogTime(mainController));
-		addChart(new TableLog(mainController, webView));
+		addChart(new TableLog(mainController));
 		addChart(new BoxplotLog(mainController));
 		addChart(new ViolinLog(mainController));
 		currentChart = charts.get(ChartType.getDefault(Tabs.LOGS));
 	}
 
 	@Override
-	public void updateCharts(String typeChart) {
+	public void updateChartFromJS(String typeChart) {
 		Chart chart = charts.get(ChartType.valueOf(typeChart));
 		if (tabLogs.isSelected()) {
 			currentChartLogs.setMax(visualizationController.getTextFieldMax()
@@ -136,7 +136,7 @@ public class VisualizationJavaConnector extends JavaConnectorAbstract {
 				.setVisible(currentChart.isUseGroupBy());
 	}
 
-	public void updateChart(boolean calculateMax) {
+	public void updateCharts(boolean calculateMax) {
 		super.updateChart();
 		if (calculateMax) {
 			setMax();
@@ -146,7 +146,7 @@ public class VisualizationJavaConnector extends JavaConnectorAbstract {
 
 	@Override
 	public void updateChart() {
-		updateChart(true);
+		updateCharts(true);
 
 	}
 
@@ -224,9 +224,5 @@ public class VisualizationJavaConnector extends JavaConnectorAbstract {
 		return currentChartActivityCompletion;
 	}
 
-	@Override
-	public void updateChartFromJS() {
-		manageOptions();
-		currentChart.update();
-	}
+	
 }

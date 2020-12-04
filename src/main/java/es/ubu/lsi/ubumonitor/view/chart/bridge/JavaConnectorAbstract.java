@@ -19,6 +19,7 @@ import javafx.scene.web.WebView;
 
 public abstract class JavaConnectorAbstract implements JavaConnector {
 
+
 	protected WebEngine webEngine;
 	protected Map<ChartType, Chart> charts;
 	protected MainConfiguration mainConfiguration;
@@ -133,6 +134,7 @@ public abstract class JavaConnectorAbstract implements JavaConnector {
 
 	@Override
 	public void addChart(Chart chart) {
+		chart.setWebView(webView);
 		chart.setWebViewChartsEngine(webEngine);
 		chart.setMainConfiguration(mainConfiguration);
 		chart.setActualCourse(actualCourse);
@@ -140,7 +142,8 @@ public abstract class JavaConnectorAbstract implements JavaConnector {
 	}
 
 	@Override
-	public void updateCharts(String typeChart) {
+	public void updateChartFromJS(String typeChart) {
+
 		Chart chart = charts.get(ChartType.valueOf(typeChart));
 		if (currentChart.getChartType() != chart.getChartType()) {
 			currentChart.clear();

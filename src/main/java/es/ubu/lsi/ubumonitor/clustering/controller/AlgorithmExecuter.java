@@ -31,7 +31,7 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
  *
  */
 public class AlgorithmExecuter {
-
+	
 	private Clusterer<UserData> clusterer;
 	private Distance distance;
 	private List<UserData> usersData;
@@ -65,15 +65,16 @@ public class AlgorithmExecuter {
 		if (remove.size() != data.size()) {
 			for (UserData userData : usersData) {
 				for (int i = remove.size() - 1; i >= 0; i--) {
-					userData.removeDatum(i);
+					userData.removeDatum(remove.get(i));
 				}
 			}
 		}
 	}
 
 	private boolean checkData(List<UserData> usersData, List<Datum> data, int j) {
+		Number value = data.get(j).getValue();
 		for (int i = 1; i < usersData.size(); i++) {
-			if (!data.get(j).getValue().equals(usersData.get(i).getData().get(j).getValue())) {
+			if (!usersData.get(i).getData().get(j).getValue().equals(value)) {
 				return false;
 			}
 		}
@@ -100,7 +101,7 @@ public class AlgorithmExecuter {
 	 * @return lista de agrupaciones
 	 */
 	public List<ClusterWrapper> execute(int iterations, int dimension, boolean filter) {
-
+		
 		if (usersData.size() < 2)
 			throw new IllegalStateException("clustering.error.notUsers");
 

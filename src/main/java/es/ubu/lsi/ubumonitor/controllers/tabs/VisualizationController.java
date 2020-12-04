@@ -2,6 +2,8 @@ package es.ubu.lsi.ubumonitor.controllers.tabs;
 
 import java.time.LocalDate;
 
+import es.ubu.lsi.ubumonitor.controllers.Controller;
+import es.ubu.lsi.ubumonitor.controllers.DateController;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.SelectionController;
 import es.ubu.lsi.ubumonitor.controllers.WebViewAction;
@@ -39,16 +41,12 @@ public class VisualizationController extends WebViewAction {
 	private ChoiceBox<GroupByAbstract<?>> choiceBoxDate;
 
 	@FXML
-	private GridPane dateGridPane;
-	@FXML
 	private GridPane gridPaneOptionLogs;
 
+	
 	@FXML
-	private DatePicker datePickerStart;
-
-	@FXML
-	private DatePicker datePickerEnd;
-
+	private DateController dateController;
+	
 	private VisualizationJavaConnector javaConnector;
 
 	private SelectionController selectionController;
@@ -106,8 +104,11 @@ public class VisualizationController extends WebViewAction {
 			}
 		});
 
-		datePickerStart.setValue(actualCourse.getStart());
-		datePickerEnd.setValue(actualCourse.getEnd());
+		DatePicker datePickerStart = getDatePickerStart();
+		DatePicker datePickerEnd = getDatePickerEnd();
+		
+		datePickerStart.setValue(actualCourse.getStart(Controller.getInstance().getUpdatedCourseData().toLocalDate()));
+		datePickerEnd.setValue(actualCourse.getEnd(Controller.getInstance().getUpdatedCourseData().toLocalDate()));
 
 		datePickerStart.setOnAction(event -> applyFilterLogs());
 		datePickerEnd.setOnAction(event -> applyFilterLogs());
@@ -152,6 +153,37 @@ public class VisualizationController extends WebViewAction {
 		return contextMenu;
 
 	}
+	
+	public void bindDatePicker(WebViewAction webViewAction, DatePicker otherStart, DatePicker otherEnd) {
+		DatePicker datePickerStart = getDatePickerStart();
+		DatePicker datePickerEnd = getDatePickerEnd();
+		
+		otherStart.setValue(datePickerStart.getValue());
+		otherEnd.setValue(datePickerEnd.getValue());
+
+		otherStart.setOnAction(event -> webViewAction.updateChart());
+		otherEnd.setOnAction(event -> webViewAction.updateChart());
+
+		otherStart.setDayCellFactory(picker -> new DateCell() {
+			@Override
+			public void updateItem(LocalDate date, boolean empty) {
+				super.updateItem(date, empty);
+				setDisable(empty || date.isAfter(datePickerEnd.getValue()));
+			}
+		});
+		otherEnd.setDayCellFactory(picker -> new DateCell() {
+			@Override
+			public void updateItem(LocalDate date, boolean empty) {
+				super.updateItem(date, empty);
+				setDisable(empty || date.isBefore(datePickerStart.getValue()) || date.isAfter(LocalDate.now()));
+			}
+		});
+		otherStart.valueProperty()
+				.bindBidirectional(datePickerStart.valueProperty());
+		otherEnd.valueProperty()
+				.bindBidirectional(datePickerEnd.valueProperty());
+
+	}
 
 	/**
 	 * Actualiza la escala maxima del eje y de los graficos de logs.
@@ -161,7 +193,7 @@ public class VisualizationController extends WebViewAction {
 	private void updateMaxScale() {
 		if (webEngine.getLoadWorker()
 				.getState() == Worker.State.SUCCEEDED && textFieldMax.isFocused())
-			javaConnector.updateChart(false);
+			javaConnector.updateCharts(false);
 
 	}
 
@@ -191,7 +223,7 @@ public class VisualizationController extends WebViewAction {
 
 	@Override
 	public void updateListViewEnrolledUser() {
-		javaConnector.updateChart(false);
+		javaConnector.updateCharts(false);
 	}
 
 	@Override
@@ -290,15 +322,15 @@ public class VisualizationController extends WebViewAction {
 	}
 
 	public GridPane getDateGridPane() {
-		return dateGridPane;
+		return dateController.getDateGridPane();
 	}
 
 	public DatePicker getDatePickerStart() {
-		return datePickerStart;
+		return dateController.getDatePickerStart();
 	}
 
 	public DatePicker getDatePickerEnd() {
-		return datePickerEnd;
+		return dateController.getDatePickerEnd();
 	}
 
 	

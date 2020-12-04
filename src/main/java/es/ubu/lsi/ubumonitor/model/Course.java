@@ -530,27 +530,28 @@ public class Course implements Serializable {
 				.collect(Collectors.toList());
 	}
 
-	public LocalDate getStart() {
+	public LocalDate getStart(LocalDate lastCourseUpdate) {
 		LOGGER.debug("Fecha de inicio del curso por el servidor: {}", startDate);
 		if(startDate == null) {
-			return getEnd().minusYears(1);
+			return getEnd(lastCourseUpdate).minusYears(1);
 		}
 		if (startDate.getEpochSecond() == 0) {
-			return getEnd();
+			return getEnd(lastCourseUpdate);
 		}
 
 		return startDate.isBefore(Instant.now()) ? LocalDateTime.ofInstant(startDate, logs.getZoneId())
 				.toLocalDate() : LocalDate.now();
 	}
 
-	public LocalDate getEnd() {
+	public LocalDate getEnd(LocalDate lastCourseUpdate) {
 		LOGGER.debug("Fecha de fin del curso por el servidor: {}", endDate);
 		if (endDate == null || endDate.getEpochSecond() == 0) {
-			return LocalDate.now();
+			return lastCourseUpdate;
 		}
 
-		return endDate.isBefore(Instant.now()) ? LocalDateTime.ofInstant(endDate, logs.getZoneId())
-				.toLocalDate() : LocalDate.now();
+		LocalDate courseEndLocalDate = endDate.atZone(ZoneId.systemDefault()).toLocalDate();
+		
+		return courseEndLocalDate.isBefore(lastCourseUpdate) ? courseEndLocalDate: lastCourseUpdate;
 
 	}
 

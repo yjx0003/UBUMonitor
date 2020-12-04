@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+
+<head>
+    <title>Charts</title>
+    <script type="text/javascript" src="./lib/plotly.js"></script>
+    <script type="text/javascript">
+     
+        var data = [{
+            type: 'table',
+            header: {
+                values: [],
+                align: ["left", "center"],
+                line: {width: 1, color: '#506784'},
+                fill: {color: '#119DFF'},
+                font: {family: "Arial", size:14, color: "white"},
+                height: 40
+            },
+            cells: {
+                values: [],
+                align: ["left", "center"],
+                line: { color: "#506784", width: 1 },
+                fill: { color: ['#25FEFD', 'white'] },
+                font: { family: "Arial", weight:'bold', size:14,  color: ["#506784"] },
+                
+                height: 30
+            }
+        }]
+
+       
+        function update(header, cells){
+            data[0].header.values = header;
+            data[0].cells.values = cells;
+            Plotly.newPlot('myDiv', data, {responsive: true}, {displayModeBar: false});
+        }
+    </script>
+</head>
+
+<body>
+    <div id='myDiv' style="height: 95vh">
+        <!-- Plotly chart will be drawn inside this DIV -->
+    </div>
+
+</body>

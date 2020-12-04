@@ -23,7 +23,6 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
-import javafx.scene.web.WebView;
 
 public class TableLog extends TabulatorLogs {
 
@@ -39,8 +38,8 @@ public class TableLog extends TabulatorLogs {
 
 	private DateTimeWrapper dateTimeWrapper;
 
-	public TableLog(MainController mainController, WebView webView) {
-		super(mainController, ChartType.TABLE_LOG, webView);
+	public TableLog(MainController mainController) {
+		super(mainController, ChartType.TABLE_LOG);
 		dateTimeWrapper = new DateTimeWrapper();
 		useRangeDate = true;
 	}
@@ -141,7 +140,7 @@ public class TableLog extends TabulatorLogs {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 
 		jsObject.put("invalidOptionWarnings", false);
 		jsObject.put("tooltipsHeader", true);
@@ -151,7 +150,7 @@ public class TableLog extends TabulatorLogs {
 		jsObject.putWithQuote("layout", "fitDataStretch");
 		jsObject.putWithQuote("layoutColumnsOnNewData", true);
 		jsObject.put("rowClick", "function(e,row){javaConnector.dataPointSelection(row._row.data." + ID + ");}");
-		return jsObject;
+	
 	}
 
 	@Override

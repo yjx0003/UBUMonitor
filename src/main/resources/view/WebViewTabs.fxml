@@ -10,14 +10,19 @@
             <fx:include fx:id="visualization" source="tabs/Visualization.fxml" />
          </content>
       </Tab>
-      <Tab fx:id="riskTab" closable="false" text="%tab.risk">
+      <Tab fx:id="multiTab" text="%tab.multi">
          <content>
-            <fx:include fx:id="risk" source="tabs/Risk.fxml" />
+            <fx:include fx:id="multi" source="tabs/Multi.fxml" />
          </content>
       </Tab>
       <Tab fx:id="forumTab" text="%tab.forum">
          <content>
             <fx:include fx:id="forum" source="tabs/ForumView.fxml" />
+         </content>
+      </Tab>
+      <Tab fx:id="riskTab" closable="false" text="%tab.risk">
+         <content>
+            <fx:include fx:id="risk" source="tabs/Risk.fxml" />
          </content>
       </Tab>
       <Tab fx:id="calendarEventTab" text="%tab.calendarevent">

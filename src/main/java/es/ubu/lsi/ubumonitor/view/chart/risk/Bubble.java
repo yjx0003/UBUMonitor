@@ -7,9 +7,12 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -21,10 +24,10 @@ import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
-import es.ubu.lsi.ubumonitor.view.chart.Chartjs;
+import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 import javafx.scene.paint.Color;
 
-public class Bubble extends Chartjs {
+public class Bubble extends Plotly {
 
 	public Bubble(MainController mainController) {
 		super(mainController, ChartType.BUBBLE);
@@ -34,148 +37,155 @@ public class Bubble extends Chartjs {
 	}
 
 	@Override
-	public void exportCSV(String path) throws IOException {
-		ZonedDateTime updateTime = Controller.getInstance()
-				.getUpdatedCourseData();
-		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader("userid", "fullname",
-				"lastCourseAccess", "lastMoodleAcess", "diffCourseAccess", "diffMoodleAccess"))) {
-			for (EnrolledUser enrolledUser : getSelectedEnrolledUser()) {
-				printer.printRecord(enrolledUser.getId(), enrolledUser.getFullName(),
-						Controller.DATE_TIME_FORMATTER.format(enrolledUser.getLastcourseaccess()
-								.atZone(ZoneId.systemDefault())),
-						Controller.DATE_TIME_FORMATTER.format(enrolledUser.getLastaccess()
-								.atZone(ZoneId.systemDefault())),
-						ChronoUnit.DAYS.between(enrolledUser.getLastcourseaccess(), updateTime),
-						ChronoUnit.DAYS.between(enrolledUser.getLastaccess(), updateTime));
-
-			}
-		}
-
+	public String getOnClickFunction() {
+		
+		return Plotly.MULTIPLE_USER_ON_CLICK_FUNCTION;
 	}
-
+	
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
-
-		int limit = mainConfiguration.getValue(this.chartType, "limitDays");
-
-		jsObject.putWithQuote("typeGraph", "bubble");
-		JSObject callbacks = new JSObject();
-
-		callbacks.put("beforeTitle", String.format("function(e,t){return'%s'+(%d==e[0].xLabel?'>'+%d:e[0].xLabel)}",
-				I18n.get("label.course"), limit, limit));
-		callbacks.put("title", String.format("function(e,t){return'%s'+(%d==e[0].yLabel?'>'+%d:e[0].yLabel)}",
-				I18n.get("text.moodle"), limit, limit));
-		callbacks.put("label", "function(e,t){return t.datasets[e.datasetIndex].data[e.index].users}");
-		jsObject.put("tooltips", "{callbacks:" + callbacks + "}");
-
-		JSObject scales = new JSObject();
-
-		JSObject ticks = new JSObject();
-		ticks.put("min", 0);
-		ticks.put("max", limit);
-		ticks.put("callback", "function(e,t,n){return " + limit + "==e?'>'+e:e}");
-
-		scales.put("yAxes", "[{" + getYScaleLabel() + ",ticks:" + ticks + "}]");
-		scales.put("xAxes", "[{" + getXScaleLabel() + ",ticks:" + ticks + "}]");
-		jsObject.put("scales", scales);
-		jsObject.put("layout", "{padding:{right:50,left:50,top:50,bottom:50}}");
-		jsObject.put("plugins",
-				"{datalabels:{display:true,font:{style:'italic',weight:'bold'},formatter:function(a,t){return a.users.length}}}");
-
-		jsObject.put("onClick",
-				"function(t,e){let n=myChart.getElementsAtEventForMode(t,'nearest',{intersect:!0});if(n.length>0){let t=n[0],e=t._chart.config.data.datasets[t._datasetIndex].data[t._index].usersId;javaConnector.dataPointSelection(e[counter%e.length]),counter++}}");
-
-		jsObject.put("elements",
-				"{point:{radius:function(a){var t=a.dataset.data[a.dataIndex];return a.chart.width/24*t.v/100+5}}}");
-		return jsObject;
-	}
-
-	@Override
-	public void update() {
-		String dataset = createDataset(getSelectedEnrolledUser());
-		JSObject options = getOptions();
-
-		webViewChartsEngine.executeScript(String.format("updateChartjs(%s,%s)", dataset, options));
-	}
-
-	private String createDataset(List<EnrolledUser> selectedEnrolledUser) {
-
-		int limit = mainConfiguration.getValue(this.chartType, "limitDays");
+	public void createData(JSArray data) {
+		List<EnrolledUser> selectedEnrolledUser = getSelectedEnrolledUser();
+		int limit = getConfigValue("limitDays");
 		Map<Long, Map<Long, List<EnrolledUser>>> lastAccess = createLastAccess(selectedEnrolledUser, limit);
-		JSObject data = new JSObject();
-
-		JSArray datasets = new JSArray();
 
 		long p25 = Math.round(0.25 * limit);
 		long p50 = Math.round(0.50 * limit);
 		long p75 = Math.round(0.75 * limit);
-		Color c25 = mainConfiguration.getValue(chartType, "firstInterval");
-		Color c50 = mainConfiguration.getValue(chartType, "secondInterval");
-		Color c75 = mainConfiguration.getValue(chartType, "thirdInterval");
-		Color c100 = mainConfiguration.getValue(chartType, "fourthInterval");
+		Color c25 = getConfigValue("firstInterval");
+		Color c50 = getConfigValue("secondInterval");
+		Color c75 = getConfigValue("thirdInterval");
+		Color c100 = getConfigValue("fourthInterval");
 
-		JSObject dataset25 = contructDataset(String.format("[0, %d)", p25), c25);
-		JSObject dataset50 = contructDataset(String.format("[%d, %d)", p25, p50), c50);
-		JSObject dataset75 = contructDataset(String.format("[%d, %d)", p50, p75), c75);
-		JSObject dataset100 = contructDataset(String.format("[%d, ∞)", p75), c100);
+		JSObject trace25 = createTrace(String.format("[0, %d)", p25), c25);
+		JSObject trace50 = createTrace(String.format("[%d, %d)", p25, p50), c50);
+		JSObject trace75 = createTrace(String.format("[%d, %d)", p50, p75), c75);
+		JSObject trace100 = createTrace(String.format("[%d, ∞)", p75), c100);
+		JSObject diagonalLine = createDiagonalLineTrace(limit, colorToRGB(getConfigValue("diagonalColor")));
+
+		data.add(diagonalLine);
+		data.add(trace25);
+		data.add(trace50);
+		data.add(trace75);
+		data.add(trace100);
 
 		for (Map.Entry<Long, Map<Long, List<EnrolledUser>>> entry : lastAccess.entrySet()) {
-			long x = entry.getKey();
+			long xValue = entry.getKey();
 			Map<Long, List<EnrolledUser>> map = entry.getValue();
 			for (Map.Entry<Long, List<EnrolledUser>> entryUsers : map.entrySet()) {
-				long y = entryUsers.getKey();
+				long yValue = entryUsers.getKey();
 
-				JSArray dataArray;
-
-				if (x < p25) {
-					dataArray = (JSArray) dataset25.get("data");
-				} else if (x < p50) {
-					dataArray = (JSArray) dataset50.get("data");
-				} else if (x < p75) {
-					dataArray = (JSArray) dataset75.get("data");
+				JSObject trace;
+				if (xValue < p25) {
+					trace = trace25;
+				} else if (xValue < p50) {
+					trace = trace50;
+				} else if (xValue < p75) {
+					trace = trace75;
 				} else {
-					dataArray = (JSArray) dataset100.get("data");
+					trace = trace100;
 				}
+				List<EnrolledUser> users = map.getOrDefault(yValue, Collections.emptyList());
+				JSArray x = (JSArray) trace.get("x");
+				JSArray y = (JSArray) trace.get("y");
+				JSArray text = (JSArray) trace.get("text");
+				JSArray allUserNames = (JSArray) trace.get("customdata");
+				JSArray allUserIds = (JSArray) trace.get("userids");
+				JSArray size = (JSArray) ((JSObject) trace.get("marker")).get("size");
 
-				JSObject jsObject = new JSObject();
-				jsObject.put("x", x);
-				jsObject.put("y", y);
-				jsObject.put("v", entryUsers.getValue()
-						.size() * 5);
-				JSArray users = new JSArray();
+				x.add(xValue);
+				y.add(yValue);
+				text.add(users.size());
+				size.add(users.size() * 5);
+
+				StringBuilder usersName = new StringBuilder();
 				JSArray usersId = new JSArray();
-				entryUsers.getValue()
-						.forEach(u -> {
-							users.addWithQuote(u.getFullName());
-							usersId.add(u.getId());
-						});
-				jsObject.put("users", users);
-				jsObject.put("usersId", usersId);
-				dataArray.add(jsObject);
+				users.forEach(u -> {
+					usersName.append(u.getFullName());
+					usersName.append("<br>");
+					usersId.add(u.getId());
+				});
+				allUserNames.addWithQuote(usersName);
+				allUserIds.add(usersId);
 			}
 
 		}
-		if (!((JSArray) dataset25.get("data")).isEmpty())
-			datasets.add(dataset25);
-		if (!((JSArray) dataset50.get("data")).isEmpty())
-			datasets.add(dataset50);
-		if (!((JSArray) dataset75.get("data")).isEmpty())
-			datasets.add(dataset75);
-		if (!((JSArray) dataset100.get("data")).isEmpty())
-			datasets.add(dataset100);
-		data.put("datasets", datasets);
-		return data.toString();
+
 	}
 
-	private JSObject contructDataset(String label, Color color) {
-		JSObject dataset = new JSObject();
-		dataset.putWithQuote("label", label);
-		dataset.put("backgroundColor", colorToRGB(color, 0.2));
-		dataset.put("borderColor", colorToRGB(color));
-		dataset.put("data", new JSArray());
-		return dataset;
+	public static JSObject createDiagonalLineTrace(int limit, String color) {
+		List<Integer> values = IntStream.rangeClosed(0, limit)
+				.boxed()
+				.collect(Collectors.toList());
+		JSObject trace = new JSObject();
+		trace.put("mode", "'lines'");
+		trace.put("hoverinfo", "'none'");
+		trace.put("showlegend", false);
+		JSObject marker = new JSObject();
+
+		marker.put("color", color);
+		trace.put("marker", marker);
+		trace.put("x", values);
+		trace.put("y", values);
+		return trace;
 	}
 
+	@Override
+	public void createLayout(JSObject layout) {
+
+		int limit = getConfigValue("limitDays");
+
+		JSArray ticktext = new JSArray();
+		for (int i = 0; i < limit; ++i) {
+
+			ticktext.addWithQuote(i);
+
+		}
+		ticktext.addWithQuote("+" + limit);
+
+		JSObject xaxis = new JSObject();
+		defaultAxisValues(xaxis, getXAxisTitle(), null);
+		createCategoryAxis(xaxis, ticktext);
+
+		JSObject yaxis = new JSObject();
+		defaultAxisValues(yaxis, getYAxisTitle(), null);
+		createCategoryAxis(yaxis, ticktext);
+
+		layout.put("xaxis", xaxis);
+		layout.put("yaxis", yaxis);
+		layout.put("hovermode", "'closest'");
+
+	}
+
+	private JSObject createTrace(String name, Color color) {
+		JSObject trace = new JSObject();
+		trace.put("type", "'scatter'");
+		trace.put("mode", "'markers+text'");
+		trace.putWithQuote("name", name);
+		trace.put("text", new JSArray());
+		trace.put("x", new JSArray());
+		trace.put("y", new JSArray());
+		JSObject marker = new JSObject();
+		marker.put("size", new JSArray());
+		marker.put("color", colorToRGB(color, 0.2));
+		JSObject line = new JSObject();
+		line.put("width", 2);
+		line.put("color", colorToRGB(color));
+		marker.put("line", line);
+		trace.put("marker", marker);
+		trace.put("customdata", new JSArray());
+		trace.put("userids", new JSArray());
+		trace.put("hovertemplate", "'<b>" + I18n.get("label.course") + " </b>%{x}<br><b>" + I18n.get("text.moodle")
+				+ " </b>%{y}<br><br>%{customdata}<extra></extra>'");
+		return trace;
+	}
+
+	/**
+	 * Create map with the instant last course access then server last access
+	 * 
+	 * @param selectedEnrolledUser selected users
+	 * @param limit                limit value for user not enter
+	 * @return map
+	 */
 	public Map<Long, Map<Long, List<EnrolledUser>>> createLastAccess(List<EnrolledUser> selectedEnrolledUser,
 			int limit) {
 		ZonedDateTime lastLogTime = Controller.getInstance()
@@ -197,15 +207,6 @@ public class Bubble extends Chartjs {
 	}
 
 	@Override
-	public int onClick(int userid) {
-		EnrolledUser user = Controller.getInstance()
-				.getDataBase()
-				.getUsers()
-				.getById(userid);
-		return getUsers().indexOf(user);
-	}
-
-	@Override
 	public String getXAxisTitle() {
 
 		return MessageFormat.format(super.getXAxisTitle(), Controller.getInstance()
@@ -219,5 +220,25 @@ public class Bubble extends Chartjs {
 		return MessageFormat.format(super.getYAxisTitle(), Controller.getInstance()
 				.getUpdatedCourseData()
 				.format(Controller.DATE_TIME_FORMATTER));
+	}
+
+	@Override
+	public void exportCSV(String path) throws IOException {
+		ZonedDateTime updateTime = Controller.getInstance()
+				.getUpdatedCourseData();
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader("userid", "fullname",
+				"lastCourseAccess", "lastMoodleAcess", "diffCourseAccess", "diffMoodleAccess"))) {
+			for (EnrolledUser enrolledUser : getSelectedEnrolledUser()) {
+				printer.printRecord(enrolledUser.getId(), enrolledUser.getFullName(),
+						Controller.DATE_TIME_FORMATTER.format(enrolledUser.getLastcourseaccess()
+								.atZone(ZoneId.systemDefault())),
+						Controller.DATE_TIME_FORMATTER.format(enrolledUser.getLastaccess()
+								.atZone(ZoneId.systemDefault())),
+						ChronoUnit.DAYS.between(enrolledUser.getLastcourseaccess(), updateTime),
+						ChronoUnit.DAYS.between(enrolledUser.getLastaccess(), updateTime));
+
+			}
+		}
+
 	}
 }

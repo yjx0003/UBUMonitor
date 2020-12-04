@@ -5,7 +5,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -25,7 +24,6 @@ import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Tabulator;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
-import javafx.scene.web.WebView;
 
 public class ActivitiesStatusTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActivitiesStatusTable.class);
@@ -35,8 +33,8 @@ public class ActivitiesStatusTable extends Tabulator {
 	private ListView<CourseModule> listViewActivity;
 
 	public ActivitiesStatusTable(MainController mainController, DatePicker datePickerStart, DatePicker datePickerEnd,
-			ListView<CourseModule> listViewActivity, WebView webView) {
-		super(mainController, ChartType.ACTIVITIES_TABLE, webView);
+			ListView<CourseModule> listViewActivity) {
+		super(mainController, ChartType.ACTIVITIES_TABLE);
 		this.datePickerStart = datePickerStart;
 		this.datePickerEnd = datePickerEnd;
 		this.listViewActivity = listViewActivity;
@@ -55,6 +53,15 @@ public class ActivitiesStatusTable extends Tabulator {
 		jsObject.put("field", "'name'");
 		jsObject.put("frozen", true);
 		array.add(jsObject);
+		
+		jsObject = new JSObject();
+		jsObject.putWithQuote("title", I18n.get("chartlabel.progress"));
+		jsObject.putWithQuote("field", "progress");
+		jsObject.putWithQuote("formatter", "progress");
+		jsObject.put("width", 100);
+		jsObject.putWithQuote("frozen", true);
+		jsObject.put("formatterParams", getProgressParam(courseModules.size()));
+		array.add(jsObject.toString());
 
 		JSObject formatterParams = new JSObject();
 		formatterParams.put("allowEmpty", true);
@@ -68,7 +75,7 @@ public class ActivitiesStatusTable extends Tabulator {
 
 		for (CourseModule courseModule : courseModules) {
 			jsObject = new JSObject();
-			jsObject.putWithQuote("align", "center");
+			jsObject.putWithQuote("hozAlign", "center");
 			jsObject.put("tooltip", true);
 
 			jsObject.putWithQuote("formatter", "tickCross");
@@ -83,13 +90,7 @@ public class ActivitiesStatusTable extends Tabulator {
 			array.add(jsObject.toString());
 		}
 
-		jsObject = new JSObject();
-		jsObject.putWithQuote("title", I18n.get("chartlabel.progress"));
-		jsObject.putWithQuote("field", "progress");
-		jsObject.putWithQuote("formatter", "progress");
-		jsObject.putWithQuote("frozen", true);
-		jsObject.put("formatterParams", getProgressParam(courseModules.size()));
-		array.add(jsObject.toString());
+		
 		return array.toString();
 	}
 
@@ -101,16 +102,14 @@ public class ActivitiesStatusTable extends Tabulator {
 		jsObject.put("legend", String
 				.format("function(value){return value+'/'+%s +' ('+Math.round(value/%s*100||0)+'%%)';}", max, max));
 
-		jsObject.putWithQuote("legendAlign", "center");
+		jsObject.putWithQuote("hozAlign", "center");
 		JSArray jsArray = new JSArray();
 
-		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "firstInterval")));
-		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "secondInterval")));
-		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "thirdInterval")));
-		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "fourthInterval")));
-		jsArray.add(colorToRGB(mainConfiguration.getValue(getChartType(), "moreMax")));
-		jsObject.put("color",
-				String.format(Locale.ROOT, "function(e){return %s[e/%f|0]}", jsArray.toString(), max / 4.0));
+		jsArray.add(colorToRGB(getConfigValue("firstInterval")));
+		jsArray.add(colorToRGB(getConfigValue("secondInterval")));
+		jsArray.add(colorToRGB(getConfigValue("thirdInterval")));
+		jsArray.add(colorToRGB(getConfigValue("fourthInterval")));
+		jsObject.put("color", jsArray);
 		return jsObject.toString();
 	}
 
@@ -187,7 +186,7 @@ public class ActivitiesStatusTable extends Tabulator {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 
 		jsObject.put("invalidOptionWarnings", false);
 		jsObject.put("height", "height");
@@ -195,7 +194,7 @@ public class ActivitiesStatusTable extends Tabulator {
 		jsObject.put("virtualDom", true);
 		jsObject.putWithQuote("layout", "fitColumns");
 		jsObject.put("rowClick", "function(e,row){javaConnector.dataPointSelection(row.getPosition());}");
-		return jsObject;
+	
 	}
 
 	@Override
@@ -208,8 +207,7 @@ public class ActivitiesStatusTable extends Tabulator {
 				.atStartOfDay(ZoneId.systemDefault())
 				.toInstant();
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		List<CourseModule> courseModules = listViewActivity
-				.getSelectionModel()
+		List<CourseModule> courseModules = listViewActivity.getSelectionModel()
 				.getSelectedItems();
 		List<String> header = new ArrayList<>();
 		header.add("userid");

@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
@@ -23,14 +22,13 @@ import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Tabulator;
 import javafx.scene.control.TreeView;
-import javafx.scene.web.WebView;
 
 public class GradeReportTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GradeReportTable.class);
 	private TreeView<GradeItem> treeViewGradeItem;
 
-	public GradeReportTable(MainController mainController, TreeView<GradeItem> treeViewGradeItem, WebView webView) {
-		super(mainController, ChartType.GRADE_REPORT_TABLE, webView);
+	public GradeReportTable(MainController mainController, TreeView<GradeItem> treeViewGradeItem) {
+		super(mainController, ChartType.GRADE_REPORT_TABLE);
 		this.treeViewGradeItem = treeViewGradeItem;
 		useGeneralButton = true;
 		useGroupButton = true;
@@ -97,18 +95,18 @@ public class GradeReportTable extends Tabulator {
 			}
 			array.add(jsObject.toString());
 		}
-		if (useGeneralButton && (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "generalActive")) {
+		if (useGeneralButton && getGeneralButtonlActive()) {
 
 			array.add(addStats(gradeItems, I18n.get("chartlabel.generalMean"), stats.getGeneralStats()));
 		}
-		if (useGroupButton && (boolean) mainConfiguration.getValue(MainConfiguration.GENERAL, "groupActive")) {
-			for (Group group : slcGroup.getItems()) {
-				if (group != null) {
+		if (useGroupButton && getGroupButtonActive()) {
+			for (Group group : getSelectedGroups()) {
+				
 					array.add(addStats(gradeItems,
 							UtilMethods.escapeJavaScriptText(I18n.get("chart.mean")) + " " + group.getGroupName(),
 							stats.getGroupStats(group)));
 
-				}
+				
 			}
 		}
 
@@ -118,9 +116,14 @@ public class GradeReportTable extends Tabulator {
 	private String addStats(List<GradeItem> gradeItems, String name, Map<GradeItem, DescriptiveStatistics> stats) {
 		JSObject jsObject = new JSObject();
 
+		if (stats == null) {
+			return null;
+		}
+
 		jsObject.putWithQuote("name", name);
 		jsObject.putWithQuote("type", I18n.get("text.stats"));
 		for (GradeItem gradeItem : gradeItems) {
+
 			jsObject.put("ID" + gradeItem.getId(), adjustTo10(stats.get(gradeItem)
 					.getMean()));
 		}
@@ -128,7 +131,7 @@ public class GradeReportTable extends Tabulator {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 
 		jsObject.put("invalidOptionWarnings", false);
 		jsObject.put("height", "height");
@@ -137,21 +140,24 @@ public class GradeReportTable extends Tabulator {
 		jsObject.put("virtualDom", true);
 		jsObject.putWithQuote("layout", "fitColumns");
 		jsObject.put("rowClick", "function(e,row){javaConnector.dataPointSelection(row.getPosition());}");
-		return jsObject;
+		
 	}
 
 	private String getProgressParam() {
-		
+
 		JSObject jsObject = new JSObject();
 		jsObject.put("min", 0.0);
 		jsObject.put("max", 10);
 		jsObject.put("legend", "function(n){return 0==n?'0':n>0?n:void 0}");
 		jsObject.putWithQuote("legendAlign", "center");
 
+		JSArray colors = new JSArray();
+		for (int i = 0; i <= 10; ++i) {
+			colors.add(colorToRGB(getConfigValue("color" + i)));
+		}
+
 		jsObject.put("color",
-				"function(e){return e<" + mainConfiguration.getValue(MainConfiguration.GENERAL, "cutGrade") + "?"
-						+ colorToRGB(mainConfiguration.getValue(getChartType(), "failGradeColor")) + ":"
-						+ colorToRGB(mainConfiguration.getValue(getChartType(), "passGradeColor")) + "}");
+				"function(e){var colorsProgress=" + colors + ";return e>0? colorsProgress[Math.floor(e)]:''}");
 		return jsObject.toString();
 	}
 

@@ -120,7 +120,7 @@ External **JavaScript** libraries are included in  [resources/graphics/lib/](res
   * [Github](https://github.com/plotly/plotly.js)
   * [CDNJS](https://cdnjs.com/libraries/plotly.js)
 * [Tabulator](http://tabulator.info/)
-  * Versión: **4.6.3**
+  * Versión: **4.8.2**
   * [Github](https://github.com/olifolkerd/tabulator)
   * [CDNJS](https://cdnjs.com/libraries/tabulator)
 * [Vis Network](https://visjs.github.io/vis-network/docs/network/)

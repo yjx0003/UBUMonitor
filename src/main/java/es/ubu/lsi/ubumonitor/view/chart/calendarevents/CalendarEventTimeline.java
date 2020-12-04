@@ -30,15 +30,14 @@ import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.VisTimeline;
 import javafx.scene.control.ListView;
-import javafx.scene.web.WebView;
 
 public class CalendarEventTimeline extends VisTimeline {
 	private ListView<CourseModule> listViewCourseModule;
-	private DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.SHORT);
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL,
+			FormatStyle.SHORT);
 
-	public CalendarEventTimeline(MainController mainController, WebView webView,
-			ListView<CourseModule> listViewCourseModule) {
-		super(mainController, ChartType.CALENDAR_EVENT_TIMELINE, webView);
+	public CalendarEventTimeline(MainController mainController, ListView<CourseModule> listViewCourseModule) {
+		super(mainController, ChartType.CALENDAR_EVENT_TIMELINE);
 		this.listViewCourseModule = listViewCourseModule;
 	}
 
@@ -60,8 +59,10 @@ public class CalendarEventTimeline extends VisTimeline {
 					printer.print(cm.getCmid());
 					printer.print(cm.getModuleName());
 				}
-				printer.print(courseEvent.getUser().getId());
-				printer.print(courseEvent.getUser().getFullName());
+				printer.print(courseEvent.getUser()
+						.getId());
+				printer.print(courseEvent.getUser()
+						.getFullName());
 				printer.print(Controller.DATE_TIME_FORMATTER
 						.format(LocalDateTime.ofInstant(courseEvent.getTimestart(), ZoneId.systemDefault())));
 				printer.print(Controller.DATE_TIME_FORMATTER.format(LocalDateTime.ofInstant(courseEvent.getTimestart()
@@ -73,7 +74,7 @@ public class CalendarEventTimeline extends VisTimeline {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 		JSObject options = new JSObject();
 		Instant startDate = actualCourse.getStartDate();
 		if (!Instant.EPOCH.equals(startDate)) {
@@ -86,8 +87,9 @@ public class CalendarEventTimeline extends VisTimeline {
 		}
 		options.put("minHeight", "'90vh'");
 		options.put("tooltip", "{overflowMethod:'cap'}");
+		options.put("order", "function(a,b){return b.epoch-a.epoch}");
 		jsObject.put("options", options);
-		return jsObject;
+		
 	}
 
 	@Override
@@ -97,7 +99,6 @@ public class CalendarEventTimeline extends VisTimeline {
 		JSObject data = new JSObject();
 		data.put("items", createItems(calendarEvents));
 		data.put("groups", createGroups(calendarEvents));
-
 		webViewChartsEngine.executeScript("updateVisTimeline(" + data + "," + getOptions() + ")");
 	}
 
@@ -131,17 +132,18 @@ public class CalendarEventTimeline extends VisTimeline {
 
 			JSObject item = new JSObject();
 			item.put("id", open.getId());
-
+			item.put("epoch", open.getTimestart() == null ? Instant.MAX.getEpochSecond()
+					: open.getTimestart()
+							.getEpochSecond());
 			ModuleType moduleType = Optional.ofNullable(open)
 					.map(CourseEvent::getCourseModule)
 					.map(CourseModule::getModuleType)
 					.orElse(ModuleType.MODULE);
 
 			item.put("group", moduleType.ordinal());
-			
+
 			String image = "<img style='vertical-align:middle' src='../img/" + moduleType.getModName() + ".png'>	";
-			fillItem(image, item,  open, close);
-			
+			fillItem(image, item, open, close);
 
 			items.add(item);
 		}
@@ -150,8 +152,7 @@ public class CalendarEventTimeline extends VisTimeline {
 	}
 
 	private void fillItem(String image, JSObject item, CourseEvent open, CourseEvent close) {
-		
-		
+
 		item.putWithQuote("content", image + open.getName());
 
 		item.putWithQuote("start", open.getTimestart());
@@ -163,9 +164,7 @@ public class CalendarEventTimeline extends VisTimeline {
 		builder.append(open.getUser()
 				.getFullName());
 		builder.append("</b><br>");
-		
-		
-		
+
 		if (close != null) {
 			builder.append(LocalDateTime.ofInstant(open.getTimestart(), ZoneId.systemDefault())
 					.format(DATE_TIME_FORMATTER));

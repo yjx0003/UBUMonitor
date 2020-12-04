@@ -5,6 +5,8 @@ import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.commonmark.renderer.text.TextContentRenderer;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import es.ubu.lsi.ubumonitor.model.DescriptionFormat;
 
@@ -48,6 +50,15 @@ public class Parsers {
 		}
 		return text;
 			 
+	}
+	
+	public static String changeImages(String text, String alternativeImg) {
+		Document doc = Jsoup.parse(text);
+		Elements elements = doc.select("img[src]");
+		elements.attr("src", alternativeImg);
+		elements.attr("height", "64");
+		elements.attr("width", "64");
+		return doc.toString();
 	}
 
 }

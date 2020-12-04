@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,19 +14,17 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.Group;
-import es.ubu.lsi.ubumonitor.model.Role;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
-import es.ubu.lsi.ubumonitor.view.chart.gradeitems.BoxPlot;
+import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 
-public class BoxplotLogTime extends ChartjsLog {
+public class BoxplotLogTime extends PlotlyLog {
 
 	public BoxplotLogTime(MainController mainController) {
 		this(mainController, ChartType.BOXPLOT_LOG_TIME);
@@ -43,92 +39,105 @@ public class BoxplotLogTime extends ChartjsLog {
 	}
 
 	@Override
-	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet) {
-		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-		boolean groupActive = controller.getMainConfiguration()
-				.getValue(MainConfiguration.GENERAL, "groupActive");
+	public <E> JSArray createData(List<E> typeLogs, DataSet<E> dataSet, List<EnrolledUser> selectedUsers,
+			LocalDate dateStart, LocalDate dateEnd, GroupByAbstract<?> groupBy) {
 
-		LocalDate dateStart = datePickerStart.getValue();
-		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
-
-		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
-
-		JSObject data = new JSObject();
-
-		data.put("labels", createLabels(rangeDates));
-
-		JSArray datasets = new JSArray();
-
+		boolean groupActive = getGroupButtonActive();
+		boolean horizontalMode = getConfigValue("horizontalMode");
+		boolean standardDeviation = getConfigValue("standardDeviation");
+		boolean notched = getConfigValue("notched");
+		JSArray data = new JSArray();
+		List<String> range = groupBy.getRangeString(dateStart, dateEnd);
 		if (!selectedUsers.isEmpty()) {
 			Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, selectedUsers,
 					typeLogs, dateStart, dateEnd);
-			datasets.add(
-					createDataset(selectedUsers, userCounts, rangeDates.size(), I18n.get("text.selectedUsers"), false));
+			data.add(createTrace(selectedUsers, userCounts, range, I18n.get("text.selectedUsers"), true, horizontalMode,
+					notched, standardDeviation));
 		}
 
-		Set<EnrolledUser> userWithRole = getUsersInRoles(selectionUserController.getCheckComboBoxRole()
-				.getCheckModel()
-				.getCheckedItems());
-		for (Group group : slcGroup.getCheckModel()
-				.getCheckedItems()) {
-			if (group != null) {
-				List<EnrolledUser> users = getUserWithRole(group.getEnrolledUsers(), userWithRole);
-				Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, users, typeLogs,
-						dateStart, dateEnd);
+		for (Group group : getSelectedGroups()) {
 
-				datasets.add(createDataset(users, userCounts, rangeDates.size(), group.getGroupName(), !groupActive));
+			List<EnrolledUser> users = getUserWithRole(group.getEnrolledUsers(), getSelectedRoles());
+			Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, users, typeLogs,
+					dateStart, dateEnd);
+
+			data.add(createTrace(users, userCounts, range, group.getGroupName(), groupActive, horizontalMode, notched,
+					standardDeviation));
+
+		}
+
+		return data;
+	}
+
+	@Override
+	public <E> JSObject createLayout(List<E> typeLogs, DataSet<E> dataSet, LocalDate dateStart, LocalDate dateEnd,
+			GroupByAbstract<?> groupBy) {
+		JSObject layout = new JSObject();
+
+		boolean horizontalMode = getConfigValue("horizontalMode");
+		long max = getSuggestedMax(textFieldMax.getText());
+
+		JSObject xaxis = new JSObject();
+		JSObject yaxis = new JSObject();
+		if (horizontalMode) {
+			yaxis.put("type", "'category'");
+		} else {
+			xaxis.put("type", "'category'");
+		}
+
+		Plotly.horizontalMode(layout, xaxis, yaxis, null, horizontalMode, getXAxisTitle(), getYAxisTitle(),
+				max == 0 ? "" : "[0," + max + "]");
+
+		layout.put("boxmode", "'group'");
+		layout.put("hovermode", "'closest'");
+		return layout;
+	}
+
+	private <E> JSObject createTrace(List<EnrolledUser> users, Map<EnrolledUser, Map<E, List<Integer>>> userCounts,
+			List<String> rangeDates, String name, boolean visible, boolean horizontalMode, boolean notched,
+			boolean standardDeviation) {
+
+		JSObject trace = new JSObject();
+		JSArray logValues = new JSArray();
+		JSArray logValuesIndex = new JSArray();
+		JSArray userNames = new JSArray();
+		JSArray userids = new JSArray();
+
+		Map<EnrolledUser, List<Integer>> logCounts = transform(userCounts, rangeDates.size());
+
+		for (EnrolledUser user : users) {
+			List<Integer> map = logCounts.get(user);
+			for (int i = 0; i < rangeDates.size(); ++i) {
+
+				logValues.add(map.get(i));
+				logValuesIndex.addWithQuote(rangeDates.get(i));
+				userNames.addWithQuote(user.getFullName());
+				userids.add(user.getId());
 			}
-
 		}
 
-		data.put("datasets", datasets);
-		return data.toString();
-	}
+		Plotly.createAxisValuesHorizontal(horizontalMode, trace, logValuesIndex, logValues);
 
-	private <E> JSObject createDataset(List<EnrolledUser> users, Map<EnrolledUser, Map<E, List<Integer>>> userCounts,
-			int rangeDateSize, String text, boolean hidden) {
-
-		Map<EnrolledUser, List<Integer>> logCounts = transform(userCounts, rangeDateSize);
-
-		JSObject dataset = BoxPlot.getDefaulDatasetProperties(text, hidden);
-		dataset.put("outlierRadius", 5);
-		JSArray usersArray = new JSArray();
-		users.forEach(u -> usersArray.addWithQuote(u.getFullName()));
-		dataset.put("users", usersArray);
-
-		JSArray data = new JSArray();
-
-		for (int i = 0; i < rangeDateSize; ++i) {
-			JSArray dataArray = new JSArray();
-			for (EnrolledUser user : users) {
-				dataArray.add(logCounts.get(user)
-						.get(i));
-			}
-			data.add(dataArray);
-
+		trace.put("type", "'box'");
+		trace.put("boxpoints", "'all'");
+		trace.put("pointpos", 0);
+		trace.put("jitter", 1);
+		trace.putWithQuote("name", name);
+		trace.put("userids", userids);
+		trace.put("text", userNames);
+		trace.put("hovertemplate", "'<b>%{" + (horizontalMode ? "y" : "x") + "}<br>%{text}: </b>%{"
+				+ (horizontalMode ? "x" : "y") + "}<extra></extra>'");
+		JSObject marker = new JSObject();
+		marker.put("color", rgb(name));
+		trace.put("marker", marker);
+		if (!visible) {
+			trace.put("visible", "'legendonly'");
 		}
-		dataset.put("data", data);
 
-		return dataset;
+		trace.put("notched", notched);
+		trace.put("boxmean", standardDeviation ? "'sd'" : "true");
 
-	}
-
-	private Set<EnrolledUser> getUsersInRoles(Collection<Role> roles) {
-		return roles.stream()
-				.map(Role::getEnrolledUsers)
-				.flatMap(Set::stream)
-				.distinct()
-				.collect(Collectors.toSet());
-
-	}
-
-	private List<EnrolledUser> getUserWithRole(Collection<EnrolledUser> groupUsers,
-			Collection<EnrolledUser> usersInRoles) {
-
-		return groupUsers.stream()
-				.filter(usersInRoles::contains)
-				.collect(Collectors.toList());
+		return trace;
 
 	}
 
@@ -232,31 +241,9 @@ public class BoxplotLogTime extends ChartjsLog {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
-
-		boolean useHorizontal = mainConfiguration.getValue(getChartType(), "horizontalMode");
-		jsObject.putWithQuote("typeGraph", useHorizontal ? "horizontalBoxplot" : "boxplot");
-		jsObject.put("tooltipDecimals", 0);
-		String xLabel = useHorizontal ? getYScaleLabel() : getXScaleLabel();
-		String yLabel = useHorizontal ? getXScaleLabel() : getYScaleLabel();
-		jsObject.put("scales", "{yAxes:[{" + yLabel + ",ticks:{suggestedMax:" + getSuggestedMax(textFieldMax.getText())
-				+ ",stepSize:0}}],xAxes:[{" + xLabel + "}]}");
-		JSObject callbacks = new JSObject();
-		callbacks.put("afterTitle", "function(t,e){return e.datasets[t[0].datasetIndex].label}");
-		callbacks.put("boxplotLabel", "boxplotLabel");
-		jsObject.put("tooltips", "{callbacks:" + callbacks + "}");
-
-		return jsObject;
-	}
-
-	@Override
-	public int onClick(int index) {
-		return -1; // do nothing at the moment
-	}
-
-	@Override
 	public String getXAxisTitle() {
 		return MessageFormat.format(I18n.get(getChartType() + ".xAxisTitle"), I18n.get(choiceBoxDate.getValue()
 				.getTypeTime()));
 	}
+
 }

@@ -81,13 +81,9 @@ html,body
 }
 .vis-tooltip{
 	white-space: normal !important;
-	max-width:90% !important;
+	max-width:90.0% !important;
 }
 
-.apexchart-container
-{
-	clear: both;
-}
 .chart-container
 {
 	height:88.0%;
@@ -114,20 +110,20 @@ html,body
 	height: 100.0%;
 	background-color: transparent;
 	border: none;
-	box-shadow: inset 0.0 -3.0px 0.0px 0.0px #25c5d8;
+	box-shadow: inset 0.0 -3.0px 0.0px 0.0px #0000FF;
 	color: #000000;
 	font-size: 14.0px;
 	font-weight: bold;
 	cursor: pointer;
 	padding-left: 22.0px;
-	background-image: url(./../img/visibility_off.png);
+	background-image: url(../img/visibility_off.png);
 	background-repeat: no-repeat;
 	background-position: center left 2.0px;
 	margin: 2.0px;
 }
 
 .opciones .btn:hover {
-	box-shadow: inset 0.0 -4.0px 0.0px 0.0px #25c5d8;
+	box-shadow: inset 0.0 -4.0px 0.0px 0.0px #0000FF;
 }
 	
 .pestañas {
@@ -158,28 +154,16 @@ button[disabled] {
 	box-shadow: inset 0.0 -3.0px 0.0px 0.0px #25c5d8;
 }
 
-.apexcharts{
-	font-weight: bold;
-	font-size: 14.0px;
-}
-.apexcharts-data-labels{ display:contents !important; }
-
 .tabulator .tabulator-header .tabulator-col {
     text-align:center;
 }
 
-.canvas-container{
-	width: 100%;
-	height: 95vh;
-	display: block;
-  
+.center {
+  padding: 0.0;
+    display: block;
+    margin: 0.0 auto;
+    max-height: 100.0%;
+    max-width: 100.0%;
+    height:95.0%;
 }
 
-.canvas-word-cloud{
-	position: relative;
-  	max-width: 100%;
-  	max-height: 100%;
-  	left: 50%;
-  	top: 50%;
-  	transform: translate(-50%, -50%);
-}

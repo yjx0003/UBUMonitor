@@ -7,9 +7,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,7 +27,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
 import org.controlsfx.control.NotificationPane;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,9 +59,9 @@ import es.ubu.lsi.ubumonitor.model.Section;
 import es.ubu.lsi.ubumonitor.model.Stats;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.persistence.Serialization;
+import es.ubu.lsi.ubumonitor.util.FileUtil;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
-import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseSearchCourses;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -69,7 +70,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -723,7 +723,7 @@ public class WelcomeController implements Initializable {
 	 * 
 	 * @param actionEvent El ActionEvent.
 	 */
-	public void logOut(ActionEvent actionEvent) {
+	public void logOut() {
 		LOGGER.info("Cerrando sesión de usuario");
 		Connection.clearCookies();
 		UtilMethods.changeScene(getClass().getResource("/view/Login.fxml"), controller.getStage());
@@ -744,7 +744,11 @@ public class WelcomeController implements Initializable {
 				LOGGER.info("Cargando datos del curso: {}", actualCourse.getFullName());
 				// Establecemos los usuarios matriculados
 
-				actualCourse.clearCourseData();
+				dataBase.getCourses()
+						.getMap()
+						.values()
+						.forEach(Course::clearCourseData);
+				
 				updateMessage(I18n.get("label.loadingcoursedata"));
 				PopulateEnrolledUsersCourse populateEnrolledUsersCourse = new PopulateEnrolledUsersCourse(dataBase,
 						webService);
@@ -841,7 +845,9 @@ public class WelcomeController implements Initializable {
 							populateEnrolledUsersCourse.searchUser(ids);
 							actualCourse.setNotEnrolledUser(notEnrolled);
 							actualCourse.setUpdatedLog(ZonedDateTime.now());
-
+							updateMessage(I18n.get("label.updateuserimages"));
+							populateEnrolledUsersCourse.downloadUserimages(actualCourse.getEnrolledUsers());
+							populateEnrolledUsersCourse.downloadUserimages(actualCourse.getNotEnrolledUser());
 							tries = limitRelogin + 1;
 						} catch (Exception e) {
 							if (tries >= limitRelogin) {
@@ -855,6 +861,7 @@ public class WelcomeController implements Initializable {
 						}
 					}
 				}
+
 				if (!isCancelled()) {
 					updateMessage(I18n.get("label.savelocal"));
 					saveData();
@@ -888,12 +895,9 @@ public class WelcomeController implements Initializable {
 
 		try {
 			PopulateCourse populateCourse = new PopulateCourse(controller.getDataBase(), controller.getWebService());
-			CoreCourseSearchCourses coreCourseSearchCourses = new CoreCourseSearchCourses();
-			coreCourseSearchCourses.setBySearch(text);
-			JSONObject jsonObject = UtilMethods.getJSONObjectResponse(controller.getWebService(),
-					coreCourseSearchCourses);
-			List<Course> courses = populateCourse.searchCourse(jsonObject);
-
+			
+			Pair<Integer, List<Course>> pair = populateCourse.searchCourse(text);
+			List<Course> courses = pair.getValue();
 			if (courses.isEmpty()) {
 				UtilMethods.warningWindow(I18n.get("warning.nofound"));
 
@@ -906,11 +910,36 @@ public class WelcomeController implements Initializable {
 						.thenComparing(Course.getCourseComparator()));
 				listViewSearch.getItems()
 						.setAll(courses);
-				totalLabel.setText(Integer.toString(jsonObject.getInt("total")));
+				totalLabel.setText(Integer.toString(pair.getKey()));
 			}
 
 		} catch (Exception e) {
 			UtilMethods.errorWindow("Error when searching", e);
+		}
+
+	}
+
+	public void exportCourse() {
+		Course course = getSelectedCourse();
+		if (course == null) {
+			lblNoSelect.setVisible(true);
+			return;
+		}
+		Path destDir = controller.getHostUserModelversionDir();
+
+		Path dest = destDir.resolve(controller.getCoursePathName(course));
+
+		if (dest.toFile()
+				.isFile()) {
+			UtilMethods.fileAction("(" + LocalDate.now()
+					.format(DateTimeFormatter.ISO_DATE) + ") " + controller.getCoursePathName(course),
+					ConfigHelper.getProperty("coursePath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
+					f -> {
+						FileUtil.exportFile(dest, destDir, f.toPath());
+						ConfigHelper.setProperty("coursePath", destDir);
+					}, FileUtil.ALL);
+		} else {
+			UtilMethods.warningWindow(I18n.get("text.coursecachenotexists"));
 		}
 
 	}

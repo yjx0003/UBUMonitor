@@ -1,65 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.web.WebView?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.controllers.CourseStatsController">
-   <top>
-      <Label fx:id="labelCourse" text="Label" textAlignment="CENTER" wrapText="true" BorderPane.alignment="BOTTOM_CENTER">
-         <font>
-            <Font name="System Bold" size="24.0" />
-         </font>
-      </Label>
-   </top>
-   <padding>
-      <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
-   </padding>
-   <center>
-      <GridPane BorderPane.alignment="CENTER">
-        <columnConstraints>
-          <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <Label text="%label.enrolledusers" />
-            <Label layoutX="10.0" layoutY="44.0" text="%label.logentries" GridPane.rowIndex="1" />
-            <Label layoutX="10.0" layoutY="13.0" text="%label.componenttypes" GridPane.rowIndex="2" />
-            <Label layoutX="10.0" layoutY="65.0" text="%label.typecomponentevents" GridPane.rowIndex="3" />
-            <Label layoutX="10.0" layoutY="91.0" text="%label.sections" GridPane.rowIndex="4" />
-            <Label text="%label.coursemodules" GridPane.rowIndex="5" />
-            <Label text="%label.gradebook" GridPane.rowIndex="6" />
-            <Label text="%label.gradebookcm" GridPane.rowIndex="7" />
-            <Label text="%label.activities" GridPane.rowIndex="8" />
-            <TextField fx:id="textFieldEnrolledUsers" editable="false" GridPane.columnIndex="1" />
-            <TextField fx:id="textFieldLogs" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <TextField fx:id="textFieldComponents" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <TextField fx:id="textFieldSections" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <TextField fx:id="textFieldComponentsEvents" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <TextField fx:id="textFieldCourseModules" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            <TextField fx:id="textFieldGradebook" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-            <TextField fx:id="textFieldGradebookCM" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-            <TextField fx:id="textFieldActivityCompletion" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-         </children>
-         <padding>
-            <Insets top="20.0" />
-         </padding>
-      </GridPane>
-   </center>
-</BorderPane>
+
+<WebView fx:id="webView" minHeight="-1.0" minWidth="-1.0" prefHeight="700.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.controllers.CourseStatsController" />

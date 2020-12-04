@@ -20,9 +20,23 @@ public class LastActivityFactory {
 		DEFAULT.addActivity(7, 14, Color.ORANGE, ChronoUnit.DAYS);
 		DEFAULT.addActivity(14, Integer.MAX_VALUE, Color.RED, ChronoUnit.DAYS);
 	}
-	
+
 	public LastActivityFactory() {
 		spanTime = new ArrayList<>();
+	}
+
+	public int getIndex(Temporal startInclusive, Temporal endExclusive) {
+		if (startInclusive != null && endExclusive != null) {
+			for (int i = 0; i < spanTime.size(); ++i) {
+				if (spanTime.get(i)
+						.isBetween(startInclusive, endExclusive)) {
+					return i;
+				}
+			}
+		}
+
+		return spanTime.size() - 1;
+
 	}
 
 	public Color getColorActivity(Temporal startInclusive, Temporal endExclusive) {
@@ -63,11 +77,11 @@ public class LastActivityFactory {
 		}
 		return null;
 	}
-	
+
 	public void addActivity(LastActivity lastActivity) {
 		spanTime.add(lastActivity);
 	}
-	
+
 	public void addActivity(int startInclusive, int endInclusive, Color color, ChronoUnit chronoUnit) {
 		addActivity(new LastActivity(spanTime.size(), startInclusive, endInclusive, color, chronoUnit));
 	}

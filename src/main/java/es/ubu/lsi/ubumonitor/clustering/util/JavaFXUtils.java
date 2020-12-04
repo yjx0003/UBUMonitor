@@ -35,8 +35,8 @@ public class JavaFXUtils {
 
 	public static void initDatePickers(DatePicker datePickerStart, DatePicker datePickerEnd, CheckBox checkBoxLogs) {
 		Controller controller = Controller.getInstance();
-		datePickerStart.setValue(controller.getActualCourse().getStart());
-		datePickerEnd.setValue(controller.getActualCourse().getEnd());
+		datePickerStart.setValue(controller.getActualCourse().getStart(controller.getUpdatedCourseData().toLocalDate()));
+		datePickerEnd.setValue(controller.getActualCourse().getEnd(controller.getUpdatedCourseData().toLocalDate()));
 
 		datePickerStart.setDayCellFactory(picker -> new DateCell() {
 			@Override

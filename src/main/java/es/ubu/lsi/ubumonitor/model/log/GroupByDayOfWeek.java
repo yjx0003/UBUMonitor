@@ -76,4 +76,19 @@ public class GroupByDayOfWeek extends GroupByAbstract<DayOfWeek> {
 		return Collections.emptyMap();
 	}
 
+	@Override
+	public LocalDate getStartLocalDate(LocalDate start) {
+		return LocalDate.MIN;
+	}
+
+	@Override
+	public LocalDate getEndLocalDate(LocalDate end) {
+		return LocalDate.MAX;
+	}
+
+	@Override
+	public LocalDate getEndLocalDate(DayOfWeek end) {
+		return LocalDate.MAX;
+	}
+
 }

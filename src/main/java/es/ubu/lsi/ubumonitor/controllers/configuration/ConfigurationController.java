@@ -32,6 +32,12 @@ import javafx.scene.control.TabPane;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
+/**
+ * Controller for the FXML file Configuration.fxml
+ * 
+ * @author Yi Peng Ji
+ *
+ */
 public class ConfigurationController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationController.class);
@@ -45,12 +51,21 @@ public class ConfigurationController {
 
 	private static final Callback<Item, PropertyEditor<?>> DEFAUL_PROPERTY_EDITOR_FACTORY = new DefaultPropertyEditorFactory();
 
+	/**
+	 * Iniitialize property sheet and set mainController and mainConfiguration
+	 * 
+	 * @param mainController    mainContreller
+	 * @param mainConfiguration mainConfiguration
+	 */
 	public void init(MainController mainController, MainConfiguration mainConfiguration) {
 		this.mainController = mainController;
 		this.mainConfiguration = mainConfiguration;
 		createPropertySheets();
 	}
 
+	/**
+	 * Create propertysheets for every type {@link Tabs}
+	 */
 	public void createPropertySheets() {
 		Tab tab = new Tab(I18n.get(MainConfiguration.GENERAL));
 		tab.setClosable(false);
@@ -72,8 +87,15 @@ public class ConfigurationController {
 			}
 
 		}
+		tabPane.getSelectionModel().select(ConfigHelper.getProperty("propertySheetConfigurationIndex", 0));
 	}
 
+	/**
+	 * Create property sheet
+	 * 
+	 * @param chartTab
+	 * @return
+	 */
 	public PropertySheet createPropertySheet(Tabs chartTab) {
 
 		PropertySheet propertySheet = new PropertySheet(
@@ -123,17 +145,30 @@ public class ConfigurationController {
 		return propertySheet;
 	}
 
+	/**
+	 * Call {@link ConfigurationController#onClose()} method when user closes the
+	 * configuration window.
+	 */
 	public void setOnClose() {
 		tabPane.getScene()
 				.getWindow()
 				.setOnHidden(e -> onClose());
 	}
 
+	/**
+	 * Apply configuration on close
+	 */
 	public void onClose() {
 		apply();
-
+		ConfigHelper.setProperty("propertySheetConfigurationIndex", tabPane.getSelectionModel().getSelectedIndex());
 	}
 
+	/**
+	 * Saves the configuration
+	 * 
+	 * @param mainConfiguration mainConfiguration
+	 * @param path              path to save
+	 */
 	public static void saveConfiguration(MainConfiguration mainConfiguration, Path path) {
 		try {
 			path.toFile()
@@ -147,11 +182,9 @@ public class ConfigurationController {
 		}
 	}
 
-	public void applyConfiguration() {
-		mainController.getActions()
-				.applyConfiguration();
-	}
-
+	/**
+	 * Restore configuration window for user confirmation.
+	 */
 	public void restoreConfiguration() {
 		ButtonType option = UtilMethods.confirmationWindow(I18n.get("text.restoredefault"));
 		if (option == ButtonType.OK) {
@@ -163,12 +196,21 @@ public class ConfigurationController {
 
 	}
 
+	/**
+	 * Restore configuration for default values.
+	 */
 	public void restoreSavedConfiguration() {
 		Controller controller = Controller.getInstance();
 		loadConfiguration(mainConfiguration, controller.getConfiguration(controller.getActualCourse()));
 
 	}
 
+	/**
+	 * Load configuration in mainConfiguration
+	 * 
+	 * @param mainConfiguration mainConfiguration
+	 * @param path              path to save
+	 */
 	public static void loadConfiguration(MainConfiguration mainConfiguration, Path path) {
 		if (path.toFile()
 				.exists()) {
@@ -181,9 +223,13 @@ public class ConfigurationController {
 		}
 	}
 
+	/**
+	 * Apply the configuration and update charts
+	 */
 	public void apply() {
 		Controller controller = Controller.getInstance();
 		saveConfiguration(mainConfiguration, controller.getConfiguration(controller.getActualCourse()));
-		applyConfiguration();
+		mainController.getActions()
+				.applyConfiguration();
 	}
 }

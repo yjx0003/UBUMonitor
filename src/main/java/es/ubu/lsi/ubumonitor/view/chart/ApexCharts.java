@@ -1,21 +1,14 @@
 package es.ubu.lsi.ubumonitor.view.chart;
 
-import java.io.File;
-import java.io.IOException;
-
 import es.ubu.lsi.ubumonitor.controllers.MainController;
-import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.util.JSObject;
-import es.ubu.lsi.ubumonitor.util.UtilMethods;
-import javafx.scene.web.WebView;
 
 public abstract class ApexCharts extends Chart {
 
-	private WebView webView;
-	public ApexCharts(MainController mainController, ChartType chartType, WebView webView) {
+	public ApexCharts(MainController mainController, ChartType chartType) {
 		super(mainController, chartType);
 		useLegend = true;
-		this.webView = webView;
+
 	}
 
 	@Override
@@ -24,25 +17,18 @@ public abstract class ApexCharts extends Chart {
 
 	}
 
-	@Override
-	public void exportImage(File file) throws IOException {
-		UtilMethods.snapshotNode(file, webView);
-		UtilMethods.showExportedFile(file);
-	}
-	
 	public String getXScaleLabel() {
-		
+
 		JSObject jsObject = new JSObject();
 
-		boolean display = mainConfiguration.getValue(MainConfiguration.GENERAL, "displayXScaleTitle");
+		boolean display = getGeneralConfigValue("displayXScaleTitle");
 		if (!display) {
 			return "title:{}";
 		}
 		jsObject.putWithQuote("text", getXAxisTitle());
 		JSObject style = new JSObject();
 		style.putWithQuote("fontSize", 14);
-		style.put("color",
-				colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorXScaleTitle")));
+		style.put("color", colorToRGB(getGeneralConfigValue("fontColorXScaleTitle")));
 		style.putWithQuote("cssClass", "apexcharts");
 		jsObject.put("style", style);
 
@@ -51,17 +37,17 @@ public abstract class ApexCharts extends Chart {
 	}
 
 	public String getYScaleLabel() {
-	
+
 		JSObject jsObject = new JSObject();
 
-		boolean display = mainConfiguration.getValue(MainConfiguration.GENERAL, "displayYScaleTitle");
+		boolean display = getGeneralConfigValue("displayYScaleTitle");
 		if (!display) {
 			return "title:{}";
 		}
 		jsObject.putWithQuote("text", getYAxisTitle());
 		JSObject style = new JSObject();
 		style.putWithQuote("fontSize", 14);
-		style.put("color", colorToRGB(mainConfiguration.getValue(MainConfiguration.GENERAL, "fontColorYScaleTitle")));
+		style.put("color", colorToRGB(getGeneralConfigValue("fontColorYScaleTitle")));
 		jsObject.put("style", style.toString());
 		return "title:" + jsObject.toString();
 

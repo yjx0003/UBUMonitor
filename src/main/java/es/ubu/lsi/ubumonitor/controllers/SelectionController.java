@@ -1,10 +1,13 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
+import java.io.Serializable;
 import java.text.Collator;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,7 +27,15 @@ import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.ModuleType;
 import es.ubu.lsi.ubumonitor.model.Section;
+import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
+import es.ubu.lsi.ubumonitor.model.datasets.DataSetComponent;
+import es.ubu.lsi.ubumonitor.model.datasets.DataSetComponentEvent;
+import es.ubu.lsi.ubumonitor.model.datasets.DataSetSection;
+import es.ubu.lsi.ubumonitor.model.datasets.DatasSetCourseModule;
+import es.ubu.lsi.ubumonitor.model.log.FirstGroupBy;
+import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.util.I18n;
+import es.ubu.lsi.ubumonitor.util.LogAction;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
@@ -150,11 +161,14 @@ public class SelectionController {
 	public void init(MainController mainController, Course actualCourse) {
 		this.mainController = mainController;
 
-		// bind the content to visualization or risk tab
+		// bind the content to visualization, multi or clustering tab
 		tabPane.visibleProperty()
 				.bind(mainController.getWebViewTabsController()
 						.getVisualizationTab()
 						.selectedProperty()
+						.or(mainController.getWebViewTabsController()
+								.getMultiTab()
+								.selectedProperty())
 						.or(mainController.getWebViewTabsController()
 								.getClusteringTab()
 								.selectedProperty()));
@@ -935,6 +949,47 @@ public class SelectionController {
 		} catch (Exception e) {
 			LOGGER.error("Error al filtrar los elementos del calificador: {}", e);
 		}
+	}
+
+	public <T> T typeLogsAction(LogAction<T> logAction) {
+		if (tabUbuLogsComponent.isSelected()) {
+
+			return logAction.action(listViewComponents.getSelectionModel()
+					.getSelectedItems(), DataSetComponent.getInstance(), GroupByAbstract::getComponents);
+		} else if (tabUbuLogsEvent.isSelected()) {
+
+			return logAction.action(listViewEvents.getSelectionModel()
+					.getSelectedItems(), DataSetComponentEvent.getInstance(), GroupByAbstract::getComponentsEvents);
+		} else if (tabUbuLogsSection.isSelected()) {
+
+			return logAction.action(listViewSection.getSelectionModel()
+					.getSelectedItems(), DataSetSection.getInstance(), GroupByAbstract::getSections);
+		} else if (tabUbuLogsCourseModule.isSelected()) {
+
+			return logAction.action(listViewCourseModule.getSelectionModel()
+					.getSelectedItems(), DatasSetCourseModule.getInstance(), GroupByAbstract::getCourseModules);
+		}
+		throw new IllegalStateException("Need other tab");
+	}
+
+	public List<String> getSelectedLogTypeTransLated() {
+		return typeLogsAction(new LogAction<List<String>>() {
+
+			@Override
+			public <E extends Serializable, T extends Serializable> List<String> action(List<E> logType,
+					DataSet<E> dataSet, Function<GroupByAbstract<?>, FirstGroupBy<E, T>> function) {
+				List<String> list = new ArrayList<>();
+				for (E e : logType) {
+					list.add(dataSet.translate(e));
+				}
+				return list;
+			}
+		});
+
+	}
+
+	public List<GradeItem> getSelectedGradeItems() {
+		return UtilMethods.getSelectedGradeItems(tvwGradeReport);
 	}
 
 	public TreeView<GradeItem> getTvwGradeReport() {

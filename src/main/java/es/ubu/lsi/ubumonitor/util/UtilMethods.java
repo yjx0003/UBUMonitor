@@ -3,7 +3,6 @@ package es.ubu.lsi.ubumonitor.util;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -13,15 +12,20 @@ import java.net.URL;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
+import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 import org.json.JSONArray;
@@ -32,8 +36,10 @@ import org.jsoup.nodes.Document;
 
 import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.Style;
+import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.load.Connection;
+import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionAbstract;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
 import javafx.embed.swing.SwingFXUtils;
@@ -49,6 +55,8 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.GridPane;
@@ -59,10 +67,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.util.Pair;
 import okhttp3.Response;
 
 public class UtilMethods {
-	private static final Random RANDOM = new Random();
 
 	private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
@@ -108,9 +116,17 @@ public class UtilMethods {
 	 * @return
 	 */
 	public static <E> String join(List<E> datasets) {
-		return datasets.stream()
+
+		return join(datasets, ",");
+	}
+
+	public static <E> String join(Collection<E> collection, String joinCharacter) {
+		if (collection == null || collection.isEmpty() || joinCharacter == null) {
+			return "";
+		}
+		return collection.stream()
 				.map(E::toString)
-				.collect(Collectors.joining(","));
+				.collect(Collectors.joining(joinCharacter));
 	}
 
 	/**
@@ -291,6 +307,7 @@ public class UtilMethods {
 
 		createDialog(loader, ownerStage, Modality.WINDOW_MODAL);
 	}
+
 	public static void openURL(String url) {
 		// from
 		// http://www.java2s.com/Code/Java/Development-Class/LaunchBrowserinMacLinuxUnix.htm
@@ -357,27 +374,27 @@ public class UtilMethods {
 			FileUtil.FileChooserType fileChooserType, FileUtil.ThrowingConsumer<File, IOException> consumer,
 			boolean confirmationWindow, FileChooser.ExtensionFilter... extensionFilters) {
 		FileChooser fileChooser = createFileChooser(initialFileName, initialDirectory, extensionFilters);
-		File file = fileChooserType.getFile(fileChooser, owner);
-		if (file == null) {
-			return;
-		}
-		String extension = fileChooser.getSelectedExtensionFilter()
-				.getExtensions()
-				.get(0)
-				.substring(1);
-		if (!file.getName()
-				.toLowerCase()
-				.endsWith(extension)) {
-			file = new File(file.getAbsolutePath() + extension);
-		}
 		try {
+			File file = fileChooserType.getFile(fileChooser, owner);
+			if (file == null) {
+				return;
+			}
+			String extension = fileChooser.getSelectedExtensionFilter()
+					.getExtensions()
+					.get(0)
+					.substring(1);
+			if (!file.getName()
+					.toLowerCase()
+					.endsWith(extension)) {
+				file = new File(file.getAbsolutePath() + extension);
+			}
+
 			consumer.accept(file);
 			if (confirmationWindow) {
 				showExportedFile(file);
 			}
-		} catch (FileNotFoundException e) {
-			errorWindow(e.getMessage());
 		} catch (Exception e) {
+
 			errorWindow(e.getMessage(), e);
 		}
 
@@ -477,24 +494,6 @@ public class UtilMethods {
 		return stage;
 	}
 
-	/**
-	 * https://www.baeldung.com/java-random-string
-	 * 
-	 * @return
-	 */
-	public static String ranmdomAlphanumeric() {
-		int leftLimit = 97; // letter 'a'
-		int rightLimit = 122; // letter 'z'
-		int targetStringLength = 10;
-
-		return RANDOM.ints(leftLimit, rightLimit + 1)
-				.filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-				.limit(targetStringLength)
-				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-				.toString();
-
-	}
-
 	public static <E> AutoCompletionBinding<E> createAutoCompletionBinding(TextField textField,
 			Collection<E> possibleSuggestions) {
 		AutoCompletionBinding<E> autoCompletionBinding = TextFields.bindAutoCompletion(textField, possibleSuggestions);
@@ -506,7 +505,7 @@ public class UtilMethods {
 		WritableImage image = node.snapshot(new SnapshotParameters(), null);
 
 		ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-		
+
 	}
 
 	public static void openFileFolder(File file) {
@@ -644,12 +643,117 @@ public class UtilMethods {
 		return element.toLowerCase()
 				.contains(textField);
 	}
-	
+
 	public static Color toAwtColor(javafx.scene.paint.Color color) {
-		 return new Color((float) color.getRed(),
-                 (float) color.getGreen(),
-                 (float) color.getBlue(),
-                 (float) color.getOpacity());
+		return new Color((float) color.getRed(), (float) color.getGreen(), (float) color.getBlue(),
+				(float) color.getOpacity());
+	}
+
+	public static <T> void fillCheckComboBox(T dummy, Collection<T> values, CheckComboBox<T> checkComboBox) {
+		if (values == null || values.isEmpty()) {
+			return;
+		}
+
+		checkComboBox.getItems()
+				.add(dummy);
+		checkComboBox.getItems()
+				.addAll(values);
+		checkComboBox.getCheckModel()
+				.checkAll();
+
+		checkComboBox.getItemBooleanProperty(0)
+				.addListener((observable, oldValue, newValue) -> {
+					if (newValue.booleanValue()) {
+						checkComboBox.getCheckModel()
+								.checkAll();
+					} else {
+						checkComboBox.getCheckModel()
+								.clearChecks();
+					}
+
+				});
+
+	}
+
+	public static <T, V extends Comparable<V>> Map<T, Integer> ranking(Map<T, V> map) {
+		return ranking(map, Function.identity());
+	}
+
+	public static <T, V, E extends Comparable<E>> Map<T, Integer> ranking(Map<T, V> map, Function<V, E> function) {
+
+		if (map.isEmpty()) {
+			return Collections.emptyMap();
+		}
+
+		List<Pair<T, V>> scores = new ArrayList<>(map.size());
+		map.forEach((k, v) -> scores.add(new Pair<>(k, v)));
+		scores.sort(Comparator.comparing(Pair::getValue, Comparator.comparing(function)
+				.reversed()));
+
+		Map<T, Integer> ranking = new HashMap<>();
+		ranking.put(scores.get(0)
+				.getKey(), 1);
+		int actualRank = 1;
+		for (int i = 1; i < scores.size(); i++) {
+			actualRank = function.apply(scores.get(i)
+					.getValue())
+					.equals(function.apply(scores.get(i - 1)
+							.getValue())) ? actualRank : i + 1;
+			ranking.put(scores.get(i)
+					.getKey(), actualRank);
+		}
+		return ranking;
+	}
+
+	public static <T, V extends Comparable<V>> Map<T, Double> rankingStatistics(Map<T, V> map) {
+		return rankingStatistics(map, Function.identity());
+	}
+	
+	public static <T, V, E extends Comparable<E>> Map<T, Double> rankingStatistics(Map<T, V> map, Function<V, E> function) {
+		Map<T, Double> ranking = new HashMap<>();
+		for (Map.Entry<T,V> entry : map.entrySet()) {
+			V actualValue = entry.getValue();
+			int lessThaActualValue = 0;
+			int equal = 1;
+			for (V value : map.values()) {
+				int compare = function.apply(actualValue).compareTo(function.apply(value));
+				if (compare < 0) {
+					++lessThaActualValue;
+				} else if (compare == 0) {
+					++equal;
+				}
+			}
+			ranking.put(entry.getKey(), lessThaActualValue+equal/2.0);
+			
+		}
+
+		return ranking;
+	}
+	
+
+	public static List<GradeItem> getSelectedGradeItems(TreeView<GradeItem> treeView) {
+		return treeView.getSelectionModel()
+				.getSelectedItems()
+				.stream()
+				.filter(Objects::nonNull)
+				.map(TreeItem::getValue)
+				.collect(Collectors.toList());
+	}
+
+	public static String getDifferenceTime(Instant start, Instant end) {
+		if (start != null && end != null && start.getEpochSecond() != 0) {
+			return Controller.DATE_TIME_FORMATTER.format(start.atZone(ZoneId.systemDefault())) + " ("
+					+ UtilMethods.formatDates(start, end) + ")";
+		}
+
+		return I18n.get("text.never");
+	}
+	
+	public static <T extends Number & Comparable<T>> Number getMax(Collection<T> values) {
+		if(values == null || values.isEmpty()) {
+			return 0;
+		}
+		return Collections.max(values);
 	}
 
 }

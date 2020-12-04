@@ -24,7 +24,6 @@ import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
-import javafx.scene.web.WebView;
 
 public class ForumTreeMap extends Plotly {
 
@@ -32,9 +31,9 @@ public class ForumTreeMap extends Plotly {
 	private DatePicker datePickerStart;
 	private DatePicker datePickerEnd;
 
-	public ForumTreeMap(MainController mainController, WebView webView, ListView<CourseModule> forumListView,
+	public ForumTreeMap(MainController mainController, ListView<CourseModule> forumListView,
 			DatePicker datePickerStart, DatePicker datePickerEnd) {
-		super(mainController, ChartType.FORUM_TREE_MAP, webView);
+		super(mainController, ChartType.FORUM_TREE_MAP);
 		this.forumListView = forumListView;
 		this.datePickerStart = datePickerStart;
 		this.datePickerEnd = datePickerEnd;
@@ -42,36 +41,40 @@ public class ForumTreeMap extends Plotly {
 
 	}
 
-	@Override
-	public void exportCSV(String path) throws IOException {
-		List<EnrolledUser> users = getSelectedEnrolledUser();
-		List<CourseModule> forums = new ArrayList<>(forumListView.getSelectionModel()
-				.getSelectedItems());
-		Map<CourseModule, Map<EnrolledUser, Long>> map = getMap(users, forums);
-		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
-				CSVFormat.DEFAULT.withHeader("forumId", "forumName", "userId", "userName", "posts"))) {
-			for (Map.Entry<CourseModule, Map<EnrolledUser, Long>> entry : map.entrySet()) {
-				CourseModule forum = entry.getKey();
 
-				for (Map.Entry<EnrolledUser, Long> entryUser : entry.getValue()
-						.entrySet()) {
-					EnrolledUser user = entryUser.getKey();
-					printer.printRecord(forum.getCmid(), forum.getModuleName(), user.getId(), user.getFullName(),
-							entryUser.getValue());
 
-				}
+	
 
-			}
-		}
+	
+
+	private JSArray createJSArray(String key, JSObject data) {
+		JSArray jsArray = new JSArray();
+		data.put(key, jsArray);
+		return jsArray;
+	}
+
+	public Map<CourseModule, Map<EnrolledUser, Long>> getMap(Collection<EnrolledUser> users,
+			Collection<CourseModule> forums) {
+		Instant start = datePickerStart.getValue()
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
+		Instant end = datePickerEnd.getValue()
+				.plusDays(1)
+				.atStartOfDay(ZoneId.systemDefault())
+				.toInstant();
+
+		return actualCourse.getDiscussionPosts()
+				.stream()
+				.filter(discussionPost -> forums.contains(discussionPost.getForum())
+						&& users.contains(discussionPost.getUser()) && start.isBefore(discussionPost.getCreated())
+						&& end.isAfter(discussionPost.getCreated()))
+				.collect(Collectors.groupingBy(DiscussionPost::getForum,
+						(Collectors.groupingBy(DiscussionPost::getUser, Collectors.counting()))));
+
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
-		return jsObject;
-	}
-
-	@Override
-	public void update() {
+	public void createData(JSArray dataArray) {
 		List<EnrolledUser> users = getSelectedEnrolledUser();
 		List<CourseModule> forums = new ArrayList<>(forumListView.getSelectionModel()
 				.getSelectedItems());
@@ -79,17 +82,16 @@ public class ForumTreeMap extends Plotly {
 		JSObject data = new JSObject();
 		data.put("type", "'treemap'");
 		data.put("branchvalues", "'total'");
-		
-		if(map.size()>0) {
+
+		if (map.size() > 0) {
 			data.put("texttemplate",
 					"'<b>%{label}</b><br>%{value}<br>%{percentParent} "
-							+ UtilMethods.escapeJavaScriptText(I18n.get("parent")) + "<br>%{percentRoot} "
+							+ UtilMethods.escapeJavaScriptText(I18n.get("forum")) + "<br>%{percentRoot} "
 							+ UtilMethods.escapeJavaScriptText(I18n.get("root")) + "'");
 			data.put("hovertemplate",
 					"'<b>%{label}</b><br>%{value}<br>%{percentParent:%} %{parent}<br>%{percentRoot:%} %{root}<extra></extra>'");
 		}
-		
-		
+
 		JSArray labels = createJSArray("labels", data);
 
 		JSArray values = createJSArray("values", data);
@@ -123,35 +125,37 @@ public class ForumTreeMap extends Plotly {
 		values.add(courseTotal);
 		parents.add("''");
 		ids.add(0);
-
-		webViewChartsEngine.executeScript("updatePlotly([" + data + "]," + getOptions() + ")");
-
+		dataArray.add(data);
+		
 	}
 
-	private JSArray createJSArray(String key, JSObject data) {
-		JSArray jsArray = new JSArray();
-		data.put(key, jsArray);
-		return jsArray;
+	@Override
+	public void createLayout(JSObject layout) {
+		// do nothing
+		
 	}
+	
+	@Override
+	public void exportCSV(String path) throws IOException {
+		List<EnrolledUser> users = getSelectedEnrolledUser();
+		List<CourseModule> forums = new ArrayList<>(forumListView.getSelectionModel()
+				.getSelectedItems());
+		Map<CourseModule, Map<EnrolledUser, Long>> map = getMap(users, forums);
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
+				CSVFormat.DEFAULT.withHeader("forumId", "forumName", "userId", "userName", "posts"))) {
+			for (Map.Entry<CourseModule, Map<EnrolledUser, Long>> entry : map.entrySet()) {
+				CourseModule forum = entry.getKey();
 
-	public Map<CourseModule, Map<EnrolledUser, Long>> getMap(Collection<EnrolledUser> users,
-			Collection<CourseModule> forums) {
-		Instant start = datePickerStart.getValue()
-				.atStartOfDay(ZoneId.systemDefault())
-				.toInstant();
-		Instant end = datePickerEnd.getValue()
-				.plusDays(1)
-				.atStartOfDay(ZoneId.systemDefault())
-				.toInstant();
+				for (Map.Entry<EnrolledUser, Long> entryUser : entry.getValue()
+						.entrySet()) {
+					EnrolledUser user = entryUser.getKey();
+					printer.printRecord(forum.getCmid(), forum.getModuleName(), user.getId(), user.getFullName(),
+							entryUser.getValue());
 
-		return actualCourse.getDiscussionPosts()
-				.stream()
-				.filter(discussionPost -> forums.contains(discussionPost.getForum())
-						&& users.contains(discussionPost.getUser()) && start.isBefore(discussionPost.getCreated())
-						&& end.isAfter(discussionPost.getCreated()))
-				.collect(Collectors.groupingBy(DiscussionPost::getForum,
-						(Collectors.groupingBy(DiscussionPost::getUser, Collectors.counting()))));
+				}
 
+			}
+		}
 	}
 
 }

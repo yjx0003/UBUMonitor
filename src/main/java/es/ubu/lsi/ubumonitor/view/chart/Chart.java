@@ -5,10 +5,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.controlsfx.control.CheckComboBox;
 
 import es.ubu.lsi.ubumonitor.controllers.Controller;
@@ -19,6 +22,7 @@ import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
+import es.ubu.lsi.ubumonitor.model.Role;
 import es.ubu.lsi.ubumonitor.model.Stats;
 import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.I18n;
@@ -26,15 +30,17 @@ import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.collections.ObservableList;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 
 public abstract class Chart implements ExportableChart {
 
+	protected static final DescriptiveStatistics EMPTY_DESCRIPTIVE_STATISTICS = new DescriptiveStatistics();
+
 	protected WebEngine webViewChartsEngine;
-	protected CheckComboBox<Group> slcGroup;
+	private CheckComboBox<Group> checkComboBoxGroup;
 	protected Stats stats;
 	protected ChartType chartType;
 	protected boolean useLegend;
@@ -49,15 +55,16 @@ public abstract class Chart implements ExportableChart {
 	protected boolean useOptions;
 	protected Controller controller = Controller.getInstance();
 	protected MainController mainController;
-	protected MainConfiguration mainConfiguration;
+	private MainConfiguration mainConfiguration;
 	protected SelectionUserController selectionUserController;
 	protected Course actualCourse;
 	protected static final double OPACITY = 0.2;
+	protected WebView webView;
 
 	public Chart(MainController mainController, ChartType chartType) {
 
 		this.selectionUserController = mainController.getSelectionUserController();
-		this.slcGroup = selectionUserController.getCheckComboBoxGroup();
+		this.checkComboBoxGroup = selectionUserController.getCheckComboBoxGroup();
 		this.stats = mainController.getStats();
 		this.mainController = mainController;
 		this.chartType = chartType;
@@ -89,7 +96,7 @@ public abstract class Chart implements ExportableChart {
 	}
 
 	public List<EnrolledUser> getUsers() {
-		return selectionUserController.getUsers();
+		return selectionUserController.getFilteredUsers();
 	}
 
 	public double adjustTo10(double value) {
@@ -122,35 +129,85 @@ public abstract class Chart implements ExportableChart {
 
 		return colorToRGB(color, color.getOpacity());
 	}
+	
+	public String awtColorToRGB(java.awt.Color color) {
+		return awtColorToRGB(color, color.getAlpha()/255.0);
+	}
 
+	public String awtColorToRGB(java.awt.Color color, double opacity) {
+		return String.format("'rgba(%s,%s,%s,%s)'", color.getRed(), color.getGreen(),  color.getBlue(), opacity);
+	}
+
+	
 	public String colorToRGB(Color color, double opacity) {
 
 		return String.format("'rgba(%s,%s,%s,%s)'", (int) (color.getRed() * 255), (int) (color.getGreen() * 255),
 				(int) (color.getBlue() * 255), opacity);
 	}
 
-	public List<GradeItem> getSelectedGradeItems(TreeView<GradeItem> tvwGradeReport) {
-		return tvwGradeReport.getSelectionModel()
-				.getSelectedItems()
-				.stream()
-				.filter(Objects::nonNull)
-				.map(TreeItem::getValue)
-				.collect(Collectors.toList());
+	public List<GradeItem> getSelectedGradeItems(TreeView<GradeItem> treeViewGradeItem) {
+		return UtilMethods.getSelectedGradeItems(treeViewGradeItem);
 	}
 
-	public abstract JSObject getOptions(JSObject jsObject);
+	public List<Group> getSelectedGroups() {
+		List<Group> groups = new ArrayList<>(checkComboBoxGroup.getCheckModel()
+				.getCheckedItems());
+		groups.removeIf(g -> g == null || g.getGroupId() < 0);
+		return groups;
+	}
+
+	public List<Role> getSelectedRoles() {
+		List<Role> roles = new ArrayList<>(selectionUserController.getCheckComboBoxRole()
+				.getCheckModel()
+				.getCheckedItems());
+		roles.removeIf(r -> r == null || r.getRoleId() < 0);
+		return roles;
+	}
+	
+	/**
+	 * Filter user with one or more specified roles
+	 * @param user users to filter
+	 * @param roles roler to filter
+	 * @return filtered users
+	 */
+	public List<EnrolledUser> getUserWithRole(Collection<EnrolledUser> user, Collection<Role> roles) {
+		Set<EnrolledUser> usersInRoles =getUserWithRole(roles);
+		return user.stream()
+				.filter(usersInRoles::contains)
+				.collect(Collectors.toList());
+
+	}
+
+	/**
+	 * Return all users with the collection role
+	 * @param roles
+	 * @return users with one or more roles
+	 */
+	public Set<EnrolledUser> getUserWithRole(Collection<Role> roles) {
+		return  roles.stream()
+				.map(Role::getEnrolledUsers)
+				.flatMap(Set::stream)
+				.distinct()
+				.collect(Collectors.toSet());
+	}
+
+	public abstract void fillOptions(JSObject jsObject);
 
 	public JSObject getOptions() {
 		JSObject jsObject = getDefaultOptions();
-		return getOptions(jsObject);
-		
+		fillOptions(jsObject);
+		return jsObject;
+
 	}
 
 	public abstract void update();
 
 	public abstract void clear();
 
-	public abstract void exportImage(File file) throws IOException;
+	public void exportImage(File file) throws IOException {
+		UtilMethods.snapshotNode(file, webView);
+		UtilMethods.showExportedFile(file);
+	}
 
 	public JSObject getDefaultOptions() {
 
@@ -244,7 +301,7 @@ public abstract class Chart implements ExportableChart {
 	}
 
 	public CheckComboBox<Group> getSlcGroup() {
-		return slcGroup;
+		return checkComboBoxGroup;
 	}
 
 	public Stats getStats() {
@@ -290,8 +347,39 @@ public abstract class Chart implements ExportableChart {
 	public void setActualCourse(Course actualCourse) {
 		this.actualCourse = actualCourse;
 	}
+
 	public <T> T getConfigValue(String name) {
 		return mainConfiguration.getValue(this.chartType, name);
+	}
+
+	public <T> T getConfigValue(String name, T defaultValue) {
+		return mainConfiguration.getValue(this.chartType, name, defaultValue);
+	}
+
+	public <T> T getGeneralConfigValue(String name) {
+		return mainConfiguration.getValue(MainConfiguration.GENERAL, name);
+	}
+
+	public boolean getGeneralButtonlActive() {
+		return getGeneralConfigValue("generalActive");
+	}
+
+	public boolean getGroupButtonActive() {
+		return getGeneralConfigValue("groupActive");
+	}
+
+	/**
+	 * @return the webView
+	 */
+	public WebView getWebView() {
+		return webView;
+	}
+
+	/**
+	 * @param webView the webView to set
+	 */
+	public void setWebView(WebView webView) {
+		this.webView = webView;
 	}
 
 }

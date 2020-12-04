@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.HashSet;
@@ -25,6 +26,7 @@ import com.kennycason.kumo.bg.Background;
 import com.kennycason.kumo.bg.PixelBoundryBackground;
 import com.kennycason.kumo.bg.RectangleBackground;
 import com.kennycason.kumo.font.scale.LinearFontScalar;
+import com.kennycason.kumo.image.AngleGenerator;
 import com.kennycason.kumo.nlp.FrequencyAnalyzer;
 import com.kennycason.kumo.palette.ColorPalette;
 
@@ -46,7 +48,6 @@ import javafx.scene.web.WebView;
 public class ForumWordCloud extends WordCloudChart {
 
 	private ListView<CourseModule> listViewForum;
-	private WebView webView;
 	private DatePicker datePickerStart;
 	private DatePicker datePickerEnd;
 
@@ -74,9 +75,8 @@ public class ForumWordCloud extends WordCloudChart {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
-
-		return jsObject;
+	public void fillOptions(JSObject jsObject) {
+		//do nothing
 	}
 
 	@Override
@@ -105,14 +105,15 @@ public class ForumWordCloud extends WordCloudChart {
 
 		WordCloud wordCloud = new WordCloud(dimension, CollisionMode.PIXEL_PERFECT);
 
-		wordCloud.setColorPalette(new ColorPalette(new Color(249,65,68), new Color(243,114,44), new Color(248,150,30),
-				new Color(249, 199, 79), new Color(144,190,109), new Color(67,170,139), new Color(87,117,144)));
+		wordCloud.setColorPalette(new ColorPalette(new Color(249, 65, 68), new Color(243, 114, 44),
+				new Color(248, 150, 30), new Color(249, 199, 79), new Color(144, 190, 109), new Color(67, 170, 139),
+				new Color(87, 117, 144)));
 		wordCloud.setBackground(background);
 		wordCloud.setPadding(getConfigValue("padding"));
 
 		wordCloud.setFontScalar(new LinearFontScalar(getConfigValue("minFont"), getConfigValue("maxFont")));
 		wordCloud.setBackgroundColor(UtilMethods.toAwtColor(getConfigValue("chartBackgroundColor")));
-
+		wordCloud.setAngleGenerator(generateAngles(getConfigValue("angles")));
 		wordCloud.build(wordCount);
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		wordCloud.writeToStreamAsPNG(output);
@@ -121,7 +122,7 @@ public class ForumWordCloud extends WordCloudChart {
 				.encodeToString(outputByte);
 
 		JSObject options = getOptions();
-
+		base64Image = img;
 		webViewChartsEngine.executeScript("updateWordCloud('data:image/png;base64," + img + "'," + options + ")");
 	}
 
@@ -153,7 +154,8 @@ public class ForumWordCloud extends WordCloudChart {
 		Instant start = datePickerStart.getValue()
 				.atStartOfDay(ZoneId.systemDefault())
 				.toInstant();
-		Instant end = datePickerEnd.getValue().plusDays(1)
+		Instant end = datePickerEnd.getValue()
+				.plusDays(1)
 				.atStartOfDay(ZoneId.systemDefault())
 				.toInstant();
 		return actualCourse.getDiscussionPosts()
@@ -165,4 +167,20 @@ public class ForumWordCloud extends WordCloudChart {
 				.collect(Collectors.toList());
 	}
 
+	private AngleGenerator generateAngles(String commaSeparatedValues) {
+		try {
+			double[] radians = Arrays.stream(commaSeparatedValues.split(","))
+					.map(String::trim)
+					.map(Integer::valueOf)
+					.mapToDouble(Math::toRadians)
+					.toArray();
+			if (radians.length == 0) {
+				throw new IllegalArgumentException(commaSeparatedValues);
+			}
+			return new AngleGenerator(radians);
+		} catch (Exception e) {
+			return new AngleGenerator();
+		}
+
+	}
 }

@@ -1,7 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers.tabs;
 
-import java.time.LocalDate;
-
+import es.ubu.lsi.ubumonitor.controllers.DateController;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.controllers.WebViewAction;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
@@ -15,7 +14,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.GridPane;
@@ -28,56 +26,29 @@ public class RiskController extends WebViewAction {
 	private GridPane optionsUbuLogs;
 	@FXML
 	private ChoiceBox<GroupByAbstract<?>> choiceBoxDate;
-
-	@FXML
-	private GridPane dateGridPane;
+	
 	@FXML
 	private GridPane gridPaneOptionLogs;
 
 	@FXML
-	private DatePicker datePickerStart;
-
-	@FXML
-	private DatePicker datePickerEnd;
+	private DateController dateController;
 
 	private RiskJavaConnector javaConnector;
-	
+
 	@Override
 	public void init(MainController mainController, Tab tab, Course actualCourse, MainConfiguration mainConfiguration,
 			Stage stage) {
-		javaConnector = new RiskJavaConnector(webViewController.getWebViewCharts(), mainConfiguration, mainController, this, actualCourse);
+		javaConnector = new RiskJavaConnector(webViewController.getWebViewCharts(), mainConfiguration, mainController,
+				this, actualCourse);
 		init(tab, actualCourse, mainConfiguration, stage, javaConnector);
 
-		VisualizationController visualizationController = mainController.getWebViewTabsController().getVisualizationController();
-		initOptions(visualizationController.getDatePickerStart(), visualizationController.getDatePickerEnd(),
-				visualizationController.getChoiceBoxDate());
-
+		VisualizationController visualizationController = mainController.getWebViewTabsController()
+				.getVisualizationController();
+		initOptions(visualizationController.getChoiceBoxDate());
+		visualizationController.bindDatePicker(this, getDatePickerStart(), getDatePickerEnd());
 	}
 
-	private void initOptions(DatePicker datePickerStartBind, DatePicker datePickerEndBind,
-			ChoiceBox<GroupByAbstract<?>> choiceBoxBind) {
-
-		datePickerStart.setValue(actualCourse.getStart());
-		datePickerEnd.setValue(actualCourse.getEnd());
-
-		datePickerStart.setOnAction(event -> updateChart());
-		datePickerEnd.setOnAction(event -> updateChart());
-
-		datePickerStart.setDayCellFactory(picker -> new DateCell() {
-			@Override
-			public void updateItem(LocalDate date, boolean empty) {
-				super.updateItem(date, empty);
-				setDisable(empty || date.isAfter(datePickerEnd.getValue()));
-			}
-		});
-
-		datePickerEnd.setDayCellFactory(picker -> new DateCell() {
-			@Override
-			public void updateItem(LocalDate date, boolean empty) {
-				super.updateItem(date, empty);
-				setDisable(empty || date.isBefore(datePickerStart.getValue()) || date.isAfter(LocalDate.now()));
-			}
-		});
+	private void initOptions(ChoiceBox<GroupByAbstract<?>> choiceBoxBind) {
 
 		LogStats logStats = actualCourse.getLogStats();
 		TypeTimes typeTime = mainConfiguration.getValue(MainConfiguration.GENERAL, "initialTypeTimes");
@@ -104,10 +75,6 @@ public class RiskController extends WebViewAction {
 
 		optionsUbuLogs.managedProperty()
 				.bind(optionsUbuLogs.visibleProperty());
-		datePickerStart.valueProperty()
-				.bindBidirectional(datePickerStartBind.valueProperty());
-		datePickerEnd.valueProperty()
-				.bindBidirectional(datePickerEndBind.valueProperty());
 
 		choiceBoxDate.valueProperty()
 				.bindBidirectional(choiceBoxBind.valueProperty());
@@ -123,7 +90,7 @@ public class RiskController extends WebViewAction {
 	@Override
 	public void onWebViewTabChange() {
 
-		javaConnector.updateOptionsImages();
+		
 		javaConnector.updateChart();
 
 	}
@@ -154,7 +121,7 @@ public class RiskController extends WebViewAction {
 	}
 
 	public GridPane getDateGridPane() {
-		return dateGridPane;
+		return dateController.getDateGridPane();
 	}
 
 	public GridPane getGridPaneOptionLogs() {
@@ -162,11 +129,11 @@ public class RiskController extends WebViewAction {
 	}
 
 	public DatePicker getDatePickerStart() {
-		return datePickerStart;
+		return dateController.getDatePickerStart();
 	}
 
 	public DatePicker getDatePickerEnd() {
-		return datePickerEnd;
+		return dateController.getDatePickerEnd();
 	}
 
 }

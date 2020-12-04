@@ -31,12 +31,11 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 	private static final long serialVersionUID = 1L;
 
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
-	
+
 	/**
 	 * Constructor para agrupar la lineas de log en funcion de los usuarios.
 	 * 
-	 * @param logLines
-	 *            las lineas de log
+	 * @param logLines las lineas de log
 	 */
 	public GroupByYearWeek(List<LogLine> logLines) {
 		super(logLines);
@@ -71,7 +70,8 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 	 */
 	@Override
 	public Function<YearWeek, String> getStringFormatFunction() {
-		return yearWeek -> yearWeek.atDay(WeekFields.of(Locale.getDefault()).getFirstDayOfWeek())
+		return yearWeek -> yearWeek.atDay(WeekFields.of(Locale.getDefault())
+				.getFirstDayOfWeek())
 				.format(DATE_TIME_FORMATTER);
 	}
 
@@ -93,13 +93,15 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 
 	@Override
 	public Map<YearWeek, List<LocalDateTime>> getRangeLocalDateTime(LocalDate start, LocalDate end) {
-		DayOfWeek dayOfWeek = WeekFields.of(Locale.getDefault()).getFirstDayOfWeek();
+		DayOfWeek dayOfWeek = WeekFields.of(Locale.getDefault())
+				.getFirstDayOfWeek();
 		Map<YearWeek, List<LocalDateTime>> map = new HashMap<>();
 
 		for (YearWeek yearWeekStart = YearWeek.from(start), yearWeekEnd = YearWeek.from(end); !yearWeekStart
 				.isAfter(yearWeekEnd); yearWeekStart = yearWeekStart.plusWeeks(1)) {
 
-			for(LocalDate day = yearWeekStart.atDay(dayOfWeek); !day.isAfter(yearWeekStart.atDay(dayOfWeek.minus(1))); day = day.plusDays(1)) {
+			for (LocalDate day = yearWeekStart.atDay(dayOfWeek); !day
+					.isAfter(yearWeekStart.atDay(dayOfWeek.minus(1))); day = day.plusDays(1)) {
 				if (!start.isAfter(day) && !end.isBefore(day)) {
 					map.computeIfAbsent(yearWeekStart, k -> new ArrayList<>())
 							.add(day.atStartOfDay());
@@ -108,6 +110,27 @@ public class GroupByYearWeek extends GroupByAbstract<YearWeek> {
 
 		}
 		return map;
+	}
+
+	@Override
+	public LocalDate getStartLocalDate(LocalDate start) {
+		DayOfWeek dayOfWeek = WeekFields.of(Locale.getDefault())
+				.getFirstDayOfWeek();
+		return YearWeek.from(start)
+				.atDay(dayOfWeek);
+	}
+
+	@Override
+	public LocalDate getEndLocalDate(LocalDate end) {
+		return getEndLocalDate(YearWeek.from(end));
+	}
+
+	@Override
+	public LocalDate getEndLocalDate(YearWeek end) {
+		DayOfWeek lastDayOfWeek = WeekFields.of(Locale.getDefault())
+				.getFirstDayOfWeek()
+				.minus(1);
+		return end.atDay(lastDayOfWeek);
 	}
 
 }

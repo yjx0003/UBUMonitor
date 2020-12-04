@@ -33,7 +33,6 @@ import es.ubu.lsi.ubumonitor.view.chart.VisNetwork;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.paint.Color;
-import javafx.scene.web.WebView;
 
 public class ForumPosts extends VisNetwork {
 
@@ -41,9 +40,9 @@ public class ForumPosts extends VisNetwork {
 	private DatePicker datePickerEnd;
 	private ListView<CourseModule> listViewForum;
 
-	public ForumPosts(MainController mainController, WebView webView, ListView<CourseModule> listViewForum,
+	public ForumPosts(MainController mainController, ListView<CourseModule> listViewForum,
 			DatePicker datePickerStart, DatePicker datePickerEnd) {
-		super(mainController, ChartType.FORUM_POSTS, webView);
+		super(mainController, ChartType.FORUM_POSTS);
 		this.datePickerStart = datePickerStart;
 		this.datePickerEnd = datePickerEnd;
 		this.listViewForum = listViewForum;
@@ -86,7 +85,7 @@ public class ForumPosts extends VisNetwork {
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
+	public void fillOptions(JSObject jsObject) {
 		JSObject options = new JSObject();
 
 		options.put("edges", getEdgesOptions());
@@ -96,7 +95,6 @@ public class ForumPosts extends VisNetwork {
 		options.put("interaction", getInteractionOptions());
 		jsObject.put("options", options);
 
-		return jsObject;
 
 	}
 
@@ -188,7 +186,7 @@ public class ForumPosts extends VisNetwork {
 		stringBuilder.append(LocalDateTime.ofInstant(discussionPost.getCreated(), ZoneId.systemDefault())
 				.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.SHORT)));
 		stringBuilder.append("<br><hr><br>");
-		stringBuilder.append(Parsers.parseToHtml(discussionPost.getMessage(), discussionPost.getMessageformat()));
+		stringBuilder.append(Parsers.changeImages(Parsers.parseToHtml(discussionPost.getMessage(), discussionPost.getMessageformat()), "../img/image_not_available.png"));
 		return stringBuilder.toString();
 	}
 

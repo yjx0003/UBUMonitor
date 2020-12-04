@@ -3,6 +3,7 @@ package es.ubu.lsi.ubumonitor.view.chart.logs;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,80 +15,107 @@ import es.ubu.lsi.ubumonitor.model.LogLine;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
-import es.ubu.lsi.ubumonitor.util.DateTimeWrapper;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
+import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 
-public class ScatterUser extends ChartjsLog {
-
-	private DateTimeWrapper dateTimeWrapper;
+public class ScatterUser extends PlotlyLog {
 
 	public ScatterUser(MainController mainController) {
 		super(mainController, ChartType.SCATTER_USER);
 		useLegend = true;
 		useRangeDate = true;
-		dateTimeWrapper = new DateTimeWrapper();
+
 	}
 
 	@Override
-	public JSObject getOptions(JSObject jsObject) {
-		LocalDate dateStart = datePickerStart.getValue();
-		LocalDate dateEnd = datePickerEnd.getValue();
-		jsObject.put("typeGraph", "'scatter'");
-		jsObject.put("onClick",
-				"function(t,a){let e=myChart.getElementAtEvent(t)[0];e&&javaConnector.dataPointSelection(e._datasetIndex)}");
-		jsObject.put("scales",
-				"{yAxes:[{type:'category'}],xAxes:[{type:'time',ticks:{min:'" + dateTimeWrapper.formatDate(dateStart)
-						+ "',max:'" + dateTimeWrapper.formatDate(dateEnd.plusDays(1))
-						+ "',maxTicksLimit:10},time:{minUnit:'day',parser:'" + dateTimeWrapper.getPattern() + "'}}]}");
-		jsObject.put("tooltips",
-				"{callbacks:{label:function(l,a){return a.datasets[l.datasetIndex].label+': '+ l.xLabel}}}");
-		return jsObject;
-	}
-
-	@Override
-	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet) {
-		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-
-		LocalDate dateStart = datePickerStart.getValue();
-		LocalDate dateEnd = datePickerEnd.getValue();
-		GroupByAbstract<?> groupBy = actualCourse.getLogStats()
+	public GroupByAbstract<?> getGroupBy() {
+		return actualCourse.getLogStats()
 				.getByType(TypeTimes.DAY);
+	}
+
+	@Override
+	public <E> JSArray createData(List<E> typeLogs, DataSet<E> dataSet, List<EnrolledUser> selectedUsers,
+			LocalDate dateStart, LocalDate dateEnd, GroupByAbstract<?> groupBy) {
+		JSArray data = new JSArray();
 		Map<EnrolledUser, Map<E, List<LogLine>>> map = dataSet.getUserLogs(groupBy, selectedUsers, typeLogs, dateStart,
 				dateEnd);
-		JSObject data = new JSObject();
-		JSArray datasets = new JSArray();
-
-		JSArray labels = new JSArray();
-		for (E typeLog : typeLogs) {
-			labels.addWithQuote(dataSet.translate(typeLog));
-		}
-
-		data.put("labels", labels);
-
+		Map<E, String> logTypeTranslations = getLogTypeTranslations(typeLogs, dataSet);
 		for (EnrolledUser user : selectedUsers) {
-			JSObject dataset = new JSObject();
-			dataset.putWithQuote("label", user.getFullName());
-			dataset.put("backgroundColor", hex(user.getId()));
-			JSArray dataArray = new JSArray();
-			for (int i = 0; i < typeLogs.size(); i++) {
-				List<LogLine> logLines = map.get(user)
-						.get(typeLogs.get(i));
+			JSArray x = new JSArray();
+			JSArray y = new JSArray();
+			JSArray userids = new JSArray();
+			Map<E, List<LogLine>> mapTypeLogs = map.get(user);
+			for (E typeLog : typeLogs) {
+				List<LogLine> logLines = mapTypeLogs.get(typeLog);
 				for (LogLine logLine : logLines) {
-					JSObject point = new JSObject();
-					point.putWithQuote("x", dateTimeWrapper.format(logLine.getTime()));
-					point.putWithQuote("y", i);
-					dataArray.add(point);
+					y.addWithQuote(logTypeTranslations.get(typeLog));
+					x.addWithQuote(logLine.getTime()
+							.toLocalDateTime());
+					userids.add(user.getId());
 				}
-
 			}
-			dataset.put("data", dataArray);
-			datasets.add(dataset);
+
+			JSObject trace = createTrace(user.getFullName(), x, y);
+			trace.put("userids", userids);
+			data.add(trace);
+
 		}
 
-		data.put("datasets", datasets);
-		return data.toString();
+		return data;
+
+	}
+
+	@Override
+	public <E> JSObject createLayout(List<E> typeLogs, DataSet<E> dataSet, LocalDate dateStart, LocalDate dateEnd,
+			GroupByAbstract<?> groupBy) {
+		JSObject layout = new JSObject();
+
+		JSObject xaxis = new JSObject();
+		JSArray range = new JSArray();
+		range.addWithQuote(dateStart);
+		range.addWithQuote(dateEnd);
+		Plotly.defaultAxisValues(xaxis, null, null);
+		xaxis.put("type", "'date'");
+		xaxis.put("range", range);
+
+		JSObject yaxis = new JSObject();
+		Plotly.defaultAxisValues(yaxis, null, null);
+		yaxis.put("autorange", "'reversed'");
+		yaxis.put("type", "'category'");
+
+		layout.put("xaxis", xaxis);
+		layout.put("yaxis", yaxis);
+
+		layout.put("hovermode", "'closest'");
+		return layout;
+	}
+
+	private JSObject createTrace(String name, JSArray x, JSArray y) {
+		JSObject trace = new JSObject();
+
+		JSObject marker = new JSObject();
+		trace.putWithQuote("name", name);
+		trace.put("type", "'scatter'");
+		trace.put("mode", "'markers'");
+		trace.put("x", x);
+		trace.put("y", y);
+		trace.put("marker", marker);
+		trace.put("hovertemplate", "'<b>%{y}<br>%{data.name}: </b>%{x}<extra></extra>'");
+
+		marker.put("color", rgb(name));
+
+		return trace;
+	}
+
+	private <E> Map<E, String> getLogTypeTranslations(List<E> logTypes, DataSet<E> dataSet) {
+		Map<E, String> map = new HashMap<>(logTypes.size());
+		for (E logType : logTypes) {
+			map.put(logType, dataSet.translate(logType));
+		}
+		return map;
+
 	}
 
 	@Override

@@ -53,11 +53,9 @@ public abstract class Plotly extends Chart {
 		try {
 			webViewChartsEngine.executeScript("updatePlotly(" + plot + "," + getOptions() + ")");
 		} catch (JSException e) {
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Probably updating too fast plotly: {}", e);
-			} else {
-				LOGGER.warn("Probably updating too fast plotly: {}", e.getMessage());
-			}
+		
+			LOGGER.debug("Probably updating too fast plotly: {}", e);
+			
 
 		}
 

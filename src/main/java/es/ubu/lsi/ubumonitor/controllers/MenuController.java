@@ -9,6 +9,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -302,9 +303,8 @@ public class MenuController {
 
 	public void exportConfiguration() {
 		Course course = controller.getActualCourse();
-		UtilMethods.fileAction(UtilMethods.removeReservedChar(course.getFullName() + "-" + course.getId()),
-				ConfigHelper.getProperty("configurationFolderPath", "./"), controller.getStage(),
-				FileUtil.FileChooserType.SAVE, file -> {
+		UtilMethods.fileAction(getFileName(course), ConfigHelper.getProperty("configurationFolderPath", "./"),
+				controller.getStage(), FileUtil.FileChooserType.SAVE, file -> {
 					ConfigurationController.saveConfiguration(controller.getMainConfiguration(), file.toPath());
 					ConfigHelper.setProperty("configurationFolderPath", file.getParent());
 				}, FileUtil.JSON);
@@ -348,9 +348,8 @@ public class MenuController {
 
 	private void exportPhoto(boolean defaultPhoto) {
 		Course course = controller.getActualCourse();
-		UtilMethods.fileAction(UtilMethods.removeReservedChar(course.getFullName() + "-" + course.getId()),
-				ConfigHelper.getProperty("csvFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
-				file -> {
+		UtilMethods.fileAction(getFileName(course), ConfigHelper.getProperty("csvFolderPath", "./"),
+				controller.getStage(), FileUtil.FileChooserType.SAVE, file -> {
 					UserPhoto exportUserPhoto = new UserPhoto();
 					exportUserPhoto.exportEnrolledUsersPhoto(course, mainController.getSelectionUserController()
 							.getListParticipants()
@@ -364,9 +363,8 @@ public class MenuController {
 	public void exportDashboard() {
 
 		Course course = controller.getActualCourse();
-		UtilMethods.fileAction(UtilMethods.removeReservedChar(course.getFullName() + "-" + course.getId()),
-				ConfigHelper.getProperty("csvFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
-				file -> {
+		UtilMethods.fileAction(getFileName(course), ConfigHelper.getProperty("csvFolderPath", "./"),
+				controller.getStage(), FileUtil.FileChooserType.SAVE, file -> {
 					Excel excel = new Excel();
 					excel.createExcel(file.getAbsolutePath());
 					ConfigHelper.setProperty("csvFolderPath", file.getParent());
@@ -491,7 +489,7 @@ public class MenuController {
 		};
 	}
 
-	public void exportRankingReport() throws IOException {
+	public void exportRankingReport() {
 
 		RankingReport rankingReport = new RankingReport();
 		SelectionController selectionController = mainController.getSelectionController();
@@ -532,9 +530,8 @@ public class MenuController {
 								.plusDays(1)
 								.atStartOfDay(ZoneId.systemDefault())
 								.toInstant()));
-		UtilMethods.fileAction(UtilMethods.removeReservedChar(course.getFullName() + "-" + course.getId()),
-				ConfigHelper.getProperty("csvFolderPath", "./"), controller.getStage(), FileUtil.FileChooserType.SAVE,
-				file -> {
+		UtilMethods.fileAction(getFileName(course), ConfigHelper.getProperty("csvFolderPath", "./"),
+				controller.getStage(), FileUtil.FileChooserType.SAVE, file -> {
 					rankingReport.createReport(file, controller.getDataBase(), users, rankingLogs, rankingGrades,
 							rankingActivities, selectionController.getSelectedLogTypeTransLated(), gradeItems,
 							activities, start.getValue(), end.getValue(), mainController.getSelectionController()
@@ -545,6 +542,11 @@ public class MenuController {
 					ConfigHelper.setProperty("csvFolderPath", file.getParent());
 				}, FileUtil.WORD);
 
+	}
+
+	private static String getFileName(Course course) {
+		return UtilMethods.removeReservedChar(course.getFullName()) + "-" + course.getId() + "-"
+				+ WebViewAction.FILE_FORMATTER.format(LocalDateTime.now());
 	}
 
 }

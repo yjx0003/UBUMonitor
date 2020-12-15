@@ -43,7 +43,7 @@ public class Radar extends Plotly {
 
 		createUserTraces(data, users, gradeItems);
 
-		createCutGradeTrace(data, gradeItems, getGeneralConfigValue("cutGrade"), getConfigValue("color"));
+		createCutGradeTrace(data, gradeItems, getGeneralConfigValue("cutGrade"), getConfigValue("cutGradeColor"));
 
 		boolean generalActive = getGeneralButtonlActive();
 		createMeanTrace(data, stats.getGeneralStats(), gradeItems, generalActive);
@@ -98,8 +98,10 @@ public class Radar extends Plotly {
 		trace.remove("fill");
 		JSObject line = (JSObject) trace.get("line");
 		line.put("color", colorToRGB(color));
+		line.put("shape", "'spline'");
 		trace.put("mode", "'lines'");
 		trace.put("hoverinfo", "'none'");
+		trace.remove("hovertemplate");
 		data.add(trace);
 
 	}

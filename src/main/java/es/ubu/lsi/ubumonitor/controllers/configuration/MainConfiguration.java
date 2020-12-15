@@ -114,6 +114,8 @@ public class MainConfiguration {
 		createItem(ChartType.STACKED_BAR, "calculateMax", false);
 		createItem(ChartType.SESSION, "timeInterval", 60);
 
+		createItem(ChartType.RADAR, "color", Color.BLACK);
+		
 		createItem(ChartType.BOXPLOT, HORIZONTAL_MODE, false);
 		createItem(ChartType.BOXPLOT, "standardDeviation", false);
 		createItem(ChartType.BOXPLOT, "notched", false);

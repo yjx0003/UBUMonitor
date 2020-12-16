@@ -125,6 +125,9 @@ public class VisualizationJavaConnector extends JavaConnectorAbstract {
 	}
 	@Override
 	public void manageOptions() {
+		if(currentChart==null) {
+			return;
+		}
 		visualizationController.getOptionsUbuLogs()
 				.setVisible(currentChart.isUseRangeDate() || currentChart.isUseGroupBy());
 		visualizationController.getDateGridPane()

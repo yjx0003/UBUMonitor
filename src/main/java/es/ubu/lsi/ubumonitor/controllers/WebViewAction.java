@@ -26,7 +26,7 @@ public abstract class WebViewAction implements MainAction {
 
 	private static final String CSV_FOLDER_PATH = "csvFolderPath";
 
-	private static final DateTimeFormatter FILE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddhhmmss");
+	public static final DateTimeFormatter FILE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddhhmmss");
 
 	protected WebEngine webEngine;
 

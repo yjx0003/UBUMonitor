@@ -166,4 +166,6 @@ button[disabled] {
     max-width: 100.0%;
     height:95.0%;
 }
-
+g.pointtext {
+	display: none;
+}

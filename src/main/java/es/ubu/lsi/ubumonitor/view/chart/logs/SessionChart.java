@@ -57,7 +57,16 @@ public class SessionChart extends PlotlyLog {
 		xaxis.put("type", "'category'");
 		Plotly.defaultAxisValues(xaxis, getXAxisTitle(), null);
 		JSObject yaxis = new JSObject();
-		Plotly.defaultAxisValues(yaxis, getYAxisTitle(), null);
+	
+		String maxText = textFieldMax.getText();
+		if(maxText==null ||  maxText.isEmpty()) {
+			Plotly.defaultAxisValues(yaxis, getYAxisTitle(), null);
+		}else {
+			long max =  getSuggestedMax(maxText);
+			Plotly.defaultAxisValues(yaxis, getYAxisTitle(), "[0," + max + "]");
+			
+		}
+		
 		
 		layout.put("xaxis", xaxis);
 		layout.put("yaxis", yaxis);

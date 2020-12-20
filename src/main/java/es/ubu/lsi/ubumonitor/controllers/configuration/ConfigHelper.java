@@ -37,7 +37,7 @@ public class ConfigHelper {
 		File file = new File(path);
 		try {
 			if (!file.isFile() && !file.createNewFile()) {
-				LOGGER.error("No se ha podido crear el fichero properties: {} ", path);
+				LOGGER.warn("No se ha podido crear el fichero properties, intentando generar uno nuevo: {} ", path);
 				properties = new JSONObject();
 			} else { // si existe el fichero properties inicializamos los valores
 				try (InputStream in = new FileInputStream(file)) {

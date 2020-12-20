@@ -85,7 +85,7 @@ public class Controller {
 		return instance;
 	}
 
-	public void initialize() throws IOException {
+	public void initialize() {
 		
 		ConfigHelper.initialize(AppInfo.PROPERTIES_PATH);
 		

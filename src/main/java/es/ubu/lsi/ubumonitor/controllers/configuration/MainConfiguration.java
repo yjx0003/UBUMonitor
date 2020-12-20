@@ -65,8 +65,6 @@ public class MainConfiguration {
 		createItem(GENERAL, "chartBackgroundColor", Color.TRANSPARENT);
 		createItem(GENERAL, "cutGrade", 5.0);
 		createItem(GENERAL, "limitLevelGradeItem", 1);
-		createItem(GENERAL, "borderLength", 10);
-		createItem(GENERAL, "borderSpace", 5);
 		createItem(GENERAL, "legendActive", true);
 		createItem(GENERAL, "generalActive", true);
 		createItem(GENERAL, "groupActive", true);
@@ -114,6 +112,8 @@ public class MainConfiguration {
 		createItem(ChartType.STACKED_BAR, "calculateMax", false);
 		createItem(ChartType.SESSION, "timeInterval", 60);
 
+		createItem(ChartType.RADAR, "cutGradeColor", Color.BLACK);
+		
 		createItem(ChartType.BOXPLOT, HORIZONTAL_MODE, false);
 		createItem(ChartType.BOXPLOT, "standardDeviation", false);
 		createItem(ChartType.BOXPLOT, "notched", false);

@@ -8,7 +8,8 @@ package es.ubu.lsi.ubumonitor;
  */
 public class AppInfo {
 
-	public static final String VERSION = "2.8.1";
+
+	public static final String VERSION = "2.8.2";
 	
 	public static final String APPLICATION_VERSION = "v" + VERSION;
 	

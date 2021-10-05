@@ -147,8 +147,8 @@ public class ForumUserPostBar extends Plotly {
 		JSObject yaxis = new JSObject();
 
 		if (horizontalMode) {
-			Plotly.defaultAxisValues(xaxis, getYAxisTitle(), "");
-			Plotly.defaultAxisValues(yaxis, getXAxisTitle(), null);
+			Plotly.defaultAxisValues(xaxis, getXAxisTitle() , "");
+			Plotly.defaultAxisValues(yaxis, getYAxisTitle(), null);
 			yaxis.put("type", "'category'");
 			layout.put("xaxis", yaxis);
 			layout.put("yaxis", xaxis);

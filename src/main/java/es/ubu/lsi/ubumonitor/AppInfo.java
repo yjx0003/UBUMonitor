@@ -70,6 +70,8 @@ public class AppInfo {
 	public static final String VERSIONS_DIR = "versions/";
 
 	public static final String ARCHIVED_DIR = "Archived Courses";
+	
+	public static final String REMOTE_CONFIGURATION_URL = "https://raw.githubusercontent.com/yjx0003/UBUMonitor/master/configurations/remoteConfiguration.json";
 
 	
 

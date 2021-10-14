@@ -234,10 +234,12 @@ public class MenuController {
 	private void changeScene(URL sceneFXML, Object controllerObject) {
 		try {
 			UtilMethods.changeScene(sceneFXML, controller.getStage(), controllerObject);
-			controller.getStage()
-					.setResizable(false);
+			controller.getStage().isResizable();
 			controller.getStage()
 					.setMaximized(false);
+			controller.getStage()
+					.setResizable(false);
+			
 
 		} catch (Exception e) {
 			LOGGER.error("Error al modifcar la ventana de JavaFX: {}", e);
@@ -310,18 +312,20 @@ public class MenuController {
 				}, FileUtil.JSON);
 
 	}
-
-	/**
-	 * Abre en el navegador el repositorio del proyecto.
-	 * 
-	 * @param actionEvent El ActionEvent.
-	 */
+	
+	
 	public void aboutApp() {
 
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AboutApp.fxml"), I18n.getResourceBundle());
 
 		UtilMethods.createDialog(loader, controller.getStage());
 
+	}
+	
+	public void comment() {
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Comments.fxml"), I18n.getResourceBundle());
+
+		UtilMethods.createDialog(loader, controller.getStage());
 	}
 
 	public void moreInfo() {

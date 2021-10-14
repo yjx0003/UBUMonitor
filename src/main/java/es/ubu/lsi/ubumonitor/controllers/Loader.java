@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.Style;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
+import es.ubu.lsi.ubumonitor.controllers.configuration.RemoteConfiguration;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -34,9 +35,12 @@ public class Loader extends Application {
 	public void start(Stage primaryStage) {
 
 		try {
-			//Thread.setDefaultUncaughtExceptionHandler((t, e) -> LOGGER.error("Uncaughted error:", t, e));
+			Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> {
+	            UtilMethods.errorWindow("Uncaught exception", throwable);
+	        });			
+			setRemoteConfiguration();
 			controller.initialize();
-
+			
 			LOGGER.info("[Bienvenido a {}]", AppInfo.APPLICATION_NAME_WITH_VERSION);
 			
 			hackTooltipStartTiming();
@@ -83,7 +87,12 @@ public class Loader extends Application {
 	    }
 	}
 	
-	
+	private void setRemoteConfiguration() {
+		RemoteConfiguration remoteConfiguration = RemoteConfiguration.getInstance();
+		
+		remoteConfiguration.setConfiguration(AppInfo.REMOTE_CONFIGURATION_URL);
+		
+	}
 	
 
 	public static void initialize() {

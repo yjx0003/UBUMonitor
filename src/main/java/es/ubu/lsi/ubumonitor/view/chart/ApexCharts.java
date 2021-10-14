@@ -13,7 +13,7 @@ public abstract class ApexCharts extends Chart {
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
+		// dont clear
 
 	}
 

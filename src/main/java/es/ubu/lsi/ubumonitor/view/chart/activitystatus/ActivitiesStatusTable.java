@@ -127,11 +127,10 @@ public class ActivitiesStatusTable extends Tabulator {
 			int progress = 0;
 			
 			for (CourseModule courseModule : courseModules) {
-				LOGGER.debug("Activity: {}",courseModule.getActivitiesCompletion());
 				
 				ActivityCompletion activity = courseModule.getActivitiesCompletion()
 						.get(enrolledUser);
-				LOGGER.debug("Activity usuario: {}", courseModule.getActivitiesCompletion().get(enrolledUser));
+				
 				String field = "ID" + courseModule.getCmid();
 			
 					

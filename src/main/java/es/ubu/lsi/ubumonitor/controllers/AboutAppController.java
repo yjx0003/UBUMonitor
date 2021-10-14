@@ -60,11 +60,12 @@ public class AboutAppController implements Initializable {
 	}
 
 	public void openAuthor2() {
-		UtilMethods.mailTo("rmartico@ubu.es");
+		throw new IllegalAccessError("Hola");
+		//UtilMethods.openURL("https://investigacion.ubu.es/investigadores/35319/detalle");
 	}
 
 	public void openAuthor3() {
-		UtilMethods.mailTo("cpardo@ubu.es");
+		UtilMethods.openURL("https://investigacion.ubu.es/investigadores/35408/detalle");
 	}
 
 	public void openAuthor4() {

@@ -287,14 +287,14 @@ public class BubbleComparison extends PlotlyLog {
 	@Override
 	public <E> JSArray createData(List<E> typeLogs, DataSet<E> dataSet, List<EnrolledUser> selectedUsers,
 			LocalDate dateStart, LocalDate dateEnd, GroupByAbstract<?> groupBy) {
-		// TODO Auto-generated method stub
+		// has private create data, dont need this
 		return null;
 	}
 
 	@Override
 	public <E> JSObject createLayout(List<E> typeLogs, DataSet<E> dataSet, LocalDate dateStart, LocalDate dateEnd,
 			GroupByAbstract<?> groupBy) {
-		// TODO Auto-generated method stub
+		// dont need this
 		return null;
 	}
 

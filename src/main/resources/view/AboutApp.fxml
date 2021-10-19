@@ -55,6 +55,7 @@
          <center>
             <GridPane BorderPane.alignment="CENTER">
               <columnConstraints>
+                  <ColumnConstraints hgrow="NEVER" />
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
               </columnConstraints>
               <rowConstraints>
@@ -65,15 +66,31 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <Label text="%text.author">
+                  <Label text="%text.author" GridPane.columnIndex="1">
                      <font>
                         <Font size="24.0" />
                      </font>
                   </Label>
-                  <Hyperlink onAction="#openAuthor1" text="Yi Peng Ji" GridPane.rowIndex="1" />
-                  <Hyperlink layoutX="10.0" layoutY="41.0" onAction="#openAuthor2" text="Raúl Marticorena Sánchez" GridPane.rowIndex="3" />
-                  <Hyperlink layoutX="10.0" layoutY="41.0" onAction="#openAuthor3" text="Carlos Pardo Aguilar" GridPane.rowIndex="4" />
-                  <Hyperlink onAction="#openAuthor4" text="Xing Long Ji" GridPane.rowIndex="2" />
+                  <Hyperlink onAction="#openAuthor1" text="Yi Peng Ji" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Hyperlink contentDisplay="RIGHT" layoutX="10.0" layoutY="41.0" onAction="#openAuthor2" text="Raúl Marticorena Sánchez" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <Hyperlink contentDisplay="RIGHT" layoutX="10.0" layoutY="41.0" onAction="#openAuthor3" text="Carlos Pardo Aguilar" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <Hyperlink onAction="#openAuthor4" text="Xing Long Ji" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <ImageView fitHeight="30.0" fitWidth="50.0" onMouseClicked="#openDigit" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="3">
+                     <image>
+                        <Image url="@../img/digit.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+                  <ImageView fitHeight="30.0" fitWidth="50.0" onMouseClicked="#openDigit" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="4">
+                     <image>
+                        <Image url="@../img/digit.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
                </children>
             </GridPane>
          </center>

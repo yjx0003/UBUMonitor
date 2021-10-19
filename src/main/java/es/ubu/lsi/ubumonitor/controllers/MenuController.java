@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -40,6 +41,7 @@ import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
+import es.ubu.lsi.ubumonitor.model.LogLine;
 import es.ubu.lsi.ubumonitor.model.LogStats;
 import es.ubu.lsi.ubumonitor.model.Logs;
 import es.ubu.lsi.ubumonitor.model.datasets.DataSet;
@@ -57,10 +59,13 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
@@ -68,6 +73,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.PopupWindow.AnchorLocation;
@@ -461,6 +467,75 @@ public class MenuController {
 					ConfigHelper.setProperty("importLogsFolderPath", file.toString());
 					createServiceImportLogs(file);
 				}, false, FileUtil.CSV);
+	}
+	
+	public void purgeLogs() {
+		
+		Dialog<LocalDate> dialog = new Dialog<>();
+	
+		dialog.getDialogPane().getButtonTypes().setAll(ButtonType.APPLY, ButtonType.CANCEL);
+		dialog.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
+		dialog.initModality(Modality.APPLICATION_MODAL);
+		Stage stageAlert = (Stage) dialog.getDialogPane()
+				.getScene()
+				.getWindow();
+		stageAlert.getIcons()
+				.add(new Image("/img/logo_min.png"));
+		GridPane grid = new GridPane();
+		
+		grid.setHgap(20);
+		grid.setVgap(20);
+		grid.setPadding(new Insets(20, 50, 10, 50));
+
+		DatePicker datePicker = new DatePicker(LocalDate.now());
+		
+		grid.add(new Label(I18n.get("label.purgeLogs")), 0, 0, 2, 1);
+		grid.add(new Label(I18n.get("purgePreviousDate")), 0, 1);
+		grid.add(datePicker, 1, 1);
+		
+		dialog.getDialogPane().setContent(grid);
+
+
+		dialog.setResultConverter(dialogButton -> {
+		    if (dialogButton == ButtonType.APPLY) {
+		        return datePicker.getValue();
+		    }
+		    return null;
+		});
+
+		Optional<LocalDate> result = dialog.showAndWait();
+
+		result.ifPresent(date -> createServicePurgeLogs(date));
+		
+
+	}
+	
+	
+	private void createServicePurgeLogs(LocalDate date) {
+		Task<Void> task = getPurgeLogsWorker(date);
+		task.setOnSucceeded(
+				e -> UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), true));
+		task.setOnFailed(e -> UtilMethods.errorWindow("Cannot purge logs", e.getSource()
+				.getException()));
+		Thread thread = new Thread(task);
+		thread.setDaemon(true);
+		thread.start();
+	}
+	
+	private Task<Void> getPurgeLogsWorker(LocalDate date) {
+		return new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				Course course = controller.getActualCourse();
+				List<LogLine> logs = course.getLogs().getList();
+				logs.removeIf(log-> log.getTime().isBefore(date.atStartOfDay(course.getLogs().getZoneId())));
+				Serialization.encrypt(controller.getPassword(), controller.getHostUserModelversionDir()
+						.resolve(controller.getCourseFile(course))
+						.toString(), controller.getDataBase());
+
+				return null;
+			}
+		};
 	}
 
 	public void createServiceImportLogs(File file) {

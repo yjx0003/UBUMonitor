@@ -36,7 +36,7 @@ public class Loader extends Application {
 
 		try {
 			Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> {
-	            UtilMethods.errorWindow("Uncaught exception", throwable);
+	            UtilMethods.errorWindow("Uncaught exception: "+ throwable.getMessage(), throwable);
 	        });			
 			setRemoteConfiguration();
 			controller.initialize();

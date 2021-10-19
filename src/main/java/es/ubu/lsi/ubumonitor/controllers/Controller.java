@@ -23,6 +23,7 @@ import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.DataBase;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
 import es.ubu.lsi.ubumonitor.model.Stats;
+import es.ubu.lsi.ubumonitor.persistence.Serialization;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.Languages;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
@@ -86,9 +87,9 @@ public class Controller {
 	}
 
 	public void initialize() {
-		
+
 		ConfigHelper.initialize(AppInfo.PROPERTIES_PATH);
-		
+
 		// Si no existe el recurso de idioma especificado cargamos el Español
 		Languages lang = Languages.getLanguageByTag(ConfigHelper.getProperty("language", Locale.getDefault()
 				.toLanguageTag()));
@@ -378,6 +379,11 @@ public class Controller {
 	 */
 	public void setDefautlDataBase(DataBase defaultDatabase) {
 		this.defaultDatabase = defaultDatabase;
+	}
+
+	public void saveCourse(Course course) {
+		Serialization.encrypt(getPassword(), getHostUserModelversionDir().resolve(getCourseFile(course))
+				.toString(), getDataBase());
 	}
 
 }

@@ -8,16 +8,12 @@ import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.web.WebEngine;
 
 public class AboutAppController implements Initializable {
 
 	private StringBuilder appInfo;
-
-	@FXML
-	private Label labelJre;
 
 	@FXML
 	private TextArea textArea;
@@ -69,6 +65,10 @@ public class AboutAppController implements Initializable {
 
 	public void openAuthor4() {
 		UtilMethods.mailTo("xjx1001@alu.ubu.es");
+	}
+	
+	public void openDigit() {
+		UtilMethods.openURL("https://www.ubu.es/instituto-de-formacion-e-innovacion-educativa-ifie/grupos-de-innovacion-docente-de-la-universidad-de-burgos/gid-de-la-ubu-digit-docencia-de-informatica-en-grados-de-ingenieria-y");
 	}
 	private void append(String key, String value) {
 		appInfo.append(key + value + "\n");

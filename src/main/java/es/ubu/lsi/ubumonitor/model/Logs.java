@@ -3,6 +3,7 @@ package es.ubu.lsi.ubumonitor.model;
 import java.io.Serializable;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,12 +58,12 @@ public class Logs implements Serializable {
 	}
 
 	/**
-	 * Devuelve la última linea del log o null si está vacio.
+	 * Devuelve la última linea del log o o la fecha actual en a las 00 horas si no hay.
 	 * 
-	 * @return última linea del log o null si está vacio
+	 * @return última linea del log o la fecha actual a las 00 si no hay
 	 */
 	public ZonedDateTime getLastZonedDatetime() {
-		return isEmpty(logLines) ? null
+		return isEmpty(logLines) ? ZonedDateTime.now(getZoneId()).truncatedTo(ChronoUnit.DAYS)
 				: logLines.get(logLines.size() - 1)
 						.getTime();
 	}

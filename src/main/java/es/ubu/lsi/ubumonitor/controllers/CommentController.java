@@ -43,6 +43,11 @@ public class CommentController implements Initializable{
 		buttonSend.disableProperty().bind(Bindings.isEmpty(textAreaComment.textProperty()));
 		labelCharacterCount.textProperty().bind(Bindings.length(textAreaComment.textProperty())
                 .asString("%d/"+ MicrosoftForms.LIMIT_CHARACTERS));
+		
+	}
+	
+	public void openMicrosoftFormPolicy() {
+		UtilMethods.openURL(I18n.get("url.microsoftFormPolicy"));
 	}
 	
 	

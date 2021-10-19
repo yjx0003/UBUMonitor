@@ -48,6 +48,7 @@
                <items>
                   <MenuItem fx:id="MIClearSelection" onAction="#clearSelection" text="%menu.clearselection" />
                   <MenuItem onAction="#importLogs" text="%menu.importlogs" />
+                  <MenuItem onAction="#purgeLogs" text="%menu.purgeLogs" />
                </items>
             </Menu>
             <Menu text="%menu.view">

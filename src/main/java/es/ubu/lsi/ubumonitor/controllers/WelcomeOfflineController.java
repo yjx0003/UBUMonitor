@@ -366,7 +366,6 @@ public class WelcomeOfflineController implements Initializable {
 		// Traditional way to get the response value.
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
-			controller.setPassword(result.get());
 			loadData(file, result.get());
 		}
 

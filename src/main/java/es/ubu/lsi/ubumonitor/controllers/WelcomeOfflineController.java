@@ -393,7 +393,7 @@ public class WelcomeOfflineController implements Initializable {
 		WelcomeController.changeToMainScene(controller.getStage(), getClass().getResource("/view/Main.fxml"),
 				getClass().getResource("/img/alert.gif")
 						.toExternalForm(),
-				lastModified);
+				lastModified, true);
 
 	}
 

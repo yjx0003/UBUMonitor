@@ -28,6 +28,7 @@ import es.ubu.lsi.ubumonitor.controllers.load.PopulateMoodleUser;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.DataBase;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
+import es.ubu.lsi.ubumonitor.persistence.Serialization;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.Languages;
 import es.ubu.lsi.ubumonitor.util.Parsers;
@@ -273,11 +274,16 @@ public class LoginController implements Initializable {
 
 		if (chkOfflineMode.isSelected()) {
 			try {
-				lblStatus.setText(null);
+				
 
 				if (offlineMode()) {
 					UtilMethods.changeScene(getClass().getResource("/view/WelcomeOffline.fxml"), controller.getStage(),
 							new WelcomeOfflineController());
+				}else {
+					lblStatus.setText(I18n.get("label.offlinePasswordIncorrect"));
+					controller.getStage()
+					.getScene()
+					.setCursor(Cursor.DEFAULT);
 				}
 
 			} catch (MalformedURLException | RuntimeException e) {
@@ -297,6 +303,11 @@ public class LoginController implements Initializable {
 
 		controller.setUsername(txtUsername.getText());
 		controller.setPassword(txtPassword.getText());
+		try {
+			Serialization.decrypt(controller.getPassword(), controller.getHostUserDir().resolve("dummyObject").toString());
+		}catch (Exception e){
+			return false;
+		}
 		onSuccessLogin();
 
 		File hostUserDir = controller.getHostUserDir().toFile();
@@ -334,7 +345,7 @@ public class LoginController implements Initializable {
 		lblStatus.setText(null);
 		service.setOnSucceeded(s -> {
 			onSuccessLogin();
-
+			Serialization.encrypt(controller.getPassword(), controller.getHostUserDir().resolve("dummyObject").toString(), "Dummy object to check if password is correct");
 			UtilMethods.changeScene(getClass().getResource("/view/Welcome.fxml"), controller.getStage(),
 					new WelcomeController());
 		});

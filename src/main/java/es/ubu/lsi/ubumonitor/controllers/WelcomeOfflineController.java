@@ -37,12 +37,12 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
+import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -52,8 +52,9 @@ import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 /**
  * Clase controlador de la pantalla de bienvenida en la que se muestran los
@@ -75,6 +76,8 @@ public class WelcomeOfflineController implements Initializable {
 	 * path con directorios de los ficheros cache
 	 */
 	private Controller controller = Controller.getInstance();
+	
+	private boolean newPassword;
 
 	@FXML
 	private AnchorPane anchorPane;
@@ -257,8 +260,10 @@ public class WelcomeOfflineController implements Initializable {
 		lblNoSelect.setVisible(false);
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getName());
 
-		// if loading cache
 		loadData(selectedCourse, controller.getPassword());
+		if (newPassword) {
+			Serialization.encrypt(controller.getPassword(), selectedCourse.toString(), controller.getDataBase());
+		}
 		loadNextWindow();
 
 	}
@@ -322,7 +327,7 @@ public class WelcomeOfflineController implements Initializable {
 	}
 
 	private void incorrectPasswordWindow(File file) {
-		Dialog<String> dialog = new Dialog<>();
+		Dialog<Pair<String, Boolean>> dialog = new Dialog<>();
 		dialog.setTitle(I18n.get("title.passwordIncorrect"));
 
 		dialog.setHeaderText(I18n.get("header.passwordIncorrectMessage") + "\n" + I18n.get("header.passwordDateTime")
@@ -339,34 +344,35 @@ public class WelcomeOfflineController implements Initializable {
 				.getButtonTypes()
 				.addAll(ButtonType.OK);
 
+		GridPane grid = new GridPane();
+
+		grid.setHgap(20);
+		grid.setVgap(20);
+		grid.setPadding(new Insets(20, 50, 10, 50));
+		grid.add(new Label(I18n.get("label.oldPassword")), 0, 0);
 		PasswordField pwd = new PasswordField();
-		HBox content = new HBox();
-		content.setAlignment(Pos.CENTER);
-		content.setSpacing(10);
-		content.getChildren()
-				.addAll(new Label(I18n.get("label.oldPassword")), pwd);
+
+		grid.add(pwd, 1, 0);
+
+		CheckBox saveNewPassword = new CheckBox(I18n.get("checkBox.saveNewPassword"));
+		saveNewPassword.setSelected(true);
+		grid.add(saveNewPassword, 0, 1, 2, 1);
 		dialog.getDialogPane()
-				.setContent(content);
+				.setContent(grid);
 
-		// desabilitamos el boton hasta que no escriba texto
-		Node accept = dialog.getDialogPane()
-				.lookupButton(ButtonType.OK);
-		accept.setDisable(true);
-
-		pwd.textProperty()
-				.addListener((observable, oldValue, newValue) -> accept.setDisable(newValue.trim()
-						.isEmpty()));
+		
 		dialog.setResultConverter(dialogButton -> {
 			if (dialogButton == ButtonType.OK) {
-				return pwd.getText();
+				return new Pair<String, Boolean>(pwd.getText(), saveNewPassword.isSelected());
 			}
 			return null;
 		});
 
 		// Traditional way to get the response value.
-		Optional<String> result = dialog.showAndWait();
+		Optional<Pair<String, Boolean>> result = dialog.showAndWait();
 		if (result.isPresent()) {
-			loadData(file, result.get());
+			loadData(file, result.get().getKey());
+			newPassword = result.get().getValue();
 		}
 
 	}

@@ -74,9 +74,8 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
+import javafx.geometry.Insets;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -95,6 +94,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -121,6 +121,9 @@ public class WelcomeController implements Initializable {
 	private Path cacheFilePath;
 	private Controller controller = Controller.getInstance();
 	private boolean isFileCacheExists;
+	
+	private boolean useNewPassword;
+	
 	@FXML
 	private AnchorPane anchorPane;
 	@FXML
@@ -476,6 +479,9 @@ public class WelcomeController implements Initializable {
 			downloadData();
 		} else { // if loading cache
 			loadData(controller.getPassword());
+			if(useNewPassword) {
+				saveData();
+			}
 			loadNextWindow();
 		}
 
@@ -569,7 +575,7 @@ public class WelcomeController implements Initializable {
 	}
 
 	private void previusPasswordWindow() {
-		Dialog<String> dialog = new Dialog<>();
+		Dialog<Pair<String, Boolean>> dialog = new Dialog<>();
 		dialog.setTitle(I18n.get("title.passwordChanged"));
 
 		dialog.setHeaderText(I18n.get("header.passwordChangedMessage") + "\n" + I18n.get("header.passwordDateTime")
@@ -586,34 +592,35 @@ public class WelcomeController implements Initializable {
 				.getButtonTypes()
 				.addAll(ButtonType.OK);
 
+		GridPane grid = new GridPane();
+
+		grid.setHgap(20);
+		grid.setVgap(20);
+		grid.setPadding(new Insets(20, 50, 10, 50));
+		grid.add(new Label(I18n.get("label.oldPassword")), 0, 0);
 		PasswordField pwd = new PasswordField();
-		HBox content = new HBox();
-		content.setAlignment(Pos.CENTER);
-		content.setSpacing(10);
-		content.getChildren()
-				.addAll(new Label(I18n.get("label.oldPassword")), pwd);
+
+		grid.add(pwd, 1, 0);
+
+		CheckBox saveNewPassword = new CheckBox(I18n.get("checkBox.saveNewPassword"));
+		saveNewPassword.setSelected(true);
+		grid.add(saveNewPassword, 0, 1, 2, 1);
+
 		dialog.getDialogPane()
-				.setContent(content);
+				.setContent(grid);
 
-		// desabilitamos el boton hasta que no escriba texto
-		Node accept = dialog.getDialogPane()
-				.lookupButton(ButtonType.OK);
-		accept.setDisable(true);
-
-		pwd.textProperty()
-				.addListener((observable, oldValue, newValue) -> accept.setDisable(newValue.trim()
-						.isEmpty()));
 		dialog.setResultConverter(dialogButton -> {
 			if (dialogButton == ButtonType.OK) {
-				return pwd.getText();
+				return new Pair<>(pwd.getText(), saveNewPassword.isSelected());
 			}
 			return null;
 		});
 
-		// Traditional way to get the response value.
-		Optional<String> result = dialog.showAndWait();
+		Optional<Pair<String, Boolean>> result = dialog.showAndWait();
 		if (result.isPresent()) {
-			loadData(result.get());
+			loadData(result.get().getKey());
+			useNewPassword = result.get().getValue();
+			
 		}
 
 	}
@@ -748,7 +755,7 @@ public class WelcomeController implements Initializable {
 						.getMap()
 						.values()
 						.forEach(Course::clearCourseData);
-				
+
 				updateMessage(I18n.get("label.loadingcoursedata"));
 				PopulateEnrolledUsersCourse populateEnrolledUsersCourse = new PopulateEnrolledUsersCourse(dataBase,
 						webService);
@@ -895,7 +902,7 @@ public class WelcomeController implements Initializable {
 
 		try {
 			PopulateCourse populateCourse = new PopulateCourse(controller.getDataBase(), controller.getWebService());
-			
+
 			Pair<Integer, List<Course>> pair = populateCourse.searchCourse(text);
 			List<Course> courses = pair.getValue();
 			if (courses.isEmpty()) {

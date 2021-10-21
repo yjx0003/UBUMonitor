@@ -50,7 +50,7 @@
 				<Image url="@../img/logo.png" />
 			</image>
 		</ImageView>
-		<Label fx:id="lblStatus" alignment="CENTER" layoutX="13.0" layoutY="489.0" maxHeight="60.0" minHeight="27.0" minWidth="375.0" prefHeight="30.0" prefWidth="375.0" textAlignment="CENTER" textFill="#ff5050">
+		<Label fx:id="lblStatus" alignment="CENTER" layoutX="13.0" layoutY="488.0" maxHeight="60.0" minHeight="40.0" minWidth="375.0" prefHeight="43.0" prefWidth="375.0" textAlignment="CENTER" textFill="#ff5050" wrapText="true">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>

@@ -240,12 +240,12 @@ public class MenuController {
 	private void changeScene(URL sceneFXML, Object controllerObject) {
 		try {
 			UtilMethods.changeScene(sceneFXML, controller.getStage(), controllerObject);
-			controller.getStage().isResizable();
+			controller.getStage()
+					.isResizable();
 			controller.getStage()
 					.setMaximized(false);
 			controller.getStage()
 					.setResizable(false);
-			
 
 		} catch (Exception e) {
 			LOGGER.error("Error al modifcar la ventana de JavaFX: {}", e);
@@ -318,8 +318,7 @@ public class MenuController {
 				}, FileUtil.JSON);
 
 	}
-	
-	
+
 	public void aboutApp() {
 
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AboutApp.fxml"), I18n.getResourceBundle());
@@ -327,7 +326,7 @@ public class MenuController {
 		UtilMethods.createDialog(loader, controller.getStage());
 
 	}
-	
+
 	public void comment() {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Comments.fxml"), I18n.getResourceBundle());
 
@@ -468,12 +467,14 @@ public class MenuController {
 					createServiceImportLogs(file);
 				}, false, FileUtil.CSV);
 	}
-	
+
 	public void purgeLogs() {
-		
+
 		Dialog<LocalDate> dialog = new Dialog<>();
-	
-		dialog.getDialogPane().getButtonTypes().setAll(ButtonType.APPLY, ButtonType.CANCEL);
+
+		dialog.getDialogPane()
+				.getButtonTypes()
+				.setAll(ButtonType.CANCEL, ButtonType.APPLY);
 		dialog.setTitle(AppInfo.APPLICATION_NAME_WITH_VERSION);
 		dialog.initModality(Modality.APPLICATION_MODAL);
 		Stage stageAlert = (Stage) dialog.getDialogPane()
@@ -482,35 +483,33 @@ public class MenuController {
 		stageAlert.getIcons()
 				.add(new Image("/img/logo_min.png"));
 		GridPane grid = new GridPane();
-		
+
 		grid.setHgap(20);
 		grid.setVgap(20);
 		grid.setPadding(new Insets(20, 50, 10, 50));
 
 		DatePicker datePicker = new DatePicker(LocalDate.now());
-		
+
 		grid.add(new Label(I18n.get("label.purgeLogs")), 0, 0, 2, 1);
 		grid.add(new Label(I18n.get("purgePreviousDate")), 0, 1);
 		grid.add(datePicker, 1, 1);
-		
-		dialog.getDialogPane().setContent(grid);
 
+		dialog.getDialogPane()
+				.setContent(grid);
 
 		dialog.setResultConverter(dialogButton -> {
-		    if (dialogButton == ButtonType.APPLY) {
-		        return datePicker.getValue();
-		    }
-		    return null;
+			if (dialogButton == ButtonType.APPLY) {
+				return datePicker.getValue();
+			}
+			return null;
 		});
 
 		Optional<LocalDate> result = dialog.showAndWait();
 
 		result.ifPresent(date -> createServicePurgeLogs(date));
-		
 
 	}
-	
-	
+
 	private void createServicePurgeLogs(LocalDate date) {
 		Task<Void> task = getPurgeLogsWorker(date);
 		task.setOnSucceeded(
@@ -521,14 +520,17 @@ public class MenuController {
 		thread.setDaemon(true);
 		thread.start();
 	}
-	
+
 	private Task<Void> getPurgeLogsWorker(LocalDate date) {
 		return new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
 				Course course = controller.getActualCourse();
-				List<LogLine> logs = course.getLogs().getList();
-				logs.removeIf(log-> log.getTime().isBefore(date.atStartOfDay(course.getLogs().getZoneId())));
+				List<LogLine> logs = course.getLogs()
+						.getList();
+				logs.removeIf(log -> log.getTime()
+						.isBefore(date.atStartOfDay(course.getLogs()
+								.getZoneId())));
 				Serialization.encrypt(controller.getPassword(), controller.getHostUserModelversionDir()
 						.resolve(controller.getCourseFile(course))
 						.toString(), controller.getDataBase());

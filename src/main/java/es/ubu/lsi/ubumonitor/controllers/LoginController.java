@@ -303,12 +303,14 @@ public class LoginController implements Initializable {
 
 		controller.setUsername(txtUsername.getText());
 		controller.setPassword(txtPassword.getText());
+		onSuccessLogin();
 		try {
+
 			Serialization.decrypt(controller.getPassword(), controller.getHostUserDir().resolve("dummyObject").toString());
 		}catch (Exception e){
 			return false;
 		}
-		onSuccessLogin();
+		
 
 		File hostUserDir = controller.getHostUserDir().toFile();
 		File hostUserModelversionDir = controller.getHostUserModelversionDir().toFile();

@@ -52,7 +52,7 @@
             <TextFlow fx:id="textFlowPrivacyPolicy">
                <children>
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%privacyPolicy" />
-                  <Hyperlink text="%label.microsoftFormPolicy" />
+                  <Hyperlink onAction="#openMicrosoftFormPolicy" text="%label.microsoftFormPolicy" />
                </children></TextFlow>
          </children>
       </GridPane>

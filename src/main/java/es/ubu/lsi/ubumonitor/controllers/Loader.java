@@ -36,6 +36,7 @@ public class Loader extends Application {
 
 		try {
 			Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> {
+				LOGGER.error("Error no catcheado: {}", thread, throwable);
 	            UtilMethods.errorWindow("Uncaught exception: "+ throwable.getMessage(), throwable);
 	        });			
 			setRemoteConfiguration();

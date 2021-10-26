@@ -35,5 +35,10 @@
             <fx:include fx:id="clustering" source="tabs/Clustering.fxml" />
          </content>
       </Tab>
+      <Tab fx:id="enrollmentTab" text="%tab.enrollment">
+         <content>
+            <fx:include fx:id="enrollment" source="tabs/Enrollment.fxml" />
+         </content>
+      </Tab>
    </tabs>
 </TabPane>

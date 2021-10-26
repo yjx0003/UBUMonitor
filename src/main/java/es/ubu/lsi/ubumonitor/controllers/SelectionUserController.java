@@ -91,13 +91,13 @@ public class SelectionUserController {
 
 	public void init(MainController mainController, Course course, MainConfiguration mainConfiguration) {
 		this.mainController = mainController;
-
+		// ocultamos los usuarios cuando se selecciona el la pestaña del calendario
 		tabPane.visibleProperty()
 				.bind(mainController.getWebViewTabsController()
 						.getCalendarEventTab()
 						.selectedProperty()
 						.not());
-
+		// deshabilitamos los usuaraios no matriculados en la pestaña de clustering
 		tabNotEnrolled.disableProperty()
 				.bind(mainController.getWebViewTabsController()
 						.getClusteringTab()

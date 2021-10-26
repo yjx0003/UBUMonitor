@@ -9,7 +9,8 @@ public class SelectionEmptyController {
 	private Label label;
 	
 	public void init(MainController mainController, Course actualCourse) {
-		label.visibleProperty().bind(mainController.getWebViewTabsController().getRiskTab().selectedProperty());
+		WebViewTabsController webViewTabsController = mainController.getWebViewTabsController();
+		label.visibleProperty().bind(webViewTabsController.getRiskTab().selectedProperty().or(webViewTabsController.getEnrollmentTab().selectedProperty()));
 	}
 
 }

@@ -126,14 +126,14 @@ public abstract class Plotly extends Chart {
 			String temp = xAxisTitle;
 			xAxisTitle = yAxisTitle;
 			yAxisTitle = temp;
-
+			
 			if (ticktext != null) {
 				List<Integer> tickvals = IntStream.range(0, ticktext.size())
 						.boxed()
 						.collect(Collectors.toList());
 				createCategoryAxis(yaxis, tickvals, ticktext);
 			}
-
+			yaxis.put("autorange", "'reversed'");
 			defaultAxisValues(xaxis, xAxisTitle, range);
 			defaultAxisValues(yaxis, yAxisTitle, "");
 		} else {
@@ -148,7 +148,7 @@ public abstract class Plotly extends Chart {
 			defaultAxisValues(xaxis, xAxisTitle, "");
 			defaultAxisValues(yaxis, yAxisTitle, range);
 		}
-
+		
 		layout.put("xaxis", xaxis);
 		layout.put("yaxis", yaxis);
 

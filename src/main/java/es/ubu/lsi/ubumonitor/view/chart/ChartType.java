@@ -50,9 +50,10 @@ public enum ChartType {
 
 	RANKING_TABLE(Tabs.MULTI, 34), 
 	POINTS_TABLE(Tabs.MULTI, 36),
-	BUBBLE_COMPARISON(Tabs.MULTI, 35);
-
-	// next id 37
+	BUBBLE_COMPARISON(Tabs.MULTI, 35),
+	
+	ENROLLMENT_BAR(Tabs.ENROLLMENT, 37);
+	// next id 38
 
 	private Tabs tab;
 	private int id;

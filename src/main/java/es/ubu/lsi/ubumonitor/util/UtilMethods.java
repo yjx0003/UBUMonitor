@@ -237,12 +237,15 @@ public class UtilMethods {
 		Button btOk = (Button) alert.getDialogPane()
 				.lookupButton(ButtonType.OK);
 		btOk.addEventFilter(ActionEvent.ACTION, event -> {
+			if(true) {
+				throw new IllegalStateException();
+			}
 			RemoteConfiguration remoteConfiguration = RemoteConfiguration.getInstance();
 			JSONObject errorReportConfiguration = remoteConfiguration.getJSONObject("errorReport");
 			MicrosoftForms microsoftForm = new MicrosoftForms(errorReportConfiguration.getString("url"));
 			microsoftForm.addAnswer(errorReportConfiguration.getString("messageQuestionId"), contentText);
 			microsoftForm.addAnswer(errorReportConfiguration.getString("traceQuestionId"), sw.toString());
-
+			
 			try (Response response = Connection.getResponse(microsoftForm.getRequest())) {
 				if (!response.isSuccessful()) {
 					throw new IllegalStateException(response.body()

@@ -48,6 +48,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -111,6 +112,9 @@ public class WelcomeOfflineController implements Initializable {
 	private Label conexionLabel;
 
 	private boolean isBBDDLoaded;
+	
+	@FXML
+	private Tab tabPreviousCache;
 
 	/**
 	 * Función initialize. Muestra la lista de cursos del usuario introducido.
@@ -393,7 +397,7 @@ public class WelcomeOfflineController implements Initializable {
 		WelcomeController.changeToMainScene(controller.getStage(), getClass().getResource("/view/Main.fxml"),
 				getClass().getResource("/img/alert.gif")
 						.toExternalForm(),
-				lastModified, true);
+				lastModified, !tabPreviousCache.isSelected());
 
 	}
 

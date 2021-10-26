@@ -89,7 +89,6 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -206,8 +205,7 @@ public class WelcomeController implements Initializable {
 	@FXML
 	private HBox horizontalBox;
 	
-	@FXML
-	private Tab tabPreviousCache;
+
 
 	public WelcomeController() {
 		this(false);
@@ -689,7 +687,7 @@ public class WelcomeController implements Initializable {
 		changeToMainScene(controller.getStage(), getClass().getResource("/view/Main.fxml"),
 				getClass().getResource("/img/alert.gif")
 						.toExternalForm(),
-				lastModified, !tabPreviousCache.isSelected());
+				lastModified, true);
 
 	}
 

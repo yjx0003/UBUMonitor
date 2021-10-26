@@ -233,13 +233,10 @@ public class UtilMethods {
 		alert.getDialogPane()
 				.setExpandableContent(expContent);
 
-		alert.showAndWait();
+		
 		Button btOk = (Button) alert.getDialogPane()
-				.lookupButton(ButtonType.OK);
+				.lookupButton(sendReport);
 		btOk.addEventFilter(ActionEvent.ACTION, event -> {
-			if(true) {
-				throw new IllegalStateException();
-			}
 			RemoteConfiguration remoteConfiguration = RemoteConfiguration.getInstance();
 			JSONObject errorReportConfiguration = remoteConfiguration.getJSONObject("errorReport");
 			MicrosoftForms microsoftForm = new MicrosoftForms(errorReportConfiguration.getString("url"));
@@ -257,6 +254,8 @@ public class UtilMethods {
 				event.consume();
 			}
 		});
+		
+		alert.showAndWait();
 
 	}
 

@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -17,6 +18,7 @@ import org.apache.commons.csv.CSVPrinter;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.Course;
+import es.ubu.lsi.ubumonitor.model.CourseCategory;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
@@ -58,13 +60,14 @@ public class EnrollmentBar extends Plotly {
 				getConfigValue("horizontalMode"), getConfigValue("minFrequency")));
 	}
 
-	public JSObject createTrace(String name, List<EnrolledUser> selectedUsers, Map<Course, List<EnrolledUser>> courseCount, Color color,
-			boolean horizontalMode, int minFrequency) {
+	public JSObject createTrace(String name, List<EnrolledUser> selectedUsers,
+			Map<Course, List<EnrolledUser>> courseCount, Color color, boolean horizontalMode, int minFrequency) {
 		JSObject trace = new JSObject();
 		JSArray x = new JSArray();
 		JSArray y = new JSArray();
 		JSArray enrolledUsers = new JSArray();
 		JSArray usersIdsArray = new JSArray();
+		JSArray text = new JSArray();
 		int i = 0;
 		for (Map.Entry<Course, List<EnrolledUser>> entry : courseCount.entrySet()) {
 			List<EnrolledUser> users = entry.getValue();
@@ -74,6 +77,8 @@ public class EnrollmentBar extends Plotly {
 				StringBuilder usersTooltip = new StringBuilder();
 				usersTooltip.append("<b>");
 				usersTooltip.append(course.getFullName());
+				usersTooltip.append(" - ");
+				usersTooltip.append(course.getId());
 				usersTooltip.append("</b><br><br>");
 				JSArray usersIds = new JSArray();
 				for (EnrolledUser user : users) {
@@ -86,6 +91,7 @@ public class EnrollmentBar extends Plotly {
 				y.add(users.size());
 				enrolledUsers.addWithQuote(usersTooltip);
 				usersIdsArray.add(usersIds);
+				text.add(users.size());
 			}
 		}
 
@@ -98,6 +104,8 @@ public class EnrollmentBar extends Plotly {
 		trace.put("marker", marker);
 		trace.put("customdata", enrolledUsers);
 		trace.put("userids", usersIdsArray);
+		trace.put("text", text);
+		trace.put("textposition", "'outside'");
 		trace.put("hovertemplate", "'%{customdata}<extra></extra>'");
 
 		return trace;
@@ -110,7 +118,7 @@ public class EnrollmentBar extends Plotly {
 
 	private Map<Course, List<EnrolledUser>> countCoursesWithUsers(Collection<EnrolledUser> users,
 			Collection<Course> courses) {
-		TreeMap<Course, List<EnrolledUser>> courseCount = new TreeMap<>(Comparator.comparing(Course::getFullName));
+		TreeMap<Course, List<EnrolledUser>> courseCount = new TreeMap<>(Course.getCourseComparator());
 		for (Course course : courses) {
 			Set<EnrolledUser> selectedUsers = new HashSet<>(course.getEnrolledUsers());
 			List<EnrolledUser> enrolledUsers = new ArrayList<>();
@@ -124,10 +132,10 @@ public class EnrollmentBar extends Plotly {
 				courseCount.put(course, enrolledUsers);
 			}
 		}
-		
+
 		// ordenamos por número de usuarios matriculados
 		Comparator<List<EnrolledUser>> sizeComparator = Comparator.comparing(List::size);
-		
+
 		return courseCount.entrySet()
 				.stream()
 				.sorted(Map.Entry.comparingByValue(sizeComparator.reversed()))
@@ -146,13 +154,13 @@ public class EnrollmentBar extends Plotly {
 			Course course = entry.getKey();
 			List<EnrolledUser> enrolledUsers = entry.getValue();
 			if (selectedUsers.size() < minFrequency || enrolledUsers.size() >= minFrequency) {
-				ticktext.addWithQuote(course.getFullName());
+				ticktext.addWithQuote(course.getFullName() + " - " + course.getId());
 			}
 		}
 
 		horizontalMode(layout, ticktext, horizontalMode, getXAxisTitle(), getYAxisTitle(), null);
 		layout.put("hovermode", "'closest'");
-
+		layout.put("hoverlabel", "{align:'left'}");
 	}
 
 }

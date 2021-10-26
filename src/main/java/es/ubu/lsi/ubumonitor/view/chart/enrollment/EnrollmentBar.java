@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -18,7 +17,6 @@ import org.apache.commons.csv.CSVPrinter;
 
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.Course;
-import es.ubu.lsi.ubumonitor.model.CourseCategory;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
@@ -83,6 +81,7 @@ public class EnrollmentBar extends Plotly {
 				JSArray usersIds = new JSArray();
 				for (EnrolledUser user : users) {
 					usersIds.add(user.getId());
+					usersTooltip.append(" • ");
 					usersTooltip.append(user.getFullName());
 					usersTooltip.append("<br>");
 				}

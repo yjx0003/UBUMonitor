@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -70,8 +71,6 @@ public class Course implements Serializable {
 	private ZonedDateTime updatedGradeItem;
 	private ZonedDateTime updatedActivityCompletion;
 	private ZonedDateTime updatedLog;
-
-
 
 	public Course() {
 		this.enrolledUsers = new HashSet<>();
@@ -443,23 +442,22 @@ public class Course implements Serializable {
 	public void clearCourseData() {
 
 		this.enrolledUsers = new HashSet<>();
-		if(roles != null) {
+		if (roles != null) {
 			this.roles.forEach(Role::clear); // eliminamos los usuarios de ese rol
 		}
 		roles = new HashSet<>();
 		this.roles.clear();
-		if(groups != null) {
+		if (groups != null) {
 			this.groups.forEach(Group::clear); // eliminamos los usuarios de ese grupo
 		}
 		groups = new HashSet<>();
-		
+
 		modules = new LinkedHashSet<>();
 		sections = new LinkedHashSet<>();
 
-		
 		discussionPosts = new HashSet<>();
 		setCourseEvents(new HashSet<>());
-	
+
 	}
 
 	public LogStats getLogStats() {
@@ -532,7 +530,7 @@ public class Course implements Serializable {
 
 	public LocalDate getStart(LocalDate lastCourseUpdate) {
 		LOGGER.debug("Fecha de inicio del curso por el servidor: {}", startDate);
-		if(startDate == null) {
+		if (startDate == null) {
 			return getEnd(lastCourseUpdate).minusYears(1);
 		}
 		if (startDate.getEpochSecond() == 0) {
@@ -549,9 +547,10 @@ public class Course implements Serializable {
 			return lastCourseUpdate;
 		}
 
-		LocalDate courseEndLocalDate = endDate.atZone(ZoneId.systemDefault()).toLocalDate();
-		
-		return courseEndLocalDate.isBefore(lastCourseUpdate) ? courseEndLocalDate: lastCourseUpdate;
+		LocalDate courseEndLocalDate = endDate.atZone(ZoneId.systemDefault())
+				.toLocalDate();
+
+		return courseEndLocalDate.isBefore(lastCourseUpdate) ? courseEndLocalDate : lastCourseUpdate;
 
 	}
 
@@ -733,8 +732,10 @@ public class Course implements Serializable {
 
 	public static Comparator<Course> getCourseComparator() {
 		return Comparator.comparing(Course::getFullName, Comparator.nullsLast(Collator.getInstance()))
-				.thenComparing(c -> c.getCourseCategory()
-						.getName(), Comparator.nullsLast(Collator.getInstance()));
+				.thenComparing(c -> Optional.ofNullable(c.getCourseCategory())
+						.map(CourseCategory::getName)
+						.orElse(null), Comparator.nullsLast(Collator.getInstance()))
+				.thenComparing(Course::getId);
 	}
 
 	public void addGroups(Collection<Group> groups) {
@@ -770,7 +771,7 @@ public class Course implements Serializable {
 	 * @return the courseEvents
 	 */
 	public Set<CourseEvent> getCourseEvents() {
-		if(courseEvents == null) {
+		if (courseEvents == null) {
 			return Collections.emptySet();
 		}
 		return courseEvents;
@@ -782,13 +783,13 @@ public class Course implements Serializable {
 	public void setCourseEvents(Set<CourseEvent> courseEvents) {
 		this.courseEvents = courseEvents;
 	}
-	
+
 	public void addCourseEvents(Collection<CourseEvent> courseEvents) {
 		this.courseEvents.addAll(courseEvents);
 	}
-	
-	public Set<DiscussionPost> getDiscussionPosts(){
-		if(discussionPosts == null) {
+
+	public Set<DiscussionPost> getDiscussionPosts() {
+		if (discussionPosts == null) {
 			return Collections.emptySet();
 		}
 		return discussionPosts;

@@ -75,9 +75,9 @@ public class EnrollmentBar extends Plotly {
 				StringBuilder usersTooltip = new StringBuilder();
 				usersTooltip.append("<b>");
 				usersTooltip.append(course.getFullName());
-				usersTooltip.append(" - ");
+				usersTooltip.append(" (");
 				usersTooltip.append(course.getId());
-				usersTooltip.append("</b><br><br>");
+				usersTooltip.append(")</b><br><br>");
 				JSArray usersIds = new JSArray();
 				for (EnrolledUser user : users) {
 					usersIds.add(user.getId());
@@ -153,7 +153,7 @@ public class EnrollmentBar extends Plotly {
 			Course course = entry.getKey();
 			List<EnrolledUser> enrolledUsers = entry.getValue();
 			if (selectedUsers.size() < minFrequency || enrolledUsers.size() >= minFrequency) {
-				ticktext.addWithQuote(course.getFullName() + " - " + course.getId());
+				ticktext.addWithQuote(course.getFullName());
 			}
 		}
 

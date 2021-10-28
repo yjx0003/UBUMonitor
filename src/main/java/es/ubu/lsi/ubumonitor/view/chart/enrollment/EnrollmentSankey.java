@@ -53,8 +53,8 @@ public class EnrollmentSankey extends Plotly {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		Map<Course, List<EnrolledUser>> countCoursesWithUsers = countCoursesWithUsers(selectedUsers, allCourses);
 		JSObject dataObject = new JSObject();
-		String userColor = colorToRGB(Color.ALICEBLUE);
-		String courseColor = colorToRGB(Color.DARKRED);
+		String userColor = colorToRGB(getConfigValue("userColorNode"));
+		String courseColor = colorToRGB(getConfigValue("courseColorNode"));
 		dataObject.put("type", "'sankey'");
 		dataObject.put("orientation", "'v'");
 		JSObject node = new JSObject();

@@ -244,6 +244,10 @@ public class MainConfiguration {
 		createItem(ChartType.ENROLLMENT_BAR, HORIZONTAL_MODE, true);
 		createItem(ChartType.ENROLLMENT_BAR, "enrollmentBarColor", Color.web("#efc9af", 0.3));
 		createItem(ChartType.ENROLLMENT_BAR, "minFrequency", 1);
+		
+		createItem(ChartType.ENROLLMENT_SANKEY, "userColorNode", Color.web("#add8e6"));
+		createItem(ChartType.ENROLLMENT_SANKEY, "courseColorNode", Color.web("#FC9E21"));
+
 
 	}
 

@@ -51,6 +51,8 @@ public class EnrollmentSankey extends Plotly {
 	public void createData(JSArray data) {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		Map<Course, List<EnrolledUser>> countCoursesWithUsers = countCoursesWithUsers(selectedUsers, allCourses);
+		int minFrequency = getConfigValue("minFrequency");
+
 		JSObject dataObject = new JSObject();
 		String userColor = colorToRGB(getConfigValue("userColorNode"));
 		String courseColor = colorToRGB(getConfigValue("courseColorNode"));
@@ -60,20 +62,18 @@ public class EnrollmentSankey extends Plotly {
 		dataObject.put("node", node);
 		JSArray label = new JSArray();
 		JSArray color = new JSArray();
+		JSArray customdata = new JSArray();
 		node.put("color", color);
 		node.put("label", label);
-		node.put("hovertemplate", "'%{label}<br>%{value:d}<extra></extra>'");
-		
+		node.put("customdata", customdata);
+		node.put("hovertemplate", "'<b>%{label}</b>%{customdata}<extra></extra>'");
+
 		label.addWithQuote(I18n.get("text.selectedUsers"));
 		color.add(userColor);
-		for (Course course : countCoursesWithUsers.keySet()) {
-			label.addWithQuote(course.getFullName());
-			color.add(courseColor);
-		}
 
 		JSObject link = new JSObject();
 		dataObject.put("link", link);
-		link.put("hovertemplate", "'%{target.label}<br>%{value:d}<extra></extra>'");
+		link.put("hovertemplate", "'<b>%{target.label}</b><br>"+I18n.get("label.enrolledusers") +": %{value:d}<extra></extra>'");
 		JSArray source = new JSArray();
 		link.put("source", source);
 		JSArray target = new JSArray();
@@ -82,23 +82,39 @@ public class EnrollmentSankey extends Plotly {
 		link.put("value", value);
 
 		int i = 1;
+		int totalEnrol = 0;
 		for (Map.Entry<Course, List<EnrolledUser>> entry : countCoursesWithUsers.entrySet()) {
 			List<EnrolledUser> users = entry.getValue();
 
-			source.add(0);
-			target.add(i);
-			value.add(users.size());
+			int usersSize = users.size();
+			if (selectedUsers.size() < minFrequency || usersSize >= minFrequency) {
+				Course course = entry.getKey();
+				label.addWithQuote(course.getFullName());
+				color.add(courseColor);
+				
+				source.add(0);
+				target.add(i);
+				value.add(usersSize);
+				i++;
+				totalEnrol += usersSize;
+				StringBuilder stringBuilder = new StringBuilder();
+				for(EnrolledUser user: users) {
+					
+					stringBuilder.append("<br> • ");
+					stringBuilder.append(user.getFullName());
+				}
+				customdata.addWithQuote(stringBuilder);
+			}
 
-			i++;
 		}
-
+		customdata.add(0, "': " + selectedUsers.size() + "<br>" + I18n.get("text.totalCourses") + totalEnrol + "'");
 		data.add(dataObject);
 
 	}
 
 	@Override
 	public void createLayout(JSObject layout) {
-		// unnecessary
+		layout.put("hoverlabel", "{align:'left'}");
 
 	}
 

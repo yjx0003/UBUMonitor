@@ -247,8 +247,8 @@ public class MainConfiguration {
 		
 		createItem(ChartType.ENROLLMENT_SANKEY, "userColorNode", Color.web("#add8e6"));
 		createItem(ChartType.ENROLLMENT_SANKEY, "courseColorNode", Color.web("#FC9E21"));
-
-
+		createItem(ChartType.ENROLLMENT_SANKEY, "minFrequency", 1);
+		
 	}
 
 	/**

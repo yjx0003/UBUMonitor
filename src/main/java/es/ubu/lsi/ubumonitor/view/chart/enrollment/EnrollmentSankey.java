@@ -3,7 +3,6 @@ package es.ubu.lsi.ubumonitor.view.chart.enrollment;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -16,11 +15,11 @@ import org.apache.commons.csv.CSVPrinter;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Plotly;
-import javafx.scene.paint.Color;
 
 public class EnrollmentSankey extends Plotly {
 
@@ -56,49 +55,40 @@ public class EnrollmentSankey extends Plotly {
 		String userColor = colorToRGB(getConfigValue("userColorNode"));
 		String courseColor = colorToRGB(getConfigValue("courseColorNode"));
 		dataObject.put("type", "'sankey'");
-		dataObject.put("orientation", "'v'");
+		dataObject.put("orientation", "'h'");
 		JSObject node = new JSObject();
 		dataObject.put("node", node);
-		JSArray customdata = new JSArray();
+		JSArray label = new JSArray();
 		JSArray color = new JSArray();
 		node.put("color", color);
-		node.put("customdata", customdata);
-		node.put("hovertemplate", "'%{customdata}<br>%{value:d}<extra></extra>'");
-		for(Course course :countCoursesWithUsers.keySet()) {
-			customdata.addWithQuote(course.getFullName());
+		node.put("label", label);
+		node.put("hovertemplate", "'%{label}<br>%{value:d}<extra></extra>'");
+		
+		label.addWithQuote(I18n.get("text.selectedUsers"));
+		color.add(userColor);
+		for (Course course : countCoursesWithUsers.keySet()) {
+			label.addWithQuote(course.getFullName());
 			color.add(courseColor);
 		}
-				
-		Map<EnrolledUser, Integer> userIndex = new HashMap<>(selectedUsers.size());
-		int countCourses = countCoursesWithUsers.keySet()
-				.size();
-		for (int i = 0; i < selectedUsers.size(); i++) {
-			EnrolledUser user = selectedUsers.get(i);
-			userIndex.put(user, i + countCourses);
-			customdata.addWithQuote(user.getFullName());
-			color.add(userColor);
-		}
-		
-		
+
 		JSObject link = new JSObject();
 		dataObject.put("link", link);
-		link.put("hovertemplate", "'%{source.customdata} <br>%{target.customdata}<extra></extra>'");
+		link.put("hovertemplate", "'%{target.label}<br>%{value:d}<extra></extra>'");
 		JSArray source = new JSArray();
 		link.put("source", source);
 		JSArray target = new JSArray();
 		link.put("target", target);
 		JSArray value = new JSArray();
 		link.put("value", value);
-		
-		int i = 0;
-		for(Map.Entry<Course, List<EnrolledUser>> entry:countCoursesWithUsers.entrySet()) {
+
+		int i = 1;
+		for (Map.Entry<Course, List<EnrolledUser>> entry : countCoursesWithUsers.entrySet()) {
 			List<EnrolledUser> users = entry.getValue();
-			
-			for(EnrolledUser user: users) {
-				source.add(i);
-				target.add(userIndex.get(user));
-				value.add(1);
-			}
+
+			source.add(0);
+			target.add(i);
+			value.add(users.size());
+
 			i++;
 		}
 

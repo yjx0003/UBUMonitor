@@ -101,7 +101,6 @@ public class CalificationBar extends Plotly {
 
 		horizontalMode(layout, ticktext, getConfigValue("horizontalMode"), getXAxisTitle(), getYAxisTitle(), null);
 		layout.put("barmode", "'stack'");
-		layout.put("hovermode", "'x unified'");
 
 	}
 

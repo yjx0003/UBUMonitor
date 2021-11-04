@@ -358,7 +358,7 @@ public class WelcomeOfflineController implements Initializable {
 
 		grid.add(pwd, 1, 0);
 
-		CheckBox saveNewPassword = new CheckBox(I18n.get("checkBox.saveNewPassword"));
+		CheckBox saveNewPassword = new CheckBox(I18n.get("checkbox.saveNewPassword"));
 		saveNewPassword.setSelected(true);
 		grid.add(saveNewPassword, 0, 1, 2, 1);
 		dialog.getDialogPane()

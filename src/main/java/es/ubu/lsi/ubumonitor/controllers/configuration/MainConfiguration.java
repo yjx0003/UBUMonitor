@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers.configuration;
 
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -242,10 +243,12 @@ public class MainConfiguration {
 		createItem(ChartType.BUBBLE_COMPARISON, "frameDuration", 1000);
 		
 		createItem(ChartType.ENROLLMENT_BAR, HORIZONTAL_MODE, true);
-		createItem(ChartType.ENROLLMENT_BAR, "enrollmentBarColor", Color.web("#efc9af", 0.3));
+		createItem(ChartType.ENROLLMENT_BAR, "startMonth", Month.SEPTEMBER);
+		createItem(ChartType.ENROLLMENT_BAR, "endMonth", Month.JULY);
 		createItem(ChartType.ENROLLMENT_BAR, "minFrequency", 1);
 		
 		createItem(ChartType.ENROLLMENT_SANKEY, "userColorNode", Color.web("#add8e6"));
+		createItem(ChartType.ENROLLMENT_SANKEY, "linkColor", Color.web("#efc9af", 0.3));
 		createItem(ChartType.ENROLLMENT_SANKEY, "courseColorNode", Color.web("#FC9E21"));
 		createItem(ChartType.ENROLLMENT_SANKEY, "minFrequency", 1);
 		

@@ -120,7 +120,7 @@ public class ForumUserPostBar extends Plotly {
 		stringBuilder.append("<br>");
 	}
 
-	private JSObject createTrace(String name, Color color, JSArray x, JSArray y, JSArray text, JSArray userids,
+	private JSObject createTrace(String name, Color color, JSArray x, JSArray y, JSArray customdata, JSArray userids,
 			boolean horizontalMode) {
 		JSObject trace = new JSObject();
 		Plotly.createAxisValuesHorizontal(horizontalMode, trace, x, y);
@@ -130,11 +130,11 @@ public class ForumUserPostBar extends Plotly {
 		JSObject marker = new JSObject();
 		marker.put("color", colorToRGB(color));
 		trace.put("marker", marker);
-		trace.put("text", text);
+		trace.put("customdata", customdata);
 		trace.put("userids", userids);
 
 		trace.put("hovertemplate", "'<b>%{" + (horizontalMode ? "y" : "x") + "}<br>%{data.name}: </b>%{"
-				+ (horizontalMode ? "x" : "y") + "}<br><br>%{text}<extra></extra>'");
+				+ (horizontalMode ? "x" : "y") + "}<br><br>%{customdata}<extra></extra>'");
 
 		return trace;
 	}

@@ -2,63 +2,38 @@ package es.ubu.lsi.ubumonitor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.junit.jupiter.api.Test;
 
-import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.view.chart.enrollment.EnrollmentBar;
 
 public class UnitTest {
 
 	@Test
-	public void rankingTest() {
-		Map<Integer, DescriptiveStatistics> map = new HashMap<>();
-		DescriptiveStatistics d1 = new DescriptiveStatistics();
-		d1.addValue(100.0);
-		DescriptiveStatistics d2 = new DescriptiveStatistics();
-		d2.addValue(100.0);
-		map.put(1, d1);
-		map.put(2, d2);
-		assertEquals(d1.getMean(), d2.getMean());
-		Map<Integer, Integer> ranking = UtilMethods.ranking(map, DescriptiveStatistics::getMean);
-		assertEquals(ranking.get(1), ranking.get(2));
-
+	public void enrolledYear() {
+		enrolledYear(9, 7, null, null);
+		enrolledYear(9, 7, ZonedDateTime.of(2021, 10, 3, 0, 0, 0, 0, ZoneId.systemDefault()).toInstant(), 2021); // 03/10/2021
+		enrolledYear(9, 7, ZonedDateTime.of(2021, 8, 3, 0, 0, 0, 0, ZoneId.systemDefault()).toInstant(), 2021); // 03/08/2021
+		enrolledYear(9, 7, ZonedDateTime.of(2021, 7, 3, 0, 0, 0, 0, ZoneId.systemDefault()).toInstant(), 2020); // 03/07/2021
+		enrolledYear(9, 7, ZonedDateTime.of(2020, 9, 3, 0, 0, 0, 0, ZoneId.systemDefault()).toInstant(), 2020); // 03/09/2020
+		
+		
+		enrolledYear(3, 9, ZonedDateTime.of(2021, 1, 3, 0, 0, 0, 0, ZoneId.systemDefault()).toInstant(), 2021); // 03/01/2021
+		enrolledYear(3, 9, ZonedDateTime.of(2021, 3, 3, 0, 0, 0, 0, ZoneId.systemDefault()).toInstant(), 2021); // 03/03/2021
+		enrolledYear(3, 9, ZonedDateTime.of(2021, 8, 3, 0, 0, 0, 0, ZoneId.systemDefault()).toInstant(), 2021); // 03/08/2021
+		enrolledYear(3, 9, ZonedDateTime.of(2021, 9, 3, 0, 0, 0, 0, ZoneId.systemDefault()).toInstant(), 2021); // 03/09/2021
+		enrolledYear(3, 9, ZonedDateTime.of(2021, 10, 3, 0, 0, 0, 0, ZoneId.systemDefault()).toInstant(), 2022); // 03/10/2021
+		
 	}
-
-	@Test
-	public void rankingTestStats() {
-		Map<Integer, Integer> map = new HashMap<>();
-		map.put(1, 1);
-		map.put(2, 2);
-		map.put(3, 2);
-		map.put(4, 2);
-		map.put(6, 2);
-		map.put(5, 3);
-
-		Map<Integer, Double> ranking = UtilMethods.rankingStatistics(map);
-		System.out.println(ranking);
-
-	}
-
-	@Test
-	public void rankColor() {
-		int max = 27;
-		int rankDivision = (int) Math.ceil(max / (double) 4);
-		for (int i = 1; i <= max; ++i) {
-			System.out.println((i) / rankDivision - 1);
-		}
-	}
-
-	@Test
-	public void rankColor1() {
-		List<String> datasets = new ArrayList<String>();
-		System.out.println(datasets.stream()
-				.map(String::toString)
-				.collect(Collectors.joining(",")));
+	
+	private void enrolledYear(int startMonth, int endMonth, Instant firstAccess, Integer expectedYear) {
+		Integer year = EnrollmentBar.getYear(startMonth, endMonth, firstAccess);
+		assertEquals(expectedYear, year);
 	}
 }
+
+	
+

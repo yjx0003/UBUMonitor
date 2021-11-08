@@ -5,6 +5,8 @@ import java.time.Instant;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,6 +16,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -66,14 +69,16 @@ public class EnrollmentBar extends Plotly {
 
 	}
 
-	private Integer getYear(int startMonth, int endMonth, Instant firstAccess) {
+	public static Integer getYear(int startMonth, int endMonth, Instant firstAccess) {
 		if (firstAccess == null) {
 			return null;
 		}
 		ZonedDateTime zonedDateTime = firstAccess.atZone(ZoneId.systemDefault());
-		if (startMonth > endMonth && zonedDateTime.getMonth()
-				.getValue() < startMonth) {
+		int firstAccessMonth = zonedDateTime.getMonthValue();
+		if (startMonth > endMonth && firstAccessMonth < startMonth && firstAccessMonth <= endMonth) {
 			return zonedDateTime.getYear() - 1;
+		} else if (startMonth < endMonth && firstAccessMonth > endMonth) {
+			return zonedDateTime.getYear() + 1;
 		}
 		return zonedDateTime.getYear();
 	}
@@ -90,7 +95,8 @@ public class EnrollmentBar extends Plotly {
 
 	private Set<Course> getUniqueCourses(Map<Integer, Map<Course, List<EnrolledUser>>> courseCount,
 			List<EnrolledUser> selectedUsers, int min) {
-		Map<Course, Integer> courses = new TreeMap<>(Course.getCourseComparator().reversed());
+		Map<Course, Integer> courses = new TreeMap<>(Course.getCourseComparator()
+				.reversed());
 
 		for (Map<Course, List<EnrolledUser>> map : courseCount.values()) {
 			for (Map.Entry<Course, List<EnrolledUser>> entry : map.entrySet()) {
@@ -151,6 +157,9 @@ public class EnrollmentBar extends Plotly {
 				usersIds.add(user.getId());
 				usersTooltip.append(" • ");
 				usersTooltip.append(user.getFullName());
+				usersTooltip.append(Optional.ofNullable(user.getFirstaccess())
+						.map(instant -> " (" + instant.atZone(ZoneId.systemDefault())
+								.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) +")").orElse(null));
 				usersTooltip.append("<br>");
 			}
 
@@ -158,7 +167,7 @@ public class EnrollmentBar extends Plotly {
 			y.add(users.size());
 			enrolledUsers.addWithQuote(usersTooltip);
 			usersIdsArray.add(usersIds);
-			text.add(users.size());
+			text.add(users.isEmpty() ? null : users.size());
 		}
 
 		Plotly.createAxisValuesHorizontal(horizontalMode, trace, x, y);

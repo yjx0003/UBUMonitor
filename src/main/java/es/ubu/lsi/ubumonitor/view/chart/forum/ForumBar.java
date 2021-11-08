@@ -105,9 +105,9 @@ public class ForumBar extends Plotly {
 		JSObject marker = new JSObject();
 		marker.put("color", colorToRGB(color));
 		trace.put("marker", marker);
-		trace.put("text", discussions);
+		trace.put("customdata", discussions);
 
-		trace.put("hovertemplate", "'<br>%{text}<br><b>" + I18n.get("text.total") + ":</b> %{" + (horizontalMode ? "x" : "y")
+		trace.put("hovertemplate", "'<br>%{customdata}<br><b>" + I18n.get("text.total") + ":</b> %{" + (horizontalMode ? "x" : "y")
 				+ "}<extra></extra>'");
 
 		return trace;

@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -28,6 +27,7 @@ import org.apache.commons.csv.CSVPrinter;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
@@ -70,7 +70,7 @@ public class EnrollmentBar extends Plotly {
 	}
 
 	public static Integer getYear(int startMonth, int endMonth, Instant firstAccess) {
-		if (firstAccess == null) {
+		if (firstAccess == null || firstAccess.getEpochSecond() == 0) {
 			return null;
 		}
 		ZonedDateTime zonedDateTime = firstAccess.atZone(ZoneId.systemDefault());
@@ -84,13 +84,31 @@ public class EnrollmentBar extends Plotly {
 	}
 
 	private Set<Integer> getUniqueYears(Map<Integer, Map<Course, List<EnrolledUser>>> courseCount) {
-		Set<Integer> years = new TreeSet<>(Comparator.nullsLast(Comparator.naturalOrder()));
+		Set<Integer> years = new TreeSet<>(Comparator.nullsFirst(Comparator.naturalOrder()));
 		for (Integer year : courseCount.keySet()) {
 
 			years.add(year);
 
 		}
 		return years;
+	}
+	
+	private Map<Course, Integer> countCoursesWithUsers(Collection<EnrolledUser> users,
+			Collection<Course> courses) {
+		Map<Course, Integer> courseCount = new HashMap<>();
+		for (Course course : courses) {
+			Set<EnrolledUser> selectedUsers = new HashSet<>(course.getEnrolledUsers());
+			int enrolledUsers = 0;
+			for (EnrolledUser user : users) {
+				if (selectedUsers.contains(user)) {
+					enrolledUsers++;
+				}
+			}
+	
+				courseCount.put(course, enrolledUsers);
+			
+		}
+		return courseCount;
 	}
 
 	private Set<Course> getUniqueCourses(Map<Integer, Map<Course, List<EnrolledUser>>> courseCount,
@@ -125,41 +143,58 @@ public class EnrollmentBar extends Plotly {
 
 		Map<Integer, Map<Course, List<EnrolledUser>>> courseCount = countCoursesWithUsers(users, allCourses,
 				startMonth.getValue(), endMonth.getValue());
+		Map<Course, Integer> courseCountTotal = countCoursesWithUsers(users, allCourses);
 
 		Set<Integer> years = getUniqueYears(courseCount);
 		Set<Course> courses = getUniqueCourses(courseCount, users, getConfigValue("minFrequency"));
 		for (Integer year : years) {
-			data.add(createTrace(year == null ? "Unknown" : year.toString(), courses, courseCount.get(year),
+			String yearString;
+			if(year == null) {
+				yearString = I18n.get("unknown");
+			} else if(startMonth.getValue() > endMonth.getValue()) {
+				yearString = year + "-" + (year+1);
+			} else {
+				yearString = year.toString();
+			}
+			data.add(createTrace(yearString, courses, courseCount.get(year), courseCountTotal,
 					getConfigValue("horizontalMode")));
 		}
 	}
 
-	public JSObject createTrace(String name, Set<Course> courses, Map<Course, List<EnrolledUser>> courseCount,
-			boolean horizontalMode) {
+	public JSObject createTrace(String name, Set<Course> courses, Map<Course, List<EnrolledUser>> yearCourseCount, Map<Course, Integer> totalCount,  boolean horizontalMode) {
+		
 		JSObject trace = new JSObject();
 		JSArray x = new JSArray();
 		JSArray y = new JSArray();
 		JSArray enrolledUsers = new JSArray();
 		JSArray usersIdsArray = new JSArray();
-		JSArray text = new JSArray();
 		int i = 0;
 		for (Course course : courses) {
-			List<EnrolledUser> users = courseCount.getOrDefault(course, Collections.emptyList());
+			List<EnrolledUser> users = yearCourseCount.getOrDefault(course, Collections.emptyList());
 
 			StringBuilder usersTooltip = new StringBuilder();
 			usersTooltip.append("<b>");
 			usersTooltip.append(course.getFullName());
 			usersTooltip.append(" (");
 			usersTooltip.append(course.getId());
-			usersTooltip.append(")</b><br><br>");
+			usersTooltip.append(")<br><br>");
+			usersTooltip.append(name);
+			usersTooltip.append(": ");
+			usersTooltip.append(users.size());
+			usersTooltip.append("<br>");
+			usersTooltip.append(I18n.get("total"));
+			usersTooltip.append(totalCount.get(course));
+			usersTooltip.append("</b><br><br>");
 			JSArray usersIds = new JSArray();
 			for (EnrolledUser user : users) {
 				usersIds.add(user.getId());
 				usersTooltip.append(" • ");
 				usersTooltip.append(user.getFullName());
-				usersTooltip.append(Optional.ofNullable(user.getFirstaccess())
-						.map(instant -> " (" + instant.atZone(ZoneId.systemDefault())
-								.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) +")").orElse(null));
+				Instant instant = user.getFirstaccess();
+				if(instant != null && instant.getEpochSecond() != 0) {
+					usersTooltip.append(" (" + instant.atZone(ZoneId.systemDefault())
+					.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) +")");
+				}
 				usersTooltip.append("<br>");
 			}
 
@@ -167,7 +202,7 @@ public class EnrollmentBar extends Plotly {
 			y.add(users.size());
 			enrolledUsers.addWithQuote(usersTooltip);
 			usersIdsArray.add(usersIds);
-			text.add(users.isEmpty() ? null : users.size());
+			
 		}
 
 		Plotly.createAxisValuesHorizontal(horizontalMode, trace, x, y);
@@ -176,7 +211,6 @@ public class EnrollmentBar extends Plotly {
 		trace.putWithQuote("name", name);
 		trace.put("customdata", enrolledUsers);
 		trace.put("userids", usersIdsArray);
-		trace.put("text", text);
 		trace.put("hovertemplate", "'%{customdata}<extra></extra>'");
 
 		return trace;
@@ -240,6 +274,7 @@ public class EnrollmentBar extends Plotly {
 		layout.put("hovermode", "'closest'");
 		layout.put("hoverlabel", "{align:'left'}");
 		layout.put("barmode", "'stack'");
+		layout.put("legend", "{traceorder:'normal'}");
 	}
 
 }

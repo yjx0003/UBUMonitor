@@ -34,8 +34,8 @@ public class MicrosoftForms {
 	public void addAnswer(String questionId, String answer) {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("questionId", questionId);
-		// solo se mandan los ultimos 4000 caracteres
-		jsonObject.put("answer1", answer.substring(Math.max(answer.length() - LIMIT_CHARACTERS, 0), answer.length()));
+		// solo se mandan los primeros 4000 caracteres
+		jsonObject.put("answer1", answer.substring(0, Math.min(LIMIT_CHARACTERS, answer.length())));
 		answersArray.put(jsonObject);
 	}
 

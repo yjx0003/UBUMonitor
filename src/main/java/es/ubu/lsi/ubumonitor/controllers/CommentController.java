@@ -14,6 +14,7 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -35,12 +36,15 @@ public class CommentController implements Initializable{
 	@FXML
 	private Label labelCharacterCount;
 	
+	@FXML
+	private CheckBox checkBoxAcceptCondition;
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		textAreaComment.setTextFormatter(new TextFormatter<String>(change -> 
         change.getControlNewText().length() <= MicrosoftForms.LIMIT_CHARACTERS ? change : null));
 		
-		buttonSend.disableProperty().bind(Bindings.isEmpty(textAreaComment.textProperty()));
+		buttonSend.disableProperty().bind(Bindings.isEmpty(textAreaComment.textProperty()).or(checkBoxAcceptCondition.selectedProperty().not()));
 		labelCharacterCount.textProperty().bind(Bindings.length(textAreaComment.textProperty())
                 .asString("%d/"+ MicrosoftForms.LIMIT_CHARACTERS));
 		

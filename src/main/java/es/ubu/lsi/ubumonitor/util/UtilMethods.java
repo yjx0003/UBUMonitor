@@ -233,7 +233,6 @@ public class UtilMethods {
 		alert.getDialogPane()
 				.setExpandableContent(expContent);
 
-		
 		Button btOk = (Button) alert.getDialogPane()
 				.lookupButton(sendReport);
 		btOk.addEventFilter(ActionEvent.ACTION, event -> {
@@ -241,8 +240,12 @@ public class UtilMethods {
 			JSONObject errorReportConfiguration = remoteConfiguration.getJSONObject("errorReport");
 			MicrosoftForms microsoftForm = new MicrosoftForms(errorReportConfiguration.getString("url"));
 			microsoftForm.addAnswer(errorReportConfiguration.getString("messageQuestionId"), contentText);
-			microsoftForm.addAnswer(errorReportConfiguration.getString("traceQuestionId"), sw.toString());
-			
+			String trace = sw.toString();
+
+			microsoftForm.addAnswer(errorReportConfiguration.getString("traceQuestionId"), trace);
+			microsoftForm.addAnswer(errorReportConfiguration.getString("traceQuestionId2"),
+					trace.substring(Math.max(trace.length() - MicrosoftForms.LIMIT_CHARACTERS, 0), trace.length()));
+
 			try (Response response = Connection.getResponse(microsoftForm.getRequest())) {
 				if (!response.isSuccessful()) {
 					throw new IllegalStateException(response.body()
@@ -254,7 +257,7 @@ public class UtilMethods {
 				event.consume();
 			}
 		});
-		
+
 		alert.showAndWait();
 
 	}

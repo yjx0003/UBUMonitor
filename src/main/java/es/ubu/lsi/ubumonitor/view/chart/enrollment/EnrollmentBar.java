@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -92,10 +93,9 @@ public class EnrollmentBar extends Plotly {
 		}
 		return years;
 	}
-	
-	private Map<Course, Integer> countCoursesWithUsers(Collection<EnrolledUser> users,
-			Collection<Course> courses) {
-		Map<Course, Integer> courseCount = new HashMap<>();
+
+	private Map<Course, Integer> countCoursesWithUsers(Collection<EnrolledUser> users, Collection<Course> courses) {
+		TreeMap<Course, Integer> courseCount = new TreeMap<>(Course.getCourseComparator());
 		for (Course course : courses) {
 			Set<EnrolledUser> selectedUsers = new HashSet<>(course.getEnrolledUsers());
 			int enrolledUsers = 0;
@@ -104,35 +104,26 @@ public class EnrollmentBar extends Plotly {
 					enrolledUsers++;
 				}
 			}
-	
+			if (enrolledUsers > 0) {
 				courseCount.put(course, enrolledUsers);
-			
+			}
+
 		}
-		return courseCount;
+
+		return courseCount.entrySet()
+				.stream()
+				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 	}
 
-	private Set<Course> getUniqueCourses(Map<Integer, Map<Course, List<EnrolledUser>>> courseCount,
-			List<EnrolledUser> selectedUsers, int min) {
-		Map<Course, Integer> courses = new TreeMap<>(Course.getCourseComparator()
-				.reversed());
+	private Set<Course> getUniqueCourses(Map<Course, Integer> courseCount, List<EnrolledUser> selectedUsers, int min) {
+		Map<Course, Integer> courses = new LinkedHashMap<>(courseCount);
 
-		for (Map<Course, List<EnrolledUser>> map : courseCount.values()) {
-			for (Map.Entry<Course, List<EnrolledUser>> entry : map.entrySet()) {
-				Course course = entry.getKey();
-				List<EnrolledUser> users = entry.getValue();
-				Integer enrolls = courses.get(course);
-				courses.put(course, enrolls == null ? users.size() : enrolls + users.size());
-			}
-		}
 		if (selectedUsers.size() >= min) {
 			courses.entrySet()
 					.removeIf(e -> e.getValue() < min);
 		}
-		return courses.entrySet()
-				.stream()
-				.sorted(Map.Entry.comparingByValue())
-				.map(Map.Entry::getKey)
-				.collect(Collectors.toCollection(LinkedHashSet::new));
+		return courses.keySet();
 	}
 
 	@Override
@@ -146,13 +137,13 @@ public class EnrollmentBar extends Plotly {
 		Map<Course, Integer> courseCountTotal = countCoursesWithUsers(users, allCourses);
 
 		Set<Integer> years = getUniqueYears(courseCount);
-		Set<Course> courses = getUniqueCourses(courseCount, users, getConfigValue("minFrequency"));
+		Set<Course> courses = getUniqueCourses(courseCountTotal, users, getConfigValue("minFrequency"));
 		for (Integer year : years) {
 			String yearString;
-			if(year == null) {
+			if (year == null) {
 				yearString = I18n.get("unknown");
-			} else if(startMonth.getValue() > endMonth.getValue()) {
-				yearString = year + "-" + (year+1);
+			} else if (startMonth.getValue() > endMonth.getValue()) {
+				yearString = year + "-" + (year + 1);
 			} else {
 				yearString = year.toString();
 			}
@@ -161,8 +152,9 @@ public class EnrollmentBar extends Plotly {
 		}
 	}
 
-	public JSObject createTrace(String name, Set<Course> courses, Map<Course, List<EnrolledUser>> yearCourseCount, Map<Course, Integer> totalCount,  boolean horizontalMode) {
-		
+	public JSObject createTrace(String name, Set<Course> courses, Map<Course, List<EnrolledUser>> yearCourseCount,
+			Map<Course, Integer> totalCount, boolean horizontalMode) {
+
 		JSObject trace = new JSObject();
 		JSArray x = new JSArray();
 		JSArray y = new JSArray();
@@ -183,7 +175,7 @@ public class EnrollmentBar extends Plotly {
 			usersTooltip.append(users.size());
 			usersTooltip.append("<br>");
 			usersTooltip.append(I18n.get("total"));
-			usersTooltip.append(totalCount.get(course));
+			usersTooltip.append(totalCount.getOrDefault(course, 0));
 			usersTooltip.append("</b><br><br>");
 			JSArray usersIds = new JSArray();
 			for (EnrolledUser user : users) {
@@ -191,9 +183,9 @@ public class EnrollmentBar extends Plotly {
 				usersTooltip.append(" • ");
 				usersTooltip.append(user.getFullName());
 				Instant instant = user.getFirstaccess();
-				if(instant != null && instant.getEpochSecond() != 0) {
+				if (instant != null && instant.getEpochSecond() != 0) {
 					usersTooltip.append(" (" + instant.atZone(ZoneId.systemDefault())
-					.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) +")");
+							.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) + ")");
 				}
 				usersTooltip.append("<br>");
 			}
@@ -202,7 +194,7 @@ public class EnrollmentBar extends Plotly {
 			y.add(users.size());
 			enrolledUsers.addWithQuote(usersTooltip);
 			usersIdsArray.add(usersIds);
-			
+
 		}
 
 		Plotly.createAxisValuesHorizontal(horizontalMode, trace, x, y);
@@ -248,13 +240,10 @@ public class EnrollmentBar extends Plotly {
 	public void createLayout(JSObject layout) {
 		boolean horizontalMode = getConfigValue("horizontalMode");
 		List<EnrolledUser> users = getSelectedEnrolledUser();
-		Month startMonth = getConfigValue("startMonth");
-		Month endMonth = getConfigValue("endMonth");
 
-		Map<Integer, Map<Course, List<EnrolledUser>>> courseCount = countCoursesWithUsers(users, allCourses,
-				startMonth.getValue(), endMonth.getValue());
+		Map<Course, Integer> courseCountTotal = countCoursesWithUsers(users, allCourses);
 
-		Set<Course> courses = getUniqueCourses(courseCount, users, getConfigValue("minFrequency"));
+		Set<Course> courses = getUniqueCourses(courseCountTotal, users, getConfigValue("minFrequency"));
 
 		JSArray ticktext = new JSArray();
 		for (Course course : courses) {
@@ -264,13 +253,28 @@ public class EnrollmentBar extends Plotly {
 		}
 
 		horizontalMode(layout, ticktext, horizontalMode, getXAxisTitle(), getYAxisTitle(), null);
-		if (horizontalMode) {
-			JSObject yaxis = (JSObject) layout.get("yaxis");
-			yaxis.put("categoryorder", "'total descending'");
-		} else {
-			JSObject xaxis = (JSObject) layout.get("xaxis");
-			xaxis.put("categoryorder", "'total descending'");
+//		if (horizontalMode) {
+//			JSObject yaxis = (JSObject) layout.get("yaxis");
+//			yaxis.put("categoryorder", "'total descending'");
+//		} else {
+//			JSObject xaxis = (JSObject) layout.get("xaxis");
+//			xaxis.put("categoryorder", "'total descending'");
+//		}
+
+		JSArray annotations = new JSArray();
+		int i = 0;
+		for (Course course : courses) {
+			Integer enrolled = courseCountTotal.getOrDefault(course, 0);
+			JSObject annotation = new JSObject();
+			annotation.put("showarrow", false);
+			annotation.put("x", horizontalMode ? enrolled + enrolled * 0.05 : i);
+			annotation.put("y", horizontalMode ? i : enrolled + enrolled * 0.05);
+			annotation.put("text", enrolled);
+			annotations.add(annotation);
+			i++;
 		}
+
+		layout.put("annotations", annotations);
 		layout.put("hovermode", "'closest'");
 		layout.put("hoverlabel", "{align:'left'}");
 		layout.put("barmode", "'stack'");

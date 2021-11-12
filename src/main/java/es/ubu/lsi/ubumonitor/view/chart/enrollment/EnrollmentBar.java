@@ -84,7 +84,7 @@ public class EnrollmentBar extends Plotly {
 	}
 
 	private Set<Integer> getUniqueYears(Map<Integer, Map<Course, List<EnrolledUser>>> courseCount) {
-		Set<Integer> years = new TreeSet<>(Comparator.nullsFirst(Comparator.naturalOrder()));
+		Set<Integer> years = new TreeSet<>(Comparator.nullsFirst(Comparator.reverseOrder()));
 		for (Integer year : courseCount.keySet()) {
 
 			years.add(year);
@@ -159,6 +159,7 @@ public class EnrollmentBar extends Plotly {
 		JSArray y = new JSArray();
 		JSArray enrolledUsers = new JSArray();
 		JSArray usersIdsArray = new JSArray();
+		JSArray text = new JSArray();
 		int i = 0;
 		for (Course course : courses) {
 			List<EnrolledUser> users = yearCourseCount.getOrDefault(course, Collections.emptyList());
@@ -193,6 +194,7 @@ public class EnrollmentBar extends Plotly {
 			y.add(users.size());
 			enrolledUsers.addWithQuote(usersTooltip);
 			usersIdsArray.add(usersIds);
+			text.add(users.size());
 
 		}
 
@@ -202,6 +204,7 @@ public class EnrollmentBar extends Plotly {
 		trace.putWithQuote("name", name);
 		trace.put("customdata", enrolledUsers);
 		trace.put("userids", usersIdsArray);
+		trace.put("text", text);
 		trace.put("hovertemplate", "'%{customdata}<extra></extra>'");
 
 		return trace;

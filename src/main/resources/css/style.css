@@ -101,11 +101,11 @@
 }
 
 .toggle-button {
-  -fx-graphic: url('../img/eye-solid.png');
+  -fx-graphic: url('../img/eye-regular.png');
   -fx-background-color: transparent;
 }
 
 .toggle-button:selected {
-  -fx-graphic: url('../img/eye-slash-solid.png');
+  -fx-graphic: url('../img/eye-slash-regular.png');
   -fx-background-color: transparent;
 }

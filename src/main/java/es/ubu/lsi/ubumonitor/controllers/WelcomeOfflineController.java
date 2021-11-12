@@ -314,7 +314,8 @@ public class WelcomeOfflineController implements Initializable {
 			isBBDDLoaded = true;
 			controller.setDefaultUpdate(
 					ZonedDateTime.ofInstant(Instant.ofEpochSecond(file.lastModified()), ZoneId.systemDefault()));
-			TimeZone.setDefault(TimeZone.getTimeZone(dataBase.getUserZoneId()));
+			ZoneId zoneId = dataBase.getUserZoneId() == null ? ZoneId.systemDefault() : dataBase.getUserZoneId();
+			TimeZone.setDefault(TimeZone.getTimeZone(zoneId));
 
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			incorrectPasswordWindow(file);

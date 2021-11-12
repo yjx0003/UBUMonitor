@@ -9,6 +9,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -35,8 +36,9 @@
 		<Group id="Group" layoutX="145.0" layoutY="250.0">
 			<children>
       				<TextField id="txtUname" fx:id="txtUsername" layoutY="27.0" prefWidth="173.0" styleClass="text-field-login" stylesheets="@/css/style.css" />
-				<PasswordField id="yxyPassword" fx:id="txtPassword" layoutY="63.0" prefWidth="173.00009999999747" styleClass="text-field-login" stylesheets="@/css/style.css" />
+				<PasswordField id="yxyPassword" fx:id="txtPassword" layoutY="63.0" prefWidth="173.0" styleClass="text-field-login" stylesheets="@/css/style.css" />
 				<TextField fx:id="txtHost" layoutY="100.0" prefWidth="173.0" promptText="https://demo.moodle.net" styleClass="text-field-login" stylesheets="@/css/style.css" />
+            <TextField id="txtUname" fx:id="txtPasswordShow" layoutY="63.0" prefWidth="173.0" styleClass="text-field-login" stylesheets="@/css/style.css" />
 			</children>
 		</Group>
 		<Button id="Entrar" fx:id="btnLogin" cancelButton="false" defaultButton="true" disable="false" focusTraversable="true" graphicTextGap="5.0" layoutX="100.0" layoutY="455.0" mnemonicParsing="false" onAction="#login" prefWidth="70.0" styleClass="accept_button" text="%btn.enter" textOverrun="ELLIPSIS" underline="false" visible="true">
@@ -85,6 +87,7 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </ImageView>
+      <ToggleButton fx:id="togglePassword" layoutX="321.0" layoutY="305.0" mnemonicParsing="false" />
       
       	</children>
 </AnchorPane>

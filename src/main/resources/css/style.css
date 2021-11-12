@@ -99,3 +99,13 @@
 #tableView .table-column {
 	-fx-alignment: center;
 }
+
+.toggle-button {
+  -fx-graphic: url('../img/eye-solid.png');
+  -fx-background-color: transparent;
+}
+
+.toggle-button:selected {
+  -fx-graphic: url('../img/eye-slash-solid.png');
+  -fx-background-color: transparent;
+}

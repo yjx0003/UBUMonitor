@@ -10,6 +10,7 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -87,7 +88,10 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </ImageView>
-      <ToggleButton fx:id="togglePassword" layoutX="321.0" layoutY="305.0" mnemonicParsing="false" />
+      <ToggleButton fx:id="togglePassword" layoutX="320.0" layoutY="309.0" mnemonicParsing="false">
+         <tooltip>
+            <Tooltip fx:id="tooltipPasswordVisible" text="Empty Tooltip" />
+         </tooltip></ToggleButton>
       
       	</children>
 </AnchorPane>

@@ -224,7 +224,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_WORD_CLOUD, "minFont", 10);
 		createItem(ChartType.FORUM_WORD_CLOUD, "maxFont", 40);
 		createItem(ChartType.FORUM_WORD_CLOUD, "angles", "-90, 0, 90");
-		createItem(ChartType.FORUM_WORD_CLOUD, "backGroundImage", MaskImage.RECTANGLE);
+		createItem(ChartType.FORUM_WORD_CLOUD, "backGroundImage", MaskImage.BUTTERFLY);
 
 		createItem(ChartType.RANKING_TABLE, "statisticsRanking", false);
 		createItem(ChartType.RANKING_TABLE, "firstInterval", Color.web("#b5ff33"));

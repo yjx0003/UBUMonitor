@@ -89,7 +89,7 @@ public class BoxPlot extends Plotly {
 		trace.put("userids", userids);
 		trace.put("text", userNames);
 		trace.put("hovertemplate",  "'<b>%{" + (useHorizontal ? "y" : "x") + "}<br>%{text}: </b>%{"
-				+ (useHorizontal ? "x" : "y") + ":.2f}<extra></extra>'");
+				+ (useHorizontal ? "x" : "y") + ":.2~f}<extra></extra>'");
 		JSObject marker = new JSObject();
 		marker.put("color", rgb(name));
 		trace.put("marker", marker);

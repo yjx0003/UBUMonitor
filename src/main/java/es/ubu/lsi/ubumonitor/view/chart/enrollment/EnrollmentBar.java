@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.view.chart.enrollment;
 
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.Month;
 import java.time.ZoneId;
@@ -161,9 +162,12 @@ public class EnrollmentBar extends Plotly {
 		JSArray usersIdsArray = new JSArray();
 		JSArray text = new JSArray();
 		int i = 0;
+		NumberFormat percentageFormat = NumberFormat.getPercentInstance();
+		percentageFormat.setMinimumFractionDigits(0);
+		percentageFormat.setMaximumFractionDigits(2);
 		for (Course course : courses) {
 			List<EnrolledUser> users = yearCourseCount.getOrDefault(course, Collections.emptyList());
-
+			int total = totalCount.getOrDefault(course, 0);
 			StringBuilder usersTooltip = new StringBuilder();
 			usersTooltip.append("<b>");
 			usersTooltip.append(course.getFullName());
@@ -173,9 +177,12 @@ public class EnrollmentBar extends Plotly {
 			usersTooltip.append(name);
 			usersTooltip.append(": ");
 			usersTooltip.append(users.size());
+			usersTooltip.append(" (");
+			usersTooltip.append(percentageFormat.format(users.size() / (double)total));
+			usersTooltip.append(")");
 			usersTooltip.append("<br>");
 			usersTooltip.append(I18n.get("total"));
-			usersTooltip.append(totalCount.getOrDefault(course, 0));
+			usersTooltip.append(total);
 			usersTooltip.append("</b><br><br>");
 			JSArray usersIds = new JSArray();
 			for (EnrolledUser user : users) {

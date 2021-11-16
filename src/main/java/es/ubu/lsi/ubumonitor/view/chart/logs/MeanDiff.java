@@ -146,7 +146,7 @@ public class MeanDiff extends PlotlyLog {
 		trace.put("y", y);
 		trace.put("line", line);
 		trace.put("marker", marker);
-		trace.put("hovertemplate", "'<b>%{x}<br>%{data.name}: </b>%{y:.2f}<extra></extra>'");
+		trace.put("hovertemplate", "'<b>%{x}<br>%{data.name}: </b>%{y:.2~f}<extra></extra>'");
 		if (!visible) {
 			trace.put("visible", "'legendonly'");
 		}

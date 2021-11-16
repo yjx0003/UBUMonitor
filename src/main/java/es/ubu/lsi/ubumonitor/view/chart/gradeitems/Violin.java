@@ -82,7 +82,7 @@ public class Violin extends Plotly {
 		trace.put("userids", userids);
 		trace.put("text", userNames);
 		trace.put("hovertemplate",  "'<b>%{" + (horizontalMode ? "y" : "x") + "}<br>%{text}: </b>%{"
-				+ (horizontalMode ? "x" : "y") + ":.2f}<extra></extra>'");
+				+ (horizontalMode ? "x" : "y") + ":.2~f}<extra></extra>'");
 		JSObject line = new JSObject();
 		line.put("color", rgb(name));
 		trace.put("line", line);

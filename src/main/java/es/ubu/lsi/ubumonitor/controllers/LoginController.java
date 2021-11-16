@@ -36,6 +36,7 @@ import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetEnrolledCoursesByTimelineClassification.Classification;
 import es.ubu.lsi.ubumonitor.webservice.api.core.webservice.CoreWebserviceGetSiteInfo;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
@@ -111,12 +112,15 @@ public class LoginController implements Initializable {
 
 	@FXML
 	private ImageView imageViewconfigurationHelper;
-	
+
 	@FXML
 	private TextField txtPasswordShow;
-	
+
 	@FXML
 	private ToggleButton togglePassword;
+
+	@FXML
+	private Tooltip tooltipPasswordVisible;
 
 	/**
 	 * Crea el selector de idioma.
@@ -205,9 +209,19 @@ public class LoginController implements Initializable {
 	 */
 	private void initializeProperties() {
 
-		txtPassword.visibleProperty().bind(togglePassword.selectedProperty().not());
-		txtPasswordShow.visibleProperty().bind(togglePassword.selectedProperty());
-		txtPassword.textProperty().bindBidirectional(txtPasswordShow.textProperty());
+		txtPassword.visibleProperty()
+				.bind(togglePassword.selectedProperty()
+						.not());
+		txtPasswordShow.visibleProperty()
+				.bind(togglePassword.selectedProperty());
+		txtPassword.textProperty()
+				.bindBidirectional(txtPasswordShow.textProperty());
+		
+		tooltipPasswordVisible.textProperty()
+				.bind(Bindings.when(togglePassword.selectedProperty())
+						.then(I18n.get("hidePassword"))
+						.otherwise(I18n.get("showPassword")));
+
 		txtHost.setText(ConfigHelper.getProperty("host", ""));
 
 		txtUsername.setText(ConfigHelper.getProperty("username", ""));
@@ -215,7 +229,7 @@ public class LoginController implements Initializable {
 		chkSaveUsername.setSelected(ConfigHelper.getProperty("saveUsername", false));
 		chkSaveHost.setSelected(ConfigHelper.getProperty("saveHost", false));
 		chkOfflineMode.setSelected(ConfigHelper.getProperty("offlineMode", false));
-		
+
 		TextFields.bindAutoCompletion(txtUsername, ConfigHelper.getArray(USERNAMES)
 				.toList())
 				.setDelay(0);

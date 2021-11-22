@@ -96,8 +96,11 @@ public abstract class ChartLogs extends Chart {
 		JSObject options = getOptions();
 		LOGGER.info("Dataset {} en JS: {}", chartType, dataset);
 		LOGGER.info("Opciones {} en JS: {}", chartType, options);
-		webViewChartsEngine.executeScript(getJSFunction(dataset, options.toString()));
-
+		try {
+			webViewChartsEngine.executeScript(getJSFunction(dataset, options.toString()));
+		} catch (Exception e) {
+			LOGGER.info("Error al actualizar la grafica", e);
+		}
 	}
 
 	@Override

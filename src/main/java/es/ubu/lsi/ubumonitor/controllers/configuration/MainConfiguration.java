@@ -242,6 +242,9 @@ public class MainConfiguration {
 		createItem(ChartType.BUBBLE_COMPARISON, "transitionDuration", 1000);
 		createItem(ChartType.BUBBLE_COMPARISON, "frameDuration", 1000);
 		
+		createItem(ChartType.SPLOM_GRADE, "minGradeColor", Color.web("#DC143C", 0.3));
+		createItem(ChartType.SPLOM_GRADE, "maxGradeColor", Color.web("#2DC214", 0.3));
+		
 		createItem(ChartType.ENROLLMENT_BAR, HORIZONTAL_MODE, true);
 		createItem(ChartType.ENROLLMENT_BAR, "startMonth", Month.SEPTEMBER);
 		createItem(ChartType.ENROLLMENT_BAR, "endMonth", Month.JULY);

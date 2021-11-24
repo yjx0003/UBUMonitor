@@ -248,18 +248,15 @@ public class MainConfiguration {
 		createItem(ChartType.ENROLLMENT_BAR, "endMonth", Month.JULY);
 		createItem(ChartType.ENROLLMENT_BAR, "minFrequency", 1);
 		
-		createItem(ChartType.ENROLLMENT_SANKEY, "userColorNode", Color.web("#add8e6"));
-		createItem(ChartType.ENROLLMENT_SANKEY, "linkColor", Color.web("#efc9af", 0.3));
-		createItem(ChartType.ENROLLMENT_SANKEY, "courseColorNode", Color.web("#FC9E21"));
-		createItem(ChartType.ENROLLMENT_SANKEY, "minFrequency", 1);
-		
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "minFrequency", 2);
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "showNonConnected", true);
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "useInitialNames", true);
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physicsAfterDraw", true);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "edges.moreInfoEdge", false);
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "edges.dashes", false);
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "edges.scaling.min", 1);
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "edges.scaling.max", 10);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "nodes.showUsernames", true);
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "nodes.borderWidth", 1);
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "nodes.scaling.min", 20);
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "nodes.scaling.max", 40);
@@ -289,6 +286,11 @@ public class MainConfiguration {
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "interaction.tooltipDelay", 300);
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "layout.randomSeed", "");
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "layout.clusterThreshold", 150);
+		
+		createItem(ChartType.ENROLLMENT_SANKEY, "userColorNode", Color.web("#add8e6"));
+		createItem(ChartType.ENROLLMENT_SANKEY, "linkColor", Color.web("#efc9af", 0.3));
+		createItem(ChartType.ENROLLMENT_SANKEY, "courseColorNode", Color.web("#FC9E21"));
+		createItem(ChartType.ENROLLMENT_SANKEY, "minFrequency", 1);
 		
 	}
 

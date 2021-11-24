@@ -78,6 +78,7 @@ public class ForumNetwork extends VisNetwork {
 		JSObject edges = super.getEdgesOptions();
 		edges.put("arrows", "{to:{enabled:true,scaleFactor:" + getConfigValue("edges.arrows.to.scaleFactor") + "}}");
 		edges.put("arrowStrikethrough", false);
+		edges.put("physics", false);
 		edges.put("dashes", getConfigValue("edges.dashes"));
 		JSObject scaling = new JSObject();
 		scaling.put("max", getConfigValue("edges.scaling.max"));

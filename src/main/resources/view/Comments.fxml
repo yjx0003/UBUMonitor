@@ -57,7 +57,10 @@
                   <Hyperlink onAction="#openMicrosoftFormPolicy" text="%label.microsoftFormPolicy" />
                </children>
             </TextFlow>
-            <CheckBox fx:id="checkBoxAcceptCondition" mnemonicParsing="false" text="%checkBox.acceptCondition" GridPane.rowIndex="1" />
+            <CheckBox fx:id="checkBoxAcceptCondition" mnemonicParsing="false" text="%checkBox.acceptCondition" GridPane.rowIndex="1">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font></CheckBox>
          </children>
       </GridPane>
       <GridPane GridPane.columnIndex="0" GridPane.rowIndex="4">

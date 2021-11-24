@@ -19,6 +19,7 @@ import org.apache.commons.text.WordUtils;
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
@@ -60,6 +61,8 @@ public class CourseEnrollmentNetwork extends VisNetwork {
 		JSObject edges = super.getEdgesOptions();
 		edges.put("arrows", "{to:{enabled:false}}");
 		edges.put("dashes", getConfigValue("edges.dashes"));
+		edges.put("physics", false);
+
 		JSObject scaling = new JSObject();
 		scaling.put("max", getConfigValue("edges.scaling.max"));
 		scaling.put("min", getConfigValue("edges.scaling.min"));
@@ -146,6 +149,8 @@ public class CourseEnrollmentNetwork extends VisNetwork {
 		int minFrequency = getConfigValue("minFrequency");
 		boolean showNonConnected = getConfigValue("showNonConnected");
 		boolean useInitialNames = getConfigValue("useInitialNames");
+		boolean showUsernames = getConfigValue("nodes.showUsernames");
+		boolean moreInfoEdge = getConfigValue("edges.moreInfoEdge");
 		
 		List<EnrolledUser> users = getSelectedEnrolledUser();
 		Map<Course, Set<EnrolledUser>> courses = coursesWithUser(users, allCourses);
@@ -157,14 +162,14 @@ public class CourseEnrollmentNetwork extends VisNetwork {
 		}
 		
 		JSObject data = new JSObject();
-		data.put("nodes", createNodes(courses, useInitialNames));
-		data.put("edges", createEdges(courseEdges));
+		data.put("nodes", createNodes(courses, useInitialNames, showUsernames));
+		data.put("edges", createEdges(courseEdges, moreInfoEdge));
 
 		
 		webViewChartsEngine.executeScript("updateVisNetwork(" + data + "," + getOptions() + ")");
 	}
 
-	private JSArray createEdges(Map<Pair<Course, Course>, List<EnrolledUser>> courseEdges) {
+	private JSArray createEdges(Map<Pair<Course, Course>, List<EnrolledUser>> courseEdges, boolean moreInfoEdge) {
 		JSArray edges = new JSArray();
 		for(Map.Entry<Pair<Course, Course>, List<EnrolledUser>> entry:courseEdges.entrySet()) {
 			Course from = entry.getKey().getKey();
@@ -176,13 +181,34 @@ public class CourseEnrollmentNetwork extends VisNetwork {
 			edges.add(edge);
 			edge.put("from", from.getId());
 			edge.put("to", to.getId());
-			edge.put("title", users.size());
+			
+			if(moreInfoEdge) {
+				StringBuilder title = new StringBuilder();
+				title.append("<b>• ");
+				title.append(from.getFullName());
+				title.append("<br>• ");
+				title.append(to.getFullName());
+				title.append("<br><br>");
+				title.append(I18n.get("label.enrolledusers"));
+				title.append(": ");
+				title.append(users.size());
+				title.append("</b><br>");
+				for(EnrolledUser enrolledUser: users) {
+					title.append("<br>• ");
+					title.append(enrolledUser.getFullName());
+					
+				}
+				edge.putWithQuote("title", title.toString());
+			}else {
+				edge.put("title", users.size());
+			}
+			
 			edge.put("value", users.size());
 		}
 		return edges;
 	}
 
-	private JSArray createNodes(Map<Course, Set<EnrolledUser>> courses, boolean useInitialNames) {
+	private JSArray createNodes(Map<Course, Set<EnrolledUser>> courses, boolean useInitialNames, boolean showUsernames) {
 		JSArray nodes = new JSArray();
 		for(Map.Entry<Course, Set<EnrolledUser>> entry: courses.entrySet()) {
 			Course course = entry.getKey();
@@ -190,7 +216,25 @@ public class CourseEnrollmentNetwork extends VisNetwork {
 			JSObject node = new JSObject();
 			nodes.add(node);
 			node.put("id", course.getId());
-			node.putWithQuote("title", course.getFullName());
+			if (showUsernames) {
+				StringBuilder title = new StringBuilder();
+				title.append("<b>");
+				title.append(course.getFullName());
+				title.append("<br><br>");
+				title.append(I18n.get("label.enrolledusers"));
+				title.append(": ");
+				title.append(users.size());
+				title.append("</b><br>");
+				for(EnrolledUser enrolledUser: users) {
+					title.append("<br>• ");
+					title.append(enrolledUser.getFullName());
+					
+				}
+				node.putWithQuote("title", title.toString());
+			}else {
+				node.putWithQuote("title", course.getFullName());
+			}
+			
 			node.put("color", rgb(course.getId() * 31));
 			node.put("value", users.size());
 			if(useInitialNames) {

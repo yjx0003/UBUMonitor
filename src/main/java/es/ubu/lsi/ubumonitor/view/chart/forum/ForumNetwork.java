@@ -34,8 +34,8 @@ public class ForumNetwork extends VisNetwork {
 	private DatePicker datePickerStart;
 	private DatePicker datePickerEnd;
 
-	public ForumNetwork(MainController mainController, ListView<CourseModule> listViewForum,
-			DatePicker datePickerStart, DatePicker datePickerEnd) {
+	public ForumNetwork(MainController mainController, ListView<CourseModule> listViewForum, DatePicker datePickerStart,
+			DatePicker datePickerEnd) {
 		super(mainController, ChartType.FORUM_NETWORK);
 		this.listViewForum = listViewForum;
 		this.datePickerStart = datePickerStart;
@@ -71,20 +71,8 @@ public class ForumNetwork extends VisNetwork {
 
 	}
 
-	@Override
-	public void fillOptions(JSObject jsObject) {
-		JSObject options = new JSObject();
 
-		jsObject.put("physicsAfterDraw", getConfigValue("physicsAfterDraw"));
-		options.put("edges", getEdgesOptions());
-		options.put("nodes", getNodesOptions());
-		options.put("physics", getPhysicsOptions());
-		options.put("interaction", getInteractionOptions());
-		options.put("layout", getLayoutOptions());
-		jsObject.put("options", options);
 
-	}
-	
 	@Override
 	public JSObject getEdgesOptions() {
 		JSObject edges = super.getEdgesOptions();
@@ -97,7 +85,7 @@ public class ForumNetwork extends VisNetwork {
 		edges.put("scaling", scaling);
 		return edges;
 	}
-	
+
 	@Override
 	public JSObject getNodesOptions() {
 		JSObject nodes = super.getNodesOptions();
@@ -105,7 +93,7 @@ public class ForumNetwork extends VisNetwork {
 			nodes.put("shape", "'circularImage'");
 			nodes.put("brokenImage", "'../img/default_user.png'");
 		} else {
-			nodes.put("shape", "'circle'");
+			nodes.put("shape", "'dot'");
 		}
 		nodes.put("borderWidth", getConfigValue("nodes.borderWidth"));
 		JSObject scaling = new JSObject();
@@ -163,7 +151,6 @@ public class ForumNetwork extends VisNetwork {
 		return physics;
 
 	}
-	
 
 	@Override
 	public JSObject getLayoutOptions() {
@@ -234,6 +221,7 @@ public class ForumNetwork extends VisNetwork {
 
 				createNodes(showNonConnected ? users : usersWithEdges, fromMap, toMap, toSelfMap, discussionCreations));
 		data.put("edges", edges);
+		
 		webViewChartsEngine.executeScript("updateVisNetwork(" + data + "," + getOptions() + ")");
 	}
 
@@ -241,7 +229,7 @@ public class ForumNetwork extends VisNetwork {
 			Map<EnrolledUser, Long> toMap, Map<EnrolledUser, Long> toSelf,
 			Map<EnrolledUser, Long> discussionCreations) {
 		JSArray nodes = new JSArray();
-
+		boolean usePhoto = getConfigValue("usePhoto");
 		for (EnrolledUser user : users) {
 
 			JSObject node = new JSObject();
@@ -252,18 +240,21 @@ public class ForumNetwork extends VisNetwork {
 			nodes.add(node);
 			node.put("id", user.getId());
 			node.putWithQuote("title", user.getFullName());
-			node.put("color", rgb(user.getId() * 31));
-			node.put("image", "'" + user.getImageBase64() + "'");
+
+			if (usePhoto) {
+				node.put("image", "'" + user.getImageBase64() + "'");
+			} else {
+				node.put("color", rgb(user.getId() * 31));
+			}
 
 			if (fromValue + toValue + toSelfValue + discussionCreated != 0) {
 				StringBuilder builder = new StringBuilder();
 				builder.append("'");
 				if ((boolean) getConfigValue("useInitialNames")) {
-					builder.append( WordUtils.initials(user.getFullName()));
+					builder.append(WordUtils.initials(user.getFullName()));
 				}
 
 				long total = 0;
-		
 
 				if (Boolean.TRUE.equals(getConfigValue("showNumberPosts"))) {
 					StringJoiner stringJoiner = new StringJoiner(", ", " (", ")");
@@ -274,7 +265,7 @@ public class ForumNetwork extends VisNetwork {
 					builder.append(stringJoiner);
 				}
 
-				total += fromValue +toValue+toSelfValue+discussionCreated;
+				total += fromValue + toValue + toSelfValue + discussionCreated;
 
 				builder.append("'");
 
@@ -338,5 +329,4 @@ public class ForumNetwork extends VisNetwork {
 				.collect(Collectors.groupingBy(DiscussionPost::getUser, Collectors.counting()));
 	}
 
-	
 }

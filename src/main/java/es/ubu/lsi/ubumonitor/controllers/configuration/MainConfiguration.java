@@ -242,8 +242,6 @@ public class MainConfiguration {
 		createItem(ChartType.BUBBLE_COMPARISON, "transitionDuration", 1000);
 		createItem(ChartType.BUBBLE_COMPARISON, "frameDuration", 1000);
 		
-		createItem(ChartType.SPLOM_GRADE, "minGradeColor", Color.web("#DC143C", 0.3));
-		createItem(ChartType.SPLOM_GRADE, "maxGradeColor", Color.web("#2DC214", 0.3));
 		
 		createItem(ChartType.ENROLLMENT_BAR, HORIZONTAL_MODE, true);
 		createItem(ChartType.ENROLLMENT_BAR, "startMonth", Month.SEPTEMBER);
@@ -254,6 +252,43 @@ public class MainConfiguration {
 		createItem(ChartType.ENROLLMENT_SANKEY, "linkColor", Color.web("#efc9af", 0.3));
 		createItem(ChartType.ENROLLMENT_SANKEY, "courseColorNode", Color.web("#FC9E21"));
 		createItem(ChartType.ENROLLMENT_SANKEY, "minFrequency", 1);
+		
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "minFrequency", 2);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "showNonConnected", true);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "useInitialNames", true);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physicsAfterDraw", true);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "edges.dashes", false);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "edges.scaling.min", 1);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "edges.scaling.max", 10);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "nodes.borderWidth", 1);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "nodes.scaling.min", 20);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "nodes.scaling.max", 40);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.solver", VisNetwork.Solver.FORCE_ATLAS_2_BASED);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.barnesHut.theta", 0.5);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.barnesHut.gravitationalConstant", -2000);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.barnesHut.centralGravity", 0.3);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.barnesHut.springLength", 95);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.barnesHut.springConstant", 0.04);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.barnesHut.damping", 0.09);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.barnesHut.avoidOverlap", 0.0);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.forceAtlas2Based.theta", 0.5);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.forceAtlas2Based.gravitationalConstant", -50);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.forceAtlas2Based.centralGravity", 0.01);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.forceAtlas2Based.springLength", 100);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.forceAtlas2Based.springConstant", 0.08);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.forceAtlas2Based.damping", 0.4);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.forceAtlas2Based.avoidOverlap", 0.0);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.repulsion.nodeDistance", 100);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.repulsion.centralGravity", 0.2);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.repulsion.springLength", 200);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.repulsion.springConstant", 0.05);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.repulsion.damping", 0.09);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "interaction.keyboard", true);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "interaction.multiselect", true);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "interaction.navigationButtons", true);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "interaction.tooltipDelay", 300);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "layout.randomSeed", "");
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "layout.clusterThreshold", 150);
 		
 	}
 

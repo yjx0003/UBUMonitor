@@ -9,7 +9,6 @@ import es.ubu.lsi.ubumonitor.view.chart.Tabs;
 import es.ubu.lsi.ubumonitor.view.chart.multi.BubbleComparison;
 import es.ubu.lsi.ubumonitor.view.chart.multi.PointsTable;
 import es.ubu.lsi.ubumonitor.view.chart.multi.RankingTable;
-import es.ubu.lsi.ubumonitor.view.chart.multi.SplomGrade;
 import javafx.scene.web.WebView;
 
 public class MultiConnector extends JavaConnectorAbstract {
@@ -36,8 +35,6 @@ public class MultiConnector extends JavaConnectorAbstract {
 						.getListViewActivity(),
 				multiController.getChoiceBoxDate(), multiController.getDatePickerStart(),
 				multiController.getDatePickerEnd()));
-		addChart(new SplomGrade(mainController, mainController.getSelectionController()
-				.getTvwGradeReport(), multiController.getDatePickerStart(), multiController.getDatePickerEnd()));
 		currentChart = charts.get(ChartType.getDefault(Tabs.MULTI));
 	}
 

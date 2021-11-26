@@ -171,6 +171,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_NETWORK, "useInitialNames", true);
 		createItem(ChartType.FORUM_NETWORK, "showNumberPosts", true);
 		createItem(ChartType.FORUM_NETWORK, "physicsAfterDraw", true);
+		createItem(ChartType.FORUM_NETWORK, "edges.physics", true);
 		createItem(ChartType.FORUM_NETWORK, "edges.dashes", false);
 		createItem(ChartType.FORUM_NETWORK, "edges.arrows.to.scaleFactor", 0.75);
 		createItem(ChartType.FORUM_NETWORK, "edges.scaling.min", 1);
@@ -249,10 +250,12 @@ public class MainConfiguration {
 		createItem(ChartType.ENROLLMENT_BAR, "minFrequency", 1);
 		
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "minFrequency", 2);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "showActualCourse", false);
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "showNonConnected", true);
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "useInitialNames", true);
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physicsAfterDraw", true);
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "edges.moreInfoEdge", false);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "edges.physics", true);
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "edges.dashes", false);
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "edges.scaling.min", 1);
 		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "edges.scaling.max", 10);

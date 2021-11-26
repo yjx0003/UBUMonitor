@@ -39,9 +39,9 @@ public class CourseEnrollmentNetwork extends VisNetwork {
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
 				CSVFormat.DEFAULT.withHeader("fromId", "fromName", "toId", "toName", "enrolledUsers"))) {
 			int minFrequency = getConfigValue("minFrequency");
-			
+			boolean showActualCourse = getConfigValue("showActualCourse");
 			List<EnrolledUser> users = getSelectedEnrolledUser();
-			Map<Course, Set<EnrolledUser>> courses = coursesWithUser(users, allCourses);
+			Map<Course, Set<EnrolledUser>> courses = coursesWithUser(users, allCourses, showActualCourse);
 			Map<Pair<Course, Course>, List<EnrolledUser>> courseEdges = courseEdges(courses, minFrequency);
 		
 			
@@ -61,7 +61,7 @@ public class CourseEnrollmentNetwork extends VisNetwork {
 		JSObject edges = super.getEdgesOptions();
 		edges.put("arrows", "{to:{enabled:false}}");
 		edges.put("dashes", getConfigValue("edges.dashes"));
-		edges.put("physics", false);
+		edges.put("physics",  getConfigValue("edges.physics"));
 
 		JSObject scaling = new JSObject();
 		scaling.put("max", getConfigValue("edges.scaling.max"));
@@ -151,9 +151,10 @@ public class CourseEnrollmentNetwork extends VisNetwork {
 		boolean useInitialNames = getConfigValue("useInitialNames");
 		boolean showUsernames = getConfigValue("nodes.showUsernames");
 		boolean moreInfoEdge = getConfigValue("edges.moreInfoEdge");
+		boolean showActualCourse = getConfigValue("showActualCourse");
 		
 		List<EnrolledUser> users = getSelectedEnrolledUser();
-		Map<Course, Set<EnrolledUser>> courses = coursesWithUser(users, allCourses);
+		Map<Course, Set<EnrolledUser>> courses = coursesWithUser(users, allCourses, showActualCourse);
 		Map<Pair<Course, Course>, List<EnrolledUser>> courseEdges = courseEdges(courses, minFrequency);
 	
 		if(!showNonConnected) {
@@ -263,10 +264,11 @@ public class CourseEnrollmentNetwork extends VisNetwork {
 	 * 
 	 * @param selectedUsers selected courses
 	 * @param courses       courses
+	 * @param showActualCourse 
 	 * @return list of courses where one or more selected is enrolled
 	 */
 	private Map<Course, Set<EnrolledUser>> coursesWithUser(List<EnrolledUser> selectedUsers,
-			Collection<Course> courses) {
+			Collection<Course> courses, boolean showActualCourse) {
 		Map<Course, Set<EnrolledUser>> courseWithUser = new HashMap<>();
 		Set<EnrolledUser> users = new HashSet<>(selectedUsers);
 		for (Course course : courses) {
@@ -278,6 +280,10 @@ public class CourseEnrollmentNetwork extends VisNetwork {
 			if (!containsUser.isEmpty()) {
 				courseWithUser.put(course, containsUser);
 			}
+		}
+		if(!showActualCourse) {
+			
+			courseWithUser.remove(actualCourse);
 		}
 		return courseWithUser;
 

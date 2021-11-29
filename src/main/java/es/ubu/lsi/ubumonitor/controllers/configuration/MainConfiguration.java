@@ -133,14 +133,19 @@ public class MainConfiguration {
 		createItem(ChartType.GRADE_REPORT_TABLE, "color8", Color.web("#4cff33"));
 		createItem(ChartType.GRADE_REPORT_TABLE, "color9", Color.web("#10c14e"));
 		createItem(ChartType.GRADE_REPORT_TABLE, "color10", Color.web("#10c14e"));
-		
-		
 
 		createItem(ChartType.CALIFICATION_BAR, HORIZONTAL_MODE, false);
 		createItem(ChartType.CALIFICATION_BAR, "emptyGradeColor", Color.web("#D3D3D3", 0.3));
 		createItem(ChartType.CALIFICATION_BAR, "failGradeColor", Color.web("#DC143C", 0.3));
 		createItem(ChartType.CALIFICATION_BAR, "passGradeColor", Color.web("#2DC214", 0.3));
-
+		
+		createItem(ChartType.PARALLEL_CATEGORY, "groups", FXCollections.observableArrayList(Controller.getInstance().getActualCourse().getGroups()), Group.class);
+		createItem(ChartType.PARALLEL_CATEGORY, "startMonth", Month.SEPTEMBER);
+		createItem(ChartType.PARALLEL_CATEGORY, "endMonth", Month.JULY);
+		createItem(ChartType.PARALLEL_CATEGORY, "emptyGradeColor", Color.web("#D3D3D3", 0.3));
+		createItem(ChartType.PARALLEL_CATEGORY, "failGradeColor", Color.web("#DC143C", 0.3));
+		createItem(ChartType.PARALLEL_CATEGORY, "passGradeColor", Color.web("#2DC214", 0.3));
+		
 		createItem(ChartType.ACTIVITIES_TABLE, "firstInterval", Color.web("#f78880"));
 		createItem(ChartType.ACTIVITIES_TABLE, "secondInterval", Color.web("#f4e3ae"));
 		createItem(ChartType.ACTIVITIES_TABLE, "thirdInterval", Color.web("#fff033"));
@@ -442,6 +447,12 @@ public class MainConfiguration {
 
 	}
 
+	
+	public void createItem(ChartType chartType, String name, Object value, Class<?> clazz) {
+		createItem(chartType.name(), name, value, clazz, chartType.getTab());
+
+	}
+	
 	/**
 	 * Create item
 	 * 
@@ -454,6 +465,7 @@ public class MainConfiguration {
 		createItem(category, name, value, clazz, null);
 
 	}
+
 
 	/**
 	 * Set value of the item

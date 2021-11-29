@@ -37,20 +37,24 @@ public class CourseEnrollmentNetwork extends VisNetwork {
 	@Override
 	public void exportCSV(String path) throws IOException {
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
-				CSVFormat.DEFAULT.withHeader("fromId", "fromName", "toId", "toName", "enrolledUsers"))) {
+				CSVFormat.DEFAULT.withHeader("fromId", "fromName", "toId", "toName", "userid", "userName"))) {
 			int minFrequency = getConfigValue("minFrequency");
 			boolean showActualCourse = getConfigValue("showActualCourse");
 			List<EnrolledUser> users = getSelectedEnrolledUser();
 			Map<Course, Set<EnrolledUser>> courses = coursesWithUser(users, allCourses, showActualCourse);
 			Map<Pair<Course, Course>, List<EnrolledUser>> courseEdges = courseEdges(courses, minFrequency);
-		
-			
-			for(Map.Entry<Pair<Course, Course>, List<EnrolledUser>> entry: courseEdges.entrySet()) {
-				Course from = entry.getKey().getKey();
-				Course to = entry.getKey().getValue();
-				
+
+			for (Map.Entry<Pair<Course, Course>, List<EnrolledUser>> entry : courseEdges.entrySet()) {
+				Course from = entry.getKey()
+						.getKey();
+				Course to = entry.getKey()
+						.getValue();
+
 				List<EnrolledUser> usersList = entry.getValue();
-				printer.printRecord(from.getId(), from.getFullName(), to.getId(), to.getFullName(), usersList.size());
+				for (EnrolledUser user : usersList) {
+					printer.printRecord(from.getId(), from.getFullName(), to.getId(), to.getFullName(),
+							user.getId(), user.getFullName());
+				}
 			}
 		}
 
@@ -61,7 +65,7 @@ public class CourseEnrollmentNetwork extends VisNetwork {
 		JSObject edges = super.getEdgesOptions();
 		edges.put("arrows", "{to:{enabled:false}}");
 		edges.put("dashes", getConfigValue("edges.dashes"));
-		edges.put("physics",  getConfigValue("edges.physics"));
+		edges.put("physics", getConfigValue("edges.physics"));
 
 		JSObject scaling = new JSObject();
 		scaling.put("max", getConfigValue("edges.scaling.max"));
@@ -152,38 +156,40 @@ public class CourseEnrollmentNetwork extends VisNetwork {
 		boolean showUsernames = getConfigValue("nodes.showUsernames");
 		boolean moreInfoEdge = getConfigValue("edges.moreInfoEdge");
 		boolean showActualCourse = getConfigValue("showActualCourse");
-		
+
 		List<EnrolledUser> users = getSelectedEnrolledUser();
 		Map<Course, Set<EnrolledUser>> courses = coursesWithUser(users, allCourses, showActualCourse);
 		Map<Pair<Course, Course>, List<EnrolledUser>> courseEdges = courseEdges(courses, minFrequency);
-	
-		if(!showNonConnected) {
+
+		if (!showNonConnected) {
 			Set<Course> coursesWithEdge = courseWithEdge(courseEdges);
-			courses.keySet().retainAll(coursesWithEdge);
+			courses.keySet()
+					.retainAll(coursesWithEdge);
 		}
-		
+
 		JSObject data = new JSObject();
 		data.put("nodes", createNodes(courses, useInitialNames, showUsernames));
 		data.put("edges", createEdges(courseEdges, moreInfoEdge));
 
-		
 		webViewChartsEngine.executeScript("updateVisNetwork(" + data + "," + getOptions() + ")");
 	}
 
 	private JSArray createEdges(Map<Pair<Course, Course>, List<EnrolledUser>> courseEdges, boolean moreInfoEdge) {
 		JSArray edges = new JSArray();
-		for(Map.Entry<Pair<Course, Course>, List<EnrolledUser>> entry:courseEdges.entrySet()) {
-			Course from = entry.getKey().getKey();
-			Course to = entry.getKey().getValue();
-			
+		for (Map.Entry<Pair<Course, Course>, List<EnrolledUser>> entry : courseEdges.entrySet()) {
+			Course from = entry.getKey()
+					.getKey();
+			Course to = entry.getKey()
+					.getValue();
+
 			List<EnrolledUser> users = entry.getValue();
-			
+
 			JSObject edge = new JSObject();
 			edges.add(edge);
 			edge.put("from", from.getId());
 			edge.put("to", to.getId());
-			
-			if(moreInfoEdge) {
+
+			if (moreInfoEdge) {
 				StringBuilder title = new StringBuilder();
 				title.append("<b>• ");
 				title.append(from.getFullName());
@@ -194,24 +200,25 @@ public class CourseEnrollmentNetwork extends VisNetwork {
 				title.append(": ");
 				title.append(users.size());
 				title.append("</b><br>");
-				for(EnrolledUser enrolledUser: users) {
+				for (EnrolledUser enrolledUser : users) {
 					title.append("<br>• ");
 					title.append(enrolledUser.getFullName());
-					
+
 				}
 				edge.putWithQuote("title", title.toString());
-			}else {
+			} else {
 				edge.put("title", users.size());
 			}
-			
+
 			edge.put("value", users.size());
 		}
 		return edges;
 	}
 
-	private JSArray createNodes(Map<Course, Set<EnrolledUser>> courses, boolean useInitialNames, boolean showUsernames) {
+	private JSArray createNodes(Map<Course, Set<EnrolledUser>> courses, boolean useInitialNames,
+			boolean showUsernames) {
 		JSArray nodes = new JSArray();
-		for(Map.Entry<Course, Set<EnrolledUser>> entry: courses.entrySet()) {
+		for (Map.Entry<Course, Set<EnrolledUser>> entry : courses.entrySet()) {
 			Course course = entry.getKey();
 			Set<EnrolledUser> users = entry.getValue();
 			JSObject node = new JSObject();
@@ -226,49 +233,47 @@ public class CourseEnrollmentNetwork extends VisNetwork {
 				title.append(": ");
 				title.append(users.size());
 				title.append("</b><br>");
-				for(EnrolledUser enrolledUser: users) {
+				for (EnrolledUser enrolledUser : users) {
 					title.append("<br>• ");
 					title.append(enrolledUser.getFullName());
-					
+
 				}
 				node.putWithQuote("title", title.toString());
-			}else {
+			} else {
 				node.putWithQuote("title", course.getFullName());
 			}
-			
+
 			node.put("color", rgb(course.getId() * 31));
 			node.put("value", users.size());
-			if(useInitialNames) {
+			if (useInitialNames) {
 				node.putWithQuote("label", WordUtils.initials(course.getFullName(), ' ', '('));
 			}
 		}
-		
+
 		return nodes;
-		
-		
-		
+
 	}
-	
+
 	private Set<Course> courseWithEdge(Map<Pair<Course, Course>, List<EnrolledUser>> courseEdges) {
 		Set<Course> courses = new HashSet<>();
-		for(Pair<Course, Course> pair: courseEdges.keySet()) {
+		for (Pair<Course, Course> pair : courseEdges.keySet()) {
 			courses.add(pair.getKey());
 			courses.add(pair.getValue());
 		}
 		return courses;
-		
+
 	}
 
 	/**
 	 * Return courses where one or more selected users is enrolled
 	 * 
-	 * @param selectedUsers selected courses
-	 * @param courses       courses
-	 * @param showActualCourse 
+	 * @param selectedUsers    selected courses
+	 * @param courses          courses
+	 * @param showActualCourse
 	 * @return list of courses where one or more selected is enrolled
 	 */
-	private Map<Course, Set<EnrolledUser>> coursesWithUser(List<EnrolledUser> selectedUsers,
-			Collection<Course> courses, boolean showActualCourse) {
+	private Map<Course, Set<EnrolledUser>> coursesWithUser(List<EnrolledUser> selectedUsers, Collection<Course> courses,
+			boolean showActualCourse) {
 		Map<Course, Set<EnrolledUser>> courseWithUser = new HashMap<>();
 		Set<EnrolledUser> users = new HashSet<>(selectedUsers);
 		for (Course course : courses) {
@@ -281,18 +286,22 @@ public class CourseEnrollmentNetwork extends VisNetwork {
 				courseWithUser.put(course, containsUser);
 			}
 		}
-		if(!showActualCourse) {
-			
+		if (!showActualCourse) {
+
 			courseWithUser.remove(actualCourse);
 		}
 		return courseWithUser;
 
 	}
 
-	private Map<Pair<Course, Course>, List<EnrolledUser>> courseEdges(Map<Course, Set<EnrolledUser>> coursesEnrolled, int minFrequency) {
+	private Map<Pair<Course, Course>, List<EnrolledUser>> courseEdges(Map<Course, Set<EnrolledUser>> coursesEnrolled,
+			int minFrequency) {
 		ArrayList<Course> courses = new ArrayList<>(coursesEnrolled.keySet());
-		courses.sort((k1, k2)-> coursesEnrolled.get(k2).size() - coursesEnrolled.get(k1).size());
-		
+		courses.sort((k1, k2) -> coursesEnrolled.get(k2)
+				.size()
+				- coursesEnrolled.get(k1)
+						.size());
+
 		Map<Pair<Course, Course>, List<EnrolledUser>> map = new HashMap<>();
 		for (int i = 0; i < courses.size(); i++) {
 			Set<EnrolledUser> usersCourseA = coursesEnrolled.get(courses.get(i));

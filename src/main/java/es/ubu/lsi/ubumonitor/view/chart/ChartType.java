@@ -28,6 +28,7 @@ public enum ChartType {
 	VIOLIN(Tabs.GRADES, 14),
 	GRADE_REPORT_TABLE(Tabs.GRADES, 15),
 	CALIFICATION_BAR(Tabs.GRADES, 16),
+	PARALLEL_CATEGORY(Tabs.GRADES, 40),
 
 	ACTIVITIES_TABLE(Tabs.ACTIVITY_COMPLETION, 17),
 
@@ -56,7 +57,7 @@ public enum ChartType {
 	ENROLLMENT_COURSE_NETWORK(Tabs.ENROLLMENT, 39),
 	ENROLLMENT_SANKEY(Tabs.ENROLLMENT, 38);
 	
-	// next id 40
+	// next id 41
 
 	private Tabs tab;
 	private int id;

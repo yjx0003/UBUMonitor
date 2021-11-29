@@ -139,6 +139,7 @@ public class MainConfiguration {
 		createItem(ChartType.CALIFICATION_BAR, "failGradeColor", Color.web("#DC143C", 0.3));
 		createItem(ChartType.CALIFICATION_BAR, "passGradeColor", Color.web("#2DC214", 0.3));
 		
+		createItem(ChartType.PARALLEL_CATEGORY, "moreInfoProbability", false);
 		createItem(ChartType.PARALLEL_CATEGORY, "groups", FXCollections.observableArrayList(Controller.getInstance().getActualCourse().getGroups()), Group.class);
 		createItem(ChartType.PARALLEL_CATEGORY, "startMonth", Month.SEPTEMBER);
 		createItem(ChartType.PARALLEL_CATEGORY, "endMonth", Month.JULY);

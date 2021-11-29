@@ -50,7 +50,7 @@ public class ParallelCategory extends Plotly {
 	public void exportCSV(String path) throws IOException {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
-		double cutGrade  =getGeneralConfigValue("cutGrade");
+		double cutGrade = getGeneralConfigValue("cutGrade");
 		Month startMonth = getConfigValue("startMonth");
 		Month endMonth = getConfigValue("endMonth");
 		ObservableList<Group> observableGroups = getConfigValue("groups");
@@ -62,32 +62,30 @@ public class ParallelCategory extends Plotly {
 		Map<EnrolledUser, Group> usersGroup = getUserUniqueGroup(selectedUsers, groups);
 
 		Map<EnrolledUser, DescriptiveStatistics> usersGrades = getUsersGrades(selectedUsers, gradeItems);
-		
-		
-		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
-				CSVFormat.DEFAULT.withHeader("userid", "username", "year", "groupid", "groupName", "gradeMean", "gradeType"))) {
+
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader("userid", "username",
+				"year", "groupid", "groupName", "gradeMean", "gradeType"))) {
 			for (Map.Entry<Integer, List<EnrolledUser>> entry : yearCount.entrySet()) {
 				Integer year = entry.getKey();
 				List<EnrolledUser> users = entry.getValue();
 				for (EnrolledUser user : users) {
 					printer.print(user.getId());
 					printer.print(user.getFullName());
-				
+
 					printer.print(getYear(startMonth, endMonth, year));
-					
+
 					Group group = usersGroup.get(user);
 					printer.print(group == null ? null : group.getGroupId());
-					printer.print(group == null ? null: group.getGroupName());
-					double gradeMean =usersGrades.get(user)
+					printer.print(group == null ? null : group.getGroupName());
+					double gradeMean = usersGrades.get(user)
 							.getMean();
 					printer.print(gradeMean);
-					
-					int typeGrade =getCategoryGrade(usersGrades.get(user)
+
+					int typeGrade = getCategoryGrade(usersGrades.get(user)
 							.getMean(), cutGrade);
 					printer.print(gradeTypes.get(typeGrade));
 					printer.println();
-						
-					
+
 				}
 			}
 		}
@@ -112,17 +110,16 @@ public class ParallelCategory extends Plotly {
 
 		data.add(createTrace(startMonth, endMonth, yearCount, usersGroup, usersGrades,
 				getGeneralConfigValue("cutGrade"), getConfigValue("emptyGradeColor"), getConfigValue("failGradeColor"),
-				getConfigValue("passGradeColor")));
+				getConfigValue("passGradeColor"), getConfigValue("moreInfoProbability")));
 	}
 
 	private JSObject createTrace(Month startMonth, Month endMonth, Map<Integer, List<EnrolledUser>> yearCount,
 			Map<EnrolledUser, Group> usersGroup, Map<EnrolledUser, DescriptiveStatistics> usersGrades, double cutGrade,
-			Color emptyColor, Color failColor, Color passColor) {
-
+			Color emptyColor, Color failColor, Color passColor, boolean moreInfoProbability) {
 
 		JSObject trace = new JSObject();
 		trace.put("type", "'parcats'");
-		trace.put("hoveron", "'dimension'");
+		trace.put("hoveron", moreInfoProbability ? "'color'" : "'dimension'");
 		trace.put("hoverinfo", "'count+probability'");
 		trace.put("arrangement", "'freeform'");
 		JSArray dimensions = new JSArray();
@@ -177,7 +174,7 @@ public class ParallelCategory extends Plotly {
 			List<EnrolledUser> users = entry.getValue();
 			for (EnrolledUser user : users) {
 				yearValues.addWithQuote(getYear(startMonth, endMonth, year));
-				int typeGrade =getCategoryGrade(usersGrades.get(user)
+				int typeGrade = getCategoryGrade(usersGrades.get(user)
 						.getMean(), cutGrade);
 				gradeValues.addWithQuote(gradeTypes.get(typeGrade));
 				color.add(typeGrade);
@@ -215,7 +212,7 @@ public class ParallelCategory extends Plotly {
 
 	private void createDimension(JSArray dimensions, JSObject dimension, JSArray values) {
 		dimensions.add(dimension);
-		
+
 		dimension.put("values", values);
 
 	}

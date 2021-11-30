@@ -270,7 +270,13 @@ public class LogCreator {
 			}
 
 			if (integer != null) {
-				list.add(Integer.parseInt(integer));
+				try {
+					int value = Integer.parseInt(integer);
+					list.add(value);
+				}catch (Exception e){
+					LOGGER.warn("No se ha podido convertir a integer el registro.", e);
+				}
+				
 			}
 		}
 		return list;

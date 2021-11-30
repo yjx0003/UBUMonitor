@@ -100,7 +100,7 @@ public class ParallelCategory extends Plotly {
 		Month endMonth = getConfigValue("endMonth");
 		ObservableList<Group> observableGroups = getConfigValue("groups");
 		Set<Group> groups = new HashSet<>(observableGroups);
-
+		groups.forEach(g-> System.out.println(g.getGroupName()+" "+g.getEnrolledUsers().size()));
 		Map<Integer, List<EnrolledUser>> yearCount = countYearWithUsers(users, startMonth.getValue(),
 				endMonth.getValue());
 
@@ -255,9 +255,9 @@ public class ParallelCategory extends Plotly {
 			Group group = groups.stream()
 					.filter(g -> g.getEnrolledUsers()
 							.contains(user))
-					.max((a, b) -> Integer.compare(b.getEnrolledUsers()
+					.max((a, b) -> Integer.compare(a.getEnrolledUsers()
 							.size(),
-							a.getEnrolledUsers()
+							b.getEnrolledUsers()
 									.size()))
 					.orElse(null);
 			userGroup.put(user, group);

@@ -481,7 +481,7 @@ public class WelcomeController implements Initializable {
 			downloadData();
 		} else { // if loading cache
 			loadData(controller.getPassword());
-			if(useNewPassword) {
+			if(useNewPassword && isBBDDLoaded) {
 				saveData();
 			}
 			loadNextWindow();
@@ -560,10 +560,11 @@ public class WelcomeController implements Initializable {
 			copyCourse(dataBase, getSelectedCourse());
 			dataBase.checkSubDatabases();
 			controller.setDataBase(dataBase);
-			isBBDDLoaded = true;
+			
 			controller.setDefaultUpdate(ZonedDateTime.ofInstant(Instant.ofEpochSecond(cacheFilePath.toFile()
 					.lastModified()), ZoneId.systemDefault()));
 			TimeZone.setDefault(TimeZone.getTimeZone(dataBase.getUserZoneId()));
+			isBBDDLoaded = true;
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			previusPasswordWindow();
 		} catch (IOException e) {

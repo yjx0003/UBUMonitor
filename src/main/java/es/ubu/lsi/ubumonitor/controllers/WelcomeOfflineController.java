@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.Collator;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -71,8 +70,8 @@ public class WelcomeOfflineController implements Initializable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WelcomeOfflineController.class);
 
 	private static final Pattern PATTERN_COURSE_FILE = Pattern.compile("^(.+)-(\\d+)$"); // ^(.+)-(\\d+)$
-	private static final Pattern PATTERN_PREVIOUS_COURSE_FILE = Pattern
-			.compile("^\\((\\d{4}-\\d{2}-\\d{2})\\) (.+)-(\\d+)$"); // ^\((\d{4}-\d{2}-\d{2})\) (.+)-(\d+)$
+	//private static final Pattern PATTERN_PREVIOUS_COURSE_FILE = Pattern
+		//	.compile("^\\((\\d{4}-\\d{2}-\\d{2})\\) (.+)-(\\d+)$"); // ^\((\d{4}-\d{2}-\d{2})\) (.+)-(\d+)$
 	/**
 	 * path con directorios de los ficheros cache
 	 */
@@ -122,7 +121,7 @@ public class WelcomeOfflineController implements Initializable {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		
 		try {
 			conexionLabel.setText(I18n.get("text.online_" + !controller.isOfflineMode()));
 			lblUser.setText(I18n.get("label.welcome") + " " + controller.getUsername());
@@ -185,8 +184,7 @@ public class WelcomeOfflineController implements Initializable {
 
 		File[] previousCourses = controller.getHostUserModelversionArchivedDir()
 				.toFile()
-				.listFiles((dir, name) -> PATTERN_PREVIOUS_COURSE_FILE.matcher(name)
-						.matches());
+				.listFiles();
 		Comparator<File> comparator = Comparator.comparing(File::getName, Collator.getInstance());
 		initListView(files, listCourses, comparator);
 		initListView(previousCourses, listViewPreviousCourses, comparator);
@@ -265,7 +263,7 @@ public class WelcomeOfflineController implements Initializable {
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getName());
 
 		loadData(selectedCourse, controller.getPassword());
-		if (newPassword) {
+		if (newPassword && isBBDDLoaded) {
 			Serialization.encrypt(controller.getPassword(), selectedCourse.toString(), controller.getDataBase());
 		}
 		loadNextWindow();
@@ -311,13 +309,13 @@ public class WelcomeOfflineController implements Initializable {
 			dataBase = (DataBase) Serialization.decrypt(password, file.toString());
 			dataBase.checkSubDatabases();
 			controller.setDataBase(dataBase);
-			isBBDDLoaded = true;
+			
 			controller.setDefaultUpdate(
 					ZonedDateTime.ofInstant(Instant.ofEpochSecond(file.lastModified()), ZoneId.systemDefault()));
 			ZoneId zoneId = dataBase.getUserZoneId() == null ? ZoneId.systemDefault() : dataBase.getUserZoneId();
 			TimeZone.setDefault(TimeZone.getTimeZone(zoneId));
-
-		} catch (IllegalBlockSizeException | BadPaddingException e) {
+			isBBDDLoaded = true;
+		} catch (IllegalBlockSizeException | BadPaddingException | IllegalArgumentException e) {
 			incorrectPasswordWindow(file);
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
@@ -447,7 +445,8 @@ public class WelcomeOfflineController implements Initializable {
 		UtilMethods.fileAction(null,
 				ConfigHelper.getProperty("coursePath", "./"), controller.getStage(), FileUtil.FileChooserType.OPEN,
 				f -> {
-					FileUtil.exportFile( f.toPath() ,controller.getHostUserModelversionArchivedDir(), Paths.get(f.getName()));
+					
+					FileUtil.exportFile( f.toPath() ,controller.getHostUserModelversionArchivedDir(), controller.getHostUserModelversionArchivedDir().resolve(f.getName()));
 					ConfigHelper.setProperty("coursePath", f.getParent());
 					tabPane.getSelectionModel().select(1);
 					if(!listViewPreviousCourses.getItems().contains(f)) {

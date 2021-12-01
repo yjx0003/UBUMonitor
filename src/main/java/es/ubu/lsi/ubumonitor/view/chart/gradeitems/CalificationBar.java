@@ -1,10 +1,9 @@
 package es.ubu.lsi.ubumonitor.view.chart.gradeitems;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
@@ -49,7 +48,7 @@ public class CalificationBar extends Plotly {
 			listFail.add(countLessCut);
 			List<EnrolledUser> countGreaterCut = new ArrayList<>();
 			listPass.add(countGreaterCut);
-			
+
 			for (EnrolledUser user : users) {
 				double grade = gradeItem.getEnrolledUserPercentage(user) / 10;
 				if (Double.isNaN(grade)) {
@@ -61,22 +60,22 @@ public class CalificationBar extends Plotly {
 					countGreaterCut.add(user);
 				}
 			}
-			
-			
+
 		}
 
-		data.add(createTrace(I18n.get("text.empty"), listNaN, getConfigValue("emptyGradeColor"), users.size(),
-				horizontalMode));
-		data.add(createTrace(I18n.get("text.fail"), listFail, getConfigValue("failGradeColor"), users.size(),
-				horizontalMode));
-		data.add(createTrace(I18n.get("text.pass"), listPass, getConfigValue("passGradeColor"), users.size(),
-				horizontalMode));
+		data.add(createTrace(I18n.get("text.empty"), listNaN, gradeItems, getConfigValue("emptyGradeColor"),
+				users.size(), horizontalMode));
+		data.add(createTrace(I18n.get("text.fail") + "( <" + cutGrade + ")", listFail, gradeItems, getConfigValue("failGradeColor"),
+				users.size(), horizontalMode));
+		data.add(createTrace(I18n.get("text.pass") + "( >=" + cutGrade + ")", listPass, gradeItems, getConfigValue("passGradeColor"),
+				users.size(), horizontalMode));
 
 	}
 
-	public JSObject createTrace(String name, List<List<EnrolledUser>> data, Color color, int nUsers, boolean horizontalMode) {
+	public JSObject createTrace(String name, List<List<EnrolledUser>> data, List<GradeItem> gradeItems, Color color,
+			int nUsers, boolean horizontalMode) {
 		JSObject trace = new JSObject();
-
+		DecimalFormat df = new DecimalFormat("#.##");
 		JSArray index = new JSArray();
 		JSArray text = new JSArray();
 		JSArray customdata = new JSArray();
@@ -84,19 +83,27 @@ public class CalificationBar extends Plotly {
 			List<EnrolledUser> users = data.get(i);
 			index.add(i);
 			text.add("'<b>'+toPercentage(" + users.size() + "," + nUsers + ")+'</b>'");
-			JSArray usernames = new JSArray();
-			customdata.add(usernames);
-			for(EnrolledUser user: users) {
-				usernames.addWithQuote("<br>• "+user.getFullName());
-				
+			StringBuilder usernames = new StringBuilder();
+			
+			GradeItem gradeItem = gradeItems.get(i);
+			for (EnrolledUser user : users) {
+				double grade = gradeItem.getEnrolledUserPercentage(user)/10;
+				String value = Double.isNaN(grade) ? " (-)" : " (" + df.format(grade) + ")";
+				usernames.append("<br>• ");
+				usernames.append(user.getFullName());
+				usernames.append(value);
+
 			}
+			customdata.addWithQuote(usernames);
 		}
 
-		createAxisValuesHorizontal(horizontalMode, trace, index, data.stream().map(List::size).collect(Collectors.toList()));
+		createAxisValuesHorizontal(horizontalMode, trace, index, data.stream()
+				.map(List::size)
+				.collect(Collectors.toList()));
 
 		trace.put("type", "'bar'");
 		trace.putWithQuote("name", name);
-		trace.put("text",  text);
+		trace.put("text", text);
 		trace.put("textposition", "'auto'");
 		trace.put("customdata", customdata);
 		trace.put("hovertemplate", "'<b>%{data.name}: </b>%{text}<br>%{customdata}<extra></extra>'");

@@ -5,6 +5,7 @@ import java.text.Collator;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,12 +43,13 @@ public class ParallelCategory extends Plotly {
 	public ParallelCategory(MainController mainController, TreeView<GradeItem> treeViewGradeItem) {
 		super(mainController, ChartType.PARALLEL_CATEGORY);
 		this.treeViewGradeItem = treeViewGradeItem;
-
+		useGroupButton = true;
 		gradeTypes = Arrays.asList(I18n.get("text.empty"), I18n.get("text.fail"), I18n.get("text.pass"));
 	}
 
 	@Override
 	public void exportCSV(String path) throws IOException {
+
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		double cutGrade = getGeneralConfigValue("cutGrade");
@@ -99,8 +101,8 @@ public class ParallelCategory extends Plotly {
 		Month startMonth = getConfigValue("startMonth");
 		Month endMonth = getConfigValue("endMonth");
 		ObservableList<Group> observableGroups = getConfigValue("groups");
-		Set<Group> groups = new HashSet<>(observableGroups);
-		
+		Set<Group> groups = getGroupButtonActive() ? new HashSet<>(observableGroups) : Collections.emptySet();
+
 		Map<Integer, List<EnrolledUser>> yearCount = countYearWithUsers(users, startMonth.getValue(),
 				endMonth.getValue());
 
@@ -120,7 +122,7 @@ public class ParallelCategory extends Plotly {
 		JSObject trace = new JSObject();
 		trace.put("type", "'parcats'");
 		trace.put("hoveron", moreInfoProbability ? "'color'" : "'dimension'");
-		trace.put("hoverinfo", "'count+probability'");
+		trace.put("hoverinfo", "'all'");
 		trace.put("arrangement", "'freeform'");
 		JSArray dimensions = new JSArray();
 		trace.put("dimensions", dimensions);
@@ -139,11 +141,11 @@ public class ParallelCategory extends Plotly {
 
 		JSObject yearDimension = new JSObject();
 		JSArray yearValues = new JSArray();
-		createDimension(dimensions, yearDimension, yearValues);
+		createDimension(null, dimensions, yearDimension, yearValues);
 
 		JSObject groupDimension = new JSObject();
 		JSArray groupValues = new JSArray();
-		createDimension(dimensions, groupDimension, groupValues);
+		createDimension(null, dimensions, groupDimension, groupValues);
 		Set<Group> groups = new TreeSet<>(
 				Comparator.nullsLast(Comparator.comparing(Group::getGroupName, Collator.getInstance())));
 		groups.addAll(usersGroup.values());
@@ -164,7 +166,7 @@ public class ParallelCategory extends Plotly {
 		JSObject gradeDimension = new JSObject();
 
 		JSArray gradeValues = new JSArray();
-		createDimension(dimensions, gradeDimension, gradeValues);
+		createDimension(I18n.get("cutGrade") + ": " + cutGrade, dimensions, gradeDimension, gradeValues);
 
 		boolean hasGroup = usersGroup.values()
 				.stream()
@@ -210,9 +212,9 @@ public class ParallelCategory extends Plotly {
 		return 2;
 	}
 
-	private void createDimension(JSArray dimensions, JSObject dimension, JSArray values) {
+	private void createDimension(String label, JSArray dimensions, JSObject dimension, JSArray values) {
 		dimensions.add(dimension);
-
+		dimension.put("label", label);
 		dimension.put("values", values);
 
 	}

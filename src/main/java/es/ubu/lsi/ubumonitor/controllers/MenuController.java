@@ -544,7 +544,7 @@ public class MenuController {
 		Task<Void> task = getImportLogsWorker(file);
 		task.setOnSucceeded(
 				e -> UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), true));
-		task.setOnFailed(e -> UtilMethods.errorWindow("Cannot import the log", e.getSource()
+		task.setOnFailed(e -> UtilMethods.errorWindow(I18n.get("error.importlogs") +  e.getSource().getMessage(), e.getSource()
 				.getException()));
 		Thread thread = new Thread(task);
 		thread.setDaemon(true);

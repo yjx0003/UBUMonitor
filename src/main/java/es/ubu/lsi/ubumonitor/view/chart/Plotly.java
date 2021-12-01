@@ -45,13 +45,13 @@ public abstract class Plotly extends Chart {
 		createFrames(frames);
 
 		JSObject plot = new JSObject();
-
+		JSObject options = getOptions();
 		plot.put("data", data);
 		plot.put("layout", layout);
 		plot.put("frames", frames);
-		LOGGER.debug("Plotly:{}", plot);
+		LOGGER.debug("Plotly:{}\nOptions plotly:{}", plot, options);
 		try {
-			webViewChartsEngine.executeScript("updatePlotly(" + plot + "," + getOptions() + ")");
+			webViewChartsEngine.executeScript("updatePlotly(" + plot + "," + options + ")");
 		} catch (JSException e) {
 			
 			LOGGER.debug("Probably updating too fast plotly: {}", e);

@@ -124,6 +124,7 @@ public class ParallelCategory extends Plotly {
 		trace.put("hoveron", moreInfoProbability ? "'color'" : "'dimension'");
 		trace.put("hoverinfo", "'all'");
 		trace.put("arrangement", "'freeform'");
+		trace.put("labelfont", "{size:16}");
 		JSArray dimensions = new JSArray();
 		trace.put("dimensions", dimensions);
 
@@ -214,7 +215,7 @@ public class ParallelCategory extends Plotly {
 
 	private void createDimension(String label, JSArray dimensions, JSObject dimension, JSArray values) {
 		dimensions.add(dimension);
-		dimension.put("label", label);
+		dimension.putWithQuote("label", label);
 		dimension.put("values", values);
 
 	}

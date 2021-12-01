@@ -506,7 +506,7 @@ public class MenuController {
 
 		Optional<LocalDate> result = dialog.showAndWait();
 
-		result.ifPresent(date -> createServicePurgeLogs(date));
+		result.ifPresent(this::createServicePurgeLogs);
 
 	}
 
@@ -531,8 +531,7 @@ public class MenuController {
 				logs.removeIf(log -> log.getTime()
 						.isBefore(date.atStartOfDay(course.getLogs()
 								.getZoneId())));
-				Serialization.encrypt(controller.getPassword(), controller.getHostUserModelversionDir()
-						.resolve(controller.getCourseFile(course))
+				Serialization.encrypt(controller.getPassword(), controller.getActualCoursePath()
 						.toString(), controller.getDataBase());
 
 				return null;
@@ -544,8 +543,9 @@ public class MenuController {
 		Task<Void> task = getImportLogsWorker(file);
 		task.setOnSucceeded(
 				e -> UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), true));
-		task.setOnFailed(e -> UtilMethods.errorWindow(I18n.get("error.importlogs") +  e.getSource().getMessage(), e.getSource()
-				.getException()));
+		task.setOnFailed(e -> UtilMethods.errorWindow(I18n.get("error.importlogs") + e.getSource()
+				.getMessage(), e.getSource()
+						.getException()));
 		Thread thread = new Thread(task);
 		thread.setDaemon(true);
 		thread.start();
@@ -562,8 +562,7 @@ public class MenuController {
 				LogCreator.parserResponse(logs, new FileReader(file));
 				course.setLogs(logs);
 				course.setLogStats(new LogStats(logs.getList()));
-				Serialization.encrypt(controller.getPassword(), controller.getHostUserModelversionDir()
-						.resolve(controller.getCourseFile(course))
+				Serialization.encrypt(controller.getPassword(), controller.getActualCoursePath()
 						.toString(), controller.getDataBase());
 				return null;
 			}

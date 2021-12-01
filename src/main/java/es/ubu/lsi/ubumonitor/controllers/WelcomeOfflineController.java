@@ -314,6 +314,7 @@ public class WelcomeOfflineController implements Initializable {
 					ZonedDateTime.ofInstant(Instant.ofEpochSecond(file.lastModified()), ZoneId.systemDefault()));
 			ZoneId zoneId = dataBase.getUserZoneId() == null ? ZoneId.systemDefault() : dataBase.getUserZoneId();
 			TimeZone.setDefault(TimeZone.getTimeZone(zoneId));
+			controller.setActualCoursePath(file.toPath());
 			isBBDDLoaded = true;
 		} catch (IllegalBlockSizeException | BadPaddingException | IllegalArgumentException e) {
 			incorrectPasswordWindow(file);

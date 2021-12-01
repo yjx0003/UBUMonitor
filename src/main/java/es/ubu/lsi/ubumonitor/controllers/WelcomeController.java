@@ -548,7 +548,7 @@ public class WelcomeController implements Initializable {
 		}
 		LOGGER.info("Guardando los datos encriptados en: {}", f.getAbsolutePath());
 		Serialization.encrypt(controller.getPassword(), cacheFilePath.toString(), controller.getDataBase());
-
+		controller.setActualCoursePath(cacheFilePath);
 	}
 
 	private void loadData(String password) {
@@ -564,6 +564,7 @@ public class WelcomeController implements Initializable {
 			controller.setDefaultUpdate(ZonedDateTime.ofInstant(Instant.ofEpochSecond(cacheFilePath.toFile()
 					.lastModified()), ZoneId.systemDefault()));
 			TimeZone.setDefault(TimeZone.getTimeZone(dataBase.getUserZoneId()));
+			controller.setActualCoursePath(cacheFilePath);
 			isBBDDLoaded = true;
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			previusPasswordWindow();

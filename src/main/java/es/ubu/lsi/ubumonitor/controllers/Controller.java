@@ -45,6 +45,7 @@ public class Controller {
 	private Path hostUserModelversionArchivedDir;
 	private Path hostUserModelversionDir;
 	private Path hostUserDir;
+	private Path actualCoursePath;
 	private URL host;
 	private Stage stage;
 	private Login login;
@@ -384,6 +385,20 @@ public class Controller {
 	public void saveCourse(Course course) {
 		Serialization.encrypt(getPassword(), getHostUserModelversionDir().resolve(getCourseFile(course))
 				.toString(), getDataBase());
+	}
+
+	/**
+	 * @return the actualCoursePath
+	 */
+	public Path getActualCoursePath() {
+		return actualCoursePath;
+	}
+
+	/**
+	 * @param actualCoursePath the actualCoursePath to set
+	 */
+	public void setActualCoursePath(Path actualCoursePath) {
+		this.actualCoursePath = actualCoursePath;
 	}
 
 }

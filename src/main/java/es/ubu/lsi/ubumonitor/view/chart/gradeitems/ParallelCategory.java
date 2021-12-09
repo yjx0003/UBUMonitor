@@ -53,6 +53,7 @@ public class ParallelCategory extends Plotly {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		double cutGrade = getGeneralConfigValue("cutGrade");
+		boolean noGradeAsZero = getConfigValue("noGradeAsZero");
 		Month startMonth = getConfigValue("startMonth");
 		Month endMonth = getConfigValue("endMonth");
 		ObservableList<Group> observableGroups = getConfigValue("groups");
@@ -63,7 +64,7 @@ public class ParallelCategory extends Plotly {
 
 		Map<EnrolledUser, Group> usersGroup = getUserUniqueGroup(selectedUsers, groups);
 
-		Map<EnrolledUser, DescriptiveStatistics> usersGrades = getUsersGrades(selectedUsers, gradeItems);
+		Map<EnrolledUser, DescriptiveStatistics> usersGrades = getUsersGrades(selectedUsers, gradeItems, noGradeAsZero);
 
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader("userid", "username",
 				"year", "groupid", "groupName", "gradeMean", "gradeType"))) {
@@ -97,7 +98,7 @@ public class ParallelCategory extends Plotly {
 	public void createData(JSArray data) {
 		List<EnrolledUser> users = getSelectedEnrolledUser();
 		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
-
+		boolean noGradeAsZero = getConfigValue("noGradeAsZero");
 		Month startMonth = getConfigValue("startMonth");
 		Month endMonth = getConfigValue("endMonth");
 		ObservableList<Group> observableGroups = getConfigValue("groups");
@@ -108,7 +109,7 @@ public class ParallelCategory extends Plotly {
 
 		Map<EnrolledUser, Group> usersGroup = getUserUniqueGroup(users, groups);
 
-		Map<EnrolledUser, DescriptiveStatistics> usersGrades = getUsersGrades(users, gradeItems);
+		Map<EnrolledUser, DescriptiveStatistics> usersGrades = getUsersGrades(users, gradeItems, noGradeAsZero);
 
 		data.add(createTrace(startMonth, endMonth, yearCount, usersGroup, usersGrades,
 				getGeneralConfigValue("cutGrade"), getConfigValue("emptyGradeColor"), getConfigValue("failGradeColor"),
@@ -221,7 +222,7 @@ public class ParallelCategory extends Plotly {
 	}
 
 	private Map<EnrolledUser, DescriptiveStatistics> getUsersGrades(List<EnrolledUser> users,
-			List<GradeItem> gradeItems) {
+			List<GradeItem> gradeItems, boolean noGradeAsZero) {
 		Map<EnrolledUser, DescriptiveStatistics> map = new HashMap<>();
 		for (EnrolledUser user : users) {
 			DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
@@ -231,6 +232,8 @@ public class ParallelCategory extends Plotly {
 				if (!Double.isNaN(percentage)) {
 					descriptiveStatistics.addValue(percentage / 10);
 
+				} else if(noGradeAsZero) {
+					descriptiveStatistics.addValue(0);
 				}
 			}
 		}

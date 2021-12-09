@@ -1,6 +1,7 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
 import java.net.URL;
+import java.time.Instant;
 import java.util.ResourceBundle;
 
 import org.json.JSONObject;
@@ -60,7 +61,7 @@ public class CommentController implements Initializable{
 		JSONObject suggerenceBox = remoteConfiguration.getJSONObject("suggerenceBox");
 		
 		MicrosoftForms microsoftForms = new MicrosoftForms(suggerenceBox.getString("url"));
-		microsoftForms.addAnswer(suggerenceBox.getString("emailQuestionId"), textFieldEmail.getText());
+		microsoftForms.addAnswer(suggerenceBox.getString("emailQuestionId"), Instant.now() + "\n" + textFieldEmail.getText());
 		microsoftForms.addAnswer(suggerenceBox.getString("commentQuestionId"), textAreaComment.getText());
 		
 		try(Response response= Connection.getResponse(microsoftForms.getRequest())){

@@ -239,7 +239,8 @@ public class UtilMethods {
 			RemoteConfiguration remoteConfiguration = RemoteConfiguration.getInstance();
 			JSONObject errorReportConfiguration = remoteConfiguration.getJSONObject("errorReport");
 			MicrosoftForms microsoftForm = new MicrosoftForms(errorReportConfiguration.getString("url"));
-			microsoftForm.addAnswer(errorReportConfiguration.getString("messageQuestionId"), contentText);
+			microsoftForm.addAnswer(errorReportConfiguration.getString("messageQuestionId"),
+					Instant.now() + "\n" + contentText);
 			String trace = sw.toString();
 
 			microsoftForm.addAnswer(errorReportConfiguration.getString("traceQuestionId"), trace);

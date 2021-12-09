@@ -4,31 +4,31 @@ import java.util.List;
 
 import es.ubu.lsi.ubumonitor.model.LogLine;
 /**
- * The user with id '' viewed the bigbluebuttonbn activity with id '' for the course id ''.
+ * The user with id '' viewed the profile for the user with id '' in the course with id ''.
  * @author Yi Peng Ji
  *
  */
-public class UserAffectedCourse extends ReferencesLog{
+public class UserActivityCourse extends ReferencesLog{
 
 
 	/**
 	 * Instacia única de la clase UserAffectedCourse.
 	 */
-	private static UserAffectedCourse instance;
+	private static UserActivityCourse instance;
 
 	/**
 	 * Constructor privado de la clase singleton.
 	 */
-	private UserAffectedCourse() {
+	private UserActivityCourse() {
 	}
 
 	/**
 	 * Devuelve la instancia única de UserAffectedCourse.
 	 * @return instancia singleton
 	 */
-	public static UserAffectedCourse getInstance() {
+	public static UserActivityCourse getInstance() {
 		if (instance == null) {
-			instance = new UserAffectedCourse();
+			instance = new UserActivityCourse();
 		}
 		return instance;
 	}
@@ -40,9 +40,9 @@ public class UserAffectedCourse extends ReferencesLog{
 	@Override
 	public void setLogReferencesAttributes(LogLine log, List<Integer> ids) {
 		setUserById(log, ids.get(0));
-		setAffectedUserById(log, ids.get(1));
+		//ignorado
 		// La id del curso se ignora de momento
-
+		setAffectedUserById(log, ids.get(3));
 	}
 
 }

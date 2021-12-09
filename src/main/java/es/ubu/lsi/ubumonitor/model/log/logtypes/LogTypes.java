@@ -45,6 +45,19 @@ public class LogTypes {
 		TYPES.put(get(ASSIGNMENT, THE_SUBMISSIONS_HAVE_BEEN_UNLOCKED_FOR_A_USER),UserAffectedCmid.getInstance());
 		TYPES.put(get(ASSIGNMENT, THE_USER_HAS_ACCEPTED_THE_STATEMENT_OF_THE_SUBMISSION), UserSubmissionCmid.getInstance());
 
+		TYPES.put(get(BIG_BLUE_BUTTON, ACTIVITY_VIEWED), UserActivityCourse.getInstance());
+		TYPES.put(get(BIG_BLUE_BUTTON, MEETING_CREATED), UserActivityCourseAffected.getInstance());
+		TYPES.put(get(BIG_BLUE_BUTTON, MEETING_JOINED), UserActivityCourse.getInstance());
+		TYPES.put(get(BIG_BLUE_BUTTON, MEETING_LEFT), UserActivityCourse.getInstance());
+		TYPES.put(get(BIG_BLUE_BUTTON, RECORDING_DELETED), UserCourse.getInstance());
+		TYPES.put(get(BIG_BLUE_BUTTON, RECORDING_PROTECTED), UserCourse.getInstance());
+		TYPES.put(get(BIG_BLUE_BUTTON, RECORDING_PUBLISHED), UserCourse.getInstance());
+		TYPES.put(get(BIG_BLUE_BUTTON, RECORDING_UNPROTECTED), UserCourse.getInstance());
+		TYPES.put(get(BIG_BLUE_BUTTON, RECORDING_UNPUBLISHED), UserCourse.getInstance());
+		TYPES.put(get(BIG_BLUE_BUTTON, RECORDING_VIEWED), UserCourse.getInstance());
+
+		
+		
 		TYPES.put(get(BOOK, CHAPTER_CREATED), UserChapterCmid.getInstance());
 		TYPES.put(get(BOOK, CHAPTER_UPDATED), UserChapterCmid.getInstance());
 		TYPES.put(get(BOOK, CHAPTER_VIEWED), UserChapterCmid.getInstance());

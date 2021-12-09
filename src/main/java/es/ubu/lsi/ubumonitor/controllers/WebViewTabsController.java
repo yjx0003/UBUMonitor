@@ -4,6 +4,7 @@ import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
 import es.ubu.lsi.ubumonitor.controllers.configuration.MainConfiguration;
 import es.ubu.lsi.ubumonitor.controllers.tabs.CalendarEventController;
 import es.ubu.lsi.ubumonitor.controllers.tabs.ClusteringController;
+import es.ubu.lsi.ubumonitor.controllers.tabs.EnrollmentController;
 import es.ubu.lsi.ubumonitor.controllers.tabs.ForumController;
 import es.ubu.lsi.ubumonitor.controllers.tabs.MultiController;
 import es.ubu.lsi.ubumonitor.controllers.tabs.RiskController;
@@ -51,6 +52,13 @@ public class WebViewTabsController {
 	
 	@FXML
 	private MultiController multiController;
+	
+	
+	@FXML
+	private Tab enrollmentTab;
+	
+	@FXML
+	private EnrollmentController enrollmentController;
 
 	private MainController mainController;
 	
@@ -84,13 +92,13 @@ public class WebViewTabsController {
 					}
 				});
 
-		
+
 		add(visualizationController, mainController, visualizationTab, actualCourse, mainConfiguration, stage);
 		add(riskController, mainController, riskTab, actualCourse, mainConfiguration, stage);
 		add(forumController, mainController, forumTab, actualCourse, mainConfiguration, stage);
 		add(calendarEventController, mainController, calendarEventTab, actualCourse, mainConfiguration, stage);
 		add(multiController, mainController, multiTab, actualCourse, mainConfiguration, stage);
-		
+		add(enrollmentController, mainController, enrollmentTab, actualCourse, mainConfiguration, stage);
 	}
 
 	private void add(WebViewAction webViewAction, MainController mainController, Tab tab, Course actualCourse, MainConfiguration mainConfiguration, Stage stage) {
@@ -163,5 +171,21 @@ public class WebViewTabsController {
 
 	public MultiController getMultiController() {
 		return multiController;
+	}
+
+
+	/**
+	 * @return the enrollementTab
+	 */
+	public Tab getEnrollmentTab() {
+		return enrollmentTab;
+	}
+
+
+	/**
+	 * @return the enrollmentController
+	 */
+	public EnrollmentController getEnrollmentController() {
+		return enrollmentController;
 	}
 }

@@ -25,6 +25,11 @@
             <fx:include fx:id="risk" source="tabs/Risk.fxml" />
          </content>
       </Tab>
+      <Tab fx:id="enrollmentTab" text="%tab.enrollment">
+         <content>
+            <fx:include fx:id="enrollment" source="tabs/Enrollment.fxml" />
+         </content>
+      </Tab>
       <Tab fx:id="calendarEventTab" text="%tab.calendarevent">
          <content>
             <fx:include fx:id="calendarEvent" source="tabs/CalendarEvent.fxml" />

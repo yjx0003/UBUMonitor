@@ -21,7 +21,7 @@ public abstract class WordCloudChart extends Chart {
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
+		// didnt use this methods
 
 	}
 

@@ -29,7 +29,7 @@ public class MultiConnector extends JavaConnectorAbstract {
 				mainController.getSelectionController()
 						.getListViewActivity(),
 				multiController.getDatePickerStart(), multiController.getDatePickerEnd()));
-		addChart(new BubbleComparison(mainController,mainController.getSelectionController()
+		addChart(new BubbleComparison(mainController, mainController.getSelectionController()
 				.getTvwGradeReport(),
 				mainController.getSelectionController()
 						.getListViewActivity(),

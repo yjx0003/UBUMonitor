@@ -61,7 +61,7 @@ public class VisualizationController extends WebViewAction {
 		javaConnector = new VisualizationJavaConnector(webViewController.getWebViewCharts(), mainConfiguration, mainController, this, actualCourse);
 		init(tab, actualCourse, mainConfiguration, stage, javaConnector);
 		
-		
+	
 		initLogOptionsFilter();
 	}
 

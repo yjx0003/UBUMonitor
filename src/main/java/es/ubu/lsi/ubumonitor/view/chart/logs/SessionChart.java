@@ -125,7 +125,8 @@ public class SessionChart extends PlotlyLog {
 		trace.putWithQuote("name", name);
 		trace.put("x", x);
 		trace.put("y", y);
-		trace.put("hovertemplate", "'<b>%{x}<br>%{data.name}: </b>%{y} (avg: %{customdata:.2f})<br><b>"+I18n.get("text.session")+"</b>%{text}<extra></extra>'");
+		trace.put("textposition", "'none'");
+		trace.put("hovertemplate", "'<b>%{x}<br>%{data.name}: </b>%{y} (avg: %{customdata:.2~f})<br><b>"+I18n.get("text.session")+"</b>%{text}<extra></extra>'");
 		JSObject marker = new JSObject();
 		marker.put("color", awtColorToRGB(color, OPACITY));
 		trace.put("marker", marker);

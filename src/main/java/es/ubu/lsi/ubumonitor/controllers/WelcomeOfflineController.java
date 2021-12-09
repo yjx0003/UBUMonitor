@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.Collator;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -37,23 +36,25 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
+import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 /**
  * Clase controlador de la pantalla de bienvenida en la que se muestran los
@@ -69,12 +70,14 @@ public class WelcomeOfflineController implements Initializable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WelcomeOfflineController.class);
 
 	private static final Pattern PATTERN_COURSE_FILE = Pattern.compile("^(.+)-(\\d+)$"); // ^(.+)-(\\d+)$
-	private static final Pattern PATTERN_PREVIOUS_COURSE_FILE = Pattern
-			.compile("^\\((\\d{4}-\\d{2}-\\d{2})\\) (.+)-(\\d+)$"); // ^\((\d{4}-\d{2}-\d{2})\) (.+)-(\d+)$
+	//private static final Pattern PATTERN_PREVIOUS_COURSE_FILE = Pattern
+		//	.compile("^\\((\\d{4}-\\d{2}-\\d{2})\\) (.+)-(\\d+)$"); // ^\((\d{4}-\d{2}-\d{2})\) (.+)-(\d+)$
 	/**
 	 * path con directorios de los ficheros cache
 	 */
 	private Controller controller = Controller.getInstance();
+	
+	private boolean newPassword;
 
 	@FXML
 	private AnchorPane anchorPane;
@@ -108,6 +111,9 @@ public class WelcomeOfflineController implements Initializable {
 	private Label conexionLabel;
 
 	private boolean isBBDDLoaded;
+	
+	@FXML
+	private Tab tabPreviousCache;
 
 	/**
 	 * Función initialize. Muestra la lista de cursos del usuario introducido.
@@ -115,7 +121,7 @@ public class WelcomeOfflineController implements Initializable {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		
 		try {
 			conexionLabel.setText(I18n.get("text.online_" + !controller.isOfflineMode()));
 			lblUser.setText(I18n.get("label.welcome") + " " + controller.getUsername());
@@ -178,8 +184,7 @@ public class WelcomeOfflineController implements Initializable {
 
 		File[] previousCourses = controller.getHostUserModelversionArchivedDir()
 				.toFile()
-				.listFiles((dir, name) -> PATTERN_PREVIOUS_COURSE_FILE.matcher(name)
-						.matches());
+				.listFiles();
 		Comparator<File> comparator = Comparator.comparing(File::getName, Collator.getInstance());
 		initListView(files, listCourses, comparator);
 		initListView(previousCourses, listViewPreviousCourses, comparator);
@@ -257,8 +262,10 @@ public class WelcomeOfflineController implements Initializable {
 		lblNoSelect.setVisible(false);
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getName());
 
-		// if loading cache
 		loadData(selectedCourse, controller.getPassword());
+		if (newPassword && isBBDDLoaded) {
+			Serialization.encrypt(controller.getPassword(), selectedCourse.toString(), controller.getDataBase());
+		}
 		loadNextWindow();
 
 	}
@@ -302,12 +309,14 @@ public class WelcomeOfflineController implements Initializable {
 			dataBase = (DataBase) Serialization.decrypt(password, file.toString());
 			dataBase.checkSubDatabases();
 			controller.setDataBase(dataBase);
-			isBBDDLoaded = true;
+			
 			controller.setDefaultUpdate(
 					ZonedDateTime.ofInstant(Instant.ofEpochSecond(file.lastModified()), ZoneId.systemDefault()));
-			TimeZone.setDefault(TimeZone.getTimeZone(dataBase.getUserZoneId()));
-
-		} catch (IllegalBlockSizeException | BadPaddingException e) {
+			ZoneId zoneId = dataBase.getUserZoneId() == null ? ZoneId.systemDefault() : dataBase.getUserZoneId();
+			TimeZone.setDefault(TimeZone.getTimeZone(zoneId));
+			controller.setActualCoursePath(file.toPath());
+			isBBDDLoaded = true;
+		} catch (IllegalBlockSizeException | BadPaddingException | IllegalArgumentException e) {
 			incorrectPasswordWindow(file);
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
@@ -322,7 +331,7 @@ public class WelcomeOfflineController implements Initializable {
 	}
 
 	private void incorrectPasswordWindow(File file) {
-		Dialog<String> dialog = new Dialog<>();
+		Dialog<Pair<String, Boolean>> dialog = new Dialog<>();
 		dialog.setTitle(I18n.get("title.passwordIncorrect"));
 
 		dialog.setHeaderText(I18n.get("header.passwordIncorrectMessage") + "\n" + I18n.get("header.passwordDateTime")
@@ -339,35 +348,35 @@ public class WelcomeOfflineController implements Initializable {
 				.getButtonTypes()
 				.addAll(ButtonType.OK);
 
+		GridPane grid = new GridPane();
+
+		grid.setHgap(20);
+		grid.setVgap(20);
+		grid.setPadding(new Insets(20, 50, 10, 50));
+		grid.add(new Label(I18n.get("label.oldPassword")), 0, 0);
 		PasswordField pwd = new PasswordField();
-		HBox content = new HBox();
-		content.setAlignment(Pos.CENTER);
-		content.setSpacing(10);
-		content.getChildren()
-				.addAll(new Label(I18n.get("label.oldPassword")), pwd);
+
+		grid.add(pwd, 1, 0);
+
+		CheckBox saveNewPassword = new CheckBox(I18n.get("checkbox.saveNewPassword"));
+		saveNewPassword.setSelected(true);
+		grid.add(saveNewPassword, 0, 1, 2, 1);
 		dialog.getDialogPane()
-				.setContent(content);
+				.setContent(grid);
 
-		// desabilitamos el boton hasta que no escriba texto
-		Node accept = dialog.getDialogPane()
-				.lookupButton(ButtonType.OK);
-		accept.setDisable(true);
-
-		pwd.textProperty()
-				.addListener((observable, oldValue, newValue) -> accept.setDisable(newValue.trim()
-						.isEmpty()));
+		
 		dialog.setResultConverter(dialogButton -> {
 			if (dialogButton == ButtonType.OK) {
-				return pwd.getText();
+				return new Pair<String, Boolean>(pwd.getText(), saveNewPassword.isSelected());
 			}
 			return null;
 		});
 
 		// Traditional way to get the response value.
-		Optional<String> result = dialog.showAndWait();
+		Optional<Pair<String, Boolean>> result = dialog.showAndWait();
 		if (result.isPresent()) {
-			controller.setPassword(result.get());
-			loadData(file, result.get());
+			loadData(file, result.get().getKey());
+			newPassword = result.get().getValue();
 		}
 
 	}
@@ -388,7 +397,7 @@ public class WelcomeOfflineController implements Initializable {
 		WelcomeController.changeToMainScene(controller.getStage(), getClass().getResource("/view/Main.fxml"),
 				getClass().getResource("/img/alert.gif")
 						.toExternalForm(),
-				lastModified);
+				lastModified, !tabPreviousCache.isSelected());
 
 	}
 
@@ -437,7 +446,8 @@ public class WelcomeOfflineController implements Initializable {
 		UtilMethods.fileAction(null,
 				ConfigHelper.getProperty("coursePath", "./"), controller.getStage(), FileUtil.FileChooserType.OPEN,
 				f -> {
-					FileUtil.exportFile( f.toPath() ,controller.getHostUserModelversionArchivedDir(), Paths.get(f.getName()));
+					
+					FileUtil.exportFile( f.toPath() ,controller.getHostUserModelversionArchivedDir(), controller.getHostUserModelversionArchivedDir().resolve(f.getName()));
 					ConfigHelper.setProperty("coursePath", f.getParent());
 					tabPane.getSelectionModel().select(1);
 					if(!listViewPreviousCourses.getItems().contains(f)) {

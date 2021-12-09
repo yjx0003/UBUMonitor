@@ -53,7 +53,7 @@ public class ActivitiesStatusTable extends Tabulator {
 		jsObject.put("field", "'name'");
 		jsObject.put("frozen", true);
 		array.add(jsObject);
-		
+
 		jsObject = new JSObject();
 		jsObject.putWithQuote("title", I18n.get("chartlabel.progress"));
 		jsObject.putWithQuote("field", "progress");
@@ -63,34 +63,32 @@ public class ActivitiesStatusTable extends Tabulator {
 		jsObject.put("formatterParams", getProgressParam(courseModules.size()));
 		array.add(jsObject.toString());
 
+		// formatter de la imagen
 		JSObject formatterParams = new JSObject();
-		formatterParams.put("allowEmpty", true);
-		formatterParams.put("allowTruthy", true);
+		formatterParams.put("heigh", 16);
+		formatterParams.put("width", 16);
+		formatterParams.put("urlPrefix", "''");
+		formatterParams.put("urlSuffix", "''");
+		
 		String stringFormatterParams = formatterParams.toString();
-
-		JSObject sorterParams = new JSObject();
-		sorterParams.putWithQuote("format", dateTimeWrapper.getPattern());
-		sorterParams.putWithQuote("alignEmptyValues", "bottom");
-		String stringsorterParams = sorterParams.toString();
 
 		for (CourseModule courseModule : courseModules) {
 			jsObject = new JSObject();
 			jsObject.putWithQuote("hozAlign", "center");
-			jsObject.put("tooltip", true);
+			jsObject.put("tooltip", "function(c){return c.getRow().getData().datetime"+courseModule.getCmid()+"}");
 
-			jsObject.putWithQuote("formatter", "tickCross");
+			jsObject.putWithQuote("formatter", "image");
 			jsObject.put("topCalc",
 					"function(n,r,c){var f=0;return n.forEach(function(n){n&&f++;}),f+'/'+n.length+' ('+(f/n.length||0).toLocaleString(locale,{style:'percent',maximumFractionDigits:2})+')';}");
 			jsObject.put("formatterParams", stringFormatterParams);
-			jsObject.putWithQuote("sorter", "datetime");
-			jsObject.put("sorterParams", stringsorterParams);
+			jsObject.put("sorter",
+					"function(t,a,n,e,i,g,r){return t-a||(n.getData().instant"+ courseModule.getCmid()+"||0)-(e.getData().instant"+ courseModule.getCmid()+"||0)}");
 			jsObject.putWithQuote("title", courseModule.getModuleName());
 			jsObject.putWithQuote("field", "ID" + courseModule.getCmid());
 
 			array.add(jsObject.toString());
 		}
 
-		
 		return array.toString();
 	}
 
@@ -127,34 +125,28 @@ public class ActivitiesStatusTable extends Tabulator {
 			jsObject = new JSObject();
 			jsObject.putWithQuote("name", enrolledUser.getFullName());
 			int progress = 0;
+			
 			for (CourseModule courseModule : courseModules) {
+				
 				ActivityCompletion activity = courseModule.getActivitiesCompletion()
 						.get(enrolledUser);
+				
 				String field = "ID" + courseModule.getCmid();
-				if (activity == null || activity.getState() == null) {
-					jsObject.putWithQuote(field, "");
-				} else {
-					switch (activity.getState()) {
-					case COMPLETE:
-					case COMPLETE_PASS:
-						Instant timeCompleted = activity.getTimecompleted();
-						if (timeCompleted != null && init.isBefore(timeCompleted) && end.isAfter(timeCompleted)) {
-							progress++;
-							jsObject.putWithQuote(field, dateTimeWrapper.format(timeCompleted));
-						}
-
-						break;
-					case COMPLETE_FAIL:
-						jsObject.put(field, false);
-						break;
-
-					case INCOMPLETE:
-						jsObject.putWithQuote(field, "");
-						break;
-					default:
-						jsObject.putWithQuote(field, "");
-						break;
-
+			
+					
+				if (activity != null) { 
+					
+					String activityTracking = activity.getTracking() == null ? "0": String.valueOf(activity.getTracking().ordinal());
+					Instant timeCompleted = activity.getTimecompleted();
+					if (timeCompleted != null && init.isBefore(timeCompleted) && end.isAfter(timeCompleted)) {
+						progress++;
+						String activityState = activity.getState() == null ? "0": String.valueOf(activity.getState().ordinal());
+						String overrideBy = activity.getOverrideby() == null ? "0" : "1";
+						jsObject.put(field,"activityCompletionIcons["+activityState + activityTracking + overrideBy+"]");
+						jsObject.putWithQuote("datetime"+courseModule.getCmid(), dateTimeWrapper.format(timeCompleted));
+						jsObject.put("instant"+courseModule.getCmid(), timeCompleted.getEpochSecond());
+					}else {
+						jsObject.put(field,"activityCompletionIcons[000]");
 					}
 
 				}
@@ -192,9 +184,10 @@ public class ActivitiesStatusTable extends Tabulator {
 		jsObject.put("height", "height");
 		jsObject.put("tooltipsHeader", true);
 		jsObject.put("virtualDom", true);
+		jsObject.put("cellVertAlign", "'middle'");
 		jsObject.putWithQuote("layout", "fitColumns");
 		jsObject.put("rowClick", "function(e,row){javaConnector.dataPointSelection(row.getPosition());}");
-	
+
 	}
 
 	@Override

@@ -84,19 +84,7 @@ public class ForumPosts extends VisNetwork {
 
 	}
 
-	@Override
-	public void fillOptions(JSObject jsObject) {
-		JSObject options = new JSObject();
-
-		options.put("edges", getEdgesOptions());
-		options.put("nodes", getNodesOptions());
-		options.put("physics", getPhysicsOptions());
-		options.put("layout", getLayoutOptions());
-		options.put("interaction", getInteractionOptions());
-		jsObject.put("options", options);
-
-
-	}
+	
 
 	@Override
 	public void update() {
@@ -196,10 +184,10 @@ public class ForumPosts extends VisNetwork {
 		JSObject nodes = super.getNodesOptions();
 		if ((boolean) getConfigValue("usePhoto")) {
 			nodes.put("shape", "'circularImage'");
-
-		} else {
-			nodes.put("shape", "'circle'");
 			nodes.put("brokenImage", "undefined");
+		} else {
+			nodes.put("shape", "'dot'");
+			
 		}
 		nodes.put("borderWidth", getConfigValue("nodes.borderWidth"));
 		return nodes;

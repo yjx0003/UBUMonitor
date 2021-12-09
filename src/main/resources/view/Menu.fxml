@@ -48,6 +48,7 @@
                <items>
                   <MenuItem fx:id="MIClearSelection" onAction="#clearSelection" text="%menu.clearselection" />
                   <MenuItem onAction="#importLogs" text="%menu.importlogs" />
+                  <MenuItem onAction="#purgeLogs" text="%menu.purgeLogs" />
                </items>
             </Menu>
             <Menu text="%menu.view">
@@ -67,6 +68,7 @@
                   <MenuItem onAction="#courseStats" text="%menu.coursestats" />
                   <MenuItem onAction="#userGuide" text="%menu.usermanual" />
                   <MenuItem onAction="#gitHubPage" text="%menu.githubpage" />
+                  <MenuItem onAction="#comment" text="%menu.comments" />
                   <MenuItem onAction="#moreInfo" text="%menu.moreinfo" />
                   <MenuItem fx:id="MIAboutUBUGrades" onAction="#aboutApp" text="%menu.about" />
                </items>

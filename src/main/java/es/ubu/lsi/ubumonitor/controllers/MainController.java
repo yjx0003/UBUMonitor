@@ -106,8 +106,7 @@ public class MainController implements Initializable {
 		actualHost.setGraphic(linkImage);
 		actualHost.setOnAction(event -> UtilMethods.openURL(actualHost.getText()));
 		// Mostramos Curso actual
-		Label lblActualCourse = new Label(controller.getActualCourse()
-				.getFullName());
+		Label lblActualCourse = new Label(controller.getActualCourse().toString());
 
 		ImageView online = new ImageView(
 				controller.isOfflineMode() ? "/img/circle_offline.png" : "/img/circle_online.png");

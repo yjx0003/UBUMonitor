@@ -12,6 +12,7 @@ public enum Component {
 	
 	ACTIVITY_REPORT("Activity report"),
 	ASSIGNMENT("Assignment"),
+	BIG_BLUE_BUTTON("BigBlueButton"),
 	BOOK("Book"),
 	BOOK_PRINTING("Book printing"),
 	CHAT("Chat"),

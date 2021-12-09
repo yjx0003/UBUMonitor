@@ -51,7 +51,7 @@ public class ForumBar extends Plotly {
 		List<CourseModule> forums = new ArrayList<>(listViewForum.getSelectionModel()
 				.getSelectedItems());
 		Map<CourseModule, Map<ForumDiscussion, Long>> map = createForumDiscussionCounts(users, forums);
-		data.add(createTrace(I18n.get("tab.forum"), forums, map, getConfigValue("tab.forum"),
+		data.add(createTrace(I18n.get("tab.forum"), forums, map, getConfigValue("forumBarColor"),
 				getConfigValue("horizontalMode")));
 	}
 
@@ -93,7 +93,7 @@ public class ForumBar extends Plotly {
 				totalPosts += entry.getValue();
 			}
 
-			x.addWithQuote(i);
+			x.add(i);
 			y.add(totalPosts);
 			discussions.addWithQuote(discussionString);
 		}
@@ -105,9 +105,9 @@ public class ForumBar extends Plotly {
 		JSObject marker = new JSObject();
 		marker.put("color", colorToRGB(color));
 		trace.put("marker", marker);
-		trace.put("text", discussions);
+		trace.put("customdata", discussions);
 
-		trace.put("hovertemplate", "'<br>%{text}<br><b>" + I18n.get("text.total") + ":</b> %{" + (horizontalMode ? "x" : "y")
+		trace.put("hovertemplate", "'<br>%{customdata}<br><b>" + I18n.get("text.total") + ":</b> %{" + (horizontalMode ? "x" : "y")
 				+ "}<extra></extra>'");
 
 		return trace;

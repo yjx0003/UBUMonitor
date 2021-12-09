@@ -9,6 +9,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -35,8 +37,9 @@
 		<Group id="Group" layoutX="145.0" layoutY="250.0">
 			<children>
       				<TextField id="txtUname" fx:id="txtUsername" layoutY="27.0" prefWidth="173.0" styleClass="text-field-login" stylesheets="@/css/style.css" />
-				<PasswordField id="yxyPassword" fx:id="txtPassword" layoutY="63.0" prefWidth="173.00009999999747" styleClass="text-field-login" stylesheets="@/css/style.css" />
+				<PasswordField id="yxyPassword" fx:id="txtPassword" layoutY="63.0" prefWidth="173.0" styleClass="text-field-login" stylesheets="@/css/style.css" />
 				<TextField fx:id="txtHost" layoutY="100.0" prefWidth="173.0" promptText="https://demo.moodle.net" styleClass="text-field-login" stylesheets="@/css/style.css" />
+            <TextField id="txtUname" fx:id="txtPasswordShow" layoutY="63.0" prefWidth="173.0" styleClass="text-field-login" stylesheets="@/css/style.css" />
 			</children>
 		</Group>
 		<Button id="Entrar" fx:id="btnLogin" cancelButton="false" defaultButton="true" disable="false" focusTraversable="true" graphicTextGap="5.0" layoutX="100.0" layoutY="455.0" mnemonicParsing="false" onAction="#login" prefWidth="70.0" styleClass="accept_button" text="%btn.enter" textOverrun="ELLIPSIS" underline="false" visible="true">
@@ -50,7 +53,7 @@
 				<Image url="@../img/logo.png" />
 			</image>
 		</ImageView>
-		<Label fx:id="lblStatus" alignment="CENTER" layoutX="13.0" layoutY="489.0" maxHeight="60.0" minHeight="27.0" minWidth="375.0" prefHeight="30.0" prefWidth="375.0" textAlignment="CENTER" textFill="#ff5050">
+		<Label fx:id="lblStatus" alignment="CENTER" layoutX="13.0" layoutY="488.0" maxHeight="60.0" minHeight="40.0" minWidth="375.0" prefHeight="43.0" prefWidth="375.0" textAlignment="CENTER" textFill="#ff5050" wrapText="true">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
@@ -85,6 +88,10 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </ImageView>
+      <ToggleButton fx:id="togglePassword" layoutX="320.0" layoutY="309.0" mnemonicParsing="false">
+         <tooltip>
+            <Tooltip fx:id="tooltipPasswordVisible" text="Empty Tooltip" />
+         </tooltip></ToggleButton>
       
       	</children>
 </AnchorPane>

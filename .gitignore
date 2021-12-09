@@ -16,3 +16,4 @@ bin
 /.project
 /.settings/
 /configuration.json
+.factorypath

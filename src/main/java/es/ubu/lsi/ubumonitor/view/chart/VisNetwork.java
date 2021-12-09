@@ -17,6 +17,20 @@ public abstract class VisNetwork extends Chart {
 
 	}
 	
+	@Override
+	public void fillOptions(JSObject jsObject) {
+		JSObject options = new JSObject();
+
+		jsObject.put("physicsAfterDraw", getConfigValue("physicsAfterDraw", false));
+		options.put("edges", getEdgesOptions());
+		options.put("nodes", getNodesOptions());
+		options.put("physics", getPhysicsOptions());
+		options.put("interaction", getInteractionOptions());
+		options.put("layout", getLayoutOptions());
+		jsObject.put("options", options);
+
+	}
+	
 	public JSObject getNodesOptions() {
 		return new JSObject();
 	}
@@ -35,10 +49,10 @@ public abstract class VisNetwork extends Chart {
 
 	public JSObject getInteractionOptions() {
 		JSObject interaction =  new JSObject();
-		interaction.put("keyboard", getConfigValue("interaction.keyboard"));
-		interaction.put("multiselect", getConfigValue("interaction.multiselect"));
-		interaction.put("navigationButtons", getConfigValue("interaction.navigationButtons"));
-		interaction.put("tooltipDelay", getConfigValue("interaction.tooltipDelay"));
+		interaction.put("keyboard", getConfigValue("interaction.keyboard", true));
+		interaction.put("multiselect", getConfigValue("interaction.multiselect", true));
+		interaction.put("navigationButtons", getConfigValue("interaction.navigationButtons", true));
+		interaction.put("tooltipDelay", getConfigValue("interaction.tooltipDelay", true));
 		return interaction;
 	}
 	

@@ -13,9 +13,13 @@ import es.ubu.lsi.ubumonitor.view.chart.Chart;
 import es.ubu.lsi.ubumonitor.view.chart.bridge.JavaConnector;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -92,6 +96,15 @@ public abstract class WebViewAction implements MainAction {
 				}, false, FileUtil.PNG);
 
 	}
+	
+	@Override
+	public void copyImage() {
+		WritableImage image = webViewController.getWebViewCharts().snapshot(new SnapshotParameters(), null);
+		Clipboard clipboard = Clipboard.getSystemClipboard();
+		ClipboardContent content = new ClipboardContent();
+		content.putImage(image);
+		clipboard.setContent(content);
+	}
 
 	public void initTabPaneWebView(JavaConnector javaConnector) {
 		WebView webViewCharts = webViewController.getWebViewCharts();
@@ -139,9 +152,12 @@ public abstract class WebViewAction implements MainAction {
 
 		MenuItem exportPNG = new MenuItem(I18n.get("text.exportpng"));
 		exportPNG.setOnAction(e -> saveImage());
+		
+		MenuItem copyImage = new MenuItem(I18n.get("text.copyimage"));
+		copyImage.setOnAction(e -> copyImage());
 
 		contextMenu.getItems()
-				.addAll(exportPNG, exportCSV);
+				.addAll(exportPNG, exportCSV, copyImage);
 		webViewController.getWebViewCharts()
 				.setOnMouseClicked(e -> {
 					if (e.getButton() == MouseButton.SECONDARY) {

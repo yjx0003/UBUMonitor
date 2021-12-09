@@ -4,7 +4,7 @@ import java.util.List;
 
 import es.ubu.lsi.ubumonitor.model.LogLine;
 /**
- * The user with id '' viewed the profile for the user with id '' in the course with id ''.
+ * The user with id '' viewed the bigbluebuttonbn activity with id '' for the course id ''.
  * @author Yi Peng Ji
  *
  */

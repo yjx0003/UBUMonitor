@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers.configuration;
 
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -132,14 +133,21 @@ public class MainConfiguration {
 		createItem(ChartType.GRADE_REPORT_TABLE, "color8", Color.web("#4cff33"));
 		createItem(ChartType.GRADE_REPORT_TABLE, "color9", Color.web("#10c14e"));
 		createItem(ChartType.GRADE_REPORT_TABLE, "color10", Color.web("#10c14e"));
-		
-		
 
 		createItem(ChartType.CALIFICATION_BAR, HORIZONTAL_MODE, false);
 		createItem(ChartType.CALIFICATION_BAR, "emptyGradeColor", Color.web("#D3D3D3", 0.3));
 		createItem(ChartType.CALIFICATION_BAR, "failGradeColor", Color.web("#DC143C", 0.3));
 		createItem(ChartType.CALIFICATION_BAR, "passGradeColor", Color.web("#2DC214", 0.3));
-
+		
+		createItem(ChartType.PARALLEL_CATEGORY, "moreInfoProbability", false);
+		createItem(ChartType.PARALLEL_CATEGORY, "groups", FXCollections.observableArrayList(Controller.getInstance().getActualCourse().getGroups()), Group.class);
+		createItem(ChartType.PARALLEL_CATEGORY, "startMonth", Month.SEPTEMBER);
+		createItem(ChartType.PARALLEL_CATEGORY, "endMonth", Month.JULY);
+		createItem(ChartType.PARALLEL_CATEGORY, "noGradeAsZero", false);
+		createItem(ChartType.PARALLEL_CATEGORY, "emptyGradeColor", Color.web("#D3D3D3", 0.3));
+		createItem(ChartType.PARALLEL_CATEGORY, "failGradeColor", Color.web("#DC143C", 0.3));
+		createItem(ChartType.PARALLEL_CATEGORY, "passGradeColor", Color.web("#2DC214", 0.3));
+		
 		createItem(ChartType.ACTIVITIES_TABLE, "firstInterval", Color.web("#f78880"));
 		createItem(ChartType.ACTIVITIES_TABLE, "secondInterval", Color.web("#f4e3ae"));
 		createItem(ChartType.ACTIVITIES_TABLE, "thirdInterval", Color.web("#fff033"));
@@ -159,7 +167,7 @@ public class MainConfiguration {
 		createItem(ChartType.BUBBLE_LOGARITHMIC, "fourthInterval", Color.web("#f78880"));
 
 		createItem(ChartType.FORUM_BAR, HORIZONTAL_MODE, false);
-		createItem(ChartType.FORUM_BAR, "tab.forum", Color.web("#efc9af", 0.3));
+		createItem(ChartType.FORUM_BAR, "forumBarColor", Color.web("#efc9af", 0.3));
 
 		createItem(ChartType.FORUM_USER_POST_BAR, "text.discussioncreation", Color.web("#efc9af", 0.3));
 		createItem(ChartType.FORUM_USER_POST_BAR, "text.replies", Color.web("#104c91", 0.3));
@@ -170,6 +178,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_NETWORK, "useInitialNames", true);
 		createItem(ChartType.FORUM_NETWORK, "showNumberPosts", true);
 		createItem(ChartType.FORUM_NETWORK, "physicsAfterDraw", true);
+		createItem(ChartType.FORUM_NETWORK, "edges.physics", true);
 		createItem(ChartType.FORUM_NETWORK, "edges.dashes", false);
 		createItem(ChartType.FORUM_NETWORK, "edges.arrows.to.scaleFactor", 0.75);
 		createItem(ChartType.FORUM_NETWORK, "edges.scaling.min", 1);
@@ -223,7 +232,7 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_WORD_CLOUD, "minFont", 10);
 		createItem(ChartType.FORUM_WORD_CLOUD, "maxFont", 40);
 		createItem(ChartType.FORUM_WORD_CLOUD, "angles", "-90, 0, 90");
-		createItem(ChartType.FORUM_WORD_CLOUD, "backGroundImage", MaskImage.RECTANGLE);
+		createItem(ChartType.FORUM_WORD_CLOUD, "backGroundImage", MaskImage.BUTTERFLY);
 
 		createItem(ChartType.RANKING_TABLE, "statisticsRanking", false);
 		createItem(ChartType.RANKING_TABLE, "firstInterval", Color.web("#b5ff33"));
@@ -240,7 +249,59 @@ public class MainConfiguration {
 		createItem(ChartType.BUBBLE_COMPARISON, "useCircles", false);
 		createItem(ChartType.BUBBLE_COMPARISON, "transitionDuration", 1000);
 		createItem(ChartType.BUBBLE_COMPARISON, "frameDuration", 1000);
-
+		
+		
+		createItem(ChartType.ENROLLMENT_BAR, HORIZONTAL_MODE, true);
+		createItem(ChartType.ENROLLMENT_BAR, "startMonth", Month.SEPTEMBER);
+		createItem(ChartType.ENROLLMENT_BAR, "endMonth", Month.JULY);
+		createItem(ChartType.ENROLLMENT_BAR, "minFrequency", 1);
+		
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "minFrequency", 2);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "showActualCourse", false);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "showNonConnected", true);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "useInitialNames", true);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physicsAfterDraw", true);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "edges.moreInfoEdge", false);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "edges.physics", true);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "edges.dashes", false);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "edges.scaling.min", 1);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "edges.scaling.max", 10);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "nodes.showUsernames", true);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "nodes.borderWidth", 1);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "nodes.scaling.min", 20);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "nodes.scaling.max", 40);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.solver", VisNetwork.Solver.FORCE_ATLAS_2_BASED);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.barnesHut.theta", 0.5);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.barnesHut.gravitationalConstant", -2000);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.barnesHut.centralGravity", 0.3);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.barnesHut.springLength", 95);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.barnesHut.springConstant", 0.04);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.barnesHut.damping", 0.09);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.barnesHut.avoidOverlap", 0.0);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.forceAtlas2Based.theta", 0.5);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.forceAtlas2Based.gravitationalConstant", -50);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.forceAtlas2Based.centralGravity", 0.01);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.forceAtlas2Based.springLength", 100);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.forceAtlas2Based.springConstant", 0.08);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.forceAtlas2Based.damping", 0.4);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.forceAtlas2Based.avoidOverlap", 0.0);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.repulsion.nodeDistance", 100);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.repulsion.centralGravity", 0.2);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.repulsion.springLength", 200);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.repulsion.springConstant", 0.05);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "physics.repulsion.damping", 0.09);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "interaction.keyboard", true);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "interaction.multiselect", true);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "interaction.navigationButtons", true);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "interaction.tooltipDelay", 300);
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "layout.randomSeed", "");
+		createItem(ChartType.ENROLLMENT_COURSE_NETWORK, "layout.clusterThreshold", 150);
+		
+		createItem(ChartType.ENROLLMENT_SANKEY, "userColorNode", Color.web("#add8e6"));
+		createItem(ChartType.ENROLLMENT_SANKEY, "linkColor", Color.web("#efc9af", 0.3));
+		createItem(ChartType.ENROLLMENT_SANKEY, "courseColorNode", Color.web("#FC9E21"));
+		createItem(ChartType.ENROLLMENT_SANKEY, "minFrequency", 1);
+		
 	}
 
 	/**
@@ -388,6 +449,12 @@ public class MainConfiguration {
 
 	}
 
+	
+	public void createItem(ChartType chartType, String name, Object value, Class<?> clazz) {
+		createItem(chartType.name(), name, value, clazz, chartType.getTab());
+
+	}
+	
 	/**
 	 * Create item
 	 * 
@@ -400,6 +467,7 @@ public class MainConfiguration {
 		createItem(category, name, value, clazz, null);
 
 	}
+
 
 	/**
 	 * Set value of the item

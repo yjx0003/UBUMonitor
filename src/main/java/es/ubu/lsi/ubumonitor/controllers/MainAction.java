@@ -31,6 +31,8 @@ public interface MainAction {
 	public default void updateListViewForum() {}
 	
 	public void saveImage();
+	
+	public void copyImage();
 
 	public void applyConfiguration();
 

@@ -38,11 +38,13 @@ import es.ubu.lsi.ubumonitor.AppInfo;
 import es.ubu.lsi.ubumonitor.Style;
 import es.ubu.lsi.ubumonitor.controllers.Controller;
 import es.ubu.lsi.ubumonitor.controllers.configuration.ConfigHelper;
+import es.ubu.lsi.ubumonitor.controllers.configuration.RemoteConfiguration;
 import es.ubu.lsi.ubumonitor.controllers.load.Connection;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WSFunctionAbstract;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -50,6 +52,8 @@ import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -183,9 +187,26 @@ public class UtilMethods {
 		return dialogWindow(AlertType.WARNING, I18n.get("warning"), contentText);
 	}
 
-	public static ButtonType errorWindow(String contentText, Throwable ex) {
+	public static void errorWindow(String contentText, Throwable ex) {
 
-		Alert alert = createAlert(AlertType.ERROR, "Error", contentText);
+		Alert alert = createAlert(AlertType.ERROR);
+
+		Hyperlink hyperLink = new Hyperlink(I18n.get("label.microsoftFormPolicy"));
+		hyperLink.setOnAction(e -> openURL(I18n.get("url.microsoftFormPolicy"))
+
+		);
+		Text text = new Text(contentText + "\n\n" + I18n.get("askSendReport"));
+
+		TextFlow flow = new TextFlow(text, hyperLink);
+		flow.setPrefWidth(600);
+
+		alert.getDialogPane()
+				.setContent(flow);
+
+		ButtonType sendReport = new ButtonType(I18n.get("button.sendReport"), ButtonData.YES);
+
+		alert.getButtonTypes()
+				.setAll(sendReport, ButtonType.NO);
 
 		// Create expandable Exception.
 		StringWriter sw = new StringWriter();
@@ -211,8 +232,35 @@ public class UtilMethods {
 		// Set expandable Exception into the dialog pane.
 		alert.getDialogPane()
 				.setExpandableContent(expContent);
+
+		Button btOk = (Button) alert.getDialogPane()
+				.lookupButton(sendReport);
+		btOk.addEventFilter(ActionEvent.ACTION, event -> {
+			RemoteConfiguration remoteConfiguration = RemoteConfiguration.getInstance();
+			JSONObject errorReportConfiguration = remoteConfiguration.getJSONObject("errorReport");
+			MicrosoftForms microsoftForm = new MicrosoftForms(errorReportConfiguration.getString("url"));
+			microsoftForm.addAnswer(errorReportConfiguration.getString("messageQuestionId"),
+					Instant.now() + "\n" + contentText);
+			String trace = sw.toString();
+
+			microsoftForm.addAnswer(errorReportConfiguration.getString("traceQuestionId"), trace);
+			microsoftForm.addAnswer(errorReportConfiguration.getString("traceQuestionId2"),
+					trace.substring(Math.max(trace.length() - MicrosoftForms.LIMIT_CHARACTERS, 0), trace.length()));
+
+			try (Response response = Connection.getResponse(microsoftForm.getRequest())) {
+				if (!response.isSuccessful()) {
+					throw new IllegalStateException(response.body()
+							.string());
+				}
+				infoWindow(I18n.get("ok.reportSent"));
+			} catch (Exception e) {
+				errorWindow(I18n.get("error.cantSendReport") + ":\n" + e.getMessage());
+				event.consume();
+			}
+		});
+
 		alert.showAndWait();
-		return alert.getResult();
+
 	}
 
 	public static ButtonType dialogWindow(AlertType alertType, String headerText, String contentText) {
@@ -708,28 +756,29 @@ public class UtilMethods {
 	public static <T, V extends Comparable<V>> Map<T, Double> rankingStatistics(Map<T, V> map) {
 		return rankingStatistics(map, Function.identity());
 	}
-	
-	public static <T, V, E extends Comparable<E>> Map<T, Double> rankingStatistics(Map<T, V> map, Function<V, E> function) {
+
+	public static <T, V, E extends Comparable<E>> Map<T, Double> rankingStatistics(Map<T, V> map,
+			Function<V, E> function) {
 		Map<T, Double> ranking = new HashMap<>();
-		for (Map.Entry<T,V> entry : map.entrySet()) {
+		for (Map.Entry<T, V> entry : map.entrySet()) {
 			V actualValue = entry.getValue();
 			int lessThaActualValue = 0;
 			int equal = 1;
 			for (V value : map.values()) {
-				int compare = function.apply(actualValue).compareTo(function.apply(value));
+				int compare = function.apply(actualValue)
+						.compareTo(function.apply(value));
 				if (compare < 0) {
 					++lessThaActualValue;
 				} else if (compare == 0) {
 					++equal;
 				}
 			}
-			ranking.put(entry.getKey(), lessThaActualValue+equal/2.0);
-			
+			ranking.put(entry.getKey(), lessThaActualValue + equal / 2.0);
+
 		}
 
 		return ranking;
 	}
-	
 
 	public static List<GradeItem> getSelectedGradeItems(TreeView<GradeItem> treeView) {
 		return treeView.getSelectionModel()
@@ -748,9 +797,9 @@ public class UtilMethods {
 
 		return I18n.get("text.never");
 	}
-	
+
 	public static <T extends Number & Comparable<T>> Number getMax(Collection<T> values) {
-		if(values == null || values.isEmpty()) {
+		if (values == null || values.isEmpty()) {
 			return 0;
 		}
 		return Collections.max(values);

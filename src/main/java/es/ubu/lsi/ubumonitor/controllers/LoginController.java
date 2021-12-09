@@ -28,6 +28,7 @@ import es.ubu.lsi.ubumonitor.controllers.load.PopulateMoodleUser;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.DataBase;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
+import es.ubu.lsi.ubumonitor.persistence.Serialization;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.Languages;
 import es.ubu.lsi.ubumonitor.util.Parsers;
@@ -35,6 +36,7 @@ import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.webservice.api.core.course.CoreCourseGetEnrolledCoursesByTimelineClassification.Classification;
 import es.ubu.lsi.ubumonitor.webservice.api.core.webservice.CoreWebserviceGetSiteInfo;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
@@ -52,6 +54,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -109,6 +112,15 @@ public class LoginController implements Initializable {
 
 	@FXML
 	private ImageView imageViewconfigurationHelper;
+
+	@FXML
+	private TextField txtPasswordShow;
+
+	@FXML
+	private ToggleButton togglePassword;
+
+	@FXML
+	private Tooltip tooltipPasswordVisible;
 
 	/**
 	 * Crea el selector de idioma.
@@ -197,6 +209,19 @@ public class LoginController implements Initializable {
 	 */
 	private void initializeProperties() {
 
+		txtPassword.visibleProperty()
+				.bind(togglePassword.selectedProperty()
+						.not());
+		txtPasswordShow.visibleProperty()
+				.bind(togglePassword.selectedProperty());
+		txtPassword.textProperty()
+				.bindBidirectional(txtPasswordShow.textProperty());
+		
+		tooltipPasswordVisible.textProperty()
+				.bind(Bindings.when(togglePassword.selectedProperty())
+						.then(I18n.get("hidePassword"))
+						.otherwise(I18n.get("showPassword")));
+
 		txtHost.setText(ConfigHelper.getProperty("host", ""));
 
 		txtUsername.setText(ConfigHelper.getProperty("username", ""));
@@ -273,16 +298,23 @@ public class LoginController implements Initializable {
 
 		if (chkOfflineMode.isSelected()) {
 			try {
-				lblStatus.setText(null);
 
 				if (offlineMode()) {
 					UtilMethods.changeScene(getClass().getResource("/view/WelcomeOffline.fxml"), controller.getStage(),
 							new WelcomeOfflineController());
+				} else {
+					lblStatus.setText(I18n.get("label.offlinePasswordIncorrect"));
+
 				}
 
 			} catch (MalformedURLException | RuntimeException e) {
 				LOGGER.error("Error en el login offline", e);
 				lblStatus.setText(Parsers.parseHtmlToString(e.getMessage()));
+
+			} finally {
+				controller.getStage()
+						.getScene()
+						.setCursor(Cursor.DEFAULT);
 			}
 
 		} else {
@@ -298,11 +330,21 @@ public class LoginController implements Initializable {
 		controller.setUsername(txtUsername.getText());
 		controller.setPassword(txtPassword.getText());
 		onSuccessLogin();
+		try {
 
-		File hostUserDir = controller.getHostUserDir().toFile();
-		File hostUserModelversionDir = controller.getHostUserModelversionDir().toFile();
-		if (hostUserDir.isDirectory()
-				&& !hostUserModelversionDir.isDirectory() || hostUserModelversionDir.listFiles().length == 0) {
+			Serialization.decrypt(controller.getPassword(), controller.getHostUserDir()
+					.resolve("dummyObject")
+					.toString());
+		} catch (Exception e) {
+			return false;
+		}
+
+		File hostUserDir = controller.getHostUserDir()
+				.toFile();
+		File hostUserModelversionDir = controller.getHostUserModelversionDir()
+				.toFile();
+		if (hostUserDir.isDirectory() && !hostUserModelversionDir.isDirectory()
+				|| hostUserModelversionDir.listFiles().length == 0) {
 
 			ButtonType option = UtilMethods
 					.confirmationWindow(I18n.get("text.modelversionchanged") + "\n" + I18n.get("text.wantonlinemode"));
@@ -317,7 +359,6 @@ public class LoginController implements Initializable {
 			}
 			return false;
 		}
-
 
 		return true;
 	}
@@ -334,7 +375,9 @@ public class LoginController implements Initializable {
 		lblStatus.setText(null);
 		service.setOnSucceeded(s -> {
 			onSuccessLogin();
-
+			Serialization.encrypt(controller.getPassword(), controller.getHostUserDir()
+					.resolve("dummyObject")
+					.toString(), "Dummy object to check if password is correct");
 			UtilMethods.changeScene(getClass().getResource("/view/Welcome.fxml"), controller.getStage(),
 					new WelcomeController());
 		});
@@ -427,7 +470,6 @@ public class LoginController implements Initializable {
 									.getId())
 							.collect(Collectors.toList()));
 					controller.setUser(moodleUser);
-					
 
 				} catch (Exception e) {
 					LOGGER.error("Error al recuperar los datos del usuario.", e);

@@ -14,6 +14,7 @@ import es.ubu.lsi.ubumonitor.view.chart.gradeitems.BoxPlot;
 import es.ubu.lsi.ubumonitor.view.chart.gradeitems.CalificationBar;
 import es.ubu.lsi.ubumonitor.view.chart.gradeitems.GradeReportTable;
 import es.ubu.lsi.ubumonitor.view.chart.gradeitems.Line;
+import es.ubu.lsi.ubumonitor.view.chart.gradeitems.ParallelCategory;
 import es.ubu.lsi.ubumonitor.view.chart.gradeitems.Radar;
 import es.ubu.lsi.ubumonitor.view.chart.gradeitems.Violin;
 import es.ubu.lsi.ubumonitor.view.chart.logs.BoxplotLog;
@@ -76,6 +77,7 @@ public class VisualizationJavaConnector extends JavaConnectorAbstract {
 		addChart(new TotalBar(mainController));
 		addChart(new Violin(mainController, treeViewGradeItem));
 		addChart(new GradeReportTable(mainController, treeViewGradeItem));
+		addChart(new ParallelCategory(mainController, treeViewGradeItem));
 		addChart(new CumLine(mainController));
 		addChart(new MeanDiff(mainController));
 		addChart(new ActivitiesStatusTable(mainController, datePickerStart, datePickerEnd,

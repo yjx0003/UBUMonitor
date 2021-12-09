@@ -99,3 +99,14 @@
 #tableView .table-column {
 	-fx-alignment: center;
 }
+
+.toggle-button {
+  -fx-graphic: url('../img/not_visible.png');
+  -fx-background-color: transparent;
+}
+
+.toggle-button:selected {
+	-fx-graphic: url('../img/visible.png');
+  
+  -fx-background-color: transparent;
+}

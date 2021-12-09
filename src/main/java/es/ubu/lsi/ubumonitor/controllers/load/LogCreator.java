@@ -29,6 +29,7 @@ import es.ubu.lsi.ubumonitor.model.Logs;
 import es.ubu.lsi.ubumonitor.model.Origin;
 import es.ubu.lsi.ubumonitor.model.log.logtypes.LogTypes;
 import es.ubu.lsi.ubumonitor.model.log.logtypes.ReferencesLog;
+import es.ubu.lsi.ubumonitor.util.I18n;
 import okhttp3.Response;
 
 /**
@@ -151,7 +152,7 @@ public class LogCreator {
 		LOGGER.info("Los nombres de las columnas del csv son: {}", headers);
 		if (!headers.isEmpty() && headers.stream()
 				.noneMatch(ALL_COLUMNS::contains)) {
-			throw new IllegalArgumentException("Logs must be in english");
+			throw new IllegalArgumentException(I18n.get("error.logsEnglish"));
 		}
 		for (CSVRecord csvRecord : csvParser) {
 			LogLine logLine = createLog(headers, csvRecord);
@@ -269,7 +270,13 @@ public class LogCreator {
 			}
 
 			if (integer != null) {
-				list.add(Integer.parseInt(integer));
+				try {
+					int value = Integer.parseInt(integer);
+					list.add(value);
+				}catch (Exception e){
+					LOGGER.warn("No se ha podido convertir a integer el registro.", e);
+				}
+				
 			}
 		}
 		return list;

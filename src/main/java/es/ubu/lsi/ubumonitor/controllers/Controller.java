@@ -23,6 +23,7 @@ import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.DataBase;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
 import es.ubu.lsi.ubumonitor.model.Stats;
+import es.ubu.lsi.ubumonitor.persistence.Serialization;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.Languages;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
@@ -44,6 +45,7 @@ public class Controller {
 	private Path hostUserModelversionArchivedDir;
 	private Path hostUserModelversionDir;
 	private Path hostUserDir;
+	private Path actualCoursePath;
 	private URL host;
 	private Stage stage;
 	private Login login;
@@ -86,9 +88,9 @@ public class Controller {
 	}
 
 	public void initialize() {
-		
+
 		ConfigHelper.initialize(AppInfo.PROPERTIES_PATH);
-		
+
 		// Si no existe el recurso de idioma especificado cargamos el Español
 		Languages lang = Languages.getLanguageByTag(ConfigHelper.getProperty("language", Locale.getDefault()
 				.toLanguageTag()));
@@ -378,6 +380,25 @@ public class Controller {
 	 */
 	public void setDefautlDataBase(DataBase defaultDatabase) {
 		this.defaultDatabase = defaultDatabase;
+	}
+
+	public void saveCourse(Course course) {
+		Serialization.encrypt(getPassword(), getHostUserModelversionDir().resolve(getCourseFile(course))
+				.toString(), getDataBase());
+	}
+
+	/**
+	 * @return the actualCoursePath
+	 */
+	public Path getActualCoursePath() {
+		return actualCoursePath;
+	}
+
+	/**
+	 * @param actualCoursePath the actualCoursePath to set
+	 */
+	public void setActualCoursePath(Path actualCoursePath) {
+		this.actualCoursePath = actualCoursePath;
 	}
 
 }

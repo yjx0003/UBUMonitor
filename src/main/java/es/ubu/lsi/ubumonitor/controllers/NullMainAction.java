@@ -55,4 +55,9 @@ public class NullMainAction implements MainAction {
 		
 	}
 
+	@Override
+	public void copyImage() {
+		//do nothing
+	}
+
 }

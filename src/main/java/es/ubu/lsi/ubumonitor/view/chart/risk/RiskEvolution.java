@@ -149,7 +149,7 @@ public class RiskEvolution extends Plotly {
 		trace.put("fillcolor", colorToRGB(lastActivity.getColor(), 0.2));
 		trace.put("marker", marker);
 		trace.put("mode", "'lines+markers'");
-		trace.put("hovertemplate", "'%{data.name}: %{y:.2f}<extra></extra>'");
+		trace.put("hovertemplate", "'%{data.name}: %{y:.2~f}<extra></extra>'");
 		trace.put("stackgroup", "'one'");
 		trace.put("y", y);
 		trace.put("x", x);

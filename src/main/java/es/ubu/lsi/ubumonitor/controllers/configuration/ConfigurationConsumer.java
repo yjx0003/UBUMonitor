@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers.configuration;
 
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +47,7 @@ public class ConfigurationConsumer {
 		CONSUMER_MAP.put(ChartType.class.toString(), ConfigurationConsumer::manageChartType);
 		CONSUMER_MAP.put(StopWord.class.toString(), ConfigurationConsumer::manageStopWordsLanguage);
 		CONSUMER_MAP.put(MaskImage.class.toString(), ConfigurationConsumer::manageMaskImage);
+		CONSUMER_MAP.put(Month.class.toString(), ConfigurationConsumer::manageMonth);
 	}
 
 	/**
@@ -87,6 +89,10 @@ public class ConfigurationConsumer {
 
 	private static void manageTypeTimes(MainConfiguration mainConfiguration, JSONObject jsonObject) {
 		manageEnum(mainConfiguration, jsonObject, TypeTimes.class, TypeTimes.YEAR_WEEK);
+	}
+	
+	private static void manageMonth(MainConfiguration mainConfiguration, JSONObject jsonObject) {
+		manageEnum(mainConfiguration, jsonObject, Month.class, Month.JANUARY);
 	}
 
 	private static void manageString(MainConfiguration mainConfiguration, JSONObject jsonObject) {

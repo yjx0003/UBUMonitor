@@ -79,6 +79,7 @@ import javafx.stage.Modality;
 import javafx.stage.PopupWindow.AnchorLocation;
 import javafx.stage.Stage;
 import okhttp3.HttpUrl;
+import okhttp3.Response;
 
 public class MenuController {
 
@@ -397,6 +398,22 @@ public class MenuController {
 				.addPathSegment(Locale.getDefault()
 						.getLanguage())
 				.addPathSegment(AppInfo.VERSION)
+				.build();
+		
+		try(Response response = Connection.getResponse(url.toString())){
+			if(response.isSuccessful()) {
+				UtilMethods.openURL(url.toString());
+				return;
+			} 
+		} catch (Exception e) {
+			LOGGER.warn("No se puede abrir: {}", url);
+		}
+		
+		url = new HttpUrl.Builder().scheme("https")
+				.host(AppInfo.USER_GUIDE)
+				.addPathSegment(Locale.getDefault()
+						.getLanguage())
+				.addPathSegment("latest")
 				.build();
 		UtilMethods.openURL(url.toString());
 	}

@@ -5,9 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.enrollment.EnrollmentBar;
 
 public class UnitTest {
@@ -32,6 +35,31 @@ public class UnitTest {
 	private void enrolledYear(int startMonth, int endMonth, Instant firstAccess, Integer expectedYear) {
 		Integer year = EnrollmentBar.getYear(startMonth, endMonth, firstAccess);
 		assertEquals(expectedYear, year);
+	}
+	
+
+	@Test
+	public void removeBackSlashTest() {
+		Map<String,String> map = new LinkedHashMap<>();
+		fillMap(map, "Inglés EPS VENA-curso 2019/20", "Inglés EPS VENA-curso 201920");
+		fillMap(map, "Inglés EPS VENA-curso 2019*20", "Inglés EPS VENA-curso 201920");
+		fillMap(map, "Inglés EPS VENA-curso 2019\\20", "Inglés EPS VENA-curso 201920");
+		fillMap(map, "Inglés EPS VENA-curso 2019?20", "Inglés EPS VENA-curso 201920");
+		fillMap(map, "Inglés EPS VENA-curso 2019:20", "Inglés EPS VENA-curso 201920");
+		fillMap(map, "Inglés EPS\\ VENA-curso 2019:20", "Inglés EPS VENA-curso 201920");
+		fillMap(map, "Inglés EPS ?VENA-curso 2019:20", "Inglés EPS VENA-curso 201920");
+		for (Map.Entry<String, String> entry : map.entrySet()) {
+			assertEquals(entry.getValue(), entry.getKey());
+		}
+
+	}
+	
+	private static void fillMap(Map<String,String> map, String actual, String expected) {
+		map.put(UtilMethods.removeReservedChar(actual), expected);
+	}
+	
+	public void login() {
+		
 	}
 }
 

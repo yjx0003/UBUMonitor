@@ -202,18 +202,31 @@ public class WelcomeOfflineController implements Initializable {
 		listView.getSelectionModel()
 				.selectedItemProperty()
 				.addListener((ov, value, newValue) -> checkFile(newValue));
-		listView.setCellFactory(callback -> new ListCell<File>() {
-			@Override
-			public void updateItem(File file, boolean empty) {
-				super.updateItem(file, empty);
-				if (empty || file == null) {
-					setText(null);
-				} else {
-					setText(file.getName());
-				}
-			}
+		listView.setCellFactory(param -> new ListCell<File>(){
+            @Override
+            protected void updateItem(File item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item==null) {
+                    setGraphic(null);
+                    setText(null); 
+                    // other stuff to do...
 
-		});
+                }else{
+
+                    // set the width's
+                    setMinWidth(param.getWidth());
+                    setMaxWidth(param.getWidth());
+                    setPrefWidth(param.getWidth());
+
+                    // allow wrapping
+                    setWrapText(true);
+
+                    setText(item.getName());
+
+
+                }
+            }
+        });
 
 	}
 

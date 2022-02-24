@@ -548,8 +548,8 @@ public class MenuController {
 				logs.removeIf(log -> log.getTime()
 						.isBefore(date.atStartOfDay(course.getLogs()
 								.getZoneId())));
-				Serialization.encrypt(controller.getPassword(), controller.getActualCoursePath()
-						.toString(), controller.getDataBase());
+				Serialization.encrypt(controller.getPassword(), controller.getActualCoursePath().toString(), controller.getDataBase());
+
 
 				return null;
 			}

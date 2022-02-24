@@ -2,6 +2,8 @@ package es.ubu.lsi.ubumonitor.controllers;
 
 import java.io.ByteArrayInputStream;
 import java.text.Collator;
+import java.text.ParseException;
+import java.text.RuleBasedCollator;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -259,8 +261,20 @@ public class SelectionUserController {
 
 	private void initNotEnrolledUsers(Course course) {
 
+		
+		
 		ObservableList<EnrolledUser> user = FXCollections.observableArrayList(course.getNotEnrolledUser());
-		user.sort(Comparator.comparing(EnrolledUser::getFullName, Comparator.nullsLast(Collator.getInstance())));
+		
+		String rules = ((RuleBasedCollator) Collator.getInstance()).getRules();
+		RuleBasedCollator correctedCollator;
+		try {
+			correctedCollator = new RuleBasedCollator(rules.replaceAll("<'\\u005f'", "<' '<'\\u005f'")); // añadimos el espacio antes del underscore
+		} catch (ParseException e1) {
+			correctedCollator = (RuleBasedCollator) Collator.getInstance();
+		} 
+	
+		
+		user.sort(Comparator.comparing(EnrolledUser::getFullName, Comparator.nullsLast(correctedCollator)));
 		FilteredList<EnrolledUser> filteredListNotEnrolled = new FilteredList<>(user);
 		filteredListNotEnrolled.predicateProperty()
 				.addListener(value -> mainController.getActions()

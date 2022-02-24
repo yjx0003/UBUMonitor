@@ -2,10 +2,19 @@ package es.ubu.lsi.ubumonitor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.text.Collator;
+import java.text.ParseException;
+import java.text.RuleBasedCollator;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -58,8 +67,27 @@ public class UnitTest {
 		map.put(UtilMethods.removeReservedChar(actual), expected);
 	}
 	
-	public void login() {
+	@Test
+	public void collatorSpaces() throws UnsupportedEncodingException, FileNotFoundException, IOException, ParseException {
+
 		
+		String usuario1 = "de la Fuente, Juan";
+		String usuario2 = "Death, Jack";
+		List<String> list = Arrays.asList(usuario1,usuario2);
+		Locale.setDefault(Locale.forLanguageTag("es-ES"));
+		
+		
+		list.sort(Collator.getInstance());
+		assertEquals(list.get(0), usuario2);
+		
+		
+		String rules = ((RuleBasedCollator) Collator.getInstance()).getRules();
+		RuleBasedCollator correctedCollator 
+		    = new RuleBasedCollator(rules.replaceAll("<'\\u005f'", "<' '<'\\u005f'")); // añadimos el espacio antes del underscore
+		list.sort(correctedCollator);
+		assertEquals(list.get(0), usuario1);
+		
+	
 	}
 }
 

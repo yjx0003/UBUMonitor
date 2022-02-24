@@ -73,9 +73,6 @@ public class MultiController extends WebViewAction {
 				return I18n.get(typeTimes.getTypeTime());
 			}
 		});
-
-		choiceBoxDate.valueProperty()
-				.bindBidirectional(choiceBoxBind.valueProperty());
 		choiceBoxDate.valueProperty()
 				.addListener((ov, oldValue, newValue) -> updateChart());
 

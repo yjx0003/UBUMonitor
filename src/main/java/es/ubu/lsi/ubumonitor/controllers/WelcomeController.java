@@ -122,8 +122,6 @@ public class WelcomeController implements Initializable {
 	private Controller controller = Controller.getInstance();
 	private boolean isFileCacheExists;
 	
-	private boolean useNewPassword;
-	
 	@FXML
 	private AnchorPane anchorPane;
 	@FXML
@@ -221,7 +219,7 @@ public class WelcomeController implements Initializable {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		
 		try {
 			conexionLabel.setText(I18n.get("text.online_" + !controller.isOfflineMode()));
 			lblUser.setText(I18n.get("label.welcome") + " " + controller.getUser()
@@ -481,7 +479,7 @@ public class WelcomeController implements Initializable {
 			downloadData();
 		} else { // if loading cache
 			loadData(controller.getPassword());
-			if(useNewPassword && isBBDDLoaded) {
+			if(isBBDDLoaded) {
 				saveData();
 			}
 			loadNextWindow();
@@ -566,7 +564,7 @@ public class WelcomeController implements Initializable {
 			TimeZone.setDefault(TimeZone.getTimeZone(dataBase.getUserZoneId()));
 			controller.setActualCoursePath(cacheFilePath);
 			isBBDDLoaded = true;
-		} catch (IllegalBlockSizeException | BadPaddingException e) {
+		} catch (IllegalBlockSizeException | BadPaddingException | IllegalArgumentException e) {
 			previusPasswordWindow();
 		} catch (IOException e) {
 			UtilMethods.errorWindow(e.getMessage(), e);
@@ -579,7 +577,7 @@ public class WelcomeController implements Initializable {
 	}
 
 	private void previusPasswordWindow() {
-		Dialog<Pair<String, Boolean>> dialog = new Dialog<>();
+		Dialog<String> dialog = new Dialog<>();
 		dialog.setTitle(I18n.get("title.passwordChanged"));
 
 		dialog.setHeaderText(I18n.get("header.passwordChangedMessage") + "\n" + I18n.get("header.passwordDateTime")
@@ -606,24 +604,20 @@ public class WelcomeController implements Initializable {
 
 		grid.add(pwd, 1, 0);
 
-		CheckBox saveNewPassword = new CheckBox(I18n.get("checkbox.saveNewPassword"));
-		saveNewPassword.setSelected(true);
-		grid.add(saveNewPassword, 0, 1, 2, 1);
 
 		dialog.getDialogPane()
 				.setContent(grid);
 
 		dialog.setResultConverter(dialogButton -> {
 			if (dialogButton == ButtonType.OK) {
-				return new Pair<>(pwd.getText(), saveNewPassword.isSelected());
+				return pwd.getText();
 			}
 			return null;
 		});
 
-		Optional<Pair<String, Boolean>> result = dialog.showAndWait();
+		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
-			loadData(result.get().getKey());
-			useNewPassword = result.get().getValue();
+			loadData(result.get());
 			
 		}
 

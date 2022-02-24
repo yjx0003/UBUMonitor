@@ -76,8 +76,6 @@ public class WelcomeOfflineController implements Initializable {
 	 * path con directorios de los ficheros cache
 	 */
 	private Controller controller = Controller.getInstance();
-	
-	private boolean newPassword;
 
 	@FXML
 	private AnchorPane anchorPane;
@@ -263,7 +261,7 @@ public class WelcomeOfflineController implements Initializable {
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getName());
 
 		loadData(selectedCourse, controller.getPassword());
-		if (newPassword && isBBDDLoaded) {
+		if (isBBDDLoaded) {
 			Serialization.encrypt(controller.getPassword(), selectedCourse.toString(), controller.getDataBase());
 		}
 		loadNextWindow();
@@ -376,7 +374,6 @@ public class WelcomeOfflineController implements Initializable {
 		Optional<Pair<String, Boolean>> result = dialog.showAndWait();
 		if (result.isPresent()) {
 			loadData(file, result.get().getKey());
-			newPassword = result.get().getValue();
 		}
 
 	}

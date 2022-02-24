@@ -147,25 +147,28 @@ public class MainConfiguration {
 		createItem(ChartType.PARALLEL_CATEGORY, "emptyGradeColor", Color.web("#D3D3D3", 0.3));
 		createItem(ChartType.PARALLEL_CATEGORY, "failGradeColor", Color.web("#DC143C", 0.3));
 		createItem(ChartType.PARALLEL_CATEGORY, "passGradeColor", Color.web("#2DC214", 0.3));
-		
+		// activity finalization
 		createItem(ChartType.ACTIVITIES_TABLE, "firstInterval", Color.web("#f78880"));
 		createItem(ChartType.ACTIVITIES_TABLE, "secondInterval", Color.web("#f4e3ae"));
 		createItem(ChartType.ACTIVITIES_TABLE, "thirdInterval", Color.web("#fff033"));
 		createItem(ChartType.ACTIVITIES_TABLE, "fourthInterval", Color.web("#b5ff33"));
+		// comparation 
+		createItem(ChartType.RANKING_TABLE, "statisticsRanking", false);
+		createItem(ChartType.RANKING_TABLE, "firstInterval", Color.web("#b5ff33"));
+		createItem(ChartType.RANKING_TABLE, "secondInterval", Color.web("#fff033"));
+		createItem(ChartType.RANKING_TABLE, "thirdInterval", Color.web("#f4e3ae"));
+		createItem(ChartType.RANKING_TABLE, "fourthInterval", Color.web("#f78880"));
 
-		createItem(ChartType.BUBBLE, "limitDays", 14);
-		createItem(ChartType.BUBBLE, "diagonalColor", Color.web("#f2f2f2"));
-		createItem(ChartType.BUBBLE, "firstInterval", Color.web("#b5ff33"));
-		createItem(ChartType.BUBBLE, "secondInterval", Color.web("#fff033"));
-		createItem(ChartType.BUBBLE, "thirdInterval", Color.web("#f4e3ae"));
-		createItem(ChartType.BUBBLE, "fourthInterval", Color.web("#f78880"));
+		createItem(ChartType.POINTS_TABLE, "statisticsRanking", false);
+		createItem(ChartType.POINTS_TABLE, "firstInterval", Color.web("#f78880"));
+		createItem(ChartType.POINTS_TABLE, "secondInterval", Color.web("#f4e3ae"));
+		createItem(ChartType.POINTS_TABLE, "thirdInterval", Color.web("#fff033"));
+		createItem(ChartType.POINTS_TABLE, "fourthInterval", Color.web("#b5ff33"));
 
-		createItem(ChartType.BUBBLE_LOGARITHMIC, "diagonalColor", Color.web("#f2f2f2"));
-		createItem(ChartType.BUBBLE_LOGARITHMIC, "firstInterval", Color.web("#b5ff33"));
-		createItem(ChartType.BUBBLE_LOGARITHMIC, "secondInterval", Color.web("#fff033"));
-		createItem(ChartType.BUBBLE_LOGARITHMIC, "thirdInterval", Color.web("#f4e3ae"));
-		createItem(ChartType.BUBBLE_LOGARITHMIC, "fourthInterval", Color.web("#f78880"));
-
+		createItem(ChartType.BUBBLE_COMPARISON, "useCircles", false);
+		createItem(ChartType.BUBBLE_COMPARISON, "transitionDuration", 1000);
+		createItem(ChartType.BUBBLE_COMPARISON, "frameDuration", 1000);
+		// forum
 		createItem(ChartType.FORUM_BAR, HORIZONTAL_MODE, false);
 		createItem(ChartType.FORUM_BAR, "forumBarColor", Color.web("#efc9af", 0.3));
 
@@ -234,22 +237,20 @@ public class MainConfiguration {
 		createItem(ChartType.FORUM_WORD_CLOUD, "angles", "-90, 0, 90");
 		createItem(ChartType.FORUM_WORD_CLOUD, "backGroundImage", MaskImage.BUTTERFLY);
 
-		createItem(ChartType.RANKING_TABLE, "statisticsRanking", false);
-		createItem(ChartType.RANKING_TABLE, "firstInterval", Color.web("#b5ff33"));
-		createItem(ChartType.RANKING_TABLE, "secondInterval", Color.web("#fff033"));
-		createItem(ChartType.RANKING_TABLE, "thirdInterval", Color.web("#f4e3ae"));
-		createItem(ChartType.RANKING_TABLE, "fourthInterval", Color.web("#f78880"));
+		// risk
+		createItem(ChartType.BUBBLE, "limitDays", 14);
+		createItem(ChartType.BUBBLE, "diagonalColor", Color.web("#f2f2f2"));
+		createItem(ChartType.BUBBLE, "firstInterval", Color.web("#b5ff33"));
+		createItem(ChartType.BUBBLE, "secondInterval", Color.web("#fff033"));
+		createItem(ChartType.BUBBLE, "thirdInterval", Color.web("#f4e3ae"));
+		createItem(ChartType.BUBBLE, "fourthInterval", Color.web("#f78880"));
 
-		createItem(ChartType.POINTS_TABLE, "statisticsRanking", false);
-		createItem(ChartType.POINTS_TABLE, "firstInterval", Color.web("#f78880"));
-		createItem(ChartType.POINTS_TABLE, "secondInterval", Color.web("#f4e3ae"));
-		createItem(ChartType.POINTS_TABLE, "thirdInterval", Color.web("#fff033"));
-		createItem(ChartType.POINTS_TABLE, "fourthInterval", Color.web("#b5ff33"));
+		createItem(ChartType.BUBBLE_LOGARITHMIC, "diagonalColor", Color.web("#f2f2f2"));
+		createItem(ChartType.BUBBLE_LOGARITHMIC, "firstInterval", Color.web("#b5ff33"));
+		createItem(ChartType.BUBBLE_LOGARITHMIC, "secondInterval", Color.web("#fff033"));
+		createItem(ChartType.BUBBLE_LOGARITHMIC, "thirdInterval", Color.web("#f4e3ae"));
+		createItem(ChartType.BUBBLE_LOGARITHMIC, "fourthInterval", Color.web("#f78880"));
 
-		createItem(ChartType.BUBBLE_COMPARISON, "useCircles", false);
-		createItem(ChartType.BUBBLE_COMPARISON, "transitionDuration", 1000);
-		createItem(ChartType.BUBBLE_COMPARISON, "frameDuration", 1000);
-		
 		
 		createItem(ChartType.ENROLLMENT_BAR, HORIZONTAL_MODE, true);
 		createItem(ChartType.ENROLLMENT_BAR, "startMonth", Month.SEPTEMBER);

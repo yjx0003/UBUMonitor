@@ -39,7 +39,7 @@ public class MeanDiff extends PlotlyLog {
 			LocalDate dateStart, LocalDate dateEnd, GroupByAbstract<?> groupBy) {
 
 		JSArray data = new JSArray();
-		List<EnrolledUser> enrolledUsers = getUsers();
+		List<EnrolledUser> enrolledUsers = getFilteredUsers();
 
 		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
 		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
@@ -190,7 +190,7 @@ public class MeanDiff extends PlotlyLog {
 		GroupByAbstract<?> groupBy = choiceBoxDate.getValue();
 		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		Map<E, List<Double>> means = dataSet.getMeans(groupBy, getUsers(), selecteds, dateStart, dateEnd);
+		Map<E, List<Double>> means = dataSet.getMeans(groupBy, getFilteredUsers(), selecteds, dateStart, dateEnd);
 
 		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
@@ -238,7 +238,7 @@ public class MeanDiff extends PlotlyLog {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, selecteds,
 				dateStart, dateEnd);
-		Map<E, List<Double>> means = dataSet.getMeans(groupBy, getUsers(), selecteds, dateStart, dateEnd);
+		Map<E, List<Double>> means = dataSet.getMeans(groupBy, getFilteredUsers(), selecteds, dateStart, dateEnd);
 		boolean hasId = hasId();
 		for (EnrolledUser selectedUser : enrolledUsers) {
 			Map<E, List<Integer>> types = userCounts.get(selectedUser);

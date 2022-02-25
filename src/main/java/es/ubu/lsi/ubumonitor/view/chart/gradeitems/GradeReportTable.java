@@ -2,8 +2,8 @@ package es.ubu.lsi.ubumonitor.view.chart.gradeitems;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -26,6 +26,7 @@ import javafx.scene.control.TreeView;
 public class GradeReportTable extends Tabulator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GradeReportTable.class);
 	private TreeView<GradeItem> treeViewGradeItem;
+	private boolean noGrade;
 
 	public GradeReportTable(MainController mainController, TreeView<GradeItem> treeViewGradeItem) {
 		super(mainController, ChartType.GRADE_REPORT_TABLE);
@@ -37,6 +38,7 @@ public class GradeReportTable extends Tabulator {
 
 	@Override
 	public void update() {
+		noGrade = getGeneralConfigValue("noGrade");
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		String columns = createColumns(gradeItems);
@@ -96,36 +98,32 @@ public class GradeReportTable extends Tabulator {
 			array.add(jsObject.toString());
 		}
 		if (useGeneralButton && getGeneralButtonlActive()) {
-
-			array.add(addStats(gradeItems, I18n.get("chartlabel.generalMean"), stats.getGeneralStats()));
+			array.add(addStats(gradeItems, enrolledUsers, I18n.get("text.meanselectedusers")));
 		}
 		if (useGroupButton && getGroupButtonActive()) {
 			for (Group group : getSelectedGroups()) {
-				
-					array.add(addStats(gradeItems,
-							UtilMethods.escapeJavaScriptText(I18n.get("chart.mean")) + " " + group.getGroupName(),
-							stats.getGroupStats(group)));
 
-				
+				array.add(addStats(gradeItems, group.getEnrolledUsers(),
+						UtilMethods.escapeJavaScriptText(I18n.get("chart.mean")) + " " + group.getGroupName()));
+
 			}
 		}
 
 		return array.toString();
 	}
 
-	private String addStats(List<GradeItem> gradeItems, String name, Map<GradeItem, DescriptiveStatistics> stats) {
+	private String addStats(List<GradeItem> gradeItems, Collection<EnrolledUser> users, String name) {
 		JSObject jsObject = new JSObject();
-
-		if (stats == null) {
-			return null;
-		}
 
 		jsObject.putWithQuote("name", name);
 		jsObject.putWithQuote("type", I18n.get("text.stats"));
 		for (GradeItem gradeItem : gradeItems) {
-
-			jsObject.put("ID" + gradeItem.getId(), adjustTo10(stats.get(gradeItem)
-					.getMean()));
+			DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
+			for (EnrolledUser user : users) {
+				double grade = gradeItem.getEnrolledUserPercentage(user);
+				UtilMethods.noGradeValues(grade, descriptiveStatistics, noGrade);
+			}
+			jsObject.put("ID" + gradeItem.getId(), adjustTo10(descriptiveStatistics.getMean()));
 		}
 		return jsObject.toString();
 	}
@@ -140,7 +138,7 @@ public class GradeReportTable extends Tabulator {
 		jsObject.put("virtualDom", true);
 		jsObject.putWithQuote("layout", "fitColumns");
 		jsObject.put("rowClick", "function(e,row){javaConnector.dataPointSelection(row.getPosition());}");
-		
+
 	}
 
 	private String getProgressParam() {

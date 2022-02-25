@@ -33,7 +33,7 @@ public class Stackedbar extends ChartjsLog {
 	public String calculateMax() {
 
 		long maxYAxis = 1L;
-		List<EnrolledUser> users = getUsers();
+		List<EnrolledUser> users = getFilteredUsers();
 		if (tabComponent.isSelected()) {
 			maxYAxis = choiceBoxDate.getValue().getComponents().getMaxElement(users,
 					listViewComponent.getSelectionModel().getSelectedItems(), datePickerStart.getValue(),
@@ -58,7 +58,7 @@ public class Stackedbar extends ChartjsLog {
 	public int onClick(int userid) {
 
 		EnrolledUser user = Controller.getInstance().getDataBase().getUsers().getById(userid);
-		return getUsers().indexOf(user);
+		return getFilteredUsers().indexOf(user);
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public class Stackedbar extends ChartjsLog {
 	@Override
 	public <E> String createData(List<E> typeLogs, DataSet<E> dataSet) {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-		List<EnrolledUser> enrolledUsers = getUsers();
+		List<EnrolledUser> enrolledUsers = getFilteredUsers();
 
 		LocalDate dateStart = datePickerStart.getValue();
 		LocalDate dateEnd = datePickerEnd.getValue();

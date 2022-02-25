@@ -56,7 +56,7 @@ public abstract class PlotlyLog extends ChartLogs {
 				.getDataBase()
 				.getUsers()
 				.getById(userid);
-		return getUsers().indexOf(user);
+		return getFilteredUsers().indexOf(user);
 	}
 
 	@Override

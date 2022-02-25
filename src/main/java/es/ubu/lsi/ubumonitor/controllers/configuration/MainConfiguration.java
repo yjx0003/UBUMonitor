@@ -65,6 +65,7 @@ public class MainConfiguration {
 		createItem(GENERAL, "charset", Charsets.UTF_8);
 		createItem(GENERAL, "chartBackgroundColor", Color.TRANSPARENT);
 		createItem(GENERAL, "cutGrade", 5.0);
+		createItem(GENERAL, "noGrade", false);
 		createItem(GENERAL, "limitLevelGradeItem", 1);
 		createItem(GENERAL, "legendActive", true);
 		createItem(GENERAL, "generalActive", true);

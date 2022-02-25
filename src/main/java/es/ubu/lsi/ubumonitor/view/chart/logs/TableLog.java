@@ -226,7 +226,7 @@ public class TableLog extends TabulatorLogs {
 				.getDataBase()
 				.getUsers()
 				.getById(userid);
-		return getUsers().indexOf(user);
+		return getFilteredUsers().indexOf(user);
 	}
 
 }

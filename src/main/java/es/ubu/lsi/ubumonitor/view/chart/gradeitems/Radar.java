@@ -2,6 +2,7 @@ package es.ubu.lsi.ubumonitor.view.chart.gradeitems;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.ToDoubleFunction;
@@ -14,10 +15,10 @@ import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
-import es.ubu.lsi.ubumonitor.model.Stats;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 import javafx.scene.control.TreeView;
@@ -26,6 +27,7 @@ import javafx.scene.paint.Color;
 public class Radar extends Plotly {
 
 	private TreeView<GradeItem> treeViewGradeItem;
+	private boolean noGrade;
 
 	public Radar(MainController mainController, TreeView<GradeItem> treeViewGradeItem) {
 		super(mainController, ChartType.RADAR);
@@ -37,19 +39,20 @@ public class Radar extends Plotly {
 
 	@Override
 	public void createData(JSArray data) {
-
-		List<EnrolledUser> users = getSelectedEnrolledUser();
+		noGrade = getGeneralConfigValue("noGrade");
+		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 
-		createUserTraces(data, users, gradeItems);
+		createUserTraces(data, selectedUsers, gradeItems);
 
 		createCutGradeTrace(data, gradeItems, getGeneralConfigValue("cutGrade"), getConfigValue("cutGradeColor"));
 
 		boolean generalActive = getGeneralButtonlActive();
-		createMeanTrace(data, stats.getGeneralStats(), gradeItems, generalActive);
+
+		createMeanTrace(data, selectedUsers, gradeItems, generalActive);
 
 		boolean groupActive = getGroupButtonActive();
-		createGroupTraces(data, getSelectedGroups(), gradeItems, stats, groupActive);
+		createGroupTraces(data, getSelectedGroups(), gradeItems, groupActive);
 
 	}
 
@@ -66,28 +69,47 @@ public class Radar extends Plotly {
 
 	}
 
-	private void createMeanTrace(JSArray data, Map<GradeItem, DescriptiveStatistics> descriptiveStats,
-			List<GradeItem> gradeItems, boolean visible) {
+	private void createMeanTrace(JSArray data, List<EnrolledUser> users, List<GradeItem> gradeItems, boolean visible) {
+		Map<GradeItem, DescriptiveStatistics> map = new HashMap<>();
+		for (GradeItem gradeItem : gradeItems) {
+			DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
+			for (EnrolledUser user : users) {
+				double grade = gradeItem.getEnrolledUserPercentage(user) / 10;
+
+				UtilMethods.noGradeValues(grade, descriptiveStatistics, noGrade);
+			}
+
+			map.put(gradeItem, descriptiveStatistics);
+
+		}
 
 		JSArray theta = createTheta(gradeItems);
-		JSArray r = createRadio(gradeItems,
-				gradeItem -> descriptiveStats.getOrDefault(gradeItem, EMPTY_DESCRIPTIVE_STATISTICS)
-						.getMean() / 10);
-		data.add(createTrace(I18n.get("chartlabel.generalMean"), theta, r, visible, "dash"));
+		JSArray r = createRadio(gradeItems, gradeItem -> map.getOrDefault(gradeItem, EMPTY_DESCRIPTIVE_STATISTICS)
+				.getMean());
+		data.add(createTrace(I18n.get("text.meanselectedusers"), theta, r, visible, "dash"));
 	}
 
-	private void createGroupTraces(JSArray data, List<Group> groups, List<GradeItem> gradeItems, Stats stats,
-			boolean visible) {
+	private void createGroupTraces(JSArray data, List<Group> groups, List<GradeItem> gradeItems, boolean visible) {
 		JSArray theta = createTheta(gradeItems);
 		for (Group group : groups) {
-
-			Map<GradeItem, DescriptiveStatistics> descriptiveStats = stats.getGroupStats(group);
+			Map<GradeItem, DescriptiveStatistics> map = new HashMap<>();
+			for (GradeItem gradeItem : gradeItems) {
+				DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
+				
+				for (EnrolledUser user : group.getEnrolledUsers()) {
+					double grade = gradeItem.getEnrolledUserPercentage(user) / 10;
+					UtilMethods.noGradeValues(grade, descriptiveStatistics, visible);
+					map.put(gradeItem, descriptiveStatistics);
+				}
+			}
 			JSArray r = createRadio(gradeItems,
-					gradeItem -> descriptiveStats.getOrDefault(gradeItem, EMPTY_DESCRIPTIVE_STATISTICS)
-							.getMean() / 10);
+					gradeItem -> map.getOrDefault(gradeItem, EMPTY_DESCRIPTIVE_STATISTICS)
+							.getMean());
 
 			data.add(createTrace(group.getGroupName(), theta, r, visible, "dot"));
 		}
+		
+		
 	}
 
 	private void createCutGradeTrace(JSArray data, List<GradeItem> gradeItems, double cutGrade, Color color) {
@@ -109,7 +131,8 @@ public class Radar extends Plotly {
 	private JSArray createRadio(List<GradeItem> gradeItems, ToDoubleFunction<GradeItem> function) {
 		JSArray r = new JSArray();
 		for (GradeItem gradeItem : gradeItems) {
-			r.add(function.applyAsDouble(gradeItem));
+
+			UtilMethods.noGradeValues(function.applyAsDouble(gradeItem), r, noGrade);
 
 		}
 		if (!r.isEmpty()) {

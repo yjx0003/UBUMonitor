@@ -215,10 +215,10 @@ public class SigmaParser {
 			if ("Asignaturas matriculadas en este curso".equals(splitedLine[0])) {
 				enrolledSubjects();
 				return;
-			} else if (!"XXXX".equals(splitedLine[0])) {
+			} else if (!"XXXX ".equals(splitedLine[0])) {
 				Subject subject = SubjectFactory.getInstance()
 						.getSubject(splitedLine[0], splitedLine[1], splitedLine[2]);
-				this.actualStudent.addEnrolledSubject(subject);
+				this.actualStudent.addOptionalSubject(subject);
 			}
 		}
 	}
@@ -230,7 +230,7 @@ public class SigmaParser {
 				observations();
 				return;
 
-			} else {
+			} else if (!"XXXX ".equals(splitedLine[0])) {
 				String type = splitedLine.length == 2 ? "Básica" : splitedLine[2];
 				Subject subject = SubjectFactory.getInstance()
 						.getSubject(splitedLine[0], splitedLine[1], type);

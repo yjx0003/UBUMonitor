@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.json.JSONArray;
 import org.junit.Ignore;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import es.ubu.lsi.ubumonitor.sigma.parser.SigmaParser;
@@ -23,7 +24,7 @@ public class SigmaTest {
 	public static final String SAMPLE_XLSX_FILE_PATH = "D:\\Users\\34651\\Downloads\\ANONIMIZADO_COMO_CSV_RECORTADO_1000287_CDS10_ListadoFichaAlumnos_22.02.2022.17.48.16.104.xls";
 
 	private static final int NUMBER_STUDENTS = 17;
-
+	private static List<Student> students;
 	@Test
 	@Ignore
 	public void readLines() throws IOException {
@@ -38,19 +39,23 @@ public class SigmaTest {
 			}
 		}
 	}
+	
+	@BeforeAll
+	public void BeforeAll() throws IOException {
+		SigmaParser sigmaParser = new SigmaParser(new File(SAMPLE_XLSX_FILE_PATH));
+		students = sigmaParser.parse();
+	}
 
 	@Test
-	public List<Student> SigmaParserTest() throws IOException {
-		SigmaParser sigmaParser = new SigmaParser(new File(SAMPLE_XLSX_FILE_PATH));
-		List<Student> students = sigmaParser.parse();
-		System.out.println(students.get(0));
+	public void sizeTest() throws IOException {
+		
+		
 		assertEquals(NUMBER_STUDENTS, students.size());
-		return students;
+		
 	}
 	
 	@Test 
 	public void toJSON() throws IOException {
-		List<Student> students = SigmaParserTest();
 		JSONArray studentsJSON = new JSONArray(students);
 		 //Write JSON file
         try (FileWriter file = new FileWriter("./test/students.json")) {

@@ -55,9 +55,11 @@ public enum ChartType {
 	
 	ENROLLMENT_BAR(Tabs.ENROLLMENT, 37),
 	ENROLLMENT_COURSE_NETWORK(Tabs.ENROLLMENT, 39),
-	ENROLLMENT_SANKEY(Tabs.ENROLLMENT, 38);
+	ENROLLMENT_SANKEY(Tabs.ENROLLMENT, 38),
 	
-	// next id 41
+	SIGMA_PIE(Tabs.SIGMA, 41);
+	
+	// next id 42
 
 	private Tabs tab;
 	private int id;

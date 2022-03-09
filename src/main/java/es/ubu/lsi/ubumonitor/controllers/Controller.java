@@ -64,6 +64,8 @@ public class Controller {
 
 	private ZonedDateTime defaultUpdate;
 
+	private Path hostUserModelversionSigmaDir;
+
 	/**
 	 * Instacia única de la clase Controller.
 	 */
@@ -268,6 +270,9 @@ public class Controller {
 				AppInfo.ARCHIVED_DIR);
 		this.hostUserDir = Paths.get(AppInfo.CACHE_DIR, hostName, userName);
 		this.configuration = Paths.get(AppInfo.CONFIGURATION_DIR, hostName, userName);
+		this.hostUserModelversionSigmaDir = Paths.get(AppInfo.CACHE_DIR, hostName, userName, AppInfo.MODEL_VERSION,
+				AppInfo.SIGMA_DIR);
+
 	}
 
 	/**
@@ -399,6 +404,13 @@ public class Controller {
 	 */
 	public void setActualCoursePath(Path actualCoursePath) {
 		this.actualCoursePath = actualCoursePath;
+	}
+
+	/**
+	 * @return the hostUserModelversionSigmaDir
+	 */
+	public Path getHostUserModelversionSigmaDir() {
+		return hostUserModelversionSigmaDir;
 	}
 
 }

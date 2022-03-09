@@ -1,4 +1,4 @@
-package es.ubu.lsi.ubumonitor.sigma.parser;
+package es.ubu.lsi.ubumonitor.sigma.controller;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,22 +16,21 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.ubu.lsi.ubumonitor.sigma.controller.SubjectFactory;
-import es.ubu.lsi.ubumonitor.sigma.parser.model.Student;
-import es.ubu.lsi.ubumonitor.sigma.parser.model.Subject;
+import es.ubu.lsi.ubumonitor.sigma.model.Student;
+import es.ubu.lsi.ubumonitor.sigma.model.Subject;
 
 public class SigmaParser {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SigmaParser.class);
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yy");
 	private File file;
 	private Student actualStudent;
-	private List<Student> students;
+	private ArrayList<Student> students;
 	private String[] splitedLine;
-	BufferedReader bufferedReader;
+	private BufferedReader bufferedReader;
 
 	Map<String, Runnable> map = new HashMap<>();
 
-	{
+	private SigmaParser() {
 		map.put("Ficha Completa", this::fullRecord);
 		map.put("Apellidos, nombre", this::fullName);
 		map.put("Dirección electrónica", this::email);
@@ -54,15 +53,16 @@ public class SigmaParser {
 		map.put("Plan de estudios", this::studyPlan);
 		map.put("Número de créditos superados hasta el curso anterior", this::numberOfCreditsPassed);
 		map.put("Número créditos matriculados en este curso", this::courseNumberCreditsEnrolled);
-		map.put("Número de créditos de formación básica y obligatorios matriculados en este curso", this::basicAndObligatoryCredits);
+		map.put("Número de créditos de formación básica y obligatorios matriculados en este curso",
+				this::basicAndObligatoryCredits);
 		map.put("Número de créditos del plan de estudios", this::creditsStudyPlan);
 		map.put("Asignaturas optativas superadas", this::optionalSubjects);
 		map.put("Asignaturas matriculadas en este curso", this::enrolledSubjects);
 		map.put("Observaciones del alumno/a", this::observations);
-
 	}
 
 	public SigmaParser(File file) {
+		this();
 		this.file = file;
 		this.students = new ArrayList<>();
 	}
@@ -185,26 +185,27 @@ public class SigmaParser {
 		this.actualStudent.setRouteAccess(splitedLine[1]);
 		this.actualStudent.setInternationalProgram("-".equals(splitedLine[3]) ? null : splitedLine[3]);
 	}
-	
+
 	private void speciality() {
 		this.actualStudent.setSpeciality("-".equals(splitedLine[1]) ? null : splitedLine[1]);
 	}
-	
+
 	private void studyPlan() {
 		this.actualStudent.setStudyPlan(splitedLine[1]);
 	}
-	
+
 	private void numberOfCreditsPassed() {
 		this.actualStudent.setNumberCreditsPassed(Integer.parseInt(splitedLine[1]));
 	}
-	
+
 	private void courseNumberCreditsEnrolled() {
 		this.actualStudent.setCourseNumberCreditsEnrolled(Integer.parseInt(splitedLine[1]));
 	}
+
 	private void basicAndObligatoryCredits() {
-		this.actualStudent.setBasicAndObligatoryCredits(Integer.parseInt(splitedLine[1]));
+		this.actualStudent.setBasicAndObligatoryCreditsEnrolled(Integer.parseInt(splitedLine[1]));
 	}
-	
+
 	private void creditsStudyPlan() {
 		this.actualStudent.setStudyPlanCredits(Integer.parseInt(splitedLine[1]));
 	}
@@ -218,7 +219,8 @@ public class SigmaParser {
 			} else if (!"XXXX ".equals(splitedLine[0])) {
 				Subject subject = SubjectFactory.getInstance()
 						.getSubject(splitedLine[0], splitedLine[1], splitedLine[2]);
-				this.actualStudent.addOptionalSubject(subject);
+				this.actualStudent.getOptionalSubjects()
+						.add(subject);
 			}
 		}
 	}
@@ -234,7 +236,8 @@ public class SigmaParser {
 				String type = splitedLine.length == 2 ? "Básica" : splitedLine[2];
 				Subject subject = SubjectFactory.getInstance()
 						.getSubject(splitedLine[0], splitedLine[1], type);
-				this.actualStudent.addEnrolledSubject(subject);
+				this.actualStudent.getEnrolledSubjects()
+						.add(subject);
 			}
 		}
 	}
@@ -244,8 +247,9 @@ public class SigmaParser {
 			if ("Ficha Completa".equals(splitedLine[0])) {
 				fullRecord();
 				return;
-			} else {
-				this.actualStudent.addObservation(splitedLine[0]);
+			} else if (!"No hay observaciones definidas para este alumno".equals(splitedLine[0])) {
+				this.actualStudent.getObservations()
+						.add(splitedLine[0]);
 			}
 
 		}

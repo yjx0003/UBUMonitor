@@ -1,8 +1,11 @@
-package es.ubu.lsi.ubumonitor.sigma.parser.model;
+package es.ubu.lsi.ubumonitor.sigma.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Subject {
+public class Subject implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
 	private String code;
 	private String name;
 	private String type;

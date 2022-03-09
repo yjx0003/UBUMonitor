@@ -61,6 +61,7 @@
                   <MenuItem fx:id="menuChangeConfig" onAction="#changeConfiguration" text="%menu.changeconfig" />
                   <MenuItem fx:id="importConfiguration" onAction="#importConfiguration" text="%menu.importconfig" />
                   <MenuItem fx:id="menuExportConfiguration" onAction="#exportConfiguration" text="%menu.exportconfig" />
+                  <MenuItem fx:id="importSigma" onAction="#importSigma" text="%menu.importsigma" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="%menu.help">

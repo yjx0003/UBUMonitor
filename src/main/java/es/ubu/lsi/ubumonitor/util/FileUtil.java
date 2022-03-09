@@ -19,6 +19,7 @@ public class FileUtil {
 	public static final ExtensionFilter CSV = new ExtensionFilter("Comma-separated values (*.csv)", "*.csv");
 	public static final ExtensionFilter JSON = new ExtensionFilter("JavaScript Object Notation (*.json)", "*.json");
 	public static final ExtensionFilter ALL = new ExtensionFilter("All type of files (*)", "*");
+	public static final ExtensionFilter XLS = new ExtensionFilter("Excel (*.xls)", "*.xls");
 	
 
 	public enum FileChooserType {

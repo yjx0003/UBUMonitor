@@ -1,10 +1,13 @@
-package es.ubu.lsi.ubumonitor.sigma.parser.model;
+package es.ubu.lsi.ubumonitor.sigma.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Student {
+public class Student implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
 	private String fullName;
 	private String email;
 	private LocalDate dateOfBirth;
@@ -32,7 +35,7 @@ public class Student {
 	private String studyPlan;
 	private int numberCreditsPassed;
 	private int courseNumberCreditsEnrolled;
-	private int basicAndObligatoryCredits;
+	private int basicAndObligatoryCreditsEnrolled;
 	private int studyPlanCredits;
 	private List<Subject> optionalSubjects;
 	private List<Subject> enrolledSubjects;
@@ -44,12 +47,16 @@ public class Student {
 		observations = new ArrayList<>();
 	}
 
+	
+
 	/**
 	 * @return the fullName
 	 */
 	public String getFullName() {
 		return fullName;
 	}
+
+
 
 	/**
 	 * @param fullName the fullName to set
@@ -58,12 +65,16 @@ public class Student {
 		this.fullName = fullName;
 	}
 
+
+
 	/**
 	 * @return the email
 	 */
 	public String getEmail() {
 		return email;
 	}
+
+
 
 	/**
 	 * @param email the email to set
@@ -72,12 +83,16 @@ public class Student {
 		this.email = email;
 	}
 
+
+
 	/**
 	 * @return the dateOfBirth
 	 */
 	public LocalDate getDateOfBirth() {
 		return dateOfBirth;
 	}
+
+
 
 	/**
 	 * @param dateOfBirth the dateOfBirth to set
@@ -86,12 +101,16 @@ public class Student {
 		this.dateOfBirth = dateOfBirth;
 	}
 
+
+
 	/**
 	 * @return the dni
 	 */
 	public String getDni() {
 		return dni;
 	}
+
+
 
 	/**
 	 * @param dni the dni to set
@@ -100,12 +119,16 @@ public class Student {
 		this.dni = dni;
 	}
 
+
+
 	/**
 	 * @return the gender
 	 */
 	public String getGender() {
 		return gender;
 	}
+
+
 
 	/**
 	 * @param gender the gender to set
@@ -114,12 +137,16 @@ public class Student {
 		this.gender = gender;
 	}
 
+
+
 	/**
 	 * @return the usualAddress
 	 */
 	public String getUsualAddress() {
 		return usualAddress;
 	}
+
+
 
 	/**
 	 * @param usualAddress the usualAddress to set
@@ -128,12 +155,16 @@ public class Student {
 		this.usualAddress = usualAddress;
 	}
 
+
+
 	/**
 	 * @return the usualPhone
 	 */
 	public String getUsualPhone() {
 		return usualPhone;
 	}
+
+
 
 	/**
 	 * @param usualPhone the usualPhone to set
@@ -142,12 +173,16 @@ public class Student {
 		this.usualPhone = usualPhone;
 	}
 
+
+
 	/**
 	 * @return the courseAddress
 	 */
 	public String getCourseAddress() {
 		return courseAddress;
 	}
+
+
 
 	/**
 	 * @param courseAddress the courseAddress to set
@@ -156,12 +191,16 @@ public class Student {
 		this.courseAddress = courseAddress;
 	}
 
+
+
 	/**
 	 * @return the coursePhone
 	 */
 	public String getCoursePhone() {
 		return coursePhone;
 	}
+
+
 
 	/**
 	 * @param coursePhone the coursePhone to set
@@ -170,12 +209,16 @@ public class Student {
 		this.coursePhone = coursePhone;
 	}
 
+
+
 	/**
 	 * @return the center
 	 */
 	public String getCenter() {
 		return center;
 	}
+
+
 
 	/**
 	 * @param center the center to set
@@ -184,12 +227,16 @@ public class Student {
 		this.center = center;
 	}
 
+
+
 	/**
 	 * @return the subject
 	 */
 	public String getSubject() {
 		return subject;
 	}
+
+
 
 	/**
 	 * @param subject the subject to set
@@ -198,12 +245,16 @@ public class Student {
 		this.subject = subject;
 	}
 
+
+
 	/**
 	 * @return the subjectCredits
 	 */
 	public double getSubjectCredits() {
 		return subjectCredits;
 	}
+
+
 
 	/**
 	 * @param subjectCredits the subjectCredits to set
@@ -212,12 +263,16 @@ public class Student {
 		this.subjectCredits = subjectCredits;
 	}
 
+
+
 	/**
 	 * @return the typeOfTeaching
 	 */
 	public String getTypeOfTeaching() {
 		return typeOfTeaching;
 	}
+
+
 
 	/**
 	 * @param typeOfTeaching the typeOfTeaching to set
@@ -226,12 +281,16 @@ public class Student {
 		this.typeOfTeaching = typeOfTeaching;
 	}
 
+
+
 	/**
 	 * @return the group
 	 */
 	public String getGroup() {
 		return group;
 	}
+
+
 
 	/**
 	 * @param group the group to set
@@ -240,12 +299,16 @@ public class Student {
 		this.group = group;
 	}
 
+
+
 	/**
 	 * @return the period
 	 */
 	public String getPeriod() {
 		return period;
 	}
+
+
 
 	/**
 	 * @param period the period to set
@@ -254,12 +317,16 @@ public class Student {
 		this.period = period;
 	}
 
+
+
 	/**
 	 * @return the courseYear
 	 */
 	public String getCourseYear() {
 		return courseYear;
 	}
+
+
 
 	/**
 	 * @param courseYear the courseYear to set
@@ -268,12 +335,16 @@ public class Student {
 		this.courseYear = courseYear;
 	}
 
+
+
 	/**
 	 * @return the typeOfSubject
 	 */
 	public String getTypeOfSubject() {
 		return typeOfSubject;
 	}
+
+
 
 	/**
 	 * @param typeOfSubject the typeOfSubject to set
@@ -282,12 +353,16 @@ public class Student {
 		this.typeOfSubject = typeOfSubject;
 	}
 
+
+
 	/**
 	 * @return the yearsConsumed
 	 */
 	public int getYearsConsumed() {
 		return yearsConsumed;
 	}
+
+
 
 	/**
 	 * @param yearsConsumed the yearsConsumed to set
@@ -296,12 +371,16 @@ public class Student {
 		this.yearsConsumed = yearsConsumed;
 	}
 
+
+
 	/**
 	 * @return the numberOfEnrols
 	 */
 	public int getNumberOfEnrols() {
 		return numberOfEnrols;
 	}
+
+
 
 	/**
 	 * @param numberOfEnrols the numberOfEnrols to set
@@ -310,12 +389,16 @@ public class Student {
 		this.numberOfEnrols = numberOfEnrols;
 	}
 
+
+
 	/**
 	 * @return the typeAccessGrade
 	 */
 	public String getTypeAccessGrade() {
 		return typeAccessGrade;
 	}
+
+
 
 	/**
 	 * @param typeAccessGrade the typeAccessGrade to set
@@ -324,12 +407,16 @@ public class Student {
 		this.typeAccessGrade = typeAccessGrade;
 	}
 
+
+
 	/**
 	 * @return the yearAccess
 	 */
 	public int getYearAccess() {
 		return yearAccess;
 	}
+
+
 
 	/**
 	 * @param yearAccess the yearAccess to set
@@ -338,12 +425,16 @@ public class Student {
 		this.yearAccess = yearAccess;
 	}
 
+
+
 	/**
 	 * @return the routeAccess
 	 */
 	public String getRouteAccess() {
 		return routeAccess;
 	}
+
+
 
 	/**
 	 * @param routeAccess the routeAccess to set
@@ -352,12 +443,16 @@ public class Student {
 		this.routeAccess = routeAccess;
 	}
 
+
+
 	/**
 	 * @return the internationalProgram
 	 */
 	public String getInternationalProgram() {
 		return internationalProgram;
 	}
+
+
 
 	/**
 	 * @param internationalProgram the internationalProgram to set
@@ -366,12 +461,16 @@ public class Student {
 		this.internationalProgram = internationalProgram;
 	}
 
+
+
 	/**
 	 * @return the speciality
 	 */
 	public String getSpeciality() {
 		return speciality;
 	}
+
+
 
 	/**
 	 * @param speciality the speciality to set
@@ -380,12 +479,16 @@ public class Student {
 		this.speciality = speciality;
 	}
 
+
+
 	/**
 	 * @return the studyPlan
 	 */
 	public String getStudyPlan() {
 		return studyPlan;
 	}
+
+
 
 	/**
 	 * @param studyPlan the studyPlan to set
@@ -394,12 +497,16 @@ public class Student {
 		this.studyPlan = studyPlan;
 	}
 
+
+
 	/**
 	 * @return the numberCreditsPassed
 	 */
 	public int getNumberCreditsPassed() {
 		return numberCreditsPassed;
 	}
+
+
 
 	/**
 	 * @param numberCreditsPassed the numberCreditsPassed to set
@@ -408,12 +515,16 @@ public class Student {
 		this.numberCreditsPassed = numberCreditsPassed;
 	}
 
+
+
 	/**
 	 * @return the courseNumberCreditsEnrolled
 	 */
 	public int getCourseNumberCreditsEnrolled() {
 		return courseNumberCreditsEnrolled;
 	}
+
+
 
 	/**
 	 * @param courseNumberCreditsEnrolled the courseNumberCreditsEnrolled to set
@@ -422,19 +533,25 @@ public class Student {
 		this.courseNumberCreditsEnrolled = courseNumberCreditsEnrolled;
 	}
 
-	/**
-	 * @return the basicAndObligatoryCredits
-	 */
-	public int getBasicAndObligatoryCredits() {
-		return basicAndObligatoryCredits;
-	}
+
 
 	/**
-	 * @param basicAndObligatoryCredits the basicAndObligatoryCredits to set
+	 * @return the basicAndObligatoryCreditsEnrolled
 	 */
-	public void setBasicAndObligatoryCredits(int basicAndObligatoryCredits) {
-		this.basicAndObligatoryCredits = basicAndObligatoryCredits;
+	public int getBasicAndObligatoryCreditsEnrolled() {
+		return basicAndObligatoryCreditsEnrolled;
 	}
+
+
+
+	/**
+	 * @param basicAndObligatoryCreditsEnrolled the basicAndObligatoryCreditsEnrolled to set
+	 */
+	public void setBasicAndObligatoryCreditsEnrolled(int basicAndObligatoryCreditsEnrolled) {
+		this.basicAndObligatoryCreditsEnrolled = basicAndObligatoryCreditsEnrolled;
+	}
+
+
 
 	/**
 	 * @return the studyPlanCredits
@@ -443,12 +560,16 @@ public class Student {
 		return studyPlanCredits;
 	}
 
+
+
 	/**
 	 * @param studyPlanCredits the studyPlanCredits to set
 	 */
 	public void setStudyPlanCredits(int studyPlanCredits) {
 		this.studyPlanCredits = studyPlanCredits;
 	}
+
+
 
 	/**
 	 * @return the optionalSubjects
@@ -457,6 +578,8 @@ public class Student {
 		return optionalSubjects;
 	}
 
+
+
 	/**
 	 * @param optionalSubjects the optionalSubjects to set
 	 */
@@ -464,11 +587,8 @@ public class Student {
 		this.optionalSubjects = optionalSubjects;
 	}
 
-	public void addOptionalSubject(Subject subject) {
-		this.optionalSubjects.add(subject);
-		
-	}
-	
+
+
 	/**
 	 * @return the enrolledSubjects
 	 */
@@ -476,22 +596,34 @@ public class Student {
 		return enrolledSubjects;
 	}
 
+
+
 	/**
 	 * @param enrolledSubjects the enrolledSubjects to set
 	 */
 	public void setEnrolledSubjects(List<Subject> enrolledSubjects) {
 		this.enrolledSubjects = enrolledSubjects;
 	}
-	
-	public void addEnrolledSubject(Subject subject) {
-		this.enrolledSubjects.add(subject);
-		
+
+
+
+	/**
+	 * @return the observations
+	 */
+	public List<String> getObservations() {
+		return observations;
 	}
 
-	public void addObservation(String observation) {
-		this.observations.add(observation);
 
+
+	/**
+	 * @param observations the observations to set
+	 */
+	public void setObservations(List<String> observations) {
+		this.observations = observations;
 	}
+
+
 
 	@Override
 	public String toString() {
@@ -504,7 +636,7 @@ public class Student {
 				+ ", typeAccessGrade=" + typeAccessGrade + ", yearAccess=" + yearAccess + ", routeAccess=" + routeAccess
 				+ ", internationalProgram=" + internationalProgram + ", speciality=" + speciality + ", studyPlan="
 				+ studyPlan + ", numberCreditsPassed=" + numberCreditsPassed + ", courseNumberCreditsEnrolled="
-				+ courseNumberCreditsEnrolled + ", basicAndObligatoryCredits=" + basicAndObligatoryCredits
+				+ courseNumberCreditsEnrolled + ", basicAndObligatoryCredits=" + basicAndObligatoryCreditsEnrolled
 				+ ", studyPlanCredits=" + studyPlanCredits + ", optionalSubjects=" + optionalSubjects
 				+ ", enrolledSubjects=" + enrolledSubjects + ", observations=" + observations + "]";
 	}

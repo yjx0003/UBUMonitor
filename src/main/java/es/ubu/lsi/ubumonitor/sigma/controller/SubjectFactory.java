@@ -2,7 +2,7 @@ package es.ubu.lsi.ubumonitor.sigma.controller;
 
 import java.util.HashMap;
 
-import es.ubu.lsi.ubumonitor.sigma.parser.model.Subject;
+import es.ubu.lsi.ubumonitor.sigma.model.Subject;
 
 public class SubjectFactory {
 
@@ -10,7 +10,7 @@ public class SubjectFactory {
 	private HashMap<String, Subject> map = new HashMap<>();
 
 	private SubjectFactory() {
-		// private
+		// private constructor
 	}
 
 	public static SubjectFactory getInstance() {

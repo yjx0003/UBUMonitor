@@ -13,12 +13,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.json.JSONArray;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import es.ubu.lsi.ubumonitor.sigma.parser.SigmaParser;
-import es.ubu.lsi.ubumonitor.sigma.parser.model.Student;
+import es.ubu.lsi.ubumonitor.sigma.controller.SigmaParser;
+import es.ubu.lsi.ubumonitor.sigma.model.Student;
 
 public class SigmaTest {
 	public static final String SAMPLE_XLSX_FILE_PATH = "D:\\Users\\34651\\Downloads\\ANONIMIZADO_COMO_CSV_RECORTADO_1000287_CDS10_ListadoFichaAlumnos_22.02.2022.17.48.16.104.xls";
@@ -26,7 +25,6 @@ public class SigmaTest {
 	private static final int NUMBER_STUDENTS = 17;
 	private static List<Student> students;
 	@Test
-	@Ignore
 	public void readLines() throws IOException {
 		try (BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(SAMPLE_XLSX_FILE_PATH),
 				StandardCharsets.ISO_8859_1)) {
@@ -41,7 +39,7 @@ public class SigmaTest {
 	}
 	
 	@BeforeAll
-	public void BeforeAll() throws IOException {
+	public static void beforeAll() throws IOException {
 		SigmaParser sigmaParser = new SigmaParser(new File(SAMPLE_XLSX_FILE_PATH));
 		students = sigmaParser.parse();
 	}

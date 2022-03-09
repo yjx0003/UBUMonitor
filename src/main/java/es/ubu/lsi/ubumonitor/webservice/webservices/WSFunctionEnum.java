@@ -84,12 +84,19 @@ public enum WSFunctionEnum {
 	 * that).
 	 */
 	CORE_ENROL_GET_USERS_COURSES("core_enrol_get_users_courses", 2.0),
-
+	
+	/**
+	 * Retrieve a conversation for a user between another user.
+	 */
+	CORE_MESSAGE_GET_CONVERSATION_BETWEEN_USERS("core_message_get_conversation_between_users", 3.6),
+	/**
+	 * Retrieve a list of messages sent and received by a user (conversations, notifications or both)
+	 */
+	CORE_MESSAGE_GET_MESSAGES("core_message_get_messages", 2.8),
 	/**
 	 *  Send instant messages 
 	 */
 	CORE_MESSAGE_SEND_INSTANT_MESSAGES("CORE_MESSAGE_SEND_INSTANT_MESSAGES", 2.1),
-	
 	/**
 	 * Retrieve users information for a specified unique field - If you want to do a
 	 * user search, use core_user_get_users().

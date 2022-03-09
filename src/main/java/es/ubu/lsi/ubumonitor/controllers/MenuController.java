@@ -49,6 +49,9 @@ import es.ubu.lsi.ubumonitor.model.log.FirstGroupBy;
 import es.ubu.lsi.ubumonitor.model.log.GroupByAbstract;
 import es.ubu.lsi.ubumonitor.model.log.TypeTimes;
 import es.ubu.lsi.ubumonitor.persistence.Serialization;
+import es.ubu.lsi.ubumonitor.sigma.controller.EnrolledUserStudentMapping;
+import es.ubu.lsi.ubumonitor.sigma.controller.SigmaParser;
+import es.ubu.lsi.ubumonitor.sigma.model.Student;
 import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.FileUtil;
 import es.ubu.lsi.ubumonitor.util.I18n;
@@ -644,6 +647,33 @@ public class MenuController {
 	private static String getFileName(Course course) {
 		return UtilMethods.removeReservedChar(course.getFullName()) + "-" + course.getId() + "-"
 				+ WebViewAction.FILE_FORMATTER.format(LocalDateTime.now());
+	}
+	
+	public void importSigma() {
+		UtilMethods.fileAction(null, ConfigHelper.getProperty("importSigmaFolderPath", "./"), controller.getStage(),
+				FileUtil.FileChooserType.OPEN, file -> {
+					ConfigHelper.setProperty("importSigmaFolderPath", file.toString());
+					sigma(file);
+					
+				}, false, FileUtil.XLS);
+	}
+	
+	private void sigma(File file) {
+		SigmaParser parser = new SigmaParser(file);
+		try {
+			List<Student> students = parser.parse();
+			EnrolledUserStudentMapping enrolledUserStudentMapping = EnrolledUserStudentMapping.getInstance();
+			enrolledUserStudentMapping.map(controller.getActualCourse().getEnrolledUsers(), students);
+			Path sigmaDir = controller.getHostUserModelversionSigmaDir();
+			if(!sigmaDir.toFile().isDirectory()) {
+				sigmaDir.toFile().mkdirs();
+			}
+			
+			Serialization.encrypt(controller.getPassword(), sigmaDir.resolve(controller.getCourseFile(controller.getActualCourse())).toString(), students);
+			UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), true);
+		} catch (IOException e) {
+			UtilMethods.errorWindow("Error al cargar los datos de Sigma", e);
+		}
 	}
 
 }

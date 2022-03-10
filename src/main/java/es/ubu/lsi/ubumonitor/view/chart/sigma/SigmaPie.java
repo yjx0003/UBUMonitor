@@ -52,13 +52,23 @@ public class SigmaPie extends Plotly {
 		jsObject.put("domain", "{row:" + row + ",column:" + column + "}");
 		jsObject.put("type", "'pie'");
 		jsObject.put("textinfo", "'label+percent+name'");
+		jsObject.put("hovertemplate", "'<b>%{data.name}: </b>%{label}<br>%{percent} (%{value})<br>%{customdata}<extra></extra>'");
 		JSArray values = new JSArray();
 		JSArray labels = new JSArray();
 		jsObject.put("values", values);
 		jsObject.put("labels", labels);
+		JSArray customdata = new JSArray();
+		jsObject.put("customdata", customdata);
 		for (Map.Entry<String, List<Student>> entry : counter.entrySet()) {
 			labels.addWithQuote(entry.getKey());
+			
 			values.add(entry.getValue().size());
+			StringBuilder studentsNames = new StringBuilder();
+			for(Student student:entry.getValue()) {
+				studentsNames.append("<br>• ");
+				studentsNames.append(student.getFullName());
+			}
+			customdata.addWithQuote(studentsNames);
 		}
 		return jsObject;
 	}

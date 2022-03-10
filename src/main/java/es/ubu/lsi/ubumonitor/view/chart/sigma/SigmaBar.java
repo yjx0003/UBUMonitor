@@ -35,10 +35,10 @@ public class SigmaBar extends Plotly{
 		List<EnrolledUser> selectedusers = getSelectedEnrolledUser();
 		List<Student> students = this.enrolledUserStudentMapping.getStudents(selectedusers);
 		
-		Map<Integer, Long> yearsConsumed = students.stream().collect(Collectors.groupingBy(Student::getYearsConsumed, TreeMap::new, Collectors.counting()));
-		Map<Integer, Long> numberOfEnrols = students.stream().collect(Collectors.groupingBy(Student::getNumberOfEnrols, TreeMap::new, Collectors.counting()));
-		Map<Integer, Long> yearsAccess = students.stream().collect(Collectors.groupingBy(Student::getYearAccess, TreeMap::new, Collectors.counting()));
-		Map<Integer, Long> yearsOld = students.stream().collect(Collectors.groupingBy(Student::getYearsOld, TreeMap::new, Collectors.counting()));
+		Map<Integer, List<Student>> yearsConsumed = students.stream().collect(Collectors.groupingBy(Student::getYearsConsumed, TreeMap::new, Collectors.toList()));
+		Map<Integer, List<Student>> numberOfEnrols = students.stream().collect(Collectors.groupingBy(Student::getNumberOfEnrols, TreeMap::new, Collectors.toList()));
+		Map<Integer, List<Student>> yearsAccess = students.stream().collect(Collectors.groupingBy(Student::getYearAccess, TreeMap::new, Collectors.toList()));
+		Map<Integer, List<Student>> yearsOld = students.stream().collect(Collectors.groupingBy(Student::getYearsOld, TreeMap::new, Collectors.toList()));
 
 		
 		data.add(createData(yearsConsumed, I18n.get("sigma.yearsConsumed"),"x1", "x1"));
@@ -47,7 +47,7 @@ public class SigmaBar extends Plotly{
 		data.add(createData(yearsOld, I18n.get("sigma.yearsOld"),"x4", "y4"));
 	}
 
-	private <T> JSObject  createData(Map<T, Long> counter, String name, String xaxis, String yaxis) {
+	private <T> JSObject  createData(Map<T, List<Student>> counter, String name, String xaxis, String yaxis) {
 		JSObject jsObject = new JSObject();
 		
 		jsObject.putWithQuote("name", name);
@@ -55,13 +55,22 @@ public class SigmaBar extends Plotly{
 		jsObject.putWithQuote("yaxis", yaxis);
 		jsObject.put("type", "'bar'");
 		jsObject.put("textinfo", "'label+percent+name'");
+		jsObject.put("hovertemplate", "'<b>%{data.name}: </b>%{label}<br>%{value}<br>%{customdata}<extra></extra>'");
 		JSArray y = new JSArray();
 		JSArray x = new JSArray();
 		jsObject.put("y", y);
 		jsObject.put("x", x);
-		for (Map.Entry<T, Long> entry : counter.entrySet()) {
+		JSArray customdata = new JSArray();
+		jsObject.put("customdata", customdata);
+		for (Map.Entry<T, List<Student>> entry : counter.entrySet()) {
 			x.addWithQuote(entry.getKey());
-			y.addWithQuote(entry.getValue());
+			y.addWithQuote(entry.getValue().size());
+			StringBuilder studentsNames = new StringBuilder();
+			for(Student student:entry.getValue()) {
+				studentsNames.append("<br>• ");
+				studentsNames.append(student.getFullName());
+			}
+			customdata.addWithQuote(studentsNames);
 		}
 		return jsObject;
 	}

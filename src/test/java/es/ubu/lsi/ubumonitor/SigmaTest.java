@@ -40,8 +40,8 @@ public class SigmaTest {
 	
 	@BeforeAll
 	public static void beforeAll() throws IOException {
-		SigmaParser sigmaParser = new SigmaParser(new File(SAMPLE_XLSX_FILE_PATH));
-		students = sigmaParser.parse();
+		SigmaParser sigmaParser = new SigmaParser();
+		students = sigmaParser.parse(new File(SAMPLE_XLSX_FILE_PATH));
 	}
 
 	@Test

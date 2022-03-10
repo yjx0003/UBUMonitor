@@ -659,9 +659,9 @@ public class MenuController {
 	}
 	
 	private void sigma(File file) {
-		SigmaParser parser = new SigmaParser(file);
+		SigmaParser parser = new SigmaParser();
 		try {
-			List<Student> students = parser.parse();
+			List<Student> students = parser.parse(file);
 			EnrolledUserStudentMapping enrolledUserStudentMapping = EnrolledUserStudentMapping.getInstance();
 			enrolledUserStudentMapping.map(controller.getActualCourse().getEnrolledUsers(), students);
 			Path sigmaDir = controller.getHostUserModelversionSigmaDir();

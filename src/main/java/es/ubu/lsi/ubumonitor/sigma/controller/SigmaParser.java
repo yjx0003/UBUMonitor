@@ -22,7 +22,6 @@ import es.ubu.lsi.ubumonitor.sigma.model.Subject;
 public class SigmaParser {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SigmaParser.class);
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yy");
-	private File file;
 	private Student actualStudent;
 	private ArrayList<Student> students;
 	private String[] splitedLine;
@@ -30,7 +29,7 @@ public class SigmaParser {
 
 	Map<String, Runnable> map = new HashMap<>();
 
-	private SigmaParser() {
+	public SigmaParser() {
 		map.put("Ficha Completa", this::fullRecord);
 		map.put("Apellidos, nombre", this::fullName);
 		map.put("Dirección electrónica", this::email);
@@ -59,15 +58,12 @@ public class SigmaParser {
 		map.put("Asignaturas optativas superadas", this::optionalSubjects);
 		map.put("Asignaturas matriculadas en este curso", this::enrolledSubjects);
 		map.put("Observaciones del alumno/a", this::observations);
-	}
-
-	public SigmaParser(File file) {
-		this();
-		this.file = file;
 		this.students = new ArrayList<>();
 	}
 
-	public List<Student> parse() throws IOException {
+	
+
+	public List<Student> parse(File file) throws IOException {
 		bufferedReader = Files.newBufferedReader(file.toPath(), StandardCharsets.ISO_8859_1);
 		while (nextLine()) {
 			Runnable runnable = map.get(splitedLine[0]);

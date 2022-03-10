@@ -178,7 +178,7 @@ public class SigmaParser {
 	}
 
 	private void routeAccessInternationalProgram() {
-		this.actualStudent.setRouteAccess(splitedLine[1]);
+		this.actualStudent.setRouteAccess(splitedLine[1].isEmpty() ? null : splitedLine[1]);
 		this.actualStudent.setInternationalProgram("-".equals(splitedLine[3]) ? null : splitedLine[3]);
 	}
 
@@ -240,10 +240,11 @@ public class SigmaParser {
 
 	private void observations() {
 		while (nextLine()) {
-			if ("Ficha Completa".equals(splitedLine[0])) {
+			String firstSplited = splitedLine[0];
+			if ("Ficha Completa".equals(firstSplited)) {
 				fullRecord();
 				return;
-			} else if (!"No hay observaciones definidas para este alumno".equals(splitedLine[0])) {
+			} else if (!"No hay observaciones definidas para este alumno".equals(firstSplited) && !firstSplited.isEmpty()) {
 				this.actualStudent.getObservations()
 						.add(splitedLine[0]);
 			}

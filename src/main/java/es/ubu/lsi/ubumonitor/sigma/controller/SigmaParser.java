@@ -45,7 +45,7 @@ public class SigmaParser {
 		map.put("Créditos de la asignatura", this::subjectCreditTypeOfTeaching);
 		map.put("Grupo", this::groupPeriod);
 		map.put("Año académico", this::courseYear);
-		map.put("Tipo de asignatura", this::typeOfSubjectCallsConsumed);
+		map.put("Tipo de asignatura", this::typeOfSubjectYearsConsumed);
 		map.put("Número de veces matriculado", this::numberOfEnrols);
 		map.put("Tipo de acceso a titulación", this::typeOfAccessYear);
 		map.put("Vía de acceso", this::routeAccessInternationalProgram);
@@ -167,7 +167,7 @@ public class SigmaParser {
 		this.actualStudent.setCourseYear(splitedLine[1]);
 	}
 
-	private void typeOfSubjectCallsConsumed() {
+	private void typeOfSubjectYearsConsumed() {
 		this.actualStudent.setTypeOfSubject(splitedLine[1]);
 		this.actualStudent.setYearsConsumed(Integer.parseInt(splitedLine[3]));
 	}

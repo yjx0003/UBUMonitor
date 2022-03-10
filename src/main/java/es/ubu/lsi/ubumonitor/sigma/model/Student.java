@@ -2,6 +2,7 @@ package es.ubu.lsi.ubumonitor.sigma.model;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -623,6 +624,9 @@ public class Student implements Serializable{
 		this.observations = observations;
 	}
 
+	public int getYearsOld() {
+		return Period.between(this.dateOfBirth, LocalDate.now()).getYears();
+	}
 
 
 	@Override

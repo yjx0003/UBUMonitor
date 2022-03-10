@@ -9,6 +9,7 @@ import es.ubu.lsi.ubumonitor.sigma.controller.EnrolledUserStudentMapping;
 import es.ubu.lsi.ubumonitor.sigma.model.Student;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Tabs;
+import es.ubu.lsi.ubumonitor.view.chart.sigma.SigmaBar;
 import es.ubu.lsi.ubumonitor.view.chart.sigma.SigmaPie;
 import javafx.scene.web.WebView;
 
@@ -21,7 +22,7 @@ public class SigmaConnector extends JavaConnectorAbstract {
 		EnrolledUserStudentMapping enrolledUserStudentMapping = EnrolledUserStudentMapping.getInstance();
 		enrolledUserStudentMapping.map(actualCourse.getEnrolledUsers(), students);
 		addChart(new SigmaPie(mainController, enrolledUserStudentMapping));
-	
+		addChart(new SigmaBar(mainController, enrolledUserStudentMapping));
 		currentChart = charts.get(ChartType.getDefault(Tabs.SIGMA));
 	}
 

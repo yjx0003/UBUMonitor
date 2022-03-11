@@ -22,6 +22,8 @@ import es.ubu.lsi.ubumonitor.sigma.model.Subject;
 public class SigmaParser {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SigmaParser.class);
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yy");
+	private static final String DEFAULT_STRING = "-";
+	
 	private Student actualStudent;
 	private ArrayList<Student> students;
 	private String[] splitedLine;
@@ -60,8 +62,6 @@ public class SigmaParser {
 		map.put("Observaciones del alumno/a", this::observations);
 		this.students = new ArrayList<>();
 	}
-
-	
 
 	public List<Student> parse(File file) throws IOException {
 		bufferedReader = Files.newBufferedReader(file.toPath(), StandardCharsets.ISO_8859_1);
@@ -104,16 +104,28 @@ public class SigmaParser {
 		}
 	}
 
+	private String getField(int index, String defaultValue){
+		if(index > splitedLine.length || splitedLine[index].trim().isEmpty()) {
+			return defaultValue;
+		}
+		
+		return splitedLine[index];
+	}
+	
+	private String getField(int index) {
+		return getField(index, DEFAULT_STRING);
+	}
+
 	private void fullName() {
-		this.actualStudent.setFullName(splitedLine[1]);
+		this.actualStudent.setFullName(getField(1));
 	}
 
 	private void email() {
-		this.actualStudent.setEmail(splitedLine[1]);
+		this.actualStudent.setEmail(getField(1));
 	}
 
 	private void dateOfBirth() {
-		LocalDate birthOfDate = LocalDate.parse(splitedLine[1], DATE_FORMATTER);
+		LocalDate birthOfDate = LocalDate.parse(getField(1), DATE_FORMATTER);
 		if (birthOfDate.isAfter(LocalDate.now())) {
 			birthOfDate = birthOfDate.minusYears(100);
 		}
@@ -121,100 +133,100 @@ public class SigmaParser {
 	}
 
 	private void dniGender() {
-		this.actualStudent.setDni(splitedLine[1]);
-		this.actualStudent.setGender(splitedLine[3]);
+		this.actualStudent.setDni(getField(1));
+		this.actualStudent.setGender(getField(3));
 	}
 
 	private void usualAddress() {
-		this.actualStudent.setUsualAddress(splitedLine[1]);
+		this.actualStudent.setUsualAddress(getField(1));
 	}
 
 	private void usualPhone() {
-		this.actualStudent.setUsualPhone(splitedLine[1]);
+		this.actualStudent.setUsualPhone(getField(1));
 	}
 
 	private void courseAddress() {
-		this.actualStudent.setCourseAddress(splitedLine[1]);
+		this.actualStudent.setCourseAddress(getField(1));
 	}
 
 	private void coursePhone() {
-		this.actualStudent.setCoursePhone(splitedLine[1]);
+		this.actualStudent.setCoursePhone(getField(1));
 	}
 
 	private void center() {
-		this.actualStudent.setCenter(splitedLine[1]);
+		this.actualStudent.setCenter(getField(1));
 	}
 
 	private void subject() {
-		this.actualStudent.setSubject(splitedLine[1]);
+		this.actualStudent.setSubject(getField(1));
 	}
 
 	private void subjectCreditTypeOfTeaching() {
-		this.actualStudent.setSubjectCredits(Double.parseDouble(splitedLine[1]));
-		this.actualStudent.setTypeOfTeaching(splitedLine[3]);
+		this.actualStudent.setSubjectCredits(Double.parseDouble(getField(1, "0.0")));
+		this.actualStudent.setTypeOfTeaching(getField(3));
 	}
 
 	private void groupPeriod() {
-		this.actualStudent.setGroup(splitedLine[1]);
-		this.actualStudent.setPeriod(splitedLine[3]);
+		this.actualStudent.setGroup(getField(1));
+		this.actualStudent.setPeriod(getField(3));
 	}
 
 	private void courseYear() {
-		this.actualStudent.setCourseYear(splitedLine[1]);
+		this.actualStudent.setCourseYear(getField(1));
 	}
 
 	private void typeOfSubjectYearsConsumed() {
-		this.actualStudent.setTypeOfSubject(splitedLine[1]);
-		this.actualStudent.setYearsConsumed(Integer.parseInt(splitedLine[3]));
+		this.actualStudent.setTypeOfSubject(getField(1));
+		this.actualStudent.setYearsConsumed(Integer.parseInt(getField(3, "0")));
 	}
 
 	private void numberOfEnrols() {
-		this.actualStudent.setNumberOfEnrols(Integer.parseInt(splitedLine[1]));
+		this.actualStudent.setNumberOfEnrols(Integer.parseInt(getField(1, "0")));
 	}
 
 	private void typeOfAccessYear() {
-		this.actualStudent.setTypeAccessGrade(splitedLine[1]);
-		this.actualStudent.setYearAccess(Integer.parseInt(splitedLine[3]));
+		this.actualStudent.setTypeAccessGrade(getField(1));
+		this.actualStudent.setYearAccess(Integer.parseInt(getField(3, "0")));
 	}
 
 	private void routeAccessInternationalProgram() {
-		this.actualStudent.setRouteAccess(splitedLine[1].isEmpty() ? null : splitedLine[1]);
-		this.actualStudent.setInternationalProgram("-".equals(splitedLine[3]) ? null : splitedLine[3]);
+		this.actualStudent.setRouteAccess(getField(1));
+		this.actualStudent.setInternationalProgram(getField(3));
 	}
 
 	private void speciality() {
-		this.actualStudent.setSpeciality("-".equals(splitedLine[1]) ? null : splitedLine[1]);
+		this.actualStudent.setSpeciality(getField(1));
 	}
 
 	private void studyPlan() {
-		this.actualStudent.setStudyPlan(splitedLine[1]);
+		this.actualStudent.setStudyPlan(getField(1));
 	}
 
 	private void numberOfCreditsPassed() {
-		this.actualStudent.setNumberCreditsPassed(Integer.parseInt(splitedLine[1]));
+		this.actualStudent.setNumberCreditsPassed(Integer.parseInt(getField(1, "0")));
 	}
 
 	private void courseNumberCreditsEnrolled() {
-		this.actualStudent.setCourseNumberCreditsEnrolled(Integer.parseInt(splitedLine[1]));
+		this.actualStudent.setCourseNumberCreditsEnrolled(Integer.parseInt(getField(1, "0")));
 	}
 
 	private void basicAndObligatoryCredits() {
-		this.actualStudent.setBasicAndObligatoryCreditsEnrolled(Integer.parseInt(splitedLine[1]));
+		this.actualStudent.setBasicAndObligatoryCreditsEnrolled(Integer.parseInt(getField(1, "0")));
 	}
 
 	private void creditsStudyPlan() {
-		this.actualStudent.setStudyPlanCredits(Integer.parseInt(splitedLine[1]));
+		this.actualStudent.setStudyPlanCredits(Integer.parseInt(getField(1, "0")));
 	}
 
 	private void optionalSubjects() {
 		nextLine(); // ignore header (Codigo, descripcion, clase)
 		while (nextLine()) {
-			if ("Asignaturas matriculadas en este curso".equals(splitedLine[0])) {
+			if ("Asignaturas matriculadas en este curso".equals(getField(0))) {
 				enrolledSubjects();
 				return;
-			} else if (!"XXXX ".equals(splitedLine[0])) {
+			} else if (!"XXXX ".equals(getField(0))) {
 				Subject subject = SubjectFactory.getInstance()
-						.getSubject(splitedLine[0], splitedLine[1], splitedLine[2]);
+						.getSubject(getField(0), getField(1), getField(2));
 				this.actualStudent.getOptionalSubjects()
 						.add(subject);
 			}
@@ -224,14 +236,14 @@ public class SigmaParser {
 	private void enrolledSubjects() {
 		nextLine(); // ignore header (Codigo, descripcion, clase)
 		while (nextLine()) {
-			if ("Observaciones del alumno/a".equals(splitedLine[0])) {
+			if ("Observaciones del alumno/a".equals(getField(0))) {
 				observations();
 				return;
 
-			} else if (!"XXXX ".equals(splitedLine[0])) {
-				String type = splitedLine.length == 2 ? "Básica" : splitedLine[2];
+			} else if (!"XXXX ".equals(getField(0))) {
+				String type = splitedLine.length == 2 ? "Básica" : getField(2);
 				Subject subject = SubjectFactory.getInstance()
-						.getSubject(splitedLine[0], splitedLine[1], type);
+						.getSubject(getField(0), getField(1), type);
 				this.actualStudent.getEnrolledSubjects()
 						.add(subject);
 			}
@@ -240,13 +252,14 @@ public class SigmaParser {
 
 	private void observations() {
 		while (nextLine()) {
-			String firstSplited = splitedLine[0];
+			String firstSplited = getField(0);
 			if ("Ficha Completa".equals(firstSplited)) {
 				fullRecord();
 				return;
-			} else if (!"No hay observaciones definidas para este alumno".equals(firstSplited) && !firstSplited.isEmpty()) {
+			} else if (!"No hay observaciones definidas para este alumno".equals(firstSplited)
+					&& !firstSplited.isEmpty()) {
 				this.actualStudent.getObservations()
-						.add(splitedLine[0]);
+						.add(getField(0));
 			}
 
 		}

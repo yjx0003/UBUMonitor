@@ -628,6 +628,9 @@ public class Student implements Serializable{
 		return Period.between(this.dateOfBirth, LocalDate.now()).getYears();
 	}
 
+	public int getOptionalCreditsEnrolled() {
+		return this.courseNumberCreditsEnrolled - basicAndObligatoryCreditsEnrolled;
+	}
 
 	@Override
 	public String toString() {

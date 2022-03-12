@@ -11,6 +11,7 @@ import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Tabs;
 import es.ubu.lsi.ubumonitor.view.chart.sigma.SigmaBar;
 import es.ubu.lsi.ubumonitor.view.chart.sigma.SigmaPie;
+import es.ubu.lsi.ubumonitor.view.chart.sigma.SigmaStackedBar;
 import javafx.scene.web.WebView;
 
 public class SigmaConnector extends JavaConnectorAbstract {
@@ -23,6 +24,8 @@ public class SigmaConnector extends JavaConnectorAbstract {
 		enrolledUserStudentMapping.map(actualCourse.getEnrolledUsers(), students);
 		addChart(new SigmaPie(mainController, enrolledUserStudentMapping));
 		addChart(new SigmaBar(mainController, enrolledUserStudentMapping));
+		addChart(new SigmaStackedBar(mainController, enrolledUserStudentMapping));
+		
 		currentChart = charts.get(ChartType.getDefault(Tabs.SIGMA));
 	}
 

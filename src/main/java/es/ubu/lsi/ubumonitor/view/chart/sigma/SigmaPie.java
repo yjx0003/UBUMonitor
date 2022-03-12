@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+
 import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.sigma.controller.EnrolledUserStudentMapping;
@@ -27,7 +30,17 @@ public class SigmaPie extends Plotly {
 
 	@Override
 	public void exportCSV(String path) throws IOException {
-		// TODO Auto-generated method stub
+		List<EnrolledUser> selectedusers = getSelectedEnrolledUser();
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader("userid", "fullname",
+				"gender", "routeAccess"))) {
+			for(EnrolledUser user: selectedusers) {
+				Student student = this.enrolledUserStudentMapping.getStudent(user);
+				if(student != null) {
+					printer.printRecord(user.getId(), user.getFullName(), student.getGender(), student.getRouteAccess());
+				}
+			}
+		}
+		
 
 	}
 
@@ -59,14 +72,19 @@ public class SigmaPie extends Plotly {
 		jsObject.put("labels", labels);
 		JSArray customdata = new JSArray();
 		jsObject.put("customdata", customdata);
+		
 		for (Map.Entry<String, List<Student>> entry : counter.entrySet()) {
 			labels.addWithQuote(entry.getKey());
-			
 			values.add(entry.getValue().size());
 			StringBuilder studentsNames = new StringBuilder();
 			for(Student student:entry.getValue()) {
+				EnrolledUser user = this.enrolledUserStudentMapping.getEnrolledUser(student);
 				studentsNames.append("<br>• ");
-				studentsNames.append(student.getFullName());
+				studentsNames.append(user.getFullName());
+				
+				
+				
+				
 			}
 			customdata.addWithQuote(studentsNames);
 		}

@@ -18,8 +18,8 @@ import es.ubu.lsi.ubumonitor.sigma.model.Student;
 public class EnrolledUserStudentMapping {
 	private static EnrolledUserStudentMapping instance;
 
-	private Map<EnrolledUser, Student> map;
-
+	private Map<EnrolledUser, Student> enrolledUserStudentMap;
+	private Map<Student, EnrolledUser> studentEnrolledUserMap;
 	private EnrolledUserStudentMapping() {
 		// private constructor singleton
 	}
@@ -31,26 +31,30 @@ public class EnrolledUserStudentMapping {
 	}
 
 	public void map(Collection<EnrolledUser> enrolledUsers, Collection<Student> students) {
-		map = new HashMap<>();
+		enrolledUserStudentMap = new HashMap<>();
+		studentEnrolledUserMap = new HashMap<>();
 		for (EnrolledUser enrolledUser : enrolledUsers) {
 			students.stream()
 					.filter(s -> s.getEmail()
 							.equals(enrolledUser.getEmail()))
 					.findAny()
-					.ifPresent(s -> map.put(enrolledUser, s));
+					.ifPresent(s -> {
+						enrolledUserStudentMap.put(enrolledUser, s);
+						studentEnrolledUserMap.put(s, enrolledUser);
+						});
 
 		}
 	}
 
 	public Student getStudent(EnrolledUser user) {
-		return map.get(user);
+		return enrolledUserStudentMap.get(user);
 	}
 
 	public List<Student> getStudents(Collection<EnrolledUser> enrolledUsers) {
 
 		List<Student> students = new ArrayList<>();
 		for (EnrolledUser enrolledUser : enrolledUsers) {
-			Student student = map.get(enrolledUser);
+			Student student = enrolledUserStudentMap.get(enrolledUser);
 			if (student != null) {
 				students.add(student);
 			}
@@ -59,5 +63,10 @@ public class EnrolledUserStudentMapping {
 		return students;
 
 	}
+	
+	public EnrolledUser getEnrolledUser(Student student) {
+		return studentEnrolledUserMap.get(student);
+	}
+
 
 }

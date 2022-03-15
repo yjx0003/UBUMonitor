@@ -669,7 +669,7 @@ public class MenuController {
 				sigmaDir.toFile().mkdirs();
 			}
 			
-			Serialization.encrypt(controller.getPassword(), sigmaDir.resolve(controller.getCourseFile(controller.getActualCourse())).toString(), students);
+			Serialization.encrypt(controller.getPassword(), controller.getSigmaCache().toString(), students);
 			UtilMethods.changeScene(getClass().getResource("/view/Main.fxml"), controller.getStage(), true);
 		} catch (IOException e) {
 			UtilMethods.errorWindow("Error al cargar los datos de Sigma", e);

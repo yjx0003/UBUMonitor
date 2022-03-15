@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -411,6 +412,12 @@ public class Controller {
 	 */
 	public Path getHostUserModelversionSigmaDir() {
 		return hostUserModelversionSigmaDir;
+	}
+	
+	public File getSigmaCache() {
+		return getHostUserModelversionSigmaDir()
+				.resolve(getCourseFile(getActualCourse()))
+				.toFile();
 	}
 
 }

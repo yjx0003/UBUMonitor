@@ -68,6 +68,6 @@ public class Subject implements Serializable{
 	}
 	@Override
 	public String toString() {
-		return "Subject [code=" + code + ", name=" + name + ", type=" + type + "]";
+		return name;
 	}
 }

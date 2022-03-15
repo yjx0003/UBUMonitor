@@ -25,11 +25,9 @@ public class SigmaController extends WebViewAction {
 	@Override
 	public void init(MainController mainController, Tab tab, Course actualCourse, MainConfiguration mainConfiguration,
 			Stage stage) {
-
 		Controller controller = Controller.getInstance();
-		File sigmaFile = controller.getHostUserModelversionSigmaDir()
-				.resolve(controller.getCourseFile(actualCourse))
-				.toFile();
+		File sigmaFile = controller.getSigmaCache();
+		
 
 		if (!sigmaFile.exists()) {
 			mainController.getWebViewTabsController()
@@ -39,8 +37,7 @@ public class SigmaController extends WebViewAction {
 		} else {
 			List<Student> students;
 			try {
-				students = (List<Student>) Serialization.decrypt(controller.getPassword(), controller.getHostUserModelversionSigmaDir()
-						.resolve(controller.getCourseFile(controller.getActualCourse())).toString());
+				students = (List<Student>) Serialization.decrypt(controller.getPassword(), sigmaFile.toString());
 				
 			} catch (Exception e) {
 				students = Collections.emptyList();
@@ -76,6 +73,16 @@ public class SigmaController extends WebViewAction {
 	public void applyConfiguration() {
 		updateChart();
 
+	}
+	@Override
+	public void onSetTabGrades() {
+		javaConnector.updateChart();
+
+	}
+	
+	@Override
+	public void updateTreeViewGradeItem() {
+		javaConnector.updateChart();
 	}
 
 	@Override

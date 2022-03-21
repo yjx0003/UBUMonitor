@@ -61,9 +61,11 @@ public enum ChartType {
 	SIGMA_BAR(Tabs.SIGMA, 42), 
 	SIGMA_STACKED_BAR(Tabs.SIGMA, 43), 
 	SIGMA_TABLE_ENROLLED(Tabs.SIGMA, 44),
-	SIGMA_TABLE_NOT_ENROLLED(Tabs.SIGMA, 45);
+	SIGMA_TABLE_NOT_ENROLLED(Tabs.SIGMA, 45), 
+	SIGMA_PARALLEL_GENDER_ACCESS(Tabs.SIGMA, 46), 
+	SIGMA_PARALLEL_ENROL_YEAR(Tabs.SIGMA, 47);
 	
-	// next id 46
+	// next id 48
 
 	private Tabs tab;
 	private int id;

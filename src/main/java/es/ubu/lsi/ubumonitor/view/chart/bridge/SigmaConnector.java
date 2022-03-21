@@ -10,6 +10,8 @@ import es.ubu.lsi.ubumonitor.sigma.model.Student;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Tabs;
 import es.ubu.lsi.ubumonitor.view.chart.sigma.SigmaBar;
+import es.ubu.lsi.ubumonitor.view.chart.sigma.SigmaParallelEnrolYear;
+import es.ubu.lsi.ubumonitor.view.chart.sigma.SigmaParallelGenderAccess;
 import es.ubu.lsi.ubumonitor.view.chart.sigma.SigmaPie;
 import es.ubu.lsi.ubumonitor.view.chart.sigma.SigmaStackedBar;
 import es.ubu.lsi.ubumonitor.view.chart.sigma.SigmaTableEnrolled;
@@ -29,7 +31,8 @@ public class SigmaConnector extends JavaConnectorAbstract {
 		addChart(new SigmaStackedBar(mainController, enrolledUserStudentMapping));
 		addChart(new SigmaTableEnrolled(mainController, enrolledUserStudentMapping));
 		addChart(new SigmaTableNotEnrolled(mainController, actualCourse, students));
-
+		addChart(new SigmaParallelGenderAccess(mainController, enrolledUserStudentMapping));
+		addChart(new SigmaParallelEnrolYear(mainController, enrolledUserStudentMapping));
 		currentChart = charts.get(ChartType.getDefault(Tabs.SIGMA));
 	}
 

@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -205,7 +206,7 @@ public class ParallelCategory extends Plotly {
 		return yearString;
 	}
 
-	private int getCategoryGrade(double mean, double cutGrade) {
+	public static int getCategoryGrade(double mean, double cutGrade) {
 		if (Double.isNaN(mean)) {
 			return 0;
 		} else if (mean < cutGrade) {
@@ -214,16 +215,16 @@ public class ParallelCategory extends Plotly {
 		return 2;
 	}
 
-	private void createDimension(String label, JSArray dimensions, JSObject dimension, JSArray values) {
+	public static void createDimension(String label, JSArray dimensions, JSObject dimension, JSArray values) {
 		dimensions.add(dimension);
 		dimension.putWithQuote("label", label);
 		dimension.put("values", values);
 
 	}
 
-	private Map<EnrolledUser, DescriptiveStatistics> getUsersGrades(List<EnrolledUser> users,
+	public static Map<EnrolledUser, DescriptiveStatistics> getUsersGrades(List<EnrolledUser> users,
 			List<GradeItem> gradeItems, boolean noGradeAsZero) {
-		Map<EnrolledUser, DescriptiveStatistics> map = new HashMap<>();
+		Map<EnrolledUser, DescriptiveStatistics> map = new LinkedHashMap<>();
 		for (EnrolledUser user : users) {
 			DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
 			map.put(user, descriptiveStatistics);

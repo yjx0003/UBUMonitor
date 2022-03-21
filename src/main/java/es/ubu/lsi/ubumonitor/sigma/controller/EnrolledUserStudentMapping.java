@@ -68,5 +68,17 @@ public class EnrolledUserStudentMapping {
 		return studentEnrolledUserMap.get(student);
 	}
 
+	public List<EnrolledUser> getEnrolledUsers(Collection<Student> students) {
 
+		List<EnrolledUser> enrolledUsers = new ArrayList<>();
+		for (Student student : students) {
+			EnrolledUser enrolledUser = studentEnrolledUserMap.get(student);
+			if (enrolledUser != null) {
+				enrolledUsers.add(enrolledUser);
+			}
+		}
+
+		return enrolledUsers;
+
+	}
 }

@@ -29,10 +29,10 @@ public class SigmaConnector extends JavaConnectorAbstract {
 		addChart(new SigmaPie(mainController, enrolledUserStudentMapping));
 		addChart(new SigmaBar(mainController, enrolledUserStudentMapping));
 		addChart(new SigmaStackedBar(mainController, enrolledUserStudentMapping));
-		addChart(new SigmaTableEnrolled(mainController, enrolledUserStudentMapping));
-		addChart(new SigmaTableNotEnrolled(mainController, actualCourse, students));
 		addChart(new SigmaParallelGenderAccess(mainController, enrolledUserStudentMapping));
 		addChart(new SigmaParallelEnrolYear(mainController, enrolledUserStudentMapping));
+		addChart(new SigmaTableEnrolled(mainController, enrolledUserStudentMapping));
+		addChart(new SigmaTableNotEnrolled(mainController, actualCourse, students));
 		currentChart = charts.get(ChartType.getDefault(Tabs.SIGMA));
 	}
 

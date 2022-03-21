@@ -49,13 +49,13 @@ public class SigmaParallelEnrolYear extends Plotly {
 		Map<EnrolledUser, DescriptiveStatistics> usersGrades = ParallelCategory.getUsersGrades(selectedUsers,
 				gradeItems, noGradeAsZero);
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader("userid", "username",
-				 "enrollments", "yearAccess" ,"gradeMean", "gradeType"))) {
+				  "yearAccess", "enrollments","gradeMean", "gradeType"))) {
 			for (Student student: selectedStudents) {
 				EnrolledUser user = enrolledUserStudentMapping.getEnrolledUser(student);
 				printer.print(user.getId());
 				printer.print(user.getFullName());
-				printer.print(student.getNumberOfEnrols());
 				printer.print(student.getYearAccess());
+				printer.print(student.getNumberOfEnrols());
 				printer.print(usersGrades.get(user).getMean());
 				int typeGrade = ParallelCategory.getCategoryGrade(usersGrades.get(user).getMean(), cutGrade);
 				printer.print(gradeTypes.get(typeGrade));
@@ -70,7 +70,7 @@ public class SigmaParallelEnrolYear extends Plotly {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		List<Student> selectedStudents = enrolledUserStudentMapping.getStudents(selectedUsers);
-		selectedStudents.sort(Comparator.comparing(Student::getNumberOfEnrols).thenComparing(Student::getYearAccess));
+		selectedStudents.sort(Comparator.comparing(Student::getYearAccess).thenComparing(Student::getNumberOfEnrols));
 		selectedUsers = enrolledUserStudentMapping.getEnrolledUsers(selectedStudents);
 		boolean noGradeAsZero = getGeneralConfigValue("noGrade");
 		double cutGrade = getGeneralConfigValue("cutGrade");
@@ -103,18 +103,20 @@ public class SigmaParallelEnrolYear extends Plotly {
 		colorscale.add("[0.5," + colorToRGB(Color.web("#dc143c", 0.3)) + "]");
 		colorscale.add("[1," + colorToRGB(Color.web("#2dc214", 0.3)) + "]");
 		
-		JSObject enrolDimension = new JSObject();
-		JSArray enrolValues = new JSArray();
-		ParallelCategory.createDimension(I18n.get("sigma.numberOfEnrols"), dimensions, enrolDimension, enrolValues);
+		JSObject yearAccessDimension = new JSObject();
+		JSArray yearAccessValues = new JSArray();
+		ParallelCategory.createDimension(I18n.get("sigma.yearAccess"), dimensions, yearAccessDimension, yearAccessValues);
+		
+		
 
 		JSObject gradeDimension = new JSObject();
 		JSArray gradeValues = new JSArray();
 		ParallelCategory.createDimension(I18n.get("cutGrade") + ": " + cutGrade, dimensions, gradeDimension,
 				gradeValues);
 		
-		JSObject yearAccessDimension = new JSObject();
-		JSArray yearAccessValues = new JSArray();
-		ParallelCategory.createDimension(I18n.get("sigma.yearAccess"), dimensions, yearAccessDimension, yearAccessValues);
+		JSObject enrolDimension = new JSObject();
+		JSArray enrolValues = new JSArray();
+		ParallelCategory.createDimension(I18n.get("sigma.numberOfEnrols"), dimensions, enrolDimension, enrolValues);
 
 		
 		

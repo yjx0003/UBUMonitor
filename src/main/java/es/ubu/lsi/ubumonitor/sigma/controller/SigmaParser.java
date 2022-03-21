@@ -23,7 +23,7 @@ public class SigmaParser {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SigmaParser.class);
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yy");
 	private static final String DEFAULT_STRING = "-";
-	
+
 	private Student actualStudent;
 	private ArrayList<Student> students;
 	private String[] splitedLine;
@@ -104,14 +104,33 @@ public class SigmaParser {
 		}
 	}
 
-	private String getField(int index, String defaultValue){
-		if(index > splitedLine.length || splitedLine[index].trim().isEmpty()) {
+	private String getField(int index, String defaultValue) {
+		if (index > splitedLine.length || splitedLine[index].trim()
+				.isEmpty()) {
 			return defaultValue;
 		}
-		
+
 		return splitedLine[index];
 	}
-	
+
+	private int getField(int index, int defaultValue) {
+		try {
+			return Integer.parseInt(getField(index));
+		} catch (Exception e) {
+			return defaultValue;
+		}
+
+	}
+
+	private double getField(int index, double defaultValue) {
+		try {
+			return Double.parseDouble(getField(index));
+		} catch (Exception e) {
+			return defaultValue;
+		}
+
+	}
+
 	private String getField(int index) {
 		return getField(index, DEFAULT_STRING);
 	}
@@ -162,7 +181,7 @@ public class SigmaParser {
 	}
 
 	private void subjectCreditTypeOfTeaching() {
-		this.actualStudent.setSubjectCredits(Double.parseDouble(getField(1, "0.0")));
+		this.actualStudent.setSubjectCredits(getField(1, 0.0));
 		this.actualStudent.setTypeOfTeaching(getField(3));
 	}
 
@@ -177,16 +196,16 @@ public class SigmaParser {
 
 	private void typeOfSubjectYearsConsumed() {
 		this.actualStudent.setTypeOfSubject(getField(1));
-		this.actualStudent.setYearsConsumed(Integer.parseInt(getField(3, "0")));
+		this.actualStudent.setYearsConsumed(getField(3, 0));
 	}
 
 	private void numberOfEnrols() {
-		this.actualStudent.setNumberOfEnrols(Integer.parseInt(getField(1, "0")));
+		this.actualStudent.setNumberOfEnrols(getField(1, 0));
 	}
 
 	private void typeOfAccessYear() {
 		this.actualStudent.setTypeAccessGrade(getField(1));
-		this.actualStudent.setYearAccess(Integer.parseInt(getField(3, "0")));
+		this.actualStudent.setYearAccess(getField(3, 0));
 	}
 
 	private void routeAccessInternationalProgram() {
@@ -203,19 +222,19 @@ public class SigmaParser {
 	}
 
 	private void numberOfCreditsPassed() {
-		this.actualStudent.setNumberCreditsPassed(Integer.parseInt(getField(1, "0")));
+		this.actualStudent.setNumberCreditsPassed(getField(1, 0));
 	}
 
 	private void courseNumberCreditsEnrolled() {
-		this.actualStudent.setCourseNumberCreditsEnrolled(Integer.parseInt(getField(1, "0")));
+		this.actualStudent.setCourseNumberCreditsEnrolled(getField(1, 0));
 	}
 
 	private void basicAndObligatoryCredits() {
-		this.actualStudent.setBasicAndObligatoryCreditsEnrolled(Integer.parseInt(getField(1, "0")));
+		this.actualStudent.setBasicAndObligatoryCreditsEnrolled(getField(1, 0));
 	}
 
 	private void creditsStudyPlan() {
-		this.actualStudent.setStudyPlanCredits(Integer.parseInt(getField(1, "0")));
+		this.actualStudent.setStudyPlanCredits(getField(1, 0));
 	}
 
 	private void optionalSubjects() {

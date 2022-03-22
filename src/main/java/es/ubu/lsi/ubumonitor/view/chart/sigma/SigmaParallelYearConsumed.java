@@ -24,15 +24,15 @@ import es.ubu.lsi.ubumonitor.view.chart.gradeitems.ParallelCategory;
 import javafx.scene.control.TreeView;
 import javafx.scene.paint.Color;
 
-public class SigmaParallelEnrolYear extends Plotly {
+public class SigmaParallelYearConsumed extends Plotly {
 
 	private EnrolledUserStudentMapping enrolledUserStudentMapping;
 	private TreeView<GradeItem> treeViewGradeItem;
 	private List<String> gradeTypes;
 
-	public SigmaParallelEnrolYear(MainController mainController,
+	public SigmaParallelYearConsumed(MainController mainController,
 			EnrolledUserStudentMapping enrolledUserStudentMapping) {
-		super(mainController, ChartType.SIGMA_PARALLEL_ENROL_YEAR);
+		super(mainController, ChartType.SIGMA_PARALLEL_YEAR_CONSUMED);
 		this.treeViewGradeItem = mainController.getSelectionController()
 				.getTvwGradeReport();
 		this.enrolledUserStudentMapping = enrolledUserStudentMapping;
@@ -49,13 +49,13 @@ public class SigmaParallelEnrolYear extends Plotly {
 		Map<EnrolledUser, DescriptiveStatistics> usersGrades = ParallelCategory.getUsersGrades(selectedUsers,
 				gradeItems, noGradeAsZero);
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader("userid", "username",
-				  "yearAccess", "enrollments","gradeMean", "gradeType"))) {
+				  "yearAccess", "consumed","gradeMean", "gradeType"))) {
 			for (Student student: selectedStudents) {
 				EnrolledUser user = enrolledUserStudentMapping.getEnrolledUser(student);
 				printer.print(user.getId());
 				printer.print(user.getFullName());
 				printer.print(student.getYearAccess());
-				printer.print(student.getNumberOfEnrols());
+				printer.print(student.getYearsConsumed());
 				printer.print(usersGrades.get(user).getMean());
 				int typeGrade = ParallelCategory.getCategoryGrade(usersGrades.get(user).getMean(), cutGrade);
 				printer.print(gradeTypes.get(typeGrade));
@@ -70,7 +70,7 @@ public class SigmaParallelEnrolYear extends Plotly {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
 		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		List<Student> selectedStudents = enrolledUserStudentMapping.getStudents(selectedUsers);
-		selectedStudents.sort(Comparator.comparing(Student::getYearAccess).thenComparing(Student::getNumberOfEnrols));
+		selectedStudents.sort(Comparator.comparing(Student::getYearAccess).thenComparing(Student::getYearsConsumed));
 		selectedUsers = enrolledUserStudentMapping.getEnrolledUsers(selectedStudents);
 		boolean noGradeAsZero = getGeneralConfigValue("noGrade");
 		double cutGrade = getGeneralConfigValue("cutGrade");
@@ -114,9 +114,9 @@ public class SigmaParallelEnrolYear extends Plotly {
 		ParallelCategory.createDimension(I18n.get("cutGrade") + ": " + cutGrade, dimensions, gradeDimension,
 				gradeValues);
 		
-		JSObject enrolDimension = new JSObject();
-		JSArray enrolValues = new JSArray();
-		ParallelCategory.createDimension(I18n.get("sigma.numberOfEnrols"), dimensions, enrolDimension, enrolValues);
+		JSObject consumedDimension = new JSObject();
+		JSArray consumedValues = new JSArray();
+		ParallelCategory.createDimension(I18n.get("sigma.numberOfEnrols"), dimensions, consumedDimension, consumedValues);
 
 		
 		
@@ -129,7 +129,7 @@ public class SigmaParallelEnrolYear extends Plotly {
 			DescriptiveStatistics descriptiveStatistics = entry.getValue();
 			int typeGrade = ParallelCategory.getCategoryGrade(descriptiveStatistics.getMean(), cutGrade);
 			color.add(typeGrade);
-			enrolValues.addWithQuote(student.getNumberOfEnrols());
+			consumedValues.addWithQuote(student.getYearsConsumed());
 			gradeValues.addWithQuote(gradeTypes.get(typeGrade));
 			yearAccessValues.addWithQuote(student.getYearAccess());
 		}

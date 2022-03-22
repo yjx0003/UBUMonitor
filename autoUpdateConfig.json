@@ -3,6 +3,7 @@
   "pattern": "^UBUMonitor.+.jar$",
   "vmArgs": [
         "-Xmx1G",
-        "-XX:NewRatio=8"
+        "-XX:NewRatio=8",
+        "-Dlog4j.configuration=file:src/main/resources/log4j.properties"
     ]
 }

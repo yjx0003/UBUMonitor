@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import es.ubu.lsi.ubumonitor.sigma.controller.SigmaParser;
 import es.ubu.lsi.ubumonitor.sigma.model.Student;
+import es.ubu.lsi.ubumonitor.view.chart.sigma.SigmaBoxplot;
 
 public class SigmaTest {
 	public static final String SAMPLE_XLSX_FILE_PATH = "D:\\Users\\34651\\Downloads\\ANONIMIZADO_COMO_CSV_RECORTADO_1000287_CDS10_ListadoFichaAlumnos_22.02.2022.17.48.16.104.xls";
@@ -64,6 +66,30 @@ public class SigmaTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
+	}
+	
+	@Test
+	public void sortTest() {
+		
+		List<Student> students = new ArrayList<>(); 
+		generateStudent(students, "c");
+		generateStudent(students, "b");
+		generateStudent(students, "a");
+		generateStudent(students, "d");
+		generateStudent(students, "e");
+		generateStudent(students, "e");
+		generateStudent(students, "b");
+		generateStudent(students, "b");
+		
+		List<String> routes = SigmaBoxplot.getUniqueRouteAccess(students, 4);
+		System.out.println(routes);
+		
+	}
+	
+	private void generateStudent(List<Student> students, String routeAccess) {
+		Student student = new Student();
+		student.setRouteAccess(routeAccess);
+		students.add(student);
 	}
 
 }

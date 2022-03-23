@@ -304,6 +304,11 @@ public class MainConfiguration {
 		createItem(ChartType.ENROLLMENT_SANKEY, "courseColorNode", Color.web("#FC9E21"));
 		createItem(ChartType.ENROLLMENT_SANKEY, "minFrequency", 1);
 		
+		if(Controller.getInstance().getSigmaCache().exists()) {
+			createItem(ChartType.SIGMA_BOXPLOT, "limit", 5);
+			createItem(ChartType.SIGMA_VIOLIN, "limit", 3);
+		}
+		
 	}
 
 	/**

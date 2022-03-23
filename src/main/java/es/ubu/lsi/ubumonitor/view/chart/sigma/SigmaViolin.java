@@ -1,11 +1,8 @@
 package es.ubu.lsi.ubumonitor.view.chart.sigma;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -59,11 +56,12 @@ public class SigmaViolin extends Plotly {
 
 	@Override
 	public void createData(JSArray data) {
+		int limit = getConfigValue("limit");
 		List<EnrolledUser> users = getSelectedEnrolledUser();
 		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		boolean noGrade = getGeneralConfigValue("noGrade");
 		List<Student> students = enrolledUserStudentMapping.getStudents(users);
-		List<String> routeAccess = getUniqueRouteAccess(students);
+		List<String> routeAccess = SigmaBoxplot.getUniqueRouteAccess(students, limit);
 		Map<EnrolledUser, DescriptiveStatistics> userGrades = ParallelCategory.getUsersGrades(users, gradeItems, noGrade);
 		data.add(createTrace(I18n.get("text.selectedUsers"), students, routeAccess, userGrades));
 	}
@@ -78,7 +76,11 @@ public class SigmaViolin extends Plotly {
 
 		for(Student student: students) {
 			EnrolledUser user = enrolledUserStudentMapping.getEnrolledUser(student);
-			x.add(routeAccess.indexOf(student.getRouteAccess()));
+			int index = routeAccess.indexOf(student.getRouteAccess());
+			if(index < 0) {
+				continue;
+			}
+			x.add(index);
 			y.add(userGrades.get(user).getMean());
 			userNames.addWithQuote(user.getFullName());
 			userids.addWithQuote(user.getId());
@@ -102,25 +104,15 @@ public class SigmaViolin extends Plotly {
 	public void createLayout(JSObject layout) {
 		List<EnrolledUser> users = getSelectedEnrolledUser();
 		boolean horizontalMode = false;
+		int limit = getConfigValue("limit");
 		List<Student> students = enrolledUserStudentMapping.getStudents(users);
-		List<String> routeAccess = getUniqueRouteAccess(students);
+		List<String> routeAccess = SigmaBoxplot.getUniqueRouteAccess(students, limit);
 		JSArray ticktext = new JSArray();
 		routeAccess.forEach(ticktext::addWithQuote);
 		horizontalMode(layout, ticktext, horizontalMode, getXAxisTitle(), getYAxisTitle(), "[-0.5,10.5]");
 		layout.put("violinmode", "'group'");
 		layout.put("hovermode", "'closest'");
 
-	}
-
-	public static List<String> getUniqueRouteAccess(List<Student> students) {
-		return students.stream()
-				.map(Student::getRouteAccess)
-				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-			    .entrySet().stream()
-			    .sorted(Map.Entry.<String, Long>comparingByValue(Comparator.reverseOrder())
-			        .thenComparing(Map.Entry.comparingByKey()))
-			    .map(Map.Entry::getKey)
-		        .collect(Collectors.toList());
 	}
 
 }

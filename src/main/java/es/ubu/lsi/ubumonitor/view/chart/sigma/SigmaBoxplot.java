@@ -31,7 +31,6 @@ public class SigmaBoxplot extends Plotly {
 
 	public SigmaBoxplot(MainController mainController, EnrolledUserStudentMapping enrolledUserStudentMapping) {
 		super(mainController, ChartType.SIGMA_BOXPLOT);
-		useLegend = true;
 		this.treeViewGradeItem = mainController.getSelectionController()
 				.getTvwGradeReport();
 		this.enrolledUserStudentMapping = enrolledUserStudentMapping;
@@ -45,14 +44,15 @@ public class SigmaBoxplot extends Plotly {
 		boolean noGradeAsZero = getGeneralConfigValue("noGrade");
 		Map<EnrolledUser, DescriptiveStatistics> usersGrades = ParallelCategory.getUsersGrades(selectedUsers,
 				gradeItems, noGradeAsZero);
-		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader("userid", "username",
-				"routeAccess" ,"gradeMean"))) {
-			for (Student student: selectedStudents) {
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
+				CSVFormat.DEFAULT.withHeader("userid", "username", "routeAccess", "gradeMean"))) {
+			for (Student student : selectedStudents) {
 				EnrolledUser user = enrolledUserStudentMapping.getEnrolledUser(student);
 				printer.print(user.getId());
 				printer.print(user.getFullName());
 				printer.print(student.getRouteAccess());
-				printer.print(usersGrades.get(user).getMean());
+				printer.print(usersGrades.get(user)
+						.getMean());
 				printer.println();
 			}
 		}
@@ -60,12 +60,14 @@ public class SigmaBoxplot extends Plotly {
 
 	@Override
 	public void createData(JSArray data) {
+		int limit = getConfigValue("limit");
 		List<EnrolledUser> users = getSelectedEnrolledUser();
 		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		boolean noGrade = getGeneralConfigValue("noGrade");
 		List<Student> students = enrolledUserStudentMapping.getStudents(users);
-		List<String> routeAccess = getUniqueRouteAccess(students);
-		Map<EnrolledUser, DescriptiveStatistics> userGrades = ParallelCategory.getUsersGrades(users, gradeItems, noGrade);
+		List<String> routeAccess = getUniqueRouteAccess(students, limit);
+		Map<EnrolledUser, DescriptiveStatistics> userGrades = ParallelCategory.getUsersGrades(users, gradeItems,
+				noGrade);
 		data.add(createTrace(I18n.get("text.selectedUsers"), students, routeAccess, userGrades));
 	}
 
@@ -79,7 +81,11 @@ public class SigmaBoxplot extends Plotly {
 
 		for(Student student: students) {
 			EnrolledUser user = enrolledUserStudentMapping.getEnrolledUser(student);
-			x.add(routeAccess.indexOf(student.getRouteAccess()));
+			int index = routeAccess.indexOf(student.getRouteAccess());
+			if(index == -1) {
+				continue;
+			}
+			x.add(index);
 			y.add(userGrades.get(user).getMean());
 			userNames.addWithQuote(user.getFullName());
 			userids.addWithQuote(user.getId());
@@ -103,8 +109,9 @@ public class SigmaBoxplot extends Plotly {
 	public void createLayout(JSObject layout) {
 		List<EnrolledUser> users = getSelectedEnrolledUser();
 		boolean horizontalMode = false;
+		int limit = getConfigValue("limit");
 		List<Student> students = enrolledUserStudentMapping.getStudents(users);
-		List<String> routeAccess = getUniqueRouteAccess(students);
+		List<String> routeAccess = getUniqueRouteAccess(students, limit);
 		JSArray ticktext = new JSArray();
 		routeAccess.forEach(ticktext::addWithQuote);
 		horizontalMode(layout, ticktext, horizontalMode, getXAxisTitle(), getYAxisTitle(), "[-0.5,10.5]");
@@ -113,15 +120,17 @@ public class SigmaBoxplot extends Plotly {
 
 	}
 
-	public static List<String> getUniqueRouteAccess(List<Student> students) {
+	public static List<String> getUniqueRouteAccess(List<Student> students, int limit) {
 		return students.stream()
 				.map(Student::getRouteAccess)
 				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-			    .entrySet().stream()
-			    .sorted(Map.Entry.<String, Long>comparingByValue(Comparator.reverseOrder())
-			        .thenComparing(Map.Entry.comparingByKey()))
-			    .map(Map.Entry::getKey)
-		        .collect(Collectors.toList());
+				.entrySet()
+				.stream()
+				.sorted(Map.Entry.<String, Long>comparingByValue(Comparator.reverseOrder())
+						.thenComparing(Map.Entry.comparingByKey()))
+				.limit(limit)
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toList());
 	}
 
 }

@@ -87,7 +87,7 @@ public class SigmaBoxplot extends Plotly {
 		
 		trace.put("x", x);
 		trace.put("y", y);
-		trace.put("type", "'boxplot'");
+		trace.put("type", "'box'");
 		trace.put("boxpoints", "'all'");
 		trace.put("pointpos", 0);
 		trace.put("jitter", 1);

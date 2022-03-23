@@ -63,10 +63,11 @@ public enum ChartType {
 	SIGMA_PARALLEL_GENDER_ACCESS(Tabs.SIGMA, 46), 
 	SIGMA_PARALLEL_YEAR_CONSUMED(Tabs.SIGMA, 47),
 	SIGMA_BOXPLOT(Tabs.SIGMA, 48),
+	SIGMA_VIOLIN(Tabs.SIGMA, 49),
 	SIGMA_TABLE_ENROLLED(Tabs.SIGMA, 44),
-	SIGMA_TABLE_NOT_ENROLLED(Tabs.SIGMA, 45), ;
+	SIGMA_TABLE_NOT_ENROLLED(Tabs.SIGMA, 45),  ;
 	
-	// next id 48
+	// next id 50
 
 	private Tabs tab;
 	private int id;

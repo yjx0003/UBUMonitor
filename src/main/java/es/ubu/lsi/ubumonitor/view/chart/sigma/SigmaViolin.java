@@ -24,14 +24,13 @@ import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 import es.ubu.lsi.ubumonitor.view.chart.gradeitems.ParallelCategory;
 import javafx.scene.control.TreeView;
 
-public class SigmaBoxplot extends Plotly {
+public class SigmaViolin extends Plotly {
 
 	private TreeView<GradeItem> treeViewGradeItem;
 	private EnrolledUserStudentMapping enrolledUserStudentMapping;
 
-	public SigmaBoxplot(MainController mainController, EnrolledUserStudentMapping enrolledUserStudentMapping) {
-		super(mainController, ChartType.SIGMA_BOXPLOT);
-		useLegend = true;
+	public SigmaViolin(MainController mainController, EnrolledUserStudentMapping enrolledUserStudentMapping) {
+		super(mainController, ChartType.SIGMA_VIOLIN);
 		this.treeViewGradeItem = mainController.getSelectionController()
 				.getTvwGradeReport();
 		this.enrolledUserStudentMapping = enrolledUserStudentMapping;
@@ -87,14 +86,14 @@ public class SigmaBoxplot extends Plotly {
 		
 		trace.put("x", x);
 		trace.put("y", y);
-		trace.put("type", "'violin'");
-		trace.put("boxpoints", "'all'");
-		trace.put("pointpos", 0);
 		trace.put("jitter", 1);
+		trace.put("type", "'violin'");
 		trace.putWithQuote("name", name);
 		trace.put("userids", userids);
 		trace.put("text", userNames);
 		trace.put("hovertemplate", "'<b>%{x}<br>%{text}: </b>%{y:.2~f}<extra></extra>'");
+		trace.put("box", "{visible:true}");
+		trace.put("meanline", "{visible:true}");
 		return trace;
 
 	}
@@ -108,7 +107,7 @@ public class SigmaBoxplot extends Plotly {
 		JSArray ticktext = new JSArray();
 		routeAccess.forEach(ticktext::addWithQuote);
 		horizontalMode(layout, ticktext, horizontalMode, getXAxisTitle(), getYAxisTitle(), "[-0.5,10.5]");
-		layout.put("boxmode", "'group'");
+		layout.put("violinmode", "'group'");
 		layout.put("hovermode", "'closest'");
 
 	}

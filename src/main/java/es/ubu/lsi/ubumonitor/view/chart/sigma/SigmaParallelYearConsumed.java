@@ -116,7 +116,7 @@ public class SigmaParallelYearConsumed extends Plotly {
 		
 		JSObject consumedDimension = new JSObject();
 		JSArray consumedValues = new JSArray();
-		ParallelCategory.createDimension(I18n.get("sigma.numberOfEnrols"), dimensions, consumedDimension, consumedValues);
+		ParallelCategory.createDimension(I18n.get("sigma.yearsConsumed"), dimensions, consumedDimension, consumedValues);
 
 		
 		

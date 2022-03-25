@@ -61,6 +61,10 @@ public class SigmaBoxplot extends Plotly {
 	@Override
 	public void createData(JSArray data) {
 		int limit = getConfigValue("limit");
+		boolean horizontalMode = getConfigValue("horizontalMode");
+		boolean standardDeviation = getConfigValue("standardDeviation");
+		boolean notched = getConfigValue("notched");
+
 		List<EnrolledUser> users = getSelectedEnrolledUser();
 		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		boolean noGrade = getGeneralConfigValue("noGrade");
@@ -68,31 +72,32 @@ public class SigmaBoxplot extends Plotly {
 		List<String> routeAccess = getUniqueRouteAccess(students, limit);
 		Map<EnrolledUser, DescriptiveStatistics> userGrades = ParallelCategory.getUsersGrades(users, gradeItems,
 				noGrade);
-		data.add(createTrace(I18n.get("text.selectedUsers"), students, routeAccess, userGrades));
+		data.add(createTrace(I18n.get("text.selectedUsers"), students, routeAccess, userGrades, horizontalMode, standardDeviation, notched));
 	}
 
-	public JSObject createTrace(String name, List<Student> students, List<String> routeAccess, Map<EnrolledUser, DescriptiveStatistics> userGrades) {
+	public JSObject createTrace(String name, List<Student> students, List<String> routeAccess,
+			Map<EnrolledUser, DescriptiveStatistics> userGrades, boolean horizontalMode, boolean standardDeviation, boolean notched) {
 		JSObject trace = new JSObject();
-		
+
 		JSArray userNames = new JSArray();
 		JSArray userids = new JSArray();
 		JSArray x = new JSArray();
 		JSArray y = new JSArray();
 
-		for(Student student: students) {
+		for (Student student : students) {
 			EnrolledUser user = enrolledUserStudentMapping.getEnrolledUser(student);
 			int index = routeAccess.indexOf(student.getRouteAccess());
-			if(index == -1) {
+			if (index == -1) {
 				continue;
 			}
 			x.add(index);
-			y.add(userGrades.get(user).getMean());
+			y.add(userGrades.get(user)
+					.getMean());
 			userNames.addWithQuote(user.getFullName());
 			userids.addWithQuote(user.getId());
 		}
-		
-		trace.put("x", x);
-		trace.put("y", y);
+		createAxisValuesHorizontal(horizontalMode, trace, x, y);
+
 		trace.put("type", "'box'");
 		trace.put("boxpoints", "'all'");
 		trace.put("pointpos", 0);
@@ -100,7 +105,10 @@ public class SigmaBoxplot extends Plotly {
 		trace.putWithQuote("name", name);
 		trace.put("userids", userids);
 		trace.put("text", userNames);
-		trace.put("hovertemplate", "'<b>%{x}<br>%{text}: </b>%{y:.2~f}<extra></extra>'");
+		trace.put("hovertemplate",  "'<b>%{" + (horizontalMode ? "y" : "x") + "}<br>%{text}: </b>%{"
+				+ (horizontalMode ? "x" : "y") + ":.2~f}<extra></extra>'");
+		trace.put("notched", notched);
+		trace.put("boxmean", standardDeviation ? "'sd'" : "true");
 		return trace;
 
 	}
@@ -108,7 +116,7 @@ public class SigmaBoxplot extends Plotly {
 	@Override
 	public void createLayout(JSObject layout) {
 		List<EnrolledUser> users = getSelectedEnrolledUser();
-		boolean horizontalMode = false;
+		boolean horizontalMode = getConfigValue("horizontalMode");
 		int limit = getConfigValue("limit");
 		List<Student> students = enrolledUserStudentMapping.getStudents(users);
 		List<String> routeAccess = getUniqueRouteAccess(students, limit);
@@ -131,6 +139,12 @@ public class SigmaBoxplot extends Plotly {
 				.limit(limit)
 				.map(Map.Entry::getKey)
 				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public String getXAxisTitle() {
+		boolean noGrade = getGeneralConfigValue("noGrade");
+		return super.getXAxisTitle() + " (" + I18n.get("noGrade." + noGrade) + ")";
 	}
 
 }

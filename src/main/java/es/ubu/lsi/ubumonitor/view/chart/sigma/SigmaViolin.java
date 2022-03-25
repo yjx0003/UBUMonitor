@@ -41,14 +41,15 @@ public class SigmaViolin extends Plotly {
 		boolean noGradeAsZero = getGeneralConfigValue("noGrade");
 		Map<EnrolledUser, DescriptiveStatistics> usersGrades = ParallelCategory.getUsersGrades(selectedUsers,
 				gradeItems, noGradeAsZero);
-		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader("userid", "username",
-				"routeAccess" ,"gradeMean"))) {
-			for (Student student: selectedStudents) {
+		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
+				CSVFormat.DEFAULT.withHeader("userid", "username", "routeAccess", "gradeMean"))) {
+			for (Student student : selectedStudents) {
 				EnrolledUser user = enrolledUserStudentMapping.getEnrolledUser(student);
 				printer.print(user.getId());
 				printer.print(user.getFullName());
 				printer.print(student.getRouteAccess());
-				printer.print(usersGrades.get(user).getMean());
+				printer.print(usersGrades.get(user)
+						.getMean());
 				printer.println();
 			}
 		}
@@ -57,44 +58,50 @@ public class SigmaViolin extends Plotly {
 	@Override
 	public void createData(JSArray data) {
 		int limit = getConfigValue("limit");
+		boolean useHorizontal = getConfigValue("horizontalMode");
+		boolean boxVisible = getConfigValue("boxVisible");
 		List<EnrolledUser> users = getSelectedEnrolledUser();
 		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
 		boolean noGrade = getGeneralConfigValue("noGrade");
 		List<Student> students = enrolledUserStudentMapping.getStudents(users);
 		List<String> routeAccess = SigmaBoxplot.getUniqueRouteAccess(students, limit);
-		Map<EnrolledUser, DescriptiveStatistics> userGrades = ParallelCategory.getUsersGrades(users, gradeItems, noGrade);
-		data.add(createTrace(I18n.get("text.selectedUsers"), students, routeAccess, userGrades));
+		Map<EnrolledUser, DescriptiveStatistics> userGrades = ParallelCategory.getUsersGrades(users, gradeItems,
+				noGrade);
+		data.add(createTrace(I18n.get("text.selectedUsers"), students, routeAccess, userGrades, useHorizontal,
+				boxVisible));
 	}
 
-	public JSObject createTrace(String name, List<Student> students, List<String> routeAccess, Map<EnrolledUser, DescriptiveStatistics> userGrades) {
+	public JSObject createTrace(String name, List<Student> students, List<String> routeAccess,
+			Map<EnrolledUser, DescriptiveStatistics> userGrades, boolean horizontalMode, boolean boxVisible) {
 		JSObject trace = new JSObject();
-		
+
 		JSArray userNames = new JSArray();
 		JSArray userids = new JSArray();
 		JSArray x = new JSArray();
 		JSArray y = new JSArray();
 
-		for(Student student: students) {
+		for (Student student : students) {
 			EnrolledUser user = enrolledUserStudentMapping.getEnrolledUser(student);
 			int index = routeAccess.indexOf(student.getRouteAccess());
-			if(index < 0) {
+			if (index < 0) {
 				continue;
 			}
 			x.add(index);
-			y.add(userGrades.get(user).getMean());
+			y.add(userGrades.get(user)
+					.getMean());
 			userNames.addWithQuote(user.getFullName());
 			userids.addWithQuote(user.getId());
 		}
-		
-		trace.put("x", x);
-		trace.put("y", y);
+		createAxisValuesHorizontal(horizontalMode, trace, x, y);
+
 		trace.put("jitter", 1);
 		trace.put("type", "'violin'");
 		trace.putWithQuote("name", name);
 		trace.put("userids", userids);
 		trace.put("text", userNames);
-		trace.put("hovertemplate", "'<b>%{x}<br>%{text}: </b>%{y:.2~f}<extra></extra>'");
-		trace.put("box", "{visible:true}");
+		trace.put("hovertemplate", "'<b>%{" + (horizontalMode ? "y" : "x") + "}<br>%{text}: </b>%{"
+				+ (horizontalMode ? "x" : "y") + ":.2~f}<extra></extra>'");
+		trace.put("box", "{visible:" + boxVisible + "}");
 		trace.put("meanline", "{visible:true}");
 		return trace;
 
@@ -113,6 +120,12 @@ public class SigmaViolin extends Plotly {
 		layout.put("violinmode", "'group'");
 		layout.put("hovermode", "'closest'");
 
+	}
+
+	@Override
+	public String getXAxisTitle() {
+		boolean noGrade = getGeneralConfigValue("noGrade");
+		return super.getXAxisTitle() + " (" + I18n.get("noGrade." + noGrade) + ")";
 	}
 
 }

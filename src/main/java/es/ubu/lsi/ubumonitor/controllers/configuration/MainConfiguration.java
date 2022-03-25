@@ -306,7 +306,12 @@ public class MainConfiguration {
 		
 		if(Controller.getInstance().getSigmaCache().exists()) {
 			createItem(ChartType.SIGMA_BOXPLOT, "limit", 5);
+			createItem(ChartType.SIGMA_BOXPLOT, HORIZONTAL_MODE, false);
+			createItem(ChartType.SIGMA_BOXPLOT, "standardDeviation", false);
+			createItem(ChartType.SIGMA_BOXPLOT, "notched", false);
 			createItem(ChartType.SIGMA_VIOLIN, "limit", 3);
+			createItem(ChartType.SIGMA_VIOLIN,  HORIZONTAL_MODE, false);
+			createItem(ChartType.SIGMA_VIOLIN, "boxVisible", true);
 		}
 		
 	}

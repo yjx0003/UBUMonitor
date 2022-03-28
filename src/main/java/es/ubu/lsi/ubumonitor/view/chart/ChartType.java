@@ -64,10 +64,13 @@ public enum ChartType {
 	SIGMA_PARALLEL_YEAR_CONSUMED(Tabs.SIGMA, 47),
 	SIGMA_BOXPLOT(Tabs.SIGMA, 48),
 	SIGMA_VIOLIN(Tabs.SIGMA, 49),
+	USUAL_ADDRESS_MAP(Tabs.SIGMA, 50),
+	COURSE_ADDRESS_MAP(Tabs.SIGMA, 51),
 	SIGMA_TABLE_ENROLLED(Tabs.SIGMA, 44),
-	SIGMA_TABLE_NOT_ENROLLED(Tabs.SIGMA, 45),  ;
+	SIGMA_TABLE_NOT_ENROLLED(Tabs.SIGMA, 45),
+	  ;
 	
-	// next id 50
+	// next id 51
 
 	private Tabs tab;
 	private int id;

@@ -1,16 +1,12 @@
 package es.ubu.lsi.ubumonitor;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -20,25 +16,13 @@ import org.junit.jupiter.api.Test;
 import es.ubu.lsi.ubumonitor.sigma.controller.SigmaParser;
 import es.ubu.lsi.ubumonitor.sigma.model.Student;
 import es.ubu.lsi.ubumonitor.view.chart.sigma.SigmaBoxplot;
+import es.ubu.lsi.ubumonitor.view.chart.sigma.SigmaUsualAddressMap;
 
 public class SigmaTest {
 	public static final String SAMPLE_XLSX_FILE_PATH = "D:\\Users\\34651\\Downloads\\ANONIMIZADO_COMO_CSV_RECORTADO_1000287_CDS10_ListadoFichaAlumnos_22.02.2022.17.48.16.104.xls";
 
 	private static final int NUMBER_STUDENTS = 17;
 	private static List<Student> students;
-	@Test
-	public void readLines() throws IOException {
-		try (BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(SAMPLE_XLSX_FILE_PATH),
-				StandardCharsets.ISO_8859_1)) {
-
-			String line = bufferedReader.readLine();
-			while (line != null) {
-				System.out.println(Arrays.asList(line.trim()
-						.split("\t")));
-				line = bufferedReader.readLine();
-			}
-		}
-	}
 	
 	@BeforeAll
 	public static void beforeAll() throws IOException {
@@ -81,15 +65,40 @@ public class SigmaTest {
 		generateStudent(students, "b");
 		generateStudent(students, "b");
 		
-		List<String> routes = SigmaBoxplot.getUniqueRouteAccess(students, 4);
-		System.out.println(routes);
-		
+		List<String> routes = SigmaBoxplot.getUniqueRouteAccess(students, 2);
+		assertEquals(2, routes.size());
+		assertEquals("b", routes.get(0));
+		assertEquals("e", routes.get(1));
 	}
 	
 	private void generateStudent(List<Student> students, String routeAccess) {
 		Student student = new Student();
 		student.setRouteAccess(routeAccess);
 		students.add(student);
+	}
+	
+	@Test
+	public void usualZipCodeTest() {
+		
+		
+		for(Student student: students) {
+			String zipCode = SigmaUsualAddressMap.getProviceZipCode(student.getUsualAddress());
+			int intValue = Integer.valueOf(zipCode);
+			assertTrue("Error fuera de rango: "+intValue +"\nEstudiante: " + student.getFullName(), intValue >= 0 && intValue<= 52);
+		}
+		
+	}
+	
+	@Test
+	public void courseZipCodeTest() {
+		
+		
+		for(Student student: students) {
+			String zipCode = SigmaUsualAddressMap.getProviceZipCode(student.getCourseAddress());
+			int intValue = Integer.valueOf(zipCode);
+			assertTrue("Error fuera de rango: "+intValue +"\nEstudiante: " + student.getFullName(), intValue >= 0 && intValue<= 52);
+		}
+		
 	}
 
 }

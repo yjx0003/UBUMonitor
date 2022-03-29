@@ -98,4 +98,8 @@ public enum Province {
 	}
 	
 	
+	public static Map<String, Province> getMapZipCode() {
+		return MAP_ZIP_CODE;
+	}
+	
 }

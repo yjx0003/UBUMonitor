@@ -1,6 +1,6 @@
 package es.ubu.lsi.ubumonitor;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
@@ -8,12 +8,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import es.ubu.lsi.ubumonitor.sigma.controller.SigmaParser;
+import es.ubu.lsi.ubumonitor.sigma.model.Province;
 import es.ubu.lsi.ubumonitor.sigma.model.Student;
 import es.ubu.lsi.ubumonitor.view.chart.sigma.SigmaBoxplot;
 import es.ubu.lsi.ubumonitor.view.chart.sigma.SigmaUsualAddressMap;
@@ -84,7 +86,7 @@ public class SigmaTest {
 		for(Student student: students) {
 			String zipCode = SigmaUsualAddressMap.getProviceZipCode(student.getUsualAddress());
 			int intValue = Integer.valueOf(zipCode);
-			assertTrue("Error fuera de rango: "+intValue +"\nEstudiante: " + student.getFullName(), intValue >= 0 && intValue<= 52);
+			assertTrue( intValue >= 0 && intValue<= 52,"Error fuera de rango: "+intValue +"\nEstudiante: " + student.getFullName());
 		}
 		
 	}
@@ -96,8 +98,16 @@ public class SigmaTest {
 		for(Student student: students) {
 			String zipCode = SigmaUsualAddressMap.getProviceZipCode(student.getCourseAddress());
 			int intValue = Integer.valueOf(zipCode);
-			assertTrue("Error fuera de rango: "+intValue +"\nEstudiante: " + student.getFullName(), intValue >= 0 && intValue<= 52);
+			assertTrue( intValue >= 0 && intValue<= 52, "Error fuera de rango: "+intValue +"\nEstudiante: " + student.getFullName());
 		}
+		
+	}
+	
+	@Test
+	public void mapZipCodeTest() {
+		
+		Map<String, Province> map = Province.getMapZipCode();
+		assertEquals(53, map.size());
 		
 	}
 

@@ -101,7 +101,7 @@ public class SigmaUsualAddressMap extends Plotly {
 				labels.addWithQuote(province.getName());
 				values.add(nStudents);
 				parents.addWithQuote(autonomousCommunity);
-				ids.addWithQuote(province);
+				ids.addWithQuote(province.getZipCode());
 				communityTotal += nStudents;
 				total += nStudents;
 			}

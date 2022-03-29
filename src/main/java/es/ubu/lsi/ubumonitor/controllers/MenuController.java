@@ -652,7 +652,7 @@ public class MenuController {
 	public void importSigma() {
 		UtilMethods.fileAction(null, ConfigHelper.getProperty("importSigmaFolderPath", "./"), controller.getStage(),
 				FileUtil.FileChooserType.OPEN, file -> {
-					ConfigHelper.setProperty("importSigmaFolderPath", file.toString());
+					ConfigHelper.setProperty("importSigmaFolderPath", file.getParentFile().toString());
 					sigma(file);
 					
 				}, false, FileUtil.XLS);

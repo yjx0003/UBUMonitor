@@ -49,7 +49,7 @@ public class SigmaParallelGenderAccess extends Plotly {
 		Map<EnrolledUser, DescriptiveStatistics> usersGrades = ParallelCategory.getUsersGrades(selectedUsers,
 				gradeItems, noGradeAsZero);
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader("userid", "username",
-				 "gender", "routeAccess" ,"gradeMean", "gradeType"))) {
+				 "gender", "accessRoute" ,"gradeMean", "gradeType"))) {
 			for (Student student: selectedStudents) {
 				EnrolledUser user = enrolledUserStudentMapping.getEnrolledUser(student);
 				printer.print(user.getId());

@@ -45,7 +45,7 @@ public class SigmaBoxplot extends Plotly {
 		Map<EnrolledUser, DescriptiveStatistics> usersGrades = ParallelCategory.getUsersGrades(selectedUsers,
 				gradeItems, noGradeAsZero);
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
-				CSVFormat.DEFAULT.withHeader("userid", "username", "routeAccess", "gradeMean"))) {
+				CSVFormat.DEFAULT.withHeader("userid", "username", "accessRoute", "gradeMean"))) {
 			for (Student student : selectedStudents) {
 				EnrolledUser user = enrolledUserStudentMapping.getEnrolledUser(student);
 				printer.print(user.getId());

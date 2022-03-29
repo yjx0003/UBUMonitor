@@ -185,5 +185,12 @@ public class Line extends Plotly {
 		}
 
 	}
+	
+	@Override
+	public String getXAxisTitle() {
+		boolean noGrade = getGeneralConfigValue("noGrade");
+		return super.getXAxisTitle() + " (" + I18n.get("noGrade." + noGrade) + ")";
+	}
+
 
 }

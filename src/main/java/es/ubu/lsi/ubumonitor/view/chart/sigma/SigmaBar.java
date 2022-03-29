@@ -32,7 +32,7 @@ public class SigmaBar extends Plotly {
 	public void exportCSV(String path) throws IOException {
 		List<EnrolledUser> selectedusers = getSelectedEnrolledUser();
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path), CSVFormat.DEFAULT.withHeader("userid", "fullname",
-				"yearsConsumed", "enrollments", "yearAccess", "yearsOld"))) {
+				"callsConsumed", "enrollments", "yearAccess", "yearsOld"))) {
 			for (EnrolledUser user : selectedusers) {
 				Student student = this.enrolledUserStudentMapping.getStudent(user);
 				if (student != null) {

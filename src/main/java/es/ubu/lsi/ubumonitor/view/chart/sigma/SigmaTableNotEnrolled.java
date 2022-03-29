@@ -39,11 +39,11 @@ public class SigmaTableNotEnrolled extends Tabulator {
 	public static final String PERIOD = "period";
 	public static final String COURSE_YEAR = "courseYear";
 	public static final String TYPE_OF_SUBJECT = "typeOfSubject";
-	public static final String YEARS_CONSUMED = "yearsConsumed";
+	public static final String CALLS_CONSUMED = "callsConsumed";
 	public static final String NUMBER_OF_ENROLS = "numberOfEnrols";
 	public static final String TYPE_ACCESS_GRADE = "typeAccessGrade";
 	public static final String YEAR_ACCESS = "yearAccess";
-	public static final String ROUTE_ACCESS = "routeAccess";
+	public static final String ACCESS_ROUTE = "accessRoute";
 	public static final String INTERNATIONAL_PROGRAM = "internationalProgram";
 	public static final String SPECIALITY = "speciality";
 	public static final String STUDY_PLAN = "studyPlan";
@@ -77,8 +77,8 @@ public class SigmaTableNotEnrolled extends Tabulator {
 		try (CSVPrinter printer = new CSVPrinter(getWritter(path),
 				CSVFormat.DEFAULT.withHeader( FULLNAME, EMAIL, DATE_OF_BIRTH, DNI, GENDER, USUAL_ADDRESS,
 						USUAL_PHONE, COURSE_ADDRESS, COURSE_PHONE, CENTER, SUBJECT, SUBJECT_CREDITS, TYPE_OF_TEACHING,
-						GROUP, PERIOD, COURSE_YEAR, TYPE_OF_SUBJECT, YEARS_CONSUMED, NUMBER_OF_ENROLS,
-						TYPE_ACCESS_GRADE, YEAR_ACCESS, ROUTE_ACCESS, INTERNATIONAL_PROGRAM, SPECIALITY, STUDY_PLAN,
+						GROUP, PERIOD, COURSE_YEAR, TYPE_OF_SUBJECT, CALLS_CONSUMED, NUMBER_OF_ENROLS,
+						TYPE_ACCESS_GRADE, YEAR_ACCESS, ACCESS_ROUTE, INTERNATIONAL_PROGRAM, SPECIALITY, STUDY_PLAN,
 						NUMBER_CREDITS_PASSED, COURSE_NUMBER_CREDITS_ENROLLED, BASIC_AND_OBLIGATORY_CREDITS_ENROLLED,
 						STUDY_PLAN_CREDITS, OPTIONAL_SUBJECTS, ENROLLED_SUBJECTS, OBSERVATIONS))) {
 			for (Student student : notEnrolledStudents) {
@@ -164,10 +164,10 @@ public class SigmaTableNotEnrolled extends Tabulator {
 			jsObject.putWithQuote(USUAL_PHONE, student.getUsualPhone());
 			jsObject.putWithQuote(COURSE_ADDRESS, student.getCourseAddress());
 			jsObject.putWithQuote(COURSE_PHONE, student.getCoursePhone());
-			jsObject.putWithQuote(YEARS_CONSUMED, student.getYearsConsumed());
+			jsObject.putWithQuote(CALLS_CONSUMED, student.getYearsConsumed());
 			jsObject.putWithQuote(NUMBER_OF_ENROLS, student.getNumberOfEnrols());
 			jsObject.putWithQuote(YEAR_ACCESS, student.getYearAccess());
-			jsObject.putWithQuote(ROUTE_ACCESS, student.getRouteAccess());
+			jsObject.putWithQuote(ACCESS_ROUTE, student.getRouteAccess());
 			jsObject.putWithQuote(INTERNATIONAL_PROGRAM, student.getInternationalProgram());
 			jsObject.putWithQuote(SPECIALITY, student.getSpeciality());
 			jsObject.putWithQuote(BASIC_AND_OBLIGATORY_CREDITS_ENROLLED,
@@ -190,8 +190,8 @@ public class SigmaTableNotEnrolled extends Tabulator {
 		columns.add(createColumn(COURSE_ADDRESS));
 		columns.add(createColumn(COURSE_PHONE));
 		columns.add(createColumn(YEAR_ACCESS));
-		columns.add(createColumn(ROUTE_ACCESS));
-		columns.add(createColumn(YEARS_CONSUMED));
+		columns.add(createColumn(ACCESS_ROUTE));
+		columns.add(createColumn(CALLS_CONSUMED));
 		columns.add(createColumn(NUMBER_OF_ENROLS));
 		columns.add(createColumn(NUMBER_CREDITS_PASSED));
 		columns.add(createColumn(COURSE_NUMBER_CREDITS_ENROLLED));

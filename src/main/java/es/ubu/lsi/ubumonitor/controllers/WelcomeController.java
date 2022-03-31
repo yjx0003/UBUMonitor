@@ -641,6 +641,7 @@ public class WelcomeController implements Initializable {
 
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
+			controller.setPreviousPassword(result.get());
 			loadData(result.get());
 			
 		}

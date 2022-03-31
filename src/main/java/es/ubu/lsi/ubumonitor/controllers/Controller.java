@@ -52,6 +52,7 @@ public class Controller {
 	private Login login;
 	private String username;
 	private String password;
+	private String previousPassword;
 	private boolean offlineMode;
 	private DataBase defaultDatabase;
 	private MainConfiguration mainConfiguration;
@@ -418,6 +419,16 @@ public class Controller {
 		return getHostUserModelversionSigmaDir()
 				.resolve(getCourseFile(getActualCourse()))
 				.toFile();
+	}
+
+	public void setPreviousPassword(String password) {
+		this.previousPassword = password;
+		
+	}
+	
+	public String getPreviousPassword() {
+		return previousPassword;
+		
 	}
 
 }

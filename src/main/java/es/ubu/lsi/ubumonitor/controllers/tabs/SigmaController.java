@@ -27,7 +27,6 @@ public class SigmaController extends WebViewAction {
 			Stage stage) {
 		Controller controller = Controller.getInstance();
 		File sigmaFile = controller.getSigmaCache();
-		
 
 		if (!sigmaFile.exists()) {
 			mainController.getWebViewTabsController()
@@ -38,16 +37,21 @@ public class SigmaController extends WebViewAction {
 			List<Student> students;
 			try {
 				students = (List<Student>) Serialization.decrypt(controller.getPassword(), sigmaFile.toString());
-				
+
 			} catch (Exception e) {
-				students = Collections.emptyList();
-				UtilMethods.errorWindow("No se puede cargar la cache de Sigma, vuelva a importarlo");
+				try {
+					students = (List<Student>) Serialization.decrypt(controller.getPreviousPassword(),
+							sigmaFile.toString());
+
+				} catch (Exception ex) {
+					students = Collections.emptyList();
+					UtilMethods.errorWindow("No se puede cargar la cache de Sigma, vuelva a importarlo", ex);
+				}
 			}
 			javaConnector = new SigmaConnector(webViewController.getWebViewCharts(), mainConfiguration, mainController,
 					actualCourse, students);
 			init(tab, actualCourse, mainConfiguration, stage, javaConnector);
 		}
-		
 
 	}
 
@@ -74,12 +78,13 @@ public class SigmaController extends WebViewAction {
 		updateChart();
 
 	}
+
 	@Override
 	public void onSetTabGrades() {
 		javaConnector.updateChart();
 
 	}
-	
+
 	@Override
 	public void updateTreeViewGradeItem() {
 		javaConnector.updateChart();

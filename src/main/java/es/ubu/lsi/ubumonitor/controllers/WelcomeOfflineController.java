@@ -119,7 +119,6 @@ public class WelcomeOfflineController implements Initializable {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		
 		try {
 			conexionLabel.setText(I18n.get("text.online_" + !controller.isOfflineMode()));
 			lblUser.setText(I18n.get("label.welcome") + " " + controller.getUsername());
@@ -386,6 +385,7 @@ public class WelcomeOfflineController implements Initializable {
 		// Traditional way to get the response value.
 		Optional<Pair<String, Boolean>> result = dialog.showAndWait();
 		if (result.isPresent()) {
+			controller.setPreviousPassword(result.get().getKey());
 			loadData(file, result.get().getKey());
 		}
 

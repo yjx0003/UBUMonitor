@@ -58,7 +58,7 @@ public class SigmaBar extends Plotly {
 		Map<Integer, List<Student>> yearsOld = students.stream()
 				.collect(Collectors.groupingBy(Student::getYearsOld, TreeMap::new, Collectors.toList()));
 
-		data.add(createData(yearsConsumed, students.size(), I18n.get("sigma.yearsConsumed"), "x1", "x1"));
+		data.add(createData(yearsConsumed, students.size(), I18n.get("sigma.callsConsumed"), "x1", "x1"));
 		data.add(createData(numberOfEnrols, students.size(), I18n.get("sigma.numberOfEnrols"), "x2", "y2"));
 		data.add(createData(yearsAccess, students.size(), I18n.get("sigma.yearsAccess"), "x3", "y3"));
 		data.add(createData(yearsOld, students.size(), I18n.get("sigma.yearsOld"), "x4", "y4"));
@@ -108,7 +108,7 @@ public class SigmaBar extends Plotly {
 	@Override
 	public void createLayout(JSObject layout) {
 		layout.put("grid", "{rows:2,columns:2,pattern: 'independent'}");
-		layout.put("xaxis", "{type:'category', title:'" + I18n.get("sigma.yearsConsumed") + "'}");
+		layout.put("xaxis", "{type:'category', title:'" + I18n.get("sigma.callsConsumed") + "'}");
 		layout.put("xaxis2", "{type:'category', title:'" + I18n.get("sigma.numberOfEnrols") + "'}");
 		layout.put("xaxis3", "{type:'category', title:'" + I18n.get("sigma.yearsAccess") + "'}");
 		layout.put("xaxis4", "{type:'category', title:'" + I18n.get("sigma.yearsOld") + "'}");

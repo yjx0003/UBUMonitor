@@ -5,8 +5,9 @@
 # UBUMonitor
 [![GitHub release](https://img.shields.io/github/release/yjx0003/UBUMonitor.svg)](https://github.com/yjx0003/UBUMonitor/releases/)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f79d51e496b3495690aa6480269536b8)](https://www.codacy.com/app/yjx0003/UBUMonitor?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yjx0003/UBUMonitor&amp;utm_campaign=Badge_Grade)
-[![HitCount](http://hits.dwyl.io/yjx0003/UBUMonitor.svg)](http://hits.dwyl.io/yjx0003/UBUMonitor)
-<p align="center"><img height="300" src="src/main/resources/img/logo.png" />
+
+## Versión actualizable
+La versión actualizable de la aplicación está disponible: [Aquí](https://github.com/yjx0003/UBUMonitorLauncher/releases)
 
 ## Monitorización de alumnos en la plataforma Moodle
 ### Descripción:
@@ -119,11 +120,11 @@ Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), d
   * Versión: **1.0.0-rc.5**
   * [Github](https://github.com/niklasvh/html2canvas/)
 * [Plotly](https://plotly.com/javascript/)
-  * Versión: **1.55.2**
+  * Versión: **2.6.4**
   * [Github](https://github.com/plotly/plotly.js)
   * [CDNJS](https://cdnjs.com/libraries/plotly.js)
 * [Tabulator](http://tabulator.info/)
-  * Versión: **4.8.2**
+  * Versión: **4.9.3**
   * [Github](https://github.com/olifolkerd/tabulator)
   * [CDNJS](https://cdnjs.com/libraries/tabulator)
 * [Vis Network](https://visjs.github.io/vis-network/docs/network/)

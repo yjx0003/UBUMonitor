@@ -18,7 +18,7 @@ Tool for displaying grades and course records (logs) on different types of chart
 This application is aimed at teachers who use Moodle services.
 
 This version is the continuation of [Félix Nogal Santamaría](https://github.com/huco95) [UBUGrades](https://github.com/huco95/UBUGrades) application.
-## Citar this
+## Cite this
 [Cite this](https://www.mdpi.com/2079-9292/11/6/954#cite)
 ## User's manual:
 <!--* https://ubumonitor.gitbook.io/ubumonitor/-->

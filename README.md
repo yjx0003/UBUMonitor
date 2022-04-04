@@ -19,7 +19,7 @@ This application is aimed at teachers who use Moodle services.
 
 This version is the continuation of [Félix Nogal Santamaría](https://github.com/huco95) [UBUGrades](https://github.com/huco95/UBUGrades) application.
 ## Citar this
-[Citar this](https://www.mdpi.com/2079-9292/11/6/954#cite)
+[Cite this](https://www.mdpi.com/2079-9292/11/6/954#cite)
 ## User's manual:
 <!--* https://ubumonitor.gitbook.io/ubumonitor/-->
 * https://ubumonitordocs.readthedocs.io/es/latest/

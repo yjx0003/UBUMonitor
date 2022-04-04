@@ -576,6 +576,7 @@ public class MenuController {
 		return new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
+				LogCreator.setDateTimeFormatter(controller.getDataBase().getRelease());
 				LogCreator.setDateTimeFormatter(ZoneId.systemDefault());
 				Logs logs = new Logs(ZoneId.systemDefault());
 				Course course = controller.getActualCourse();

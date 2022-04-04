@@ -56,6 +56,7 @@ public class Controller {
 	private boolean offlineMode;
 	private DataBase defaultDatabase;
 	private MainConfiguration mainConfiguration;
+	private String release;
 
 	/**
 	 * Usuario actual.
@@ -429,6 +430,15 @@ public class Controller {
 	public String getPreviousPassword() {
 		return previousPassword;
 		
+	}
+
+	public void setRelease(String release) {
+		this.release = release;
+		
+	}
+	
+	public String getRelease() {
+		return release;
 	}
 
 }

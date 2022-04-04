@@ -22,6 +22,7 @@ public class DataBase implements Serializable {
 	private byte[] userPhoto;
 	private String fullName;
 	private ZoneId userZoneId;
+	private String release;
 
 	private SubDataBase<Role> roles;
 	private SubDataBase<Group> groups;
@@ -167,6 +168,20 @@ public class DataBase implements Serializable {
 
 	public void setUserZoneId(ZoneId userZoneId) {
 		this.userZoneId = userZoneId;
+	}
+
+	/**
+	 * @return the release
+	 */
+	public String getRelease() {
+		return release;
+	}
+
+	/**
+	 * @param release the release to set
+	 */
+	public void setRelease(String release) {
+		this.release = release;
 	}
 
 }

@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import org.controlsfx.control.textfield.TextFields;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -441,9 +442,10 @@ public class LoginController implements Initializable {
 
 				try {
 					LOGGER.info("Recogiendo info del usuario");
-					String validUsername = UtilMethods
-							.getJSONObjectResponse(controller.getWebService(), new CoreWebserviceGetSiteInfo())
-							.getString(Constants.USERNAME);
+					JSONObject jsonObject = UtilMethods
+							.getJSONObjectResponse(controller.getWebService(), new CoreWebserviceGetSiteInfo());
+					String validUsername = jsonObject.getString(Constants.USERNAME);
+					controller.setRelease(jsonObject.getString("release"));
 					PopulateMoodleUser populateMoodleUser = new PopulateMoodleUser(controller.getWebService());
 					MoodleUser moodleUser = populateMoodleUser.populateMoodleUser(validUsername, controller.getUrlHost()
 							.toString());

@@ -773,7 +773,7 @@ public class WelcomeController implements Initializable {
 				Course actualCourse = dataBase.getActualCourse();
 				LOGGER.info("Cargando datos del curso: {}", actualCourse.getFullName());
 				// Establecemos los usuarios matriculados
-
+				dataBase.setRelease(controller.getRelease());
 				dataBase.getCourses()
 						.getMap()
 						.values()
@@ -841,7 +841,7 @@ public class WelcomeController implements Initializable {
 
 							updateMessage(MessageFormat.format(I18n.get("label.downloadinglog"), tries, limitRelogin));
 							if (actualCourse.getUpdatedLog() == null) {
-
+								LogCreator.setDateTimeFormatter(controller.getRelease());
 								DownloadLogController downloadLogController = LogCreator.download();
 
 								Response response = downloadLogController.downloadLog(false);

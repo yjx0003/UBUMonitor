@@ -86,7 +86,8 @@ public class MainController implements Initializable {
 			menuController.init(this);
 			selectionUserController.init(this, controller.getActualCourse(), controller.getMainConfiguration());
 			selectionMainController.init(this, controller.getActualCourse());
-			webViewTabsController.init(this, controller.getActualCourse(), controller.getMainConfiguration(), controller.getStage());
+			webViewTabsController.init(this, controller.getActualCourse(), controller.getMainConfiguration(),
+					controller.getStage());
 
 			initStatusBar();
 
@@ -106,8 +107,10 @@ public class MainController implements Initializable {
 		actualHost.setGraphic(linkImage);
 		actualHost.setOnAction(event -> UtilMethods.openURL(actualHost.getText()));
 		// Mostramos Curso actual
-		Label lblActualCourse = new Label(controller.getActualCourse().toString());
-
+		Label lblActualCourse = new Label(controller.getActualCourse()
+				.toString());
+		Label lblRelease = new Label(controller.getDataBase()
+				.getRelease());
 		ImageView online = new ImageView(
 				controller.isOfflineMode() ? "/img/circle_offline.png" : "/img/circle_online.png");
 		online.setFitHeight(20);
@@ -118,7 +121,8 @@ public class MainController implements Initializable {
 		left.setSpacing(5);
 		left.getChildren()
 				.addAll(online, new Separator(Orientation.VERTICAL), lblActualCourse,
-						new Separator(Orientation.VERTICAL), actualHost);
+						new Separator(Orientation.VERTICAL), lblRelease, new Separator(Orientation.VERTICAL),
+						actualHost);
 
 		statusBar.getLeftItems()
 				.add(left);

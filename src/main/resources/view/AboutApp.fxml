@@ -102,7 +102,8 @@
         </columnConstraints>
         <rowConstraints>
             <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="63.0" minHeight="10.0" prefHeight="20.0" valignment="CENTER" vgrow="SOMETIMES" />
+          <RowConstraints valignment="CENTER" vgrow="NEVER" />
+            <RowConstraints valignment="CENTER" vgrow="NEVER" />
           <RowConstraints maxHeight="119.0" minHeight="10.0" prefHeight="119.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
@@ -111,21 +112,22 @@
                   <Insets left="50.0" right="50.0" />
                </GridPane.margin>
             </TextArea>
-            <Label text="%text.thankstitle" GridPane.rowIndex="1">
+            <Label text="%text.thankstitle" GridPane.rowIndex="1" GridPane.rowSpan="2">
                <font>
                   <Font size="24.0" />
                </font>
             </Label>
             <Hyperlink onAction="#openLicense" text="%text.license" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <GridPane.margin>
-                  <Insets right="20.0" />
+                  <Insets />
                </GridPane.margin>
             </Hyperlink>
-            <TextArea editable="false" prefHeight="200.0" prefWidth="200.0" text="%text.thanks" wrapText="true" GridPane.columnSpan="2" GridPane.rowIndex="2">
+            <TextArea editable="false" prefHeight="200.0" prefWidth="200.0" text="%text.thanks" wrapText="true" GridPane.columnSpan="2" GridPane.rowIndex="3">
                <GridPane.margin>
                   <Insets left="50.0" right="50.0" />
                </GridPane.margin>
             </TextArea>
+            <Hyperlink onAction="#openPaper" text="%text.citepaper" GridPane.columnIndex="1" GridPane.rowIndex="2" />
          </children>
       </GridPane>
       <ImageView fitHeight="90.0" fitWidth="159.0" layoutX="577.0" layoutY="435.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="2">

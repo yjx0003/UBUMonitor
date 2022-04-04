@@ -8,6 +8,7 @@ import es.ubu.lsi.ubumonitor.controllers.tabs.EnrollmentController;
 import es.ubu.lsi.ubumonitor.controllers.tabs.ForumController;
 import es.ubu.lsi.ubumonitor.controllers.tabs.MultiController;
 import es.ubu.lsi.ubumonitor.controllers.tabs.RiskController;
+import es.ubu.lsi.ubumonitor.controllers.tabs.SigmaController;
 import es.ubu.lsi.ubumonitor.controllers.tabs.VisualizationController;
 import es.ubu.lsi.ubumonitor.model.Course;
 import javafx.fxml.FXML;
@@ -53,13 +54,18 @@ public class WebViewTabsController {
 	@FXML
 	private MultiController multiController;
 	
-	
 	@FXML
 	private Tab enrollmentTab;
 	
 	@FXML
 	private EnrollmentController enrollmentController;
 
+	@FXML
+	private SigmaController sigmaController;
+	
+	@FXML
+	private Tab sigmaTab;
+	
 	private MainController mainController;
 	
 	public void init(MainController mainController, Course actualCourse, MainConfiguration mainConfiguration, Stage stage) {
@@ -92,13 +98,15 @@ public class WebViewTabsController {
 					}
 				});
 
-
+		
+		
 		add(visualizationController, mainController, visualizationTab, actualCourse, mainConfiguration, stage);
 		add(riskController, mainController, riskTab, actualCourse, mainConfiguration, stage);
 		add(forumController, mainController, forumTab, actualCourse, mainConfiguration, stage);
 		add(calendarEventController, mainController, calendarEventTab, actualCourse, mainConfiguration, stage);
 		add(multiController, mainController, multiTab, actualCourse, mainConfiguration, stage);
 		add(enrollmentController, mainController, enrollmentTab, actualCourse, mainConfiguration, stage);
+		add(sigmaController, mainController, sigmaTab, actualCourse, mainConfiguration, stage);
 	}
 
 	private void add(WebViewAction webViewAction, MainController mainController, Tab tab, Course actualCourse, MainConfiguration mainConfiguration, Stage stage) {
@@ -188,4 +196,22 @@ public class WebViewTabsController {
 	public EnrollmentController getEnrollmentController() {
 		return enrollmentController;
 	}
+
+
+	/**
+	 * @return the sigmaController
+	 */
+	public SigmaController getSigmaController() {
+		return sigmaController;
+	}
+
+
+	/**
+	 * @return the sigmaTab
+	 */
+	public Tab getSigmaTab() {
+		return sigmaTab;
+	}
+	
+	
 }

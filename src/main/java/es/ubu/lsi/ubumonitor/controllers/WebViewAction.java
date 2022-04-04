@@ -157,7 +157,7 @@ public abstract class WebViewAction implements MainAction {
 		copyImage.setOnAction(e -> copyImage());
 
 		contextMenu.getItems()
-				.addAll(exportPNG, exportCSV, copyImage);
+				.addAll(exportPNG, copyImage, exportCSV);
 		webViewController.getWebViewCharts()
 				.setOnMouseClicked(e -> {
 					if (e.getButton() == MouseButton.SECONDARY) {

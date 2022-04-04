@@ -3,42 +3,55 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 
-<TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.ubu.lsi.ubumonitor.controllers.WebViewTabsController">
-   <tabs>
-      <Tab fx:id="visualizationTab" closable="false" text="%tab.visualization">
-         <content>
-            <fx:include fx:id="visualization" source="tabs/Visualization.fxml" />
-         </content>
-      </Tab>
-      <Tab fx:id="multiTab" text="%tab.multi">
-         <content>
-            <fx:include fx:id="multi" source="tabs/Multi.fxml" />
-         </content>
-      </Tab>
-      <Tab fx:id="forumTab" text="%tab.forum">
-         <content>
-            <fx:include fx:id="forum" source="tabs/ForumView.fxml" />
-         </content>
-      </Tab>
-      <Tab fx:id="riskTab" closable="false" text="%tab.risk">
-         <content>
-            <fx:include fx:id="risk" source="tabs/Risk.fxml" />
-         </content>
-      </Tab>
-      <Tab fx:id="enrollmentTab" text="%tab.enrollment">
-         <content>
-            <fx:include fx:id="enrollment" source="tabs/Enrollment.fxml" />
-         </content>
-      </Tab>
-      <Tab fx:id="calendarEventTab" text="%tab.calendarevent">
-         <content>
-            <fx:include fx:id="calendarEvent" source="tabs/CalendarEvent.fxml" />
-         </content>
-      </Tab>
-      <Tab fx:id="clusteringTab" text="%tab.clustering">
-         <content>
-            <fx:include fx:id="clustering" source="tabs/Clustering.fxml" />
-         </content>
-      </Tab>
-   </tabs>
+<TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE"
+	xmlns="http://javafx.com/javafx/8.0.171"
+	xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="es.ubu.lsi.ubumonitor.controllers.WebViewTabsController">
+	<tabs>
+		<Tab fx:id="visualizationTab" closable="false"
+			text="%tab.visualization">
+			<content>
+				<fx:include fx:id="visualization"
+					source="tabs/Visualization.fxml" />
+			</content>
+		</Tab>
+		<Tab fx:id="multiTab" text="%tab.multi">
+			<content>
+				<fx:include fx:id="multi" source="tabs/Multi.fxml" />
+			</content>
+		</Tab>
+		<Tab fx:id="forumTab" text="%tab.forum">
+			<content>
+				<fx:include fx:id="forum" source="tabs/ForumView.fxml" />
+			</content>
+		</Tab>
+		<Tab fx:id="riskTab" closable="false" text="%tab.risk">
+			<content>
+				<fx:include fx:id="risk" source="tabs/Risk.fxml" />
+			</content>
+		</Tab>
+		<Tab fx:id="enrollmentTab" text="%tab.enrollment">
+			<content>
+				<fx:include fx:id="enrollment"
+					source="tabs/Enrollment.fxml" />
+			</content>
+		</Tab>
+		<Tab fx:id="calendarEventTab" text="%tab.calendarevent">
+			<content>
+				<fx:include fx:id="calendarEvent"
+					source="tabs/CalendarEvent.fxml" />
+			</content>
+		</Tab>
+		<Tab fx:id="clusteringTab" text="%tab.clustering">
+			<content>
+				<fx:include fx:id="clustering"
+					source="tabs/Clustering.fxml" />
+			</content>
+		</Tab>
+		<Tab fx:id="sigmaTab" text="%tab.sigma">
+			<content>
+				<fx:include fx:id="sigma" source="tabs/Sigma.fxml" />
+			</content>
+		</Tab>
+	</tabs>
 </TabPane>

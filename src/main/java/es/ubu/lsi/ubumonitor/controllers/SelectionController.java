@@ -171,6 +171,9 @@ public class SelectionController {
 								.selectedProperty())
 						.or(mainController.getWebViewTabsController()
 								.getClusteringTab()
+								.selectedProperty())
+						.or(mainController.getWebViewTabsController()
+								.getSigmaTab()
 								.selectedProperty()));
 
 		tabPane.getSelectionModel()

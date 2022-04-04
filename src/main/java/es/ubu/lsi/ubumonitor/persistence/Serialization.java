@@ -88,16 +88,16 @@ public class Serialization {
 	 * @param key contraseña
 	 * @param ruta ruta del fichero
 	 * @param object objeto
-	 * @param <T> objeto que extiende serializable
+	 * @param objeto que extiende serializable
 	 * 
 	 */
-	public static <T extends Serializable> void encrypt(String key, String ruta, T object) {
+	public static void encrypt(String key, String ruta, Object object) {
 		LOGGER.info("Intendado encriptar fichero: {}", ruta);
 
 		Cipher cipher = initCipher(key, Cipher.ENCRYPT_MODE);	
 
 		try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(ruta))) {
-			SealedObject sealedObject = new SealedObject(object, cipher);
+			SealedObject sealedObject = new SealedObject((Serializable)object, cipher);
 			outputStream.writeObject(sealedObject);
 			LOGGER.info("Encriptación correcta en {}", ruta);
 

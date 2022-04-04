@@ -55,7 +55,7 @@ public class TotalBar extends PlotlyLog {
 
 		// filtered users
 		logCounts = getTypeLogsSum(typeLogs,
-				dataSet.getUserLogsGroupedByLogElement(groupBy, getUsers(), typeLogs, dateStart, dateEnd));
+				dataSet.getUserLogsGroupedByLogElement(groupBy, getFilteredUsers(), typeLogs, dateStart, dateEnd));
 		data.add(createTrace(I18n.get("text.filteredusers"), typeLogs, dataSet, logCounts, horizontalMode,
 				getGeneralButtonlActive()));
 
@@ -175,7 +175,7 @@ public class TotalBar extends PlotlyLog {
 		Map<E, Integer> selectedUsersSum = getTypeLogsSum(typeLogs, map);
 		Map<E, Integer> filteredUsersSum = null;
 		if (generalActive) {
-			map = dataSet.getUserLogsGroupedByLogElement(groupBy, getUsers(), typeLogs, dateStart, dateEnd);
+			map = dataSet.getUserLogsGroupedByLogElement(groupBy, getFilteredUsers(), typeLogs, dateStart, dateEnd);
 			filteredUsersSum = getTypeLogsSum(typeLogs, map);
 		}
 		List<Map<E, Integer>> groupStats = null;
@@ -242,7 +242,7 @@ public class TotalBar extends PlotlyLog {
 	@Override
 	protected <E> void exportCSVDesglosed(CSVPrinter printer, DataSet<E> dataSet, List<E> typeLogs) throws IOException {
 		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
-		List<EnrolledUser> filteredUsers = getUsers();
+		List<EnrolledUser> filteredUsers = getFilteredUsers();
 
 		boolean groupActive = getGroupButtonActive();
 

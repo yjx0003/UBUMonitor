@@ -76,8 +76,6 @@ public class WelcomeOfflineController implements Initializable {
 	 * path con directorios de los ficheros cache
 	 */
 	private Controller controller = Controller.getInstance();
-	
-	private boolean newPassword;
 
 	@FXML
 	private AnchorPane anchorPane;
@@ -121,7 +119,6 @@ public class WelcomeOfflineController implements Initializable {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		
 		try {
 			conexionLabel.setText(I18n.get("text.online_" + !controller.isOfflineMode()));
 			lblUser.setText(I18n.get("label.welcome") + " " + controller.getUsername());
@@ -204,18 +201,31 @@ public class WelcomeOfflineController implements Initializable {
 		listView.getSelectionModel()
 				.selectedItemProperty()
 				.addListener((ov, value, newValue) -> checkFile(newValue));
-		listView.setCellFactory(callback -> new ListCell<File>() {
-			@Override
-			public void updateItem(File file, boolean empty) {
-				super.updateItem(file, empty);
-				if (empty || file == null) {
-					setText(null);
-				} else {
-					setText(file.getName());
-				}
-			}
+		listView.setCellFactory(param -> new ListCell<File>(){
+            @Override
+            protected void updateItem(File item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item==null) {
+                    setGraphic(null);
+                    setText(null); 
+                    // other stuff to do...
 
-		});
+                }else{
+
+                    // set the width's
+                    setMinWidth(param.getWidth());
+                    setMaxWidth(param.getWidth());
+                    setPrefWidth(param.getWidth());
+
+                    // allow wrapping
+                    setWrapText(true);
+
+                    setText(item.getName());
+
+
+                }
+            }
+        });
 
 	}
 
@@ -263,7 +273,7 @@ public class WelcomeOfflineController implements Initializable {
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getName());
 
 		loadData(selectedCourse, controller.getPassword());
-		if (newPassword && isBBDDLoaded) {
+		if (isBBDDLoaded) {
 			Serialization.encrypt(controller.getPassword(), selectedCourse.toString(), controller.getDataBase());
 		}
 		loadNextWindow();
@@ -375,8 +385,8 @@ public class WelcomeOfflineController implements Initializable {
 		// Traditional way to get the response value.
 		Optional<Pair<String, Boolean>> result = dialog.showAndWait();
 		if (result.isPresent()) {
+			controller.setPreviousPassword(result.get().getKey());
 			loadData(file, result.get().getKey());
-			newPassword = result.get().getValue();
 		}
 
 	}

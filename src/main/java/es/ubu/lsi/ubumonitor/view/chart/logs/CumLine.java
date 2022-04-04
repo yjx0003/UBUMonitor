@@ -36,16 +36,20 @@ public class CumLine extends PlotlyLog {
 	public <E> JSArray createData(List<E> typeLogs, DataSet<E> dataSet, List<EnrolledUser> selectedUsers,
 			LocalDate dateStart, LocalDate dateEnd, GroupByAbstract<?> groupBy) {
 		JSArray data = new JSArray();
-		List<EnrolledUser> enrolledUsers = getUsers();
+		List<EnrolledUser> filteredUsers = getFilteredUsers();
 
 		List<String> rangeDates = groupBy.getRangeString(dateStart, dateEnd);
-		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, enrolledUsers, typeLogs,
+		Map<EnrolledUser, Map<E, List<Integer>>> userCounts = dataSet.getUserCounts(groupBy, filteredUsers, typeLogs,
 				dateStart, dateEnd);
 
-		Map<E, List<Double>> means = dataSet.getMeans(groupBy, enrolledUsers, typeLogs, dateStart, dateEnd);
-
+		
 		createUsersTraces(data, selectedUsers, typeLogs, userCounts, rangeDates);
-		createMeanTrace(data, typeLogs, means, rangeDates, I18n.get("chartlabel.generalMean"));
+		
+		Map<E, List<Double>> avgFilteredUsers = dataSet.getMeans(groupBy, filteredUsers, typeLogs, dateStart, dateEnd);
+		createMeanTrace(data, typeLogs, avgFilteredUsers, rangeDates, I18n.get("text.meanfilteredusers"));
+		
+		Map<E, List<Double>> avgSelectedUsers = dataSet.getMeans(groupBy, selectedUsers, typeLogs, dateStart, dateEnd);
+		createMeanTrace(data, typeLogs, avgSelectedUsers, rangeDates, I18n.get("text.meanselectedusers"));
 
 		return data;
 	}
@@ -161,7 +165,7 @@ public class CumLine extends PlotlyLog {
 					Function<GroupByAbstract<?>, FirstGroupBy<E, T>> function) {
 
 				return function.apply(choiceBoxDate.getValue())
-						.getCumulativeMax(getUsers(), logType, datePickerStart.getValue(), datePickerEnd.getValue());
+						.getCumulativeMax(getFilteredUsers(), logType, datePickerStart.getValue(), datePickerEnd.getValue());
 			}
 		});
 

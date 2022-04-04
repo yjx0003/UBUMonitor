@@ -44,8 +44,9 @@ public class LogCreator {
 
 	private static final Controller CONTROLLER = Controller.getInstance();
 
-	private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/MM/yy, kk:mm");
-
+	private static DateTimeFormatter dateTimeFormatter3 = DateTimeFormatter.ofPattern("d/MM/yy, kk:mm");
+	private static DateTimeFormatter dateTimeFormatter4 = DateTimeFormatter.ofPattern("d/MM/yy, kk:mm:ss");
+	private static DateTimeFormatter actualDateTimeFormatter;
 	private static final Set<String> NOT_AVAIBLE_COMPONENTS = new TreeSet<>();
 	private static final Set<String> NOT_AVAIBLE_EVENTS = new TreeSet<>();
 	
@@ -73,7 +74,15 @@ public class LogCreator {
 	 * @param zoneId zona horaria
 	 */
 	public static void setDateTimeFormatter(ZoneId zoneId) {
-		dateTimeFormatter = dateTimeFormatter.withZone(zoneId);
+		actualDateTimeFormatter = actualDateTimeFormatter.withZone(zoneId);
+	}
+	
+	public static void setDateTimeFormatter(String release) {
+		if (release.startsWith("4")) {
+			actualDateTimeFormatter = dateTimeFormatter4;
+		}else {
+			actualDateTimeFormatter = dateTimeFormatter3;
+		}
 	}
 
 	public static void createLogsMultipleDays(Logs logs) throws IOException {
@@ -215,7 +224,7 @@ public class LogCreator {
 		//considering Time column always first
 		String time = csvRecord.get(0);
 
-		ZonedDateTime zdt = ZonedDateTime.parse(time, dateTimeFormatter);
+		ZonedDateTime zdt = ZonedDateTime.parse(time, actualDateTimeFormatter);
 		log.setTime(zdt);
 
 		if (headers.contains(LogCreator.ORIGIN)) {

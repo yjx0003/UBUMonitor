@@ -19,6 +19,8 @@ Esta aplicación está dirigida a docentes que usen los servicios de Moodle.
 Esta versión es la continuación de [UBUGrades](https://github.com/huco95/UBUGrades) de [Félix Nogal Santamaría](https://github.com/huco95).
 <p align="center"><img src="/latex/img/ejemplo_barras_apiladas.png" />
 
+## Citar trabajo
+[Citar este trabajo](https://www.mdpi.com/2079-9292/11/6/954#cite)
 ## Manual de usuario:
 <!--* https://ubumonitor.gitbook.io/ubumonitor/-->
 * https://ubumonitordocs.readthedocs.io/es/latest/
@@ -147,6 +149,5 @@ Las librerías externas de **Java** están incluidas en la carpeta [lib](lib), d
 ## Tutores
 - Raúl Marticorena Sánchez
 - Carlos Pardo Aguilar
-
 ## Licencia
 Este proyecto está licenciado bajo la licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.

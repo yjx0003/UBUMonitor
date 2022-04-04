@@ -1,5 +1,6 @@
 package es.ubu.lsi.ubumonitor.controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -51,9 +52,11 @@ public class Controller {
 	private Login login;
 	private String username;
 	private String password;
+	private String previousPassword;
 	private boolean offlineMode;
 	private DataBase defaultDatabase;
 	private MainConfiguration mainConfiguration;
+	private String release;
 
 	/**
 	 * Usuario actual.
@@ -63,6 +66,8 @@ public class Controller {
 	private Path configuration;
 
 	private ZonedDateTime defaultUpdate;
+
+	private Path hostUserModelversionSigmaDir;
 
 	/**
 	 * Instacia única de la clase Controller.
@@ -268,6 +273,9 @@ public class Controller {
 				AppInfo.ARCHIVED_DIR);
 		this.hostUserDir = Paths.get(AppInfo.CACHE_DIR, hostName, userName);
 		this.configuration = Paths.get(AppInfo.CONFIGURATION_DIR, hostName, userName);
+		this.hostUserModelversionSigmaDir = Paths.get(AppInfo.CACHE_DIR, hostName, userName, AppInfo.MODEL_VERSION,
+				AppInfo.SIGMA_DIR);
+
 	}
 
 	/**
@@ -399,6 +407,38 @@ public class Controller {
 	 */
 	public void setActualCoursePath(Path actualCoursePath) {
 		this.actualCoursePath = actualCoursePath;
+	}
+
+	/**
+	 * @return the hostUserModelversionSigmaDir
+	 */
+	public Path getHostUserModelversionSigmaDir() {
+		return hostUserModelversionSigmaDir;
+	}
+	
+	public File getSigmaCache() {
+		return getHostUserModelversionSigmaDir()
+				.resolve(getCourseFile(getActualCourse()))
+				.toFile();
+	}
+
+	public void setPreviousPassword(String password) {
+		this.previousPassword = password;
+		
+	}
+	
+	public String getPreviousPassword() {
+		return previousPassword;
+		
+	}
+
+	public void setRelease(String release) {
+		this.release = release;
+		
+	}
+	
+	public String getRelease() {
+		return release;
 	}
 
 }

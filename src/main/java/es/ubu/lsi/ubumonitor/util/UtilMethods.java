@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
@@ -803,6 +804,24 @@ public class UtilMethods {
 			return 0;
 		}
 		return Collections.max(values);
+	}
+	
+	public static void noGradeValues(double grade, DescriptiveStatistics descriptiveStatistics, boolean noGrade) {
+		if(!Double.isNaN(grade)) {
+			descriptiveStatistics.addValue(grade);
+			
+		} else if(noGrade){
+			descriptiveStatistics.addValue(0);
+		}
+	}
+	
+	public static void noGradeValues(double grade, JSArray jsArray, boolean noGrade) {
+		if(!Double.isNaN(grade)) {
+			jsArray.add(grade);
+			
+		} else if(noGrade){
+			jsArray.add(0);
+		}
 	}
 
 }

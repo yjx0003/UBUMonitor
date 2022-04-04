@@ -192,5 +192,11 @@ public class Violin extends Plotly {
 		printer.print(stat);
 		printer.printRecord(count);
 	}
+	
+	@Override
+	public String getXAxisTitle() {
+		boolean noGrade = getGeneralConfigValue("noGrade");
+		return super.getXAxisTitle() + " (" + I18n.get("noGrade." + noGrade) + ")";
+	}
 
 }

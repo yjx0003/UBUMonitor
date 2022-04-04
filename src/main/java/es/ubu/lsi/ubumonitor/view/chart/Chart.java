@@ -23,7 +23,6 @@ import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
 import es.ubu.lsi.ubumonitor.model.Role;
-import es.ubu.lsi.ubumonitor.model.Stats;
 import es.ubu.lsi.ubumonitor.util.Charsets;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
@@ -41,7 +40,6 @@ public abstract class Chart implements ExportableChart {
 
 	protected WebEngine webViewChartsEngine;
 	private CheckComboBox<Group> checkComboBoxGroup;
-	protected Stats stats;
 	protected ChartType chartType;
 	protected boolean useLegend;
 	protected boolean useGeneralButton;
@@ -65,7 +63,6 @@ public abstract class Chart implements ExportableChart {
 
 		this.selectionUserController = mainController.getSelectionUserController();
 		this.checkComboBoxGroup = selectionUserController.getCheckComboBoxGroup();
-		this.stats = mainController.getStats();
 		this.mainController = mainController;
 		this.chartType = chartType;
 
@@ -95,7 +92,7 @@ public abstract class Chart implements ExportableChart {
 		return selectionUserController.getSelectedUsers();
 	}
 
-	public List<EnrolledUser> getUsers() {
+	public List<EnrolledUser> getFilteredUsers() {
 		return selectionUserController.getFilteredUsers();
 	}
 
@@ -110,7 +107,7 @@ public abstract class Chart implements ExportableChart {
 		}
 
 		EnrolledUser selectedUser = getSelectedEnrolledUser().get(index);
-		return getUsers().indexOf(selectedUser);
+		return getFilteredUsers().indexOf(selectedUser);
 	}
 
 	public static <T> String rgba(T hash, double alpha) {
@@ -302,10 +299,6 @@ public abstract class Chart implements ExportableChart {
 
 	public CheckComboBox<Group> getSlcGroup() {
 		return checkComboBoxGroup;
-	}
-
-	public Stats getStats() {
-		return stats;
 	}
 
 	public Controller getController() {

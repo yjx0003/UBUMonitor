@@ -70,6 +70,12 @@ public class AboutAppController implements Initializable {
 	public void openDigit() {
 		UtilMethods.openURL("https://www.ubu.es/instituto-de-formacion-e-innovacion-educativa-ifie/grupos-de-innovacion-docente-de-la-universidad-de-burgos/gid-de-la-ubu-digit-docencia-de-informatica-en-grados-de-ingenieria-y");
 	}
+	
+	public void openPaper() {
+		UtilMethods.openURL("https://www.mdpi.com/2079-9292/11/6/954#cite");
+
+	}
+	
 	private void append(String key, String value) {
 		appInfo.append(key + value + "\n");
 

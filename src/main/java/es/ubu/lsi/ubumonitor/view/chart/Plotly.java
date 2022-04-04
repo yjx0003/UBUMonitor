@@ -74,7 +74,7 @@ public abstract class Plotly extends Chart {
 				.getDataBase()
 				.getUsers()
 				.getById(userid);
-		return getUsers().indexOf(user);
+		return getFilteredUsers().indexOf(user);
 	}
 
 	@Override

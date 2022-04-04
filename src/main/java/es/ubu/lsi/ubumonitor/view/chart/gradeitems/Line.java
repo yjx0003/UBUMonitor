@@ -3,7 +3,7 @@ package es.ubu.lsi.ubumonitor.view.chart.gradeitems;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -13,10 +13,10 @@ import es.ubu.lsi.ubumonitor.controllers.MainController;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Group;
-import es.ubu.lsi.ubumonitor.model.Stats;
 import es.ubu.lsi.ubumonitor.util.I18n;
 import es.ubu.lsi.ubumonitor.util.JSArray;
 import es.ubu.lsi.ubumonitor.util.JSObject;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
 import es.ubu.lsi.ubumonitor.view.chart.ChartType;
 import es.ubu.lsi.ubumonitor.view.chart.Plotly;
 import javafx.scene.control.TreeView;
@@ -36,26 +36,32 @@ public class Line extends Plotly {
 	@Override
 	public void createData(JSArray data) {
 
-		List<EnrolledUser> users = getSelectedEnrolledUser();
+		boolean noGrade = getGeneralConfigValue("noGrade");
+		List<EnrolledUser> selectedUsers = getSelectedEnrolledUser();
+		List<EnrolledUser> filteredUsers = getFilteredUsers();
 		List<GradeItem> gradeItems = getSelectedGradeItems(treeViewGradeItem);
-
-		createUserTraces(data, users, gradeItems);
+		
+		createUserTraces(data, selectedUsers, gradeItems, noGrade);
 
 		boolean generalActive = getGeneralButtonlActive();
-		createMeanTrace(data, stats.getGeneralStats(), gradeItems, generalActive);
-
+		createMeanTrace(data, selectedUsers, gradeItems, generalActive, noGrade, I18n.get("text.meanselectedusers"));
+		createMeanTrace(data, filteredUsers, gradeItems, generalActive, noGrade, I18n.get("text.meanfilteredusers"));
+		
 		boolean groupActive = getGroupButtonActive();
-		createGroupTraces(data, getSelectedGroups(), gradeItems, stats, groupActive);
+		createGroupTraces(data, getSelectedGroups(), gradeItems, groupActive, noGrade);
 	}
 
-	private void createUserTraces(JSArray data, List<EnrolledUser> users, List<GradeItem> gradeItems) {
+	private void createUserTraces(JSArray data, List<EnrolledUser> users, List<GradeItem> gradeItems, boolean noGrade) {
 
 		for (EnrolledUser user : users) {
 			JSArray x = new JSArray();
 			JSArray y = new JSArray();
 
 			for (GradeItem gradeItem : gradeItems) {
-				y.add(gradeItem.getEnrolledUserPercentage(user) / 10);
+				double grade = gradeItem.getEnrolledUserPercentage(user) / 10;
+				
+				UtilMethods.noGradeValues(grade, y, noGrade);
+				
 				x.add(gradeItem.getId());
 			}
 
@@ -64,29 +70,45 @@ public class Line extends Plotly {
 
 	}
 
-	private void createMeanTrace(JSArray data, Map<GradeItem, DescriptiveStatistics> descriptiveStats,
-			List<GradeItem> gradeItems, boolean visible) {
+	private void createMeanTrace(JSArray data, List<EnrolledUser> users, 
+			List<GradeItem> gradeItems, boolean visible, boolean noGrade, String traceName) {
 
 		JSArray x = new JSArray();
 		JSArray y = new JSArray();
 		for (GradeItem gradeItem : gradeItems) {
-			y.add(descriptiveStats.getOrDefault(gradeItem, EMPTY_DESCRIPTIVE_STATISTICS)
-					.getMean() / 10);
+			DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
+			for(EnrolledUser user: users) {
+				double grade = gradeItem.getEnrolledUserPercentage(user) / 10;
+				
+				UtilMethods.noGradeValues(grade, descriptiveStatistics, noGrade);
+			}
+				
+			
+			y.add(descriptiveStatistics.getMean());
+			
 			x.add(gradeItem.getId());
 		}
 
-		data.add(createTrace(I18n.get("chartlabel.generalMean"), x, y, visible, "dash"));
+		data.add(createTrace(traceName, x, y, visible, "dash"));
 	}
 
-	private void createGroupTraces(JSArray data, List<Group> groups, List<GradeItem> gradeItems, Stats stats,
-			boolean visible) {
+	private void createGroupTraces(JSArray data, List<Group> groups, List<GradeItem> gradeItems,
+			boolean visible, boolean noGrade) {
 		for (Group group : groups) {
 			JSArray x = new JSArray();
 			JSArray y = new JSArray();
-			Map<GradeItem, DescriptiveStatistics> descriptiveStats = stats.getGroupStats(group);
+			Set<EnrolledUser> users = group.getEnrolledUsers();
 			for (GradeItem gradeItem : gradeItems) {
-				y.add(descriptiveStats.getOrDefault(gradeItem, EMPTY_DESCRIPTIVE_STATISTICS)
-						.getMean() / 10);
+				DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
+				for(EnrolledUser user: users) {
+					double grade = gradeItem.getEnrolledUserPercentage(user) / 10;
+					
+					UtilMethods.noGradeValues(grade, descriptiveStatistics, noGrade);
+				}
+					
+				
+				y.add(descriptiveStatistics.getMean());
+				
 				x.add(gradeItem.getId());
 			}
 			data.add(createTrace(group.getGroupName(), x, y, visible, "dot"));
@@ -132,7 +154,7 @@ public class Line extends Plotly {
 
 		JSObject yaxis = new JSObject();
 		defaultAxisValues(yaxis, getYAxisTitle(), "[-0.5,10.5]");
-	
+
 		createCategoryAxis(xaxis, tickvals, ticktext);
 		layout.put("xaxis", xaxis);
 		layout.put("yaxis", yaxis);
@@ -163,5 +185,12 @@ public class Line extends Plotly {
 		}
 
 	}
+	
+	@Override
+	public String getXAxisTitle() {
+		boolean noGrade = getGeneralConfigValue("noGrade");
+		return super.getXAxisTitle() + " (" + I18n.get("noGrade." + noGrade) + ")";
+	}
+
 
 }

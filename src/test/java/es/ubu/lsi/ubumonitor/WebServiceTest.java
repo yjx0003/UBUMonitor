@@ -38,6 +38,8 @@ import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Logs;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
 import es.ubu.lsi.ubumonitor.model.Section;
+import es.ubu.lsi.ubumonitor.util.UtilMethods;
+import es.ubu.lsi.ubumonitor.webservice.api.core.webservice.CoreWebserviceGetSiteInfo;
 import es.ubu.lsi.ubumonitor.webservice.api.mod.quiz.ModQuizGetQuizzesByCourses;
 import es.ubu.lsi.ubumonitor.webservice.api.mod.quiz.ModQuizGetUserAttempts;
 import es.ubu.lsi.ubumonitor.webservice.api.tool.mobile.ToolMobileCallExternalFunctions;
@@ -142,6 +144,8 @@ public class WebServiceTest {
 	@Test
 	@Order(7)
 	public void getLogs() throws IOException {
+		JSONObject jsonObject = UtilMethods.getJSONObjectResponse(webService, new CoreWebserviceGetSiteInfo());
+		LogCreator.setDateTimeFormatter(jsonObject.getString("release"));
 		DownloadLogController downloadLogController = LogCreator.download();
 
 		Response response = downloadLogController.downloadLog(true);

@@ -838,10 +838,9 @@ public class WelcomeController implements Initializable {
 					int limitRelogin = 3;
 					while (tries <= limitRelogin && !isCancelled()) {
 						try {
-
+							LogCreator.setDateTimeFormatter(controller.getRelease());
 							updateMessage(MessageFormat.format(I18n.get("label.downloadinglog"), tries, limitRelogin));
 							if (actualCourse.getUpdatedLog() == null) {
-								LogCreator.setDateTimeFormatter(controller.getRelease());
 								DownloadLogController downloadLogController = LogCreator.download();
 
 								Response response = downloadLogController.downloadLog(false);

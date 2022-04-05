@@ -37,10 +37,6 @@ External **JavaScript** libraries are included in  [resources/graphics/lib/](res
   * Versión: **3.6.1**
   * [Github](https://github.com/apache/commons-math)
   * [Maven Repository](https://mvnrepository.com/artifact/org.apache.commons/commons-math3)
-* [Apache Log4j](http://logging.apache.org/log4j/1.2/)
-  * Versión: **2.13.3**
-  * [Github](https://github.com/apache/log4j)
-  * [Maven Repository](https://mvnrepository.com/artifact/log4j/log4j)
 * [Apache Lucene](https://lucene.apache.org/)
   * Versión: **8.6.2**
   * [Github](https://github.com/apache/lucene-solr)

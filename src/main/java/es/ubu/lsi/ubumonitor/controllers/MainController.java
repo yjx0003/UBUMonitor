@@ -109,7 +109,7 @@ public class MainController implements Initializable {
 		// Mostramos Curso actual
 		Label lblActualCourse = new Label(controller.getActualCourse()
 				.toString());
-		Label lblRelease = new Label(controller.getDataBase()
+		Label lblRelease = new Label("Moodle "+controller.getDataBase()
 				.getRelease());
 		ImageView online = new ImageView(
 				controller.isOfflineMode() ? "/img/circle_offline.png" : "/img/circle_online.png");

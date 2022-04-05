@@ -42,6 +42,7 @@ public class SigmaController extends WebViewAction {
 				try {
 					students = (List<Student>) Serialization.decrypt(controller.getPreviousPassword(),
 							sigmaFile.toString());
+					Serialization.encrypt(controller.getPassword(), sigmaFile.toString(), students);
 
 				} catch (Exception ex) {
 					students = Collections.emptyList();

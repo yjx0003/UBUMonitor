@@ -221,6 +221,7 @@ public class WelcomeController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		
 		try {
+			controller.setPreviousPassword(null);
 			conexionLabel.setText(I18n.get("text.online_" + !controller.isOfflineMode()));
 			lblUser.setText(I18n.get("label.welcome") + " " + controller.getUser()
 					.getFullName());
@@ -503,7 +504,7 @@ public class WelcomeController implements Initializable {
 			downloadData();
 		} else { // if loading cache
 			loadData(controller.getPassword());
-			if(isBBDDLoaded) {
+			if(isBBDDLoaded && controller.getPreviousPassword() != null) {
 				saveData();
 			}
 			loadNextWindow();

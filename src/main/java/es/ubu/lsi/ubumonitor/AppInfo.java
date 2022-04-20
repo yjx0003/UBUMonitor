@@ -75,6 +75,8 @@ public class AppInfo {
 
 	public static final String SIGMA_DIR = "Sigma";
 
+	public static final String CITE = "https://www.mdpi.com/2079-9292/11/6/954#cite";
+
 	
 
 	private AppInfo() {

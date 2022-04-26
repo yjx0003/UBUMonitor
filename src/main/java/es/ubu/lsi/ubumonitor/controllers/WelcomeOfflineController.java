@@ -120,6 +120,7 @@ public class WelcomeOfflineController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
+			controller.setPreviousPassword(null);
 			conexionLabel.setText(I18n.get("text.online_" + !controller.isOfflineMode()));
 			lblUser.setText(I18n.get("label.welcome") + " " + controller.getUsername());
 			LOGGER.info("Cargando cursos...");
@@ -273,7 +274,7 @@ public class WelcomeOfflineController implements Initializable {
 		LOGGER.info(" Curso seleccionado: {}", selectedCourse.getName());
 
 		loadData(selectedCourse, controller.getPassword());
-		if (isBBDDLoaded) {
+		if (isBBDDLoaded && controller.getPreviousPassword() != null) {
 			Serialization.encrypt(controller.getPassword(), selectedCourse.toString(), controller.getDataBase());
 		}
 		loadNextWindow();

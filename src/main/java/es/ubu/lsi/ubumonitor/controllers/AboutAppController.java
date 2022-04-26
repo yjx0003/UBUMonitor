@@ -72,7 +72,7 @@ public class AboutAppController implements Initializable {
 	}
 	
 	public void openPaper() {
-		UtilMethods.openURL("https://www.mdpi.com/2079-9292/11/6/954#cite");
+		UtilMethods.openURL(AppInfo.CITE);
 
 	}
 	

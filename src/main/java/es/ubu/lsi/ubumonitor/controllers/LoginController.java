@@ -113,6 +113,9 @@ public class LoginController implements Initializable {
 
 	@FXML
 	private ImageView imageViewconfigurationHelper;
+	
+	@FXML
+	private ImageView imageViewCite;
 
 	@FXML
 	private TextField txtPasswordShow;
@@ -147,6 +150,8 @@ public class LoginController implements Initializable {
 			}
 		});
 		Tooltip.install(insecureProtocol, new Tooltip(I18n.get("tooltip.insecureprotocol")));
+		Tooltip.install(imageViewCite, new Tooltip(I18n.get("tooltip.cite")));
+
 		initLanguagesList();
 		initLauncherConfiguration();
 		DataBase dataBase = new DataBase();
@@ -534,6 +539,10 @@ public class LoginController implements Initializable {
 		ConfigHelper.setProperty(ASK_AGAIN, launcherConfigurationController.isAskAgain());
 		ConfigHelper.setProperty(BETA_TESTER, launcherConfigurationController.isBetaTester());
 
+	}
+	
+	public void openCite() {
+		UtilMethods.openURL(AppInfo.CITE);
 	}
 
 }

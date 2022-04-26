@@ -92,6 +92,14 @@
          <tooltip>
             <Tooltip fx:id="tooltipPasswordVisible" text="Empty Tooltip" />
          </tooltip></ToggleButton>
+      <ImageView fx:id="imageViewCite" layoutX="30.0" layoutY="70.0" onMouseClicked="#openCite" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../img/quote-right-solid.png" />
+         </image>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </ImageView>
       
       	</children>
 </AnchorPane>

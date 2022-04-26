@@ -57,7 +57,7 @@ public enum Province {
 	VALENCIA("46", "Valencia", AutonomousCommunity.VALENCIAN_COMMUNITY),
 	CEUTA("51", "Ceuta", AutonomousCommunity.CEUTA),
 	MELILLA("52", "Melilla", AutonomousCommunity.MELILLA),
-	UNKNOWN("-1", "Unknown", AutonomousCommunity.UNKNOWN);
+	UNKNOWN("-1", "-", AutonomousCommunity.UNKNOWN);
 	
 	private String zipCode;
 	private String name;

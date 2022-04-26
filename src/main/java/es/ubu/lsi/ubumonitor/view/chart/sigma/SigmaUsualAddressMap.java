@@ -81,13 +81,14 @@ public class SigmaUsualAddressMap extends Plotly {
 			data.put("texttemplate",
 					"'<b>%{label}</b><br>%{value}<br>%{percentParent} "
 							+ UtilMethods.escapeJavaScriptText(I18n.get("autonomousCommunity")) + "<br>%{percentRoot} "
-							+ UtilMethods.escapeJavaScriptText(I18n.get("spain")) + "'");
+							+ UtilMethods.escapeJavaScriptText(I18n.get("spain")) + "<br>%{text}'");
 			data.put("hovertemplate",
-					"'<b>%{label}</b><br>%{value}<br>%{percentParent:.2%} %{parent}<br>%{percentRoot:.2%} %{root}<extra></extra>'");
+					"'<b>%{label}</b><br>%{value}<br>%{percentParent:.2%} %{parent}<br>%{percentRoot:.2%} %{root}<br>%{text}<extra></extra>'");
 		}
 		JSArray labels = createJSArray("labels", data);
 		JSArray values = createJSArray("values", data);
 		JSArray parents = createJSArray("parents", data);
+		JSArray text = createJSArray("text", data);
 		JSArray ids = createJSArray("ids", data);
 		int total = 0;
 		for (Map.Entry<AutonomousCommunity, Map<Province, List<Student>>> entry : map.entrySet()) {
@@ -95,6 +96,12 @@ public class SigmaUsualAddressMap extends Plotly {
 			Map<Province, List<Student>> mapProvince = entry.getValue();
 			int communityTotal = 0;
 			for (Map.Entry<Province, List<Student>> entryProvince : mapProvince.entrySet()) {
+				StringBuilder textStudents = new StringBuilder();
+				for(Student student: entryProvince.getValue()) {
+					textStudents.append("<br>• ");
+					textStudents.append(student.getFullName());
+				}
+				text.addWithQuote(textStudents.toString());
 				Province province = entryProvince.getKey();
 				int nStudents = entryProvince.getValue()
 						.size();
@@ -110,13 +117,14 @@ public class SigmaUsualAddressMap extends Plotly {
 			values.add(communityTotal);
 			parents.add(0);
 			ids.addWithQuote(autonomousCommunity);
+			text.add("''");
 		}
 		// spain information
 		labels.addWithQuote(I18n.get("spain"));
 		values.add(total);
 		parents.add("''");
 		ids.add(0);
-
+		text.add("''");
 	}
 
 	private JSArray createJSArray(String key, JSObject data) {

@@ -112,6 +112,11 @@ public class SigmaBar extends Plotly {
 		layout.put("xaxis2", "{type:'category', title:'" + I18n.get("sigma.numberOfEnrols") + "'}");
 		layout.put("xaxis3", "{type:'category', title:'" + I18n.get("sigma.yearsAccess") + "'}");
 		layout.put("xaxis4", "{type:'category', title:'" + I18n.get("sigma.yearsOld") + "'}");
+		
+		layout.put("yaxis", "{title:'"+I18n.get("sigma.numberUsers") +"'}");
+		layout.put("yaxis2", "{title:'"+I18n.get("sigma.numberUsers") +"'}");
+		layout.put("yaxis3", "{title:'"+I18n.get("sigma.numberUsers") +"'}");
+		layout.put("yaxis4", "{title:'"+I18n.get("sigma.numberUsers") +"'}");
 	}
 
 }

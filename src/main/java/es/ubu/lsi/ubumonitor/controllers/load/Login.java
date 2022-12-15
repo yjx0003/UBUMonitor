@@ -130,7 +130,9 @@ public class Login {
 	}
 
 	public void reLogin() throws IOException {
-		tryLogin();
+		webService.setSesskey(null);
+		launchurl = null;
+		login(typeoflogin, launchurl);
 
 	}
 

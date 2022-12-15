@@ -9,46 +9,41 @@ import java.util.List;
 public class Student implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
-	private String fullName;
-	private String email;
-	private LocalDate dateOfBirth;
-	private String dni;
-	private String gender;
-	private String usualAddress;
-	private String usualPhone;
-	private String courseAddress;
-	private String coursePhone;
-	private String center;
-	private String subject;
-	private double subjectCredits;
-	private String typeOfTeaching;
-	private String group;
-	private String period;
-	private String courseYear;
-	private String typeOfSubject;
-	private int yearsConsumed;
-	private int numberOfEnrols;
-	private String typeAccessGrade;
-	private int yearAccess;
-	private String routeAccess;
-	private String internationalProgram;
-	private String speciality;
-	private String studyPlan;
-	private int numberCreditsPassed;
-	private int courseNumberCreditsEnrolled;
-	private int basicAndObligatoryCreditsEnrolled;
-	private int studyPlanCredits;
-	private List<Subject> optionalSubjects;
-	private List<Subject> enrolledSubjects;
-	private List<String> observations;
-
-	public Student() {
-		optionalSubjects = new ArrayList<>();
-		enrolledSubjects = new ArrayList<>();
-		observations = new ArrayList<>();
-	}
-
+	private static final String NA = "N/A";
 	
+	private String fullName = NA;
+	private String email = NA;
+	private LocalDate dateOfBirth = LocalDate.now();
+	private String dni = NA;
+	private String gender = NA;
+	private String usualAddress = NA;
+	private String usualPhone = NA;
+	private String courseAddress = NA;
+	private String coursePhone = NA;
+	private String center = NA;
+	private String subject = NA;
+	private double subjectCredits = 0.0;
+	private String typeOfTeaching = NA;
+	private String group = NA;
+	private String period = NA;
+	private String courseYear = NA;
+	private String typeOfSubject = NA;
+	private int yearsConsumed = -1;
+	private int numberOfEnrols = -1;
+	private String typeAccessGrade  = NA;
+	private int yearAccess  = -1;
+	private String routeAccess = NA;
+	private String internationalProgram = NA;
+	private String speciality = NA;
+	private String studyPlan = NA;
+	private int numberCreditsPassed = -1;
+	private int courseNumberCreditsEnrolled = -1;
+	private int basicAndObligatoryCreditsEnrolled = -1;
+	private int studyPlanCredits = -1;
+	private List<Subject> optionalSubjects = new ArrayList<>();
+	private List<Subject> enrolledSubjects = new ArrayList<>();
+	private List<String> observations = new ArrayList<>();
+
 
 	/**
 	 * @return the fullName

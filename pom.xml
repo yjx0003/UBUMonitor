@@ -162,9 +162,11 @@
 					<source>1.8</source>
 					<target>1.8</target>
 					<!-- Passing arguments is a trainwreck, see https://issues.apache.org/jira/browse/MCOMPILER-123 -->
+					<!--
 					<compilerArguments>
 						<properties>${project.basedir}/.settings/org.eclipse.jdt.core.prefs</properties>
 					</compilerArguments>
+					-->
 					<showWarnings>true</showWarnings>
 					<showDeprecation>true</showDeprecation>
 				</configuration>

@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.is; 
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,15 +30,19 @@ import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourse;
 import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourseCategories;
 import es.ubu.lsi.ubumonitor.controllers.load.PopulateCourseContent;
 import es.ubu.lsi.ubumonitor.controllers.load.PopulateEnrolledUsersCourse;
+import es.ubu.lsi.ubumonitor.controllers.load.PopulateForum;
 import es.ubu.lsi.ubumonitor.controllers.load.PopulateGradeItem;
 import es.ubu.lsi.ubumonitor.controllers.load.PopulateMoodleUser;
 import es.ubu.lsi.ubumonitor.model.Course;
 import es.ubu.lsi.ubumonitor.model.CourseCategory;
 import es.ubu.lsi.ubumonitor.model.CourseModule;
 import es.ubu.lsi.ubumonitor.model.DataBase;
+import es.ubu.lsi.ubumonitor.model.DiscussionPost;
 import es.ubu.lsi.ubumonitor.model.EnrolledUser;
+import es.ubu.lsi.ubumonitor.model.ForumDiscussion;
 import es.ubu.lsi.ubumonitor.model.GradeItem;
 import es.ubu.lsi.ubumonitor.model.Logs;
+import es.ubu.lsi.ubumonitor.model.ModuleType;
 import es.ubu.lsi.ubumonitor.model.MoodleUser;
 import es.ubu.lsi.ubumonitor.model.Section;
 import es.ubu.lsi.ubumonitor.util.UtilMethods;
@@ -211,7 +218,7 @@ public class WebServiceTest {
 
 		for (int i = 0; i < jsonArray.length(); ++i) {
 			if (jsonArray.getJSONObject(i)
-					.getInt("visible") == 1) {
+					.getBoolean("visible") == true) { // boolean since Moodle 4.x
 				quizzesids.add(jsonArray.getJSONObject(i)
 						.getInt("id"));
 			}
@@ -264,6 +271,55 @@ public class WebServiceTest {
 		List<CourseCategory> courseCategories = populateCourseCategories.populateCourseCategories(categoryIds);
 		assertFalse(courseCategories.isEmpty());
 
+	}
+	
+	/**
+	 * Check the load of data forum.
+	 * 
+	 * @since 2.10.4
+	 */
+	@Test
+	@Order(12)
+	public void getForumsData() {
+		// given
+		Course actualCourse = dataBase.getActualCourse();		
+		
+		dataBase.getCourses()
+		.getMap()
+		.values()
+		.forEach(Course::clearCourseData);
+
+		// when
+		
+		// add users...
+		PopulateEnrolledUsersCourse populateEnrolledUsersCourse = new PopulateEnrolledUsersCourse(dataBase,	webService);
+		actualCourse.addEnrolledUsers(populateEnrolledUsersCourse.createEnrolledUsers(actualCourse.getId()));
+
+		// add course modules...
+		PopulateCourseContent populateCourseContent = new PopulateCourseContent(webService, dataBase);
+		Pair<List<Section>, List<CourseModule>> pair = populateCourseContent
+				.populateCourseContent(actualCourse.getId());
+		actualCourse.addSections(pair.getKey());
+		actualCourse.addCourseModules(pair.getValue());
+
+		// populate discussions of the forum modules from the current course 
+		PopulateForum populateForum = new PopulateForum(dataBase, webService);		
+		List<ForumDiscussion> forumDiscussions = populateForum.populateForumDiscussions(pair.getValue()
+				.stream()
+				.filter(cm -> cm.getModuleType() == ModuleType.FORUM)
+				.collect(Collectors.toList()));
+	
+		// populate posts of the current discussions
+		List<DiscussionPost> discussionPosts = populateForum.populateDiscussionPosts(forumDiscussions.stream()
+				.map(ForumDiscussion::getId)
+				.collect(Collectors.toList()));		
+	
+		// add forum data to actual course
+		actualCourse.addDiscussionPosts(discussionPosts);		
+		
+		// then
+		assertThat("Wrong number of forums.", forumDiscussions.size(), is(7));		
+		assertThat("Wrong number of posts.", actualCourse.getDiscussionPosts().size(), is(20));
 	}
 
 }

@@ -3,6 +3,7 @@ package es.ubu.lsi.ubumonitor.controllers.load;
 public class Constants {
 
 	public static final String ATTACHMENT = "attachment";
+	public static final String AUTHOR = "author"; // since Moodle 4..x
 	public static final String AVAILABLE = "available";
 	public static final String CANFAVOURITE = "canfavourite";
 	public static final String CANLOCK = "canlock";
@@ -24,6 +25,7 @@ public class Constants {
 	public static final String DESCRIPTION = "description";
 	public static final String DESCRIPTIONFORMAT = "descriptionformat";
 	public static final String DISCUSSION = "discussion";
+	public static final String DISCUSSIONID = "discussionid"; // since Moodle 4.x
 	public static final String DISCUSSIONS = "discussions";
 	public static final String EMAIL = "email";
 	public static final String ENABLECOMPLETION = "enablecompletion";
@@ -71,6 +73,7 @@ public class Constants {
 	public static final String OPTIONS = "options";
 	public static final String OVERRIDEBY = "overrideby";
 	public static final String PARENT = "parent";
+	public static final String PARENTID = "parentid";
 	public static final String PATH = "path";
 	public static final String PERCENTAGE = "percentage";
 	public static final String PERCENTAGEFORMATTED = "percentageformatted";
@@ -90,6 +93,7 @@ public class Constants {
 	public static final String SUMMARYFORMAT = "summaryformat";
 	public static final String TABLEDATA = "tabledata";
 	public static final String TABLES = "tables";
+	public static final String TIMECREATED = "timecreated"; // since Moodle 4.x
 	public static final String TIMECOMPLETED = "timecompleted";
 	public static final String TIMEEND = "timeend";
 	public static final String TIMEMODIFIED = "timemodified";

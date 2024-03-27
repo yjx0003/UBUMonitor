@@ -32,7 +32,14 @@ public class PopulateGradeItem {
 	/**
 	 * Icono de carpeta, indica que el grade item es de categoria.
 	 */
-	private static final String FOLDER_ICON = "icon fa fa-folder fa-fw icon itemicon";
+	private static final String FOLDER_ICON = "icon fa fa-folder fa-fw icon itemicon"; // Moodle 3.x
+	
+	/**
+	 * Chevron down icon used in Moodle 4.
+	 * 
+	 * @since 2.10.4
+	 */
+	private static final String FOLDER_ICON_V4 = "icon fa fa-chevron-down fa-fw"; // Moodle 4.x expand 
 
 	/**
 	 * Nivel de jearquia del grade Item
@@ -79,7 +86,12 @@ public class PopulateGradeItem {
 			getGradereportUserGetGradeItems(courseid, gradeItems, jsonObject);
 			return gradeItems;
 		} catch (Exception e) {
-			PopulateGradeItemTable creatorGradeItems = new PopulateGradeItemTable(dataBase, webService);
+			int moodleVersion = this.extractHigherNumberOfMoodleVersion(dataBase.getRelease());
+			PopulateGradeItemTableAbstract creatorGradeItems;
+			creatorGradeItems = (moodleVersion == 3) ? 
+					new PopulateGradeItemMoodle3Table(dataBase, webService) // Moodle 3.x
+					:
+					new PopulateGradeItemMoodle4Table(dataBase, webService); // Moodle 4.x
 			return creatorGradeItems.createGradeItems(courseid, jsonObject);
 		}
 	}
@@ -318,6 +330,20 @@ public class PopulateGradeItem {
 		}
 		throw new IllegalStateException("No se encuentra el nivel en " + stringClass
 				+ ", probablemente haya cambiado el formato de las tablas.");
+	}
+	
+	/**
+	 * Extract the first digit in the number version.
+	 * 
+	 * @param text text with version number (e.g. 4.3.3 (Build: 20240212))
+	 * @return firt digit of the version (e.g. 4 or 3)
+	 * @since 2.10.4
+	 */
+	private int extractHigherNumberOfMoodleVersion(String text) {	
+		if (text==null || text.isEmpty()) {
+			return 4; // default value
+		}
+		return Integer.parseInt(String.valueOf(text.charAt(0)));
 	}
 
 }

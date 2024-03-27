@@ -21,9 +21,19 @@ import es.ubu.lsi.ubumonitor.view.chart.sigma.SigmaBoxplot;
 import es.ubu.lsi.ubumonitor.view.chart.sigma.SigmaUsualAddressMap;
 
 public class SigmaTest {
-	public static final String SAMPLE_XLSX_FILE_PATH = "D:\\Users\\34651\\Downloads\\ANONIMIZADO_COMO_CSV_RECORTADO_1000287_CDS10_ListadoFichaAlumnos_22.02.2022.17.48.16.104.xls";
+	
+	private static final String DATATEST_PATH = "./datatest/";
+	
+	private static final String DATATEST_ANONYMISED_FILE = "ANONYMISED_AS_CSV_RETRIMMED_1000287_CDS10_ListStudents_22.02.2022.17.48.16.104.xls";
+	
+	private static final String DATATEST_RESULT_FILE = "students.json";	
+	
+	private static final String SAMPLE_XLSX_FILE_PATH = DATATEST_PATH + DATATEST_ANONYMISED_FILE;
+	
+	private static final String RESULT_JSON_FILE_PATH = DATATEST_PATH + DATATEST_RESULT_FILE;
 
 	private static final int NUMBER_STUDENTS = 17;
+	
 	private static List<Student> students;
 	
 	@BeforeAll
@@ -44,7 +54,7 @@ public class SigmaTest {
 	public void toJSON() throws IOException {
 		JSONArray studentsJSON = new JSONArray(students);
 		 //Write JSON file
-        try (FileWriter file = new FileWriter("./test/students.json")) {
+        try (FileWriter file = new FileWriter(RESULT_JSON_FILE_PATH)) {
             //We can write any JSONArray or JSONObject instance to the file
             file.write(studentsJSON.toString(4)); 
             file.flush();

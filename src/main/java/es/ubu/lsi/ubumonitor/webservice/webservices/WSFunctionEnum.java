@@ -125,9 +125,13 @@ public enum WSFunctionEnum {
 	
 	/**
 	 * Returns a list of forum posts for a discussion. 
+	 * 
+	 * Replace the depecrated web service "mod_forum_get_forum_discussion_posts" included in 2.7.
+	 * 
+	 * @since 2.10.4
 	 */
-	MOD_FORUM_GET_FORUM_DISCUSSION_POSTS("mod_forum_get_forum_discussion_posts", 2.7),
-	
+	MOD_FORUM_GET_FORUM_DISCUSSION_POSTS("mod_forum_get_discussion_posts", 3.7),
+		
 	/**
 	 * Returns a list of forum discussions optionally sorted and paginated.
 	 */

@@ -5,7 +5,7 @@
 
 	<groupId>es.ubu.lsi</groupId>
 	<artifactId>ubumonitor</artifactId>
-	<version>2.10.3</version>
+	<version>2.10.4</version>
 
 
 
@@ -33,6 +33,13 @@
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
 			<version>5.4.0</version>
+			<scope>test</scope>
+		</dependency>			
+		<!-- https://mvnrepository.com/artifact/org.hamcrest/hamcrest -->
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest</artifactId>
+			<version>2.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -121,7 +128,6 @@
 			<artifactId>kumo-core</artifactId>
 			<version>1.27</version>
 		</dependency>
-
 	</dependencies>
 
 
@@ -162,9 +168,11 @@
 					<source>1.8</source>
 					<target>1.8</target>
 					<!-- Passing arguments is a trainwreck, see https://issues.apache.org/jira/browse/MCOMPILER-123 -->
+					<!--
 					<compilerArguments>
 						<properties>${project.basedir}/.settings/org.eclipse.jdt.core.prefs</properties>
 					</compilerArguments>
+					-->
 					<showWarnings>true</showWarnings>
 					<showDeprecation>true</showDeprecation>
 				</configuration>

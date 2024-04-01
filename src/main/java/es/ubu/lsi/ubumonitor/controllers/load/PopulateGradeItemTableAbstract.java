@@ -34,40 +34,32 @@ import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
  * feedback desactivado.
  * 
  * @author Yi Peng Ji
+ * @author Raúl Marticorena
+ * @since 2.10.4
  *
  */
-public class PopulateGradeItemTable {
+public abstract class PopulateGradeItemTableAbstract {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(PopulateGradeItemTable.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PopulateGradeItemTableAbstract.class);
 
-	private static final String CONTENT = "content";
-
-	/**
-	 * Icono de tipo categoria
-	 */
-	private static final String FOLDER_ICON = "icon fa fa-folder fa-fw icon itemicon";
-
-	/**
-	 * Icono de items manuales
-	 */
-	private static final String MANUAL_ITEM_ICON = "icon fa fa-square-o fa-fw icon itemicon";
+	protected static final String CONTENT = "content";
 
 	/**
 	 * Patrin que busca el id del course module
 	 */
-	private static final Pattern MODULE_ID_PATTERN = Pattern.compile("id=(\\d+)");
+	protected static final Pattern MODULE_ID_PATTERN = Pattern.compile("id=(\\d+)");
 
-	private final DecimalFormat decimalFormat;
+	protected final DecimalFormat decimalFormat;
 
-	private DataBase dataBase;
-	private WebService webService;
+	protected DataBase dataBase;
+	protected WebService webService;
 
 	/**
 	 * Constructor a partir del locale
 	 * 
 	 * @param locale locale
 	 */
-	public PopulateGradeItemTable(DataBase dataBase, WebService webService) {
+	public PopulateGradeItemTableAbstract(DataBase dataBase, WebService webService) {
 		decimalFormat = new DecimalFormat("###.#####");
 		this.dataBase = dataBase;
 		this.webService = webService;
@@ -108,79 +100,7 @@ public class PopulateGradeItemTable {
 	 * @param jsonObject json
 	 * @return lista de grade item
 	 */
-	private List<GradeItem> createHierarchyGradeItems(JSONObject jsonObject) {
-
-		JSONObject table = Optional.ofNullable(jsonObject)
-				.map(a -> a.optJSONArray(Constants.TABLES))
-				.map(o -> o.optJSONObject(0))
-				.orElse(null);
-		if (table == null) { // if there is no element in the gradereport
-			return Collections.emptyList();
-		}
-
-		int maxDepth = table.getInt(Constants.MAXDEPTH) + 1;
-
-		GradeItem[] categories = new GradeItem[maxDepth];
-
-		JSONArray tabledata = table.getJSONArray(Constants.TABLEDATA);
-
-		List<GradeItem> gradeItems = new ArrayList<>();
-		for (int i = 0; i < tabledata.length(); i++) {
-
-			JSONObject tabledataJsonObject = tabledata.optJSONObject(i); // linea del gradereport
-
-			if (tabledataJsonObject == null) // grade item no visible
-				continue;
-
-			JSONObject itemname = tabledataJsonObject.getJSONObject(Constants.ITEMNAME);
-			int nivel = PopulateGradeItem.getNivel(itemname.getString(Constants.CLASS));
-			String contentString = itemname.getString(CONTENT);
-			Document content = Jsoup.parseBodyFragment(contentString);
-
-			GradeItem gradeItem = dataBase.getGradeItems()
-					.getById(i);
-			gradeItem.setItemname(content.text());
-			gradeItem.clearChildren();
-
-			gradeItem.setLevel(nivel);
-
-			// Buscamos la etiqueta HTML "i" dentro del JSONObject de content.
-			Element element = content.selectFirst("i");
-
-			String icon = element == null ? "" : element.className();
-
-			// Si hay icono de carpeta es la cabecera de la categoria con su nombre de
-			// carpeta
-			if (icon.equals(FOLDER_ICON)) {
-				gradeItem.setItemModule(ModuleType.CATEGORY);
-				categories[nivel] = gradeItem;
-				PopulateGradeItem.setFatherAndChildren(categories, nivel, gradeItem);
-
-				// Comprobamos si es nota de la categoria, si existe un elemento en ese nivel es
-				// que es de la nota de la categoria
-			} else if (categories[nivel] != null) {
-				gradeItem = categories[nivel];
-				categories[nivel] = null;
-				gradeItems.add(gradeItem);
-				setAtrributes(gradeItem, tabledataJsonObject);
-			} else if (icon.equals(MANUAL_ITEM_ICON)) {
-				gradeItem.setItemModule(ModuleType.MANUAL_ITEM);
-				gradeItems.add(gradeItem);
-				setAtrributes(gradeItem, tabledataJsonObject);
-				PopulateGradeItem.setFatherAndChildren(categories, nivel, gradeItem);
-			} else { // todos los demas modulos calificables
-				gradeItems.add(gradeItem);
-				setAtrributes(gradeItem, tabledataJsonObject);
-				PopulateGradeItem.setFatherAndChildren(categories, nivel, gradeItem);
-
-				setCourseModule(gradeItem, contentString);
-
-			}
-
-		}
-
-		return gradeItems;
-	}
+	abstract List<GradeItem> createHierarchyGradeItems(JSONObject jsonObject); 
 
 	/**
 	 * Asigna el grade item al modulo del curso si existe
@@ -189,7 +109,7 @@ public class PopulateGradeItemTable {
 	 * @param contentString string con la posibilidad que contenga el id del modulo
 	 *                      del curso
 	 */
-	private void setCourseModule(GradeItem gradeItem, String contentString) {
+	void setCourseModule(GradeItem gradeItem, String contentString) {
 
 		Matcher matcher = MODULE_ID_PATTERN.matcher(contentString);
 		if (matcher.find()) {
@@ -209,7 +129,7 @@ public class PopulateGradeItemTable {
 	 * @param gradeItem
 	 * @param tabledataJsonObject
 	 */
-	private void setAtrributes(GradeItem gradeItem, JSONObject tabledataJsonObject) {
+	void setAtrributes(GradeItem gradeItem, JSONObject tabledataJsonObject) {
 
 		setWeight(gradeItem, tabledataJsonObject);
 		setGradeMinMax(gradeItem, tabledataJsonObject);
@@ -223,7 +143,7 @@ public class PopulateGradeItemTable {
 	 * @param content
 	 * @return
 	 */
-	private boolean isEmpty(String content) {
+	boolean isEmpty(String content) {
 		return "-".equals(content);
 	}
 
@@ -234,7 +154,7 @@ public class PopulateGradeItemTable {
 	 * @param gradeItem           grade item
 	 * @param tabledataJsonObject json
 	 */
-	private void setGradeMinMax(GradeItem gradeItem, JSONObject tabledataJsonObject) {
+	void setGradeMinMax(GradeItem gradeItem, JSONObject tabledataJsonObject) {
 		if (!tabledataJsonObject.has("range")) {
 			return;
 		}
@@ -268,7 +188,7 @@ public class PopulateGradeItemTable {
 	 * @param gradeItem           grade item
 	 * @param tabledataJsonObject json
 	 */
-	private void setWeight(GradeItem gradeItem, JSONObject tabledataJsonObject) {
+	void setWeight(GradeItem gradeItem, JSONObject tabledataJsonObject) {
 
 		if (!tabledataJsonObject.has(Constants.WEIGHT)) {
 			return;
@@ -298,7 +218,7 @@ public class PopulateGradeItemTable {
 	 * @param jsonObject json
 	 * @param gradeItems lista de grade items
 	 */
-	private void setEnrolledUserGrades(JSONObject jsonObject, List<GradeItem> gradeItems) {
+	 void setEnrolledUserGrades(JSONObject jsonObject, List<GradeItem> gradeItems) {
 		JSONArray jsonArray = jsonObject.optJSONArray(Constants.TABLES);
 		if (jsonArray == null) {
 			return;
@@ -335,41 +255,7 @@ public class PopulateGradeItemTable {
 	 * @param gradeItem       grade item
 	 * @param enrolledUser    usuario
 	 */
-	private void setGrade(JSONObject tabledataObject, GradeItem gradeItem, EnrolledUser enrolledUser) {
-		if (!tabledataObject.has("grade")) {
-			gradeItem.addUserGrade(enrolledUser, Double.NaN);
-			return;
-		}
-
-		String content = tabledataObject.getJSONObject(Constants.GRADE)
-				.getString(CONTENT);
-		double grade = Double.NaN;
-
-		if (!"-".equals(content)) {
-
-			try {
-				grade = decimalFormat.parse(content)
-						.doubleValue();
-			} catch (ParseException e) {
-				LOGGER.info("No se puede parsear: {}, lo intentamos buscando el porcentaje", content);
-
-				try {
-					JSONObject percentage = tabledataObject.optJSONObject("percentage");
-					if (percentage != null) {
-						content = percentage.optString(CONTENT);
-						grade = decimalFormat.parse(content)
-								.doubleValue();
-					}
-
-				} catch (ParseException e1) {
-					LOGGER.error("No se puede parsear la nota de: " + tabledataObject.toString(2), e1);
-				}
-			}
-		}
-
-		gradeItem.addUserGrade(enrolledUser, grade);
-
-	}
+	abstract void setGrade(JSONObject tabledataObject, GradeItem gradeItem, EnrolledUser enrolledUser);
 
 	/**
 	 * Asigna la columna del porcentaje.
@@ -378,7 +264,7 @@ public class PopulateGradeItemTable {
 	 * @param gradeItem       gradeitem actual
 	 * @param enrolledUser    usuario
 	 */
-	private void setPercentage(JSONObject tabledataObject, GradeItem gradeItem, EnrolledUser enrolledUser) {
+	 void setPercentage(JSONObject tabledataObject, GradeItem gradeItem, EnrolledUser enrolledUser) {
 
 		JSONObject percentageJson = tabledataObject.optJSONObject(Constants.PERCENTAGE);
 		double percentage = Double.NaN;
@@ -398,3 +284,4 @@ public class PopulateGradeItemTable {
 	}
 
 }
+

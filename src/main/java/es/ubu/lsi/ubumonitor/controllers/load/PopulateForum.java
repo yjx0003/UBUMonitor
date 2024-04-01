@@ -21,6 +21,14 @@ import es.ubu.lsi.ubumonitor.webservice.api.mod.forum.ModForumGetForumDiscussion
 import es.ubu.lsi.ubumonitor.webservice.api.mod.forum.ModForumGetForumDiscussions;
 import es.ubu.lsi.ubumonitor.webservice.webservices.WebService;
 
+/**
+ * Populate the model with the forum information.
+ * 
+ * Using forums, discussions and posts.
+ * 
+ * @author Yi Peng Yi
+ * @author Raúl Marticorena
+ */
 public class PopulateForum {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PopulateForum.class);
@@ -124,14 +132,15 @@ public class PopulateForum {
 
 	public DiscussionPost populateDiscussionPost(JSONObject jsonObject) {
 		DiscussionPost discussionPost = dataBase.getDiscussionPosts().getById(jsonObject.getInt(Constants.ID));
-		discussionPost.setDiscussion(dataBase.getForumDiscussions().getById(jsonObject.optInt(Constants.DISCUSSION)));
-		int parent = jsonObject.optInt(Constants.PARENT);
+		discussionPost.setDiscussion(dataBase.getForumDiscussions().getById(jsonObject.optInt(Constants.DISCUSSIONID)));
+		int parent = jsonObject.optInt(Constants.PARENTID);
 		
 		discussionPost.setParent(dataBase.getDiscussionPosts().getById(parent));
+		// the access to author is changed in the new structure of the JSON response
+		discussionPost.setUser(dataBase.getUsers().getById(jsonObject.getJSONObject(Constants.AUTHOR).getInt("id")));
 		
-		discussionPost.setUser(dataBase.getUsers().getById(jsonObject.optInt(Constants.USERID)));
-		discussionPost.setCreated(Instant.ofEpochSecond(jsonObject.optLong(Constants.CREATED)));
-		discussionPost.setModified(Instant.ofEpochMilli(jsonObject.optLong(Constants.MODIFIED)));
+		discussionPost.setCreated(Instant.ofEpochSecond(jsonObject.optLong(Constants.TIMECREATED)));
+		discussionPost.setModified(Instant.ofEpochMilli(jsonObject.optLong(Constants.TIMEMODIFIED)));
 		discussionPost.setMailed(jsonObject.optInt(Constants.MAILED) == 1);
 		discussionPost.setSubject(jsonObject.optString(Constants.SUBJECT));
 		discussionPost.setMessage(jsonObject.optString(Constants.MESSAGE));

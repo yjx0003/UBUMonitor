@@ -123,10 +123,10 @@ public class PartitionalClusteringController {
 
 	@FXML
 	private ProgressIndicator progressExecute;
-	
+
 	@FXML
 	private DatePicker datePickerStart;
-	
+
 	@FXML
 	private DatePicker datePickerEnd;
 
@@ -221,17 +221,17 @@ public class PartitionalClusteringController {
 		gradesCollector = new GradesCollector(mainController);
 		activityCollector = new ActivityCollector(mainController);
 		List<LogCollector<?>> list = new ArrayList<>();
-		list.add(new LogCollector<>("component", mainController.getSelectionController().getListViewComponents(), DataSetComponent.getInstance(),
-				t -> t.name().toLowerCase()));
-		list.add(new LogCollector<>("event", mainController.getSelectionController().getListViewEvents(), DataSetComponentEvent.getInstance(),
-				t -> t.getComponent().name().toLowerCase()));
-		list.add(new LogCollector<>("section", mainController.getSelectionController().getListViewSection(), DataSetSection.getInstance(),
-				t -> t.isVisible() ? "visible" : "not_visible"));
+		list.add(new LogCollector<>("component", mainController.getSelectionController().getListViewComponents(),
+				DataSetComponent.getInstance(), t -> t.name().toLowerCase()));
+		list.add(new LogCollector<>("event", mainController.getSelectionController().getListViewEvents(),
+				DataSetComponentEvent.getInstance(), t -> t.getComponent().name().toLowerCase()));
+		list.add(new LogCollector<>("section", mainController.getSelectionController().getListViewSection(),
+				DataSetSection.getInstance(), t -> t.isVisible() ? "visible" : "not_visible"));
 		list.add(new LogCollector<>("coursemodule", mainController.getSelectionController().getListViewCourseModule(),
 				DatasSetCourseModule.getInstance(), t -> t.getModuleType().getModName()));
 		checkComboBoxLogs.getItems().setAll(list);
 		checkComboBoxLogs.getCheckModel().checkAll();
-		
+
 		JavaFXUtils.initDatePickers(datePickerStart, datePickerEnd, checkBoxLogs);
 	}
 
@@ -244,8 +244,8 @@ public class PartitionalClusteringController {
 
 					@Override
 					protected Void call() throws Exception {
-						List<EnrolledUser> users = mainController.getSelectionUserController().getListParticipants().getSelectionModel()
-								.getSelectedItems();
+						List<EnrolledUser> users = mainController.getSelectionUserController().getListParticipants()
+								.getSelectionModel().getSelectedItems();
 						Algorithm algorithm = algorithmList.getSelectionModel().getSelectedItem();
 
 						List<DataCollector> collectors = getSelectedCollectors();
@@ -268,12 +268,17 @@ public class PartitionalClusteringController {
 		buttonExecute.disableProperty().bind(service.runningProperty());
 		progressExecute.visibleProperty().bind(service.runningProperty());
 		service.setOnSucceeded(e -> {
-			silhouette.updateChart(clusters);
-			clusteringTableController.updateTable(clusters);
-			updateRename();
-			graph.updateChart(clusters);
-			graph3D.updateChart(clusters);
-			service.reset();
+			try { // #133 RMS FIXME temporal solution but the data validation should be improved...
+				silhouette.updateChart(clusters);
+				clusteringTableController.updateTable(clusters);
+				updateRename();
+				graph.updateChart(clusters);
+				graph3D.updateChart(clusters);
+				service.reset(); // set an stable state
+			} catch (Exception exception) { // when is not possible to draw some chart by the number of features...
+				service.reset(); // RMS should be really in a finally clause avoiding duplication...
+				LOGGER.error("Exception updating charts in clustering, review validation data: {}", exception);
+			}
 		});
 		service.setOnFailed(e -> {
 			Throwable exception = service.getException();
@@ -320,7 +325,8 @@ public class PartitionalClusteringController {
 		int start = (int) rangeSlider.getLowValue();
 		int end = (int) rangeSlider.getHighValue();
 
-		List<EnrolledUser> users = mainController.getSelectionUserController().getListParticipants().getSelectionModel().getSelectedItems();
+		List<EnrolledUser> users = mainController.getSelectionUserController().getListParticipants().getSelectionModel()
+				.getSelectedItems();
 		List<DataCollector> collectors = getSelectedCollectors();
 		AnalysisMethod analysisMethod = choiceBoxAnalyze.getValue().createAnalysis(algorithm);
 

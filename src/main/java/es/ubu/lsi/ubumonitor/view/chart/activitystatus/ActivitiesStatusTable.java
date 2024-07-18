@@ -69,24 +69,28 @@ public class ActivitiesStatusTable extends Tabulator {
 		formatterParams.put("width", 16);
 		formatterParams.put("urlPrefix", "''");
 		formatterParams.put("urlSuffix", "''");
-		
+
 		String stringFormatterParams = formatterParams.toString();
 
 		for (CourseModule courseModule : courseModules) {
-			jsObject = new JSObject();
-			jsObject.putWithQuote("hozAlign", "center");
-			jsObject.put("tooltip", "function(c){return c.getRow().getData().datetime"+courseModule.getCmid()+"}");
+			// commit #132 when the user unselect options a null value is included in the list...
+			if (courseModule != null) { // FIX BUG RMS
+				jsObject = new JSObject();
+				jsObject.putWithQuote("hozAlign", "center");
+				jsObject.put("tooltip",
+						"function(c){return c.getRow().getData().datetime" + courseModule.getCmid() + "}");
 
-			jsObject.putWithQuote("formatter", "image");
-			jsObject.put("topCalc",
-					"function(n,r,c){var f=0;return n.forEach(function(n){n&&f++;}),f+'/'+n.length+' ('+(f/n.length||0).toLocaleString(locale,{style:'percent',maximumFractionDigits:2})+')';}");
-			jsObject.put("formatterParams", stringFormatterParams);
-			jsObject.put("sorter",
-					"function(t,a,n,e,i,g,r){return t-a||(n.getData().instant"+ courseModule.getCmid()+"||0)-(e.getData().instant"+ courseModule.getCmid()+"||0)}");
-			jsObject.putWithQuote("title", courseModule.getModuleName());
-			jsObject.putWithQuote("field", "ID" + courseModule.getCmid());
+				jsObject.putWithQuote("formatter", "image");
+				jsObject.put("topCalc",
+						"function(n,r,c){var f=0;return n.forEach(function(n){n&&f++;}),f+'/'+n.length+' ('+(f/n.length||0).toLocaleString(locale,{style:'percent',maximumFractionDigits:2})+')';}");
+				jsObject.put("formatterParams", stringFormatterParams);
+				jsObject.put("sorter", "function(t,a,n,e,i,g,r){return t-a||(n.getData().instant"
+						+ courseModule.getCmid() + "||0)-(e.getData().instant" + courseModule.getCmid() + "||0)}");
+				jsObject.putWithQuote("title", courseModule.getModuleName());
+				jsObject.putWithQuote("field", "ID" + courseModule.getCmid());
 
-			array.add(jsObject.toString());
+				array.add(jsObject.toString());
+			}
 		}
 
 		return array.toString();
@@ -114,39 +118,36 @@ public class ActivitiesStatusTable extends Tabulator {
 	public String createData(List<EnrolledUser> enrolledUsers, List<CourseModule> courseModules) {
 		JSArray array = new JSArray();
 		JSObject jsObject;
-		Instant init = datePickerStart.getValue()
-				.atStartOfDay(ZoneId.systemDefault())
-				.toInstant();
-		Instant end = datePickerEnd.getValue()
-				.plusDays(1)
-				.atStartOfDay(ZoneId.systemDefault())
-				.toInstant();
+		Instant init = datePickerStart.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant();
+		Instant end = datePickerEnd.getValue().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
 		for (EnrolledUser enrolledUser : enrolledUsers) {
 			jsObject = new JSObject();
 			jsObject.putWithQuote("name", enrolledUser.getFullName());
 			int progress = 0;
-			
+
 			for (CourseModule courseModule : courseModules) {
-				
-				ActivityCompletion activity = courseModule.getActivitiesCompletion()
-						.get(enrolledUser);
-				
+
+				ActivityCompletion activity = courseModule.getActivitiesCompletion().get(enrolledUser);
+
 				String field = "ID" + courseModule.getCmid();
-			
-					
-				if (activity != null) { 
-					
-					String activityTracking = activity.getTracking() == null ? "0": String.valueOf(activity.getTracking().ordinal());
+
+				if (activity != null) {
+
+					String activityTracking = activity.getTracking() == null ? "0"
+							: String.valueOf(activity.getTracking().ordinal());
 					Instant timeCompleted = activity.getTimecompleted();
 					if (timeCompleted != null && init.isBefore(timeCompleted) && end.isAfter(timeCompleted)) {
 						progress++;
-						String activityState = activity.getState() == null ? "0": String.valueOf(activity.getState().ordinal());
+						String activityState = activity.getState() == null ? "0"
+								: String.valueOf(activity.getState().ordinal());
 						String overrideBy = activity.getOverrideby() == null ? "0" : "1";
-						jsObject.put(field,"activityCompletionIcons["+activityState + activityTracking + overrideBy+"]");
-						jsObject.putWithQuote("datetime"+courseModule.getCmid(), dateTimeWrapper.format(timeCompleted));
-						jsObject.put("instant"+courseModule.getCmid(), timeCompleted.getEpochSecond());
-					}else {
-						jsObject.put(field,"activityCompletionIcons[000]");
+						jsObject.put(field,
+								"activityCompletionIcons[" + activityState + activityTracking + overrideBy + "]");
+						jsObject.putWithQuote("datetime" + courseModule.getCmid(),
+								dateTimeWrapper.format(timeCompleted));
+						jsObject.put("instant" + courseModule.getCmid(), timeCompleted.getEpochSecond());
+					} else {
+						jsObject.put(field, "activityCompletionIcons[000]");
 					}
 
 				}
@@ -163,8 +164,7 @@ public class ActivitiesStatusTable extends Tabulator {
 	public void update() {
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
 
-		List<CourseModule> courseModules = listViewActivity.getSelectionModel()
-				.getSelectedItems();
+		List<CourseModule> courseModules = listViewActivity.getSelectionModel().getSelectedItems();
 		String columns = createColumns(courseModules);
 		String tableData = createData(enrolledUsers, courseModules);
 		JSObject data = new JSObject();
@@ -192,16 +192,10 @@ public class ActivitiesStatusTable extends Tabulator {
 
 	@Override
 	public void exportCSV(String path) throws IOException {
-		Instant init = datePickerStart.getValue()
-				.atStartOfDay(ZoneId.systemDefault())
-				.toInstant();
-		Instant end = datePickerEnd.getValue()
-				.plusDays(1)
-				.atStartOfDay(ZoneId.systemDefault())
-				.toInstant();
+		Instant init = datePickerStart.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant();
+		Instant end = datePickerEnd.getValue().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
 		List<EnrolledUser> enrolledUsers = getSelectedEnrolledUser();
-		List<CourseModule> courseModules = listViewActivity.getSelectionModel()
-				.getSelectedItems();
+		List<CourseModule> courseModules = listViewActivity.getSelectionModel().getSelectedItems();
 		List<String> header = new ArrayList<>();
 		header.add("userid");
 		header.add("fullname");
@@ -221,16 +215,14 @@ public class ActivitiesStatusTable extends Tabulator {
 				int completed = 0;
 				for (CourseModule courseModule : courseModules) {
 
-					ActivityCompletion activity = courseModule.getActivitiesCompletion()
-							.get(enrolledUser);
+					ActivityCompletion activity = courseModule.getActivitiesCompletion().get(enrolledUser);
 					State state = activity.getState();
 					Instant timeCompleted = activity.getTimecompleted();
 
 					if ((state == ActivityCompletion.State.COMPLETE || state == ActivityCompletion.State.COMPLETE_PASS)
 							&& timeCompleted != null && init.isBefore(timeCompleted) && end.isAfter(timeCompleted)) {
 						++completed;
-						printer.print(activity.getState()
-								.ordinal());
+						printer.print(activity.getState().ordinal());
 						printer.print(dateTimeWrapper.format(timeCompleted));
 					} else {
 						printer.print(ActivityCompletion.State.INCOMPLETE.ordinal());

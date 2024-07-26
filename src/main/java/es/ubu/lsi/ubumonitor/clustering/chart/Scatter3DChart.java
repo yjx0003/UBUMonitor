@@ -41,29 +41,34 @@ public class Scatter3DChart extends ClusteringChart {
 	 */
 	@Override
 	public void updateChart(List<ClusterWrapper> clusters) {
-		points = AlgorithmExecuter.clustersTo(3, clusters);
+		try { // FIX #137 catch exception generating an empty dataset
+			points = AlgorithmExecuter.clustersTo(3, clusters);
 
-		JSArray series = new JSArray();
-		int total = clusters.stream().mapToInt(ClusterWrapper::size).sum();
-		for (int i = 0; i < clusters.size(); i++) {
-			ClusterWrapper cluster = clusters.get(i);
-			JSObject serie = new JSObject();
-			serie.putWithQuote("name", getLegend(cluster, total));
-			JSArray data = new JSArray();
-			for (Entry<UserData, double[]> entry : points.get(i).entrySet()) {
-				double[] value = entry.getValue();
-				JSArray point = new JSArray();
-				point.add(value[0]);
-				point.add(value.length > 1 ? value[1] : 0.0);
-				point.add(value.length > 2 ? value[2] : 0.0);
-				data.add(point);
+			JSArray series = new JSArray();
+			int total = clusters.stream().mapToInt(ClusterWrapper::size).sum();
+			for (int i = 0; i < clusters.size(); i++) {
+				ClusterWrapper cluster = clusters.get(i);
+				JSObject serie = new JSObject();
+				serie.putWithQuote("name", getLegend(cluster, total));
+				JSArray data = new JSArray();
+				for (Entry<UserData, double[]> entry : points.get(i).entrySet()) {
+					double[] value = entry.getValue();
+					JSArray point = new JSArray();
+					point.add(value[0]);
+					point.add(value.length > 1 ? value[1] : 0.0);
+					point.add(value.length > 2 ? value[2] : 0.0);
+					data.add(point);
+				}
+				serie.put("data", data);
+				series.add(serie);
 			}
-			serie.put("data", data);
-			series.add(serie);
-		}
 
-		LOGGER.debug("3D series: {}", series);
-		getWebEngine().executeScript("updateChart(" + series + ")");
+			LOGGER.debug("3D series: {}", series);
+			getWebEngine().executeScript("updateChart(" + series + ")");
+		} catch (Exception e) {
+			LOGGER.error("Error updating chart 3D", e);
+			getWebEngine().executeScript("updateChart()");
+		}
 	}
 
 	/**

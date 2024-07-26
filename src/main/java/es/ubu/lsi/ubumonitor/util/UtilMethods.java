@@ -154,8 +154,8 @@ public class UtilMethods {
 	 * @param stringToRemove need to remove reserved character
 	 * @return without reserved character
 	 */
-	public static String removeReservedChar(String stringToRemove) {
-		String newString = stringToRemove.replaceAll(":|\\\\|/|\\?|\\*|\\|", "");
+	public static String removeReservedChar(String stringToRemove) {		
+		String newString = stringToRemove.replaceAll("\"|\\||<|>|:|\\\\|/|\\?|\\*|\\|", ""); // FIX #139 added more dangerous characters 
 		return newString.trim();
 		
 	}

@@ -193,7 +193,7 @@ public class AlgorithmExecuter {
 		List<Map<UserData, double[]>> points = new ArrayList<>();			
 		// PCA with T-SNE 	
 		PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();		
-		if (matrix[0].length > dim) {
+		if (matrix[0].length >= dim) { // FIX #137 changed > to >=
 			matrix = pca.pca(matrix, dim);
 		}
 

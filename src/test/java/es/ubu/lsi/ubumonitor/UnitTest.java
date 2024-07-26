@@ -57,6 +57,9 @@ public class UnitTest {
 		fillMap(map, "Inglés EPS VENA-curso 2019:20", "Inglés EPS VENA-curso 201920");
 		fillMap(map, "Inglés EPS\\ VENA-curso 2019:20", "Inglés EPS VENA-curso 201920");
 		fillMap(map, "Inglés EPS ?VENA-curso 2019:20", "Inglés EPS VENA-curso 201920");
+		fillMap(map, "Inglés EPS \"VENA-curso 2019:20\"", "Inglés EPS VENA-curso 201920");
+		fillMap(map, "Inglés EPS <VENA-curso 2019:20>", "Inglés EPS VENA-curso 201920");
+		fillMap(map, "Inglés EPS |VENA-curso 2019:20|", "Inglés EPS VENA-curso 201920");
 		for (Map.Entry<String, String> entry : map.entrySet()) {
 			assertEquals(entry.getValue(), entry.getKey());
 		}

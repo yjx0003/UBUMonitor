@@ -64,7 +64,7 @@ import okhttp3.Response;
 public class WebServiceTest {
 
 	private static final String USERNAME = "teacher";
-	private static final String PASSWORD = "moodle";
+	private static final String PASSWORD = "moodle25";
 	private static final String HOST = "https://school.moodledemo.net";
 	private static final int COURSE_ID = 62;
 	private static WebService webService;
@@ -93,7 +93,7 @@ public class WebServiceTest {
 	}
 	
 	/**
-	 * Check the number version of Moodle is 4.
+	 * Check the number version of current Moodle is 5.
 	 * 
 	 * @throws IOException 
 	 * @since 2.10.4
@@ -105,7 +105,7 @@ public class WebServiceTest {
 				.getJSONObjectResponse(CONTROLLER.getWebService(), new CoreWebserviceGetSiteInfo());		
 		CONTROLLER.setRelease(jsonObject.get("release").toString());
 		int firstVersionDigit = simpleExtract(CONTROLLER.getRelease());
-		assertEquals(4, firstVersionDigit, "Number of major version should be 4");
+		assertEquals(5, firstVersionDigit, "Number of major version should be 5");
 	}
 	
 	/**

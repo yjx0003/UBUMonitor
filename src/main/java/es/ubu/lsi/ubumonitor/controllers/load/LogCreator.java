@@ -78,10 +78,13 @@ public class LogCreator {
 	}
 	
 	public static void setDateTimeFormatter(String release) {
-		if (release.startsWith("4")) {
-			actualDateTimeFormatter = dateTimeFormatter4;
-		}else {
+		if (release.startsWith("3")) {
 			actualDateTimeFormatter = dateTimeFormatter3;
+		}else {
+			// Hof fix with migration to version Moodle 5.x
+			// if it is not 3, we assume that the version >=4
+			// expecting version 5 to have the same format
+			actualDateTimeFormatter = dateTimeFormatter4;
 		}
 	}
 

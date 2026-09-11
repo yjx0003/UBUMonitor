@@ -174,8 +174,25 @@ public class PopulateCourse {
 		try {
 
 			Response response = webService.getAjaxResponse(new CoreCourseGetRecentCourses());
-			JSONArray jsonArray = new JSONArray(response.body()
-					.string());
+			
+			String responseBody = response.body().string();
+			LOGGER.debug("Recent courses AJAX response: {}", responseBody);
+			
+			JSONArray jsonArray = new JSONArray(responseBody);			
+			
+			if (jsonArray.length() == 0) {
+	            LOGGER.warn("Empty response getting recent courses");
+	            return EMPTY_LIST_COURSE;
+	        }
+
+	        JSONObject result = jsonArray.getJSONObject(0);
+
+	        if (!result.has(Constants.DATA)) {
+	            LOGGER.warn("Cannot get recent courses. Moodle response: {}",
+	                    result);
+	            return EMPTY_LIST_COURSE;
+	        }
+		
 
 			return coursesByTimelineClassification(jsonArray.getJSONObject(0)
 					.getJSONArray(Constants.DATA));

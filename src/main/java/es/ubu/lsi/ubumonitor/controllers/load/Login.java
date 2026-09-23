@@ -406,7 +406,34 @@ public class Login {
 			if (sesskey != null) {
 				webService.setSesskey(sesskey);
 			}
+			
+			/*ues
+			 * Linux/JavaFX can successfully load the final launch.php page
+			 * without attempting to navigate to the moodlemobile:// scheme.
+			 *
+			 * Moodle then leaves the callback at:
+			 *
+			 * <a id="launchapp" href="moodlemobile://token=...">
+			 *
+			 * We process it directly from the DOM, without relying on the
+			 * platform-specific WebKit behavior.
+			 */
+			String mobileUrl = getMoodleMobileUrlFromWebView();
 
+			if (mobileUrl != null
+			        && processMoodleMobileRedirect(mobileUrl, popup)) {
+
+			    LOGGER.info(
+			            "Moodle mobile callback recovered from WebView DOM "
+			                    + "after successful page load");
+
+			    return;
+			}
+
+			/*
+			 * Normal behavior: in case WebView did navigate directly
+			 * to the moodlemobile:// scheme.
+			 */
 			processMoodleMobileRedirect(webView.getEngine().getLocation(), popup);
 		};
 	}
